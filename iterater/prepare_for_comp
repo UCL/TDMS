@@ -1,0 +1,4 @@
+module swap PrgEnv-cray PrgEnv-gnu
+module load fftw
+LD_LIBRARY_PATH=/group/gc4/pmunro/code/resources/matlab/glnxa64/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH

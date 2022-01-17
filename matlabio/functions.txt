@@ -1,0 +1,10 @@
+mxSetName -- obsolete
+matGetDir
+matGetArray -- obsolete
+
+matPutArray -- obsolete
+mxGetNumberOfElements
+mexErrMsgTxt
+mexGetArrayPtr -- obsolete
+mxCreateDoubleMatrix
+mexGetVariablePtr
