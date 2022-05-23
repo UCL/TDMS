@@ -1,3 +1,5 @@
 **build/
 doc/*.pdf
-
+.idea/
+**.o
+**.mat
