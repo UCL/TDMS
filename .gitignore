@@ -3,3 +3,4 @@ doc/*.pdf
 .idea/
 **.o
 **.mat
+**/.pytest_cache/
