@@ -88,9 +88,3 @@ class HDF5File(dict):
                 return False
 
         return True
-
-
-if __name__ == '__main__':
-
-    path = Path(THIS_DIR_PATH, '..', 'out', 'pstd_fs.mat')
-    f = HDF5File(path)
