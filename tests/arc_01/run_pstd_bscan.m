@@ -41,9 +41,13 @@ addpath('../../');
 %Now run the executeables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%setup environment variables
+eval('!/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH');
+eval('!export LD_LIBRARY_PATH');
+
 %run the executeable
-eval('!DYLD_LIBRARY_PATH=/Applications/MATLAB_R2022a.app/bin/maci64:/Applications/MATLAB_R2022a.app/sys/os/maci64 ../../iterater/prtmfdtdOMP_PSTD in/pstd_fs.mat out/pstd_fs.mat');
-eval('!DYLD_LIBRARY_PATH=/Applications/MATLAB_R2022a.app/bin/maci64:/Applications/MATLAB_R2022a.app/sys/os/maci64 ../../iterater/prtmfdtdOMP_PSTD in/pstd_cyl.mat out/pstd_cyl.mat');
+eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_fs.mat out/pstd_fs.mat');
+eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_cyl.mat out/pstd_cyl.mat');
 
 %plot the data
 dat_cyl = load('out/pstd_cyl');
@@ -59,4 +63,3 @@ subplot(2,1,2);
 imagesc(dat_fs.z_i,dat_fs.x_i,abs(squeeze(dat_cyl.Ex_i)));
 title('Focussed beam with scattering cylinder');
 axis equal;
-
