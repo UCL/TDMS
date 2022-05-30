@@ -2,6 +2,7 @@
 doc/*.pdf
 .idea/
 **.o
+**.DS_store
 **.mat
 **/.pytest_cache/
 **.pdf

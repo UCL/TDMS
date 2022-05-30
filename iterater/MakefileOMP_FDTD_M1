@@ -1,3 +1,4 @@
+# -*- makefile -*-
 # rm -rf *.o && make -f MakefileOMP_FDTD_UCL2
 
 #can be 'matlab' or 'ownio'

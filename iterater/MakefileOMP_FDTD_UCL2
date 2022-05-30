@@ -1,3 +1,4 @@
+# -*- makefile -*-
 #environment variables so libraries can be found
 #LD_LIBRARY_PATH=/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH
 #export LD_LIBRARY_PATH
