@@ -1,0 +1,31 @@
+name: Build LaTeX documentation
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'doc/**'
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: masterdoc.tex
+          working_directory: doc
+      - name: Move pdf
+        run: |
+          mv doc/masterdoc.pdf .
+      - name: Commit documentation
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Build documentation
+          branch: gh-doc
+          file_pattern: masterdoc.pdf
+          create_branch: true
+          push_options: '--force'
