@@ -18,9 +18,10 @@ jobs:
         with:
           root_file: masterdoc.tex
           working_directory: doc
-      - name: Move pdf
+      - name: Move pdf and remove other files
         run: |
           mv doc/masterdoc.pdf .
+          ls | grep -xv "masterdoc.pdf" | xargs rm -r
       - name: Commit documentation
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
