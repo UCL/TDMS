@@ -1,6 +1,6 @@
 #ifndef MIOFLAG
-#include "Mat_io.h"
-#include "iterater.h"
+#include "../matlabio/Mat_io.h"
+#include "tdms_iterator.h"
 #else
 #include "mat.h"
 #include "mex.h"

@@ -24,7 +24,7 @@
 #include <omp.h>
 #include "matio.h"
 #include <complex>
-#include "iterater_OMP_PSTD.h"
+#include "tdms_iterator.h"
 #include <string.h>
 #include "interpolate.h"
 #include "numeric.h"
@@ -280,11 +280,14 @@ void mexfprintf(const char err[]){
   fprintf(stderr,(char *)err);
 }
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   
   /*Local variables*/
-  int useCD = 0;//determines whether FDTD or PSTD is used
+
+  // determines whether FDTD or PSTD is used
+  int useCD = 0;
+
   double time_0, time_1, time_ml_1, time_ml_0;
   double secs;
   complex<double> commonPhase;

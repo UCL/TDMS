@@ -24,10 +24,10 @@
 #include <omp.h>
 #include "matio.h"
 #include <complex>
-#include "iterater_OMP_PSTD.h"
+#include "tdms_iterator.h"
 #include <string.h>
 #include "interpolate.h"
-#include "numeric.h"
+#include "../../matlabio/numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
 #include <time.h>

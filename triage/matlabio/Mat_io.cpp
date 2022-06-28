@@ -2,6 +2,9 @@
 #pragma hdrstop
 #include<string>
 #include<fstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include<iostream>
 using namespace std;
 #include "Mat_io.h"
@@ -77,7 +80,7 @@ MATFile* matOpen(const char* filename, const char* mode){
 						mf1 = NULL;
 			         }
 					 break;
-			case 1 : 
+			case 1 :
 			case 2 : mf1->WriteHeader(); break;
 		}
 	}
@@ -111,7 +114,7 @@ mxArray* matGetVariable(MATFile* mf1, const char* ArrayName){
 	int Npos;
 	mf1->SetRWmode(true);
 	mf1->SetPos(128);
-	
+
 	int count=1;
 	while((!found)&&(!mf1->EoF())){
 	  mf1->ReadTag(DataType, Bytes, small);
@@ -207,7 +210,7 @@ int matPutVariable(MATFile* mf1, char* Name, mxArray* mxA){
 	mf1->WriteTag(DataType,0,small);
 	int Npos=mf1->GetPos();
 //	cout << "Npos = " << Npos << endl;
-	
+
 	if((mxA1!=NULL)&&(!mxA1->GetEmpty())){
 		if(DataType==miCOMPRESSED)Strm_ok = mf1->InitStream(Npos);
 //		cout << "Strm_ok = " << Strm_ok << endl;
@@ -249,7 +252,7 @@ char **matGetDir(MATFile *mf1, int *num){
   for(int i=0;i<num[0];i++){
     retval[i] = (char *)malloc(sizeof(char)*(strlen(tempbuf[i])+1));
   }
-    
+
 }
 */
 
@@ -271,19 +274,19 @@ char **matGetDir(MATFile *mf1, int *num){
     strcpy(tempbuf[num[0]-1],temp2[0]);
     mxA = matGetNextVariable(mf1, (const char **)temp2);
     num[0]++;
-    
+
 
   }
-  
+
   (*num)--;
   retval = (char **)malloc(sizeof(char *)*num[0]);
   for(int i=0;i<num[0];i++){
     retval[i] = (char *)malloc(sizeof(char)*(strlen(tempbuf[i])+1));
     strcpy(retval[i],tempbuf[i]);
   }
-  
+
   return retval;
-    
+
 }
 
 
@@ -310,7 +313,7 @@ char **matGetDir(MATFile *mf1, int *num){
     Npos = mf1->GetPos() + Bytes;
     //if( (Bytes>0) && (DataType<=miUTF32) ){
       if( (Bytes>0) ){
-      
+
       if(DataType==miCOMPRESSED)Strm_ok = mf1->InitStream(Npos);
       if(Strm_ok)
 	{
@@ -328,7 +331,7 @@ char **matGetDir(MATFile *mf1, int *num){
 	mf1->EndStream();
       mf1->SetNindex(Npos);
     }
-    
+
   }
   (*num)--;
   retval = (char **)malloc( (*num)*sizeof(char *) );
@@ -507,7 +510,7 @@ void mxSetField(mxArray* mxA, mwIndex n1, const char* Name1, mxArray* mxA0){
 
 extern int mxAddField(mxArray *pm, const char *fieldname){
   return (pm)->AddField(fieldname, 32);
-  
+
   //mxArray* mxCreateStructMatrix(mwSize ndim, const mwSize *dims, int nf, const char** FieldNames)
 
 }
@@ -786,16 +789,16 @@ void MATFile::EndStream(){
 		cout << "strm.avail_in = " << strm.avail_in << endl;
 		while(strm_error==Z_OK){
 			cout << "strm.avail_out = " << strm.avail_out << endl;
-					cout << "strm.next_in = " << (int)strm.next_in << endl;
-					cout << "strm_in      = " << (int)strm_in << endl;
-					cout << "strm.next_out = " << (int)strm.next_out << endl;
-					cout << "strm_out      = " << (int)strm_out << endl;
+					cout << "strm.next_in = " << (size_t)strm.next_in << endl;
+					cout << "strm_in      = " << (size_t)strm_in << endl;
+					cout << "strm.next_out = " << (size_t)strm.next_out << endl;
+					cout << "strm_out      = " << (size_t)strm_out << endl;
 			strm.next_in = strm_in; //why necessary??
 			strm_error = deflate(&strm, Z_FINISH);
-					cout << "strm.next_in = " << (int)strm.next_in << endl;
-					cout << "strm_in      = " << (int)strm_in << endl;
-					cout << "strm.next_out = " << (int)strm.next_out << endl;
-					cout << "strm_out      = " << (int)strm_out << endl;
+					cout << "strm.next_in = " << (size_t)strm.next_in << endl;
+					cout << "strm_in      = " << (size_t)strm_in << endl;
+					cout << "strm.next_out = " << (size_t)strm.next_out << endl;
+					cout << "strm_out      = " << (size_t)strm_out << endl;
 			cout << "strm.avail_in = " << strm.avail_in << endl;
 			cout << "strm.avail_out = " << strm.avail_out << endl;
 			strm_idx = strm.avail_in;
@@ -805,10 +808,10 @@ void MATFile::EndStream(){
 			cout << "add = " << CHUNK-strm.avail_out << endl;
 			File1.write(reinterpret_cast<char*>(strm_out),CHUNK-strm.avail_out);
 			cout << "now = " << File1.tellp() << endl;
-					cout << "strm.next_in = " << (int)strm.next_in << endl;
-					cout << "strm_in      = " << (int)strm_in << endl;
-					cout << "strm.next_out = " << (int)strm.next_out << endl;
-					cout << "strm_out      = " << (int)strm_out << endl;
+					cout << "strm.next_in = " << (size_t)strm.next_in << endl;
+					cout << "strm_in      = " << (size_t)strm_in << endl;
+					cout << "strm.next_out = " << (size_t)strm.next_out << endl;
+					cout << "strm_out      = " << (size_t)strm_out << endl;
 			cout << "strm.avail_out = " << strm.avail_out << endl;
 			strm.avail_out = CHUNK;
 		}
@@ -1064,7 +1067,7 @@ bool MATFile::ReadTag(miMatrix& DataType, int& Bytes, bool& small){
 		if(miRead)for(int i=0; i<4; i++)a2[i] = a1[3-i];
 		else for(int i=0; i<4; i++)a2[i] = a1[i];
 		c1 = reinterpret_cast<unsigned int*>(a2);
-		
+
 		if(c1[0]>65535){//small data element
 			small=true;
 			DataType = (miMatrix)(c1[0]%65536);
@@ -1073,7 +1076,7 @@ bool MATFile::ReadTag(miMatrix& DataType, int& Bytes, bool& small){
 		else{
 			small=false;
 			DataType = (miMatrix)c1[0];
-			
+
 			tmp=4;
 			Read(a1,tmp);
 			if(miRead)for(int i=0; i<4; i++)a2[i] = a1[3-i];
@@ -1740,9 +1743,9 @@ bool MATFile::ReadMatrixHeader(mxArray* mxA){
 		mxA->SetName(Data3,Bytes);
 		delete[] Data3;
 	}
-	
+
 	if(ArrayType==mxSTRUCT_CLASS){
-	  
+
 		ReadTag(DataType, Bytes, small);
 		if(DataType==miINT8){
 		  Data3 = new char [Bytes];
@@ -1773,7 +1776,7 @@ bool MATFile::ReadMatrixHeader(mxArray* mxA){
 			    padding++;
 			  padding=padding*8;
 			  padding = padding-MaxLength*(mxA->GetNf());
-			  			  
+
 			}
 			else{
 			  padding=(MaxLength*(mxA->GetNf()))/4;
@@ -1789,7 +1792,7 @@ bool MATFile::ReadMatrixHeader(mxArray* mxA){
 		}
 		else failed=true;
 	}
-	
+
 	mxA->SetDataOffset(GetPos());
 	return failed;
 }
@@ -2295,7 +2298,7 @@ int mxArray::AddField(const char *fieldname, int MaxLength){
     OldFieldNames[i] = FieldNames[i];
   delete[] FieldNames;
   FieldNames = new char * [nf];
-  	
+
   //add name
   for(int i=0; i<nf; i++){
     FieldNames[i] = new char [MaxLength];
@@ -2316,12 +2319,12 @@ int mxArray::AddField(const char *fieldname, int MaxLength){
 	if(!NL)FieldNames[i][j] = fieldname[j];
 	else FieldNames[i][j] = 0;
       }
-    
+
   }
   delete[] OldFieldNames;
   int OldElements=Ndata;
   int NewElements=nf;
-  
+
 
   for(int i=0; i<nd; i++)
     NewElements=Dim[i]*NewElements;
@@ -2329,10 +2332,10 @@ int mxArray::AddField(const char *fieldname, int MaxLength){
   mxArray** mxA0copy = new mxArray* [OldElements];
   memcpy(mxA0copy,mxA0,sizeof( mxArray *)*(OldElements));
   delete[] mxA0;
-  mxA0 = new mxArray* [NewElements]; 
+  mxA0 = new mxArray* [NewElements];
   for(int i=0; i<OldElements; i++)mxA0[i] = mxA0copy[i];
   for(int i=OldElements; i<NewElements; i++)mxA0[i] = NULL;
-  
+
 
   delete[] mxA0copy;
   return nf;
@@ -2376,7 +2379,7 @@ void mxArray::RemoveField( int fieldnumber, int MaxLength){
     OldFieldNames[i] = FieldNames[i];
   delete[] FieldNames;
   FieldNames = new char * [nf];
-  	
+
   //add name
   int count=0;
   for(int i=0; i<(nf+1); i++){
@@ -2397,7 +2400,7 @@ void mxArray::RemoveField( int fieldnumber, int MaxLength){
   delete[] OldFieldNames;
   int OldElements=Ndata;
   int NewElements=nf;
-  
+
 
   for(int i=0; i<nd; i++)
     NewElements=Dim[i]*NewElements;

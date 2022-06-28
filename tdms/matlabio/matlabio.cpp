@@ -18,7 +18,7 @@
 #include "matio.h"
 #include <complex>
 using namespace std;
-#include "globals.h"
+#include "matlabio_globals.h"
 #include "matlabio.h"
 
 /* Update the matlab array. This ensures no mistakes are made when indexing the matlab array.

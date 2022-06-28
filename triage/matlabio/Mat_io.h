@@ -4,7 +4,7 @@
 //---------------------------------------------------------------------------
 #include <string>
 #include <fstream>
-#include "globals_io.h"
+#include "Mat_io_globals.h"
 #include "zlib.h"
 //---------------------------------------------------------------------------
 #define _ALLOW_COMPRESSION 0
