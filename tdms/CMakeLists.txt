@@ -1,14 +1,16 @@
-project(.)
+project(tdms)
+
+# General setup ---------------------------------------------------------------
 cmake_minimum_required(VERSION 3.22)
 
 # Append the cmake/ directory to the search path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-        "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # and the  include directories for the project
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
 include_directories(${CMAKE_SOURCE_DIR}/mesh/)
+
 
 # Command line options for CMake ----------------------------------------------
 option(MATLAB_IO "Use MATLAB input/output" ON)
@@ -19,6 +21,7 @@ option(USE_FD "Use finite differences" OFF)
 if (${MATLAB_IO} STREQUAL ON)
     set(DFLAG -DMIOFLAG)  # TODO: Something better. Copied from Makefile
 endif()
+
 
 # Matlab ----------------------------------------------------------------------
 find_package(Matlab REQUIRED MAT_LIBRARY)
@@ -31,9 +34,16 @@ find_package(FFTW REQUIRED)
 include_directories(${FFTW_INCLUDE_DIRS})
 include_directories(${Matlab_INCLUDE_DIRS})
 
-# OpenMP ----------------------------------------------------------------------
-find_package(OpenMP REQUIRED)
 
+# OpenMP + libc++ -------------------------------------------------------------
+if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+    find_package(OpenMP_Mac REQUIRED)
+    find_package(Lib_CXX_Mac)
+else()
+    find_package(OpenMP REQUIRED)
+endif()
+
+# Compile options -------------------------------------------------------------
 add_compile_options(-DMX_COMPAT_32 -c ${DFLAG} -O3)
 
 add_executable(tdms)
@@ -46,14 +56,13 @@ target_sources(tdms PRIVATE
         src/queuelinked.cpp
         src/tdms_iterator.cpp
         matlabio/matlabio.cpp
-        mesh/mesh.cpp
         mesh/mesh_base.cpp
         )
-
 
 target_link_libraries(tdms
         ${Matlab_LIBRARIES}
         ${FFTW_LIBRARIES}
+        ${LIBCXX_LIBRARY}
         OpenMP::OpenMP_CXX
         )
 
