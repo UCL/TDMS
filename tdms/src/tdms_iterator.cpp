@@ -284,9 +284,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   
   /*Local variables*/
-
-  // determines whether FDTD or PSTD is used
-  int useCD = 0;
+  int useCD = 0;//determines whether FDTD or PSTD is used
 
   double time_0, time_1, time_ml_1, time_ml_0;
   double secs;

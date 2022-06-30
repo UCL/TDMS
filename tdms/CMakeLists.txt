@@ -48,9 +48,8 @@ add_compile_options(-DMX_COMPAT_32 -c ${DFLAG} -O3)
 
 add_executable(tdms)
 target_sources(tdms PRIVATE
-        src/cli.cpp
+        src/openandorder_PSTD.cpp
         src/interpolate.cpp
-        src/io.cpp
         src/numeric.cpp
         src/queuelinked.cpp
         src/tdms_iterator.cpp
