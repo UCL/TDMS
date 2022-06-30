@@ -13,14 +13,6 @@ include_directories(${CMAKE_SOURCE_DIR}/mesh/)
 
 
 # Command line options for CMake ----------------------------------------------
-# Type of I/O to use
-set(IO_TYPE "MATLAB" CACHE STRING "Use MATLAB or C++ input/output")
-set_property(CACHE IO_TYPE PROPERTY STRINGS "MATLAB" "OWN")
-get_property(x CACHE IO_TYPE PROPERTY STRINGS)
-if (NOT IO_TYPE IN_LIST x)
-    message(FATAL_ERROR "Cannot set IO_TYPE=${IO_TYPE}. Options: ${x}")
-endif()
-
 # Type of derivatives to use
 set(DERIVATIVE_TYPE "PS" CACHE STRING "Type of derivatives to compute.
 Either Use pseudo spectral (PS) or finite differences (FD).
@@ -33,17 +25,9 @@ endif()
 
 
 # Matlab ----------------------------------------------------------------------
-if (${IO_TYPE} STREQUAL MATLAB)
-    set(DFLAG "-D MIOFLAG")
-
-    find_package(Matlab REQUIRED MAT_LIBRARY)
-    # Currently matlab only has x84 libraries on Mac (no arm)
-    set(CMAKE_OSX_ARCHITECTURES "x86_64")
-    set(NUMERICAL_DERIVATIVE_SOURCE_FILE "src/numerical_derivative.cpp")
-else()
-    set(CXX_MATLAB_IO_SOURCE_FILE "matlabio/Mat_io.cpp")
-endif()
-
+find_package(Matlab REQUIRED MAT_LIBRARY)
+# Currently matlab only has x84 libraries on Mac (no arm)
+set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
 # FFTW3 -----------------------------------------------------------------------
 find_package(FFTW REQUIRED)
@@ -72,8 +56,7 @@ target_sources(tdms PRIVATE
         src/tdms_iterator.cpp
         matlabio/matlabio.cpp
         mesh/mesh_base.cpp
-        ${NUMERICAL_DERIVATIVE_SOURCE_FILE}
-        ${CXX_MATLAB_IO_SOURCE_FILE}
+        src/numerical_derivative.cpp
         )
 
 target_link_libraries(tdms
