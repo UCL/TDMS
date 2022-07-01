@@ -63,4 +63,3 @@ subplot(2,1,2);
 imagesc(dat_fs.z_i,dat_fs.x_i,abs(squeeze(dat_cyl.Ex_i)));
 title('Focussed beam with scattering cylinder');
 axis equal;
-

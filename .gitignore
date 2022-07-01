@@ -1,3 +1,10 @@
 **build/
 doc/*.pdf
-
+.idea/
+**.o
+**.DS_store
+**.mat
+**.pyc
+**/.pytest_cache/
+**.pdf
+**cmake-build**

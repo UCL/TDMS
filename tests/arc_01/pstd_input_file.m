@@ -31,7 +31,7 @@ Dzu = 10;
 dt = 2/sqrt(2)/pi*delta.x/(3e8/1.35)*.95;
 
 %define the number of time steps
-Nt = 2500;
+Nt = 500;
 %Nt=12000;
 
 %water
