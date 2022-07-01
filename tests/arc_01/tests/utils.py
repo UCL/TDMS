@@ -8,9 +8,9 @@ from functools import wraps
 
 def work_in_zipped_dir(zip_path: Path):
     """
-    Extract some data from a compressed folder, change directories to it if
-    required, run the function then, if required change directories back out
-    and then delete the generated folder
+    Function decorator to extract some data from a compressed folder into a
+    directory, run the function, change directories to the initial working
+    directory and then delete the generated folder.
     """
 
     if not str(zip_path).endswith(".zip"):
