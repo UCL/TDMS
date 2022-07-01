@@ -13,18 +13,17 @@ def work_in_zipped_dir(zip_path: Path):
     and then delete the generated folder
     """
 
-    if not str(zip_path).endswith('.zip'):
+    if not str(zip_path).endswith(".zip"):
         raise ValueError(f"Cannot work in {zip_path}. Not a .zip directory")
 
     def func_decorator(func):
-
         @wraps(func)
         def wrapped_function(*args, **kwargs):
 
             cwd = os.getcwd()
             dir_path = Path(cwd, zip_path.stem)
 
-            with ZipFile(zip_path, 'r') as zip_folder:
+            with ZipFile(zip_path, "r") as zip_folder:
                 zip_folder.extractall(dir_path)
 
             os.chdir(dir_path)
@@ -39,4 +38,5 @@ def work_in_zipped_dir(zip_path: Path):
             return result
 
         return wrapped_function
+
     return func_decorator

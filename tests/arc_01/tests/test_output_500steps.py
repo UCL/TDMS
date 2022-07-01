@@ -7,10 +7,10 @@ from utils import work_in_zipped_dir
 
 
 THIS_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR_PATH = Path(THIS_DIR_PATH, '..', 'out')
+OUT_DIR_PATH = Path(THIS_DIR_PATH, "..", "out")
 
 
-@work_in_zipped_dir(Path(THIS_DIR_PATH, 'test_data.zip'))
+@work_in_zipped_dir(Path(THIS_DIR_PATH, "test_data.zip"))
 def test_output_as_expected():
     """
     For all the .mat files in this directory ensure that the generated file in
@@ -41,7 +41,7 @@ class HDF5File(dict):
     def __init__(self, filepath: Path):
         super().__init__()
 
-        with h5py.File(filepath, 'r') as file:
+        with h5py.File(filepath, "r") as file:
             self.update({k: self.to_numpy_array(v) for k, v in file.items()})
 
     def to_numpy_array(self, dataset: h5py.Dataset) -> np.ndarray:
@@ -66,7 +66,7 @@ class HDF5File(dict):
 
         return array.reshape(shape)
 
-    def matches(self, other: 'HDF5File', rtol=0.05) -> bool:
+    def matches(self, other: "HDF5File", rtol=1e-4) -> bool:
         """
         Does this file match another. All arrays must be within a rtol
         to the other, where rtol is the relative difference between the two
@@ -83,8 +83,20 @@ class HDF5File(dict):
             if value.shape != other_value.shape:
                 return False  # Shapes did not match
 
-            rel_diff = np.abs((value - other_value) / value)
-            if np.max(rel_diff) > rtol:
+            if relative_mean_squared_difference(value, other_value) > rtol:
+                print(f"{key} was not within {rtol} to the reference (rel MSD)")
                 return False
 
         return True
+
+
+def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
+    """Calculate the relative mean square difference between two arrays"""
+
+    mean_sq_a = np.mean(np.square(a))
+    mean_sq_b = np.mean(np.square(b))
+
+    if mean_sq_a < 1e-16 and mean_sq_b < 1e-16:
+        return 0.0  # Prevent division by zero for tensors filled with zeros
+
+    return np.mean(np.square(a - b)) / max(mean_sq_a, mean_sq_b)
