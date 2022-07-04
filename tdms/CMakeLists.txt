@@ -3,6 +3,9 @@ project(tdms)
 # General setup ---------------------------------------------------------------
 cmake_minimum_required(VERSION 3.22)
 
+# Allow RPATH on mac
+set(CMAKE_MACOSX_RPATH 1)
+
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
@@ -27,9 +30,9 @@ endif()
 
 # Matlab ----------------------------------------------------------------------
 find_package(Matlab REQUIRED MAT_LIBRARY)
+
 # Currently matlab only has x84 libraries on Mac (no arm)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
-set(CMAKE_MACOSX_RPATH 1)
 
 # Set the RPATH for the executable to find the dynamically linked libraries
 get_filename_component(MATLAB_LIB_ROOT "${Matlab_MAT_LIBRARY}" DIRECTORY)

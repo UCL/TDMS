@@ -68,8 +68,10 @@ else()
 endif()
 
 if (NOT FFTW_DOUBLE_LIB)
-    message("Failed to find FFTW3. Set FFTW_ROOT with e.g.\n
-             cmake .. -DFFTW_ROOT=/path/to/fftw3/\n")
+    message(WARNING
+"Failed to find FFTW3. Set FFTW_ROOT in the cmake command with e.g.
+     cmake .. -DFFTW_ROOT=/path/to/fftw3/\n"
+            )
 endif()
 
 set(FFTW_LIBRARIES ${FFTW_LIBRARIES} ${FFTW_DOUBLE_LIB})
