@@ -411,8 +411,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int Npe=0; //The number of terms in the algorithm to extract the phasors
   double dtp=0.; //The phasor extraction time step
   int Ni_tdf=0, Nk_tdf=0;
-  int skip_tdf = 1;
 
+  #ifdef FDFLAG
+  int skip_tdf = 6;
+  #else
+  int skip_tdf = 1;
+  #endif
+  
   const mwSize *dimptr_out;
 
   mwSize *dims;dims = (mwSize *)malloc(3*sizeof(mwSize));
