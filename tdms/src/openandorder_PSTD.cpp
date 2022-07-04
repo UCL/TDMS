@@ -39,7 +39,9 @@ int saveoutput(mxArray **plhs, int *matricestosave, char *matrixnames[], int nma
 void freememory( int nmatrices, mxArray **matrixptrs);
 
 int main(int nargs,char *argv[], char **envp){
-  omp_set_num_threads(12);
+
+  fprintf(stdout,"Using %d OMP threads\n", omp_get_num_threads());
+
   FILE *infile;
 
   /*

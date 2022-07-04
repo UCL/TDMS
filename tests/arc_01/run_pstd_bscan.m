@@ -42,12 +42,15 @@ addpath('../../');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %setup environment variables
-eval('!/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH');
-eval('!export LD_LIBRARY_PATH');
+%eval('!/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH');
+%eval('!export LD_LIBRARY_PATH');
 
 %run the executeable
-eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_fs.mat out/pstd_fs.mat');
-eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_cyl.mat out/pstd_cyl.mat');
+%[status,cmdout] = system('tdms in/pstd_fs.mat out/pstd_fs.mat')
+eval('!tdms in/pstd_fs.mat out/pstd_fs.mat');
+%eval('!DYLD_LIBRARY_PATH=/Applications/MATLAB_R2022a.app/bin/maci64 tdms in/pstd_fs.mat out/pstd_fs.mat');
+%eval('!DYLD_LIBRARY_PATH=/Applications/MATLAB_R2022a.app/bin/maci64 tdms out/pstd_cyl.mat');
+exit
 
 %plot the data
 dat_cyl = load('out/pstd_cyl');

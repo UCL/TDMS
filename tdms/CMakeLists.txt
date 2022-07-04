@@ -22,12 +22,19 @@ get_property(x CACHE DERIVATIVE_TYPE PROPERTY STRINGS)
 if (NOT DERIVATIVE_TYPE IN_LIST x)
     message(FATAL_ERROR "Cannot set DERIVATIVE_TYPE=${DERIVATIVE_TYPE}. Options: ${x}")
 endif()
+# TODO: implement switch
 
 
 # Matlab ----------------------------------------------------------------------
 find_package(Matlab REQUIRED MAT_LIBRARY)
 # Currently matlab only has x84 libraries on Mac (no arm)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
+set(CMAKE_MACOSX_RPATH 1)
+
+# Set the RPATH for the executable to find the dynamically linked libraries
+get_filename_component(MATLAB_LIB_ROOT "${Matlab_MAT_LIBRARY}" DIRECTORY)
+set(CMAKE_INSTALL_RPATH ${MATLAB_LIB_ROOT})
+message(STATUS "rpath: ${CMAKE_INSTALL_RPATH}")
 
 # FFTW3 -----------------------------------------------------------------------
 find_package(FFTW REQUIRED)
@@ -53,13 +60,15 @@ target_sources(tdms PRIVATE
         src/numeric.cpp
         src/queuelinked.cpp
         src/tdms_iterator.cpp
-        matlabio/matlabio.cpp
-        mesh/mesh_base.cpp
+        src/mesh_base.cpp
         src/numerical_derivative.cpp
+        matlabio/matlabio.cpp
         )
 
-target_link_libraries(tdms
-        ${Matlab_LIBRARIES}
+target_link_libraries(tdms PUBLIC
+        Matlab::mex
+        Matlab::mx
+        Matlab::mat
         ${FFTW_LIBRARIES}
         ${LIBCXX_LIBRARY}
         OpenMP::OpenMP_CXX
