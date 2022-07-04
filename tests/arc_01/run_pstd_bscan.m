@@ -3,9 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %start by defining the coordinates of the computational grid
-addpath('../../');
+addpath('../../tdms/matlab');
 [x,y,z,lambda] = fdtd_bounds('pstd_input_file.m');
-rmpath('../../');
 
 %15 micron radius cylinder
 rad = 15e-6;
@@ -33,7 +32,6 @@ composition_matrix = [];
 save(sprintf('gridfiles/gridfile_fs'), 'composition_matrix', 'material_matrix');
 
 %generate C input files
-addpath('../../');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_cyl','gridfiles/gridfile_cyl.mat','');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_fs','gridfiles/gridfile_fs.mat','');
 

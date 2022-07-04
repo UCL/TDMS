@@ -65,7 +65,7 @@ target_sources(tdms PRIVATE
         matlabio/matlabio.cpp
         )
 
-target_link_libraries(tdms PUBLIC
+target_link_libraries(tdms
         Matlab::mex
         Matlab::mx
         Matlab::mat
