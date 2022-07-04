@@ -1,16 +1,16 @@
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
 # TDMS
-_Time Domain Maxwell Solver_
 
+> **Warning**
+> This repository is a _work in progress_. The API will change without notice
 
 ***
 ## Introduction
 
-TDMS is a hybrid C++ and MATLAB code to solve Maxwell's equations in the time 
-domain.
-
-> **Warning**
-> This repository is a _work in progress_. The API will change without notice
+TDMS (Time Domain Maxwell Solver) is a hybrid C++ and MATLAB code to solve 
+Maxwell's equations to simulate light propagation through a medium. See the 
+[pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
+further details.
 
 
 ***
@@ -55,7 +55,9 @@ where lines need to be commented in and the paths modified if cmake cannot
 
 
 ***
-## Usage: Running the demonstration code
+## Usage
+
+#### To run the demonstration code
 
 Once the executable has been compiled, move into directory:
 tests/arc_01
