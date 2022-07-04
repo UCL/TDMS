@@ -25,7 +25,10 @@ get_property(x CACHE DERIVATIVE_TYPE PROPERTY STRINGS)
 if (NOT DERIVATIVE_TYPE IN_LIST x)
     message(FATAL_ERROR "Cannot set DERIVATIVE_TYPE=${DERIVATIVE_TYPE}. Options: ${x}")
 endif()
-# TODO: implement switch
+
+if (${DERIVATIVE_TYPE} STREQUAL FD)
+    set(DFLAG "-DFDFLAG")
+endif()
 
 
 # Matlab ----------------------------------------------------------------------

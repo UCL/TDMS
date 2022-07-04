@@ -284,7 +284,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   
   /*Local variables*/
-  int useCD = 0;//determines whether FDTD or PSTD is used
+  #ifdef FDFLAG
+  int useCD = 1; //determines whether FDTD or PSTD is used
+  #else
+  int useCD = 0;
+  #endif
 
   double time_0, time_1, time_ml_1, time_ml_0;
   double secs;
