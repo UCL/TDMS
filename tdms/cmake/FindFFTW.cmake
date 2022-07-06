@@ -1,6 +1,7 @@
 # - Find the FFTW library
 #
 # Adapted from: https://github.com/egpbos/findFFTW/blob/master/FindFFTW.cmake
+# to remove unnecessary functions and add useful hints
 #
 # Usage:
 #   find_package(FFTW [REQUIRED])
@@ -8,11 +9,11 @@
 # It sets the following variables:
 #   FFTW_FOUND                  ... true if fftw is found on the system
 #   FFTW_LIBRARIES              ... full paths to all found fftw libraries
-#   FFTW_[component]_LIB        ... full path to one of the components
 #   FFTW_INCLUDE_DIRS           ... fftw include directory paths
 #
 # The following variables will be checked by the function
-#   FFTW_USE_STATIC_LIBS        ... if true, only static libraries are found, otherwise both static and shared.
+#   FFTW_USE_STATIC_LIBS        ... if true, only static libraries are found,
+#                                   otherwise both static and shared.
 #   FFTW_ROOT                   ... if set, the libraries are exclusively searched
 #                                   under this path
 
@@ -51,7 +52,6 @@ if()
             PATH_SUFFIXES "include"
             NO_DEFAULT_PATH
             )
-
 else()
 
     find_library(
@@ -64,7 +64,6 @@ else()
             NAMES "fftw3.h"
             PATHS ${PKG_FFTW_INCLUDE_DIRS} ${INCLUDE_INSTALL_DIR}
             )
-
 endif()
 
 if (NOT FFTW_DOUBLE_LIB)

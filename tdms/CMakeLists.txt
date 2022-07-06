@@ -73,7 +73,7 @@ target_link_libraries(tdms
         Matlab::mex
         Matlab::mx
         Matlab::mat
-        ${FFTW_LIBRARIES}
+        FFTW::Double
         ${LIBCXX_LIBRARY}
         OpenMP::OpenMP_CXX
         )
