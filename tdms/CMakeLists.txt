@@ -1,7 +1,7 @@
 project(tdms)
 
 # General setup ---------------------------------------------------------------
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.21)
 
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH 1)
@@ -70,10 +70,8 @@ target_sources(tdms PRIVATE
         )
 
 target_link_libraries(tdms
-        Matlab::mex
-        Matlab::mx
-        Matlab::mat
         FFTW::Double
+        ${Matlab_LIBRARIES}
         ${LIBCXX_LIBRARY}
         OpenMP::OpenMP_CXX
         )
