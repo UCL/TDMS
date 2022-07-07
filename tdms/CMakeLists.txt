@@ -4,7 +4,7 @@ project(tdms)
 cmake_minimum_required(VERSION 3.21)
 
 # Allow RPATH on mac
-set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_MACOSX_RPATH TRUE)
 
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
