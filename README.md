@@ -1,3 +1,4 @@
+[![Run tests](https://github.com/UCL/TDMS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/UCL/TDMS/actions/workflows/tests.yml)
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
 # TDMS
 
