@@ -24,10 +24,10 @@
 #include <omp.h>
 #include "matio.h"
 #include <complex>
-#include "iterater_OMP_PSTD.h"
+#include "tdms_iterator.h"
 #include <string.h>
 #include "interpolate.h"
-#include "numeric.h"
+#include "../../matlabio/numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
 #include <time.h>
@@ -284,7 +284,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
 {
   
   /*Local variables*/
-  int useCD = 0;//determines whether FDTD or PSTD is used
+  int useCD = 1;//determines whether FDTD or PSTD is used
   double time_0, time_1, time_ml_1, time_ml_0;
   double secs;
   complex<double> commonPhase;
@@ -406,7 +406,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
   int Npe=0; //The number of terms in the algorithm to extract the phasors
   double dtp=0.; //The phasor extraction time step
   int Ni_tdf=0, Nk_tdf=0;
-  int skip_tdf = 1;
+  int skip_tdf = 6;
   const mwSize *dimptr_out;
 
   mwSize *dims;dims = (mwSize *)malloc(3*sizeof(mwSize));
@@ -424,7 +424,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
   complex<double> **Idx, **Idy;
   complex<double> Idxt,Idyt,kprop;
   
-  char message_buffer[500];
+  char message_buffer[50];
  
   char dimension_str[3];
   const char fdtdgrid_elements[][15] = {"Exy","Exz","Eyx","Eyz","Ezx","Ezy","Hxy","Hxz","Hyx","Hyz","Hzx","Hzy","materials"};
@@ -5952,21 +5952,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
 	      maxfield = tempfield;
 	  }
 fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
-//fprintf(stderr,"Post-iter 1\n");
+ 
 //     fprintf(stdout,"Iterating: %d\n",tind);
       t0 = double(time(NULL));
-      //fprintf(stderr,"Post-iter 2\n");
     }
-//fprintf(stderr,"Post-iter 3\n");
+
     if((sourcemode==sm_steadystate)&&(tind == (Nt[0]-1))&&(runmode==rm_complete)&& exphasorsvolume ){
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
       copyPhasors(mxGetPr( (mxArray *)dummy_array[0]),mxGetPi( (mxArray *)dummy_array[0]),mxGetPr( (mxArray *)dummy_array[1]),mxGetPi( (mxArray *)dummy_array[1]),mxGetPr( (mxArray *)dummy_array[2]),mxGetPi( (mxArray *)dummy_array[2]),
 		  mxGetPr( (mxArray *)plhs[0]),mxGetPi( (mxArray *)plhs[0]),mxGetPr( (mxArray *)plhs[1]),mxGetPi( (mxArray *)plhs[1]),mxGetPr( (mxArray *)plhs[2]),mxGetPi( (mxArray *)plhs[2]),
 		  (int)mxGetNumberOfElements( (mxArray *)plhs[0]));
     }
-//fprintf(stderr,"Post-iter 4\n");
+
     fflush(stdout);
-//fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),!strcmp(tdfdirstr,""));
     if( strcmp(tdfdirstr,"") ){
       //fprintf(stderr,"tind:%d\n",tind);
@@ -6001,7 +5999,7 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 
       }
     }
-//fprintf(stderr,"Post-iter 6\n");
+
     /*write out fdtdgrid to a file*/
     /*
      MATFile *toutfile;
@@ -6018,11 +6016,8 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 
   }//end of main iteration loop
   if(TIME_MAIN_LOOP){
-    //fprintf(stderr,"Post-iter 7\n");
     time_ml_1 = omp_get_wtime();
-    //fprintf(stderr,"Post-iter 8\n");
     fprintf(stdout,"# Time elasped in main loop: %e\n",time_ml_1-time_ml_0);
-    //fprintf(stderr,"Post-iter 9\n");
   }
   //save state of fdtdgrid
 
@@ -6055,7 +6050,7 @@ if(runmode == rm_complete && (nvertices>0) )
 			vertices, nvertices,
 			 components, ncomponents,
 			 E_norm[ifx], H_norm[ifx]);
-      fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
+      //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
 

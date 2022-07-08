@@ -47,28 +47,28 @@ prtmfdtdOMP_FDTD : $(objects)
 clean:
 	rm  prtmfdtdOMP_FDTD $(objects)
 
-openandorder_PSTD.o : openandorder_PSTD.cpp 
+openandorder_PSTD.o : ../../tdms/src
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) openandorder_PSTD.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO) $(INCFFT) $(COMPARG) $(OPTFLAG) 
 
 iterater_OMP_FDTD.o : iterater_OMP_FDTD.cpp 
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) iterater_OMP_FDTD.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(INCMESH) $(INCINTERP)  $(INCFFT)  $(COMPARG) $(OPTFLAG) 
 
-interpolate.o : ../interpolate/interpolate.cpp
+interpolate.o : ../../tdms/src
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) ../interpolate/interpolate.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(COMPARG) $(OPTFLAG) 
 
 mesh_base.o : ../mesh_experiment/mesh_base.cpp
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) ../mesh_experiment/mesh_base.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(INCMESH)   $(COMPARG) $(OPTFLAG) 
 
-matlabio.o : ../matlabio3/matlabio.cpp
+matlabio.o : ../../tdms/matlabio
 	$(COMPILER) $(OFLAG) -c $(DFLAG)  $(ERRNUM) ../matlabio3/matlabio.cpp  $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(COMPARG) $(OPTFLAG) 
 
-numeric.o : numeric.cpp
+numeric.o : ../../tdms/src
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) numeric.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(COMPARG) $(OPTFLAG) 
 
-queuelinked.o : queuelinked.cpp
+queuelinked.o : ../../tdms/src
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) queuelinked.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(COMPARG) $(OPTFLAG) 
 
-Mat_io.o : ../matlabio/Mat_io.cpp
+Mat_io.o : ../../tdms/matlabio
 	$(COMPILER) $(OFLAG) -c $(DFLAG) $(ERRNUM) ../matlabio/Mat_io.cpp $(INCMATIOUTIL) $(INCZLIB) $(INCMATIO) $(INCIO)  $(COMPARG) $(OPTFLAG) 
 
 numerical_derivative.o : ../../../FDTD/fourier_derive/examples/example1/numerical_derivative.cpp

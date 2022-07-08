@@ -1,50 +1,63 @@
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
+# TDMS
+
+> **Warning**
+> This repository is a _work in progress_. The API will change without notice
 
 ***
-# Introduction
+## Introduction
 
-The majority of the code's functionality is contained within file:
-iterater/iterater_OMP_PSTD.cpp
+TDMS (Time Domain Maxwell Solver) is a hybrid C++ and MATLAB code to solve 
+Maxwell's equations to simulate light propagation through a medium. See the 
+[pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
+further details.
 
-All source files used are listed in the make file:
-iterater/MakefileOMP_PSTD_UCL2
-
-Demonstration code is located in:
-tests/arc_01/run_pstd_bscan.m
-If this script is run in Matlab, and the executable has been
-correctly compiled, the demonstration simulation will run,
-demonstrating all key steps in running a simulation.
 
 ***
-# Prerequisites for compiling the code
+## Compilation
 
-Prior to compiling the code it is necessary to install the following:
+TDMS requires building against [FFTW](https://www.fftw.org/) and 
+[MATLAB](https://www.mathworks.com/products/matlab.html), thus both need to be
+downloaded and installed prior to compiling TDMS. Install with
 
--FFTW
--Matlab libraries as distributed with an installation of Matlab that
- are typically located in a directory such as /usr/local/MATLAB/R2019b/bin/glnxa64
+```bash
+cd tdms
+mkdir build; cd build
+cmake .. \
+# -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
+# -DFFTW_ROOT=/usr/local/fftw3/ \
+# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+make install
+```
+where lines need to be commented in and the paths modified if cmake cannot 
+(1) find MATLAB, (2) find FFTW or (3) install to the default install prefix.
+
+- <details>
+    <summary>Mac specific instructions</summary>
+
+    To compile on a Mac an x86 compiler with libraries for OpenMP are required,
+    which can be installed using [brew](https://brew.sh/) with `brew install llvm` 
+    then (optionally) set the following cmake arguments
+
+    ```
+    -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
+    -DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
+    -DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
+    ```
+  
+    On an ARM Mac install the x86 version of brew with
+    ```bash
+    arch -x86_64 zsh  
+    arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    arch -x86_64 /usr/local/bin/brew install llvm
+    ```
+</details>
+
 
 ***
-# Compilation instructions
+## Usage
 
-
-The following instructions correspond to a system running Ubuntu
-linux. The Makefile and preliminary commands will need to be changed
-according to the system's Matlab installation.
-
-The code is compiled by moving into the "iterater" directory.
-
-Then the following commands should be executed:
-
-LD_LIBRARY_PATH=/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH
-make -f MakefileOMP_PSTD_UCL2
-
-This will result in an executable "prtmfdtdOMP_PSTD"
-
-***
-# Running the demonstration code
-
+#### To run the demonstration code
 
 Once the executable has been compiled, move into directory:
 tests/arc_01

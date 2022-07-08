@@ -3,9 +3,9 @@
  *  Project.....:  isotropic FDTD code
  *  Application.:  launch and file IO
  *  Module......:  openandorder.cpp
- *  Description.:  Code for processing command line arguments, 
- *                 opening input files,  passing matrices to 
- *                 the mexFunction and writing the output to the 
+ *  Description.:  Code for processing command line arguments,
+ *                 opening input files,  passing matrices to
+ *                 the mexFunction and writing the output to the
  *                 specified output file.
  *  Compiler....:  g++
  *  Written by..:  Peter Munro, Imperial College London, 2002-2008
@@ -19,8 +19,8 @@
 /*---------------------------------------------------------------*/
 #include <omp.h>
 #include <stdio.h>
-#include <string.h> 
-#include <stdlib.h> 
+#include <string.h>
+#include <stdlib.h>
 #include "queuelinked.h"
 #include "matio.h"
 
@@ -39,18 +39,20 @@ int saveoutput(mxArray **plhs, int *matricestosave, char *matrixnames[], int nma
 void freememory( int nmatrices, mxArray **matrixptrs);
 
 int main(int nargs,char *argv[], char **envp){
-  omp_set_num_threads(12);
+
+  fprintf(stdout,"Using %d OMP threads\n", omp_get_max_threads());
+
   FILE *infile;
 
   /*
-    There are two cases to consider, when the fdtdgrid matrix is specified in a separate mat file 
+    There are two cases to consider, when the fdtdgrid matrix is specified in a separate mat file
     and when it is in the same file as the other matrices.
   */
 
   const char *matrixnames[] = {"fdtdgrid","Cmaterial","Dmaterial","C","D","freespace","disp_params","delta","interface","Isource","Jsource","Ksource","grid_labels","omega_an","to_l","hwhm","Dxl","Dxu","Dyl","Dyu","Dzl","Dzu","Nt","dt","tind","sourcemode","runmode","exphasorsvolume","exphasorssurface","intphasorssurface","phasorsurface","phasorinc","dimension","conductive_aux","dispersive_aux","structure","f_ex_vec","exdetintegral","f_vec","Pupil","D_tilde","k_det_obs_global","air_interface","intmatprops","intmethod","tdfield","tdfdir","fieldsample","campssample"};
-  
+
   const char *matrixnames_infile[] = {"Cmaterial","Dmaterial","C","D","freespace","disp_params","delta","interface","Isource","Jsource","Ksource","grid_labels","omega_an","to_l","hwhm","Dxl","Dxu","Dyl","Dyu","Dzl","Dzu","Nt","dt","tind","sourcemode","runmode","exphasorsvolume","exphasorssurface","intphasorssurface","phasorsurface","phasorinc","dimension","conductive_aux","dispersive_aux","structure","f_ex_vec","exdetintegral","f_vec","Pupil","D_tilde","k_det_obs_global","air_interface","intmatprops","intmethod","tdfield","tdfdir","fieldsample","campssample"};
-  
+
   const char *matrixnames_gridfile[] = {"fdtdgrid"};
 
   const char *outputmatrices_all[] = {"Ex_out","Ey_out","Ez_out","Hx_out","Hy_out","Hz_out","x_out","y_out","z_out","Ex_i","Ey_i","Ez_i","Hx_i","Hy_i","Hz_i","x_i","y_i","z_i","vertices","camplitudes","facets","maxresfield","Id","fieldsample","campssample"};
@@ -68,39 +70,39 @@ int main(int nargs,char *argv[], char **envp){
   /*********************************/
   Queue q = initQueue();
   ql_init(q);
-  
+
   while( argi<nargs ){
     if( argv[argi][0]=='-'){
       //fprintf(stdout,"switch: %s\n",argv[i]);
       switch(argv[argi][1]){
-      case 'h':
-	fprintf(stdout,"Usage: openandorder [options] infile outfile\n       openandorder [options] infile gridfile outfile\nOptions:\n-h:\tDisplay this help message\n-m:\tMinimise output file size by not saving vertex and facet information\n\n");
-	ql_deleteQueue(q);
-	exit(0);
-      case 'm':
-	save_geometry=0;
+        case 'h':
+          fprintf(stdout,"Usage: openandorder [options] infile outfile\n       openandorder [options] infile gridfile outfile\nOptions:\n-h:\tDisplay this help message\n-m:\tMinimise output file size by not saving vertex and facet information\n\n");
+          ql_deleteQueue(q);
+          exit(0);
+        case 'm':
+          save_geometry=0;
       }
       argi++;
     }
     else{
       if(strlen(argv[argi])>(STRBUFLEN-1)){
-	fprintf(stderr,"argument %d file name is too long (max length %d chars)\n",n_args_read+1,STRBUFLEN-1);
-	ql_deleteQueue(q);
-	exit(-1);
+        fprintf(stderr,"argument %d file name is too long (max length %d chars)\n",n_args_read+1,STRBUFLEN-1);
+        ql_deleteQueue(q);
+        exit(-1);
       }
       ql_push(q,argv[argi]);
       argi++;
       n_args_read++;
     }
   }
-  
+
   if( (n_args_read!=2) &&  (n_args_read!=3) ){
     fprintf(stderr,"incorrect number of arguments\n");
     ql_deleteQueue(q);
     exit(-1);
   }
   else{
-    
+
     ql_pop( q, infile_str, STRBUFLEN);
     if( n_args_read== 3)
       ql_pop( q, gridfile_str, STRBUFLEN);
@@ -112,7 +114,7 @@ int main(int nargs,char *argv[], char **envp){
   }
   ql_deleteQueue(q);
   /*********************************/
-  
+
   //for(temp=0;temp<100;temp++){
   infile = fopen(infile_str,"r");
   if(infile==NULL){
@@ -120,7 +122,7 @@ int main(int nargs,char *argv[], char **envp){
     exit(-1);
   }
   fclose(infile);
-  
+
   infile = fopen(outfile_str,"a+");
   if(infile==NULL){
     fprintf(stderr,"Unable to open file %s\n",outfile_str);
@@ -137,8 +139,8 @@ int main(int nargs,char *argv[], char **envp){
     fclose(infile);
   }
 
-    
-    //now it is safe to use matlab routines to open the file and order the matrices 
+
+  //now it is safe to use matlab routines to open the file and order the matrices
   if(n_args_read==2)
     openandorder(infile_str, (char **)matrixnames, matrixptrs, nmatrices);
   else{
@@ -146,27 +148,27 @@ int main(int nargs,char *argv[], char **envp){
     openandorder(gridfile_str, (char **)matrixnames_gridfile, matrixptrs, 1);
   }
 
-    //now run the FDTD code
-     mexFunction(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
-     /*
-     MATFile *toutfile;
-     toutfile  = matOpen("fdtdgrid_out.mat", "w");
-     matPutVariable(toutfile, "fdtdgrid", (mxArray *) matrixptrs[0]);
-     matClose(toutfile);
-     */
+  //now run the FDTD code
+  mexFunction(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
+  /*
+  MATFile *toutfile;
+  toutfile  = matOpen("fdtdgrid_out.mat", "w");
+  matPutVariable(toutfile, "fdtdgrid", (mxArray *) matrixptrs[0]);
+  matClose(toutfile);
+  */
 
-    if( save_geometry ){//prints vertices and facets
-      saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL,outfile_str );
-    }
-    else{//does not print vertices and facets
-      saveoutput(plhs, matricestosave, (char **)outputmatrices, NOUTMATRICES_WRITE,outfile_str );
+  if( save_geometry ){//prints vertices and facets
+    saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL,outfile_str );
+  }
+  else{//does not print vertices and facets
+    saveoutput(plhs, matricestosave, (char **)outputmatrices, NOUTMATRICES_WRITE,outfile_str );
     freememory(NMATRICES,(mxArray **)matrixptrs);
     freememory(NOUTMATRICES_PASSED,(mxArray **)plhs);
     return 0;
-    
+
   }
   //}
-  
+
 }
 /*Returns:
 
@@ -187,42 +189,42 @@ int openandorder(char *matfilename, char **matrixnames, const mxArray **matrixpt
   int I_tot, J_tot, K_tot;
   const char fdtdgrid_elements[][15] = {"Exy","Exz","Eyx","Eyz","Ezx","Ezy","Hxy","Hxz","Hyx","Hyz","Hzx","Hzy"};
   mxArray *element;
- 
+
 
   tmatfile = matOpen(matfilename, "r");
   if(tmatfile==NULL){
     fprintf(stderr, "Error opening %s\n",matfilename);
     return(-1);
   }
-  
+
   //get matrix names
   mat_matrixnames = matGetDir(tmatfile, &num_mats);
-     
+
   if( num_mats < nmatrices){
     fprintf(stderr,"Not enough matrices in mat file (%d,%d)\n",num_mats,nmatrices);
     return(-3);
   }
-    
+
   //now iterate through the matrix names and assign the pointer to each matrix
   //into the appropriate entry of matrixptrs
   for(i=0;i<nmatrices;i++){
     //now find the matrix name
     for(j=0;j<num_mats;j++){
       if(!strcmp(mat_matrixnames[j],matrixnames[i])){
-	//matrix pointer found
-	//fprintf(stderr,"Got %s/%s (%d)\n",mat_matrixnames[j],matrixnames[i],j);
-	//	//	matrixptrs[i] = matGetArray(tmatfile, mat_matrixnames[j]);
-	matrixptrs[i] = matGetVariable(tmatfile, mat_matrixnames[j]);
-	if( matrixptrs[i] == NULL){
-	  fprintf(stderr, "Could not get pointer to %s\n",mat_matrixnames[j]);
-	  return -5;
-	}
-	break;
+        //matrix pointer found
+        //fprintf(stderr,"Got %s/%s (%d)\n",mat_matrixnames[j],matrixnames[i],j);
+        //	//	matrixptrs[i] = matGetArray(tmatfile, mat_matrixnames[j]);
+        matrixptrs[i] = matGetVariable(tmatfile, mat_matrixnames[j]);
+        if( matrixptrs[i] == NULL){
+          fprintf(stderr, "Could not get pointer to %s\n",mat_matrixnames[j]);
+          return -5;
+        }
+        break;
       }
       else if(j==(num_mats-1)){
-	//matrix pointer NOT found
-	fprintf(stderr, "Couldn't find matrix %s\n",matrixnames[i]);
-	return(-2);
+        //matrix pointer NOT found
+        fprintf(stderr, "Couldn't find matrix %s\n",matrixnames[i]);
+        return(-2);
       }
     }
   }
@@ -251,25 +253,25 @@ int openandorder(char *matfilename, char **matrixnames, const mxArray **matrixpt
     element = mxGetField( (mxArray *)matrixptrs[0], 0, "K_tot");
     K_tot = (int) *mxGetPr(element);
     mxRemoveField((mxArray *)matrixptrs[0], mxGetFieldNumber( (mxArray *)matrixptrs[0], "K_tot"));
-    
+
     //fprintf(stderr,"%d %d %d\n",I_tot,J_tot,K_tot);
-    
+
     //now need to add fields to fdtdgrid
     for(i=0;i<12;i++){
       mxAddField((mxArray *)(matrixptrs[0]),fdtdgrid_elements[i] );
       //now need to populate the fields with zero matrices
       element = mxGetField( (mxArray *)matrixptrs[0], 0, fdtdgrid_elements[i]);
       ndims = 3;
-      
+
       dims[0] = I_tot + 1;
       dims[1] = J_tot + 1;
       dims[2] = K_tot + 1;
-    
+
       element = mxCreateNumericArray( (const mwSize)ndims, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL); //this function initialises data to 0
       mxSetField(( mxArray *)matrixptrs[0], 0, fdtdgrid_elements[i],element);
     }
   }
-  
+
   free(dims);
   matClose(tmatfile);
   mxFree(mat_matrixnames);
@@ -290,7 +292,7 @@ int saveoutput(mxArray **plhs, int *matricestosave, char *matrixnames[], int nma
   int i;
   int mpv_out;
   FILE *fp;
-  
+
   //first open file
   outfile = matOpen(outputfilename, "w7.3");
   if(outfile==NULL){
@@ -305,15 +307,15 @@ int saveoutput(mxArray **plhs, int *matricestosave, char *matrixnames[], int nma
     if(mpv_out){
       fp = matGetFp(outfile);
       fprintf(stderr,"Could not write array %s to %s (%d,%d,%d)\n",matrixnames[i],outputfilename,mpv_out,feof(fp),ferror(fp));
-      
+
     }
-      //return -2;
+    //return -2;
   }
   //int matPutArray(MATFile *mfp, const mxArray *mp);
   //void mxSetName(mxArray *array_ptr, const char *name);
   matClose(outfile);
   return 0;
-  
+
 }
 
 void freememory( int nmatrices, mxArray **matrixptrs){

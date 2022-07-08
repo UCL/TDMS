@@ -3,9 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %start by defining the coordinates of the computational grid
-addpath('../../');
+addpath('../../tdms/matlab');
 [x,y,z,lambda] = fdtd_bounds('pstd_input_file.m');
-rmpath('../../');
 
 %15 micron radius cylinder
 rad = 15e-6;
@@ -33,7 +32,6 @@ composition_matrix = [];
 save(sprintf('gridfiles/gridfile_fs'), 'composition_matrix', 'material_matrix');
 
 %generate C input files
-addpath('../../');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_cyl','gridfiles/gridfile_cyl.mat','');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_fs','gridfiles/gridfile_fs.mat','');
 
@@ -41,13 +39,8 @@ addpath('../../');
 %Now run the executeables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%setup environment variables
-eval('!/usr/local/MATLAB/R2019b/bin/glnxa64:/usr/local/MATLAB/R2019b/sys/os/glnxa64:$LD_LIBRARY_PATH');
-eval('!export LD_LIBRARY_PATH');
-
-%run the executeable
-eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_fs.mat out/pstd_fs.mat');
-eval('!../../iterater/prtmfdtdOMP_PSTD in/pstd_cyl.mat out/pstd_cyl.mat');
+eval('!tdms in/pstd_fs.mat out/pstd_fs.mat');
+eval('!tdms in/pstd_cyl.mat out/pstd_cyl.mat');
 
 %plot the data
 dat_cyl = load('out/pstd_cyl');

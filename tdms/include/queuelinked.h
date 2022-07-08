@@ -10,4 +10,3 @@ void ql_pop(Queue q, char *messptr, int mess_size);
 void ql_peek(Queue q, char *messptr, int mess_size);
 int ql_getNumElements(Queue q);
 void ql_deleteQueue(Queue q);
-
