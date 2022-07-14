@@ -44,4 +44,6 @@ jobs:
       - name: Test TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
-        run: py.test ${GITHUB_WORKSPACE}/tdms/tests
+        run: |
+          export OMP_NUM_THREADS=1
+          py.test ${GITHUB_WORKSPACE}/tdms/tests
