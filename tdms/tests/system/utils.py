@@ -15,7 +15,7 @@ from subprocess import run
 
 executable_path = shutil.which("tdms")
 
-if Path("tdms").exists():
+if Path("tdms").is_file():
     # If the executable exists in the current working directory use that
     executable_path = str(Path("tdms").absolute())
 
