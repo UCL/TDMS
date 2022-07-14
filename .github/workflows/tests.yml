@@ -26,7 +26,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libgomp1
+          sudo apt-get install libfftw3-dev libgomp1 python3
+          pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
       - name: Create Build Environment
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
@@ -43,5 +44,4 @@ jobs:
       - name: Test TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
-        # This is a dummy test for the time being
-        run: ls tdms
+        run: py.test ${GITHUB_WORKSPACE}/tdms/tests
