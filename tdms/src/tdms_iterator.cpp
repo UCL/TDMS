@@ -336,7 +336,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //these are used for boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs,**iwave_lEx_Ibs, **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double *to_l, *hwhm, *omega_an, *dt;
-  double maxfield = 0.0, tempfield = 0.0;
+  double maxfield = 0.0, tempfield;
   double *place_holder;
   double *array_ptr_dbl;
   int intmatprops=1;//means the material properties will be interpolated
@@ -5940,28 +5940,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(  (((double)time(NULL)) - t0)>1 ){
  
       maxfield = 0.;
-      for(k=0;k<(K_tot+1);k++)
-	for(j=0;j<(J_tot+1);j++)
-	  for(i=0;i<(I_tot+1);i++){
-	    tempfield = fabs(Exy[k][j][i]+Exz[k][j][i]);
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	    tempfield = fabs(Eyx[k][j][i]+Eyz[k][j][i]);
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	    tempfield = fabs(Ezx[k][j][i]+Ezy[k][j][i]);	
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	    tempfield = fabs(Hxy[k][j][i]+Hxz[k][j][i]);	
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	    tempfield = fabs(Hyx[k][j][i]+Hyz[k][j][i]);	
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	    tempfield = fabs(Hzx[k][j][i]+Hzy[k][j][i]);	
-	    if( maxfield < tempfield )
-	      maxfield = tempfield;
-	  }
+      for(k=0;k<(K_tot+1);k++) {
+        for (j = 0; j < (J_tot + 1); j++){
+          for (i = 0; i < (I_tot + 1); i++) {
+            tempfield = fabs(Exy[k][j][i] + Exz[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+            tempfield = fabs(Eyx[k][j][i] + Eyz[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+            tempfield = fabs(Ezx[k][j][i] + Ezy[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+            tempfield = fabs(Hxy[k][j][i] + Hxz[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+            tempfield = fabs(Hyx[k][j][i] + Hyz[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+            tempfield = fabs(Hzx[k][j][i] + Hzy[k][j][i]);
+            if (maxfield < tempfield)
+              maxfield = tempfield;
+          }
+        }
+      }
+
 fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 //fprintf(stderr,"Post-iter 1\n");
 //     fprintf(stdout,"Iterating: %d\n",tind);
