@@ -66,9 +66,6 @@ class HDF5File(dict):
 
         for key, value in self.items():
 
-            if key == "maxresfield":
-                continue  # TODO: remove
-
             if key not in other:
                 return False  # Key did not match
 
