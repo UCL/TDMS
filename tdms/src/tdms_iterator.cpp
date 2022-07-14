@@ -336,7 +336,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //these are used for boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs,**iwave_lEx_Ibs, **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double *to_l, *hwhm, *omega_an, *dt;
-  double maxfield = 0.0, tempfield;
+  double maxfield = 0, tempfield;
   double *place_holder;
   double *array_ptr_dbl;
   int intmatprops=1;//means the material properties will be interpolated

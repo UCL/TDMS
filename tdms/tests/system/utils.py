@@ -66,11 +66,6 @@ class HDF5File(dict):
 
         for key, value in self.items():
 
-            if key == "maxresfield":
-                other_value = other[key]
-                print(value, other_value, relative_mean_squared_difference(value, other_value))
-                continue  # TODO: remove
-
             if key not in other:
                 return False  # Key did not match
 
