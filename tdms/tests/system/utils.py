@@ -6,6 +6,7 @@ import h5py
 import shutil
 import numpy as np
 
+from urllib import request
 from typing import Union
 from pathlib import Path
 from zipfile import ZipFile
@@ -74,8 +75,10 @@ class HDF5File(dict):
             if value.shape != other_value.shape:
                 return False  # Shapes did not match
 
-            if relative_mean_squared_difference(value, other_value) > rtol:
-                print(f"{key} was not within {rtol} to the reference (rel MSD)")
+            r_ms_diff = relative_mean_squared_difference(value, other_value)
+            if r_ms_diff > rtol:
+                print(f"{key} was not within {rtol} to the reference. "
+                      f"relative MSD = {r_ms_diff:.8f})")
                 return False
 
         return True
@@ -84,13 +87,13 @@ class HDF5File(dict):
 def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
     """Calculate the relative mean square difference between two arrays"""
 
-    mean_sq_a = np.mean(np.square(a))
-    mean_sq_b = np.mean(np.square(b))
+    mean_sq_a = np.mean(np.square(np.abs(a)))
+    mean_sq_b = np.mean(np.square(np.abs(b)))
 
     if mean_sq_a < 1e-16 and mean_sq_b < 1e-16:
         return 0.0  # Prevent division by zero for tensors filled with zeros
 
-    return np.mean(np.square(a - b)) / max(mean_sq_a, mean_sq_b)
+    return np.mean(np.square(np.abs(a - b))) / max(mean_sq_a, mean_sq_b)
 
 
 def work_in_zipped_dir(zip_path: Path):
@@ -140,4 +143,23 @@ def run_tdms(input_filename: str, output_filename: str) -> None:
                              "working directory or $PATH")
 
     _ = run([executable_path, input_filename, output_filename])
+    return None
+
+
+def download_data(url: str, to: Path) -> None:
+    """Download binary data present at a URL to a file"""
+    print("Downloading: ", url)
+
+    cwd = Path().cwd()
+    if not to.parent.exists():
+        to.parent.mkdir()
+
+    os.chdir(to.parent)
+    response = request.urlopen(url)
+
+    with open(to, "wb") as file:
+        file.write(response.read())
+
+    os.chdir(cwd)
+
     return None

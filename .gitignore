@@ -8,3 +8,4 @@ doc/*.pdf
 **/.pytest_cache/
 **.pdf
 **cmake-build**
+tdms/tests/system/data
