@@ -8,7 +8,7 @@
 ***
 ## Introduction
 
-TDMS (Time Domain Maxwell Solver) is a hybrid C++ and MATLAB code to solve 
+TDMS (Time Domain Maxwell Solver) is a hybrid C++ and MATLAB for solving 
 Maxwell's equations to simulate light propagation through a medium. See the 
 [pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
 further details.
