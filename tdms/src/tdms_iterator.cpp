@@ -5941,26 +5941,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  
       maxfield = 0.;
       for(k=0;k<(K_tot+1);k++) {
-        for (j = 0; j < (J_tot + 1); j++){
+        for (j = 0; j < (J_tot + 1); j++) {
           for (i = 0; i < (I_tot + 1); i++) {
             tempfield = fabs(Exy[k][j][i] + Exz[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
             tempfield = fabs(Eyx[k][j][i] + Eyz[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
             tempfield = fabs(Ezx[k][j][i] + Ezy[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
             tempfield = fabs(Hxy[k][j][i] + Hxz[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
             tempfield = fabs(Hyx[k][j][i] + Hyz[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
             tempfield = fabs(Hzx[k][j][i] + Hzy[k][j][i]);
-            if (maxfield < tempfield)
+            if (maxfield < tempfield) {
               maxfield = tempfield;
+            }
           }
         }
       }
