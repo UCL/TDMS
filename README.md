@@ -67,3 +67,8 @@ _run_pstd_bscan.m_
 
 This script will generate the input to the executable, run the executable and 
 display sample output.
+
+
+## Contributing
+
+You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file.
