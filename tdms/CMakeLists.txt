@@ -71,7 +71,9 @@ target_sources(tdms PRIVATE
 
 target_link_libraries(tdms
         FFTW::Double
-        ${Matlab_LIBRARIES}
+        ${Matlab_MEX_LIBRARY}
+        ${Matlab_MX_LIBRARY}
+        ${Matlab_MAT_LIBRARY}
         ${LIBCXX_LIBRARY}
         OpenMP::OpenMP_CXX
         )

@@ -1,3 +1,4 @@
+[![Run tests](https://github.com/UCL/TDMS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/UCL/TDMS/actions/workflows/tests.yml)
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
 # TDMS
 
@@ -59,11 +60,10 @@ where lines need to be commented in and the paths modified if cmake cannot
 
 #### To run the demonstration code
 
-Once the executable has been compiled, move into directory:
-tests/arc_01
-
+Once the executable has been compiled, move into directory _examples/arc_01_,
 launch Matlab and run the Matlab script:
-run_pstd_bscan.m
 
-This script will generate the input to the executable, run the
-executable and display sample output.
+_run_pstd_bscan.m_
+
+This script will generate the input to the executable, run the executable and 
+display sample output.
