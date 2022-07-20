@@ -18,7 +18,8 @@ PRs should follow the following guidelines
 
 - Contain a **context** or **description** of the change
 - Include any useful hints for reviewers
-- Not be excessively large (500 line diff at a maximum)
+- Be focused on a single feature or fix, i.e. a logically consistent set of changes
+- Not be excessively large, ideally touching 100s not 1000s of lines
 - Add additional tests to ensure the correct functionality
 - Should pass all system and unit tests run on GitHub Actions CI
 
