@@ -26,12 +26,8 @@ jobs:
         id: cache-test-data
         uses: actions/cache@v3
         with:
-          path: test_data
+          path: ${GITHUB_WORKSPACE}/tdms/tests/system/data
           key: test_data
-
-      - name: Copy test data
-        if: steps.cache-test-data.outputs.cache-hit == 'true'
-        run: cp -r test_data/ ${GITHUB_WORKSPACE}/tdms/tests/system/data
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
@@ -59,7 +55,3 @@ jobs:
         run: |
           export OMP_NUM_THREADS=1
           py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
-
-      - name: Cache test data
-        if: steps.cache-test-data.outputs.cache-hit != 'true'
-        run: cp -r ${GITHUB_WORKSPACE}/tdms/tests/system/data/ test_data/
