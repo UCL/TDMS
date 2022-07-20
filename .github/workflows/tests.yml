@@ -21,6 +21,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Setup cache
+        id: cache-test-data
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/tdms/tests/system/data
+          key: test_data
+
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
       - name: Install dependencies
@@ -46,4 +54,4 @@ jobs:
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
-          py.test ${GITHUB_WORKSPACE}/tdms/tests
+          py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
