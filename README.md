@@ -71,7 +71,7 @@ display sample output.
 
 #### Parallelism
 
-TDMS is paralleled with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum 
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum 
 number of threads can be set with the `OMP_NUM_THREADS` environment variable. 
 For example, to use 4 threads, in a bash shell, use:
 
