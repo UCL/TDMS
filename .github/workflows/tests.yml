@@ -44,6 +44,8 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: |
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        env:
+          CXXFLAGS: -Wall
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
