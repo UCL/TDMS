@@ -15,7 +15,6 @@
 %be computed if this string is non empty.
 function [fdtdgrid, Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out, Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
 %Edited 24/7/2003 to_l allow for different cell widths in each orthogonal direction
-
 %input the configuration information
 [fid_input,message] = fopen(input_file,'r');
 
@@ -571,42 +570,41 @@ if length(ill_file) > 0%must have already computed the illumination source
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
-    if numel(fieldnames_ill)==3
-	Isource = data.Isource;
-	Jsource = data.Jsource;
-	Ksource = data.Ksource;
-	[mI,nI,oI] = size(Isource);
-	[mJ,nJ,oJ] = size(Jsource);
-	[mK,nK,oK] = size(Ksource);
-	tdfield.exi = [];
-	tdfield.eyi = [];
+    assert_ill_file_data_has_correct_fields(data);
+    Isource = data.Isource;
+    Jsource = data.Jsource;
+    Ksource = data.Ksource;
+    [mI,nI,oI] = size(Isource);
+    [mJ,nJ,oJ] = size(Jsource);
+    [mK,nK,oK] = size(Ksource);
+    tdfield.exi = [];
+    tdfield.eyi = [];
 
-	%Now make sure that the source matrices have the correct
-	%dimensions
-	if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-	    (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
-	end
+    %Now make sure that the source matrices have the correct
+    %dimensions
+    if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+        (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
+    end
     elseif numel(fieldnames_ill)==2
 %	exi = data.exi;
 %	eyi = data.eyi;
-	tdfield = data;
-	if interface.I0(2) | interface.I1(2)
-	    Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Isource=[];
-	end
-	
-	if interface.J0(2) | interface.J1(2)
-	    Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Jsource = [];
-	end
-	
-	if interface.K0(2) | interface.K1(2)
-	    Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
-	else
-	    Ksource = [];
-	end
+    tdfield = data;
+    if interface.I0(2) | interface.I1(2)
+        Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+    else
+        Isource=[];
+    end
+
+    if interface.J0(2) | interface.J1(2)
+        Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+    else
+        Jsource = [];
+    end
+
+    if interface.K0(2) | interface.K1(2)
+        Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
+    else
+        Ksource = [];
     end
 else
     tdfield.exi = [];tdfield.eyi = [];
@@ -1312,4 +1310,14 @@ Nt
 	     facets = [];
 	     maxresfield = [];
 	 end
+end
+
+end
+
+function assert_ill_file_data_has_correct_fields(data)
+    fields = fieldnames(data);
+    assert(numel(fields) == 3);
+    assert(strcmp(fields(1), 'Isource'));
+    assert(strcmp(fields(2), 'Jsource'));
+    assert(strcmp(fields(3), 'Ksource'));
 end
