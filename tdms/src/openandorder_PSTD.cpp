@@ -40,8 +40,6 @@ void freememory( int nmatrices, mxArray **matrixptrs);
 
 int main(int nargs,char *argv[], char **envp){
 
-  fprintf(stdout,"Using %d OMP threads\n", omp_get_max_threads());
-
   FILE *infile;
 
   /*
