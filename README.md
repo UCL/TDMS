@@ -69,6 +69,17 @@ This script will generate the input to the executable, run the executable and
 display sample output.
 
 
+#### Parallelism
+
+TDMS is paralleled with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum 
+number of threads can be set with the `OMP_NUM_THREADS` environment variable. 
+For example, to use 4 threads, in a bash shell, use:
+
+```bash
+export OMP_NUM_THREADS=4
+```
+
+
 ## Contributing
 
 You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file.
