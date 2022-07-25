@@ -52,6 +52,7 @@ jobs:
         shell: pwsh
         run: |
           conda install fftw cmake --yes
+          echo "fftw_win_root=C:\Miniconda\envs\test\lib" >> $GITHUB_ENV
 
       - name: Create Build Environment
         run: |
@@ -65,11 +66,19 @@ jobs:
         run: |
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
-      - name: Build TDMS
+      - name: Build TDMS linux
+        if: runner.os == 'Linux'
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           cmake --build . --config ${{ matrix.build_type }}
+
+      - name: Build TDMS windows
+        if: runner.os == 'Windows'
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          cmake --build . --config ${{ matrix.build_type }} -DFFTW_ROOT=${{ fftw_win_root }}
 
       - name: Run TDMS unit tests
         working-directory: ${{runner.workspace}}/build
