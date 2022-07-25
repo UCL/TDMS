@@ -570,25 +570,29 @@ if length(ill_file) > 0%must have already computed the illumination source
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
-    assert_ill_file_data_has_correct_fields(data);
-    Isource = data.Isource;
-    Jsource = data.Jsource;
-    Ksource = data.Ksource;
-    [mI,nI,oI] = size(Isource);
-    [mJ,nJ,oJ] = size(Jsource);
-    [mK,nK,oK] = size(Ksource);
-    tdfield.exi = [];
-    tdfield.eyi = [];
 
-    %Now make sure that the source matrices have the correct
-    %dimensions
-    if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-        (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
+    if has_ijk_source_matricies(data)
+        Isource = data.Isource;
+        Jsource = data.Jsource;
+        Ksource = data.Ksource;
+        [mI,nI,oI] = size(Isource);
+        [mJ,nJ,oJ] = size(Jsource);
+        [mK,nK,oK] = size(Ksource);
+        tdfield.exi = [];
+        tdfield.eyi = [];
+
+        %Now make sure that the source matrices have the correct
+        %dimensions
+        if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+            (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
+        end
+    elseif has_exi_eyi(data)
+    %	exi = data.exi;
+    %	eyi = data.eyi;
+        tdfield = data;
+    else;
+        error('Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
     end
-    elseif numel(fieldnames_ill)==2
-%	exi = data.exi;
-%	eyi = data.eyi;
-    tdfield = data;
     if interface.I0(2) | interface.I1(2)
         Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
@@ -1314,10 +1318,25 @@ end
 
 end
 
-function assert_ill_file_data_has_correct_fields(data)
+
+function result = has_ijk_source_matricies(data)
     fields = fieldnames(data);
-    assert(numel(fields) == 3);
-    assert(strcmp(fields(1), 'Isource'));
-    assert(strcmp(fields(2), 'Jsource'));
-    assert(strcmp(fields(3), 'Ksource'));
+    if ~(numel(fields) == 3)
+        result = false
+    else
+        result = strcmp(fields(1), 'Isource') & ...
+                 strcmp(fields(2), 'Jsource') & ...
+                 strcmp(fields(3), 'Ksource');
+    end
+end
+
+
+function result = has_exi_eyi(data)
+    fields = fieldnames(data);
+    if ~(numel(fields) == 2)
+        result = false
+    else
+        result = strcmp(fields(1), 'exi') & ...
+                 strcmp(fields(2), 'eyi');
+    end
 end
