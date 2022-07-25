@@ -2,7 +2,7 @@ name: Run tests
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   pull_request:
   release:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          # - ubuntu-latest
           - windows-latest
         build_type:
           - Release
@@ -78,6 +78,11 @@ jobs:
         shell: bash
         run: |
           cmake --build . --config ${{ matrix.build_type }}
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
 
       - name: Test TDMS
         working-directory: ${{runner.workspace}}/build
