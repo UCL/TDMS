@@ -41,11 +41,10 @@ jobs:
 
       - name: Install dependinces Windows
         if: runner.os == "Windows"
-      - uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: 3.9
-      - name: Conda info
         shell: pwsh
         run: |
           conda install fftw openmp cmake --yes
