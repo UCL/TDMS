@@ -143,7 +143,7 @@ def run_tdms(input_filename: str, output_filename: str) -> None:
         raise AssertionError("Failed to run tdms. Not found in either current "
                              "working directory or $PATH")
 
-    _ = run([executable_path, input_filename, output_filename])
+    run([executable_path, input_filename, output_filename], check=True)
     return None
 
 
