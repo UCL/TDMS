@@ -90,9 +90,9 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
     throw runtime_error("Error in interpolateFieldCentralE, k_u too large\n");
     
   }
-  //throw runtime_error("interpolateFieldCentralE 01\n");
+  //fprintf(stderr, "interpolateFieldCentralE 01\n");
   if(j_u<j_l){
-    //throw runtime_error("interpolateFieldCentralE 02\n");
+    //fprintf(stderr, "interpolateFieldCentralE 02\n");
     j=0;
     for(k=k_l;k<=k_u;k++)
       for(i=i_l;i<=i_u;i++){
@@ -100,7 +100,7 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
 	  Ey[k-k_l][0][i-i_l] = Ey_yee[k][0][i];
 	  Ez[k-k_l][0][i-i_l] = interp1(Ez_yee[k-2][j][i], Ez_yee[k-1][j][i], Ez_yee[k][j][i], Ez_yee[k+1][j][i]);
 	}
-    //throw runtime_error("interpolateFieldCentralE 03\n");
+    //fprintf(stderr, "interpolateFieldCentralE 03\n");
   }
   else
     for(k=k_l;k<=k_u;k++)
@@ -263,16 +263,16 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   double ***ExR, ***ExI, ***EyR, ***EyI, ***EzR, ***EzI,***Ex_yee_R, ***Ex_yee_I, ***Ey_yee_R, ***Ey_yee_I, ***Ez_yee_R, ***Ez_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  //throw runtime_error("mxInterpolateFieldCentralE Pos 00\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE Pos 00\n");
   if( (int)mxGetNumberOfDimensions( (const mxArray *)Ex_yee) < 3){
     throw runtime_error("Error in mxInterpolateFieldCentralE, Ex_yee does not have 3 dimensions\n");
     
     
   }
-  //throw runtime_error("mxInterpolateFieldCentralE Pos 01\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE Pos 01\n");
   indims = (int *)mxGetDimensions( (mxArray *)Ex_yee);
-  //throw runtime_error("mxInterpolateFieldCentralE(indims): (%d,%d,%d)\n",indims[0],indims[1],indims[2]);
-  //throw runtime_error("mxInterpolateFieldCentralE: j_u: %d, j_l: %d\n",j_u,j_l);
+  //fprintf(stderr, "mxInterpolateFieldCentralE(indims): (%d,%d,%d)\n",indims[0],indims[1],indims[2]);
+  //fprintf(stderr, "mxInterpolateFieldCentralE: j_u: %d, j_l: %d\n",j_u,j_l);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Ex_yee) ){
     mexErrMsgTxt("Ex_yee is not complex");
@@ -283,7 +283,7 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   if( !mxIsComplex(Ez_yee) ){
     mexErrMsgTxt("Ez_yee is not complex");
   }
-  //throw runtime_error("mxInterpolateFieldCentralE Pos 02\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE Pos 02\n");
   Ex_yee_R = castMatlab3DArray(mxGetPr(Ex_yee), indims[0], indims[1], indims[2]);
   Ex_yee_I = castMatlab3DArray(mxGetPi(Ex_yee), indims[0], indims[1], indims[2]);
 
@@ -292,7 +292,7 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
 
   Ez_yee_R = castMatlab3DArray(mxGetPr(Ez_yee), indims[0], indims[1], indims[2]);
   Ez_yee_I = castMatlab3DArray(mxGetPi(Ez_yee), indims[0], indims[1], indims[2]);
-  //throw runtime_error("mxInterpolateFieldCentralE Pos 03\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE Pos 03\n");
   //now construct the output matrices
   ndims = 3;
   
@@ -301,21 +301,21 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   if(outdims[1]<1)
     outdims[1]=1;
   outdims[2] = k_u - k_l + 1;
-  //throw runtime_error("mxInterpolateFieldCentralE(outdims): (%d,%d,%d)\n",outdims[0],outdims[1],outdims[2]);
-    //throw runtime_error("mxInterpolateFieldCentralE Pos 04\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE(outdims): (%d,%d,%d)\n",outdims[0],outdims[1],outdims[2]);
+    //fprintf(stderr, "mxInterpolateFieldCentralE Pos 04\n");
   *Ex = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
-//throw runtime_error("mxInterpolateFieldCentralE Pos 04a\n");
+//fprintf(stderr, "mxInterpolateFieldCentralE Pos 04a\n");
   ExR = castMatlab3DArray(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
   ExI = castMatlab3DArray(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
-//throw runtime_error("mxInterpolateFieldCentralE Pos 04b\n");
+//fprintf(stderr, "mxInterpolateFieldCentralE Pos 04b\n");
   EyR = castMatlab3DArray(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
   EyI = castMatlab3DArray(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
-//throw runtime_error("mxInterpolateFieldCentralE Pos 04c\n");
+//fprintf(stderr, "mxInterpolateFieldCentralE Pos 04c\n");
   EzR = castMatlab3DArray(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
   EzI = castMatlab3DArray(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
-  //throw runtime_error("mxInterpolateFieldCentralE Pos 05\n");
+  //fprintf(stderr, "mxInterpolateFieldCentralE Pos 05\n");
   //now finally ready for interpolation
   interpolateFieldCentralE( Ex_yee_I, Ey_yee_I, Ez_yee_I,
 			    ExI     , EyI     , EzI    ,
@@ -601,7 +601,7 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
     
   }
   if(j_u<j_l){
-    //throw runtime_error("interpolateFieldCentralH 02\n");
+    //fprintf(stderr, "interpolateFieldCentralH 02\n");
     j=0;
     for(k=k_l;k<=k_u;k++)
       for(i=i_l;i<=i_u;i++){
