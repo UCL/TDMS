@@ -47,11 +47,16 @@ jobs:
           auto-update-conda: true
           python-version: 3.9
 
-      - name: Install dependinces Windows
+      - name: Install dependencies Windows
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           conda install fftw cmake --yes
+
+      - name: Export FFTW directory Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
           echo "FFTWDIR=C:\Miniconda\envs\test\Library" >> $GITHUB_ENV
 
       - name: Create Build Environment
