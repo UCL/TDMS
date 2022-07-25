@@ -39,12 +39,15 @@ jobs:
           sudo apt-get install libfftw3-dev libgomp1 python3
           pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
 
-      - name: Install dependinces Windows
+      - name: Install miniconda Windows
         if: runner.os == "Windows"
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: 3.9
+
+      - name: Install dependinces Windows
+        if: runner.os == "Windows"
         shell: pwsh
         run: |
           conda install fftw openmp cmake --yes
