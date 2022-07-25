@@ -51,7 +51,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          conda install fftw openmp cmake --yes
+          conda install fftw cmake --yes
 
       - name: Create Build Environment
         run: |
