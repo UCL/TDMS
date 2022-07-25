@@ -323,7 +323,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double dx, dy, dz;
   double t0;
   double *Cmaterial_Cax,*Cmaterial_Cay,*Cmaterial_Caz, *Cmaterial_Cbx, *Cmaterial_Cby, *Cmaterial_Cbz, *Cmaterial_Ccx, *Cmaterial_Ccy, *Cmaterial_Ccz, *Dmaterial_Dax, *Dmaterial_Day, *Dmaterial_Daz, *Dmaterial_Dbx, *Dmaterial_Dby, *Dmaterial_Dbz;//non free space material parameters
-  double *freespace_Cbx, *freespace_Cby __attribute__ ((unused)),*freespace_Cbz __attribute__ ((unused)),*freespace_Dbx __attribute__ ((unused)), *freespace_Dby __attribute__ ((unused)),*freespace_Dbz __attribute__ ((unused));//freespace variables 
+  double *freespace_Cbx, *freespace_Cby, *freespace_Cbz, *freespace_Dbx, *freespace_Dby, *freespace_Dbz;//freespace variables 
   double Ca, Cb, Cc;//used by interpolation scheme 
   double *Cax, *Cay, *Caz,*Cbx, *Cby, *Cbz,*Ccx, *Ccy, *Ccz,*Dax, *Day, *Daz,*Dbx, *Dby, *Dbz;
   double *f_ex_vec;
