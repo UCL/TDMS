@@ -567,6 +567,7 @@ end
 
 if length(ill_file) > 0%must have already computed the illumination source
     data = load(ill_file);
+    assert_are_not_defined(efname, hfname);
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
@@ -1316,6 +1317,7 @@ Nt
 	     maxresfield = [];
 	 end
 end
+end
 
 end
 
@@ -1340,4 +1342,12 @@ function result = has_exi_eyi(data)
         result = strcmp(fields(1), 'exi') & ...
                  strcmp(fields(2), 'eyi');
     end
+end
+
+
+function assert_are_not_defined(efname, hfname)
+    assert(length(efname) == 0, ...
+    'An efield should not be defined. Set efname to an empty string');
+    assert(length(hfname) == 0, ...
+    'A hfield should not be defined. Set hfname to an empty string');
 end
