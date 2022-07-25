@@ -37,7 +37,7 @@ else()
     set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 endif()
 
-if()
+if(FFTW_ROOT)
     find_library(
             FFTW_DOUBLE_LIB
             NAMES "fftw3" libfftw3-3
@@ -53,7 +53,6 @@ if()
             NO_DEFAULT_PATH
             )
 else()
-
     find_library(
             FFTW_DOUBLE_LIB
             NAMES "fftw3"
