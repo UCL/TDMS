@@ -16,7 +16,8 @@ jobs:
       matrix:
         os:
           # - ubuntu-latest
-          - windows-latest
+          - macos-latest
+          # - windows-latest
         build_type:
           - Release
     steps:
@@ -38,6 +39,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libfftw3-dev libgomp1 python3
+
+      - name: Install dependencies macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install fftw libomp
+          # Use vanilla LLVM
+          echo "CC=$(brew --prefix llvm@14)/bin/clang"    >> "${GITHUB_ENV}"
+          echo "CXX=$(brew --prefix llvm@14)/bin/clang++" >> "${GITHUB_ENV}"
 
       - name: Install miniconda Windows
         if: runner.os == 'Windows'
@@ -81,8 +90,8 @@ jobs:
           export OMP_NUM_THREADS=1
           py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-        if: always()
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
+      #   if: always()
