@@ -51,12 +51,7 @@ jobs:
         shell: pwsh
         run: |
           conda install fftw cmake --yes
-
-      - name: Export FFTW directory Windows
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          echo "FFTWDIR=C:\Miniconda\envs\test\Library" >> $GITHUB_ENV
+          echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Python dependencies
         shell: bash
