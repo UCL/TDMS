@@ -78,7 +78,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
-          cmake --build . --config ${{ matrix.build_type }} -DFFTW_ROOT=${{ fftw_win_root }}
+          cmake --build . --config ${{ matrix.build_type }} -DFFTW_ROOT=$fftw_win_root
 
       - name: Run TDMS unit tests
         working-directory: ${{runner.workspace}}/build
