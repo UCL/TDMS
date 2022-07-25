@@ -276,9 +276,6 @@ inline int min ( int a, int b ) { return a < b ? a : b; }
 
 */
 
-void mexfprintf(const char err[]){
-  fprintf(stderr,(char *)err);
-}
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -409,7 +406,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int poutfile = 0;
   int Np=0; //The phasor extraction algorithm will be executed every Np iterations.
   int Npe=0; //The number of terms in the algorithm to extract the phasors
-  double dtp=0.; //The phasor extraction time step
   int Ni_tdf=0, Nk_tdf=0;
 
   #ifdef FDFLAG
@@ -471,12 +467,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //  eyfile = fopen("Eyz.txt","w");
   //  jyfile = fopen("Jyz.txt","w");
   if( nrhs != 49 ){
-    fprintf(stderr,"%d\n",nrhs);
-    mexfprintf("Expected 49 inputs.");
+    throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs));
   }
 
-  if (nlhs != 27) 
-    mexfprintf("27 outputs required.");
+  if (nlhs != 31){
+    throw runtime_error("27 outputs required. Had " + to_string(nlhs));
+  }
 
   /*Get fdtdgrid*/
   if(mxIsStruct(prhs[input_counter])){
@@ -484,30 +480,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
    
     //check that all fields are present
     if(num_fields != 13){
-      sprintf(message_buffer, "fdtdgrid should have 13 members, it only has %d",num_fields);
-      mexfprintf(message_buffer);
-    } 
+      throw runtime_error("fdtdgrid should have 13 members, it only has " + to_string(num_fields));
+    }
     //now loop over the fields 
     
     for(int i=0;i<num_fields;i++){
       //element = mxGetField(prhs[input_counter], 0, fdtdgrid_elements[i]);
       element = mxGetField( (mxArray *)prhs[input_counter], 0, fdtdgrid_elements[i]);
-      if(mxIsDouble(element))
-	array_ptr_dbl = mxGetPr(element);
+      string element_name = fdtdgrid_elements[i];
+
+      if(mxIsDouble(element)) {
+        array_ptr_dbl = mxGetPr(element);
+      }
       else if(mxIsUint8(element)){
-	array_ptr_uint8 = (unsigned char *)mxGetPr(element);
+	      array_ptr_uint8 = (unsigned char *)mxGetPr(element);
       }
       else{
-	sprintf(message_buffer, "Incorrect data type in fdtdgrid.%s",fdtdgrid_elements[i]);
-	mexfprintf(message_buffer);
+	      throw runtime_error("Incorrect data type in fdtdgrid. " + element_name);
       }
 
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
 
       if( (ndims != 2) && (ndims != 3) ){
-    	sprintf(message_buffer, "field matrix %s should be 2- or 3-dimensional",fdtdgrid_elements[i]);
-	mexfprintf(message_buffer);
+    	  throw runtime_error("field matrix %s should be 2- or 3-dimensional " +  element_name);
       }
       //start
       if(!strcmp(fdtdgrid_elements[i],"Exy")){
@@ -600,16 +596,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  K_tot = dimptr_out[2]-1;
       }
       else{
-	sprintf(message_buffer, "element fdtdgrid.%s not handled",fdtdgrid_elements[i]);
-	mexfprintf(message_buffer);
+	      throw runtime_error("element fdtdgrid.%s not handled " + element_name);
       }
     
     }//end
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+ " was expected to be a structure");
   }
   /*Got fdtdgrid*/
   //fprintf(stderr,"Got fdtdgrid\n");
@@ -618,18 +612,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 9){
-      sprintf(message_buffer, "Cmaterials should have 9 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("Cmaterials should have 9 members, it has " + to_string(num_fields));
     }
     
     for(int i=0;i<9;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, Cmaterial_elements[i]);
+      string element_name = Cmaterial_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if(dimptr_out[0] != 1){ 
-	  sprintf(message_buffer, "Incorrect dimension on Cmaterial.%s",Cmaterial_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on Cmaterial: " + element_name);
 	}
 	if(!strcmp(Cmaterial_elements[i],"Cax")){
 	  Cmaterial_Cax = mxGetPr(element);
@@ -659,19 +652,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  Cmaterial_Ccz = mxGetPr(element);
 	}
 	else{
-	  sprintf(message_buffer, "element Cmaterial.%s not handled",Cmaterial_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element Cmaterial.%s not handled "+ element_name);
 	}
       }
       else
-	mexfprintf("Incorrect dimension on Cmaterial.Ca");
+    throw runtime_error("Incorrect dimension on Cmaterial.Ca");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("Argument %d was expected to be a structure " + to_string(input_counter));
+  }
   /*Got Cmaterials */
 
   //fprintf(stderr,"Got Cmaterials\n");
@@ -680,20 +671,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 6){
-      sprintf(message_buffer, "Dmaterials should have 6 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("Dmaterials should have 6 members, it has +" + to_string(num_fields));
     }
-    
-    
+
     for(int i=0;i<6;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, Dmaterial_elements[i]);
-      
+      string element_name = Dmaterial_elements[i];
+
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if(dimptr_out[0] != 1){ 
-	  sprintf(message_buffer, "Incorrect dimension on Dmaterial.%s",Dmaterial_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on Dmaterial." + element_name);
 	}
 	if(!strcmp(Dmaterial_elements[i],"Dax")){
 	  Dmaterial_Dax = mxGetPr(element);
@@ -714,19 +703,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  Dmaterial_Dbz = mxGetPr(element);
 	}
 	else{
-	  sprintf(message_buffer, "element Dmaterial.%s not handled",Dmaterial_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element Dmaterial."+ element_name + " not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on Dmaterial.Da");
+        throw runtime_error("Incorrect dimension on Dmaterial.Da");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("Argument " + to_string(input_counter) +" was expected to be a structure");
+  }
   /*Got Dmaterials */
   //fprintf(stderr,"Got Dmaterials\n");
   /*Get C */
@@ -735,8 +722,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if( (num_fields != 6) && (num_fields != 9) ){
-      sprintf(message_buffer, "C should have 6 or 9 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("C should have 6 or 9 members, it has " + to_string(num_fields));
     }
 
     if( num_fields==9 ){
@@ -745,7 +731,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if( num_fields==6 ){
       for(int i=0;i<num_fields;i++){
 	element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements[i]);
-      
+  string element_name = C_elements[i];
+
 	ndims = mxGetNumberOfDimensions(element);
 	if( ndims == 2 ){
 	  dimptr_out = mxGetDimensions(element);
@@ -780,17 +767,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	    Ccz = mxGetPr(element);
 	  }
 	  else{
-	    sprintf(message_buffer, "element C.%s not handled",C_elements[i]);
-	    mexfprintf(message_buffer);
+	    throw runtime_error("element C. "+element_name+" not handled ");
 	  }
 	}
 	else
-	  mexfprintf("Incorrect dimension on C");
+	  throw runtime_error("Incorrect dimension on C");
       }
     }
     else{
       for(int i=0;i<num_fields;i++){
 	element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements_disp_ml[i]);
+  string element_name = C_elements_disp_ml[i];
       
 	ndims = mxGetNumberOfDimensions(element);
 	if( ndims == 2 ){
@@ -828,20 +815,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	    Ccz = mxGetPr(element);
 	  }
 	  else{
-	    sprintf(message_buffer, "element C.%s not handled",C_elements_disp_ml[i]);
-	    mexfprintf(message_buffer);
+	    throw runtime_error("element C.%s not handled " + element_name);
 	  }
 	}
 	else
-	  mexfprintf("Incorrect dimension on C");
+	  throw runtime_error("Incorrect dimension on C");
       }
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
+  }
   /*Got C */
   //fprintf(stderr,"Got C\n");
   /*Get D */
@@ -849,19 +834,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 6){
-      sprintf(message_buffer, "D should have 6 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("D should have 6 members, it has " + to_string(num_fields));
     }
-    
-    
+
     for(int i=0;i<6;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, D_elements[i]);
-      
+      string element_name = D_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if(dimptr_out[0] != 1){ 
-	  //sprintf(message_buffer, "Incorrect dimension on D.%s",D_elements[i]);
+	  //throw runtime_error("Incorrect dimension on D.%s",D_elements[i]);
 	  //mexfprintf(message_buffer);
 	}
 	if(!strcmp(D_elements[i],"Dax")){
@@ -883,19 +866,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  Dbz = mxGetPr(element);
 	}
 	else{
-	  sprintf(message_buffer, "element D.%s not handled",D_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element D."+element_name+" not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on D");
+        throw runtime_error("Incorrect dimension on D");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
+  }
   /*Got D */
 
   //fprintf(stderr,"Got D\n");
@@ -905,19 +886,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 6){
-      sprintf(message_buffer, "freespace should have 6 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("freespace should have 6 members, it has " + to_string(num_fields));
     }
         
     for(int i=0;i<6;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, freespace_elements[i]);
-      
+      string element_name = freespace_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if(dimptr_out[0] != 1){ 
-	  sprintf(message_buffer, "Incorrect dimension on freespace.%s",freespace_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on freespace. " + element_name);
 	}
 	if(!strcmp(freespace_elements[i],"Cbx")){
 	  freespace_Cbx = mxGetPr(element);
@@ -938,18 +917,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  freespace_Dbz = mxGetPr(element);
 	}
 	else{
-	  sprintf(message_buffer, "element freespace.%s not handled",freespace_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element freespace. "+element_name+" not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on freespace");
+	throw runtime_error("Incorrect dimension on freespace");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
   }
 
   /*Got freespace*/
@@ -961,19 +938,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 3){
-      sprintf(message_buffer, "disp_params should have 3 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("disp_params should have 3 members, it has " + to_string(num_fields));
     }
         
     for(int i=0;i<3;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, disp_params_elements[i]);
-      
+      string element_name = disp_params_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if( !(dimptr_out[0] == 1 ||dimptr_out[0] == 0) ){ 
-	  sprintf(message_buffer, "Incorrect dimension on disp_params.%s",disp_params_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on disp_params. " + element_name);
 	}
 	if(!strcmp(disp_params_elements[i],"alpha")){
 	  alpha = mxGetPr(element);
@@ -985,18 +960,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  gamma = mxGetPr(element);
 	}
 	else{
-	  sprintf(message_buffer, "element disp_params.%s not handled",disp_params_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element disp_params. "+element_name+" not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on disp_params");
+	throw runtime_error("Incorrect dimension on disp_params");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
   }
 
   
@@ -1009,19 +982,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 3){
-      sprintf(message_buffer, "delta should have 3 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("delta should have 3 members, it has " +to_string(num_fields));
     }
     
     for(int i=0;i<3;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, delta_elements[i]);
-      
+      string element_name = freespace_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
 	if(dimptr_out[0] != 1){ 
-	  sprintf(message_buffer, "Incorrect dimension on delta.%s",freespace_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on delta. " + element_name);
 	}
 	if(!strcmp(delta_elements[i],"x")){
 	  dx = *mxGetPr( (mxArray *)element);
@@ -1033,18 +1004,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  dz = *mxGetPr( (mxArray *)element);
 	}
 	else{
-	  sprintf(message_buffer, "element delta.%s not handled",delta_elements[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element delta."+element_name+" not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on delta");
+	throw runtime_error("Incorrect dimension on delta");
     }
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
   }
   
   /*Got delta params*/
@@ -1055,8 +1024,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 6){
-      sprintf(message_buffer, "interface should have 6 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("interface should have 6 members, it has " + to_string(num_fields));
     }
     //need to allocate some space for I0
     I0 = (double *)malloc(2*sizeof(double));
@@ -1072,9 +1040,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	//dimptr = (int *)mxGetDimensions(element);
 	dimptr_out = mxGetDimensions(element);
+  string field_name = interface_fields[i];
+
 	if( !(dimptr_out[0] == 1 && dimptr_out[1] == 2) ){ 
-	  sprintf(message_buffer, "Incorrect dimension on interface.%s (%d,%d,%d)\n",interface_fields[i],(int)dimptr_out[0],(int)dimptr_out[1],(int)mxGetNumberOfElements(element));
-	  mexfprintf(message_buffer);
+	  throw runtime_error("Incorrect dimension on interface." +
+                         field_name +
+                         " (" + to_string((int)dimptr_out[0]) +
+                         "," + to_string((int)dimptr_out[1]) +
+                         "," + to_string((int)mxGetNumberOfElements(element)) +
+                         ")\n");
 	}
 	if(!strcmp(interface_fields[i],"I0")){
 	  place_holder = mxGetPr( (mxArray *)element);
@@ -1111,19 +1085,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  *(K1+1) = *(place_holder+1);
 	}
 	else{
-	  sprintf(message_buffer, "element interface.%s not handled",interface_fields[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element interface."+field_name+" not handled");
 	}
       }
       else
-	mexfprintf("Incorrect dimension on interfaces");
+	throw runtime_error("Incorrect dimension on interfaces");
     }
     //printf("%d %d %d %d %d %d\n",(int)*I0,(int)*I1,(int)*J0,(int)*J1,(int)*K0,(int)*K1);  
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
   }
 
   /*Got interface*/
@@ -1135,17 +1107,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     ndims = mxGetNumberOfDimensions(prhs[input_counter]);
     dimptr_out = mxGetDimensions( (mxArray *)prhs[input_counter]);
     if( (ndims !=3) && (ndims !=2) )
-      mexfprintf("Isource should be 3- or 2- dimensional");
+      throw runtime_error("Isource should be 3- or 2- dimensional");
     if( ndims ==3 ){
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(J1[0]-J0[0]+1))) && (dimptr_out[2]==((int)(K1[0]-K0[0]+1))) ) )
-	mexfprintf("Isource has incorresct size");
+	throw runtime_error("Isource has incorresct size");
     }
     else{
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(J1[0]-J0[0]+1))) ))
-	mexfprintf("Isource has incorrect size");
+	throw runtime_error("Isource has incorrect size");
     }
     if(!mxIsComplex( (mxArray *)prhs[input_counter]))
-      mexfprintf("Isource should be complex, use a call of complex(real(Isource),imag(Isource)) in matlab if necessary");
+      throw runtime_error("Isource should be complex, use a call of complex(real(Isource),imag(Isource)) in matlab if necessary");
     if( ndims==2 ){
       IsourceR = castMatlab3DArray(mxGetPr( (mxArray *)prhs[input_counter]), dimptr_out[0], dimptr_out[1], 0);
       IsourceI = castMatlab3DArray(mxGetPi( (mxArray *)prhs[input_counter++]), dimptr_out[0], dimptr_out[1], 0);
@@ -1156,7 +1128,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
   }
   else{
-    mexfprintf("Isource is empty\n");
+    fprintf(stderr, "Isource is empty\n");
     input_counter++;
   }
   /*Got Isource*/
@@ -1166,17 +1138,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     ndims = mxGetNumberOfDimensions(prhs[input_counter]);
     dimptr_out = mxGetDimensions( (mxArray *)prhs[input_counter]);
     if( (ndims !=3) && (ndims !=2) )
-      mexfprintf("Jsource should be 3- or 2- dimensional");
+      throw runtime_error("Jsource should be 3- or 2- dimensional");
     if(ndims==3){
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (dimptr_out[2]==((int)(K1[0]-K0[0]+1))) ) )
-	mexfprintf("Jsource has incorrect size");
+	throw runtime_error("Jsource has incorrect size");
     }
     else{
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1)))))
-	mexfprintf("Jsource has incorrect size");
+	throw runtime_error("Jsource has incorrect size");
     }
     if(!mxIsComplex( (mxArray *)prhs[input_counter]))
-      mexfprintf("Jsource should be complex, use a call of complex(real(Jsource),imag(Jsource)) in matlab if necessary");
+      throw runtime_error("Jsource should be complex, use a call of complex(real(Jsource),imag(Jsource)) in matlab if necessary");
     if( ndims==2 ){
       JsourceR = castMatlab3DArray(mxGetPr( (mxArray *)prhs[input_counter]), dimptr_out[0], dimptr_out[1], 0);
       JsourceI = castMatlab3DArray(mxGetPi( (mxArray *)prhs[input_counter++]), dimptr_out[0], dimptr_out[1], 0);
@@ -1187,7 +1159,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     } 
   }
   else{
-    mexfprintf("Jsource is empty\n");
+    fprintf(stderr, "Jsource is empty\n");
     input_counter++;
   }
   /*Got Jsource*/
@@ -1201,19 +1173,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     fprintf(stderr,"Ksource-2\n");
     if( ndims ==2 ){
       fprintf(stderr,"Ksource-3 (%d)\n",ndims);
-      //mexfprintf("Ksource should be 3 dimensional\n");
+      //throw runtime_error("Ksource should be 3 dimensional\n");
     }
     if( ndims ==3 ){
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (dimptr_out[2]==((int)(J1[0]-J0[0]+1))) ) )
-	mexfprintf("Ksource has incorresct size\n");
+        fprintf(stderr, "Ksource has incorresct size\n");
     }
     else if(ndims==2){
 	if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (0==((int)(J1[0]-J0[0]+1))) ) )
-	mexfprintf("Ksource has incorresct size\n");
+    fprintf(stderr, "Ksource has incorresct size\n");
     }
     fprintf(stderr,"Ksource-4\n");
     if(!mxIsComplex( (mxArray *)prhs[input_counter]))
-      mexfprintf("Ksource should be complex, use a call of complex(real(Ksource),imag(Ksource)) in matlab if necessary");
+      throw runtime_error("Ksource should be complex, use a call of complex(real(Ksource),imag(Ksource)) in matlab if necessary");
     
     fprintf(stderr,"Ksource-5\n");
     fprintf(stderr,"KsourceR: %d,%d,%d\n",dimptr_out[0], dimptr_out[1], dimptr_out[2]);
@@ -1230,7 +1202,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
   }
   else{
-    mexfprintf("Ksource is empty\n");
+    fprintf(stderr, "Ksource is empty\n");
     input_counter++;
   }
   /*Got Ksource*/
@@ -1240,17 +1212,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     //check that all fields are present
     if(num_fields != 3){
-      sprintf(message_buffer, "grid_labels should have 3 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("grid_labels should have 3 members, it has " + to_string(num_fields));
     }
     for(int i=0;i<3;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, grid_labels_fields[i]);
       ndims = mxGetNumberOfDimensions(element);
+      string material_element = Cmaterial_elements[i];
+      string grid_label = grid_labels_fields[i];
+
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){ 
-	  sprintf(message_buffer, "Incorrect dimension on Cmaterial.%s",Cmaterial_elements[i]);
-	  mexfprintf(message_buffer);
+	if(dimptr_out[0] != 1){
+	  throw runtime_error("Incorrect dimension on Cmaterial: " + material_element);
 	}
 	if(!strcmp(grid_labels_fields[i],"x_grid_labels")){
 	  x_grid_labels = mxGetPr( (mxArray *)element);
@@ -1262,13 +1235,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  z_grid_labels = mxGetPr( (mxArray *)element);
 	}
 	else{
-	  sprintf(message_buffer, "element grid_labels.%s not handled",grid_labels_fields[i]);
-	  mexfprintf(message_buffer);
+	  throw runtime_error("element grid_labels. "+grid_label+" not handled");
 	}
       }
       else{
-	sprintf(message_buffer, "Incorrect dimension on grid_labels.%s",Cmaterial_elements[i]);
-	mexfprintf(message_buffer);
+	throw runtime_error("Incorrect dimension on grid_labels. " + material_element);
       }
     }
     
@@ -1289,19 +1260,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   */
   /*Got tvec_E*/
 
-  /*Get tvec_H - no longer used*/
-  /*
-    if(mxIsDouble(prhs[input_counter])){
-    tvec_H = mxGetPr(prhs[input_counter]); 
-    input_counter++;
-    }
-    else{
-    sprintf(message_buffer, "Expected tvec_H to be a double vector");
-    mexfprintf(message_buffer);
-    } 
-  */
-  /*Got tvec_H*/
-
   /*Get omega_an*/
 
   if(mxIsDouble(prhs[input_counter])){
@@ -1309,9 +1267,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected omega_an to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected omega_an to be a double");
+  }
 
   /*Got omega_an*/
 
@@ -1322,9 +1279,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected to_l to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected to_l to be a double");
+  }
 
   /*Got to_l*/
 
@@ -1335,9 +1291,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected hwhm to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected hwhm to be a double");
+  }
 
   /*Got hwhm*/
 
@@ -1350,9 +1305,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dxl to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dxl to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dxl*/
 
@@ -1365,9 +1319,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dxu to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dxu to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dxu*/
 
@@ -1380,9 +1333,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dyl to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dyl to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dyl*/
 
@@ -1395,9 +1347,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dyu to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dyu to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dyu*/
 
@@ -1410,9 +1361,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dzl to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dzl to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dzl*/
 
@@ -1425,9 +1375,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Dzu to be a double, although i will cast it as an int!");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Dzu to be a double, although i will cast it as an int!");
+  }
 
   /*Got Dzu*/
 
@@ -1453,9 +1402,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected Nt to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected Nt to be a double");
+  }
   /*Got Nt*/
 
   /*Get dt*/
@@ -1465,9 +1413,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected dt to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected dt to be a double");
+  }
 
   /*Got dt*/
 
@@ -1477,48 +1424,47 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    sprintf(message_buffer, "expected start_tind to be a double");
-    mexfprintf(message_buffer);
-  } 
+    throw runtime_error("expected start_tind to be a double");
+  }
   /*Got tind*/
 
   /*Get sourcemode*/
   if(mxIsChar(prhs[input_counter])){
     sourcemodestr = (char *)malloc((1+(int)mxGetNumberOfElements( (mxArray *)prhs[input_counter]))*sizeof(char));
+    string sourcemode_string = sourcemodestr;
     mxGetString((mxArray *)prhs[input_counter], sourcemodestr, (1+(int)mxGetNumberOfElements( (mxArray *)prhs[input_counter])));
     if( !strncmp(sourcemodestr,"steadystate",11) )
       sourcemode = sm_steadystate;
     else if( !strncmp(sourcemodestr,"pulsed",6) )
       sourcemode = sm_pulsed;
     else{
-      sprintf(message_buffer,"value of sourcemode (%s) is invalid\n",sourcemodestr);
-      mexfprintf(message_buffer);
+      throw runtime_error("value of sourcemode ("+sourcemode_string+") is invalid\n");
     }
     free(sourcemodestr);
     input_counter++;
   }
   else{
-    mexfprintf("Expected sourcemode to be a string");
+    throw runtime_error("Expected sourcemode to be a string");
   }
   /*Got sourcemode*/
 
   /*Get runmode*/
   if(mxIsChar(prhs[input_counter])){
     sourcemodestr = (char *)malloc((1+(int)mxGetNumberOfElements( (mxArray *)prhs[input_counter]))*sizeof(char));
+    string runmode_string = sourcemodestr;
     mxGetString( (mxArray *)prhs[input_counter], sourcemodestr, (1+(int)mxGetNumberOfElements( (mxArray *)prhs[input_counter])));
     if( !strncmp(sourcemodestr,"complete",8) )
       runmode = rm_complete;
     else if( !strncmp(sourcemodestr,"analyse",7) )
       runmode = rm_analyse;
     else{
-      sprintf(message_buffer,"value of runmode (%s) is invalid\n",sourcemodestr);
-      mexfprintf(message_buffer);
+      throw runtime_error("value of runmode ("+runmode_string+") is invalid\n");
     }
     free(sourcemodestr);
     input_counter++;
   }
   else{
-    mexfprintf("Expected sourcemode to be a string");
+    throw runtime_error("Expected sourcemode to be a string");
   }
   /*Got runmode*/
 
@@ -1528,8 +1474,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   }
   else{
-    sprintf(message_buffer, "expected exphasorsvolume to be a double");
-    mexfprintf(message_buffer);
+    throw runtime_error("expected exphasorsvolume to be a double");
   }
   /*Got exphasorsvolume*/
 
@@ -1538,8 +1483,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     exphasorssurface = (int)*mxGetPr( (mxArray *)prhs[input_counter++]);
   }
   else{
-    sprintf(message_buffer, "expected exphasorssurface to be a double");
-    mexfprintf(message_buffer);
+    throw runtime_error("expected exphasorssurface to be a double");
   }
   /*Got exphasorssurface*/
 
@@ -1548,8 +1492,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     intphasorssurface = (int)*mxGetPr( (mxArray *)prhs[input_counter++]);
   }
   else{
-    sprintf(message_buffer, "expected intphasorssurface to be a double");
-    mexfprintf(message_buffer);
+    throw runtime_error("expected intphasorssurface to be a double");
   }
   /*Got intphasorssurface*/
 
@@ -1559,12 +1502,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     ndims = mxGetNumberOfDimensions(prhs[input_counter]);
     dimptr_out = mxGetDimensions( (mxArray *)prhs[input_counter]);
     if(ndims !=2){
-      sprintf(message_buffer, "expected phasorsurface to be a vector of length 6");
-      mexfprintf(message_buffer);
+      throw runtime_error("expected phasorsurface to be a vector of length 6");
     }
     if(dimptr_out[0]*dimptr_out[1] !=6){
-      sprintf(message_buffer, "expected phasorsurface to be a vector of length 6");
-      mexfprintf(message_buffer);
+      throw runtime_error("expected phasorsurface to be a vector of length 6");
     }
     //now safe to extract the indices
     for(i=0;i<6;i++){
@@ -1576,8 +1517,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     if(J_tot==0)
       if( cuboid[2] != cuboid[3] ){
-	sprintf(message_buffer, "When doind a 2D simulation, J0 should equal J1 in phasorsurface.");
-	mexfprintf(message_buffer);
+	      throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
       }
 
   }
@@ -1591,8 +1531,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       phasorinc[i] = (int)tmpptr[i];
   }
   else{
-    sprintf(message_buffer, "expected phasorinc to be a double");
-    mexfprintf(message_buffer);
+    throw runtime_error("expected phasorinc to be a double");
   }
   /*Got phasorinc*/
 
@@ -1614,11 +1553,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if(mxIsStruct(prhs[input_counter])){
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     if(num_fields != 3){
-      sprintf(message_buffer, "conductive_aux should have 3 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("conductive_aux should have 3 members, it has " + to_string(num_fields));
     }
     for(int i=0;i<3;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, conductive_aux_elements[i]);
+      string element_name = conductive_aux_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 	dimptr_out = mxGetDimensions(element);
@@ -1637,14 +1576,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	rho_z = mxGetPr(element);
       }
       else{
-	sprintf(message_buffer, "element conductive_aux.%s not handled",conductive_aux_elements[i]);
-	mexfprintf(message_buffer);
+	throw runtime_error("element conductive_aux. "+element_name+" not handled");
       }
     }
   }
   else{
-    sprintf(message_buffer, "Argument %d was expected to be a structure (conductive_aux)",input_counter);
-    mexfprintf(message_buffer);
+    throw runtime_error("Argument "+to_string(input_counter)+
+                        " was expected to be a structure (conductive_aux)");
   }
   input_counter++;
   /*Get conductive_aux */
@@ -1654,47 +1592,46 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(mxIsStruct(prhs[input_counter])){
       num_fields = mxGetNumberOfFields(prhs[input_counter]);
       if( num_fields != 9 ){
-	sprintf(message_buffer, "dispersive_aux should have 9 elements, it has %d",num_fields);
-	mexfprintf(message_buffer);
+	      throw runtime_error("dispersive_aux should have 9 elements, it has " + to_string(num_fields));
       }
       for(int i=0;i<9;i++){
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, dispersive_aux_elements[i]);
-	if(!strcmp(dispersive_aux_elements[i],"alpha")){
-	  ml_alpha = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"beta")){
-	  ml_beta = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"gamma")){
-	  ml_gamma = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"kappa_x")){
-	  ml_kappa_x = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"kappa_y")){
-	  ml_kappa_y = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"kappa_z")){
-	  ml_kappa_z = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"sigma_x")){
-	  ml_sigma_x = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"sigma_y")){
-	  ml_sigma_y = mxGetPr(element);
-	}
-	else if(!strcmp(dispersive_aux_elements[i],"sigma_z")){
-	  ml_sigma_z = mxGetPr(element);
-	}
-	else{
-	  sprintf(message_buffer, "element dispersive_aux.%s not handled",dispersive_aux_elements[i]);
-	  mexfprintf(message_buffer);
-	}
+        element = mxGetField( (mxArray *)prhs[input_counter], 0, dispersive_aux_elements[i]);
+        string element_name = dispersive_aux_elements[i];
+        if(!strcmp(dispersive_aux_elements[i],"alpha")){
+          ml_alpha = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"beta")){
+          ml_beta = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"gamma")){
+          ml_gamma = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"kappa_x")){
+          ml_kappa_x = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"kappa_y")){
+          ml_kappa_y = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"kappa_z")){
+          ml_kappa_z = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"sigma_x")){
+          ml_sigma_x = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"sigma_y")){
+          ml_sigma_y = mxGetPr(element);
+        }
+        else if(!strcmp(dispersive_aux_elements[i],"sigma_z")){
+          ml_sigma_z = mxGetPr(element);
+        }
+        else{
+          throw runtime_error("element dispersive_aux. "+element_name+" not handled");
+        }
       }
     }
     else{
-      sprintf(message_buffer, "Argument %d was expected to be a structure (dispersive_aux)",input_counter);
-      mexfprintf(message_buffer);
+      throw runtime_error("Argument "+ to_string(input_counter) +
+                          " was expected to be a structure (dispersive_aux)");
     }
   }
 
@@ -1707,10 +1644,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     dimptr_out = mxGetDimensions((mxArray *)prhs[input_counter]);
     if(ndims!=2){
       //fprintf(stderr,"ndims: %d\n",ndims);
-      mexfprintf("structure should be a 2D matrix");
+      throw runtime_error("structure should be a 2D matrix");
     }
     if( dimptr_out[0] != 2 || dimptr_out[1] != (I_tot+1))
-      mexfprintf("structure should have dimension 2 x (I_tot+1) ");
+      throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
     //castMatlab2DArrayInt(int *array, int nrows, int ncols)
     structure = castMatlab2DArrayInt((int *)mxGetPr((mxArray *)prhs[input_counter]),2,I_tot+1);
     //    fprintf(stderr,"%2d %2d %2d\n%2d %2d %2d\n",structure[0][0],structure[1][0],structure[2][0],structure[0][1],structure[1][1],structure[1][1]);
@@ -1730,10 +1667,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     fprintf(stderr,"f_ex_vec has ndims=%d, N=%d\n",ndims,dimptr_out[0]);
 
     if(ndims!=2){
-      mexfprintf("f_ex_vec should be an array with N>0 elements");
+      throw runtime_error("f_ex_vec should be an array with N>0 elements");
     }
     if( !( (dimptr_out[0]==1) || (dimptr_out[1]==1) ) )
-      mexfprintf("f_ex_vec should be an array with N>0 elements");
+      throw runtime_error("f_ex_vec should be an array with N>0 elements");
     if(dimptr_out[0]>dimptr_out[1])
       N_f_ex_vec=dimptr_out[0];
     else
@@ -1766,9 +1703,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       if(mxIsStruct(prhs[input_counter])){
 	num_fields = mxGetNumberOfFields(prhs[input_counter]);
 	if(num_fields != 2){
-	  sprintf(message_buffer, "f_vec should have 2 members, it has %d",num_fields);
-	  mexfprintf(message_buffer);
-	} 
+	  throw runtime_error("f_vec should have 2 members, it has " + to_string(num_fields));
+	}
 	element = mxGetField( (mxArray *)prhs[input_counter], 0, "fx_vec");
 	fx_vec = mxGetPr(element);
 	Nfx_vec = mxGetNumberOfElements(element);
@@ -1800,9 +1736,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       if(mxIsStruct(prhs[input_counter])){
 	num_fields = mxGetNumberOfFields(prhs[input_counter]);
 	if(num_fields != 2){
-	  sprintf(message_buffer, "D_tilde should have 2 members, it has %d",num_fields);
-	  mexfprintf(message_buffer);
-	} 
+	  throw runtime_error("D_tilde should have 2 members, it has " + to_string(num_fields));
+	}
 	element = mxGetField( (mxArray *)prhs[input_counter], 0, "Dx_tilde");
 	ndims = mxGetNumberOfDimensions(element);
 	dimptr_out = mxGetDimensions(element);
@@ -1926,8 +1861,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
    
     //check that all fields are present
     if(num_fields != 2){
-      sprintf(message_buffer, "tdfield should have 2 members, it has %d",num_fields);
-      mexfprintf(message_buffer);
+      throw runtime_error("tdfield should have 2 members, it has " + to_string(num_fields));
     }
     element = mxGetField( (mxArray *)prhs[input_counter], 0, "exi");
     //fprintf(stderr,"isempty ?: (%d)\n", !mxIsEmpty(element));
@@ -1989,8 +1923,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(mxIsStruct(prhs[input_counter])){
       num_fields = mxGetNumberOfFields(prhs[input_counter]);
       if(num_fields != 4){
-	sprintf(message_buffer, "fieldsample should have 4 members, it has %d",num_fields);
-	mexfprintf(message_buffer);
+	      throw runtime_error("fieldsample should have 4 members, it has " + to_string(num_fields));
       }
       for(int i=0;i<4;i++){
 	element = mxGetField( (mxArray *)prhs[input_counter], 0, fieldsample_elements[i]);
@@ -2030,8 +1963,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     fprintf(stderr,"num_fields=%d\n",num_fields);
     if(num_fields != 2){
-	sprintf(message_buffer, "campssample should have 2 members, it has %d",num_fields);
-	mexfprintf(message_buffer);
+	    throw runtime_error("campssample should have 2 members, it has " + to_string(num_fields));
     }
     for(int i=0;i<2;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, campssample_elements[i]);
@@ -2213,8 +2145,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //evaluate maximum optical frequency
 
   Np=(int)floor(1./(2.5*dt[0]*f_max));
-  dtp = ((double)Np)*dt[0];
+  double dtp = ((double)Np)*dt[0];
   //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
+
   //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
   for(tind = start_tind; tind < *Nt; tind++)
     if( (tind-start_tind) % Np == 0)
