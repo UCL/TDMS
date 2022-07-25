@@ -78,4 +78,10 @@ target_link_libraries(tdms
         OpenMP::OpenMP_CXX
         )
 
+if(MSVC)
+  target_compile_options(tdms PRIVATE /W4)
+else()
+  target_compile_options(tdms PRIVATE -Wall)
+endif()
+
 install(TARGETS tdms)
