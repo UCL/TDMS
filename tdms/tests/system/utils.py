@@ -20,7 +20,8 @@ executable_path = shutil.which(executable_name)
 if Path(executable_name).is_file():
     # If the executable exists in the current working directory use that
     executable_path = str(Path(executable_name).absolute())
-
+elif Path(f"Release/{executable_name}").is_file():
+    executable_path = str(Path(f"Release/{executable_name}").absolute())
 
 class HDF5File(dict):
     """

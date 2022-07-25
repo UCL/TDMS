@@ -79,14 +79,15 @@ jobs:
         run: |
           cmake --build . --config ${{ matrix.build_type }}
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-
       - name: Test TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
           py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+        if: always()
