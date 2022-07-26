@@ -386,9 +386,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku;
   int cuboid[6];
   int **vertices;
-  int nvertices;
+  int nvertices = 0;
   int *components;
-  int ncomponents;
+  int ncomponents = 0;
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
   
@@ -402,7 +402,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int **structure, is_structure = 0;
   int I_tot, J_tot, K_tot, K, max_IJK;
   int Nsteps = 0, dft_counter = 0;
-  int **surface_vertices, n_surface_vertices;
+  int **surface_vertices, n_surface_vertices = 0;
   int poutfile = 0;
   int Np=0; //The phasor extraction algorithm will be executed every Np iterations.
   int Npe=0; //The number of terms in the algorithm to extract the phasors
@@ -975,44 +975,44 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   //fprintf(stderr,"Got disp_params\n");
   /*Get delta params*/
-  
-  if(mxIsStruct(prhs[input_counter])){
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    //check that all fields are present
-    if(num_fields != 3){
-      throw runtime_error("delta should have 3 members, it has " +to_string(num_fields));
-    }
-    
-    for(int i=0;i<3;i++){
-      element = mxGetField( (mxArray *)prhs[input_counter], 0, delta_elements[i]);
-      string element_name = freespace_elements[i];
-      ndims = mxGetNumberOfDimensions(element);
-      if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){ 
-	  throw runtime_error("Incorrect dimension on delta. " + element_name);
-	}
-	if(!strcmp(delta_elements[i],"x")){
-	  dx = *mxGetPr( (mxArray *)element);
-	}
-	else if(!strcmp(delta_elements[i],"y")){
-	  dy = *mxGetPr( (mxArray *)element);
-	}
-	else if(!strcmp(delta_elements[i],"z")){
-	  dz = *mxGetPr( (mxArray *)element);
-	}
-	else{
-	  throw runtime_error("element delta."+element_name+" not handled");
-	}
-      }
-      else
-	throw runtime_error("Incorrect dimension on delta");
-    }
-    input_counter++;
-  }
-  else{
+  if (!mxIsStruct(prhs[input_counter])){
     throw runtime_error("Argument "+to_string(input_counter)+" was expected to be a structure");
   }
+
+  num_fields = mxGetNumberOfFields(prhs[input_counter]);
+  //check that all fields are present
+  if(num_fields != 3){
+    throw runtime_error("delta should have 3 members, it has " +to_string(num_fields));
+  }
+
+  for(int i=0;i<3;i++){
+    element = mxGetField( (mxArray *)prhs[input_counter], 0, delta_elements[i]);
+    string element_name = freespace_elements[i];
+    ndims = mxGetNumberOfDimensions(element);
+    if (ndims != 2){
+      throw runtime_error("Incorrect dimension on delta");
+    }
+
+    dimptr_out = mxGetDimensions(element);
+    if(dimptr_out[0] != 1){
+      throw runtime_error("Incorrect dimension on delta. " + element_name);
+    }
+    if(!strcmp(delta_elements[i],"x")){
+      dx = *mxGetPr( (mxArray *)element);
+    }
+    else if(!strcmp(delta_elements[i],"y")){
+      dy = *mxGetPr( (mxArray *)element);
+    }
+    else if(!strcmp(delta_elements[i],"z")){
+      dz = *mxGetPr( (mxArray *)element);
+    }
+    else{
+      throw runtime_error("Element delta "+element_name+" not handled");
+    }
+  }
+  input_counter++;
+
+
   
   /*Got delta params*/
 
@@ -1968,39 +1968,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     for(int i=0;i<2;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, campssample_elements[i]);
       if(!strcmp(campssample_elements[i],"vertices")){
-	if( !mxIsEmpty(element) ){
-	  dimptr_out = mxGetDimensions(element);
-	  fprintf(stderr,"found vertices (%d x %d)\n", dimptr_out[0], dimptr_out[1]);
-	  vertices = castMatlab2DArrayInt((int *)mxGetPr( (mxArray *)element), dimptr_out[0], dimptr_out[1]);
-	  //fprintf(stderr,"vertices[1000] = %d %d %d\n",vertices[0][10],vertices[1][10],vertices[2][10]);
-	  nvertices =  dimptr_out[0];
-	  //convert vertices to index base 0
-	  
-	  for( int j=0;j<nvertices;j++)
-	    for( int k=0;k<3;k++)
-	      vertices[k][j] = vertices[k][j] - 1;
-	  
-	  
-	}
-	else{
-	  nvertices = 0;
-	}
-	    
+        if( !mxIsEmpty(element) ){
+          dimptr_out = mxGetDimensions(element);
+          fprintf(stderr,"found vertices (%d x %d)\n", dimptr_out[0], dimptr_out[1]);
+          vertices = castMatlab2DArrayInt((int *)mxGetPr( (mxArray *)element), dimptr_out[0], dimptr_out[1]);
+          //fprintf(stderr,"vertices[1000] = %d %d %d\n",vertices[0][10],vertices[1][10],vertices[2][10]);
+          nvertices =  dimptr_out[0];
+          //convert vertices to index base 0
+
+          for( int j=0;j<nvertices;j++)
+            for( int k=0;k<3;k++)
+              vertices[k][j] = vertices[k][j] - 1;
+        }
       }
       else if(!strcmp(campssample_elements[i],"components")){
 
-	if( !mxIsEmpty(element) ){
-	  dimptr_out = mxGetDimensions(element);
-	  components = (int *)mxGetPr( (mxArray *)element);
-	  if( dimptr_out[0] > dimptr_out[1] )
-	    ncomponents = dimptr_out[0];
-	  else
-	    ncomponents = dimptr_out[1];
-	}
-	fprintf(stderr,"found components (%d)\n",ncomponents);
+        if( !mxIsEmpty(element) ){
+          dimptr_out = mxGetDimensions(element);
+          components = (int *)mxGetPr( (mxArray *)element);
+          if( dimptr_out[0] > dimptr_out[1] )
+            ncomponents = dimptr_out[0];
+          else
+            ncomponents = dimptr_out[1];
+        }
+        fprintf(stderr,"found components (%d)\n",ncomponents);
       }
     }
-    
   }
   else{
     fprintf(stderr, "campssample is empty\n");
@@ -3055,7 +3048,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     */
 
-    int array_ind;
+    int array_ind = 0;
     //fprintf(stderr,"I_tot=%d, J_tot=%d, K_tot=%d\n",I_tot,J_tot,K_tot);
     if(TIME_EXEC){
       time_1=omp_get_wtime();
@@ -3071,6 +3064,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     */
 #pragma omp parallel default(shared)  private(i,j,k,rho,k_loc,array_ind,Ca,Cb,Cc,alpha_l,beta_l,gamma_l,kappa_l,sigma_l,Enp1,Jnp1)//,ca_vec,cb_vec,cc_vec,eh_vec)
     {
+      Enp1 = 0.0;
+      array_ind = 0;
+
       if(dimension==THREE || dimension==TE){
 	if( useCD ){//FDTD, Exy
 #pragma omp for
@@ -3314,6 +3310,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 
 
+      Enp1 = 0.0;
 		//Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
 		if( (is_disp || is_disp_ml) && gamma_l)
 		  Enp1 += Cc*Exy_nm1[k][j][i] - 1./2.*Cb*dy*((1+alpha_l)*Jxy[k][j][i] + beta_l*Jxy_nm1[k][j][i]);
