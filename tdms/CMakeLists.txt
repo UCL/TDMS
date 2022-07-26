@@ -81,7 +81,7 @@ target_link_libraries(tdms
 if(MSVC)
   target_compile_options(tdms PRIVATE /W4)
 else()
-  target_compile_options(tdms PRIVATE -Wall)
+  target_compile_options(tdms PRIVATE -Wall -Wno-maybe-uninitialized)
 endif()
 
 install(TARGETS tdms)
