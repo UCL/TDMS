@@ -728,96 +728,98 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     if( num_fields==6 ){
       for(int i=0;i<num_fields;i++){
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements[i]);
-  string element_name = C_elements[i];
+        element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements[i]);
+        string element_name = C_elements[i];
 
-	ndims = mxGetNumberOfDimensions(element);
-	if( ndims == 2 ){
-	  dimptr_out = mxGetDimensions(element);
-	  if(dimptr_out[0] != 1){ 
-	    is_multilayer = 1;
-	  }
-	  if(!strcmp(C_elements[i],"Cax")){
-	    Cax = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Cay")){
-	    Cay = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Caz")){
-	    Caz = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Cbx")){
-	    Cbx = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Cby")){
-	    Cby = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Cbz")){
-	    Cbz = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Ccx")){
-	    Ccx = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Ccy")){
-	    Ccy = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements[i],"Ccz")){
-	    Ccz = mxGetPr(element);
-	  }
-	  else{
-	    throw runtime_error("element C. "+element_name+" not handled ");
-	  }
-	}
-	else
-	  throw runtime_error("Incorrect dimension on C");
+        ndims = mxGetNumberOfDimensions(element);
+        if( ndims == 2 ){
+          dimptr_out = mxGetDimensions(element);
+          if(dimptr_out[0] != 1){
+            is_multilayer = 1;
+          }
+          if(!strcmp(C_elements[i],"Cax")){
+            Cax = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Cay")){
+            Cay = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Caz")){
+            Caz = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Cbx")){
+            Cbx = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Cby")){
+            Cby = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Cbz")){
+            Cbz = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Ccx")){
+            Ccx = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Ccy")){
+            Ccy = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements[i],"Ccz")){
+            Ccz = mxGetPr(element);
+          }
+          else{
+            throw runtime_error("element C. "+element_name+" not handled ");
+          }
+        }
+        else{
+          throw runtime_error("Incorrect dimension on C");
+        }
       }
     }
     else{
       for(int i=0;i<num_fields;i++){
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements_disp_ml[i]);
-  string element_name = C_elements_disp_ml[i];
-      
-	ndims = mxGetNumberOfDimensions(element);
-	if( ndims == 2 ){
-	  dimptr_out = mxGetDimensions(element);
-	  if(dimptr_out[0] != 1){ 
-	    //sprintf(message_buffer, "Incorrect dimension on C.%s",C_elements[i]);
-	    //mexfprintf(message_buffer);
-	    is_multilayer = 1;
-	  }
-	  if(!strcmp(C_elements_disp_ml[i],"Cax")){
-	    Cax = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Cay")){
-	    Cay = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Caz")){
-	    Caz = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Cbx")){
-	    Cbx = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Cby")){
-	    Cby = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Cbz")){
-	    Cbz = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Ccx")){
-	    Ccx = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Ccy")){
-	    Ccy = mxGetPr(element);
-	  }
-	  else if(!strcmp(C_elements_disp_ml[i],"Ccz")){
-	    Ccz = mxGetPr(element);
-	  }
-	  else{
-	    throw runtime_error("element C.%s not handled " + element_name);
-	  }
-	}
-	else
-	  throw runtime_error("Incorrect dimension on C");
+        element = mxGetField( (mxArray *)prhs[input_counter], 0, C_elements_disp_ml[i]);
+        string element_name = C_elements_disp_ml[i];
+
+        ndims = mxGetNumberOfDimensions(element);
+        if( ndims == 2 ){
+          dimptr_out = mxGetDimensions(element);
+          if(dimptr_out[0] != 1){
+            //sprintf(message_buffer, "Incorrect dimension on C.%s",C_elements[i]);
+            //mexfprintf(message_buffer);
+            is_multilayer = 1;
+          }
+          if(!strcmp(C_elements_disp_ml[i],"Cax")){
+            Cax = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Cay")){
+            Cay = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Caz")){
+            Caz = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Cbx")){
+            Cbx = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Cby")){
+            Cby = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Cbz")){
+            Cbz = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Ccx")){
+            Ccx = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Ccy")){
+            Ccy = mxGetPr(element);
+          }
+          else if(!strcmp(C_elements_disp_ml[i],"Ccz")){
+            Ccz = mxGetPr(element);
+          }
+          else{
+            throw runtime_error("element C.%s not handled " + element_name);
+          }
+        }
+        else{
+          throw runtime_error("Incorrect dimension on C");
+        }
       }
     }
     input_counter++;
@@ -840,35 +842,36 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       string element_name = D_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){ 
-	  //throw runtime_error("Incorrect dimension on D.%s",D_elements[i]);
-	  //mexfprintf(message_buffer);
-	}
-	if(!strcmp(D_elements[i],"Dax")){
-	  Dax = mxGetPr(element);
-	}
-	else if(!strcmp(D_elements[i],"Day")){
-	  Day = mxGetPr(element);
-	}
-	else if(!strcmp(D_elements[i],"Daz")){
-	  Daz = mxGetPr(element);
-	}
-	else if(!strcmp(D_elements[i],"Dbx")){
-	  Dbx = mxGetPr(element);
-	}
-	else if(!strcmp(D_elements[i],"Dby")){
-	  Dby = mxGetPr(element);
-	}
-	else if(!strcmp(D_elements[i],"Dbz")){
-	  Dbz = mxGetPr(element);
-	}
-	else{
-	  throw runtime_error("element D."+element_name+" not handled");
-	}
+        dimptr_out = mxGetDimensions(element);
+        if(dimptr_out[0] != 1){
+          //throw runtime_error("Incorrect dimension on D.%s",D_elements[i]);
+          //mexfprintf(message_buffer);
+        }
+        if(!strcmp(D_elements[i],"Dax")){
+          Dax = mxGetPr(element);
+        }
+        else if(!strcmp(D_elements[i],"Day")){
+          Day = mxGetPr(element);
+        }
+        else if(!strcmp(D_elements[i],"Daz")){
+          Daz = mxGetPr(element);
+        }
+        else if(!strcmp(D_elements[i],"Dbx")){
+          Dbx = mxGetPr(element);
+        }
+        else if(!strcmp(D_elements[i],"Dby")){
+          Dby = mxGetPr(element);
+        }
+        else if(!strcmp(D_elements[i],"Dbz")){
+          Dbz = mxGetPr(element);
+        }
+        else{
+          throw runtime_error("element D."+element_name+" not handled");
+        }
       }
-      else
+      else{
         throw runtime_error("Incorrect dimension on D");
+      }
     }
     input_counter++;
   }
@@ -1036,55 +1039,55 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
 
-	//dimptr = (int *)mxGetDimensions(element);
-	dimptr_out = mxGetDimensions(element);
-  string field_name = interface_fields[i];
+        //dimptr = (int *)mxGetDimensions(element);
+        dimptr_out = mxGetDimensions(element);
+        string field_name = interface_fields[i];
 
-	if( !(dimptr_out[0] == 1 && dimptr_out[1] == 2) ){ 
-	  throw runtime_error("Incorrect dimension on interface." +
-                         field_name +
-                         " (" + to_string((int)dimptr_out[0]) +
-                         "," + to_string((int)dimptr_out[1]) +
-                         "," + to_string((int)mxGetNumberOfElements(element)) +
-                         ")\n");
-	}
-	if(!strcmp(interface_fields[i],"I0")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *I0 = *place_holder - 1.;
-	  *(I0+1) = *(place_holder+1);
-	}
-	else if(!strcmp(interface_fields[i],"I1")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *I1 = *place_holder - 1.;
-	  *(I1+1) = *(place_holder+1);
-	}
-	else if(!strcmp(interface_fields[i],"J0")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *J0 = *place_holder - 1.; 
-	  *(J0+1) = *(place_holder+1);
-	}
-	else if(!strcmp(interface_fields[i],"J1")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *J1 = *place_holder - 1.;
-	  *(J1+1) = *(place_holder+1);
-	}
-	else if(!strcmp(interface_fields[i],"K0")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *K0 = *place_holder - 1.;
-	  if(*K0<0)
-	    *K0 = 0.;
-	  *(K0+1) = *(place_holder+1);
-	}
-	else if(!strcmp(interface_fields[i],"K1")){
-	  place_holder = mxGetPr( (mxArray *)element);
-	  *K1 = *place_holder - 1.;
-	  if(*K1<0)
-	    *K1 = 0.;
-	  *(K1+1) = *(place_holder+1);
-	}
-	else{
-	  throw runtime_error("element interface."+field_name+" not handled");
-	}
+        if( !(dimptr_out[0] == 1 && dimptr_out[1] == 2) ){
+          throw runtime_error("Incorrect dimension on interface." +
+                               field_name +
+                               " (" + to_string((int)dimptr_out[0]) +
+                               "," + to_string((int)dimptr_out[1]) +
+                               "," + to_string((int)mxGetNumberOfElements(element)) +
+                               ")\n");
+        }
+        if(!strcmp(interface_fields[i],"I0")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *I0 = *place_holder - 1.;
+          *(I0+1) = *(place_holder+1);
+        }
+        else if(!strcmp(interface_fields[i],"I1")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *I1 = *place_holder - 1.;
+          *(I1+1) = *(place_holder+1);
+        }
+        else if(!strcmp(interface_fields[i],"J0")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *J0 = *place_holder - 1.;
+          *(J0+1) = *(place_holder+1);
+        }
+        else if(!strcmp(interface_fields[i],"J1")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *J1 = *place_holder - 1.;
+          *(J1+1) = *(place_holder+1);
+        }
+        else if(!strcmp(interface_fields[i],"K0")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *K0 = *place_holder - 1.;
+          if(*K0<0)
+            *K0 = 0.;
+          *(K0+1) = *(place_holder+1);
+        }
+        else if(!strcmp(interface_fields[i],"K1")){
+          place_holder = mxGetPr( (mxArray *)element);
+          *K1 = *place_holder - 1.;
+          if(*K1<0)
+            *K1 = 0.;
+          *(K1+1) = *(place_holder+1);
+        }
+        else{
+          throw runtime_error("element interface."+field_name+" not handled");
+        }
       }
       else
 	throw runtime_error("Incorrect dimension on interfaces");
@@ -1219,25 +1222,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       string grid_label = grid_labels_fields[i];
 
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){
-	  throw runtime_error("Incorrect dimension on Cmaterial: " + material_element);
-	}
-	if(!strcmp(grid_labels_fields[i],"x_grid_labels")){
-	  x_grid_labels = mxGetPr( (mxArray *)element);
-	}
-	else if(!strcmp(grid_labels_fields[i],"y_grid_labels")){
-	  y_grid_labels = mxGetPr( (mxArray *)element);
-	}
-	else if(!strcmp(grid_labels_fields[i],"z_grid_labels")){
-	  z_grid_labels = mxGetPr( (mxArray *)element);
-	}
-	else{
-	  throw runtime_error("element grid_labels. "+grid_label+" not handled");
-	}
+        dimptr_out = mxGetDimensions(element);
+        if(dimptr_out[0] != 1){
+          throw runtime_error("Incorrect dimension on Cmaterial: " + material_element);
+        }
+        if(!strcmp(grid_labels_fields[i],"x_grid_labels")){
+          x_grid_labels = mxGetPr( (mxArray *)element);
+        }
+        else if(!strcmp(grid_labels_fields[i],"y_grid_labels")){
+          y_grid_labels = mxGetPr( (mxArray *)element);
+        }
+        else if(!strcmp(grid_labels_fields[i],"z_grid_labels")){
+          z_grid_labels = mxGetPr( (mxArray *)element);
+        }
+        else{
+          throw runtime_error("element grid_labels. "+grid_label+" not handled");
+        }
       }
       else{
-	throw runtime_error("Incorrect dimension on grid_labels. " + material_element);
+	      throw runtime_error("Incorrect dimension on grid_labels. " + material_element);
       }
     }
     
@@ -1977,8 +1980,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           //convert vertices to index base 0
 
           for( int j=0;j<nvertices;j++)
-            for( int k=0;k<3;k++)
+            for( int k=0;k<3;k++){
               vertices[k][j] = vertices[k][j] - 1;
+            }
         }
       }
       else if(!strcmp(campssample_elements[i],"components")){
@@ -1986,10 +1990,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         if( !mxIsEmpty(element) ){
           dimptr_out = mxGetDimensions(element);
           components = (int *)mxGetPr( (mxArray *)element);
-          if( dimptr_out[0] > dimptr_out[1] )
+          if( dimptr_out[0] > dimptr_out[1] ){
             ncomponents = dimptr_out[0];
-          else
+          }
+          else{
             ncomponents = dimptr_out[1];
+          }
         }
         fprintf(stderr,"found components (%d)\n",ncomponents);
       }
@@ -3064,10 +3070,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     */
 #pragma omp parallel default(shared)  private(i,j,k,rho,k_loc,array_ind,Ca,Cb,Cc,alpha_l,beta_l,gamma_l,kappa_l,sigma_l,Enp1,Jnp1)//,ca_vec,cb_vec,cc_vec,eh_vec)
     {
-      Enp1 = 0.0;
-      array_ind = 0;
+    Enp1 = 0.0;
+    array_ind = 0;
 
-      if(dimension==THREE || dimension==TE){
+  if(dimension==THREE || dimension==TE){
 	if( useCD ){//FDTD, Exy
 #pragma omp for
 	  for(k=0;k<(K_tot+1);k++)
