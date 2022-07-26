@@ -63,7 +63,7 @@ target_sources(tdms PRIVATE
         src/interpolate.cpp
         src/numeric.cpp
         src/queuelinked.cpp
-        src/tdms_iterator.cpp
+        src/iterator.cpp
         src/mesh_base.cpp
         src/numerical_derivative.cpp
         matlabio/matlabio.cpp

@@ -24,7 +24,7 @@
 #include <omp.h>
 #include "matio.h"
 #include <complex>
-#include "tdms_iterator.h"
+#include "iterator.h"
 #include <string.h>
 #include "interpolate.h"
 #include "numeric.h"
@@ -365,7 +365,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double lambda_an_t;
   double ***D_temp_re, ***D_temp_im;
   double **Pupil;
-  int k_det_obs_global;
+  int k_det_obs_global = 0;
   double *fx_vec, *fy_vec;
   int Nfx_vec, Nfy_vec;
   double z_obs = 0.;
@@ -422,17 +422,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mxArray *dummy_array[3];
   mxArray *element;
   mxArray *mx_surface_vertices, *mx_surface_facets, *mx_surface_amplitudes;
-  mxArray *mx_fieldsample, *mx_fieldsample_x, *mx_fieldsample_y, *mx_fieldsample_z;
-  double ****fieldsample,****fieldsample_x,****fieldsample_y,****fieldsample_z;
+  mxArray *mx_fieldsample;
+  double ****fieldsample;
   
   
   mxArray *mx_Idx, *mx_Idy;
   double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
   complex<double> **Idx, **Idy;
   complex<double> Idxt,Idyt,kprop;
-  
-  char message_buffer[500];
- 
+
   char dimension_str[3];
   const char fdtdgrid_elements[][15] = {"Exy","Exz","Eyx","Eyz","Ezx","Ezy","Hxy","Hxz","Hyx","Hyz","Hzx","Hzy","materials"};
   const char Cmaterial_elements[][10] = {"Cax","Cay","Caz","Cbx","Cby","Cbz","Ccx","Ccy","Ccz"};
@@ -1807,15 +1805,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /*Get k_det_obs*/
     if( !mxIsEmpty(prhs[input_counter]) ){
-      if( mxGetNumberOfElements(prhs[input_counter]) != 1)
-	fprintf(stderr,"k_det_obs has %d elements, it should only have 1.\n",(int)mxGetNumberOfElements(prhs[input_counter]));
+      if( mxGetNumberOfElements(prhs[input_counter]) != 1){
+        int n = (int)mxGetNumberOfElements(prhs[input_counter]);
+        throw runtime_error("k_det_obs has "+to_string(n)+" elements, it should only have 1.\n");
+      }
+
       k_det_obs_global = (int)*mxGetPr((mxArray *)prhs[input_counter]) - 1;
     }
     input_counter++;
     /*Got k_det_obs*/    
     //now set z_obs
     z_obs = z_grid_labels[k_det_obs_global];
-
     
   }//end of if(exdetintegral==1)
   else
@@ -2145,7 +2145,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //evaluate maximum optical frequency
 
   Np=(int)floor(1./(2.5*dt[0]*f_max));
-  double dtp = ((double)Np)*dt[0];
+  //double dtp = ((double)Np)*dt[0];
   //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
 
   //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
@@ -2511,13 +2511,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mx_fieldsample = mxCreateNumericArray( ndims, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL);
     fieldsample = castMatlab4DArray( mxGetPr(mx_fieldsample),N_fieldsample_i, N_fieldsample_j,N_fieldsample_k,N_fieldsample_n);
     //these variables are temporary storage to reduce the need for interpolation during the algorithm
-    mx_fieldsample_x = mxCreateNumericArray( ndims, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample_x = castMatlab4DArray( mxGetPr(mx_fieldsample),N_fieldsample_i, N_fieldsample_j,N_fieldsample_k,N_fieldsample_n);
-    mx_fieldsample_y = mxCreateNumericArray( ndims, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample_y = castMatlab4DArray( mxGetPr(mx_fieldsample),N_fieldsample_i, N_fieldsample_j,N_fieldsample_k,N_fieldsample_n);
-    mx_fieldsample_z = mxCreateNumericArray( ndims, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample_z = castMatlab4DArray( mxGetPr(mx_fieldsample),N_fieldsample_i, N_fieldsample_j,N_fieldsample_k,N_fieldsample_n);
-    
   }
   else{
     ndims   = 4;
@@ -2557,7 +2550,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   /*set up the parameters for the phasor convergence procedure*/
   /*First we set dt so that an integer number of time periods fits within a sinusoidal period
    */
-  double Nsteps_tmp, dt_old;
+  double Nsteps_tmp = 0.0;
+  double dt_old;
   if(sourcemode==sm_steadystate){
     dt_old = dt[0];
     Nsteps_tmp = ceil(2.*dcpi/omega_an[0]/dt[0]*3);
@@ -2916,13 +2910,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		  fieldsample[nt][kt][jt][it] = fieldsample[nt][kt][jt][it] + pow( Ex_temp*Ex_temp + Ey_temp*Ey_temp + Ez_temp*Ez_temp, fieldsample_n[nt]/2.)/Nt[0];
 		//fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
 
-		/*
-		fieldsample_x[nt][kt][jt][it] = fieldsample_x[nt][kt][jt][it] + pow( Exz[ (int)fieldsample_k[kt] + Dzl[0] - 1 ][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1] + Exy[ (int)fieldsample_k[kt] + Dzl[0] - 1][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1],  (int)fieldsample_n[nt])/Nsteps;
-
-		fieldsample_y[nt][kt][jt][it] = fieldsample_y[nt][kt][jt][it] + pow( Eyx[ (int)fieldsample_k[kt] + Dzl[0] - 1 ][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1] + Eyz[ (int)fieldsample_k[kt] + Dzl[0] - 1][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1],  (int)fieldsample_n[nt])/Nsteps;
-
-		fieldsample_z[nt][kt][jt][it] = fieldsample_z[nt][kt][jt][it] + pow( Ezx[ (int)fieldsample_k[kt] + Dzl[0] - 1 ][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1] + Ezy[ (int)fieldsample_k[kt] + Dzl[0] - 1][ (int)fieldsample_j[jt] + Dyl[0] - 1][ (int)fieldsample_i[it] + Dxl[0] - 1],  (int)fieldsample_n[nt])/Nsteps;
-		*/
 	      }
 	}
       }
@@ -6343,12 +6330,9 @@ if(runmode == rm_complete && (nvertices>0) )
     freeCastMatlab3DArray(KsourceR,((int)(J1[0]-J0[0]+1.)));
   }
 
-if( !((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) || (N_fieldsample_n == 0)) ){
-  freeCastMatlab4DArray( fieldsample, N_fieldsample_k,N_fieldsample_n);
-  freeCastMatlab4DArray( fieldsample_x, N_fieldsample_k,N_fieldsample_n);
-  freeCastMatlab4DArray( fieldsample_y, N_fieldsample_k,N_fieldsample_n);
-  freeCastMatlab4DArray( fieldsample_z, N_fieldsample_k,N_fieldsample_n);
- }
+  if( !((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) || (N_fieldsample_n == 0)) ){
+    freeCastMatlab4DArray( fieldsample, N_fieldsample_k,N_fieldsample_n);
+   }
 
   freeCastMatlab2DArray(iwave_lEx_Rbs);
   freeCastMatlab2DArray(iwave_lEx_Ibs);
