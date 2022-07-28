@@ -591,7 +591,8 @@ if length(ill_file) > 0%must have already computed the illumination source
     %	eyi = data.eyi;
         tdfield = data;
     else;
-        error('Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
+        error('TDMSException:InvalidIlluminationFile', ...
+        'Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
     end
     if interface.I0(2) | interface.I1(2)
         Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);

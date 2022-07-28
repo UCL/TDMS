@@ -1,0 +1,25 @@
+name: MATLAB tests
+
+on:
+  push:
+  #push:
+  #  branches: "main"
+  #pull_request:
+  #release:
+  #workflow_dispatch:on: [push]
+
+jobs:
+  tests:
+    name: Run MATLAB Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+
+      - name: Run script
+        uses: matlab-actions/run-command@v1
+        with:
+          command: rmpath('/usr/local/MATLAB/R2022a/toolbox/rfpcb/rfpcb/shapes'), run('tdms/tests/matlab/run_tests.m')
