@@ -565,7 +565,7 @@ if strncmp(sourcemode,'pulsed',6)
     end
 end
 
-if length(ill_file) > 0%must have already computed the illumination source
+if length(ill_file) > 0 %must have already computed the illumination source
     data = load(ill_file);
     assert_are_not_defined(efname, hfname);
     %here we can have a data file with elemenets Isource, Jsource
@@ -841,6 +841,7 @@ else
 	Ksource(8,:,:) = source_field{2};
     end
 end
+
 fprintf('Done\n');
 
 if strncmp(operation,'illsetup',8)%save the source terms
@@ -967,7 +968,7 @@ else
     
     [m_outputs,n_outputs] = size(outputs_array);
     m_outputs
-Nt
+    Nt
     accumulate_output = cell(m_outputs, Nt);
     
     %now set the fdtdgrid to an initial state
@@ -1317,10 +1318,8 @@ Nt
 	     maxresfield = [];
 	 end
 end
-end
 
 end
-
 
 function result = has_ijk_source_matricies(data)
     fields = fieldnames(data);
@@ -1347,7 +1346,9 @@ end
 
 function assert_are_not_defined(efname, hfname)
     assert(length(efname) == 0, ...
+    'TDMSException:IncompatibleInput', ...
     'An efield should not be defined. Set efname to an empty string');
     assert(length(hfname) == 0, ...
+    'TDMSException:IncompatibleInput', ...
     'A hfield should not be defined. Set hfname to an empty string');
 end
