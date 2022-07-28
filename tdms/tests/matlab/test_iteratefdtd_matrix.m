@@ -1,43 +1,49 @@
 
+% Define the tests as all the locally defined functions
 function tests = test_iteratefdtd_matrix_function
-tests = functiontests(localfunctions);
+    tests = functiontests(localfunctions);
 end
 
 function testInvalidIlluminationSourceIJKErrors(testCase)
-    verifyError(testCase, @()createInputWithInvalidIlluminationSourceIJ(), 'TDMSException:InvalidIlluminationFile');
-    delete *.mat
+    runInTempoaryDirectory(testCase, @()createInputWithInvalidIlluminationSourceIJ());
 end
 
 function testInvalidIlluminationSourceExiEyiErrors(testCase)
-    verifyError(testCase, @()createInputWithInvalidIlluminationSourceExi(), 'TDMSException:InvalidIlluminationFile');
-    delete *.mat
+    runInTempoaryDirectory(testCase, @()createInputWithInvalidIlluminationSourceExi());
+end
+
+function runInTempoaryDirectory(testCase, func)
+    addpath('../../matlab/', 'data/');
+
+    oldFolder = cd(createTemporaryFolder(testCase));
+    verifyError(testCase, func, 'TDMSException:InvalidIlluminationFile');
+    cd(oldFolder);
 end
 
 function createInputWithInvalidIlluminationSourceIJ()
 
-    addPathAndCreateGridFile();
+    createGridFile();
     Isource = zeros(size(1));
     Jsource = zeros(size(1));
     % Illumnation file must also have a Ksource tensor
     save(sprintf('invalid_illumnation_file'), 'Isource', 'Jsource', 'Jsource');
 
     [~] = iteratefdtd_matrix('pstd_input_file.m','filesetup',...
-    'tmp_input','gridfile_cyl.mat','invalid_illumnation_file.mat');
+    'tmp_input','gridfile.mat','invalid_illumnation_file.mat');
 end
 
 function createInputWithInvalidIlluminationSourceExi()
 
-    addPathAndCreateGridFile();
+    createGridFile();
     exi = zeros(size(1));
     % Illumnation file must both exi and eyi
     save(sprintf('invalid_illumnation_file'), 'exi', 'exi');
 
     [~] = iteratefdtd_matrix('pstd_input_file.m','filesetup',...
-    'tmp_input','gridfile_cyl.mat','invalid_illumnation_file.mat');
+    'tmp_input','gridfile.mat','invalid_illumnation_file.mat');
 end
 
-function addPathAndCreateGridFile()
-    addpath('../../matlab/', 'data/');
+function createGridFile()
 
     lambda = 1300e-9;
     illorigin = [128 0 128]
@@ -51,5 +57,5 @@ function addPathAndCreateGridFile()
     [ii,jj,kk] = ind2sub(size(I), inds);
     composition_matrix = [ii jj kk ones(size(ii))];
     material_matrix = [1 0 1 0 0 0     0     0     0 0 0];
-    save(sprintf('gridfile_cyl'), 'composition_matrix', 'material_matrix');
+    save(sprintf('gridfile'), 'composition_matrix', 'material_matrix');
 end
