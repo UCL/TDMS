@@ -41,8 +41,8 @@ interface.K1 = [K-5 0];
 
 outputs_array ={};
 
-efname = 'efield_gauss';
-hfname = 'hfield_focused_equiv';
+efname = '';
+hfname = '';
 
 z_launch = 0;
 
