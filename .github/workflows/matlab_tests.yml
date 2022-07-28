@@ -2,11 +2,10 @@ name: MATLAB tests
 
 on:
   push:
-  #push:
-  #  branches: "main"
-  #pull_request:
-  #release:
-  #workflow_dispatch:on: [push]
+    branches: "main"
+  pull_request:
+  release:
+  workflow_dispatch:on: [push]
 
 jobs:
   tests:
