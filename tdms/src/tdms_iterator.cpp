@@ -458,6 +458,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   char *sourcemodestr;
   char *tdfdirstr;
 
+  fprintf(stdout,"Using %d OMP threads\n", omp_get_max_threads());
+
   FILE *outfile;
   if(poutfile){
     outfile = fopen("out.1.2.txt","w");
