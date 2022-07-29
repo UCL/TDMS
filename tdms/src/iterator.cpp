@@ -653,8 +653,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  throw runtime_error("element Cmaterial.%s not handled "+ element_name);
 	}
       }
-      else
-    throw runtime_error("Incorrect dimension on Cmaterial.Ca");
+      else{
+        throw runtime_error("Incorrect dimension on Cmaterial.Ca");
+      }
     }
     input_counter++;
   }
@@ -814,7 +815,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             Ccz = mxGetPr(element);
           }
           else{
-            throw runtime_error("element C.%s not handled " + element_name);
+            throw runtime_error("element C."+element_name+" not handled ");
           }
         }
         else{
@@ -1089,8 +1090,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           throw runtime_error("element interface."+field_name+" not handled");
         }
       }
-      else
-	throw runtime_error("Incorrect dimension on interfaces");
+      else{
+        throw runtime_error("Incorrect dimension on interfaces");
+      }
     }
     //printf("%d %d %d %d %d %d\n",(int)*I0,(int)*I1,(int)*J0,(int)*J1,(int)*K0,(int)*K1);  
     input_counter++;
