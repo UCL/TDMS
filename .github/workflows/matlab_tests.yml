@@ -1,0 +1,24 @@
+name: MATLAB tests
+
+on:
+  push:
+    branches: "main"
+  pull_request:
+  release:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Run MATLAB Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+
+      - name: Run script
+        uses: matlab-actions/run-command@v1
+        with:      # rfpcb contains a delta function definition which must be removed so a delta struct can be defined
+          command: rmpath('/usr/local/MATLAB/R2022a/toolbox/rfpcb/rfpcb/shapes'), run('tdms/tests/matlab/run_tests.m')

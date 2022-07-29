@@ -15,7 +15,6 @@
 %be computed if this string is non empty.
 function [fdtdgrid, Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out, Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
 %Edited 24/7/2003 to_l allow for different cell widths in each orthogonal direction
-
 %input the configuration information
 [fid_input,message] = fopen(input_file,'r');
 
@@ -529,7 +528,7 @@ omega_an = 2*pi*f_an;
 lambda_an = c/(f_an*refractive_index);
 wave_num_an = 2*pi/lambda_an;%wave number in m^-1
 
-fprintf('Initialising source field...');
+fprintf('Initialising source field...\n');
 
 %Isource(:,1,1) = [Ey Ez Hy Hz Ey Ez Hy Hz]
 %Jsource(:,1,1) = [Ex Ez Hx Hz Ex Ez Hx Hz]
@@ -548,7 +547,6 @@ illorigin = illorigin + [Dxl Dyl Dzl];
 %however, if the sourcemode is pulsed then we must reset these
 %values to:
 
-
 if strncmp(sourcemode,'pulsed',6)
     interface.I0(1) = 1;
     interface.J0(1) = 1;
@@ -562,53 +560,61 @@ if strncmp(sourcemode,'pulsed',6)
     interface.K1(2) = 0;
     
     if (interface.K0(2)==0) & K~=0
-	error('Running in pulsed mode with k0[0]=0, there is no point running');
+	    error('Running in pulsed mode with k0[0]=0, there is no point running');
     end
 end
 
-if length(ill_file) > 0%must have already computed the illumination source
+if length(ill_file) > 0 %must have already computed the illumination source
+    fprintf('Loading illumination source from %s\n', ill_file);
+
     data = load(ill_file);
+    assert_are_not_defined(efname, hfname);
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
-    if numel(fieldnames_ill)==3
-	Isource = data.Isource;
-	Jsource = data.Jsource;
-	Ksource = data.Ksource;
-	[mI,nI,oI] = size(Isource);
-	[mJ,nJ,oJ] = size(Jsource);
-	[mK,nK,oK] = size(Ksource);
-	tdfield.exi = [];
-	tdfield.eyi = [];
 
-	%Now make sure that the source matrices have the correct
-	%dimensions
-	if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-	    (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
-	end
-    elseif numel(fieldnames_ill)==2
-%	exi = data.exi;
-%	eyi = data.eyi;
-	tdfield = data;
-	if interface.I0(2) | interface.I1(2)
-	    Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Isource=[];
-	end
-	
-	if interface.J0(2) | interface.J1(2)
-	    Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Jsource = [];
-	end
-	
-	if interface.K0(2) | interface.K1(2)
-	    Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
-	else
-	    Ksource = [];
-	end
+    if has_ijk_source_matricies(data)
+
+        Isource = data.Isource;
+        Jsource = data.Jsource;
+        Ksource = data.Ksource;
+
+        tdfield.exi = [];
+        tdfield.eyi = [];
+        assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
+
+    elseif has_exi_eyi(data)
+
+        tdfield = data;
+        assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
+
+        if interface.I0(2) | interface.I1(2)
+            Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+        else
+            Isource=[];
+        end
+
+        if interface.J0(2) | interface.J1(2)
+            Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+        else
+            Jsource = [];
+        end
+
+        if interface.K0(2) | interface.K1(2)
+            Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
+        else
+            Ksource = [];
+        end
+
+    else;
+        error('TDMSException:InvalidIlluminationFile', ...
+             'Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
     end
+
 else
+    assert_are_defined(efname, hfname);
+    fprintf('Creating Isource, Jsource, Ksource...');
+
     tdfield.exi = [];tdfield.eyi = [];
     if interface.I0(2) | interface.I1(2)
 	Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
@@ -836,8 +842,11 @@ else
 	eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
 	Ksource(8,:,:) = source_field{2};
     end
+
+    fprintf('Done\n');
 end
-fprintf('Done\n');
+
+fprintf('Done initialising source field\n');
 
 if strncmp(operation,'illsetup',8)%save the source terms
     save(outfile,'Isource','Jsource','Ksource');
@@ -963,7 +972,7 @@ else
     
     [m_outputs,n_outputs] = size(outputs_array);
     m_outputs
-Nt
+    Nt
     accumulate_output = cell(m_outputs, Nt);
     
     %now set the fdtdgrid to an initial state
@@ -1313,3 +1322,90 @@ Nt
 	     maxresfield = [];
 	 end
 end
+
+end
+
+function result = has_ijk_source_matricies(data)
+    fields = fieldnames(data);
+    if ~(numel(fields) == 3)
+        result = false;
+    else
+        result = strcmp(fields(1), 'Isource') & ...
+                 strcmp(fields(2), 'Jsource') & ...
+                 strcmp(fields(3), 'Ksource');
+    end
+end
+
+
+function result = has_exi_eyi(data)
+    fields = fieldnames(data);
+    if ~(numel(fields) == 2)
+        result = false;
+    else
+        result = strcmp(fields(1), 'exi') & ...
+                 strcmp(fields(2), 'eyi');
+    end
+end
+
+
+function assert_are_not_defined(efname, hfname)
+    assert(strlength(efname) == 0, ...
+        'TDMSException:IncompatibleInput', ...
+        'An efield should not be defined. Set efname to an empty string');
+    assert(strlength(hfname) == 0, ...
+        'TDMSException:IncompatibleInput', ...
+        'A hfield should not be defined. Set hfname to an empty string');
+end
+
+function assert_are_defined(efname, hfname)
+    assert(strlength(efname) > 0, ...
+        'TDMSException:IncompatibleInput', 'An efname must be defined');
+    assert(strlength(hfname) > 0, ...
+        'TDMSException:IncompatibleInput', 'A hfname must be defined');
+end
+
+function assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface)
+
+    [mI,nI,oI] = size(Isource);
+    [mJ,nJ,oJ] = size(Jsource);
+    [mK,nK,oK] = size(Ksource);
+
+    %Now make sure that the source matrices have the correct dimensions
+    if length(Isource) > 0  % Check that the Isource dimensions are correct
+        if ~( (mI==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Isource read in from %s might has incorrect dimenions');
+        end
+    end
+
+    if length(Jsource) > 0  % Check that the Jsource dimensions are correct
+        if ~( (mJ==8) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Jsource read in from %s might has incorrect dimenions');
+        end
+    end
+
+    if length(Ksource) > 0  % Check that the Ksource dimensions are correct
+        if ~( (mK==8) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Ksource read in from %s has incorrect dimenions');
+        end
+    end
+end
+
+function assert_exi_eyi_have_correct_dimensions(exi, eyi, I_tot, J_tot, Nt)
+
+    [mX,nX,oX] = size(exi);
+    [mY,nY,oY] = size(eyi);
+
+    if ~(mX == I_tot + 1 & nX == J_tot + 1 & oX == Nt)
+        error('TDMSException:InvalidIlluminationDimensions',...
+              sprintf('exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
+    end
+
+    if ~(mY == I_tot + 1 & nY == J_tot + 1 & oY == Nt)
+        error('TDMSException:InvalidIlluminationDimensions',...
+              sprintf('eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
+    end
+end
+
