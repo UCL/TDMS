@@ -11,7 +11,7 @@ private:
 public:
     int num_non_flag = 0;
 
-    explicit ArgumentNamespace(int nargs, char *argv[]);
+    explicit ArgumentNamespace(int n_args, char *argv[]);
     bool have_flag(std::string const &flag);
     bool has_grid_filename() const;
     static bool is_a_flag_argument(std::string arg);
@@ -31,5 +31,5 @@ private:
 
 public:
     explicit ArgumentParser();
-    static ArgumentNamespace parse_args(int nargs, char *argv[]);
+    static ArgumentNamespace parse_args(int n_args, char *arg_ptrs[]);
 };

@@ -51,7 +51,13 @@ jobs:
         shell: bash
         run: |
           cmake --build . --config ${{ matrix.build_type }}
-      - name: Test TDMS
+
+      - name: Run TDMS unit tests
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          ctest -C ${{ matrix.build_type }} --extra-verbos
+
+      - name: Run TDMS system tests
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
