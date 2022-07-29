@@ -23,7 +23,7 @@ function testInvalidStateWithIlluminationAndEField(testCase)
         'TDMSException:IncompatibleInput');
 end
 
-function testFileSetupValidIlluminationFile2D(testCase)
+function testFileSetupValidIlluminationFile2DSource(testCase)
     runInTempoaryDirectory(testCase, ...
             @()createInputWithValidIlluminationSource2D(), ...
             '');
@@ -32,7 +32,7 @@ end
 function testFileSetupInvalidIlluminationFile2D(testCase)
     runInTempoaryDirectory(testCase, ...
             @()createInputIlluminationSourceWithInvalidDimensions2D(), ...
-            'TDMSException:InvalidIlluminationFileDimensions');
+            'TDMSException:InvalidIlluminationDimensions');
 end
 
 function testFileSetupValidIlluminationFile3D(testCase)
@@ -44,7 +44,13 @@ end
 function testFileSetupInvalidIlluminationFile3D(testCase)
     runInTempoaryDirectory(testCase, ...
             @()createInputIlluminationSourceWithInvalidDimensions3D(), ...
-            'TDMSException:InvalidIlluminationFileDimensions');
+            'TDMSException:InvalidIlluminationDimensions');
+end
+
+function testFileSetupInvalidIlluminationFile2DExi(testCase)
+    runInTempoaryDirectory(testCase, ...
+            @()createInputIlluminationSourceWithInvalidExiDimensions2D(), ...
+            'TDMSException:InvalidIlluminationDimensions');
 end
 
 function runInTempoaryDirectory(testCase, func, exception)
@@ -110,7 +116,7 @@ end
 function createInputWithInvalidIlluminationSourceExi()
 
     createGridFile();
-    exi = zeros(size(1));
+    exi = zeros(277, 277, 500);
     % Illumnation file must both exi and eyi
     save(sprintf('invalid_illumnation_file'), 'exi', 'exi');
 
@@ -124,12 +130,25 @@ function createInputWithIlluminationAndEField()
     replaceInFile('pstd_input_file_2D.m', 'efname = ''''', 'efname = ''tmp''')
 
     % creates a valid illumnation file
-    exi = zeros(size(1));
-    eyi = zeros(size(1));
+    exi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
+    eyi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
     save(sprintf('illumnation_file'), 'exi', 'eyi');
 
     [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup',...
     'tmp_input','gridfile.mat','illumnation_file.mat');
+end
+
+function createInputIlluminationSourceWithInvalidExiDimensions2D()
+
+    createGridFile();
+
+    % creates an invalid illumnation file
+    exi = zeros(1, 277, 500);  % I_tot + 1, J_tot + 1, Nt
+    eyi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
+    save(sprintf('invalid_illumnation_file'), 'exi', 'eyi');
+
+    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup',...
+    'tmp_input','gridfile.mat','invalid_illumnation_file.mat');
 end
 
 % Create a valid grid file
@@ -147,11 +166,13 @@ function createIlluminaionFileFrom(filename)
     removeEfnameHfnameFrom(filename);
 end
 
+% Edit an input file to define efname and hfname
 function defineEfnameHfnameIn(filename)
     replaceInFile(filename, 'efname = ''''', 'efname = ''efield_gauss''');
     replaceInFile(filename, 'hfname = ''''', 'hfname = ''hfield_focused_equiv''');
 end
 
+% Edit an input file to remove the definitions of efname and hfname
 function removeEfnameHfnameFrom(filename)
     replaceInFile(filename, 'efname = ''efield_gauss''', 'efname = ''''');
     replaceInFile(filename, 'hfname = ''hfield_focused_equiv''', 'hfname = ''''');
