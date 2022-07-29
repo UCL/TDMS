@@ -1,4 +1,4 @@
-% Sample input file required to call iteratefdtd_matrix
+% Sample input file for a 2D simulation required to call iteratefdtd_matrix
 
 lambda = 1300e-9;
 
