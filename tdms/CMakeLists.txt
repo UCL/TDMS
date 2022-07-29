@@ -63,7 +63,7 @@ target_sources(tdms PRIVATE
         src/interpolate.cpp
         src/numeric.cpp
         src/queuelinked.cpp
-        src/tdms_iterator.cpp
+        src/iterator.cpp
         src/mesh_base.cpp
         src/numerical_derivative.cpp
         matlabio/matlabio.cpp
@@ -81,7 +81,7 @@ target_link_libraries(tdms
 if(MSVC)
   target_compile_options(tdms PRIVATE /W4)
 else()
-  target_compile_options(tdms PRIVATE -Wall)
+  target_compile_options(tdms PRIVATE -Wall -Wno-maybe-uninitialized)
 endif()
 
 install(TARGETS tdms)
