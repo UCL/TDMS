@@ -41,6 +41,11 @@ function testFileSetupValidIlluminationFile3D(testCase)
             '');
 end
 
+function testFileSetupInvalidIlluminationFile3D(testCase)
+    runInTempoaryDirectory(testCase, ...
+            @()createInputIlluminationSourceWithInvalidDimensions3D(), ...
+            'TDMSException:InvalidIlluminationFileDimensions');
+end
 
 function runInTempoaryDirectory(testCase, func, exception)
     addpath('../../matlab/', 'data/');
@@ -78,6 +83,16 @@ function createInputIlluminationSourceWithInvalidDimensions2D()
     % Cannot generate the input with an invalid dimension size
     replaceInFile('pstd_input_file_2D.m', 'I = 256;', 'I = 264;');
     [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup','input_file','gridfile.mat','illfile.mat');
+end
+
+function createInputIlluminationSourceWithInvalidDimensions3D()
+
+    createGridFile();
+    createIlluminaionFileFrom('pstd_input_file_3D.m');
+
+    % Cannot generate the input with an invalid dimension size
+    replaceInFile('pstd_input_file_3D.m', 'I = 128;', 'I = 138;');
+    [~] = iteratefdtd_matrix('pstd_input_file_3D.m','filesetup','input_file','gridfile.mat','illfile.mat');
 end
 
 function createInputWithInvalidIlluminationSourceIJ()

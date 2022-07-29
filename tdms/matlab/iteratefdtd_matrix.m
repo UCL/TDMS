@@ -579,14 +579,32 @@ if length(ill_file) > 0 %must have already computed the illumination source
         [mI,nI,oI] = size(Isource);
         [mJ,nJ,oJ] = size(Jsource);
         [mK,nK,oK] = size(Ksource);
+
         tdfield.exi = [];
         tdfield.eyi = [];
 
-        %Now make sure that the source matrices have the correct
-        %dimensions
-        if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-            (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
+        %Now make sure that the source matrices have the correct dimensions
+        if length(Isource) > 0  % Check that the Isource dimensions are correct
+            if ~( (mI==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)))
+                error('TDMSException:InvalidIlluminationFileDimensions',...
+                      sprintf('Isource read in from %s might has incorrect dimenions', ill_file));
+            end
         end
+
+        if length(Jsource) > 0  % Check that the Jsource dimensions are correct
+            if ~( (mJ==8) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)))
+                error('TDMSException:InvalidIlluminationFileDimensions',...
+                      sprintf('Jsource read in from %s might has incorrect dimenions', ill_file));
+            end
+        end
+
+        if length(Ksource) > 0  % Check that the Ksource dimensions are correct
+            if ~( (mK==8) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+                error('TDMSException:InvalidIlluminationFileDimensions',...
+                      sprintf('Ksource read in from %s has incorrect dimenions', ill_file));
+            end
+        end
+
     elseif has_exi_eyi(data)
     %	exi = data.exi;
     %	eyi = data.eyi;
