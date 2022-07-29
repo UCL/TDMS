@@ -575,37 +575,42 @@ if length(ill_file) > 0 %must have already computed the illumination source
 
     if has_ijk_source_matricies(data)
 
+        Isource = data.Isource;
+        Jsource = data.Jsource;
+        Ksource = data.Ksource;
+
         tdfield.exi = [];
         tdfield.eyi = [];
-        assert_source_has_correct_dimensions(data.Isource, data.Jsource, data.Ksource, interface);
+        assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
 
     elseif has_exi_eyi(data)
-    %	exi = data.exi;
-    %	eyi = data.eyi;
+
         tdfield = data;
         assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
+
+        if interface.I0(2) | interface.I1(2)
+            Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+        else
+            Isource=[];
+        end
+
+        if interface.J0(2) | interface.J1(2)
+            Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+        else
+            Jsource = [];
+        end
+
+        if interface.K0(2) | interface.K1(2)
+            Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
+        else
+            Ksource = [];
+        end
 
     else;
         error('TDMSException:InvalidIlluminationFile', ...
              'Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
     end
-    if interface.I0(2) | interface.I1(2)
-        Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-    else
-        Isource=[];
-    end
 
-    if interface.J0(2) | interface.J1(2)
-        Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-    else
-        Jsource = [];
-    end
-
-    if interface.K0(2) | interface.K1(2)
-        Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
-    else
-        Ksource = [];
-    end
 else
     assert_are_defined(efname, hfname);
     fprintf('Creating Isource, Jsource, Ksource...');
