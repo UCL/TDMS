@@ -6,9 +6,9 @@ using namespace std;
 
 ArgumentParser::ArgumentParser() = default;
 
-ArgumentNamespace ArgumentParser::parse_args(int nargs, char *argv[]) {
+ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 
-  auto args = ArgumentNamespace(nargs, argv);
+  auto args = ArgumentNamespace(n_args, arg_ptrs);
 
   if (args.have_flag("-h")){
     print_help_message();
@@ -47,9 +47,9 @@ void ArgumentParser::print_help_message(){
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
 
-ArgumentNamespace::ArgumentNamespace(int nargs, char *argv[]) {
+ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {
 
-  arguments = std::vector<std::string>(argv + 1, argv + nargs);
+  arguments = std::vector<std::string>(arg_ptrs + 1, arg_ptrs + n_args);
 
   for (const auto& arg: arguments){
 
