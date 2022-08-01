@@ -25,13 +25,26 @@ inds = find(I(:));
 [ii,jj,kk] = ind2sub(size(I), inds);
 composition_matrix = [ii jj kk ones(size(ii))];
 material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
-save(sprintf('gridfiles/gridfile_cyl'), 'composition_matrix', 'material_matrix');
 
-%setup free space matrix
+%check whether the directories gridfiles/, in/, and out/ exist before we
+%attempt to save to them.
+%if they do not exist, create them
+if ~exist('gridfiles', 'dir')
+    mkdir gridfiles;
+end %if (directory gridfiles/ exists)
+if ~exist('in', 'dir')
+    mkdir in;
+end %if (directory in/ exists
+if ~exist('out', 'dir')
+    mkdir out;
+end %if (directory out/ exists
+
+save(sprintf('gridfiles/gridfile_cyl'), 'composition_matrix', 'material_matrix');
+%setup free space matrix and save to directory gridfiles/
 composition_matrix = [];
 save(sprintf('gridfiles/gridfile_fs'), 'composition_matrix', 'material_matrix');
 
-%generate C input files
+%generate C input files and save to directory in/
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_cyl','gridfiles/gridfile_cyl.mat','');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_fs','gridfiles/gridfile_fs.mat','');
 
