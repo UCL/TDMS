@@ -31,7 +31,7 @@ save('gridfile_cyl', 'composition_matrix', 'material_matrix');
 composition_matrix = [];
 save(sprintf('gridfile_fs'), 'composition_matrix', 'material_matrix');
 
-%generate C input files and save to directory in/
+%generate tdms executable input files
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in_pstd_cyl','gridfile_cyl.mat','');
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in_pstd_fs','gridfile_fs.mat','');
 
