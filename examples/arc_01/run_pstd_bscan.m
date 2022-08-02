@@ -25,26 +25,26 @@ inds = find(I(:));
 [ii,jj,kk] = ind2sub(size(I), inds);
 composition_matrix = [ii jj kk ones(size(ii))];
 material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
-save(sprintf('gridfiles/gridfile_cyl'), 'composition_matrix', 'material_matrix');
 
-%setup free space matrix
+save('gridfile_cyl', 'composition_matrix', 'material_matrix');
+%setup free space matrix and save to directory gridfiles/
 composition_matrix = [];
-save(sprintf('gridfiles/gridfile_fs'), 'composition_matrix', 'material_matrix');
+save('gridfile_fs', 'composition_matrix', 'material_matrix');
 
-%generate C input files
-[fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_cyl','gridfiles/gridfile_cyl.mat','');
-[fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_fs','gridfiles/gridfile_fs.mat','');
+%generate tdms executable input files
+[fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in_pstd_cyl','gridfile_cyl.mat','');
+[fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in_pstd_fs','gridfile_fs.mat','');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Now run the executeables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-eval('!tdms in/pstd_fs.mat out/pstd_fs.mat');
-eval('!tdms in/pstd_cyl.mat out/pstd_cyl.mat');
+eval('!tdms in_pstd_fs.mat out_pstd_fs.mat');
+eval('!tdms in_pstd_cyl.mat out_pstd_cyl.mat');
 
 %plot the data
-dat_cyl = load('out/pstd_cyl');
-dat_fs = load('out/pstd_fs');
+dat_cyl = load('out_pstd_cyl');
+dat_fs = load('out_pstd_fs');
 
 figure(1);clf;
 subplot(2,1,1);
