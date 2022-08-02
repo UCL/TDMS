@@ -135,7 +135,7 @@ def work_in_zipped_dir(zip_path: Path):
 def run_tdms(*args,
              return_output: bool = False,
              return_returncode: bool = False
-             ) -> Any:
+             ) -> Union[str, bool, None]:
     """
     Run the tdms executable. Requires a tdms executable within the working
     directory or $PATH.
