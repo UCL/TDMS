@@ -1,7 +1,7 @@
-project(tdms)
-
 # General setup ---------------------------------------------------------------
 cmake_minimum_required(VERSION 3.21)
+
+project(tdms LANGUAGES CXX)
 
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
@@ -54,14 +54,27 @@ else()
     find_package(OpenMP REQUIRED)
 endif()
 
+
+# catch2 tests ----------------------------------------------------------------
+Include(FetchContent)
+
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v3.0.1
+)
+
+FetchContent_MakeAvailable(Catch2)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/contrib)
+include(CTest)
+include(Catch)
+
+
 # Compile options -------------------------------------------------------------
 add_compile_options(-DMX_COMPAT_32 -c ${DFLAG} -O3)
 
-add_executable(tdms)
-set_property(TARGET tdms PROPERTY CXX_STANDARD 11)
-
-target_sources(tdms PRIVATE
-        matlabio/matlabio.cpp
+add_library(tdms_lib SHARED)
+target_sources(tdms_lib PUBLIC
         src/argument_parser.cpp
         src/fdtd_grid_initialiser.cpp
         src/interpolate.cpp
@@ -70,11 +83,14 @@ target_sources(tdms PRIVATE
         src/mesh_base.cpp
         src/numeric.cpp
         src/numerical_derivative.cpp
-        src/openandorder.cpp
         src/utils.cpp
+        matlabio/matlabio.cpp
         )
 
-target_link_libraries(tdms
+add_executable(tdms "src/openandorder.cpp")
+set_property(TARGET tdms PROPERTY CXX_STANDARD 11)
+
+target_link_libraries(tdms_lib LINK_PUBLIC
         FFTW::Double
         ${Matlab_MEX_LIBRARY}
         ${Matlab_MX_LIBRARY}
@@ -83,6 +99,8 @@ target_link_libraries(tdms
         OpenMP::OpenMP_CXX
         )
 
+target_link_libraries(tdms tdms_lib)
+
 if(MSVC)
   target_compile_options(tdms PRIVATE /W4)
 else()
@@ -90,3 +108,17 @@ else()
 endif()
 
 install(TARGETS tdms)
+
+
+# Testing ---------------------------------------------------------------------
+enable_testing()
+
+add_executable(tdms_tests
+        tests/unit/test_openandorder.cpp)
+
+target_link_libraries(tdms_tests PRIVATE
+        Catch2::Catch2WithMain
+        tdms_lib
+        )
+
+add_test(test_all tdms_tests)
