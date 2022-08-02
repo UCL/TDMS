@@ -29,7 +29,7 @@ material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
 save('gridfile_cyl', 'composition_matrix', 'material_matrix');
 %setup free space matrix and save to directory gridfiles/
 composition_matrix = [];
-save(sprintf('gridfile_fs'), 'composition_matrix', 'material_matrix');
+save('gridfile_fs', 'composition_matrix', 'material_matrix');
 
 %generate tdms executable input files
 [fdtdgrid, Exs,Eys,Ezs,Hxs,Hys,Hzs,grid_labels,camplitudes,vertices,facets,Id] = iteratefdtd_matrix('pstd_input_file.m','filesetup','in_pstd_cyl','gridfile_cyl.mat','');
