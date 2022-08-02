@@ -19,7 +19,7 @@
 #include "math.h"
 #include <complex>
 #include <stdlib.h>
-#include "matio.h"
+#include "mat_io.h"
 
 using namespace std;
 #include "matlabio.h"

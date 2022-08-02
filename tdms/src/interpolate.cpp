@@ -7,7 +7,7 @@
  *                 spatial position.
  *****************************************************************************/
 #include "stdexcept"
-#include "matio.h"
+#include "mat_io.h"
 #include "interpolate.h"
 #include "matlabio.h"
 

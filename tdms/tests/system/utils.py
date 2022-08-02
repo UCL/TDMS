@@ -6,12 +6,13 @@ import h5py
 import shutil
 import numpy as np
 
+from dataclasses import dataclass
 from urllib import request
 from typing import Union
 from pathlib import Path
 from zipfile import ZipFile
 from functools import wraps
-from subprocess import run
+from subprocess import Popen, PIPE
 
 
 executable_path = shutil.which("tdms")
@@ -132,7 +133,14 @@ def work_in_zipped_dir(zip_path: Path):
     return func_decorator
 
 
-def run_tdms(input_filename: str, output_filename: str) -> None:
+@dataclass
+class Result:
+
+    return_code: int
+    stdout: str
+
+
+def run_tdms(*args) -> Result:
     """
     Run the tdms executable. Requires a tdms executable within the working
     directory or $PATH.
@@ -142,8 +150,10 @@ def run_tdms(input_filename: str, output_filename: str) -> None:
         raise AssertionError("Failed to run tdms. Not found in either current "
                              "working directory or $PATH")
 
-    _ = run([executable_path, input_filename, output_filename])
-    return None
+    p = Popen([executable_path, *args], stdout=PIPE)
+    stdout, _ = p.communicate()
+
+    return Result(p.returncode, stdout.decode())
 
 
 def download_data(url: str, to: Path) -> None:
