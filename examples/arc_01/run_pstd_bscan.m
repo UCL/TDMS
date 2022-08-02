@@ -26,7 +26,7 @@ inds = find(I(:));
 composition_matrix = [ii jj kk ones(size(ii))];
 material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
 
-save(sprintf('gridfile_cyl'), 'composition_matrix', 'material_matrix');
+save('gridfile_cyl', 'composition_matrix', 'material_matrix');
 %setup free space matrix and save to directory gridfiles/
 composition_matrix = [];
 save(sprintf('gridfile_fs'), 'composition_matrix', 'material_matrix');
