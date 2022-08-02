@@ -77,16 +77,14 @@ add_library(tdms_lib SHARED)
 target_sources(tdms_lib PUBLIC
         src/argument_parser.cpp
         src/fdtd_grid_initialiser.cpp
-        src/utils.cpp
-        src/openandorder.cpp
         src/interpolate.cpp
         src/iterator.cpp
         src/matrix_collection.cpp
         src/mesh_base.cpp
         src/numeric.cpp
         src/numerical_derivative.cpp
-        src/openandorder.cpp
         src/utils.cpp
+        matlabio/matlabio.cpp
         )
 
 add_executable(tdms "src/openandorder.cpp")
