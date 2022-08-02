@@ -15,12 +15,13 @@ ArgumentNamespace ArgumentParser::parse_args(int nargs, char *argv[]) {
     exit(0);
   }
 
-  if( (args.num_non_flag != 2) &&  (args.num_non_flag != 3) ){
-    fprintf(stderr,"incorrect number of arguments\n");
+  if (!args.have_correct_number_of_filenames()){
+    fprintf(stderr,"Incorrect number of arguments. See below for help\n\n");
+    print_help_message();
     exit(-1);
   }
 
-  if( args.num_non_flag == 2){
+  if( !args.has_grid_filename()){
     fprintf(stdout,"infile:[%s], outfile:[%s], m=%d\n",
             args.input_filename(),
             args.output_filename(),
@@ -45,7 +46,6 @@ void ArgumentParser::print_help_message(){
                  "-h:\tDisplay this help message\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
-
 
 ArgumentNamespace::ArgumentNamespace(int nargs, char *argv[]) {
 
@@ -76,7 +76,7 @@ bool ArgumentNamespace::have_flag(std::string const &flag){
 
 const char* ArgumentNamespace::output_filename() {
 
-  if (num_non_flag == 3){
+  if (has_grid_filename()){
     return non_flag_arguments[2].c_str();
   } else if (num_non_flag == 2){
     return non_flag_arguments[1].c_str();
@@ -117,4 +117,8 @@ vector<string> ArgumentNamespace::input_filenames() {
   }
 
   return filenames;
+}
+
+bool ArgumentNamespace::have_correct_number_of_filenames() const {
+  return num_non_flag == 2 || num_non_flag == 3;
 }

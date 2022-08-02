@@ -14,6 +14,8 @@ public:
     explicit ArgumentNamespace(int nargs, char *argv[]);
     bool have_flag(std::string const &flag);
     bool has_grid_filename() const;
+    bool have_correct_number_of_filenames() const;
+
     static bool is_a_flag_argument(std::string arg);
 
     const char* input_filename();

@@ -61,17 +61,17 @@ add_executable(tdms)
 set_property(TARGET tdms PROPERTY CXX_STANDARD 11)
 
 target_sources(tdms PRIVATE
-        src/argument_parser.cpp
-        src/matrix_collection.cpp
-        src/fdtd_grid_initialiser.cpp
-        src/utils.cpp
-        src/openandorder.cpp
-        src/interpolate.cpp
-        src/numeric.cpp
-        src/iterator.cpp
-        src/mesh_base.cpp
-        src/numerical_derivative.cpp
         matlabio/matlabio.cpp
+        src/argument_parser.cpp
+        src/fdtd_grid_initialiser.cpp
+        src/interpolate.cpp
+        src/iterator.cpp
+        src/matrix_collection.cpp
+        src/mesh_base.cpp
+        src/numeric.cpp
+        src/numerical_derivative.cpp
+        src/openandorder.cpp
+        src/utils.cpp
         )
 
 target_link_libraries(tdms

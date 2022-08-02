@@ -7,7 +7,7 @@ import shutil
 import numpy as np
 
 from urllib import request
-from typing import Any, Union
+from typing import Union
 from pathlib import Path
 from zipfile import ZipFile
 from functools import wraps
@@ -132,10 +132,14 @@ def work_in_zipped_dir(zip_path: Path):
     return func_decorator
 
 
-def run_tdms(*args,
-             return_output: bool = False,
-             return_returncode: bool = False
-             ) -> Union[str, bool, None]:
+class Result:
+
+    def __init__(self, return_code: int, stdout: str):
+        self.return_code = return_code
+        self.stdout = stdout
+
+
+def run_tdms(*args) -> Result:
     """
     Run the tdms executable. Requires a tdms executable within the working
     directory or $PATH.
@@ -148,13 +152,7 @@ def run_tdms(*args,
     p = Popen([executable_path, *args], stdout=PIPE)
     stdout, _ = p.communicate()
 
-    if return_output:
-        return stdout.decode()
-
-    if return_returncode:
-        return p.returncode
-
-    return None
+    return Result(p.returncode, stdout.decode())
 
 
 def download_data(url: str, to: Path) -> None:

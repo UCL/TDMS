@@ -1,6 +1,6 @@
 #include "string"
 #include "stdexcept"
-#include "matio.h"
+#include "mat_io.h"
 #include "matrix_collection.h"
 
 

@@ -15,7 +15,7 @@
 //                        INCLUDE section
 /*---------------------------------------------------------------*/
 
-#include "matio.h"
+#include "mat_io.h"
 #include <complex>
 using namespace std;
 #include "matlabio_globals.h"

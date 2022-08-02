@@ -22,7 +22,7 @@
 //                        INCLUDE section
 /*---------------------------------------------------------------*/
 #include <omp.h>
-#include "matio.h"
+#include "mat_io.h"
 #include <complex>
 #include "iterator.h"
 #include <string.h>
