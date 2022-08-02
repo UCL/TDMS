@@ -6,6 +6,7 @@ import h5py
 import shutil
 import numpy as np
 
+from dataclasses import dataclass
 from urllib import request
 from typing import Union
 from pathlib import Path
@@ -132,11 +133,11 @@ def work_in_zipped_dir(zip_path: Path):
     return func_decorator
 
 
+@dataclass
 class Result:
 
-    def __init__(self, return_code: int, stdout: str):
-        self.return_code = return_code
-        self.stdout = stdout
+    return_code: int
+    stdout: str
 
 
 def run_tdms(*args) -> Result:
