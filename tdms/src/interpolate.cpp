@@ -127,26 +127,24 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
 	      }
 }
 
-/*Interpolate the electric field to the origin of the Yee cell
+/**
+ * @brief Interpolate the TE electric field (x,y components) to the origin of the Yee cell
  *
- *Ex_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Ey_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Ez_yee[in] - steady state z component of electric field calculated at points in the Yee cell
- *
- *Ex[out] - steady state x component of electric field interpolated to Yee cell origin
- *Ey[out] - steady state y component of electric field interpolated to Yee cell origin
- *Ez[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ * @param[in] Ex_yee Steady state x component of electric field calculated at points in the Yee cell
+ * @param[in] Ey_yee Steady state y component of electric field calculated at points in the Yee cell
+ * @param[in] Ez_yee Steady state z component of electric field calculated at points in the Yee cell
+ * @param[out] Ex Steady state x component of electric field interpolated to Yee cell origin
+ * @param[out] Ey Steady state y component of electric field interpolated to Yee cell origin
+ * @param[out] Ez Steady state z component of electric field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
  */
 void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -167,26 +165,24 @@ void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***
       }
 }
 
-/*Interpolate the electric field to the origin of the Yee cell
+/**
+ * @brief Interpolate the TM electric field (z component) to the origin of the Yee cell
  *
- *Ex_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Ey_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Ez_yee[in] - steady state z component of electric field calculated at points in the Yee cell
- *
- *Ex[out] - steady state x component of electric field interpolated to Yee cell origin
- *Ey[out] - steady state y component of electric field interpolated to Yee cell origin
- *Ez[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ * @param[in] Ex_yee Steady state x component of electric field calculated at points in the Yee cell
+ * @param[in] Ey_yee Steady state y component of electric field calculated at points in the Yee cell
+ * @param[in] Ez_yee Steady state z component of electric field calculated at points in the Yee cell
+ * @param[out] Ex Steady state x component of electric field interpolated to Yee cell origin
+ * @param[out] Ey Steady state y component of electric field interpolated to Yee cell origin
+ * @param[out] Ez Steady state z component of electric field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
  */
 void interpolateFieldCentralE_TM( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -311,21 +307,23 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   freeCastMatlab3DArray(EzI,outdims[2]);
 }
 
-/*Interpolate the electric field to the origin of the Yee cell - matlab interface
+/**
+ * @brief Interpolate the TE electric field (x,y components) to the origin of the Yee cell - MATLAB interface
  *
- *Ex_yee -> Ez_yee are the  input Yee cell field matrices
- *Ex     -> Ez     are the output Yee cell field matrices
+ * @param[in] Ex_yee Input Yee cell Ex field matrix
+ * @param[in] Ey_yee Input Yee cell Ey field matrix
+ * @param[in] Ez_yee Input Yee cell Ez field matrix
+ * @param[out] Ex Output Yee cell Ex field matrix
+ * @param[out] Ey Output Yee cell Ey field matrix
+ * @param[out] Ez Output Yee cell Ez field matrix
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
  *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- *
- *(I - number of elements in the i direction of the FDTD grid
- * J - number of elements in the j direction of the FDTD grid
- * K - number of elements in the k direction of the FDTD grid)
+ * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez_yee,
 				   mxArray **Ex    , mxArray **Ey    , mxArray **Ez    ,
@@ -407,21 +405,23 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   freeCastMatlab3DArray(EzI,outdims[2]);
 }
 
-/*Interpolate the electric field to the origin of the Yee cell - matlab interface
+/**
+ * @brief Interpolate the TM electric field (z component) to the origin of the Yee cell - MATLAB interface
  *
- *Ex_yee -> Ez_yee are the  input Yee cell field matrices
- *Ex     -> Ez     are the output Yee cell field matrices
+ * @param[in] Ex_yee Input Yee cell Ex field matrix
+ * @param[in] Ey_yee Input Yee cell Ey field matrix
+ * @param[in] Ez_yee Input Yee cell Ez field matrix
+ * @param[out] Ex Output Yee cell Ex field matrix
+ * @param[out] Ey Output Yee cell Ey field matrix
+ * @param[out] Ez Output Yee cell Ez field matrix
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
  *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- *
- *(I - number of elements in the i direction of the FDTD grid
- * J - number of elements in the j direction of the FDTD grid
- * K - number of elements in the k direction of the FDTD grid)
+ * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez_yee,
 				   mxArray **Ex    , mxArray **Ey    , mxArray **Ez    ,
@@ -602,26 +602,24 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
 	    }
 }
 
-/*Interpolate the electric field to the origin of the Yee cell
+/**
+ * @brief Interpolate the TE magnetic field (z component) to the origin of the Yee cell
  *
- *Hx_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Hy_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Hz_yee[in] - steady state z component of electric field calculated at points in the Yee cell
- *
- *Hx[out] - steady state x component of electric field interpolated to Yee cell origin
- *Hy[out] - steady state y component of electric field interpolated to Yee cell origin
- *Hz[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ * @param[in] Hx_yee Steady state x component of magnetic field calculated at points in the Yee cell
+ * @param[in] Hy_yee Steady state y component of magnetic field calculated at points in the Yee cell
+ * @param[in] Hz_yee Steady state z component of magnetic field calculated at points in the Yee cell
+ * @param[out] Hx Steady state x component of magnetic field interpolated to Yee cell origin
+ * @param[out] Hy Steady state y component of magnetic field interpolated to Yee cell origin
+ * @param[out] Hz Steady state z component of magnetic field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
  */
 void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***Hz_yee,
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
@@ -669,26 +667,24 @@ void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***
       }
 }
 
-/*Interpolate the electric field to the origin of the Yee cell
+/**
+ * @brief Interpolate the TE magnetic field (x,y components) to the origin of the Yee cell
  *
- *Hx_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Hy_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Hz_yee[in] - steady state z component of electric field calculated at points in the Yee cell
- *
- *Hx[out] - steady state x component of electric field interpolated to Yee cell origin
- *Hy[out] - steady state y component of electric field interpolated to Yee cell origin
- *Hz[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ * @param[in] Hx_yee Steady state x component of magnetic field calculated at points in the Yee cell
+ * @param[in] Hy_yee Steady state y component of magnetic field calculated at points in the Yee cell
+ * @param[in] Hz_yee Steady state z component of magnetic field calculated at points in the Yee cell
+ * @param[out] Hx Steady state x component of magnetic field interpolated to Yee cell origin
+ * @param[out] Hy Steady state y component of magnetic field interpolated to Yee cell origin
+ * @param[out] Hz Steady state z component of magnetic field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
  */
 void interpolateFieldCentralH_TM( double ***Hx_yee, double ***Hy_yee, double ***Hz_yee,
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
@@ -731,22 +727,23 @@ void interpolateFieldCentralH_TM( double ***Hx_yee, double ***Hy_yee, double ***
       }
 }
 
-      
-/*Interpolate the magnetic field to the origin of the Yee cell - matlab interface
+/**
+ * @brief Interpolate the magnetic field to the origin of the Yee cell - MATLAB interface
  *
- *Hx_yee -> Hz_yee are the  input Yee cell field matrices
- *Hx     -> Hz     are the output Yee cell field matrices
+ * @param[in] Hx_yee Input Yee cell Hx field matrix
+ * @param[in] Hy_yee Input Yee cell Hy field matrix
+ * @param[in] Hz_yee Input Yee cell Hz field matrix
+ * @param[out] Hx Output Yee cell Hx field matrix
+ * @param[out] Hy Output Yee cell Hy field matrix
+ * @param[out] Hz Output Yee cell Hz field matrix
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
  *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- *
- *(I - number of elements in the i direction of the FDTD grid
- * J - number of elements in the j direction of the FDTD grid
- * K - number of elements in the k direction of the FDTD grid)
+ * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz_yee,
 			        mxArray **Hx    , mxArray **Hy    , mxArray **Hz    ,
@@ -758,8 +755,6 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   
   if( mxGetNumberOfDimensions(Hx_yee) < 3){
     throw runtime_error("Error in mxInterpolateFieldCentralH, Ex_yee does not have 3 dimensions\n");
-    
-    
   }
   
   indims = (int *)mxGetDimensions(Hx_yee);
@@ -833,22 +828,24 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   freeCastMatlab3DArray(HzR,outdims[2]);
   freeCastMatlab3DArray(HzI,outdims[2]);
 }
-      
-/*Interpolate the magnetic field to the origin of the Yee cell - matlab interface
+
+/**
+ * @brief Interpolate the TE magnetic field (z component) to the origin of the Yee cell - MATLAB interface
  *
- *Hx_yee -> Hz_yee are the  input Yee cell field matrices
- *Hx     -> Hz     are the output Yee cell field matrices
+ * @param[in] Hx_yee Input Yee cell Hx field matrix
+ * @param[in] Hy_yee Input Yee cell Hy field matrix
+ * @param[in] Hz_yee Input Yee cell Hz field matrix
+ * @param[out] Hx Output Yee cell Hx field matrix
+ * @param[out] Hy Output Yee cell Hy field matrix
+ * @param[out] Hz Output Yee cell Hz field matrix
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
  *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- *
- *(I - number of elements in the i direction of the FDTD grid
- * J - number of elements in the j direction of the FDTD grid
- * K - number of elements in the k direction of the FDTD grid)
+ * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz_yee,
 				   mxArray **Hx    , mxArray **Hy    , mxArray **Hz    ,
@@ -934,22 +931,23 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   freeCastMatlab3DArray(HzI,outdims[2]);
 }
 
-     
-/*Interpolate the magnetic field to the origin of the Yee cell - matlab interface
+/**
+ * @brief Interpolate the TM magnetic field (x,y components) to the origin of the Yee cell - MATLAB interface
  *
- *Hx_yee -> Hz_yee are the  input Yee cell field matrices
- *Hx     -> Hz     are the output Yee cell field matrices
+ * @param[in] Hx_yee Input Yee cell Hx field matrix
+ * @param[in] Hy_yee Input Yee cell Hy field matrix
+ * @param[in] Hz_yee Input Yee cell Hz field matrix
+ * @param[out] Hx Output Yee cell Hx field matrix
+ * @param[out] Hy Output Yee cell Hy field matrix
+ * @param[out] Hz Output Yee cell Hz field matrix
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
  *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- *
- *(I - number of elements in the i direction of the FDTD grid
- * J - number of elements in the j direction of the FDTD grid
- * K - number of elements in the k direction of the FDTD grid)
+ * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz_yee,
 				   mxArray **Hx    , mxArray **Hy    , mxArray **Hz    ,
