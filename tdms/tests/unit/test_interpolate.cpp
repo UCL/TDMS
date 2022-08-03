@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/**
+ * @brief Test whether checkInterpolationPoints throws exceptions in the correct cases.
+ * 
+ * This function checks whether it is possible to use cubic interpolation over a given index range.
+ */
 TEST_CASE("checkInterpolationPoints: exceptions thrown") {
 
     // setup some fake field dimensions
@@ -36,6 +41,6 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
             for(int j_l=2; j_l<J-2; j_l++)
                 for(int j_u=2; j_u<J-2; j_u++)
                     for(int i_l=2; i_l<I-2; i_l++)
-                        for(int i_u=2; i_u++; i_u++)
+                        for(int i_u=2; i_u<I-2; i_u++)
                             CHECK_NOTHROW(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K));
 }
