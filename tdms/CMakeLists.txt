@@ -114,7 +114,8 @@ install(TARGETS tdms)
 enable_testing()
 
 add_executable(tdms_tests
-        tests/unit/test_openandorder.cpp)
+        tests/unit/test_openandorder.cpp
+        tests/unit/test_interpolate.cpp)
 
 target_link_libraries(tdms_tests PRIVATE
         Catch2::Catch2WithMain
