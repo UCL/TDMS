@@ -142,11 +142,11 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
  *K[in] - number of elements in the k direction of the FDTD grid
  *
  *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
+ *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
  *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
+ *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
  *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
  */
 void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -156,38 +156,15 @@ void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***
   int i,j,k;
  
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, i_l too small\n");
-    
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, j_u too large\n");
-    
-  }
-  if( k_l < 0 ){
-    throw runtime_error("Error in interpolateFieldCentralE, k_l too small\n");
-    
-  }
-  else if( k_u > 0){
-    throw runtime_error("Error in interpolateFieldCentralE, k_u too large\n");
-    
-  }
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+
   for(k=k_l;k<=k_u;k++)
     for(j=j_l;j<=j_u;j++)
       for(i=i_l;i<=i_u;i++){
-	Ex[k-k_l][j-j_l][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
-	Ey[k-k_l][j-j_l][i-i_l] = interp1(Ey_yee[k][j-2][i], Ey_yee[k][j-1][i], Ey_yee[k][j][i], Ey_yee[k][j+1][i]);
-	Ez[k-k_l][j-j_l][i-i_l] = 0.;
+	      Ex[k-k_l][j-j_l][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
+	      Ey[k-k_l][j-j_l][i-i_l] = interp1(Ey_yee[k][j-2][i], Ey_yee[k][j-1][i], Ey_yee[k][j][i], Ey_yee[k][j+1][i]);
+	      Ez[k-k_l][j-j_l][i-i_l] = 0.;
       }
-
 }
 
 /*Interpolate the electric field to the origin of the Yee cell
@@ -205,11 +182,11 @@ void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***
  *K[in] - number of elements in the k direction of the FDTD grid
  *
  *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
+ *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
  *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
+ *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
  *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
  */
 void interpolateFieldCentralE_TM( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -219,39 +196,15 @@ void interpolateFieldCentralE_TM( double ***Ex_yee, double ***Ey_yee, double ***
   int i,j,k;
  
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, i_l too small\n");
-    
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, j_u too large\n");
-    
-  }
-  if( k_l < 0 ){
-    throw runtime_error("Error in interpolateFieldCentralE, k_l too small\n");
-    
-  }
-  else if( k_u > 0){
-    throw runtime_error("Error in interpolateFieldCentralE, k_u too large\n");
-    
-  }
-  
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+
   for(k=k_l;k<=k_u;k++)
     for(j=j_l;j<=j_u;j++)
       for(i=i_l;i<=i_u;i++){
-	Ex[k-k_l][j-j_l][i-i_l] = 0.;
-	Ey[k-k_l][j-j_l][i-i_l] = 0.;
-	Ez[k-k_l][j-j_l][i-i_l] = Ez_yee[k][j][i];
+	      Ex[k-k_l][j-j_l][i-i_l] = 0.;
+	      Ey[k-k_l][j-j_l][i-i_l] = 0.;
+	      Ez[k-k_l][j-j_l][i-i_l] = Ez_yee[k][j][i];
       }
-
 }
 
 /**
@@ -452,9 +405,7 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   freeCastMatlab3DArray(EyI,outdims[2]);
   freeCastMatlab3DArray(EzR,outdims[2]);
   freeCastMatlab3DArray(EzI,outdims[2]);
-
 }
-
 
 /*Interpolate the electric field to the origin of the Yee cell - matlab interface
  *
@@ -554,31 +505,7 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   freeCastMatlab3DArray(EyI,outdims[2]);
   freeCastMatlab3DArray(EzR,outdims[2]);
   freeCastMatlab3DArray(EzI,outdims[2]);
-
 }
-
-
-/*Interpolate the magnetic field to the origin of the Yee cell
- *
- *Hx_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Hy_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Hz_yee[in] - steady state z component of electric field calculated at points in the Yee cell
- *
- *Hx[out] - steady state x component of electric field interpolated to Yee cell origin
- *Hy[out] - steady state y component of electric field interpolated to Yee cell origin
- *Hz[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
- */
 
 /**
  * @brief Interpolate the magnetic field to the origin of the Yee cell
@@ -690,11 +617,11 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
  *K[in] - number of elements in the k direction of the FDTD grid
  *
  *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
+ *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
  *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
+ *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
  *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
  */
 void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***Hz_yee,
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
@@ -704,68 +631,42 @@ void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***
   int i,j,k;
   double res1, res2, res3, res4;
  
-
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, i_l too small\n");
-    
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, j_u too large\n");
-    
-  }
-  if( k_l < 0 ){
-    throw runtime_error("Error in interpolateFieldCentralH, k_l too small\n");
-    
-  }
-  else if( k_u > 0){
-    throw runtime_error("Error in interpolateFieldCentralH, k_u too large\n");
-    
-  }
-  
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+
   for(k=k_l;k<=k_u;k++)
     for(j=j_l;j<=j_u;j++)
       for(i=i_l;i<=i_u;i++){
+      /*
+        res1 = interp1(Hx_yee[k+1][j][i+1],Hx_yee[k+1][j][i],Hx_yee[k+1][j][i-1],Hx_yee[k+1][j][i-2]);
+        res2 = interp1(Hx_yee[k  ][j][i+1],Hx_yee[k  ][j][i],Hx_yee[k  ][j][i-1],Hx_yee[k  ][j][i-2]);
+        res3 = interp1(Hx_yee[k-1][j][i+1],Hx_yee[k-1][j][i],Hx_yee[k-1][j][i-1],Hx_yee[k-1][j][i-2]);
+        res4 = interp1(Hx_yee[k-2][j][i+1],Hx_yee[k-2][j][i],Hx_yee[k-2][j][i-1],Hx_yee[k-2][j][i-2]);
+        Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
 
-	/*
-	  res1 = interp1(Hx_yee[k+1][j][i+1],Hx_yee[k+1][j][i],Hx_yee[k+1][j][i-1],Hx_yee[k+1][j][i-2]);
-	  res2 = interp1(Hx_yee[k  ][j][i+1],Hx_yee[k  ][j][i],Hx_yee[k  ][j][i-1],Hx_yee[k  ][j][i-2]);
-	  res3 = interp1(Hx_yee[k-1][j][i+1],Hx_yee[k-1][j][i],Hx_yee[k-1][j][i-1],Hx_yee[k-1][j][i-2]);
-	  res4 = interp1(Hx_yee[k-2][j][i+1],Hx_yee[k-2][j][i],Hx_yee[k-2][j][i-1],Hx_yee[k-2][j][i-2]);
-	  Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+        res1 = interp1(Hy_yee[k+1][j+1][i],Hy_yee[k+1][j][i],Hy_yee[k+1][j-1][i],Hy_yee[k+1][j-2][i]);
+        res2 = interp1(Hy_yee[k  ][j+1][i],Hy_yee[k  ][j][i],Hy_yee[k  ][j-1][i],Hy_yee[k  ][j-2][i]);
+        res3 = interp1(Hy_yee[k-1][j+1][i],Hy_yee[k-1][j][i],Hy_yee[k-1][j-1][i],Hy_yee[k-1][j-2][i]);
+        res4 = interp1(Hy_yee[k-2][j+1][i],Hy_yee[k-2][j][i],Hy_yee[k-2][j-1][i],Hy_yee[k-2][j-2][i]);
+        Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
 
-	  res1 = interp1(Hy_yee[k+1][j+1][i],Hy_yee[k+1][j][i],Hy_yee[k+1][j-1][i],Hy_yee[k+1][j-2][i]);
-	  res2 = interp1(Hy_yee[k  ][j+1][i],Hy_yee[k  ][j][i],Hy_yee[k  ][j-1][i],Hy_yee[k  ][j-2][i]);
-	  res3 = interp1(Hy_yee[k-1][j+1][i],Hy_yee[k-1][j][i],Hy_yee[k-1][j-1][i],Hy_yee[k-1][j-2][i]);
-	  res4 = interp1(Hy_yee[k-2][j+1][i],Hy_yee[k-2][j][i],Hy_yee[k-2][j-1][i],Hy_yee[k-2][j-2][i]);
-	  Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+        res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
+        res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
+        res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
+        res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
+        Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+      */
 
-	  res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
-	  res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
-	  res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
-	  res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
-	  Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-	*/
+      Hx[k-k_l][j-j_l][i-i_l] = 0.;
 
-	Hx[k-k_l][j-j_l][i-i_l] = 0.;
+      Hy[k-k_l][j-j_l][i-i_l] = 0.;
 
-	Hy[k-k_l][j-j_l][i-i_l] = 0.;
-
-	res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
-	res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
-	res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
-	res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
-	Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+      res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
+      res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
+      res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
+      res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
+      Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
       }
-
 }
 
 /*Interpolate the electric field to the origin of the Yee cell
@@ -783,11 +684,11 @@ void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***
  *K[in] - number of elements in the k direction of the FDTD grid
  *
  *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
+ *i_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
  *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
+ *j_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
  *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ *k_u[in] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
  */
 void interpolateFieldCentralH_TM( double ***Hx_yee, double ***Hy_yee, double ***Hz_yee,
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
@@ -797,60 +698,36 @@ void interpolateFieldCentralH_TM( double ***Hx_yee, double ***Hy_yee, double ***
   int i,j,k;
 
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, i_l too small\n");
-    
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, j_u too large\n");
-    
-  }
-  if( k_l < 0 ){
-    throw runtime_error("Error in interpolateFieldCentralH, k_l too small\n");
-    
-  }
-  else if( k_u > 0){
-    throw runtime_error("Error in interpolateFieldCentralH, k_u too large\n");
-    
-  }
-  
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+
   for(k=k_l;k<=k_u;k++)
     for(j=j_l;j<=j_u;j++)
       for(i=i_l;i<=i_u;i++){
+      /*
+        res1 = interp1(Hx_yee[k+1][j][i+1],Hx_yee[k+1][j][i],Hx_yee[k+1][j][i-1],Hx_yee[k+1][j][i-2]);
+        res2 = interp1(Hx_yee[k  ][j][i+1],Hx_yee[k  ][j][i],Hx_yee[k  ][j][i-1],Hx_yee[k  ][j][i-2]);
+        res3 = interp1(Hx_yee[k-1][j][i+1],Hx_yee[k-1][j][i],Hx_yee[k-1][j][i-1],Hx_yee[k-1][j][i-2]);
+        res4 = interp1(Hx_yee[k-2][j][i+1],Hx_yee[k-2][j][i],Hx_yee[k-2][j][i-1],Hx_yee[k-2][j][i-2]);
+        Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
 
-	/*
-	  res1 = interp1(Hx_yee[k+1][j][i+1],Hx_yee[k+1][j][i],Hx_yee[k+1][j][i-1],Hx_yee[k+1][j][i-2]);
-	  res2 = interp1(Hx_yee[k  ][j][i+1],Hx_yee[k  ][j][i],Hx_yee[k  ][j][i-1],Hx_yee[k  ][j][i-2]);
-	  res3 = interp1(Hx_yee[k-1][j][i+1],Hx_yee[k-1][j][i],Hx_yee[k-1][j][i-1],Hx_yee[k-1][j][i-2]);
-	  res4 = interp1(Hx_yee[k-2][j][i+1],Hx_yee[k-2][j][i],Hx_yee[k-2][j][i-1],Hx_yee[k-2][j][i-2]);
-	  Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+        res1 = interp1(Hy_yee[k+1][j+1][i],Hy_yee[k+1][j][i],Hy_yee[k+1][j-1][i],Hy_yee[k+1][j-2][i]);
+        res2 = interp1(Hy_yee[k  ][j+1][i],Hy_yee[k  ][j][i],Hy_yee[k  ][j-1][i],Hy_yee[k  ][j-2][i]);
+        res3 = interp1(Hy_yee[k-1][j+1][i],Hy_yee[k-1][j][i],Hy_yee[k-1][j-1][i],Hy_yee[k-1][j-2][i]);
+        res4 = interp1(Hy_yee[k-2][j+1][i],Hy_yee[k-2][j][i],Hy_yee[k-2][j-1][i],Hy_yee[k-2][j-2][i]);
+        Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
 
-	  res1 = interp1(Hy_yee[k+1][j+1][i],Hy_yee[k+1][j][i],Hy_yee[k+1][j-1][i],Hy_yee[k+1][j-2][i]);
-	  res2 = interp1(Hy_yee[k  ][j+1][i],Hy_yee[k  ][j][i],Hy_yee[k  ][j-1][i],Hy_yee[k  ][j-2][i]);
-	  res3 = interp1(Hy_yee[k-1][j+1][i],Hy_yee[k-1][j][i],Hy_yee[k-1][j-1][i],Hy_yee[k-1][j-2][i]);
-	  res4 = interp1(Hy_yee[k-2][j+1][i],Hy_yee[k-2][j][i],Hy_yee[k-2][j-1][i],Hy_yee[k-2][j-2][i]);
-	  Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+        res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
+        res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
+        res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
+        res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
+        Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
+      */
 
-	  res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
-	  res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
-	  res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
-	  res4 = interp1(Hz_yee[k][j-2][i+1],Hz_yee[k][j-2][i],Hz_yee[k][j-2][i-1],Hz_yee[k][j-2][i-2]);
-	  Hz[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-	*/
+      Hx[k-k_l][j-j_l][i-i_l] = interp1(Hx_yee[k][j-2][i], Hx_yee[k][j-1][i], Hx_yee[k][j][i], Hx_yee[k][j+1][i]);
 
-	Hx[k-k_l][j-j_l][i-i_l] = interp1(Hx_yee[k][j-2][i], Hx_yee[k][j-1][i], Hx_yee[k][j][i], Hx_yee[k][j+1][i]);
+      Hy[k-k_l][j-j_l][i-i_l] = interp1(Hy_yee[k][j][i-2], Hy_yee[k][j][i-1], Hy_yee[k][j][i], Hy_yee[k][j][i+1]);
 
-	Hy[k-k_l][j-j_l][i-i_l] = interp1(Hy_yee[k][j][i-2], Hy_yee[k][j][i-1], Hy_yee[k][j][i], Hy_yee[k][j][i+1]);
-
-	Hz[k-k_l][j-j_l][i-i_l] = 0.;
+      Hz[k-k_l][j-j_l][i-i_l] = 0.;
       }
 }
 
@@ -955,7 +832,6 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   freeCastMatlab3DArray(HyI,outdims[2]);
   freeCastMatlab3DArray(HzR,outdims[2]);
   freeCastMatlab3DArray(HzI,outdims[2]);
-
 }
       
 /*Interpolate the magnetic field to the origin of the Yee cell - matlab interface
@@ -1056,7 +932,6 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   freeCastMatlab3DArray(HyI,outdims[2]);
   freeCastMatlab3DArray(HzR,outdims[2]);
   freeCastMatlab3DArray(HzI,outdims[2]);
-
 }
 
      
@@ -1156,10 +1031,7 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   freeCastMatlab3DArray(HyI,outdims[2]);
   freeCastMatlab3DArray(HzR,outdims[2]);
   freeCastMatlab3DArray(HzI,outdims[2]);
-
 }
-
-
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
  *
