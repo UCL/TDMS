@@ -38,26 +38,62 @@ double interp3(double v1, double v2, double v3, double v4){
   return 1./16.*v1 - 5./16.*v2 + 15./16.*v3 + 5./16.*v4;
 }
 
-/*Interpolate the electric field to the origin of the Yee cell
+/**
+ * @brief Checks whether the limits of field extraction are within range of the FDTD grid
  *
- *Ex_yee[in] - steady state x component of electric field calculated at points in the Yee cell
- *Ey_yee[in] - steady state y component of electric field calculated at points in the Yee cell
- *Ez_yee[in] - steady state z component of electric field calculated at points in the Yee cell
+ * Since cubic interpolation is being used, it must be ensured that (in any given direction) that the least index used is no smaller than 2, whilst the greatest no larger than the maximum number of cells in that direction - 2.
+ * 
+ * @param i_l Least i index into the FDTD grid to evaluate the field at
+ * @param i_u Greatest i index into the FDTD grid to evaluate the field at
+ * @param j_l Least j index into the FDTD grid to evaluate the field at
+ * @param j_u Greatest j index into the FDTD grid to evaluate the field at
+ * @param k_l Least k index into the FDTD grid to evaluate the field at
+ * @param k_u Greatest k index into the FDTD grid to evaluate the field at
+ * @param I Number of elements in the i direction of the FDTD grid
+ * @param J Number of elements in the j direction of the FDTD grid
+ * @param K Number of elements in the k direction of the FDTD grid
+ * 
+ * @throws runtime_error In the event that the limits of field extraction are outside the FDTD grid
+ */
+void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K) {
+  if (i_l < 2) {
+    throw runtime_error("Interpolation error: i_l too small");
+  }
+  else if (i_u > I-2) {
+    throw runtime_error("Interpolation error: i_u too large");
+  }
+  else if (j_l < 2) {
+    throw runtime_error("Interpolation error: j_l too small");
+  }
+  else if (j_u > J-2) {
+    throw runtime_error("Interpolation error: j_u too large");
+  }
+  else if (k_l < 2) {
+    throw runtime_error("Interpolation error: k_l too small");
+  }
+  else if (k_u > K-2) {
+    throw runtime_error("Interpolation error: k_u too large");
+  }
+}
+
+/**
+ * @brief Interpolate the electric field to the origin of the Yee cell
  *
- *Ex[out] - steady state x component of electric field interpolated to Yee cell origin
- *Ey[out] - steady state y component of electric field interpolated to Yee cell origin
- *Ez[out] - steady state z component of electric field interpolated to Yee cell origin
- *
- *I[in] - number of elements in the i direction of the FDTD grid
- *J[in] - number of elements in the j direction of the FDTD grid
- *K[in] - number of elements in the k direction of the FDTD grid
- *
- *i_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *i_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= I-2.
- *j_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *j_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= J-2.
- *k_l[in]  - lowest i index into the FDTD grid to evaluate the field at. Should be >= 2.
- *k_u[out] - largest i index into the FDTD grid to evaluate the field at. Should be <= K-2.
+ * @param[in] Ex_yee Steady state x component of electric field calculated at points in the Yee cell
+ * @param[in] Ey_yee Steady state y component of electric field calculated at points in the Yee cell
+ * @param[in] Ez_yee Steady state z component of electric field calculated at points in the Yee cell
+ * @param[out] Ex Steady state x component of electric field interpolated to Yee cell origin
+ * @param[out] Ey Steady state y component of electric field interpolated to Yee cell origin
+ * @param[out] Ez Steady state z component of electric field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
  */
 void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -67,51 +103,30 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
   int i,j,k;
  
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, i_l too small");
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, j_u too large\n");
-    
-  }
-  if( k_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralE, k_l too small\n");
-    
-  }
-  else if( k_u > K - 2){
-    throw runtime_error("Error in interpolateFieldCentralE, k_u too large\n");
-    
-  }
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+
   //fprintf(stderr, "interpolateFieldCentralE 01\n");
-  if(j_u<j_l){
+  if(j_u<j_l) {
     //fprintf(stderr, "interpolateFieldCentralE 02\n");
     j=0;
     for(k=k_l;k<=k_u;k++)
-      for(i=i_l;i<=i_u;i++){
-	  Ex[k-k_l][0][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
-	  Ey[k-k_l][0][i-i_l] = Ey_yee[k][0][i];
-	  Ez[k-k_l][0][i-i_l] = interp1(Ez_yee[k-2][j][i], Ez_yee[k-1][j][i], Ez_yee[k][j][i], Ez_yee[k+1][j][i]);
-	}
-    //fprintf(stderr, "interpolateFieldCentralE 03\n");
+      for(i=i_l;i<=i_u;i++) {
+	      Ex[k-k_l][0][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
+	      Ey[k-k_l][0][i-i_l] = Ey_yee[k][0][i];
+	      Ez[k-k_l][0][i-i_l] = interp1(Ez_yee[k-2][j][i], Ez_yee[k-1][j][i], Ez_yee[k][j][i], Ez_yee[k+1][j][i]);
+	    }
+  //fprintf(stderr, "interpolateFieldCentralE 03\n");
   }
   else
     for(k=k_l;k<=k_u;k++)
       for(j=j_l;j<=j_u;j++)
-	for(i=i_l;i<=i_u;i++){
-	  Ex[k-k_l][j-j_l][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
-	  Ey[k-k_l][j-j_l][i-i_l] = interp1(Ey_yee[k][j-2][i], Ey_yee[k][j-1][i], Ey_yee[k][j][i], Ey_yee[k][j+1][i]);
-	  Ez[k-k_l][j-j_l][i-i_l] = interp1(Ez_yee[k-2][j][i], Ez_yee[k-1][j][i], Ez_yee[k][j][i], Ez_yee[k+1][j][i]);
-	}
-
+	      for(i=i_l;i<=i_u;i++){
+	        Ex[k-k_l][j-j_l][i-i_l] = interp1(Ex_yee[k][j][i-2], Ex_yee[k][j][i-1], Ex_yee[k][j][i], Ex_yee[k][j][i+1]);
+	        Ey[k-k_l][j-j_l][i-i_l] = interp1(Ey_yee[k][j-2][i], Ey_yee[k][j-1][i], Ey_yee[k][j][i], Ey_yee[k][j+1][i]);
+	        Ez[k-k_l][j-j_l][i-i_l] = interp1(Ez_yee[k-2][j][i], Ez_yee[k-1][j][i], Ez_yee[k][j][i], Ez_yee[k+1][j][i]);
+	      }
 }
+
 /*Interpolate the electric field to the origin of the Yee cell
  *
  *Ex_yee[in] - steady state x component of electric field calculated at points in the Yee cell
@@ -576,30 +591,8 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
  
   //  throw runtime_error("Entering interpolateFieldCentralH\n");
   //first check that the limits of field extraction of within range
-  if( i_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, i_l too small\n");
-    
-  }
-  else if( i_u > I - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, i_u too large\n");
-    
-  }
-  if( j_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, j_l too small\n");
-    
-  }
-  else if( j_u > J - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, j_u too large\n");
-    
-  }
-  if( k_l < 2 ){
-    throw runtime_error("Error in interpolateFieldCentralH, k_l too small\n");
-    
-  }
-  else if( k_u > K - 2){
-    throw runtime_error("Error in interpolateFieldCentralH, k_u too large\n");
-    
-  }
+  checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
+  
   if(j_u<j_l){
     //fprintf(stderr, "interpolateFieldCentralH 02\n");
     j=0;
