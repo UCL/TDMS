@@ -1,3 +1,5 @@
+# include "matrix.h"
+
 double interp1(double v1, double v2, double v3, double v4);
 double interp2(double v1, double v2, double v3, double v4);
 double interp3(double v1, double v2, double v3, double v4);
