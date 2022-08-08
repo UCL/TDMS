@@ -904,7 +904,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           freespace_Cbx = mxGetPr(element);
         }
         else{ // Unused in the code: Cby Cbz Dbx Dby Dbz
-          throw runtime_error("element freespace. "+element_name+" not handled");
+          fprintf(stderr, "Unused freespace element: %s", element_name.c_str());
         }
       }
       else{
