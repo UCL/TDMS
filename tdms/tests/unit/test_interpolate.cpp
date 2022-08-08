@@ -84,7 +84,7 @@ TEST_CASE("interp: cubic interpolation is exact") {
     double x[] = {0.,1.,2.,3.};
     // test acceptence tolerance. Allow for FLOP inprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
-    double tol = 4e1 * __DBL_EPSILON__; // performing cubic interpolation
+    double tol = 4e1 * __DBL_EPSILON__;
 
     // constant field
     double c0 = 3.1415;
