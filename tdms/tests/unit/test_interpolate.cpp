@@ -45,6 +45,10 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
                             CHECK_NOTHROW(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K));
 }
 
+/**
+ * @brief Test whether determineInterpScheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
+ * 
+ */
 TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
     int N = 10;
@@ -68,4 +72,56 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
     CHECK(determineInterpScheme(N, N-2) == INTERP1);
     CHECK(determineInterpScheme(N, N-1) == INTERP1);
     CHECK(determineInterpScheme(N, N) == INTERP3);
+}
+
+/**
+ * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ * 
+ */
+TEST_CASE("interp: cubic interpolation is exact") {
+
+    // equidistant points
+    double x[] = {0.,1.,2.,3.};
+    // test acceptence tolerance
+    double tol = __DBL_EPSILON__;
+
+    // constant field
+    double c0 = 3.1415;
+    double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
+    double v12 = c0, v23 = c0, v34 = c0;
+    
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4) <= tol));
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4) <= tol));
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4) <= tol));
+
+    // linear
+    double c1 = -2.7182818;
+    v1 += c1*x[0]; v2 += c1*x[1]; v3 += c1*x[2]; v4 += c1*x[3];
+    v12 += c1*(x[1]+x[0])/2.; v23 += c1*(x[2]+x[1])/2.; v34 += c1*(x[3]+x[2])/2.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // quadratic
+    double c2 = 9.81;
+    v1 += c2*x[0]*x[0]; v2 += c2*x[1]*x[1]; v3 += c2*x[2]*x[2]; v4 += c2*x[3]*x[3];
+    v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
+    v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
+    v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // cubic
+    double c3 = 4.2;
+    v1 += c3*x[0]*x[0]*x[0]; v2 += c3*x[1]*x[1]*x[1]; v3 += c3*x[2]*x[2]*x[2]; v4 += c3*x[3]*x[3]*x[3];
+    v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
+    v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
+    v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 }
