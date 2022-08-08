@@ -58,6 +58,19 @@ endif()
 
 
 # TDMS target -----------------------------------------------------------------
+set(SOURCES
+    src/argument_parser.cpp
+    src/fdtd_grid_initialiser.cpp
+    src/interpolate.cpp
+    src/iterator.cpp
+    src/matrix_collection.cpp
+    src/mesh_base.cpp
+    src/numeric.cpp
+    src/numerical_derivative.cpp
+    src/utils.cpp
+    matlabio/matlabio.cpp
+    )
+
 if (CMAKE_BUILD_TYPE STREQUAL "Test")
     test_target()
 else()
@@ -75,8 +88,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(tdms PRIVATE -Wall)
 endif()
-
-
 
 
 # Install ---------------------------------------------------------------------

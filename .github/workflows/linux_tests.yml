@@ -1,4 +1,4 @@
-name: Run tests
+name: Linux tests
 
 on:
   push:
@@ -33,19 +33,10 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
 
-      - name: Install dependencies Linux
-        if: runner.os == 'Linux'
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install libfftw3-dev libgomp1 python3
-
-
-      - name: Install dependencies Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          conda install fftw --yes
-          echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Python dependencies
         shell: bash

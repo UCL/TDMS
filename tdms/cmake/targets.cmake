@@ -1,19 +1,7 @@
 function(release_target)
     add_executable(tdms)
 
-    target_sources(tdms PRIVATE
-            src/argument_parser.cpp
-            src/fdtd_grid_initialiser.cpp
-            src/openandorder.cpp
-            src/interpolate.cpp
-            src/numeric.cpp
-            src/iterator.cpp
-            src/mesh_base.cpp
-            src/numerical_derivative.cpp
-            src/utils.cpp
-            src/matrix_collection.cpp
-            matlabio/matlabio.cpp
-            )
+    target_sources(tdms PRIVATE ${SOURCES} src/openandorder.cpp)
 
     target_link_libraries(tdms
             FFTW::Double
@@ -60,19 +48,7 @@ function(test_target)
     include(Catch)
 
     add_library(tdms_lib SHARED)
-    target_sources(tdms_lib PUBLIC
-            src/argument_parser.cpp
-            src/fdtd_grid_initialiser.cpp
-            src/interpolate.cpp
-            src/iterator.cpp
-            src/matrix_collection.cpp
-            src/mesh_base.cpp
-            src/numeric.cpp
-            src/numerical_derivative.cpp
-            src/utils.cpp
-            matlabio/matlabio.cpp
-            )
-
+    target_sources(tdms_lib PUBLIC ${SOURCES})
     add_executable(tdms "src/openandorder.cpp")
 
     target_link_libraries(tdms_lib LINK_PUBLIC
@@ -88,4 +64,3 @@ function(test_target)
     target_compile_options(tdms_lib PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
 
 endfunction()
-
