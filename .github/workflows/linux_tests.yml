@@ -17,6 +17,7 @@ jobs:
         os:
           - ubuntu-latest
         build_type:
+          - Test
           - Release
     steps:
       - name: Check out repository
@@ -70,6 +71,7 @@ jobs:
           cmake --build . --config ${{ matrix.build_type }}
 
       - name: Run TDMS unit tests
+        if: matrix.build_type == 'Test'
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
