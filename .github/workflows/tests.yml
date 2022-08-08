@@ -50,7 +50,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          conda install -c conda-forge pkg-config fftw --yes
+          conda install fftw --yes
           echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Python dependencies
@@ -62,21 +62,13 @@ jobs:
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
 
-      - name: Configure TDMS Unix
+      - name: Configure TDMS
         shell: bash
         working-directory: ${{runner.workspace}}/build
         env:
           CXXFLAGS: -Werror
         run: |
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-
-      - name: Configure TDMS Windows
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        env:
-          CXXFLAGS: -Werror
-        run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DPKG_CONFIG_EXECUTABLE=/c/Miniconda/envs/test/Library/bin/pkg-config -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
