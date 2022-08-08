@@ -76,3 +76,6 @@ void interpolateTimeDomainFieldCentralH_TM( double ***Hxy, double ***Hxz, double
 void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 					int i, int j, int k,
 						   double *Hx, double *Hy, double *Hz);
+int determineInterpScheme(int cells_in_direction, int cell_id);
+void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea);
+void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez);

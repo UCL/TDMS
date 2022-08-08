@@ -1272,3 +1272,174 @@ void interpolateTimeDomainFieldCentralE_TM(  double ***Exy, double ***Exz, doubl
   *Ey = 0.;
   *Ez = Ezy[k][j][i]+Ezx[k][j][i];
 }
+
+// define aliases for interpolation scheme flags, for readability
+#define BAND_LIMITED 0
+#define INTERP1 1
+#define INTERP2 2
+#define INTERP3 3
+// aliases for the dimension "a" represents when interpolating a single field component
+#define ax 0
+#define ay 1
+#define az 2
+
+/**
+ * @brief Determines the appropriate interpolation scheme to use
+ * 
+ * @param[in] cells_in_direction The number of Yee cells in the interpolation direction of interest
+ * @param[in] cell_id The current ID (in this dimension) of the Yee cell
+ * @return int Equal to BAND_LIMITED, INTERP1, INTERP2, INTERP3, indicating the appropriate interpolation scheme
+ */
+int determineInterpScheme(int cells_in_direction, int cell_id) {
+  // interpolation is impossible if the total number of cells in this direction is <4
+  if (cells_in_direction < 4) { throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, interpolation impossible.\n"); }
+  // otherwise, now determine which interpolation scheme we should be using
+  int right_cell_buffer = (cells_in_direction - 1) - cell_id;
+  if ((right_cell_buffer >= 3) && (cell_id >= 4)) {
+    // we have enough room to apply band-limited interpolation
+    return BAND_LIMITED;
+  }
+  else if (right_cell_buffer == 0) {
+    // we are at the extreme right Yee cell, and hence must use interp3
+    return INTERP3;
+  }
+  else if (cell_id == 0) {
+    // we are at the extreme left Yee cell, and must use interp2
+    return INTERP2;
+  }
+  else {
+    // we have sufficient space to use interp2, with two Yee cells either side
+    return INTERP1;
+  }
+}
+
+/**
+ * @brief Interpolate a component of the E-field to the centre of a Yee cell
+ * 
+ * We enforce {a,b,c} = {i,j,k}, with the conventions a=i, b=j, c=k; a=j, b=i, c=k; a=k, b=i, c=j.
+ * Indices and variables are named assuming the a=i case, EG (a,b,c) will specify the index of the Yee cell.
+ * 
+ * @param[in] aID Identifies which direction i(0), j(1), or k(2) the a-direction represents
+ * @param[in] Eab, Eac Split components of the Yee cell
+ * @param[in] a,b,c Index of the Yee cell
+ * @param[in] A Total number of Yee cells in the a-direction
+ * @param[out] Ea The interpolated field component at the centre of the Yee cell
+ */
+void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea)
+{
+  // which interpolation scheme can be applied?
+  int interp_type = determineInterpScheme(A, a);
+
+  switch (interp_type)
+  {
+  // perform BAND_LIMITED interpolation
+  case BAND_LIMITED:
+    /*Array for performing bandwidth limited interpolation obtained using Matlab's interp function */
+    const int Nbvec = 8;
+    const double bvec[Nbvec] = {-0.006777513830606, 0.039457774230186, -0.142658093428622, 0.609836360661632, 0.609836360661632, -0.142658093428622, 0.039457774230186, -0.006777513830606};
+    *Ea = 0.;
+    switch (aID) 
+    {
+      case ax:
+        // a is the i-direction, so b=j and c=k
+        for (int ind = 0; ind < Nbvec; ind++)
+        {
+          *Ea += (Eab[c][b][a - Nbvec / 2 + ind] + Eac[c][b][a - Nbvec / 2 + ind]) * bvec[ind];
+        }
+        break;
+      case ay:
+        // a is the j-direction, so b=i and c=k
+        for (int ind = 0; ind < Nbvec; ind++)
+        {
+          *Ea += (Eab[c][a - Nbvec / 2 + ind][b] + Eac[c][a - Nbvec / 2 + ind][b]) * bvec[ind];
+        }
+      case az:
+        // a is the k-direction, so b=i and c=j
+        for (int ind = 0; ind < Nbvec; ind++)
+        {
+          *Ea += (Eab[a - Nbvec / 2 + ind][c][b] + Eac[a - Nbvec / 2 + ind][c][b]) * bvec[ind];
+        }
+      default:
+        throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
+        break;
+    }
+    break;
+  // perform cubic interpolation (centre centre)
+  case INTERP1:
+    switch (aID)
+    {
+    case ax:
+      // a is the i-direction, so b=j and c=k
+      *Ea = interp1(Eab[c][b][a - 2] + Eac[c][b][a - 2], Eab[c][b][a - 1] + Eac[c][b][a - 1], Eab[c][b][a] + Eac[c][b][a], Eab[c][b][a + 1] + Eac[c][b][a + 1]);
+      break;
+    case ay:
+      // a is the j-direction, so b = i, and c = k
+      *Ea = interp1(Eab[c][a - 2][b] + Eac[c][a - 2][b], Eab[c][a - 1][b] + Eac[c][a - 1][b], Eab[c][a][b] + Eac[c][a][b], Eab[c][a + 1][b] + Eac[c][a + 1][b]);
+      break;
+    case az:
+      // a is the k-direction, so b = i, and c = j
+      *Ea = interp1(Eab[a - 2][c][b] + Eac[a - 2][c][b], Eab[a - 1][c][b] + Eac[a - 1][c][b], Eab[a][c][b] + Eac[a][c][b], Eab[a + 1][c][b] + Eac[a + 1][c][b]);
+      break;
+    default:
+      throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
+      break;
+    }
+  // perform cubic interpolation (left centre)
+  case INTERP2:
+    switch (aID)
+    {
+    case ax:
+      // a is the i-direction, so b=j and c=k
+      *Ea = interp2(Eab[c][b][a - 1] + Eac[c][b][a - 1], Eab[c][b][a] + Eac[c][b][a], Eab[c][b][a + 1] + Eac[c][b][a + 1], Eab[c][b][a + 2] + Eac[c][b][a + 2]);
+      break;
+    case ay:
+      // a is the j-direction, so b = i, and c = k
+      *Ea = interp2(Eab[c][a - 1][b] + Eac[c][a - 1][b], Eab[c][a][b] + Eac[c][a][b], Eab[c][a + 1][b] + Eac[c][a + 1][b], Eab[c][a + 2][b] + Eac[c][a + 2][b]);
+      break;
+    case az:
+      // a is the k-direction, so b = i, and c = j
+      *Ea = interp2(Eab[a - 1][c][b] + Eac[a - 1][c][b], Eab[a][c][b] + Eac[a][c][b], Eab[a + 1][c][b] + Eac[a + 1][c][b], Eab[a + 2][c][b] + Eac[a + 2][c][b]);
+      break;
+    default:
+      throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
+      break;
+    }
+  // perform cubic interpolation (right centre)
+  case INTERP3:
+    switch (aID)
+    {
+    case ax:
+      // a is the i-direction, so b=j and c=k
+      *Ea = interp3(Eab[c][b][a - 3] + Eac[c][b][a - 3], Eab[c][b][a - 2] + Eac[c][b][a - 2], Eab[c][b][a - 1] + Eac[c][b][a - 1], Eab[c][b][a] + Eac[c][b][a]);
+      break;
+    case ay:
+      // a is the j-direction, so b = i, and c = k
+      *Ea = interp3(Eab[c][a - 3][b] + Eac[c][a - 3][b], Eab[c][a - 2][b] + Eac[c][a - 2][b], Eab[c][a - 1][b] + Eac[c][a - 1][b], Eab[c][a][b] + Eac[c][a][b]);
+      break;
+    case az:
+      // a is the k-direction, so b = i, and c = j
+      *Ea = interp3(Eab[a - 3][c][b] + Eac[a - 3][c][b], Eab[a - 2][c][b] + Eac[a - 2][c][b], Eab[a - 1][c][b] + Eac[a - 1][c][b], Eab[a][c][b] + Eac[a][c][b]);
+      break;
+    default:
+      throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
+      break;
+    }
+  }
+}
+
+/**
+ * @brief Interpolate the E-field to the origin of the Yee cell in the time domain
+ * 
+ * This function calls the interpolation methods for each component of the E-field separately.
+ * 
+ * @param[in] Exy,Exz,Eyx,Eyz,Ezx,Ezy Split components of the Yee cell
+ * @param i,j,k Index of the Yee cell to interpolate to the centre of
+ * @param I,J,K Total number of Yee cells in the i,j,k directions respectively
+ * @param Ex,Ey,Ez Interpolated E-field x,y,z components (respectively)
+ */
+void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez) {
+  // interpolate each of the field components in sequence
+  interpolateTimeDomainEcomponent(ax, Exy, Exz, i, j, k, I, Ex);
+  interpolateTimeDomainEcomponent(ay, Eyx, Eyz, j, i, k, J, Ey);
+  interpolateTimeDomainEcomponent(az, Ezx, Ezy, k, i, j, K, Ez);
+}
