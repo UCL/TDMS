@@ -323,7 +323,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double dx, dy, dz;
   double t0;
   double *Cmaterial_Cax,*Cmaterial_Cay,*Cmaterial_Caz, *Cmaterial_Cbx, *Cmaterial_Cby, *Cmaterial_Cbz, *Cmaterial_Ccx, *Cmaterial_Ccy, *Cmaterial_Ccz, *Dmaterial_Dax, *Dmaterial_Day, *Dmaterial_Daz, *Dmaterial_Dbx, *Dmaterial_Dby, *Dmaterial_Dbz;//non free space material parameters
-  double *freespace_Cbx, *freespace_Cby, *freespace_Cbz, *freespace_Dbx, *freespace_Dby, *freespace_Dbz;//freespace variables 
+  double *freespace_Cbx; //freespace variables
   double Ca, Cb, Cc;//used by interpolation scheme 
   double *Cax, *Cay, *Caz,*Cbx, *Cby, *Cbz,*Ccx, *Ccy, *Ccz,*Dax, *Day, *Daz,*Dbx, *Dby, *Dbz;
   double *f_ex_vec;
@@ -896,34 +896,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       string element_name = freespace_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){ 
-	  throw runtime_error("Incorrect dimension on freespace. " + element_name);
-	}
-	if(!strcmp(freespace_elements[i],"Cbx")){
-	  freespace_Cbx = mxGetPr(element);
-	}
-	else if(!strcmp(freespace_elements[i],"Cby")){
-	  freespace_Cby = mxGetPr(element);
-	}
-	else if(!strcmp(freespace_elements[i],"Cbz")){
-	  freespace_Cbz = mxGetPr(element);
-	}
-	else if(!strcmp(freespace_elements[i],"Dbx")){
-	  freespace_Dbx = mxGetPr(element);
-	}
-	else if(!strcmp(freespace_elements[i],"Dby")){
-	  freespace_Dby = mxGetPr(element);
-	}
-	else if(!strcmp(freespace_elements[i],"Dbz")){
-	  freespace_Dbz = mxGetPr(element);
-	}
-	else{
-	  throw runtime_error("element freespace. "+element_name+" not handled");
-	}
+        dimptr_out = mxGetDimensions(element);
+        if(dimptr_out[0] != 1){
+          throw runtime_error("Incorrect dimension on freespace. " + element_name);
+        }
+        if(!strcmp(freespace_elements[i],"Cbx")){
+          freespace_Cbx = mxGetPr(element);
+        }
+        else{ // Unused in the code: Cby Cbz Dbx Dby Dbz
+          throw runtime_error("element freespace. "+element_name+" not handled");
+        }
       }
-      else
-	throw runtime_error("Incorrect dimension on freespace");
+      else{
+        throw runtime_error("Incorrect dimension on freespace");
+      }
     }
     input_counter++;
   }
