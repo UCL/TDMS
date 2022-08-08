@@ -48,7 +48,6 @@ include_directories(${FFTW_INCLUDE_DIRS})
 
 # OpenMP + libc++ -------------------------------------------------------------
 if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    message(STATUS "Finding openMP mac")
     find_package(OpenMP_Mac REQUIRED)
     find_package(Lib_CXX_Mac)
 else()
