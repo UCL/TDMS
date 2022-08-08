@@ -11,20 +11,6 @@ function(release_target)
             ${LIBCXX_LIBRARY}
             OpenMP::OpenMP_CXX
             )
-
-    # Windows -----------------------------------------------------------------
-    if (WIN32)
-        # Windows requires the shared dlls to be in the same directory as the
-        # target or to be present in the $PATH environment variable, MATLAB
-        # requires a whole folder, which is wasteful to copy. Therefore, the
-        # MATLABRootDIR/bin/win64 directory must be added to the $PATH
-        # environment variable
-        add_custom_command(TARGET tdms POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy ${FFTW_ROOT}/bin/fftw3.dll $<TARGET_FILE_DIR:tdms>
-                COMMAND_EXPAND_LISTS
-                )
-    endif(WIN32)
-
 endfunction()
 
 function(test_target)

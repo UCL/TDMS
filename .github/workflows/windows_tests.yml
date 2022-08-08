@@ -71,4 +71,5 @@ jobs:
         run: |
           export OMP_NUM_THREADS=1
           export PATH=/c/Program\ Files/MATLAB/R2022a/bin/win64/:$PATH
+          export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
           py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
