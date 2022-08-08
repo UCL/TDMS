@@ -1273,16 +1273,6 @@ void interpolateTimeDomainFieldCentralE_TM(  double ***Exy, double ***Exz, doubl
   *Ez = Ezy[k][j][i]+Ezx[k][j][i];
 }
 
-// define aliases for interpolation scheme flags, for readability
-#define BAND_LIMITED 0
-#define INTERP1 1
-#define INTERP2 2
-#define INTERP3 3
-// aliases for the dimension "a" represents when interpolating a single field component
-#define ax 0
-#define ay 1
-#define az 2
-
 /**
  * @brief Determines the appropriate interpolation scheme to use
  * 
@@ -1292,7 +1282,12 @@ void interpolateTimeDomainFieldCentralE_TM(  double ***Exy, double ***Exz, doubl
  */
 int determineInterpScheme(int cells_in_direction, int cell_id) {
   // interpolation is impossible if the total number of cells in this direction is <4
-  if (cells_in_direction < 4) { throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, interpolation impossible.\n"); }
+  if (cells_in_direction < 4) { throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and band-limited interpolation impossible.\n"); }
+  // Yee cell with index <=0 doesn't exist (indexing starts from 1)
+  else if (cell_id <= 0) { throw out_of_range("Error: Interior Yee cell index <=0 requested (must be >=1).\n");}
+  // Yee cell with index >=cells_in_direction doesn't exist
+  else if (cell_id >= cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
+
   // otherwise, now determine which interpolation scheme we should be using
   int right_cell_buffer = (cells_in_direction - 1) - cell_id;
   if ((right_cell_buffer >= 3) && (cell_id >= 4)) {
@@ -1303,7 +1298,7 @@ int determineInterpScheme(int cells_in_direction, int cell_id) {
     // we are at the extreme right Yee cell, and hence must use interp3
     return INTERP3;
   }
-  else if (cell_id == 0) {
+  else if (cell_id == 1) {
     // we are at the extreme left Yee cell, and must use interp2
     return INTERP2;
   }

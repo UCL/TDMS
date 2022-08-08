@@ -44,3 +44,21 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
                         for(int i_u=2; i_u<I-2; i_u++)
                             CHECK_NOTHROW(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K));
 }
+
+TEST_CASE("determineInterpScheme: correct interpolation chosen") {
+
+    // should throw out_of_range exception if interpolation is impossible (<=4 Yee cells in direction)
+    REQUIRE_THROWS_AS(determineInterpScheme(4, 2), out_of_range);
+    // should throw out_of_range exception if Yee cell of invalid index is requested
+    REQUIRE_THROWS_AS(determineInterpScheme(9,0), out_of_range);
+    REQUIRE_THROWS_AS(determineInterpScheme(9,9), out_of_range);
+
+    /* Suppose we have 9 Yee cells in a dimension. The program should determine:
+        - cell_id == 1 : Use interp2
+        - cell_id == 2-7 : Use interp3
+        - cell_id == 8 : Use interp1
+    */
+    CHECK(determineInterpScheme(9,1)==INTERP2);
+    for(int i=2; i<8; i++) {CHECK(determineInterpScheme(9,i)==INTERP3);}
+    CHECK(determineInterpScheme(9, 8)==INTERP1);
+}

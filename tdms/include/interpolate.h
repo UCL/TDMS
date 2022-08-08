@@ -76,6 +76,17 @@ void interpolateTimeDomainFieldCentralH_TM( double ***Hxy, double ***Hxz, double
 void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 					int i, int j, int k,
 						   double *Hx, double *Hy, double *Hz);
+
+// define aliases for interpolation scheme flags, for readability
+#define BAND_LIMITED 0
+#define INTERP1 1
+#define INTERP2 2
+#define INTERP3 3
+// aliases for the dimension "a" represents when interpolating a single field component
+#define ax 0
+#define ay 1
+#define az 2
+
 int determineInterpScheme(int cells_in_direction, int cell_id);
 void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea);
 void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez);
