@@ -47,18 +47,25 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
 
 TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
+    int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<=4 Yee cells in direction)
     REQUIRE_THROWS_AS(determineInterpScheme(4, 2), out_of_range);
     // should throw out_of_range exception if Yee cell of invalid index is requested
-    REQUIRE_THROWS_AS(determineInterpScheme(9,0), out_of_range);
-    REQUIRE_THROWS_AS(determineInterpScheme(9,9), out_of_range);
+    REQUIRE_THROWS_AS(determineInterpScheme(N,0), out_of_range);
+    REQUIRE_THROWS_AS(determineInterpScheme(N,N+1), out_of_range);
 
-    /* Suppose we have 9 Yee cells in a dimension. The program should determine:
+    /* Suppose we have N Yee cells in a dimension. The program should determine:
         - cell_id == 1 : Use interp2
-        - cell_id == 2-7 : Use interp3
-        - cell_id == 8 : Use interp1
+        - cell_id == 2,3 : Use interp1
+        - cell_id == 4,...,N-3 : Use bandlimited
+        - cell_id == N-2,N-1 : Use interp1
+        - cell_id == N : Use interp3
     */
-    CHECK(determineInterpScheme(9,1)==INTERP2);
-    for(int i=2; i<8; i++) {CHECK(determineInterpScheme(9,i)==INTERP3);}
-    CHECK(determineInterpScheme(9, 8)==INTERP1);
+    CHECK(determineInterpScheme(N, 1) == INTERP2);
+    CHECK(determineInterpScheme(N, 2) == INTERP1);
+    CHECK(determineInterpScheme(N, 3) == INTERP1);
+    for(int i=4; i<=N-3; i++) {CHECK(determineInterpScheme(N, i) == BAND_LIMITED);}
+    CHECK(determineInterpScheme(N, N-2) == INTERP1);
+    CHECK(determineInterpScheme(N, N-1) == INTERP1);
+    CHECK(determineInterpScheme(N, N) == INTERP3);
 }

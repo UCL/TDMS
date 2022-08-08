@@ -1282,14 +1282,14 @@ void interpolateTimeDomainFieldCentralE_TM(  double ***Exy, double ***Exz, doubl
  */
 int determineInterpScheme(int cells_in_direction, int cell_id) {
   // interpolation is impossible if the total number of cells in this direction is <4
-  if (cells_in_direction < 4) { throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and band-limited interpolation impossible.\n"); }
+  if (cells_in_direction <= 4) { throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and band-limited interpolation impossible.\n"); }
   // Yee cell with index <=0 doesn't exist (indexing starts from 1)
   else if (cell_id <= 0) { throw out_of_range("Error: Interior Yee cell index <=0 requested (must be >=1).\n");}
   // Yee cell with index >=cells_in_direction doesn't exist
-  else if (cell_id >= cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
+  else if (cell_id > cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
 
   // otherwise, now determine which interpolation scheme we should be using
-  int right_cell_buffer = (cells_in_direction - 1) - cell_id;
+  int right_cell_buffer = cells_in_direction - cell_id;
   if ((right_cell_buffer >= 3) && (cell_id >= 4)) {
     // we have enough room to apply band-limited interpolation
     return BAND_LIMITED;
@@ -1329,6 +1329,7 @@ void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int 
   {
   // perform BAND_LIMITED interpolation
   case BAND_LIMITED:
+    {
     /*Array for performing bandwidth limited interpolation obtained using Matlab's interp function */
     const int Nbvec = 8;
     const double bvec[Nbvec] = {-0.006777513830606, 0.039457774230186, -0.142658093428622, 0.609836360661632, 0.609836360661632, -0.142658093428622, 0.039457774230186, -0.006777513830606};
@@ -1359,8 +1360,10 @@ void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int 
         break;
     }
     break;
+    }
   // perform cubic interpolation (centre centre)
   case INTERP1:
+    {
     switch (aID)
     {
     case ax:
@@ -1379,8 +1382,10 @@ void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int 
       throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
       break;
     }
+    }
   // perform cubic interpolation (left centre)
   case INTERP2:
+    {
     switch (aID)
     {
     case ax:
@@ -1399,8 +1404,10 @@ void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int 
       throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
       break;
     }
+    }
   // perform cubic interpolation (right centre)
   case INTERP3:
+    {
     switch (aID)
     {
     case ax:
@@ -1418,6 +1425,7 @@ void interpolateTimeDomainEcomponent(int aID, double ***Eab, double ***Eac, int 
     default:
       throw out_of_range("Invalid interpolation dimension (" + to_string(aID) + "), expected 0(i), 1(j), or 2(k).\n");
       break;
+    }
     }
   }
 }
