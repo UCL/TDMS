@@ -76,15 +76,18 @@ jobs:
         run: |
           cmake --build . --config ${{ matrix.build_type }}
 
-      - name: Build TDMS windows
+      - name: Copy TDMS exe windows
         if: runner.os == 'Windows'
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
+          cp ${{ matrix.build_type }}/* .
 
       - name: Run TDMS unit tests
         working-directory: ${{runner.workspace}}/build
         run: |
+          export OMP_NUM_THREADS=1
+          export PATH=/c/Program\ Files/MATLAB/R2022a/bin/win64/:$PATH
           ctest -C ${{ matrix.build_type }} --extra-verbos
 
       - name: Run TDMS system tests
@@ -92,4 +95,5 @@ jobs:
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
+          export PATH=/c/Program\ Files/MATLAB/R2022a/bin/win64/:$PATH
           py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
