@@ -101,14 +101,21 @@ target_link_libraries(tdms_lib LINK_PUBLIC
 
 target_link_libraries(tdms tdms_lib)
 
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(tdms PRIVATE /W4)
-else()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(tdms PRIVATE -Wall -Wno-maybe-uninitialized)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(tdms PRIVATE -Wall)
 endif()
 
-install(TARGETS tdms)
+# Windows ---------------------------------------------------------------------
 
+
+
+# Install ---------------------------------------------------------------------
+
+install(TARGETS tdms)
 
 # Testing ---------------------------------------------------------------------
 enable_testing()

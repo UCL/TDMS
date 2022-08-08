@@ -1221,7 +1221,6 @@ void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz
     *Hy += bvec[ind1]*hy;
     *Hz += bvec[ind1]*hz;
   }
-  return 0;
 }
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
