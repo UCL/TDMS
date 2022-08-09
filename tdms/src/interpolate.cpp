@@ -1289,7 +1289,7 @@ int determineInterpScheme(int cells_in_direction, int cell_id) {
   else if (cell_id >= cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
 
   // otherwise, now determine which interpolation scheme we should be using
-  int right_cell_buffer = cells_in_direction - cell_id;
+  int right_cell_buffer = cells_in_direction - (cell_id+1); // indexing from 0 artifact
   if ((right_cell_buffer >= 3) && (cell_id >= 4)) {
     // we have enough room to apply band-limited interpolation
     return BAND_LIMITED;
