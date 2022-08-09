@@ -5,7 +5,7 @@ DOC_FILE = matlab_array.pdf
 
 pdf: $(DOC_FILE)
 
-$(DOC_FILE): matlab_array.tex
+$(DOC_FILE): matlab_array.tex $(wildcard figures/*.pdf)
 	mkdir -p $(BUILD_DIR)
 	pdflatex -synctex=1 -interaction=nonstopmode -output-directory=$(BUILD_DIR) $<
 	cp $(BUILD_DIR)/$@ $@
