@@ -35,7 +35,7 @@ must pass locally and on CI for a change to be merged.
 
 Code should follow the following guidelines
 
-- Have docstrings in a javadoc file
+- Have docstrings in a javadoc style
 - Use "@" to define [commands](https://doxygen.nl/manual/commands.html)
 - For example:
 
