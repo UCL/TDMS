@@ -1,11 +1,10 @@
 **build/
-masterdoc.pdf
+**doc/masterdoc.pdf
 .idea/
 **.o
 **.DS_store
 **.mat
 **.pyc
 **/.pytest_cache/
-**.pdf
 **cmake-build**
 tdms/tests/system/data
