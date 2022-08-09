@@ -22,9 +22,32 @@ PRs should follow the following guidelines
 - Not be excessively large, ideally touching 100s not 1000s of lines
 - Add additional tests to ensure the correct functionality
 - Should pass all system and unit tests run on GitHub Actions CI
+- Follow the code style guidelines bellow
 
 
 ### Tests
 
 Tests are located in [`tdms/tests`](./tdms/tests) and include both unit and system tests. These
 must pass locally and on CI for a change to be merged.
+
+
+### Code style
+
+Code should follow the following guidelines
+
+- Have docstrings in a javadoc style
+- Use "@" to define [commands](https://doxygen.nl/manual/commands.html)
+- For example:
+
+```c++
+/**
+ * Add two numbers together
+ *
+ * @param a: real number
+ * @param b: real number
+ * @return sum of a and b
+ */
+double add(double a, double b) {
+    ...
+}
+```
