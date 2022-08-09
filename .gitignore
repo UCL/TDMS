@@ -1,5 +1,5 @@
 **build/
-doc/*.pdf
+masterdoc.pdf
 .idea/
 **.o
 **.DS_store
