@@ -1,7 +1,1 @@
-// aliases for the dimension "a" represents when interpolating a single field component
-enum dimension
-{
-    x = 0,
-    y = 1,
-    z = 2
-};
+void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int I, double *Ex);

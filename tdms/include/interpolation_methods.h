@@ -23,4 +23,6 @@ enum interp_scheme
 
 interp_scheme determineInterpScheme(int cells_in_direction, int cell_id);
 
-double bandlimited_interpolation(int interp_pos, double *a);
+double bandlimited_interpolation(int interp_pos, double *a, int offset=0);
+double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2, double a3,
+                                 double a4, double a5, double a6, double a7);

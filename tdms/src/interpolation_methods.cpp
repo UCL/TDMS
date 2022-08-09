@@ -116,9 +116,10 @@ interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
  * 
  * @param interp_pos The value i in the formula above
  * @param a Equally spaced sample points, must contain (at least 8) elements
+ * @param offset {Default 0} a[offset] will be treated as a[0]
  * @return double The interpolated value a[interp_pos.5]
  */
-double bandlimited_interpolation(int interp_pos, double *a)
+double bandlimited_interpolation(int interp_pos, double *a, int offset)
 {
     // in the vast majority of cases, we expect to be well outside the PML and thus in this case
     // so it is more efficient for us to check via an if statement before matching to a switch
@@ -129,7 +130,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                0.609836360660818, -0.142658093427528, 0.039457774230959, -0.006777513830539};
         for (int i; i < 8; i++)
         {
-            interp_value += a[i] * b45[i];
+            interp_value += a[i+offset] * b45[i];
         }
     }
     else
@@ -143,7 +144,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    0.046235288061499, -0.006777513830539}; // last 3 terms are 0
             for (int i = 0; i < 5; i++)
             {
-                interp_value += a[i] * b05[i];
+                interp_value += a[i+offset] * b05[i];
             }
             break;
         case 1:
@@ -152,7 +153,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    -0.142658093427528, 0.039457774230959, -0.006777513830539}; // last 2 terms are 0
             for (int i = 0; i < 6; i++)
             {
-                interp_value += a[i] * b15[i];
+                interp_value += a[i+offset] * b15[i];
             }
             break;
         case 2:
@@ -162,7 +163,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    0.006777513830539};
             for (int i = 0; i < 7; i++)
             {
-                interp_value += a[i] * b25[i];
+                interp_value += a[i+offset] * b25[i];
             }
             break;
         case 4:
@@ -172,7 +173,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    0.025902746569881}; // first term is zero
             for (int i = 1; i < 8; i++)
             {
-                interp_value += a[i] * b45[i - 1];
+                interp_value += a[i+offset] * b45[i - 1];
             }
             break;
         case 5:
@@ -181,7 +182,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    0.616613874491358, 0.570378586429859, -0.077297572626688}; // first two terms are zero
             for (int i = 2; i < 8; i++)
             {
-                interp_value += a[i] * b55[i - 2];
+                interp_value += a[i+offset] * b55[i - 2];
             }
             break;
         case 6:
@@ -190,7 +191,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    0.752494454088346, 0.389880694606603}; // first 3 terms are zero
             for (int i = 3; i < 8; i++)
             {
-                interp_value += a[i] * b65[i - 3];
+                interp_value += a[i+offset] * b65[i - 3];
             }
             break;
         case 7:
@@ -199,7 +200,7 @@ double bandlimited_interpolation(int interp_pos, double *a)
                                    -0.752494454088346, 1.609553415928240}; // first 3 terms are zero
             for (int i = 3; i < 8; i++)
             {
-                interp_value += a[i] * b75[i - 3];
+                interp_value += a[i+offset] * b75[i - 3];
             }
             break;
         default:
@@ -208,4 +209,22 @@ double bandlimited_interpolation(int interp_pos, double *a)
         } // end switch(interp_pos)
     }     // else
     return interp_value;
+}
+
+/**
+ * @brief Performs bandlimited interpolation with 8 sample points, to position i.5
+ *
+ * Given equidistant sample points a0,....,a[7, the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
+ *  a[i.5] = \sum_{k=0}^7 a[k] * b^{(i.5)}[k],
+ * where (for each i), b^{i.5)}[k] is a vector of constant coefficients coded into this function.
+ *
+ * @param interp_pos The value i in the formula above
+ * @param a0,a1,a2,a3,a4,a5,a6,a7 Equidistant sample values
+ * @return double The interpolated value a[interp_pos.5]
+ */
+double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2, double a3,
+                                 double a4, double a5, double a6, double a7) 
+{
+    double a[8] = {a0, a1, a2, a3, a4, a5, a6, a7};
+    return bandlimited_interpolation(interp_pos, a, 0);
 }

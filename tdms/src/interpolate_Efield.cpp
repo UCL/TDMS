@@ -1,13 +1,18 @@
 #include "interpolate_Efield.h"
 #include "interpolation_methods.h"
 
-// aliases for the dimension "a" represents when interpolating a single field component
-enum dimension
-{
-    x = 0,
-    y = 1,
-    z = 2
-};
+/**
+ * @brief Interpolate the Ex field component to the centre of a Yee cell
+ * 
+ * @param[in] Exy,Exz split components of the Yee cell 
+ * @param[in] i,j,k Yee cell index 
+ * @param[in] I Number of Yee cells in the x-dimension
+ * @param[out] Ex Interpolated value of the Ex field at centre of Yee cell i,j,k
+ */
+void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int I, double *Ex) {
+    // determine the interpolation scheme to use
+    interp_scheme scheme = determineInterpScheme(I, i);
+}
 
 /**
  * @brief Interpolate a component of the E-field to the centre of a Yee cell
@@ -21,6 +26,7 @@ enum dimension
  * @param[in] A Total number of Yee cells in the a-direction
  * @param[out] Ea The interpolated field component at the centre of the Yee cell
  */
+/*
 void interpolateTimeDomainEcomponent(dimension aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea)
 {
     // which interpolation scheme can be applied?
@@ -31,7 +37,7 @@ void interpolateTimeDomainEcomponent(dimension aID, double ***Eab, double ***Eac
     // perform BAND_LIMITED interpolation
     case BAND_LIMITED:
     {
-        /*Array for performing bandwidth limited interpolation obtained using Matlab's interp function */
+        // Array for performing bandwidth limited interpolation obtained using Matlab's interp function
         const int Nbvec = 8;
         const double bvec[Nbvec] = {-0.006777513830606, 0.039457774230186, -0.142658093428622, 0.609836360661632, 0.609836360661632, -0.142658093428622, 0.039457774230186, -0.006777513830606};
         *Ea = 0.;
@@ -130,17 +136,19 @@ void interpolateTimeDomainEcomponent(dimension aID, double ***Eab, double ***Eac
     }
     }
 }
+*/
 
-/**
- * @brief Interpolate the E-field to the origin of the Yee cell in the time domain
- *
- * This function calls the interpolation methods for each component of the E-field separately.
- *
- * @param[in] Exy,Exz,Eyx,Eyz,Ezx,Ezy Split components of the Yee cell
- * @param i,j,k Index of the Yee cell to interpolate to the centre of
- * @param I,J,K Total number of Yee cells in the i,j,k directions respectively
- * @param Ex,Ey,Ez Interpolated E-field x,y,z components (respectively)
- */
+    /**
+     * @brief Interpolate the E-field to the origin of the Yee cell in the time domain
+     *
+     * This function calls the interpolation methods for each component of the E-field separately.
+     *
+     * @param[in] Exy,Exz,Eyx,Eyz,Ezx,Ezy Split components of the Yee cell
+     * @param i,j,k Index of the Yee cell to interpolate to the centre of
+     * @param I,J,K Total number of Yee cells in the i,j,k directions respectively
+     * @param Ex,Ey,Ez Interpolated E-field x,y,z components (respectively)
+     */
+    /*
 void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez)
 {
     // interpolate each of the field components in sequence
@@ -148,3 +156,4 @@ void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double 
     interpolateTimeDomainEcomponent(y, Eyx, Eyz, j, i, k, J, Ey);
     interpolateTimeDomainEcomponent(z, Ezx, Ezy, k, i, j, K, Ez);
 }
+*/
