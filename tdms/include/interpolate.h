@@ -1,9 +1,6 @@
 # include "matrix.h"
+# include "interpolation_methods.h"
 
-double interp1(double v1, double v2, double v3, double v4);
-double interp2(double v1, double v2, double v3, double v4);
-double interp3(double v1, double v2, double v3, double v4);
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
 void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
                               int       I     , int       J     , int       K     ,
@@ -77,11 +74,5 @@ void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz
 					int i, int j, int k,
 						   double *Hx, double *Hy, double *Hz);
 
-// define aliases for interpolation scheme flags, for readability
-enum interp_scheme {BAND_LIMITED=0, INTERP1=1, INTERP2=2, INTERP3=3};
-// aliases for the dimension "a" represents when interpolating a single field component
-enum dimension {x=0, y=1, z=2};
-
-interp_scheme determineInterpScheme(int cells_in_direction, int cell_id);
 void interpolateTimeDomainEcomponent(dimension aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea);
 void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez);
