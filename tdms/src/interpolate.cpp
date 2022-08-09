@@ -1504,6 +1504,10 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
   int zDirScheme = determineInterpScheme(K, k);
   // we now take the "best" option available to us, which is BLi in x (if possible) and BLi in another dimension (if possible).
   int up, low;
+  // Hx_interps_bli[i] = Hx[i-1/2][j][k], with enough buffer to store 8 values
+  double Hx_interps_bli[8];
+  // Hx_interps[i] = Hx[i-1/2][j][k], with enough buffer to store 4 values (cubic interps)
+  double Hx_interps[4];
   // for the _other_ dimension, due to our aliases for the various schemes, the "minimum" of zDirScheme and yDirScheme is the best interpolation plan to use
   if (yDirScheme < zDirScheme) {
     // y's scheme is better than z's scheme
@@ -1512,15 +1516,13 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       case BAND_LIMITED:
         // we need to perform 9 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-4,...,j+3
         up = j+3; low = j-4;
-        // Hx_interps[i] = Hx[i-1/2][j][k]
-        double Hx_interps[8]; 
         switch (xDirScheme)
         {
         case BAND_LIMITED:
           // we are performing BLi in both the x and y directions
           // do BLi in the x-direction for the 8 nearest-neighbour Yee cells in the y-direction
           for(int jj=up; jj<=low; jj++) {
-            Hx_interps[jj - low] = BLi(Hxy[k][jj][i - 4] + Hxz[k][jj][i - 4],
+            Hx_interps_bli[jj - low] = BLi(Hxy[k][jj][i - 4] + Hxz[k][jj][i - 4],
                                          Hxy[k][jj][i - 3] + Hxz[k][jj][i - 3],
                                          Hxy[k][jj][i - 2] + Hxz[k][jj][i - 2],
                                          Hxy[k][jj][i - 1] + Hxz[k][jj][i - 1],
@@ -1534,7 +1536,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
           // we are doing midpoint-cubic interpolation for x, but BLi in the y-direction
           // do interp1 in the x-direction with the 8 nearest-neighbour Yee cells in the y-direction
           for(int jj=low; jj<=up; jj++) {
-            Hx_interps[jj - low] = interp1(Hxy[k][jj][i - 2] + Hxz[k][jj][i - 2],
+            Hx_interps_bli[jj - low] = interp1(Hxy[k][jj][i - 2] + Hxz[k][jj][i - 2],
                                              Hxy[k][jj][i - 1] + Hxz[k][jj][i - 1],
                                              Hxy[k][jj][i] + Hxz[k][jj][i],
                                              Hxy[k][jj][i + 1] + Hxz[k][jj][i + 1]);
@@ -1545,7 +1547,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
           // do interp2 in the x-direction with the 8 nearest-neighbour Yee cells in the y-direction
           for (int jj = low; jj <= up; jj++)
           {
-            Hx_interps[jj - low] = interp2(Hxy[k][jj][i - 1] + Hxz[k][jj][i - 1],
+            Hx_interps_bli[jj - low] = interp2(Hxy[k][jj][i - 1] + Hxz[k][jj][i - 1],
                                              Hxy[k][jj][i] + Hxz[k][jj][i],
                                              Hxy[k][jj][i + 1] + Hxz[k][jj][i + 1],
                                              Hxy[k][jj][i + 2] + Hxz[k][jj][i + 2]);
@@ -1556,7 +1558,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
           // do interp3 in the x-direction with the 8 nearest-neighbour Yee cells in the y-direction
           for (int jj = low; jj <= up; jj++)
           {
-            Hx_interps[jj - low] = interp3(Hxy[k][jj][i - 3] + Hxz[k][jj][i - 3],
+            Hx_interps_bli[jj - low] = interp3(Hxy[k][jj][i - 3] + Hxz[k][jj][i - 3],
                                              Hxy[k][jj][i - 2] + Hxz[k][jj][i - 2],
                                              Hxy[k][jj][i - 1] + Hxz[k][jj][i - 1],
                                              Hxy[k][jj][i] + Hxz[k][jj][i]);
@@ -1564,13 +1566,11 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
           break;
         }
         // Hx_interps now contains the interpolated points, which we can now collapse to Yee cell origin via BLi in the y-direction
-        *Hx = BLi(Hx_interps);
+        *Hx = BLi(Hx_interps_bli);
         break;
       case INTERP1:
         // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-2,...,j+1 
         low = j+1; low = j-2;
-        // Hx_interps[i] = Hx[i-1/2][j][k]
-        double Hx_interps[4];
         switch (xDirScheme)
         {
         case BAND_LIMITED:
@@ -1622,8 +1622,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       case INTERP2:
         // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-1,...,j+2
         low = j+2; low = j-1;
-        // Hx_interps[i] = Hx[i-1/2][j][k]
-        double Hx_interps[4];
         switch (xDirScheme)
         {
         case BAND_LIMITED:
@@ -1676,8 +1674,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       case INTERP3:
         // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-3,...,j
         low = j; low = j-3;
-        // Hx_interps[i] = Hx[i-1/2][j][k]
-        double Hx_interps[4];
         switch (xDirScheme)
         {
         case BAND_LIMITED:
@@ -1737,8 +1733,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       // we need to perform 9 interpolations in x, obtaining Hx[kk][j][i-1/2] for kk=k-4,...,k+3
       up = k + 3;
       low = k - 4;
-      // Hx_interps[i] = Hx[i-1/2][j][k]
-      double Hx_interps[8];
       switch (xDirScheme)
       {
       case BAND_LIMITED:
@@ -1746,7 +1740,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         // do BLi in the x-direction for the 8 nearest-neighbour Yee cells in the z-direction
         for (int kk = up; kk <= low; kk++)
         {
-          Hx_interps[kk - low] = BLi(Hxy[kk][j][i - 4] + Hxz[kk][j][i - 4],
+          Hx_interps_bli[kk - low] = BLi(Hxy[kk][j][i - 4] + Hxz[kk][j][i - 4],
                                      Hxy[kk][j][i - 3] + Hxz[kk][j][i - 3],
                                      Hxy[kk][j][i - 2] + Hxz[kk][j][i - 2],
                                      Hxy[kk][j][i - 1] + Hxz[kk][j][i - 1],
@@ -1761,7 +1755,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         // do interp1 in the x-direction with the 8 nearest-neighbour Yee cells in the z-direction
         for (int kk = low; kk <= up; kk++)
         {
-          Hx_interps[kk - low] = interp1(Hxy[kk][j][i - 2] + Hxz[kk][j][i - 2],
+          Hx_interps_bli[kk - low] = interp1(Hxy[kk][j][i - 2] + Hxz[kk][j][i - 2],
                                          Hxy[kk][j][i - 1] + Hxz[kk][j][i - 1],
                                          Hxy[kk][j][i] + Hxz[kk][j][i],
                                          Hxy[kk][j][i + 1] + Hxz[kk][j][i + 1]);
@@ -1772,7 +1766,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         // do interp2 in the x-direction with the 8 nearest-neighbour Yee cells in the z-direction
         for (int kk = low; kk <= up; kk++)
         {
-          Hx_interps[kk - low] = interp2(Hxy[kk][j][i - 1] + Hxz[kk][j][i - 1],
+          Hx_interps_bli[kk - low] = interp2(Hxy[kk][j][i - 1] + Hxz[kk][j][i - 1],
                                          Hxy[kk][j][i] + Hxz[kk][j][i],
                                          Hxy[kk][j][i + 1] + Hxz[kk][j][i + 1],
                                          Hxy[kk][j][i + 2] + Hxz[kk][j][i + 2]);
@@ -1783,7 +1777,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         // do interp3 in the x-direction with the 8 nearest-neighbour Yee cells in the z-direction
         for (int kk = low; kk <= up; kk++)
         {
-          Hx_interps[kk - low] = interp3(Hxy[kk][j][i - 3] + Hxz[kk][j][i - 3],
+          Hx_interps_bli[kk - low] = interp3(Hxy[kk][j][i - 3] + Hxz[kk][j][i - 3],
                                          Hxy[kk][j][i - 2] + Hxz[kk][j][i - 2],
                                          Hxy[kk][j][i - 1] + Hxz[kk][j][i - 1],
                                          Hxy[kk][j][i] + Hxz[kk][j][i]);
@@ -1791,14 +1785,12 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         break;
       }
       // Hx_interps now contains the interpolated points, which we can now collapse to Yee cell origin via BLi in the y-direction
-      *Hx = BLi(Hx_interps);
+      *Hx = BLi(Hx_interps_bli);
       break;
     case INTERP1:
       // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-2,...,j+1
       low = k + 1;
       low = k - 2;
-      // Hx_interps[i] = Hx[i-1/2][j][k]
-      double Hx_interps[4];
       switch (xDirScheme)
       {
       case BAND_LIMITED:
@@ -1852,8 +1844,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-1,...,j+2
       low = k + 2;
       low = k - 1;
-      // Hx_interps[i] = Hx[i-1/2][j][k]
-      double Hx_interps[4];
       switch (xDirScheme)
       {
       case BAND_LIMITED:
@@ -1907,8 +1897,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
       // we need to perform 4 interpolations in x, obtaining Hx[k][jj][i-1/2] for jj=j-3,...,j
       low = k;
       low = k - 3;
-      // Hx_interps[i] = Hx[i-1/2][j][k]
-      double Hx_interps[4];
       switch (xDirScheme)
       {
       case BAND_LIMITED:
