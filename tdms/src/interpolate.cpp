@@ -1286,7 +1286,7 @@ int determineInterpScheme(int cells_in_direction, int cell_id) {
   // Yee cell with index <=0 doesn't exist (indexing starts from 1)
   else if (cell_id <= 0) { throw out_of_range("Error: Interior Yee cell index <=0 requested (must be >=1).\n");}
   // Yee cell with index >=cells_in_direction doesn't exist
-  else if (cell_id > cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
+  else if (cell_id >= cells_in_direction) { throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");}
 
   // otherwise, now determine which interpolation scheme we should be using
   int right_cell_buffer = cells_in_direction - cell_id;
