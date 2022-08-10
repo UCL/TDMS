@@ -2,14 +2,21 @@
 #include "simulation_parameters.h"
 
 
+struct xyz_arrays{
+    double ***x;
+    double ***y;
+    double ***z;
+};
+
+
 class Field{
 
 public:
     std::complex<double> angular_norm = 0.;
 
-    std::complex<double> ***x = nullptr;
-    std::complex<double> ***y = nullptr;
-    std::complex<double> ***z = nullptr;
+    // TODO: this is likely better as a set of complex arrays
+    xyz_arrays real = xyz_arrays{nullptr, nullptr, nullptr};
+    xyz_arrays imag = xyz_arrays{nullptr, nullptr, nullptr};
 };
 
 class SplitField{
