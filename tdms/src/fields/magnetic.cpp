@@ -5,8 +5,8 @@
 using namespace std;
 
 
-void MagneticField::add_to_angular_norm(double f, int n, int Nt, SimulationParameters &params) {
-  angular_norm += phasor_norm(f, n, params.omega_an, params.dt, Nt);
+void MagneticField::add_to_angular_norm(int n, int Nt, SimulationParameters &params) {
+  angular_norm += phasor_norm(ft, n, params.omega_an, params.dt, Nt);
 }
 
 complex<double> MagneticField::phasor_norm(double f, int n, double omega, double dt, int Nt){

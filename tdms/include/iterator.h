@@ -1,5 +1,5 @@
-#include <complex>
-using namespace std;
+#include "complex"
+#include "grid_labels.h"
 
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs, 
@@ -19,7 +19,7 @@ void extractPhasorsVolumeH(double ***HxR, double ***HxI, double ***HyR, double *
 void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim);
 void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
 double linearRamp(double t, double period, double rampwidth);
-double complexAbs(complex<double> z);
+double complexAbs(std::complex<double> z);
 double checkPhasorConvergence(double ***ExR, double ***ExI, double ***EyR, double ***EyI, double ***EzR, double ***EzI,
 			    double ***ExR2, double ***ExI2, double ***EyR2, double ***EyI2, double ***EzR2, double ***EzI2,
 			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
@@ -28,10 +28,9 @@ double checkPhasorConvergence(double ***ExR, double ***ExI, double ***EyR, doubl
 void copyPhasors(double *ExR, double *ExI, double *EyR, double *EyI, double *EzR, double *EzI,
 		 double *ExR2, double *ExI2, double *EyR2, double *EyI2, double *EzR2, double *EzI2,
 		 int nelements);
-void setGridLabels(double *x_labels_in , double * y_labels_in , double *z_labels_in ,
-		   double *x_labels_out, double * y_labels_out, double *z_labels_out,
-		   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
-//void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[]);
+void setGridLabels(GridLabels &input_labels,
+                   GridLabels &output_labels,
+                   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
 void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,  
 			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
@@ -67,17 +66,17 @@ void destroy_auxilliary_mem(int I_tot, int J_tot, int K_tot,
 			     double ****Jyx2, double ****Jyz2,  
 			     double ****Jzx2, double ****Jzy2);
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[]);
-void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
-void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
+
+void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
+void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
 void normaliseVolume(double ***ExR, double ***ExI, double ***EyR, double ***EyI, double ***EzR, double ***EzI,
-		     int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,  complex<double> norm);
+		     int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,  std::complex<double> norm);
 void normaliseSurface( double **surface_EHr, double **surface_EHi ,
-		       int **surface_vertices, int n_surface_vertices,  complex<double> Enorm , complex<double> Hnorm );
+		       int **surface_vertices, int n_surface_vertices,  std::complex<double> Enorm , std::complex<double> Hnorm );
 void normaliseVertices( double **EHr, double **EHi ,
 			int **vertices, int nvertices,
 			int *components, int ncomponents,
-			complex<double> Enorm , complex<double> Hnorm );
+			std::complex<double> Enorm , std::complex<double> Hnorm );
 int is_conductive(double *rho_x, double *rho_y, double *rho_z, int I_tot, int J_tot, int K_tot);
 int is_dispersive_ml(double *ml_gamma, int K_tot);
 void allocate_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,

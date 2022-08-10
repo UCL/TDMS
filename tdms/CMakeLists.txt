@@ -59,9 +59,12 @@ endif()
 
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
+    src/fields/current_density.cpp
+    src/fields/electric.cpp
+    src/fields/magnetic.cpp
     src/argument_parser.cpp
-    src/electric_field.cpp
     src/fdtd_grid_initialiser.cpp
+    src/grid_labels.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
