@@ -89,56 +89,6 @@ double cubic_interpolation(int interp_pos, double *v) {
 }
 
 /**
- * @brief Determines the appropriate interpolation scheme to use
- *
- * @param[in] cells_in_direction The number of Yee cells in the interpolation direction of interest
- * @param[in] cell_id The current ID (in this dimension) of the Yee cell
- * @return interp_scheme Indicating the appropriate interpolation scheme to use
- */
-interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
-{
-    // interpolation is impossible if the total number of cells in this direction is <4
-    if (cells_in_direction < 4)
-    {
-        throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and band-limited interpolation impossible.\n");
-    }
-    // Yee cell with index <0 doesn't exist (indexing starts from 1), and Yee cell 0 cannot undergo interpolation to the centre
-    else if (cell_id <= 0)
-    {
-        throw out_of_range("Error: Yee cell index <=0 requested (must be >=1).\n");
-    }
-    // Yee cell with index >=cells_in_direction doesn't exist
-    else if (cell_id >= cells_in_direction)
-    {
-        throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");
-    }
-    else if (cells_in_direction < 8) {
-        // we do not have enough cells to use bandlimited interpolation, but we can use cubic
-        // by definition, cell_id = 1 requires us to use interp2, cell_id = cells_in_direction-1 interp3,
-        // and everything else interp2
-        if (cell_id == 1) {
-            return CUBIC_INTERP_FIRST;
-        }
-        else if (cell_id == cells_in_direction-1) {
-            return CUBIC_INTERP_LAST;
-        }
-        else {
-            return CUBIC_INTERP_MIDDLE;
-        }
-    }
-    else {
-        // we can apply bandlimited interpolation
-        if ((cell_id >= 4) && (cell_id <= cells_in_direction-3)) {return BAND_LIMITED_3;} // best, and most frequent, case
-        else if (cell_id==1) {return BAND_LIMITED_0;}
-        else if (cell_id == 2) {return BAND_LIMITED_1;}
-        else if (cell_id == 3) {return BAND_LIMITED_2;}
-        else if (cell_id == cells_in_direction-3) {return BAND_LIMITED_4;}
-        else if (cell_id == cells_in_direction-2) {return BAND_LIMITED_5;}
-        else {return BAND_LIMITED_6;} //cell_id = cells_in_direction-1
-    }
-}
-
-/**
  * @brief Performs bandlimited interpolation with 8 sample points, to position i.5
  * 
  * Given equidistant sample points a[0],....,a[7], the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
@@ -258,4 +208,80 @@ double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2
 {
     double a[8] = {a0, a1, a2, a3, a4, a5, a6, a7};
     return bandlimited_interpolation(interp_pos, a, 0);
+}
+
+/**
+ * @brief Determines the appropriate interpolation scheme to use
+ *
+ * @param[in] cells_in_direction The number of Yee cells in the interpolation direction of interest
+ * @param[in] cell_id The current ID (in this dimension) of the Yee cell
+ * @return interp_scheme Indicating the appropriate interpolation scheme to use
+ */
+interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
+{
+    // interpolation is impossible if the total number of cells in this direction is <4
+    if (cells_in_direction < 4)
+    {
+        throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and band-limited interpolation impossible.\n");
+    }
+    // Yee cell with index <0 doesn't exist (indexing starts from 1), and Yee cell 0 cannot undergo interpolation to the centre
+    else if (cell_id <= 0)
+    {
+        throw out_of_range("Error: Yee cell index <=0 requested (must be >=1).\n");
+    }
+    // Yee cell with index >=cells_in_direction doesn't exist
+    else if (cell_id >= cells_in_direction)
+    {
+        throw out_of_range("Error: requested Yee cell index beyond maximum number of Yee cells.\n");
+    }
+    else if (cells_in_direction < 8)
+    {
+        // we do not have enough cells to use bandlimited interpolation, but we can use cubic
+        // by definition, cell_id = 1 requires us to use interp2, cell_id = cells_in_direction-1 interp3,
+        // and everything else interp2
+        if (cell_id == 1)
+        {
+            return CUBIC_INTERP_FIRST;
+        }
+        else if (cell_id == cells_in_direction - 1)
+        {
+            return CUBIC_INTERP_LAST;
+        }
+        else
+        {
+            return CUBIC_INTERP_MIDDLE;
+        }
+    }
+    else
+    {
+        // we can apply bandlimited interpolation
+        if ((cell_id >= 4) && (cell_id <= cells_in_direction - 3))
+        {
+            return BAND_LIMITED_3;
+        } // best, and most frequent, case
+        else if (cell_id == 1)
+        {
+            return BAND_LIMITED_0;
+        }
+        else if (cell_id == 2)
+        {
+            return BAND_LIMITED_1;
+        }
+        else if (cell_id == 3)
+        {
+            return BAND_LIMITED_2;
+        }
+        else if (cell_id == cells_in_direction - 3)
+        {
+            return BAND_LIMITED_4;
+        }
+        else if (cell_id == cells_in_direction - 2)
+        {
+            return BAND_LIMITED_5;
+        }
+        else
+        {
+            return BAND_LIMITED_6;
+        } // cell_id = cells_in_direction-1
+    }
 }

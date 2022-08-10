@@ -9,6 +9,10 @@ double cubic_interpolation(int interp_pos, double *v);
 
 void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
 
+double bandlimited_interpolation(int interp_pos, double *a, int offset = 0);
+double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2, double a3,
+                                 double a4, double a5, double a6, double a7);
+
 /**
  * @brief Defines aliases for the flags that will determine the interpolation scheme to be used.
  * 
@@ -30,7 +34,3 @@ enum interp_scheme
 };
 
 interp_scheme determineInterpScheme(int cells_in_direction, int cell_id);
-
-double bandlimited_interpolation(int interp_pos, double *a, int offset=0);
-double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2, double a3,
-                                 double a4, double a5, double a6, double a7);
