@@ -49,7 +49,7 @@ include_directories(${FFTW_INCLUDE_DIRS})
 
 
 # OpenMP + libc++ -------------------------------------------------------------
-if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_package(OpenMP_Mac REQUIRED)
     find_package(Lib_CXX_Mac)
 else()
@@ -60,14 +60,18 @@ endif()
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
     src/argument_parser.cpp
+    src/electric_field.cpp
     src/fdtd_grid_initialiser.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
+    src/magnetic_field.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
     src/numerical_derivative.cpp
+    src/simulation_parameters.cpp
+    src/timer.cpp
     src/utils.cpp
     matlabio/matlabio.cpp
     )
@@ -100,6 +104,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
 
     add_executable(tdms_tests
             tests/unit/test_openandorder.cpp
+            tests/unit/test_fields.cpp
             tests/unit/test_interpolate.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
