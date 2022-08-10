@@ -250,11 +250,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
   auto params = SimulationParameters();
 
+  auto E_s = ElectricSplitField();
+  auto H_s = MagneticSplitField();
+  auto J_s = CurrentDensitySplitField();
+
   auto E = ElectricField();
   auto H = MagneticField();
-  auto J = CurrentDensityField();
 
-  double commonAmplitude;
   double ***ExR, ***ExI, ***EyR, ***EyI, ***EzR, ***EzI,***HxR, ***HxI, ***HyR, ***HyI, ***HzR, ***HzI;
   double ***ExR2, ***ExI2, ***EyR2, ***EyI2, ***EzR2, ***EzI2;
   double **ex_tdf;
@@ -458,77 +460,77 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       //start
       if(are_equal(fdtdgrid_elements[i],"Exy")){
 	if(ndims==2)
-    E.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else{
 	  //fprintf(stderr,"Dims Exy=%d %d %d\n",dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-	  E.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+	  E_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
 	}
       }
       else if(are_equal(fdtdgrid_elements[i],"Exz")){
 	if(ndims==2)
-    E.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    E.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Eyx")){
 	if(ndims==2)
-    E.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    E.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Eyz")){
 	if(ndims==2)
-    E.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    E.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Ezx")){
 	if(ndims==2)
-    E.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    E.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Ezy")){
 	if(ndims==2)
-    E.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    E_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    E.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hxy")){
 	if(ndims==2)
-    H.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hxz")){
 	if(ndims==2)
-    H.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hyx")){
 	if(ndims==2)
-    H.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hyz")){
 	if(ndims==2)
-    H.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hzx")){
 	if(ndims==2)
-    H.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hzy")){
 	if(ndims==2)
-    H.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
+    H_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
 	else
-    H.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    H_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"materials")){
 	
@@ -2422,8 +2424,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     is_disp_ml = is_dispersive_ml(ml_gamma, K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, is_disp_ml: %d\n",is_disp,is_cond,is_disp_ml);
   //if we have dispersive materials we need to create additional field variables
-  auto E_nm1 = ElectricField();
-  auto J_nm1 = CurrentDensityField();
+  auto E_nm1 = ElectricSplitField();
+  auto J_nm1 = CurrentDensitySplitField();
 
 
   if(is_disp || is_disp_ml){
@@ -2431,15 +2433,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
                             &E_nm1.xy, &E_nm1.xz,
                             &E_nm1.yx, &E_nm1.yz,
                             &E_nm1.zx, &E_nm1.zy,
-                            &J.xy, &J.xz,
-                            &J.yx, &J.yz,
-                            &J.zx, &J.zy,
+                            &J_s.xy, &J_s.xz,
+                            &J_s.yx, &J_s.yz,
+                            &J_s.zx, &J_s.zy,
                             &J_nm1.xy, &J_nm1.xz,
                             &J_nm1.yx, &J_nm1.yz,
                             &J_nm1.zx, &J_nm1.zy);
   }
 //fprintf(stderr,"Pre 14\n");
-  auto J_c = CurrentDensityField();
+  auto J_c = CurrentDensitySplitField();
   if(is_cond){
     allocate_auxilliary_mem_conductive(I_tot, J_tot, K_tot,
 				       &J_c.xy, &J_c.xz, 
@@ -2719,7 +2721,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       dft_counter = 0;
       double tol = checkPhasorConvergence(ExR, ExI, EyR, EyI, EzR, EzI,
                                           ExR2, ExI2, EyR2, EyI2, EzR2, EzI2,
-                                          E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                                          E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                                           pind_il, pind_iu,
                                           pind_jl, pind_ju,
                                           pind_kl, pind_ku,
@@ -2772,13 +2774,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     if((sourcemode==sm_steadystate)&&(runmode==rm_complete) && exphasorsvolume){
       
       extractPhasorsVolume(ExR, ExI, EyR, EyI, EzR, EzI,
-                           E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                           E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                            pind_il, pind_iu,
                            pind_jl, pind_ju,
                            pind_kl, pind_ku,
                            dft_counter, *omega_an, *dt, Nsteps);
       extractPhasorsVolumeH(HxR, HxI, HyR, HyI, HzR, HzI,
-                            H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                            H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
                             pind_il, pind_iu,
                             pind_jl, pind_ju,
                             pind_kl, pind_ku,
@@ -2788,16 +2790,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	if(intphasorssurface){
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
 	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx],
-                            H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                            E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                            H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
+                            E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                             surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot, intmethod );
 	  dft_counter++;
 	}
 	else{
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
 	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx],
-                                           H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                           E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                                           H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
+                                           E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                                            surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot );
 	  dft_counter++;
 	}
@@ -2811,14 +2813,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
       if( (tind-start_tind) % Np == 0){
 	extractPhasorsVolume(ExR, ExI, EyR, EyI, EzR, EzI,
-                       E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                       E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                        pind_il, pind_iu,
                        pind_jl, pind_ju,
                        pind_kl, pind_ku,
                        tind, *omega_an, *dt, Npe);
 	//fprintf(stderr,"Pos 01a:\n");
 	extractPhasorsVolumeH(HxR, HxI, HyR, HyI, HzR, HzI,
-                        H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                        H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
                         pind_il, pind_iu,
                         pind_jl, pind_ju,
                         pind_kl, pind_ku,
@@ -2841,7 +2843,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	    for(int jt=0; jt< N_fieldsample_j ; jt++)
 	      for(int it=0; it< N_fieldsample_i; it++){
 		////fprintf(stderr,"Pos fs 1\n");
-		interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, (int)fieldsample_k[kt] + Dzl[0] - 1, &Ex_temp, &Ey_temp, &Ez_temp);
+		interpolateTimeDomainFieldCentralEBandLimited(E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy, (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, (int)fieldsample_k[kt] + Dzl[0] - 1, &Ex_temp, &Ey_temp, &Ez_temp);
 		//fprintf(stderr,"Pos fs 2\n");
 		for(int nt=0; nt< N_fieldsample_n; nt++)
 		  fieldsample[nt][kt][jt][it] = fieldsample[nt][kt][jt][it] + pow( Ex_temp*Ex_temp + Ey_temp*Ey_temp + Ez_temp*Ez_temp, fieldsample_n[nt]/2.)/Nt[0];
@@ -2860,15 +2862,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	if(intphasorssurface)
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
 	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx],
-                            H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                            E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                            H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
+                            E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                             surface_vertices, n_surface_vertices, tind, 
 				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
 	else
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
 	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx],
-                                           H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                           E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                                           H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
+                                           E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                                            surface_vertices, n_surface_vertices, tind, 
 				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot );
 
@@ -2885,8 +2887,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	  //	  fprintf(stderr,"EPV 01\n");
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
 	    extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx],
-                             H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                             E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                             H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
+                             E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
                              vertices, nvertices, components, ncomponents, tind, 
 				    f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
 	}
@@ -2900,8 +2902,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	//First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
 	for(j=*Dyl;j<(J_tot-*Dyu);j++)
 	  for(i=*Dxl;i<(I_tot-*Dxu);i++){
-	    Ex_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E.xy[k_det_obs_global][j][i] + E.xz[k_det_obs_global][j][i];Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
-	    Ey_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E.yx[k_det_obs_global][j][i] + E.yz[k_det_obs_global][j][i];Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
+	    Ex_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
+	    Ey_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
 	  }
 	//fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",*Dyl,J_tot-*Dyu,*Dxl,I_tot-*Dxu);
 	fftw_execute(pex_t);fftw_execute(pey_t);
@@ -2971,8 +2973,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       if(dimension==THREE){
 	extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
                       iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs,
-                      E.xz, E.yz, H.xz, H.yz,
-                      E.xy, E.yx, H.xy, H.yx,
+                      E_s.xz, E_s.yz, H_s.xz, H_s.yz,
+                      E_s.xy, E_s.yx, H_s.xy, H_s.yx,
                       I_tot, J_tot, ((int)*K0) + 1, tind, *omega_an, *dt, *Nt);//extract the phasors just above the line
       }
     //fprintf(stderr,"Pos 02c:\n");
@@ -3255,31 +3257,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       Enp1 = 0.0;
 		//Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
 		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
+		  Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
 		if(is_cond && rho)
 		  Enp1 += Cb*dy*J_c.xy[k][j][i];
 		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E.xy[k][j][i];
+		  Jnp1  = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
+		  Jnp1 += sigma_l / eo * gamma_l * E_s.xy[k][j][i];
 	  
-		  E_nm1.xy[k][j][i] = E.xy[k][j][i];
-		  J_nm1.xy[k][j][i] = J.xy[k][j][i];
-      J.xy[k][j][i]     = Jnp1;
+		  E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
+		  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
+      J_s.xy[k][j][i]     = Jnp1;
 	   
 		  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,Jxy[k][j][i]);
 		}
 
 		if(is_cond && rho){
-		  J_c.xy[k][j][i] -= rho*(Enp1 + E.xy[k][j][i]);
+		  J_c.xy[k][j][i] -= rho*(Enp1 + E_s.xy[k][j][i]);
 		}
 	  
-		eh_vec[omp_get_thread_num()][j][0] = H.zy[k][j][i] + H.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+		eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 		ca_vec[omp_get_thread_num()][j-1] = Ca;
 		cb_vec[omp_get_thread_num()][j-1] = Cb;
 	      }
 	      if(J_tot>1){
 		j = 0;
-		eh_vec[omp_get_thread_num()][j][0] = H.zy[k][j][i] + H.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+		eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 		first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				  dk_e_y, N_e_y , pf_exy[omp_get_thread_num()], pb_exy[omp_get_thread_num()]);
 
@@ -3287,7 +3289,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		//fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,omp_get_thread_num(),omp_get_num_threads());
 
 		for(j=1;j<J_tot;j++){
-      E.xy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E.xy[k][j][i] + cb_vec[omp_get_thread_num()][j - 1] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
+      E_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.xy[k][j][i] + cb_vec[omp_get_thread_num()][j - 1] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
 		}
 	      }
 	    }
@@ -3540,29 +3542,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		  fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
 		//Enp1 = Ca*Exz[k][j][i]+Cb*(Hyx[k-1][j][i] + Hyz[k-1][j][i] - Hyx[k][j][i] - Hyz[k][j][i]);
 		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
+		  Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
 		if(is_cond && rho)
 		  Enp1 += Cb*dz*J_c.xz[k][j][i];
 		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E.xz[k][j][i];
-		  E_nm1.xz[k][j][i] = E.xz[k][j][i];
-		  J_nm1.xz[k][j][i] = J.xz[k][j][i];
-      J.xz[k][j][i]     = Jnp1;
+		  Jnp1  = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
+		  Jnp1 += sigma_l / eo * gamma_l * E_s.xz[k][j][i];
+		  E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
+		  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
+      J_s.xz[k][j][i]     = Jnp1;
 	  
 		}
 	    
 		if(is_cond && rho){
-		  J_c.xz[k][j][i] -= rho*(Enp1 + E.xz[k][j][i]);
+		  J_c.xz[k][j][i] -= rho*(Enp1 + E_s.xz[k][j][i]);
 		}
 		
-		eh_vec[omp_get_thread_num()][k][0] = H.yx[k][j][i] + H.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+		eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 		ca_vec[omp_get_thread_num()][k-1] = Ca;
 		cb_vec[omp_get_thread_num()][k-1] = Cb;
 
 	      }
 	      k=0;
-	      eh_vec[omp_get_thread_num()][k][0] = H.yx[k][j][i] + H.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+	      eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 	      /*
 		if (tind==1 & i==25 & j==25){
 		for(k=0;k<N_e_z;k++)
@@ -3591,7 +3593,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		}
 	      */
 	      for(k=1;k<K_tot;k++){
-          E.xz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E.xz[k][j][i] - cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
+          E_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.xz[k][j][i] - cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
 	      }
 	      
 	    }
@@ -3842,33 +3844,33 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
 		//Enp1 = Ca*Eyx[k][j][i]+Cb*(Hzx[k][j][i-1] + Hzy[k][j][i-1] - Hzx[k][j][i] - Hzy[k][j][i]);
 		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
+		  Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
 		if(is_cond && rho)
 		  Enp1 += Cb*dx*J_c.yx[k][j][i];
 		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E.yx[k][j][i];
-		  E_nm1.yx[k][j][i] = E.yx[k][j][i];
-		  J_nm1.yx[k][j][i] = J.yx[k][j][i];
-      J.yx[k][j][i]     = Jnp1;
+		  Jnp1  = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
+		  Jnp1 += sigma_l / eo * gamma_l * E_s.yx[k][j][i];
+		  E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
+		  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
+      J_s.yx[k][j][i]     = Jnp1;
 		}
 		if(is_cond && rho){
-		  J_c.yx[k][j][i] -= rho*(Enp1 + E.yx[k][j][i]);
+		  J_c.yx[k][j][i] -= rho*(Enp1 + E_s.yx[k][j][i]);
 		}
 	      
-		eh_vec[omp_get_thread_num()][i][0] = H.zx[k][j][i] + H.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+		eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 		ca_vec[omp_get_thread_num()][i-1] = Ca;
 		cb_vec[omp_get_thread_num()][i-1] = Cb;
 			    
 	      }
 	      i=0;
-	      eh_vec[omp_get_thread_num()][i][0] = H.zx[k][j][i] + H.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+	      eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 	      
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_e_x, N_e_x , pf_eyx[omp_get_thread_num()], pb_eyx[omp_get_thread_num()]);
 
 	      for(i=1;i<I_tot;i++){
-          E.yx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E.yx[k][j][i] - cb_vec[omp_get_thread_num()][i - 1] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
+          E_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.yx[k][j][i] - cb_vec[omp_get_thread_num()][i - 1] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
 		//Eyx[k][j][i] = Enp1;
 	      }
 	    }
@@ -4110,37 +4112,37 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		//fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
 		//Enp1 = Ca*Eyz[k][j][i]+Cb*(Hxy[k][j][i] + Hxz[k][j][i] - Hxy[k-1][j][i] - Hxz[k-1][j][i]); 
 		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
+		  Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
 		if(is_cond && rho)
 		  Enp1 += Cb*dz*J_c.yz[k][j][i];
     
 		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E.yz[k][j][i];
-		  E_nm1.yz[k][j][i] = E.yz[k][j][i];
-		  J_nm1.yz[k][j][i] = J.yz[k][j][i];
-      J.yz[k][j][i]     = Jnp1;
+		  Jnp1  = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
+		  Jnp1 += sigma_l / eo * gamma_l * E_s.yz[k][j][i];
+		  E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
+		  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
+      J_s.yz[k][j][i]     = Jnp1;
 		  //	      if(i==40 && j==40 && k==40)
 		  //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
 		  //	      fflush(outfile);
 		}
 		if(is_cond && rho){
-		  J_c.yz[k][j][i] -= rho*(Enp1 + E.yz[k][j][i]);
+		  J_c.yz[k][j][i] -= rho*(Enp1 + E_s.yz[k][j][i]);
 		}
 
-		eh_vec[omp_get_thread_num()][k][0] = H.xy[k][j][i] + H.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+		eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 		ca_vec[omp_get_thread_num()][k-1] = Ca;
 		cb_vec[omp_get_thread_num()][k-1] = Cb;
 	  
 	      }
 	      k = 0;
-	      eh_vec[omp_get_thread_num()][k][0] = H.xy[k][j][i] + H.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+	      eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_e_z, N_e_z , pf_eyz[omp_get_thread_num()], pb_eyz[omp_get_thread_num()]);
 	      
 
 	      for(k=1;k<K_tot;k++){
-          E.yz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E.yz[k][j][i] + cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
+          E_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.yz[k][j][i] + cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
 		//Eyz[k][j][i] = Enp1;
 	      }
 	    }
@@ -4394,33 +4396,33 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
         fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,is_disp_ml);*/
       //Enp1 = Ca*Ezx[k][j][i]+Cb*(Hyx[k][j][i] + Hyz[k][j][i] - Hyx[k][j][i-1] - Hyz[k][j][i-1]);
       if( (is_disp || is_disp_ml) && gamma_l)
-        Enp1 += Cc*E_nm1.zx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
+        Enp1 += Cc*E_nm1.zx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
       if(is_cond && rho)
         Enp1 += Cb*dx*J_c.zx[k][j][i];
       if( (is_disp || is_disp_ml) && gamma_l){
-        Jnp1  = alpha_l * J.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
-        Jnp1 += sigma_l / eo * gamma_l * E.zx[k][j][i];
-        E_nm1.zx[k][j][i] = E.zx[k][j][i];
-        J_nm1.zx[k][j][i] = J.zx[k][j][i];
-        J.zx[k][j][i]     = Jnp1;
+        Jnp1  = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
+        Jnp1 += sigma_l / eo * gamma_l * E_s.zx[k][j][i];
+        E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
+        J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
+        J_s.zx[k][j][i]     = Jnp1;
       }
       if(is_cond && rho){
-        J_c.zx[k][j][i] -= rho*(Enp1 + E.zx[k][j][i]);
+        J_c.zx[k][j][i] -= rho*(Enp1 + E_s.zx[k][j][i]);
       }
 
-      eh_vec[omp_get_thread_num()][i][0] = H.yx[k][j][i] + H.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+      eh_vec[omp_get_thread_num()][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
       ca_vec[omp_get_thread_num()][i-1] = Ca;
       cb_vec[omp_get_thread_num()][i-1] = Cb;
 
           }
           i=0;
-          eh_vec[omp_get_thread_num()][i][0] = H.yx[k][j][i] + H.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+          eh_vec[omp_get_thread_num()][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
           first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
           dk_e_x, N_e_x , pf_ezx[omp_get_thread_num()], pb_ezx[omp_get_thread_num()]);
 
           for(i=1;i<I_tot;i++){
-            E.zx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E.zx[k][j][i] + cb_vec[omp_get_thread_num()][i - 1] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
+            E_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.zx[k][j][i] + cb_vec[omp_get_thread_num()][i - 1] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
       //Ezx[k][j][i] = Enp1;
           }
         }
@@ -4494,24 +4496,24 @@ else{
 }
     }
 
-    Enp1 = Ca * E.zx[k][j][i] + Cb * (H.yx[k][j][i] + H.yz[k][j][i] - H.yx[k][j][i - 1] - H.yz[k][j][i - 1]);
+    Enp1 = Ca * E_s.zx[k][j][i] + Cb * (H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i - 1] - H_s.yz[k][j][i - 1]);
     if( (is_disp || is_disp_ml) && gamma_l)
-Enp1 += Cc*E_nm1.zx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
+Enp1 += Cc*E_nm1.zx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
     if(is_cond && rho)
 Enp1 += Cb*dx*J_c.zx[k][j][i];
 
     if( (is_disp || is_disp_ml) && gamma_l){
-Jnp1  = alpha_l * J.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
-Jnp1 += sigma_l / eo * gamma_l * E.zx[k][j][i];
-E_nm1.zx[k][j][i] = E.zx[k][j][i];
-J_nm1.zx[k][j][i] = J.zx[k][j][i];
-      J.zx[k][j][i]     = Jnp1;
+Jnp1  = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
+Jnp1 += sigma_l / eo * gamma_l * E_s.zx[k][j][i];
+E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
+J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
+      J_s.zx[k][j][i]     = Jnp1;
     }
     if(is_cond && rho){
-J_c.zx[k][j][i] -= rho*(Enp1 + E.zx[k][j][i]);
+J_c.zx[k][j][i] -= rho*(Enp1 + E_s.zx[k][j][i]);
     }
 
-    E.zx[k][j][i] = Enp1;
+    E_s.zx[k][j][i] = Enp1;
   }
   }
   //fprintf(stderr,"Pos 08:\n");
@@ -4759,35 +4761,35 @@ J_c.zx[k][j][i] -= rho*(Enp1 + E.zx[k][j][i]);
 
       //Enp1 = Ca*Ezy[k][j][i]+Cb*(Hxy[k][j-1][i] + Hxz[k][j-1][i] - Hxy[k][j][i] - Hxz[k][j][i]);
       if( (is_disp || is_disp_ml) && gamma_l)
-        Enp1 += Cc*E_nm1.zy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
+        Enp1 += Cc*E_nm1.zy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
       if(is_cond && rho)
         Enp1 += Cb*dy*J_c.zy[k][j][i];
 
       if( (is_disp || is_disp_ml) && gamma_l){
-        Jnp1  = alpha_l * J.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
+        Jnp1  = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
 
-        Jnp1 += sigma_l / eo * gamma_l * E.zy[k][j][i];
-        E_nm1.zy[k][j][i] = E.zy[k][j][i];
-        J_nm1.zy[k][j][i] = J.zy[k][j][i];
-        J.zy[k][j][i]     = Jnp1;
+        Jnp1 += sigma_l / eo * gamma_l * E_s.zy[k][j][i];
+        E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
+        J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
+        J_s.zy[k][j][i]     = Jnp1;
       }
       if(is_cond && rho){
-        J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
+        J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
       }
 
-      eh_vec[omp_get_thread_num()][j][0] = H.xy[k][j][i] + H.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+      eh_vec[omp_get_thread_num()][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
       ca_vec[omp_get_thread_num()][j-1] = Ca;
       cb_vec[omp_get_thread_num()][j-1] = Cb;
 
           }
           if(J_tot>1){
       j = 0;
-      eh_vec[omp_get_thread_num()][j][0] = H.xy[k][j][i] + H.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+      eh_vec[omp_get_thread_num()][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
       first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
             dk_e_y, N_e_y , pf_ezy[omp_get_thread_num()], pb_ezy[omp_get_thread_num()]);
           }
           for(j=1;j<J_tot;j++){
-            E.zy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E.zy[k][j][i] - cb_vec[omp_get_thread_num()][j - 1] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
+            E_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.zy[k][j][i] - cb_vec[omp_get_thread_num()][j - 1] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
       //Ezy[k][j][i] = Enp1;
           }
         }
@@ -4862,25 +4864,25 @@ else{
 
 
 
-    Enp1 = Ca * E.zy[k][j][i] + Cb * (H.xy[k][j - 1][i] + H.xz[k][j - 1][i] - H.xy[k][j][i] - H.xz[k][j][i]);
+    Enp1 = Ca * E_s.zy[k][j][i] + Cb * (H_s.xy[k][j - 1][i] + H_s.xz[k][j - 1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
     if( (is_disp || is_disp_ml) && gamma_l)
-Enp1 += Cc*E_nm1.zy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
+Enp1 += Cc*E_nm1.zy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
     if(is_cond && rho)
 Enp1 += Cb*dy*J_c.zy[k][j][i];
 
     if( (is_disp || is_disp_ml) && gamma_l){
-Jnp1  = alpha_l * J.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
+Jnp1  = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
 
-Jnp1 += sigma_l / eo * gamma_l * E.zy[k][j][i];
-E_nm1.zy[k][j][i] = E.zy[k][j][i];
-J_nm1.zy[k][j][i] = J.zy[k][j][i];
-      J.zy[k][j][i]     = Jnp1;
+Jnp1 += sigma_l / eo * gamma_l * E_s.zy[k][j][i];
+E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
+J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
+      J_s.zy[k][j][i]     = Jnp1;
     }
     if(is_cond && rho){
-J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
+J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
     }
 
-    E.zy[k][j][i] = Enp1;
+    E_s.zy[k][j][i] = Enp1;
   }
   }
 }//end of parallel section
@@ -4893,7 +4895,7 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
     //update terms for self consistency across scattered/total interface - E updates##
     if(sourcemode == sm_steadystate){//steadystate
       complex<double> commonPhase = exp(-I*fmod(omega_an[0]*time_H,2.*dcpi));
-      commonAmplitude = linearRamp(time_H, 1./(*omega_an/(2*dcpi)), ramp_width);
+      double commonAmplitude = linearRamp(time_H, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
 	  if( (int)I0[1] ){//Perform across I0
@@ -4904,18 +4906,18 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (I_tot+1)*k+(int)I0[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-        E.zx[k][j][(int)I0[0]] = E.zx[k][j][(int)I0[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
+        E_s.zx[k][j][(int)I0[0]] = E_s.zx[k][j][(int)I0[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
 	      if(is_cond)
 		J_c.zx[k][j][(int)I0[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
 	      if(is_disp_ml)
-          J.zx[k][j][(int)I0[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
+          J_s.zx[k][j][(int)I0[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
 	    }
 	    if( j < ((int)J1[0]) ){
-        E.yx[k][j][(int)I0[0]] = E.yx[k][j][(int)I0[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
+        E_s.yx[k][j][(int)I0[0]] = E_s.yx[k][j][(int)I0[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
 	      if(is_cond)
 		J_c.yx[k][j][(int)I0[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
 	      if(is_disp_ml)
-          J.yx[k][j][(int)I0[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
+          J_s.yx[k][j][(int)I0[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
 	    }
 	  }
 	  if( (int)I1[1] ){//Perform across I1
@@ -4926,18 +4928,18 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (I_tot+1)*k+(int)I1[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-        E.zx[k][j][(int)I1[0]] = E.zx[k][j][(int)I1[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
+        E_s.zx[k][j][(int)I1[0]] = E_s.zx[k][j][(int)I1[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
 	      if(is_cond)
 		J_c.zx[k][j][(int)I1[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
 	      if(is_disp_ml)
-          J.zx[k][j][(int)I1[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
+          J_s.zx[k][j][(int)I1[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
 	    }
 	    if( j < ((int)J1[0]) ){
-        E.yx[k][j][(int)I1[0]] = E.yx[k][j][(int)I1[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
+        E_s.yx[k][j][(int)I1[0]] = E_s.yx[k][j][(int)I1[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
 	      if(is_cond)
 		J_c.yx[k][j][(int)I1[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
 	      if(is_disp_ml)
-          J.yx[k][j][(int)I1[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
+          J_s.yx[k][j][(int)I1[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
 	    }
 	  }
 	}
@@ -4952,18 +4954,18 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      else
 		array_ind = (J_tot+1)*k+(int)J0[0];
 
-        E.zy[k][((int)J0[0])][i] = E.zy[k][((int)J0[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
+        E_s.zy[k][((int)J0[0])][i] = E_s.zy[k][((int)J0[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
 	      if(is_cond)
 		J_c.zy[k][((int)J0[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
 	      if(is_disp_ml)
-          J.zy[k][((int)J0[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
+          J_s.zy[k][((int)J0[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
 	    }
 	    if( i < ((int)I1[0]) ){
-        E.xy[k][((int)J0[0])][i] = E.xy[k][((int)J0[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
+        E_s.xy[k][((int)J0[0])][i] = E_s.xy[k][((int)J0[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
 	      if(is_cond)
 		J_c.xy[k][((int)J0[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
 	      if(is_disp_ml)
-          J.xy[k][((int)J0[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
+          J_s.xy[k][((int)J0[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
 	    }
 	  }
 	  if( (int)J1[1] ){//Perform across J1
@@ -4974,18 +4976,18 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (J_tot+1)*k+(int)J1[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-        E.zy[k][((int)J1[0])][i] = E.zy[k][((int)J1[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
+        E_s.zy[k][((int)J1[0])][i] = E_s.zy[k][((int)J1[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
 	      if(is_cond)
 		J_c.zy[k][((int)J1[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
 	      if(is_disp_ml)
-          J.zy[k][((int)J1[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
+          J_s.zy[k][((int)J1[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
 	    }
 	    if( i < ((int)I1[0]) ){
-        E.xy[k][((int)J1[0])][i] = E.xy[k][((int)J1[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
+        E_s.xy[k][((int)J1[0])][i] = E_s.xy[k][((int)J1[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
 	      if(is_cond)
 		J_c.xy[k][((int)J1[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
 	      if(is_disp_ml)
-          J.xy[k][((int)J1[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
+          J_s.xy[k][((int)J1[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
 	    }
 	  }
 	}
@@ -4994,34 +4996,34 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
 	  if( (int)K0[1] ){//Perform across K0
 	    if( j < ((int)J1[0]) ){
-        E.yz[((int)K0[0])][j][i] = E.yz[((int)K0[0])][j][i] - Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
+        E_s.yz[((int)K0[0])][j][i] = E_s.yz[((int)K0[0])][j][i] - Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
 	      if(is_cond)
 		J_c.yz[((int)K0[0])][j][i] += rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
 	      if(is_disp_ml)
-          J.yz[((int)K0[0])][j][i] -= ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
+          J_s.yz[((int)K0[0])][j][i] -= ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
 	    }
 	    if( i < ((int)I1[0]) ){
-        E.xz[((int)K0[0])][j][i] = E.xz[((int)K0[0])][j][i] + Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
+        E_s.xz[((int)K0[0])][j][i] = E_s.xz[((int)K0[0])][j][i] + Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
 	      if(is_cond)
 		J_c.xz[((int)K0[0])][j][i]  -= rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
 	      if(is_disp_ml)
-          J.xz[((int)K0[0])][j][i] += ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
+          J_s.xz[((int)K0[0])][j][i] += ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
 	    }
 	  }
 	  if( (int)K1[1] ){//Perform across K1
 	    if( j < ((int)J1[0]) ){
-        E.yz[((int)K1[0])][j][i] = E.yz[((int)K1[0])][j][i] + Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
+        E_s.yz[((int)K1[0])][j][i] = E_s.yz[((int)K1[0])][j][i] + Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
 	      if(is_cond)
 		J_c.yz[((int)K1[0])][j][i] -= rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
 	      if(is_disp_ml)
-          J.yz[((int)K1[0])][j][i] += ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
+          J_s.yz[((int)K1[0])][j][i] += ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
 	    }
 	    if( i < ((int)I1[0]) ){
-        E.xz[((int)K1[0])][j][i] = E.xz[((int)K1[0])][j][i] - Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
+        E_s.xz[((int)K1[0])][j][i] = E_s.xz[((int)K1[0])][j][i] - Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
 	      if(is_cond)
 		J_c.xz[((int)K1[0])][j][i] += rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
 	      if(is_disp_ml)
-          J.xz[((int)K1[0])][j][i] -= ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
+          J_s.xz[((int)K1[0])][j][i] -= ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
 	    }
 	  }
 	}
@@ -5032,13 +5034,13 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
       if(J_tot==0){
 	j=0;
 	for(i=0;i<(I_tot+1);i++){
-    E.yz[(int)K0[0]][j][i] = E.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
+    E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
 	  //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	  if(is_cond)
 	    J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
 	  //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	  if(is_disp_ml){
-      J.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
+      J_s.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
 	    //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	    
 	  }
@@ -5051,26 +5053,26 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      if(i==41 & j==41)
 	      fprintf(stderr,"Cbz = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",Cbz[(int)K0[0]],KsourceR[j-((int)J0[0])][i-((int)I0[0])][2],KsourceI[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
 	    */
-	    E.yz[(int)K0[0]][j][i] = E.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
+	    E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
 	    //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	    if(is_cond)
 	      J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
 	    //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	    if(is_disp_ml){
-        J.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
+        J_s.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
 	      //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	  
 	    }
 	  }
       for(j=0;j<(J_tot+1);j++)
 	for(i=0;i<I_tot;i++){
-    E.xz[(int)K0[0]][j][i] = E.xz[(int)K0[0]][j][i] + Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
+    E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
 	  //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	  if(is_cond)
 	    J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
 	  //J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	  if(is_disp_ml)
-      J.xz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
+      J_s.xz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
 	  //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	}
       //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
@@ -5151,17 +5153,17 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  //Hxz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
 		}
 	    
-		eh_vec[omp_get_thread_num()][k][0] = E.yx[k][j][i] + E.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+		eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 
 	      }
 	      k = K_tot;
-	      eh_vec[omp_get_thread_num()][k][0] = E.yx[k][j][i] + E.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+	      eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 	    
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_h_z, N_h_z , pf_hxz[omp_get_thread_num()], pb_hxz[omp_get_thread_num()]);
 
 	      for(k=0;k<K_tot;k++){
-          H.xz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H.xz[k][j][i] + cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
+          H_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.xz[k][j][i] + cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
 	      }
 	    }
 	
@@ -5226,17 +5228,17 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  //		Hxy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
 		}
 	      	      
-		eh_vec[omp_get_thread_num()][j][0] = E.zy[k][j][i] + E.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+		eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 	      
 	      }
 	      j=J_tot;
-	      eh_vec[omp_get_thread_num()][j][0] = E.zy[k][j][i] + E.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+	      eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_h_y, N_h_y , pf_hxy[omp_get_thread_num()], pb_hxy[omp_get_thread_num()]);
 	    	    
 	      for(j=0;j<J_tot;j++){
-          H.xy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H.xy[k][j][i] - cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
+          H_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.xy[k][j][i] - cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
 	      }
 
 	      /*
@@ -5319,17 +5321,17 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  //	Hyx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);  
 		}
 
-		eh_vec[omp_get_thread_num()][i][0] = E.zx[k][j][i] + E.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+		eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 	      
 	      }
 	      i = I_tot;
-	      eh_vec[omp_get_thread_num()][i][0] = E.zx[k][j][i] + E.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+	      eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_h_x, N_h_x , pf_hyx[omp_get_thread_num()], pb_hyx[omp_get_thread_num()]);
 
 	      for(i=0;i<I_tot;i++){
-          H.yx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H.yx[k][j][i] + cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
+          H_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.yx[k][j][i] + cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
 	      }
 	    }
 //PSTD, Hyx
@@ -5397,11 +5399,11 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  //Hyz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]); 
 		}
 	      
-		eh_vec[omp_get_thread_num()][k][0] = E.xy[k][j][i] + E.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+		eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 	      
 	      }
 	      k=K_tot;
-	      eh_vec[omp_get_thread_num()][k][0] = E.xy[k][j][i] + E.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+	      eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 	    
 	      /*
 		if( i==12 & j==12 ){
@@ -5415,7 +5417,7 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 				dk_h_z, N_h_z , pf_hyz[omp_get_thread_num()], pb_hyz[omp_get_thread_num()]);
 
 	      for(k=0;k<K_tot;k++){
-          H.yz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H.yz[k][j][i] - cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
+          H_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.yz[k][j][i] - cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
 	      }
 	    }
 //PSTD, Hyz
@@ -5428,9 +5430,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	  for(j=0;j<J_tot;j++)
 	    for(i=0;i<(I_tot+1);i++)
 	      if(  !materials[k][j][i])
-          H.xz[k][j][i] = 0.;
+          H_s.xz[k][j][i] = 0.;
 	      else
-          H.xz[k][j][i] = 0.;
+          H_s.xz[k][j][i] = 0.;
 
 #pragma omp for
 	//Hxy update
@@ -5452,9 +5454,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      else
 		array_ind = (J_tot+1)*k_loc+j;
 	      if(  !materials[k][j][i])
-          H.xy[k][j][i] = Day[array_ind] * H.xy[k][j][i] + Dby[array_ind] * (E.zy[k][j][i] + E.zx[k][j][i] - E.zy[k][j + 1][i] - E.zx[k][j + 1][i]);
+          H_s.xy[k][j][i] = Day[array_ind] * H_s.xy[k][j][i] + Dby[array_ind] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
 	      else
-          H.xy[k][j][i] = Dmaterial_Day[materials[k][j][i] - 1] * H.xy[k][j][i] + Dmaterial_Dby[materials[k][j][i] - 1] * (E.zy[k][j][i] + E.zx[k][j][i] - E.zy[k][j + 1][i] - E.zx[k][j + 1][i]);
+          H_s.xy[k][j][i] = Dmaterial_Day[materials[k][j][i] - 1] * H_s.xy[k][j][i] + Dmaterial_Dby[materials[k][j][i] - 1] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
 	    }
 
 #pragma omp for
@@ -5477,9 +5479,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      else
 		array_ind = (I_tot+1)*k_loc+i;
 	      if(  !materials[k][j][i])
-          H.yx[k][j][i] = Dax[array_ind] * H.yx[k][j][i] + Dbx[array_ind] * (E.zx[k][j][i + 1] + E.zy[k][j][i + 1] - E.zx[k][j][i] - E.zy[k][j][i]);
+          H_s.yx[k][j][i] = Dax[array_ind] * H_s.yx[k][j][i] + Dbx[array_ind] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
 	      else
-          H.yx[k][j][i] = Dmaterial_Dax[materials[k][j][i] - 1] * H.yx[k][j][i] + Dmaterial_Dbx[materials[k][j][i] - 1] * (E.zx[k][j][i + 1] + E.zy[k][j][i + 1] - E.zx[k][j][i] - E.zy[k][j][i]);
+          H_s.yx[k][j][i] = Dmaterial_Dax[materials[k][j][i] - 1] * H_s.yx[k][j][i] + Dmaterial_Dbx[materials[k][j][i] - 1] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
 	    }
 
 #pragma omp for
@@ -5487,9 +5489,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	  for(j=0;j<(J_tot+1);j++)
 	    for(i=0;i<I_tot;i++)
 	      if(  !materials[k][j][i])
-          H.yz[k][j][i] = 0.;
+          H_s.yz[k][j][i] = 0.;
 	      else
-          H.yz[k][j][i] = 0.;
+          H_s.yz[k][j][i] = 0.;
 	}
       }
     
@@ -5552,16 +5554,16 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  //	      Hzy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]); 
 		}
 
-		eh_vec[omp_get_thread_num()][j][0] = E.xy[k][j][i] + E.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+		eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 	      }
 	      j=J_tot;
-	      eh_vec[omp_get_thread_num()][j][0] = E.xy[k][j][i] + E.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+	      eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_h_y, N_h_y , pf_hzy[omp_get_thread_num()], pb_hzy[omp_get_thread_num()]);
 
 	      for(j=0;j<J_tot;j++){
-          H.zy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H.zy[k][j][i] + cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
+          H_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.zy[k][j][i] + cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
 	      }
 	    }
  //PSTD, Hzy
@@ -5627,17 +5629,17 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 		  cb_vec[omp_get_thread_num()][i] = Dmaterial_Dbx[materials[k][j][i]-1];
 		}
 
-		eh_vec[omp_get_thread_num()][i][0] = E.yx[k][j][i] + E.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+		eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 	      }
 	      i=I_tot;
-	      eh_vec[omp_get_thread_num()][i][0] = E.yx[k][j][i] + E.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+	      eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
 	    
 	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
 				dk_h_x, N_h_x , pf_hzx[omp_get_thread_num()], pb_hzx[omp_get_thread_num()]);
 
 	      for(i=0;i<I_tot;i++){
-          H.zx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H.zx[k][j][i] - cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
+          H_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.zx[k][j][i] - cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
 	      }
 	    
 	    }
@@ -5653,7 +5655,7 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
     //update terms for self consistency across scattered/total interface - E updates
     if(sourcemode == sm_steadystate){//steadystate
       complex<double> commonPhase = exp(-I*fmod(omega_an[0]*time_E,2.*dcpi));
-      commonAmplitude = linearRamp(time_E, 1./(*omega_an/(2*dcpi)), ramp_width);
+      double commonAmplitude = linearRamp(time_E, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
 	  if( (int)I0[1] ){//Perform across I0
@@ -5664,9 +5666,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (I_tot+1)*k+(int)I0[0] - 1;
 
 	    if( j < ((int)J1[0]) )
-        H.zx[k][j][((int)I0[0]) - 1] = H.zx[k][j][((int)I0[0]) - 1] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][0] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][0]));
+        H_s.zx[k][j][((int)I0[0]) - 1] = H_s.zx[k][j][((int)I0[0]) - 1] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][0] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][0]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-        H.yx[k][j][((int)I0[0]) - 1] = H.yx[k][j][((int)I0[0]) - 1] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][1] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][1]));
+        H_s.yx[k][j][((int)I0[0]) - 1] = H_s.yx[k][j][((int)I0[0]) - 1] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][1] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][1]));
 	    
 	  }
 	  if( (int)I1[1] ){//Perform across I1
@@ -5677,9 +5679,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (I_tot+1)*k+(int)I1[0];
 
 	    if( j < ((int)J1[0]) )
-        H.zx[k][j][((int)I1[0])] = H.zx[k][j][((int)I1[0])] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][4] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][4]));
+        H_s.zx[k][j][((int)I1[0])] = H_s.zx[k][j][((int)I1[0])] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][4] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][4]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-        H.yx[k][j][((int)I1[0])] = H.yx[k][j][((int)I1[0])] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][5] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][5]));
+        H_s.yx[k][j][((int)I1[0])] = H_s.yx[k][j][((int)I1[0])] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][5] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][5]));
 	  }
 	}
       
@@ -5693,10 +5695,10 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (J_tot+1)*k+(int)J0[0];
 	 
 	    if( i < ((int)I1[0]) )
-        H.zy[k][((int)J0[0]) - 1][i] = H.zy[k][((int)J0[0]) - 1][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][0] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][0]));
+        H_s.zy[k][((int)J0[0]) - 1][i] = H_s.zy[k][((int)J0[0]) - 1][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][0] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][0]));
 
 	    if( k < ((int)K1[0]) || dimension==TM )
-        H.xy[k][((int)J0[0]) - 1][i] = H.xy[k][((int)J0[0]) - 1][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][1] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][1]));
+        H_s.xy[k][((int)J0[0]) - 1][i] = H_s.xy[k][((int)J0[0]) - 1][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][1] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][1]));
 	  }
 	  if( (int)J1[1] ){//Perform across J1
 
@@ -5706,9 +5708,9 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	      array_ind = (J_tot+1)*k+(int)J1[0];
 
 	    if( i < ((int)I1[0]) )
-        H.zy[k][((int)J1[0])][i] = H.zy[k][((int)J1[0])][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][4] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][4]));
+        H_s.zy[k][((int)J1[0])][i] = H_s.zy[k][((int)J1[0])][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][4] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][4]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-        H.xy[k][((int)J1[0])][i] = H.xy[k][((int)J1[0])][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][5] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][5]));
+        H_s.xy[k][((int)J1[0])][i] = H_s.xy[k][((int)J1[0])][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][5] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][5]));
 	  }
 	}
       
@@ -5716,15 +5718,15 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
 	  if( (int)K0[1] ){//Perform across K0
 	    if( i < ((int)I1[0]) )
-        H.yz[((int)K0[0]) - 1][j][i] = H.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]));
+        H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]));
 	    if( j < ((int)J1[0]) )
-        H.xz[((int)K0[0]) - 1][j][i] = H.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]));
+        H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]));
 	  }
 	  if( (int)K1[1] ){//Perform across K1
 	    if( i < ((int)I1[0]) )
-        H.yz[((int)K1[0])][j][i] = H.yz[((int)K1[0])][j][i] - Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][4] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][4]));
+        H_s.yz[((int)K1[0])][j][i] = H_s.yz[((int)K1[0])][j][i] - Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][4] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][4]));
 	    if( j < ((int)J1[0]) )
-        H.xz[((int)K1[0])][j][i] = H.xz[((int)K1[0])][j][i] + Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][5] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][5]));
+        H_s.xz[((int)K1[0])][j][i] = H_s.xz[((int)K1[0])][j][i] + Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][5] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][5]));
 	  }
 	}
       E.ft = real(commonAmplitude * commonPhase);
@@ -5735,17 +5737,17 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	//fprintf(stderr,"Pos 11d\n");
 	j=0;
 	for(i=0;i<(I_tot+1);i++){
-    H.xz[((int)K0[0]) - 1][j][i] = H.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][1] + I * KsourceI[0][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
+    H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][1] + I * KsourceI[0][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
 	  //broadband source term
 	  if(eyi_present)
-      H.xz[((int)K0[0]) - 1][j][i] = H.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
+      H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
 	}
 	//fprintf(stderr,"Pos 11e\n");
 	for(i=0;i<I_tot;i++){
-    H.yz[((int)K0[0]) - 1][j][i] = H.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][0] + I * KsourceI[0][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
+    H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][0] + I * KsourceI[0][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
 	  //broadband source term
 	  if(exi_present)
-      H.yz[((int)K0[0]) - 1][j][i] = H.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
+      H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
 	  //if(i==511)
 	  //  fprintf(stdout,"%e\n",Dbz[((int)K0[0])-1]*exi[tind][j][i]);
 	}
@@ -5755,18 +5757,18 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
 	//fprintf(stderr,"Pos 11g\n");
 	for(j=0;j<J_tot;j++)
 	  for(i=0;i<(I_tot+1);i++){
-      H.xz[((int)K0[0]) - 1][j][i] = H.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
+      H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
 	    //broadband source term
 	    if(eyi_present)
-        H.xz[((int)K0[0]) - 1][j][i] = H.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
+        H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
 	  }
 	//fprintf(stderr,"Pos 11h\n");
 	for(j=0;j<(J_tot+1);j++)
 	  for(i=0;i<I_tot;i++){
-      H.yz[((int)K0[0]) - 1][j][i] = H.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
+      H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
 	    //broadband source term
 	    if(exi_present)
-        H.yz[((int)K0[0]) - 1][j][i] = H.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
+        H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
 	  }
 	//fprintf(stderr,"Pos 11i\n");
       }
@@ -5810,27 +5812,27 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E.zy[k][j][i]);
       for(k=0;k<(K_tot+1);k++) {
         for (j = 0; j < (J_tot + 1); j++) {
           for (i = 0; i < (I_tot + 1); i++) {
-            tempfield = fabs(E.xy[k][j][i] + E.xz[k][j][i]);
+            tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
-            tempfield = fabs(E.yx[k][j][i] + E.yz[k][j][i]);
+            tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
-            tempfield = fabs(E.zx[k][j][i] + E.zy[k][j][i]);
+            tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
-            tempfield = fabs(H.xy[k][j][i] + H.xz[k][j][i]);
+            tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
-            tempfield = fabs(H.yx[k][j][i] + H.yz[k][j][i]);
+            tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
-            tempfield = fabs(H.zx[k][j][i] + H.zy[k][j][i]);
+            tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
             if (maxfield < tempfield) {
               maxfield = tempfield;
             }
@@ -5868,7 +5870,7 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 	if( (i % skip_tdf) == 0){
 	  for(k=0;k<K_tot;k++)
 	    if( (k % skip_tdf) == 0){
-	      ex_tdf[kc++][ic] = E.xy[k][0][i] + E.xz[k][0][i];
+	      ex_tdf[kc++][ic] = E_s.xy[k][0][i] + E_s.xz[k][0][i];
 	      //fprintf(stderr,"%d %d\n",kc,ic);
 	    }
 	ic++;
@@ -5916,17 +5918,17 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 
   //fprintf(stderr,"Pos 12\n");
   if(runmode == rm_complete && exphasorsvolume){
-    normaliseVolume(ExR,ExI,EyR,EyI,EzR,EzI,
-		    pind_il,pind_iu,
-		    pind_jl,pind_ju,
-		    pind_kl,pind_ku,
-		    E.angular_norm);
+    normaliseVolume(ExR, ExI, EyR, EyI, EzR, EzI,
+                    pind_il, pind_iu,
+                    pind_jl, pind_ju,
+                    pind_kl, pind_ku,
+                    E.angular_norm);
 
-    normaliseVolume(HxR,HxI,HyR,HyI,HzR,HzI,
-		    pind_il,pind_iu,
-		    pind_jl,pind_ju,
-		    pind_kl,pind_ku,
-		    H.angular_norm);
+    normaliseVolume(HxR, HxI, HyR, HyI, HzR, HzI,
+                    pind_il, pind_iu,
+                    pind_jl, pind_ju,
+                    pind_kl, pind_ku,
+                    H.angular_norm);
   }
  
   //fprintf(stderr,"Pos 13\n");
@@ -5969,27 +5971,27 @@ if(runmode == rm_complete && (nvertices>0) )
   for(k=0;k<(K_tot+1);k++) {
     for (j = 0; j < (J_tot + 1); j++) {
       for (i = 0; i < (I_tot + 1); i++) {
-        tempfield = fabs(E.xy[k][j][i] + E.xz[k][j][i]);
+        tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
-        tempfield = fabs(E.yx[k][j][i] + E.yz[k][j][i]);
+        tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
-        tempfield = fabs(E.zx[k][j][i] + E.zy[k][j][i]);
+        tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
-        tempfield = fabs(H.xy[k][j][i] + H.xz[k][j][i]);
+        tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
-        tempfield = fabs(H.yx[k][j][i] + H.yz[k][j][i]);
+        tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
-        tempfield = fabs(H.zx[k][j][i] + H.zy[k][j][i]);
+        tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
         if (maxfield < tempfield) {
           maxfield = tempfield;
         }
@@ -6202,34 +6204,34 @@ if(runmode == rm_complete && (nvertices>0) )
 
   //fprintf(stderr,"Pos 18\n");
   if(dimension==THREE){
-    freeCastMatlab3DArray(E.xy, K_tot + 1);
-    freeCastMatlab3DArray(E.xz, K_tot + 1);
-    freeCastMatlab3DArray(E.yx, K_tot + 1);
-    freeCastMatlab3DArray(E.yz, K_tot + 1);
-    freeCastMatlab3DArray(E.zx, K_tot + 1);
-    freeCastMatlab3DArray(E.zy, K_tot + 1);
+    freeCastMatlab3DArray(E_s.xy, K_tot + 1);
+    freeCastMatlab3DArray(E_s.xz, K_tot + 1);
+    freeCastMatlab3DArray(E_s.yx, K_tot + 1);
+    freeCastMatlab3DArray(E_s.yz, K_tot + 1);
+    freeCastMatlab3DArray(E_s.zx, K_tot + 1);
+    freeCastMatlab3DArray(E_s.zy, K_tot + 1);
 
-    freeCastMatlab3DArray(H.xy, K_tot + 1);
-    freeCastMatlab3DArray(H.xz, K_tot + 1);
-    freeCastMatlab3DArray(H.yx, K_tot + 1);
-    freeCastMatlab3DArray(H.yz, K_tot + 1);
-    freeCastMatlab3DArray(H.zx, K_tot + 1);
-    freeCastMatlab3DArray(H.zy, K_tot + 1);
+    freeCastMatlab3DArray(H_s.xy, K_tot + 1);
+    freeCastMatlab3DArray(H_s.xz, K_tot + 1);
+    freeCastMatlab3DArray(H_s.yx, K_tot + 1);
+    freeCastMatlab3DArray(H_s.yz, K_tot + 1);
+    freeCastMatlab3DArray(H_s.zx, K_tot + 1);
+    freeCastMatlab3DArray(H_s.zy, K_tot + 1);
   }
   else{
-    freeCastMatlab3DArray(E.xy, 0);
-    freeCastMatlab3DArray(E.xz, 0);
-    freeCastMatlab3DArray(E.yx, 0);
-    freeCastMatlab3DArray(E.yz, 0);
-    freeCastMatlab3DArray(E.zx, 0);
-    freeCastMatlab3DArray(E.zy, 0);
+    freeCastMatlab3DArray(E_s.xy, 0);
+    freeCastMatlab3DArray(E_s.xz, 0);
+    freeCastMatlab3DArray(E_s.yx, 0);
+    freeCastMatlab3DArray(E_s.yz, 0);
+    freeCastMatlab3DArray(E_s.zx, 0);
+    freeCastMatlab3DArray(E_s.zy, 0);
     
-    freeCastMatlab3DArray(H.xy, 0);
-    freeCastMatlab3DArray(H.xz, 0);
-    freeCastMatlab3DArray(H.yx, 0);
-    freeCastMatlab3DArray(H.yz, 0);
-    freeCastMatlab3DArray(H.zx, 0);
-    freeCastMatlab3DArray(H.zy, 0);
+    freeCastMatlab3DArray(H_s.xy, 0);
+    freeCastMatlab3DArray(H_s.xz, 0);
+    freeCastMatlab3DArray(H_s.yx, 0);
+    freeCastMatlab3DArray(H_s.yz, 0);
+    freeCastMatlab3DArray(H_s.zx, 0);
+    freeCastMatlab3DArray(H_s.zy, 0);
   }
 
   //fprintf(stderr,"Pos 19\n");
@@ -6383,9 +6385,9 @@ if(runmode == rm_complete && (nvertices>0) )
                            &E_nm1.xy, &E_nm1.xz,
                            &E_nm1.yx, &E_nm1.yz,
                            &E_nm1.zx, &E_nm1.zy,
-                           &J.xy, &J.xz,
-                           &J.yx, &J.yz,
-                           &J.zx, &J.zy,
+                           &J_s.xy, &J_s.xz,
+                           &J_s.yx, &J_s.yz,
+                           &J_s.zx, &J_s.zy,
                            &J_nm1.xy, &J_nm1.xz,
                            &J_nm1.yx, &J_nm1.yz,
                            &J_nm1.zx, &J_nm1.zy);
