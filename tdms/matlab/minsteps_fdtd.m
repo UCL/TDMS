@@ -5,7 +5,7 @@
 %trailing edge of the guassian pulse travels at the speed of
 %light. (dispersion free). Calculates the edge of the pulse travelling from 
 %interface to end wall and back.
-function [n] = fdtdminsteps(inputfile)
+function [n] = minsteps_fdtd(inputfile)
 
 [fid_input,message] = fopen(inputfile,'r');
 
@@ -51,4 +51,4 @@ t = 2*to;
 %the grid and then out again
 t = t + (K-interface.K0(1))*delta.z/(c/sqrt(max(epsr))) + K*delta.z/(c/sqrt(max(epsr)));
 
-n = t/(0.95*dt_upper);
+n = int32(t/(0.95*dt_upper));
