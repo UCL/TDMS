@@ -51,4 +51,4 @@ t = 2*to;
 %the grid and then out again
 t = t + (K-interface.K0(1))*delta.z/(c/sqrt(max(epsr))) + K*delta.z/(c/sqrt(max(epsr)));
 
-n = int32(t/(0.95*dt_upper));
+n = ceil(t/(0.95*dt_upper));

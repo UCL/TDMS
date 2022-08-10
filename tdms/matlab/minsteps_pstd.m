@@ -5,7 +5,7 @@
 %trailing edge of the guassian pulse travels at the speed of
 %light. (dispersion free). Calculates the edge of the pulse travelling from 
 %interface to end wall and back.
-function [n] = fdtdminsteps_pstd(inputfile)
+function [n] = minsteps_pstd(inputfile)
 
 [fid_input,message] = fopen(inputfile,'r');
 
@@ -44,9 +44,7 @@ if exist('dt') ~= 1
     error('dt is not defined - cannot determine n');
 end
 
-
 [to hwhm] = fdtdduration(inputfile);
-%[dt_upper] = fdtdts(inputfile);
 
 %have to have pulse reaching close to 0 at the interface
 t = 2*to;

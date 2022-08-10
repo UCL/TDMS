@@ -19,9 +19,18 @@ end
 
 function testMinStepsFDTD(testCase)
 
-    n_expected = int32(1483);
+    n_expected = 1483;
     % This also tests fdtdts, which computes the upper limite of the timestep
     n_acual = minsteps_fdtd('pstd_input_file_2D.m');
+
+    verifyEqual(testCase, n_expected, n_acual);
+end
+
+
+function testMinStepsPSTD(testCase)
+
+    n_expected = 891;
+    n_acual = minsteps_pstd('pstd_input_file_2D.m');
 
     verifyEqual(testCase, n_expected, n_acual);
 end
