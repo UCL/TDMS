@@ -8,18 +8,19 @@ import numpy as np
 
 from dataclasses import dataclass
 from urllib import request
+from platform import system
 from typing import Union
 from pathlib import Path
 from zipfile import ZipFile
 from functools import wraps
 from subprocess import Popen, PIPE
 
+executable_name = "tdms.exe" if system() == "Windows" else "tdms"
+executable_path = shutil.which(executable_name)
 
-executable_path = shutil.which("tdms")
-
-if Path("tdms").is_file():
+if Path(executable_name).is_file():
     # If the executable exists in the current working directory use that
-    executable_path = str(Path("tdms").absolute())
+    executable_path = str(Path(executable_name).absolute())
 
 
 class HDF5File(dict):

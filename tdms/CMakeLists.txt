@@ -8,6 +8,7 @@ set(CMAKE_MACOSX_RPATH TRUE)
 
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
 
 # and the  include directories for the project
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -41,13 +42,14 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64")
 get_filename_component(MATLAB_LIB_ROOT "${Matlab_MAT_LIBRARY}" DIRECTORY)
 set(CMAKE_INSTALL_RPATH ${MATLAB_LIB_ROOT})
 
+
 # FFTW3 -----------------------------------------------------------------------
 find_package(FFTW REQUIRED)
 include_directories(${FFTW_INCLUDE_DIRS})
 
 
 # OpenMP + libc++ -------------------------------------------------------------
-if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
     find_package(OpenMP_Mac REQUIRED)
     find_package(Lib_CXX_Mac)
 else()
@@ -55,70 +57,53 @@ else()
 endif()
 
 
-# catch2 tests ----------------------------------------------------------------
-Include(FetchContent)
+# TDMS target -----------------------------------------------------------------
+set(SOURCES
+    src/argument_parser.cpp
+    src/fdtd_grid_initialiser.cpp
+    src/interpolate.cpp
+    src/iterator.cpp
+    src/matrix_collection.cpp
+    src/mesh_base.cpp
+    src/numeric.cpp
+    src/numerical_derivative.cpp
+    src/utils.cpp
+    matlabio/matlabio.cpp
+    )
 
-FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v3.0.1
-)
-
-FetchContent_MakeAvailable(Catch2)
-list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/contrib)
-include(CTest)
-include(Catch)
+if (CMAKE_BUILD_TYPE STREQUAL "Test")
+    test_target()
+else()
+    release_target()
+endif()
 
 
 # Compile options -------------------------------------------------------------
-add_compile_options(-DMX_COMPAT_32 -c ${DFLAG} -O3)
+target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
 
-add_library(tdms_lib SHARED)
-target_sources(tdms_lib PUBLIC
-        src/argument_parser.cpp
-        src/fdtd_grid_initialiser.cpp
-        src/interpolate.cpp
-        src/iterator.cpp
-        src/matrix_collection.cpp
-        src/mesh_base.cpp
-        src/numeric.cpp
-        src/numerical_derivative.cpp
-        src/utils.cpp
-        matlabio/matlabio.cpp
-        )
-
-add_executable(tdms "src/openandorder.cpp")
-set_property(TARGET tdms PROPERTY CXX_STANDARD 11)
-
-target_link_libraries(tdms_lib LINK_PUBLIC
-        FFTW::Double
-        ${Matlab_MEX_LIBRARY}
-        ${Matlab_MX_LIBRARY}
-        ${Matlab_MAT_LIBRARY}
-        ${LIBCXX_LIBRARY}
-        OpenMP::OpenMP_CXX
-        )
-
-target_link_libraries(tdms tdms_lib)
-
-if(MSVC)
-  target_compile_options(tdms PRIVATE /W4)
-else()
-  target_compile_options(tdms PRIVATE -Wall -Wno-maybe-uninitialized)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(tdms PRIVATE /W4)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(tdms PRIVATE -Wall -Wno-maybe-uninitialized)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(tdms PRIVATE -Wall)
 endif()
 
+
+# Install ---------------------------------------------------------------------
 install(TARGETS tdms)
 
-
 # Testing ---------------------------------------------------------------------
-enable_testing()
+if (CMAKE_BUILD_TYPE STREQUAL "Test")
+    enable_testing()
 
-add_executable(tdms_tests
-        tests/unit/test_openandorder.cpp)
+    add_executable(tdms_tests
+            tests/unit/test_openandorder.cpp)
 
-target_link_libraries(tdms_tests PRIVATE
-        Catch2::Catch2WithMain
-        tdms_lib
-        )
+    target_link_libraries(tdms_tests PRIVATE
+            Catch2::Catch2WithMain
+            tdms_lib
+            )
 
-add_test(test_all tdms_tests)
+    add_test(test_all tdms_tests)
+endif()
