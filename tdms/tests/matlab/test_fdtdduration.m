@@ -20,7 +20,7 @@ end
 function testMinStepsFDTD(testCase)
 
     n_expected = 1483;
-    % This also tests fdtdts, which computes the upper limite of the timestep
+    % This also tests fdtdts, which computes the upper limit of the number of timesteps
     n_acual = minsteps_fdtd('pstd_input_file_2D.m');
 
     verifyEqual(testCase, n_expected, n_acual);
