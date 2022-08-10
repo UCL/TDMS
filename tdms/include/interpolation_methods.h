@@ -34,3 +34,4 @@ enum interp_scheme
 };
 
 interp_scheme determineInterpScheme(int cells_in_direction, int cell_id);
+bool better_scheme(interp_scheme s0, interp_scheme s1);

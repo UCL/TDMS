@@ -285,3 +285,49 @@ interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
         } // cell_id = cells_in_direction-1
     }
 }
+
+/**
+ * @brief Given two interpolation schemes s0 and s1, performs evaluation of the expression "s0 > s1", in terms of optimality of the scheme.
+ *
+ * @param s0,s1 interp_schemes
+ * @return true If s0 is the optimal scheme.
+ * @return false If s1 is the optimal scheme. Also returned in the event of a tie.
+ */
+bool better_scheme(interp_scheme s0, interp_scheme s1) {
+    /* Optimality is as follows:
+    BLi @ pos 3.5
+    BLi @ pos 2.5 or 4.5
+    BLi @ pos 1.5 or 5.5
+    BLi @ pos 0.5 or 6.5
+    Cubic @ middle
+    Cubic @ first or last
+    */
+   int s0_rank, s1_rank;
+   switch (s0)
+   {
+    case BAND_LIMITED_0: {s0_rank = 4; break;}
+    case BAND_LIMITED_1: {s0_rank = 3; break;}
+    case BAND_LIMITED_2: {s0_rank = 2; break;}
+    case BAND_LIMITED_3: {s0_rank = 1; break;}
+    case BAND_LIMITED_4: {s0_rank = 2; break;}
+    case BAND_LIMITED_5: {s0_rank = 3; break;}
+    case BAND_LIMITED_6: {s0_rank = 4; break;}
+    case CUBIC_INTERP_MIDDLE: {s0_rank = 5; break;}
+    case CUBIC_INTERP_FIRST: {s0_rank = 6; break;}
+    case CUBIC_INTERP_LAST: {s0_rank = 6; break;}
+   }
+   switch (s1)
+   {
+    case BAND_LIMITED_0: {s1_rank = 4; break;}
+    case BAND_LIMITED_1: {s1_rank = 3; break;}
+    case BAND_LIMITED_2: {s1_rank = 2; break;}
+    case BAND_LIMITED_3: {s1_rank = 1; break;}
+    case BAND_LIMITED_4: {s1_rank = 2; break;}
+    case BAND_LIMITED_5: {s1_rank = 3; break;}
+    case BAND_LIMITED_6: {s1_rank = 4; break;}
+    case CUBIC_INTERP_MIDDLE: {s1_rank = 5; break;}
+    case CUBIC_INTERP_FIRST: {s1_rank = 6; break;}
+    case CUBIC_INTERP_LAST: {s1_rank = 6; break;}
+   }
+   return (s0_rank <= s1_rank);
+}
