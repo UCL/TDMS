@@ -6,39 +6,37 @@ using namespace std;
 
 // CUBIC INTERPOLATION FUNCTIONS
 
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
+/*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
- * o     o     o  x  o
+ * o     o  x   o    o
  */
 double interp1(double v1, double v2, double v3, double v4)
 {
     return -1. / 16. * v1 + 9. / 16. * v2 + 9. / 16. * v3 - 1. / 16. * v4;
 }
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
+/*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
- * o     o     o  x  o
+ * o     o  x   o    o
  */
 double interp1(double *v) {
     return -1. / 16. * v[0] + 9. / 16. * v[1] + 9. / 16. * v[2] - 1. / 16. * v[3];
 }
-
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
+/*Use cubic interpolation to interpolate between the first 2 of 4 points
  * v0    v1    v2    v3
- * o     o     o  x  o
+ * o  x   o     o    o
  */
 double interp2(double v1, double v2, double v3, double v4)
 {
     return 5. / 16. * v1 + 15. / 16. * v2 - 5. / 16. * v3 + 1. / 16. * v4;
 }
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
+/*Use cubic interpolation to interpolate between the first 2 of 4 points
  * v0    v1    v2    v3
- * o     o     o  x  o
+ * o  x   o     o    o
  */
 double interp2(double *v)
 {
     return 5. / 16. * v[0] + 15. / 16. * v[1] - 5. / 16. * v[2] + 1. / 16. * v[3];
 }
-
 /*Use cubic interpolation to interpolate between the last 2 of 4 points
  * v0    v1    v2    v3
  * o     o     o  x  o
@@ -57,11 +55,45 @@ double interp3(double *v)
 }
 
 /**
+ * @brief Performs cubic interpolation to interp_pos, given 4 data points.
+ * 
+ * Use cubic interpolation to interpolate to the middle of a given pair of points.
+ * The input data in the array v, and the position of the interpolated value depending on interp_pos, can be visualised as follows:
+ * 
+ * interp_pos       v0      v1      v2      v3
+ *  0                   x
+ *  1                           x
+ *  2                                   x
+ * 
+ * @param interp_pos The position to interpolate to
+ * @param v Equally spaced data points to use for interpolation
+ * @return double Interpolated value
+ */
+double cubic_interpolation(int interp_pos, double *v) {
+    // determine which interpolation scheme is to be used based off interp_pos
+    switch (interp_pos)
+    {
+    case 0:
+        return interp2(v);
+        break;
+    case 1:
+        return interp1(v);
+        break;
+    case 2:
+        return interp3(v);
+        break;
+    default:
+        throw out_of_range("Cubic interpolation cannot take place before 1st point, or after last\n");
+        break;
+    }
+}
+
+/**
  * @brief Determines the appropriate interpolation scheme to use
  *
  * @param[in] cells_in_direction The number of Yee cells in the interpolation direction of interest
  * @param[in] cell_id The current ID (in this dimension) of the Yee cell
- * @return interp_scheme {BAND_LIMITED, INTERP1, INTERP2, INTERP3} Indicating the appropriate interpolation scheme
+ * @return interp_scheme Indicating the appropriate interpolation scheme to use
  */
 interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
 {
@@ -82,17 +114,16 @@ interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
     }
     else if (cells_in_direction < 8) {
         // we do not have enough cells to use bandlimited interpolation, but we can use cubic
-        // by definition, cell_id = 1 requires us to use interp2, cell_id = 2 interp1, and cell_id = 3 interp3
-        switch(cell_id) {
-            case 1:
-                return CUBIC_INTERP_2;
-                break;
-            case 2:
-                return CUBIC_INTERP_1;
-                break;
-            case 3:
-                return CUBIC_INTERP_3;
-                break;
+        // by definition, cell_id = 1 requires us to use interp2, cell_id = cells_in_direction-1 interp3,
+        // and everything else interp2
+        if (cell_id == 1) {
+            return CUBIC_INTERP_FIRST;
+        }
+        else if (cell_id == cells_in_direction-1) {
+            return CUBIC_INTERP_LAST;
+        }
+        else {
+            return CUBIC_INTERP_MIDDLE;
         }
     }
     else {
