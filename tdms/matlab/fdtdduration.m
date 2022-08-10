@@ -4,6 +4,11 @@
 %fdtd code according to:
 %
 %G(t) = exp( -pi((t-to)/hwhm)^2 )
+% where hwhm is the half width at half maximum of the pulse and to (t_0) is the
+% time delay. The latter ensures that when the pulse starts to be introduced
+% the envelope of the pulse has a magnitude of 10^(-8). This ensures that there
+% aren't any erroneous spectral components introduced as a result of having a
+% sharp discontinuity in time.
 function [to, hwhm] = fdtdduration(inputfile)
 
 [fid_input,message] = fopen(inputfile,'r');
