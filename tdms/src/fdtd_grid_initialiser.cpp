@@ -18,7 +18,7 @@ fdtdGridInitialiser::fdtdGridInitialiser(const mxArray *fdtd_pointer, const char
 /**
  * Get a value from a integer attribute of fdtdgrid defined in a .mat file
  */
-int fdtdGridInitialiser::value_of_attribute(const string& key){
+mwSize fdtdGridInitialiser::value_of_attribute(const string& key){
 
   if( mxGetFieldNumber( (mxArray *)pointer, key.c_str()) == -1 ){
     throw runtime_error(string(mat_filename)+" missing field fdtdgrid."+key);
@@ -29,7 +29,7 @@ int fdtdGridInitialiser::value_of_attribute(const string& key){
     throw runtime_error("Failed to find "+key+" in fdtdgrid");
   }
 
-  int value = (int) (*mxGetPr(element));
+  auto value = (mwSize) (*mxGetPr(element));
   mxRemoveField((mxArray *)pointer, mxGetFieldNumber(pointer, key.c_str()));
 
   return value;
