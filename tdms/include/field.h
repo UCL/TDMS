@@ -58,6 +58,8 @@ public:
     // TODO: this is likely better as a set of complex arrays
     xyz_arrays real;
     xyz_arrays imag;
+
+    void normalise_volume();
 };
 
 

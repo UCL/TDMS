@@ -59,6 +59,7 @@ endif()
 
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
+    src/fields/base.cpp
     src/fields/current_density.cpp
     src/fields/electric.cpp
     src/fields/magnetic.cpp

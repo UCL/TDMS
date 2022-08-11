@@ -1,6 +1,7 @@
 #include "catch2/catch_test_macros.hpp"
 #include "complex"
 #include "field.h"
+#include "numeric.h"
 
 #include "iostream"
 
@@ -84,3 +85,12 @@ TEST_CASE("Test that a split field can be allocated and zeroed"){
   }
 }
 
+TEST_CASE("Test setting a component of a vector field"){
+
+  auto arrays = xyz_arrays();
+  construct3dArray(&arrays.x, 1, 1, 1);
+
+  arrays('x')[0][0][0] = 1.0;
+
+  REQUIRE(is_close(arrays('x')[0][0][0], 1.0));
+}

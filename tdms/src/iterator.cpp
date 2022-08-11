@@ -5941,9 +5941,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //fprintf(stderr,"Pos 12\n");
   if (runmode == rm_complete && exphasorsvolume) {
-    normaliseVolume(E, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, E.angular_norm);
-
-    normaliseVolume(H, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, H.angular_norm);
+    E.normalise_volume();
+    H.normalise_volume();
   }
 
   //fprintf(stderr,"Pos 13\n");
@@ -6562,34 +6561,7 @@ void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices
     }
 }
 
-void normaliseVolume(Field &F, int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,
-                     complex<double> norm) {
-  double norm_r, norm_i, denom, temp_r, temp_i;
 
-  norm_r = real(norm);
-  norm_i = imag(norm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
-
-        temp_r = F.real.x[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.x[k - k_l][j - j_l][i - i_l];
-        F.real.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-
-        temp_r = F.real.y[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.y[k - k_l][j - j_l][i - i_l];
-        F.real.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-
-        temp_r = F.real.z[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.z[k - k_l][j - j_l][i - i_l];
-        F.real.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-      }
-}
 
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
   *Enorm += ft * exp(fmod(omega * ((double) (n + 1)) * dt, 2 * dcpi) * I) * 1. / ((double) Nt);
