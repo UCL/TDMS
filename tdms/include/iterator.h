@@ -35,11 +35,6 @@ void setGridLabels(GridLabels &input_labels,
 void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
 			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
-			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension );
-
-void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
-			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
 			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod );
 
 void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi,
