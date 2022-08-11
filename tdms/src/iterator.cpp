@@ -951,7 +951,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (ndims == 3) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (J1[0] - J0[0] + 1))) &&
             (dimptr_out[2] == ((int) (K1[0] - K0[0] + 1)))))
-        throw runtime_error("Isource has incorresct size");
+        throw runtime_error("Isource has incorrect size");
     } else {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (J1[0] - J0[0] + 1)))))
         throw runtime_error("Isource has incorrect size");
@@ -1023,11 +1023,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (ndims == 3) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (I1[0] - I0[0] + 1))) &&
             (dimptr_out[2] == ((int) (J1[0] - J0[0] + 1)))))
-        fprintf(stderr, "Ksource has incorresct size\n");
+        fprintf(stderr, "Ksource has incorrect size\n");
     } else if (ndims == 2) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (I1[0] - I0[0] + 1))) &&
             (0 == ((int) (J1[0] - J0[0] + 1)))))
-        fprintf(stderr, "Ksource has incorresct size\n");
+        fprintf(stderr, "Ksource has incorrect size\n");
     }
     fprintf(stderr, "Ksource-4\n");
     if (!mxIsComplex((mxArray *) prhs[input_counter]))
@@ -2040,6 +2040,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   E.I_tot = pind_iu - pind_il + 1;
   E.J_tot = pind_ju - pind_jl + 1;
   E.K_tot = pind_ku - pind_kl + 1;
+  H.I_tot = E.I_tot;
+  H.J_tot = E.J_tot;
+  H.K_tot = E.K_tot;
 
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);

@@ -40,8 +40,6 @@ void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double om
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
 
-void normaliseVolume(Field &F, std::complex<double> norm);
-
 void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 		       int **surface_vertices, int n_surface_vertices,  std::complex<double> Enorm , std::complex<double> Hnorm );
 
