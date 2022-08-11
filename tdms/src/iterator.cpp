@@ -87,7 +87,7 @@ using namespace std;
 
   fdtdgrid - A structre with the following members, each of which is a 3 dimensional
   array:
-	   
+
   fdtdgrid.Exy       (double)
   fdtdgrid.Exz
   fdtdgrid.Eyx 
@@ -105,7 +105,7 @@ using namespace std;
 
   Cmaterial - A structure with the following members, each of which is a 1 dimensional 
   array indexed by indices od scattering materials:
-	    
+
   Cmaterial.Cax      (double)
   Cmaterial.Cay
   Cmaterial.Caz
@@ -118,7 +118,7 @@ using namespace std;
 
   Dmaterial - A structure with the following members, each of which is a 1 dimensional 
   array indexed by indices od scattering materials:
-	    
+
   Dmaterial.Cax      (double)
   Dmaterial.Cay
   Dmaterial.Caz
@@ -131,7 +131,7 @@ using namespace std;
 
   D - A structure with the same elements as Cmaterial whose elements relate to the background 
   region. Elements are not restricted to 1 dimension. 
-	   
+
   freespace - A structure with the following members each of which is a double
 
   freespace.Cbx      (double)
@@ -165,7 +165,7 @@ using namespace std;
   where, for example, I0 is the position of the interface plane between
   total and scattered formulations. apply is a boolean which indicates
   whether or not to apply the boundary condition
-	    
+
   Isource - A 3d matrix of dimension 8x(J1-J0+1)x(K1-K0+1) which contains
   complex amplitude information for the interface equations at the I0 and I1 
   planes. Should be Isource(1,:,:) - Ey, Isource(2,:,:) - Ez, Isource(3,:,:) - Hy, 
@@ -443,110 +443,110 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
         array_ptr_dbl = mxGetPr(element);
       }
       else if(mxIsUint8(element)){
-	      array_ptr_uint8 = (unsigned char *)mxGetPr(element);
+        array_ptr_uint8 = (unsigned char *)mxGetPr(element);
       }
       else{
-	      throw runtime_error("Incorrect data type in fdtdgrid. " + element_name);
+        throw runtime_error("Incorrect data type in fdtdgrid. " + element_name);
       }
 
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
 
       if( (ndims != 2) && (ndims != 3) ){
-    	  throw runtime_error("field matrix %s should be 2- or 3-dimensional " +  element_name);
+        throw runtime_error("field matrix %s should be 2- or 3-dimensional " +  element_name);
       }
       //start
       if(are_equal(fdtdgrid_elements[i],"Exy")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else{
-	  //fprintf(stderr,"Dims Exy=%d %d %d\n",dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-	  E_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-	}
+  else{
+    //fprintf(stderr,"Dims Exy=%d %d %d\n",dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+    E_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+  }
       }
       else if(are_equal(fdtdgrid_elements[i],"Exz")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     E_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Eyx")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     E_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Eyz")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     E_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Ezx")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     E_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Ezy")){
-	if(ndims==2)
+  if(ndims==2)
     E_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     E_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hxy")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.xy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hxz")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.xz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hyx")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.yx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hyz")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.yz = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hzx")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.zx = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"Hzy")){
-	if(ndims==2)
+  if(ndims==2)
     H_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], 0);
-	else
+  else
     H_s.zy = castMatlab3DArray(array_ptr_dbl, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
       }
       else if(are_equal(fdtdgrid_elements[i],"materials")){
 
-	if(ndims==2)
-	  materials = castMatlab3DArrayUint8(array_ptr_uint8, dimptr_out[0], dimptr_out[1], 0);
-	else
-	  materials = castMatlab3DArrayUint8(array_ptr_uint8, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-	//save this for later when freeing memory
-	material_nlayers = dimptr_out[2];
-	I_tot = dimptr_out[0]-1;//The _tot variables do NOT include the additional cell at the
-	J_tot = dimptr_out[1]-1;//edge of the grid which is only partially used
-	if(ndims==2)
-	  K_tot = 0;
-	else
-	  K_tot = dimptr_out[2]-1;
+  if(ndims==2)
+    materials = castMatlab3DArrayUint8(array_ptr_uint8, dimptr_out[0], dimptr_out[1], 0);
+  else
+    materials = castMatlab3DArrayUint8(array_ptr_uint8, dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+  //save this for later when freeing memory
+  material_nlayers = dimptr_out[2];
+  I_tot = dimptr_out[0]-1;//The _tot variables do NOT include the additional cell at the
+  J_tot = dimptr_out[1]-1;//edge of the grid which is only partially used
+  if(ndims==2)
+    K_tot = 0;
+  else
+    K_tot = dimptr_out[2]-1;
       }
       else{
-	      throw runtime_error("element fdtdgrid.%s not handled " + element_name);
+        throw runtime_error("element fdtdgrid.%s not handled " + element_name);
       }
 
     }//end
@@ -570,40 +570,40 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       string element_name = Cmaterial_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){
-	  throw runtime_error("Incorrect dimension on Cmaterial: " + element_name);
-	}
-	if(are_equal(Cmaterial_elements[i],"Cax")){
-	  Cmaterial_Cax = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Cay")){
-	  Cmaterial_Cay = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Caz")){
-	  Cmaterial_Caz = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Cbx")){
-	  Cmaterial_Cbx = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Cby")){
-	  Cmaterial_Cby = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Cbz")){
-	  Cmaterial_Cbz = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Ccx")){
-	  Cmaterial_Ccx = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Ccy")){
-	  Cmaterial_Ccy = mxGetPr(element);
-	}
-	else if(are_equal(Cmaterial_elements[i],"Ccz")){
-	  Cmaterial_Ccz = mxGetPr(element);
-	}
-	else{
-	  throw runtime_error("element Cmaterial.%s not handled "+ element_name);
-	}
+  dimptr_out = mxGetDimensions(element);
+  if(dimptr_out[0] != 1){
+    throw runtime_error("Incorrect dimension on Cmaterial: " + element_name);
+  }
+  if(are_equal(Cmaterial_elements[i],"Cax")){
+    Cmaterial_Cax = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Cay")){
+    Cmaterial_Cay = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Caz")){
+    Cmaterial_Caz = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Cbx")){
+    Cmaterial_Cbx = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Cby")){
+    Cmaterial_Cby = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Cbz")){
+    Cmaterial_Cbz = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Ccx")){
+    Cmaterial_Ccx = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Ccy")){
+    Cmaterial_Ccy = mxGetPr(element);
+  }
+  else if(are_equal(Cmaterial_elements[i],"Ccz")){
+    Cmaterial_Ccz = mxGetPr(element);
+  }
+  else{
+    throw runtime_error("element Cmaterial.%s not handled "+ element_name);
+  }
       }
       else{
         throw runtime_error("Incorrect dimension on Cmaterial.Ca");
@@ -631,31 +631,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if(dimptr_out[0] != 1){
-	  throw runtime_error("Incorrect dimension on Dmaterial." + element_name);
-	}
-	if(are_equal(Dmaterial_elements[i],"Dax")){
-	  Dmaterial_Dax = mxGetPr(element);
-	}
-	else if(are_equal(Dmaterial_elements[i],"Day")){
-	  Dmaterial_Day = mxGetPr(element);
-	}
-	else if(are_equal(Dmaterial_elements[i],"Daz")){
-	  Dmaterial_Daz = mxGetPr(element);
-	}
-	else if(are_equal(Dmaterial_elements[i],"Dbx")){
-	  Dmaterial_Dbx = mxGetPr(element);
-	}
-	else if(are_equal(Dmaterial_elements[i],"Dby")){
-	  Dmaterial_Dby = mxGetPr(element);
-	}
-	else if(are_equal(Dmaterial_elements[i],"Dbz")){
-	  Dmaterial_Dbz = mxGetPr(element);
-	}
-	else{
-	  throw runtime_error("element Dmaterial."+ element_name + " not handled");
-	}
+  dimptr_out = mxGetDimensions(element);
+  if(dimptr_out[0] != 1){
+    throw runtime_error("Incorrect dimension on Dmaterial." + element_name);
+  }
+  if(are_equal(Dmaterial_elements[i],"Dax")){
+    Dmaterial_Dax = mxGetPr(element);
+  }
+  else if(are_equal(Dmaterial_elements[i],"Day")){
+    Dmaterial_Day = mxGetPr(element);
+  }
+  else if(are_equal(Dmaterial_elements[i],"Daz")){
+    Dmaterial_Daz = mxGetPr(element);
+  }
+  else if(are_equal(Dmaterial_elements[i],"Dbx")){
+    Dmaterial_Dbx = mxGetPr(element);
+  }
+  else if(are_equal(Dmaterial_elements[i],"Dby")){
+    Dmaterial_Dby = mxGetPr(element);
+  }
+  else if(are_equal(Dmaterial_elements[i],"Dbz")){
+    Dmaterial_Dbz = mxGetPr(element);
+  }
+  else{
+    throw runtime_error("element Dmaterial."+ element_name + " not handled");
+  }
       }
       else
         throw runtime_error("Incorrect dimension on Dmaterial.Da");
@@ -886,25 +886,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       string element_name = disp_params_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if( !(dimptr_out[0] == 1 ||dimptr_out[0] == 0) ){
-	  throw runtime_error("Incorrect dimension on disp_params. " + element_name);
-	}
-	if(are_equal(disp_params_elements[i],"alpha")){
-	  alpha = mxGetPr(element);
-	}
-	else if(are_equal(disp_params_elements[i],"beta")){
-	  beta = mxGetPr(element);
-	}
-	else if(are_equal(disp_params_elements[i],"gamma")){
-	  gamma = mxGetPr(element);
-	}
-	else{
-	  throw runtime_error("element disp_params. "+element_name+" not handled");
-	}
+  dimptr_out = mxGetDimensions(element);
+  if( !(dimptr_out[0] == 1 ||dimptr_out[0] == 0) ){
+    throw runtime_error("Incorrect dimension on disp_params. " + element_name);
+  }
+  if(are_equal(disp_params_elements[i],"alpha")){
+    alpha = mxGetPr(element);
+  }
+  else if(are_equal(disp_params_elements[i],"beta")){
+    beta = mxGetPr(element);
+  }
+  else if(are_equal(disp_params_elements[i],"gamma")){
+    gamma = mxGetPr(element);
+  }
+  else{
+    throw runtime_error("element disp_params. "+element_name+" not handled");
+  }
       }
       else
-	throw runtime_error("Incorrect dimension on disp_params");
+  throw runtime_error("Incorrect dimension on disp_params");
     }
     input_counter++;
   }
@@ -1051,11 +1051,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       throw runtime_error("Isource should be 3- or 2- dimensional");
     if( ndims ==3 ){
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(J1[0]-J0[0]+1))) && (dimptr_out[2]==((int)(K1[0]-K0[0]+1))) ) )
-	throw runtime_error("Isource has incorresct size");
+  throw runtime_error("Isource has incorresct size");
     }
     else{
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(J1[0]-J0[0]+1))) ))
-	throw runtime_error("Isource has incorrect size");
+  throw runtime_error("Isource has incorrect size");
     }
     if(!mxIsComplex( (mxArray *)prhs[input_counter]))
       throw runtime_error("Isource should be complex, use a call of complex(real(Isource),imag(Isource)) in matlab if necessary");
@@ -1082,11 +1082,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       throw runtime_error("Jsource should be 3- or 2- dimensional");
     if(ndims==3){
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (dimptr_out[2]==((int)(K1[0]-K0[0]+1))) ) )
-	throw runtime_error("Jsource has incorrect size");
+  throw runtime_error("Jsource has incorrect size");
     }
     else{
       if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1)))))
-	throw runtime_error("Jsource has incorrect size");
+  throw runtime_error("Jsource has incorrect size");
     }
     if(!mxIsComplex( (mxArray *)prhs[input_counter]))
       throw runtime_error("Jsource should be complex, use a call of complex(real(Jsource),imag(Jsource)) in matlab if necessary");
@@ -1121,7 +1121,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
         fprintf(stderr, "Ksource has incorresct size\n");
     }
     else if(ndims==2){
-	if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (0==((int)(J1[0]-J0[0]+1))) ) )
+  if( !( (dimptr_out[0]==8) && (dimptr_out[1]==((int)(I1[0]-I0[0]+1))) && (0==((int)(J1[0]-J0[0]+1))) ) )
     fprintf(stderr, "Ksource has incorresct size\n");
     }
     fprintf(stderr,"Ksource-4\n");
@@ -1182,7 +1182,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
         }
       }
       else{
-	      throw runtime_error("Incorrect dimension on grid_labels. " + material_element);
+        throw runtime_error("Incorrect dimension on grid_labels. " + material_element);
       }
     }
 
@@ -1456,13 +1456,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     for(i=0;i<6;i++){
       cuboid[i] = (int)*(mxGetPr( (mxArray *)prhs[input_counter])+i) - 1;//must go from matlab coords to C
       if(cuboid[i]<0){
-	cuboid[i] = 0;
+  cuboid[i] = 0;
 
       }
     }
     if(J_tot==0)
       if( cuboid[2] != cuboid[3] ){
-	      throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
+        throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
       }
 
   }
@@ -1505,23 +1505,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       string element_name = conductive_aux_elements[i];
       ndims = mxGetNumberOfDimensions(element);
       if( ndims == 2 ){
-	dimptr_out = mxGetDimensions(element);
-	if( !(dimptr_out[0] == 1 ||dimptr_out[0] == 0) ){
-	  //sprintf(message_buffer, "Incorrect dimension on conductive_aux.%s",conductive_aux_elements[i]);
-	  //mexfprintf(message_buffer);
-	}
+  dimptr_out = mxGetDimensions(element);
+  if( !(dimptr_out[0] == 1 ||dimptr_out[0] == 0) ){
+    //sprintf(message_buffer, "Incorrect dimension on conductive_aux.%s",conductive_aux_elements[i]);
+    //mexfprintf(message_buffer);
+  }
       }
       if(are_equal(conductive_aux_elements[i],"rho_x")){
-	rho_x = mxGetPr(element);
+  rho_x = mxGetPr(element);
       }
       else if(are_equal(conductive_aux_elements[i],"rho_y")){
-	rho_y = mxGetPr(element);
+  rho_y = mxGetPr(element);
       }
       else if(are_equal(conductive_aux_elements[i],"rho_z")){
-	rho_z = mxGetPr(element);
+  rho_z = mxGetPr(element);
       }
       else{
-	throw runtime_error("element conductive_aux. "+element_name+" not handled");
+  throw runtime_error("element conductive_aux. "+element_name+" not handled");
       }
     }
   }
@@ -1537,7 +1537,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     if(mxIsStruct(prhs[input_counter])){
       num_fields = mxGetNumberOfFields(prhs[input_counter]);
       if( num_fields != 9 ){
-	      throw runtime_error("dispersive_aux should have 9 elements, it has " + to_string(num_fields));
+        throw runtime_error("dispersive_aux should have 9 elements, it has " + to_string(num_fields));
       }
       for(int i=0;i<9;i++){
         element = mxGetField( (mxArray *)prhs[input_counter], 0, dispersive_aux_elements[i]);
@@ -1646,17 +1646,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     /*Get f_vec*/
     if( !mxIsEmpty(prhs[input_counter]) ){
       if(mxIsStruct(prhs[input_counter])){
-	num_fields = mxGetNumberOfFields(prhs[input_counter]);
-	if(num_fields != 2){
-	  throw runtime_error("f_vec should have 2 members, it has " + to_string(num_fields));
-	}
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, "fx_vec");
-	fx_vec = mxGetPr(element);
-	Nfx_vec = mxGetNumberOfElements(element);
+  num_fields = mxGetNumberOfFields(prhs[input_counter]);
+  if(num_fields != 2){
+    throw runtime_error("f_vec should have 2 members, it has " + to_string(num_fields));
+  }
+  element = mxGetField( (mxArray *)prhs[input_counter], 0, "fx_vec");
+  fx_vec = mxGetPr(element);
+  Nfx_vec = mxGetNumberOfElements(element);
 
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, "fy_vec");
-	fy_vec = mxGetPr(element);
-	Nfy_vec = mxGetNumberOfElements(element);
+  element = mxGetField( (mxArray *)prhs[input_counter], 0, "fy_vec");
+  fy_vec = mxGetPr(element);
+  Nfy_vec = mxGetNumberOfElements(element);
 
       }
     }
@@ -1668,9 +1668,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       ndims = mxGetNumberOfDimensions(prhs[input_counter]);
       dimptr_out = mxGetDimensions(prhs[input_counter]);
       if(ndims!=2)
-	fprintf(stderr,"Pupil should be two dimensional\n");
+  fprintf(stderr,"Pupil should be two dimensional\n");
       if( dimptr_out[0]!=Nfx_vec || dimptr_out[1]!=Nfy_vec )
-	fprintf(stderr,"Pupil has dimension %dx%d yet it should have dimension %dx%d\n",dimptr_out[0],dimptr_out[1],Nfx_vec,Nfy_vec);
+  fprintf(stderr,"Pupil has dimension %dx%d yet it should have dimension %dx%d\n",dimptr_out[0],dimptr_out[1],Nfx_vec,Nfy_vec);
       Pupil = castMatlab2DArray(mxGetPr(prhs[input_counter]),dimptr_out[0],dimptr_out[1]);
     }
     input_counter++;
@@ -1679,72 +1679,72 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     /*Get D_tilde*/
     if( !mxIsEmpty(prhs[input_counter]) ){
       if(mxIsStruct(prhs[input_counter])){
-	num_fields = mxGetNumberOfFields(prhs[input_counter]);
-	if(num_fields != 2){
-	  throw runtime_error("D_tilde should have 2 members, it has " + to_string(num_fields));
-	}
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, "Dx_tilde");
-	ndims = mxGetNumberOfDimensions(element);
-	dimptr_out = mxGetDimensions(element);
-	if(ndims!=3)
-	  fprintf(stderr,"Dx_tilde should be three dimensional\n");
+  num_fields = mxGetNumberOfFields(prhs[input_counter]);
+  if(num_fields != 2){
+    throw runtime_error("D_tilde should have 2 members, it has " + to_string(num_fields));
+  }
+  element = mxGetField( (mxArray *)prhs[input_counter], 0, "Dx_tilde");
+  ndims = mxGetNumberOfDimensions(element);
+  dimptr_out = mxGetDimensions(element);
+  if(ndims!=3)
+    fprintf(stderr,"Dx_tilde should be three dimensional\n");
 
-	Ndetmodes = dimptr_out[0];
+  Ndetmodes = dimptr_out[0];
 
-	if( dimptr_out[1]!=Nfx_vec || dimptr_out[2]!=Nfy_vec )
-	  fprintf(stderr,"Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",dimptr_out[0],dimptr_out[1],dimptr_out[2],dimptr_out[0],Nfx_vec,Nfy_vec);
+  if( dimptr_out[1]!=Nfx_vec || dimptr_out[2]!=Nfy_vec )
+    fprintf(stderr,"Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",dimptr_out[0],dimptr_out[1],dimptr_out[2],dimptr_out[0],Nfx_vec,Nfy_vec);
 
-	/*Now create Dx_tilde*/
-	//fprintf(stderr,"Dx_tilde: %d x %d x %d\n",Ndetmodes,Nfx_vec,Nfy_vec);
-	Dx_tilde = (complex<double> ***)malloc(sizeof(complex<double> **)*Nfy_vec);
-	for(int j=0;j<Nfy_vec;j++){
-	  Dx_tilde[j]=(complex<double> **)malloc(sizeof(complex<double> *)*Nfx_vec);
-	  for(int i=0;i<Nfx_vec;i++){
-	    Dx_tilde[j][i] = (complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
-	  }
-	}
+  /*Now create Dx_tilde*/
+  //fprintf(stderr,"Dx_tilde: %d x %d x %d\n",Ndetmodes,Nfx_vec,Nfy_vec);
+  Dx_tilde = (complex<double> ***)malloc(sizeof(complex<double> **)*Nfy_vec);
+  for(int j=0;j<Nfy_vec;j++){
+    Dx_tilde[j]=(complex<double> **)malloc(sizeof(complex<double> *)*Nfx_vec);
+    for(int i=0;i<Nfx_vec;i++){
+      Dx_tilde[j][i] = (complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
+    }
+  }
 
-	D_temp_re = castMatlab3DArray(mxGetPr(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
-	D_temp_im = castMatlab3DArray(mxGetPi(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
-
-
-	for(int k=0;k<Ndetmodes;k++)
-	  for(int j=0;j<Nfy_vec;j++)
-	    for(int i=0;i<Nfx_vec;i++){
-	      Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
-	    }
-	//fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
-	freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
-
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, "Dy_tilde");
-	ndims = mxGetNumberOfDimensions(element);
-	dimptr_out = mxGetDimensions(element);
-	if(ndims!=3)
-	  fprintf(stderr,"Dy_tilde should be three dimensional\n");
-
-	if( dimptr_out[1]!=Nfx_vec || dimptr_out[2]!=Nfy_vec )
-	  fprintf(stderr,"Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",dimptr_out[0],dimptr_out[1],dimptr_out[2],dimptr_out[0],Nfx_vec,Nfy_vec);
-
-	/*Now create Dy_tilde*/
-
-	Dy_tilde = (complex<double> ***)malloc(sizeof(complex<double> **)*Nfy_vec);
-	for(int j=0;j<Nfy_vec;j++){
-	  Dy_tilde[j]=(complex<double> **)malloc(sizeof(complex<double> *)*Nfx_vec);
-	  for(int i=0;i<Nfx_vec;i++){
-	    Dy_tilde[j][i] = (complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
-	  }
-	}
-
-	D_temp_re = castMatlab3DArray(mxGetPr(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
-	D_temp_im = castMatlab3DArray(mxGetPi(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
+  D_temp_re = castMatlab3DArray(mxGetPr(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
+  D_temp_im = castMatlab3DArray(mxGetPi(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
 
 
-	for(int k=0;k<Ndetmodes;k++)
-	  for(int j=0;j<Nfy_vec;j++)
-	    for(int i=0;i<Nfx_vec;i++){
-	      Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
-	    }
-	freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
+  for(int k=0;k<Ndetmodes;k++)
+    for(int j=0;j<Nfy_vec;j++)
+      for(int i=0;i<Nfx_vec;i++){
+        Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
+      }
+  //fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
+  freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
+
+  element = mxGetField( (mxArray *)prhs[input_counter], 0, "Dy_tilde");
+  ndims = mxGetNumberOfDimensions(element);
+  dimptr_out = mxGetDimensions(element);
+  if(ndims!=3)
+    fprintf(stderr,"Dy_tilde should be three dimensional\n");
+
+  if( dimptr_out[1]!=Nfx_vec || dimptr_out[2]!=Nfy_vec )
+    fprintf(stderr,"Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",dimptr_out[0],dimptr_out[1],dimptr_out[2],dimptr_out[0],Nfx_vec,Nfy_vec);
+
+  /*Now create Dy_tilde*/
+
+  Dy_tilde = (complex<double> ***)malloc(sizeof(complex<double> **)*Nfy_vec);
+  for(int j=0;j<Nfy_vec;j++){
+    Dy_tilde[j]=(complex<double> **)malloc(sizeof(complex<double> *)*Nfx_vec);
+    for(int i=0;i<Nfx_vec;i++){
+      Dy_tilde[j][i] = (complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
+    }
+  }
+
+  D_temp_re = castMatlab3DArray(mxGetPr(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
+  D_temp_im = castMatlab3DArray(mxGetPi(element),dimptr_out[0],dimptr_out[1],dimptr_out[2]);
+
+
+  for(int k=0;k<Ndetmodes;k++)
+    for(int j=0;j<Nfy_vec;j++)
+      for(int i=0;i<Nfx_vec;i++){
+        Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
+      }
+  freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
       }
     }
     input_counter++;
@@ -1855,11 +1855,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     //calculate the Ni_tdf
     for(k=0;k<K_tot;k++)
       if( (k % skip_tdf) == 0)
-	Nk_tdf++;
+  Nk_tdf++;
 
     for(i=0;i<I_tot;i++)
       if( (i % skip_tdf) == 0)
-	Ni_tdf++;
+  Ni_tdf++;
     fprintf(stderr,"Ni_tdf=%d, Nk_tdf=%d\n",Ni_tdf,Nk_tdf);
     input_counter++;
   }
@@ -1870,28 +1870,28 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     if(mxIsStruct(prhs[input_counter])){
       num_fields = mxGetNumberOfFields(prhs[input_counter]);
       if(num_fields != 4){
-	      throw runtime_error("fieldsample should have 4 members, it has " + to_string(num_fields));
+        throw runtime_error("fieldsample should have 4 members, it has " + to_string(num_fields));
       }
       for(int i=0;i<4;i++){
-	element = mxGetField( (mxArray *)prhs[input_counter], 0, fieldsample_elements[i]);
+  element = mxGetField( (mxArray *)prhs[input_counter], 0, fieldsample_elements[i]);
 
-	if(are_equal(fieldsample_elements[i],"i")){
-	  fieldsample_i = mxGetPr(element);
-	  N_fieldsample_i = mxGetNumberOfElements(element);
-	  //fprintf(stderr,"Number of elements in fieldsample_i: %d\n",N_fieldsample_i);
-	}
-	else if(are_equal(fieldsample_elements[i],"j")){
-	  fieldsample_j = mxGetPr(element);
-	  N_fieldsample_j = mxGetNumberOfElements(element);
-	}
-	else if(are_equal(fieldsample_elements[i],"k")){
-	  fieldsample_k = mxGetPr(element);
-	  N_fieldsample_k = mxGetNumberOfElements(element);
-	}
-	else if(are_equal(fieldsample_elements[i],"n")){
-	  fieldsample_n = mxGetPr(element);
-	  N_fieldsample_n = mxGetNumberOfElements(element);
-	}
+  if(are_equal(fieldsample_elements[i],"i")){
+    fieldsample_i = mxGetPr(element);
+    N_fieldsample_i = mxGetNumberOfElements(element);
+    //fprintf(stderr,"Number of elements in fieldsample_i: %d\n",N_fieldsample_i);
+  }
+  else if(are_equal(fieldsample_elements[i],"j")){
+    fieldsample_j = mxGetPr(element);
+    N_fieldsample_j = mxGetNumberOfElements(element);
+  }
+  else if(are_equal(fieldsample_elements[i],"k")){
+    fieldsample_k = mxGetPr(element);
+    N_fieldsample_k = mxGetNumberOfElements(element);
+  }
+  else if(are_equal(fieldsample_elements[i],"n")){
+    fieldsample_n = mxGetPr(element);
+    N_fieldsample_n = mxGetNumberOfElements(element);
+  }
       }
 
     }
@@ -1910,7 +1910,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     fprintf(stderr,"num_fields=%d\n",num_fields);
     if(num_fields != 2){
-	    throw runtime_error("campssample should have 2 members, it has " + to_string(num_fields));
+      throw runtime_error("campssample should have 2 members, it has " + to_string(num_fields));
     }
     for(int i=0;i<2;i++){
       element = mxGetField( (mxArray *)prhs[input_counter], 0, campssample_elements[i]);
@@ -2112,12 +2112,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
   if( exphasorssurface && runmode==rm_complete){
     if(J_tot==0)
       conciseCreateBoundary(cuboid[0], cuboid[1],cuboid[4], cuboid[5],
-			    &mx_surface_vertices, &mx_surface_facets);
+          &mx_surface_vertices, &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip( cuboid[0], cuboid[1], cuboid[2],
-				    cuboid[3], cuboid[4], cuboid[5],
-				    phasorinc[0],phasorinc[1],phasorinc[2],
-				    &mx_surface_vertices, &mx_surface_facets);
+            cuboid[3], cuboid[4], cuboid[5],
+            phasorinc[0],phasorinc[1],phasorinc[2],
+            &mx_surface_vertices, &mx_surface_facets);
     //fprintf(stderr,"Qos 00a:\n");
     //we don't need the facets so destroy the matrix now to save memory
     mxDestroyArray(mx_surface_facets);
@@ -2181,10 +2181,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
   /*
-	 pind_il = 0;
-	 pind_iu = I_tot;
-	 pind_jl = 0;
-	 pind_ju = J_tot;
+   pind_il = 0;
+   pind_iu = I_tot;
+   pind_jl = 0;
+   pind_ju = J_tot;
   */
 
  //fprintf(stderr,"Qos 01:\n");
@@ -2339,14 +2339,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       Idx[ifx]=(complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
       Idy[ifx]=(complex<double> *)malloc(sizeof(complex<double>)*Ndetmodes);
       for(int im=0;im<Ndetmodes;im++){
-	Idx[ifx][im]=0.;
-	Idy[ifx][im]=0.;
+  Idx[ifx][im]=0.;
+  Idy[ifx][im]=0.;
       }
     }
 
     for(int im=0;im<Ndetmodes;im++){
       for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	Idx_re[ifx][im]=0.;Idx_im[ifx][im]=0.;Idy_re[ifx][im]=0.;Idy_im[ifx][im]=0.;
+  Idx_re[ifx][im]=0.;Idx_im[ifx][im]=0.;Idy_re[ifx][im]=0.;Idy_im[ifx][im]=0.;
       }
     }
 
@@ -2526,7 +2526,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
     for (int icomp=0;icomp<4;icomp++)
       for(i=0;i<(I_tot+1);i++){
-	ksource_nz[icomp] = ksource_nz[icomp] || (fabs(KsourceI[0][i-((int)I0[0])][icomp])>1.0e-15 )|| (fabs(KsourceR[0][i-((int)I0[0])][icomp])>1.0e-15 );
+  ksource_nz[icomp] = ksource_nz[icomp] || (fabs(KsourceI[0][i-((int)I0[0])][icomp])>1.0e-15 )|| (fabs(KsourceR[0][i-((int)I0[0])][icomp])>1.0e-15 );
       }
 
     //for (int icomp=0;icomp<4;icomp++)
@@ -2717,7 +2717,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       fprintf(stderr,"tol: %.5e \n",tol);
 
       if( tol<TOL )
-	break;//required accuracy obtained
+  break;//required accuracy obtained
 
       copyPhasors(E, E_copy, (int)mxGetNumberOfElements( (mxArray *)plhs[0]));
 
@@ -2727,9 +2727,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       dims[2] = pind_ku - pind_kl + 1;
 
       /*
-	dims[0] = I_tot - *Dxu - *Dxl - 3 + 1;
-	dims[1] = J_tot - *Dyu - *Dyl - 3 + 1;
-	dims[2] = K_tot - *Dzu - *Dzl - 3 + 1;
+  dims[0] = I_tot - *Dxu - *Dxl - 3 + 1;
+  dims[1] = J_tot - *Dyu - *Dyl - 3 + 1;
+  dims[2] = K_tot - *Dzu - *Dzl - 3 + 1;
       */
 
       initialiseDouble3DArray(E.real.x, dims[0], dims[1], dims[2]);
@@ -2747,8 +2747,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       initialiseDouble3DArray(H.imag.z, dims[0], dims[1], dims[2]);
 
       if( exphasorssurface ){
-	initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, N_f_ex_vec);
-	initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, N_f_ex_vec);
+  initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, N_f_ex_vec);
+  initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, N_f_ex_vec);
       }
       //cleanphasors
     }
@@ -2768,18 +2768,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
                             dft_counter, *omega_an, *dt, Nsteps);
 
       if( exphasorssurface ){
-	if(intphasorssurface){
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+  if(intphasorssurface){
+    for(int ifx=0;ifx<N_f_ex_vec;ifx++)
+      extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                             surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot, intmethod );
-	  dft_counter++;
-	}
-	else{
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+    dft_counter++;
+  }
+  else{
+    for(int ifx=0;ifx<N_f_ex_vec;ifx++)
+      extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                            surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot );
-	  dft_counter++;
-	}
+    dft_counter++;
+  }
       }
 
     }
@@ -2789,20 +2789,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       }
 
       if( (tind-start_tind) % Np == 0){
-	extractPhasorsVolume(E, E_s,
+  extractPhasorsVolume(E, E_s,
                        pind_il, pind_iu,
                        pind_jl, pind_ju,
                        pind_kl, pind_ku,
                        tind, *omega_an, *dt, Npe);
-	//fprintf(stderr,"Pos 01a:\n");
-	extractPhasorsVolumeH(H, H_s,
+  //fprintf(stderr,"Pos 01a:\n");
+  extractPhasorsVolumeH(H, H_s,
                         pind_il, pind_iu,
                         pind_jl, pind_ju,
                         pind_kl, pind_ku,
                         tind, *omega_an, *dt, Npe);
       }
       if(TIME_EXEC){
-	      timer.click();
+        timer.click();
       }
       //fprintf(stderr,"Pos 01b:\n");
     }
@@ -2811,21 +2811,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       //if( (tind-start_tind) % Np == 0){
       if(1){
 #pragma omp parallel default(shared) private(Ex_temp,Ey_temp,Ez_temp)
-	{
+  {
 
 #pragma omp for
-	  for(int kt=0; kt< N_fieldsample_k; kt++)
-	    for(int jt=0; jt< N_fieldsample_j ; jt++)
-	      for(int it=0; it< N_fieldsample_i; it++){
-		////fprintf(stderr,"Pos fs 1\n");
-		interpolateTimeDomainFieldCentralEBandLimited(E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy, (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, (int)fieldsample_k[kt] + Dzl[0] - 1, &Ex_temp, &Ey_temp, &Ez_temp);
-		//fprintf(stderr,"Pos fs 2\n");
-		for(int nt=0; nt< N_fieldsample_n; nt++)
-		  fieldsample[nt][kt][jt][it] = fieldsample[nt][kt][jt][it] + pow( Ex_temp*Ex_temp + Ey_temp*Ey_temp + Ez_temp*Ez_temp, fieldsample_n[nt]/2.)/Nt[0];
-		//fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
+    for(int kt=0; kt< N_fieldsample_k; kt++)
+      for(int jt=0; jt< N_fieldsample_j ; jt++)
+        for(int it=0; it< N_fieldsample_i; it++){
+    ////fprintf(stderr,"Pos fs 1\n");
+    interpolateTimeDomainFieldCentralEBandLimited(E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy, (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, (int)fieldsample_k[kt] + Dzl[0] - 1, &Ex_temp, &Ey_temp, &Ez_temp);
+    //fprintf(stderr,"Pos fs 2\n");
+    for(int nt=0; nt< N_fieldsample_n; nt++)
+      fieldsample[nt][kt][jt][it] = fieldsample[nt][kt][jt][it] + pow( Ex_temp*Ex_temp + Ey_temp*Ey_temp + Ez_temp*Ez_temp, fieldsample_n[nt]/2.)/Nt[0];
+    //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
 
-	      }
-	}
+        }
+  }
       }
     }
 
@@ -2834,16 +2834,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     //fprintf(stderr,"Pos 02:\n");
     if( sourcemode==sm_pulsed && runmode==rm_complete && exphasorssurface ){
       if( (tind-start_tind) % Np == 0 ){
-	if(intphasorssurface)
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+  if(intphasorssurface)
+    for(int ifx=0;ifx<N_f_ex_vec;ifx++)
+      extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                             surface_vertices, n_surface_vertices, tind,
-				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
-	else
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+           f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
+  else
+    for(int ifx=0;ifx<N_f_ex_vec;ifx++)
+      extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                            surface_vertices, n_surface_vertices, tind,
-				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot );
+           f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot );
 
 
       }
@@ -2852,15 +2852,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
    if( sourcemode==sm_pulsed && runmode==rm_complete && (nvertices > 0) ){
      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,start_tind,Np);
       if( (tind-start_tind) % Np == 0 ){
-	//	fprintf(stderr,"loc 02\n");
-	if( nvertices > 0){
-	  //fprintf(stderr,"loc 03\n");
-	  //	  fprintf(stderr,"EPV 01\n");
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s,
+  //	fprintf(stderr,"loc 02\n");
+  if( nvertices > 0){
+    //fprintf(stderr,"loc 03\n");
+    //	  fprintf(stderr,"EPV 01\n");
+    for(int ifx=0;ifx<N_f_ex_vec;ifx++)
+      extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s,
                              vertices, nvertices, components, ncomponents, tind,
-				    f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
-	}
+            f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
+  }
       }
     }
 
@@ -2868,79 +2868,79 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     //fprintf(stderr,"Pos 02a:\n");
     if( sourcemode==sm_pulsed && runmode==rm_complete && exdetintegral ){
       if( (tind-start_tind) % Np == 0 ){
-	//First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
-	for(j=*Dyl;j<(J_tot-*Dyu);j++)
-	  for(i=*Dxl;i<(I_tot-*Dxu);i++){
-	    Ex_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
-	    Ey_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
-	  }
-	//fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",*Dyl,J_tot-*Dyu,*Dxl,I_tot-*Dxu);
-	fftw_execute(pex_t);fftw_execute(pey_t);
-	//fprintf(stderr,"Pos 02a [2]:\n");
-	//Iterate over each mode
-	for(int im=0;im<Ndetmodes;im++){
-	  //Now go back to column-major
-	  for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
-	    for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
-	      Ex_t_cm[j][i] = Ex_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ex_t[j+i*(J_tot-*Dyu-*Dyl)][1];
-	      Ey_t_cm[j][i] = Ey_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ey_t[j+i*(J_tot-*Dyu-*Dyl)][1];
-	    }
-	  //fprintf(stderr,"Pos 02a [3]:\n");
-	  //Now multiply the pupil, mostly the pupil is non-zero in only a elements
-	  for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
-	    for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
-	      Ex_t_cm[j][i] = Ex_t_cm[j][i]*Pupil[j][i]*Dx_tilde[j][i][im];
-	      Ey_t_cm[j][i] = Ey_t_cm[j][i]*Pupil[j][i]*Dy_tilde[j][i][im];
-	    }
-	  //fprintf(stderr,"Pos 02a [4]:\n");
-	  //now iterate over each frequency to extract phasors at
+  //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
+  for(j=*Dyl;j<(J_tot-*Dyu);j++)
+    for(i=*Dxl;i<(I_tot-*Dxu);i++){
+      Ex_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
+      Ey_t[j-*Dyl+(i-*Dxl)*(J_tot-*Dyu-*Dyl)][0] = E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1]=0.;
+    }
+  //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",*Dyl,J_tot-*Dyu,*Dxl,I_tot-*Dxu);
+  fftw_execute(pex_t);fftw_execute(pey_t);
+  //fprintf(stderr,"Pos 02a [2]:\n");
+  //Iterate over each mode
+  for(int im=0;im<Ndetmodes;im++){
+    //Now go back to column-major
+    for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
+      for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
+        Ex_t_cm[j][i] = Ex_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ex_t[j+i*(J_tot-*Dyu-*Dyl)][1];
+        Ey_t_cm[j][i] = Ey_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ey_t[j+i*(J_tot-*Dyu-*Dyl)][1];
+      }
+    //fprintf(stderr,"Pos 02a [3]:\n");
+    //Now multiply the pupil, mostly the pupil is non-zero in only a elements
+    for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
+      for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
+        Ex_t_cm[j][i] = Ex_t_cm[j][i]*Pupil[j][i]*Dx_tilde[j][i][im];
+        Ey_t_cm[j][i] = Ey_t_cm[j][i]*Pupil[j][i]*Dy_tilde[j][i][im];
+      }
+    //fprintf(stderr,"Pos 02a [4]:\n");
+    //now iterate over each frequency to extract phasors at
 #pragma omp parallel default(shared)  private(lambda_an_t,Idxt,Idyt,i,j,kprop,phaseTermE,cphaseTermE)
-	  {
+    {
 #pragma omp for
-	    for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	      //wavelength in air
-	      lambda_an_t = light_v/f_ex_vec[ifx];
-	      //fprintf(stdout,"lambda_an_t = %e, light_v = %e, z_obs = %e\n",lambda_an_t,light_v,z_obs);
-	      Idxt=0.;Idyt=0.;
+      for(int ifx=0;ifx<N_f_ex_vec;ifx++){
+        //wavelength in air
+        lambda_an_t = light_v/f_ex_vec[ifx];
+        //fprintf(stdout,"lambda_an_t = %e, light_v = %e, z_obs = %e\n",lambda_an_t,light_v,z_obs);
+        Idxt=0.;Idyt=0.;
 
-	      //now loop over all angular frequencies
-	      for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
-		for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
-		  if( (lambda_an_t*fx_vec[i]*lambda_an_t*fx_vec[i]+lambda_an_t*fy_vec[j]*lambda_an_t*fy_vec[j]) < 1){
+        //now loop over all angular frequencies
+        for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
+    for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
+      if( (lambda_an_t*fx_vec[i]*lambda_an_t*fx_vec[i]+lambda_an_t*fy_vec[j]*lambda_an_t*fy_vec[j]) < 1){
 
-		    if(!air_interface_present){
-		      /*This had to be fixed since we must take into account the refractive index of the medium.
+        if(!air_interface_present){
+          /*This had to be fixed since we must take into account the refractive index of the medium.
 
-		       */
-		      kprop = exp(I*z_obs*2.*dcpi/lambda_an_t*refind*sqrt(1. - pow(lambda_an_t*fx_vec[i]/refind,2.) - pow(lambda_an_t*fy_vec[j]/refind,2.) ));
-		      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,fx_vec[i],fy_vec[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
-		    }
-		    else{
-		      kprop = exp(I*(-air_interface+z_obs)*2.*dcpi/lambda_an_t*refind*sqrt(1.-pow(lambda_an_t*fx_vec[i]/refind,2.)-pow(lambda_an_t*fy_vec[j]/refind,2.)))*exp(I*air_interface*2.*dcpi/lambda_an_t*sqrt(1.-pow(lambda_an_t*fx_vec[i],2.) - pow(lambda_an_t*fy_vec[j],2.)));
-		    }
-		  }
-		  else
-		    kprop = 0.;
+           */
+          kprop = exp(I*z_obs*2.*dcpi/lambda_an_t*refind*sqrt(1. - pow(lambda_an_t*fx_vec[i]/refind,2.) - pow(lambda_an_t*fy_vec[j]/refind,2.) ));
+          //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,fx_vec[i],fy_vec[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
+        }
+        else{
+          kprop = exp(I*(-air_interface+z_obs)*2.*dcpi/lambda_an_t*refind*sqrt(1.-pow(lambda_an_t*fx_vec[i]/refind,2.)-pow(lambda_an_t*fy_vec[j]/refind,2.)))*exp(I*air_interface*2.*dcpi/lambda_an_t*sqrt(1.-pow(lambda_an_t*fx_vec[i],2.) - pow(lambda_an_t*fy_vec[j],2.)));
+        }
+      }
+      else
+        kprop = 0.;
 
-		  Idxt+=Ex_t_cm[j][i]*kprop;
-		  Idyt+=Ey_t_cm[j][i]*kprop;
-		}
-	      phaseTermE = fmod(f_ex_vec[ifx]*2.*dcpi*((double) tind)*dt[0], 2*dcpi);
-	      cphaseTermE = exp(phaseTermE * I) * 1./((double) Npe);
+      Idxt+=Ex_t_cm[j][i]*kprop;
+      Idyt+=Ey_t_cm[j][i]*kprop;
+    }
+        phaseTermE = fmod(f_ex_vec[ifx]*2.*dcpi*((double) tind)*dt[0], 2*dcpi);
+        cphaseTermE = exp(phaseTermE * I) * 1./((double) Npe);
 
-	      Idx[ifx][im]+=Idxt*cphaseTermE;
-	      Idy[ifx][im]+=Idyt*cphaseTermE;
+        Idx[ifx][im]+=Idxt*cphaseTermE;
+        Idy[ifx][im]+=Idyt*cphaseTermE;
 
-	    }//end of loop on frequencies
-	  }//end of pragma omp parallel
-	}//end of loop over each mode
+      }//end of loop on frequencies
+    }//end of pragma omp parallel
+  }//end of loop over each mode
       }
     }//end of section for calculating detector function
 
     //fprintf(stderr,"Pos 02b:\n");
     if(runmode==rm_complete)
       if(dimension==THREE){
-	extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
+  extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
                       iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs,
                       E_s.xz, E_s.yz, H_s.xz, H_s.yz,
                       E_s.xy, E_s.yx, H_s.xy, H_s.yx,
@@ -2983,1138 +2983,1138 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 #ifdef FDFLAG // Use central difference derivatives
     //FDTD, Exy
 #pragma omp for
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=1;j<J_tot;j++)
-	      for(i=0;i<I_tot;i++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
+    for(k=0;k<(K_tot+1);k++)
+      for(j=1;j<J_tot;j++)
+        for(i=0;i<I_tot;i++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
 
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][j][i+1]){
-		  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Cay[array_ind];
-		    Cb = Cby[array_ind];
-		    if(is_disp_ml)
-		      Cc = Ccy[array_ind];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Cay[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cby[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccy[materials[k][j][i]-1];
-		  }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][j][i+1]){
+      //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Cay[array_ind];
+        Cb = Cby[array_ind];
+        if(is_disp_ml)
+          Cc = Ccy[array_ind];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Cay[materials[k][j][i]-1];
+        Cb = Cmaterial_Cby[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccy[materials[k][j][i]-1];
+      }
 
-		  if(intmatprops){
-		    if( !materials[k][j][i+1] ){
-		      Ca = Ca + Cay[array_ind];
-		      Cb = Cb + Cby[array_ind];
-		      if(is_disp_ml)
-			Cc = Cc + Ccy[array_ind];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Cay[materials[k][j][i+1]-1];
-		      Cb = Cb + Cmaterial_Cby[materials[k][j][i+1]-1];
-		      Cc = Cc + Cmaterial_Ccy[materials[k][j][i+1]-1];
-		    }
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Cay[array_ind];
-		  Cb = Cby[array_ind];
-		  if(is_disp_ml)
-		    Cc = Ccy[array_ind];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_y[array_ind];
-		}
+      if(intmatprops){
+        if( !materials[k][j][i+1] ){
+          Ca = Ca + Cay[array_ind];
+          Cb = Cb + Cby[array_ind];
+          if(is_disp_ml)
+      Cc = Cc + Ccy[array_ind];
+        }
+        else{
+          Ca = Ca + Cmaterial_Cay[materials[k][j][i+1]-1];
+          Cb = Cb + Cmaterial_Cby[materials[k][j][i+1]-1];
+          Cc = Cc + Cmaterial_Ccy[materials[k][j][i+1]-1];
+        }
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Cay[array_ind];
+      Cb = Cby[array_ind];
+      if(is_disp_ml)
+        Cc = Ccy[array_ind];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_y[array_ind];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_y[array_ind];
-		  kappa_l = ml_kappa_y[array_ind];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][j][i+1]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_y[array_ind];
+      kappa_l = ml_kappa_y[array_ind];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][j][i+1]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][j][i+1]){
-		      alpha_l += alpha[materials[k][j][i+1]-1];
-		      beta_l +=  beta[materials[k][j][i+1]-1];
-		      gamma_l += gamma[materials[k][j][i+1]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][j][i+1]){
+          alpha_l += alpha[materials[k][j][i+1]-1];
+          beta_l +=  beta[materials[k][j][i+1]-1];
+          gamma_l += gamma[materials[k][j][i+1]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
 
 
-		Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l)*Jxy[k][j][i] + beta_l*J_nm1.xy[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dy*J_c.xy[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l*Jxy[k][j][i] + beta_l*J_nm1.xy[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.xy[k][j][i]);
-		  Jnp1 += sigma_l/eo*gamma_l*Exy[k][j][i];
+    Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l)*Jxy[k][j][i] + beta_l*J_nm1.xy[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dy*J_c.xy[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l*Jxy[k][j][i] + beta_l*J_nm1.xy[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.xy[k][j][i]);
+      Jnp1 += sigma_l/eo*gamma_l*Exy[k][j][i];
 
-		  E_nm1.xy[k][j][i] = Exy[k][j][i];
-		  J_nm1.xy[k][j][i] = Jxy[k][j][i];
-		  Jxy[k][j][i]     = Jnp1;
+      E_nm1.xy[k][j][i] = Exy[k][j][i];
+      J_nm1.xy[k][j][i] = Jxy[k][j][i];
+      Jxy[k][j][i]     = Jnp1;
 
-		  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,Jxy[k][j][i]);
-		}
+      //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,Jxy[k][j][i]);
+    }
 
-		if(is_cond && rho){
-		  J_c.xy[k][j][i] -= rho*(Enp1 + Exy[k][j][i]);
-		}
+    if(is_cond && rho){
+      J_c.xy[k][j][i] -= rho*(Enp1 + Exy[k][j][i]);
+    }
 
-		Exy[k][j][i] = Enp1;
-	      }
-	//FDTD, Exy
+    Exy[k][j][i] = Enp1;
+        }
+  //FDTD, Exy
 #else//PSTD, Exy
 //fprintf(stderr,"Pos 02d:\n");
 #pragma omp for
-	  for(k=0;k<(K_tot+1);k++)
-	    for(i=0;i<I_tot;i++){
-	      for(j=1;j<J_tot;j++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
+    for(k=0;k<(K_tot+1);k++)
+      for(i=0;i<I_tot;i++){
+        for(j=1;j<J_tot;j++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
 
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][j][i+1]){
-		  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Cay[array_ind];
-		    Cb = Cby[array_ind];
-		    if(is_disp_ml)
-		      Cc = Ccy[array_ind];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Cay[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cby[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccy[materials[k][j][i]-1];
-		  }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][j][i+1]){
+      //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Cay[array_ind];
+        Cb = Cby[array_ind];
+        if(is_disp_ml)
+          Cc = Ccy[array_ind];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Cay[materials[k][j][i]-1];
+        Cb = Cmaterial_Cby[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccy[materials[k][j][i]-1];
+      }
 
-		  if(intmatprops){
-		    if( !materials[k][j][i+1] ){
-		      Ca = Ca + Cay[array_ind];
-		      Cb = Cb + Cby[array_ind];
-		      if(is_disp_ml)
-			Cc = Cc + Ccy[array_ind];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Cay[materials[k][j][i+1]-1];
-		      Cb = Cb + Cmaterial_Cby[materials[k][j][i+1]-1];
-		      Cc = Cc + Cmaterial_Ccy[materials[k][j][i+1]-1];
-		    }
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Cay[array_ind];
-		  Cb = Cby[array_ind];
-		  if(is_disp_ml)
-		    Cc = Ccy[array_ind];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_y[array_ind];
-		}
+      if(intmatprops){
+        if( !materials[k][j][i+1] ){
+          Ca = Ca + Cay[array_ind];
+          Cb = Cb + Cby[array_ind];
+          if(is_disp_ml)
+      Cc = Cc + Ccy[array_ind];
+        }
+        else{
+          Ca = Ca + Cmaterial_Cay[materials[k][j][i+1]-1];
+          Cb = Cb + Cmaterial_Cby[materials[k][j][i+1]-1];
+          Cc = Cc + Cmaterial_Ccy[materials[k][j][i+1]-1];
+        }
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Cay[array_ind];
+      Cb = Cby[array_ind];
+      if(is_disp_ml)
+        Cc = Ccy[array_ind];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_y[array_ind];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_y[array_ind];
-		  kappa_l = ml_kappa_y[array_ind];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][j][i+1]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_y[array_ind];
+      kappa_l = ml_kappa_y[array_ind];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][j][i+1]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][j][i+1]){
-		      alpha_l += alpha[materials[k][j][i+1]-1];
-		      beta_l +=  beta[materials[k][j][i+1]-1];
-		      gamma_l += gamma[materials[k][j][i+1]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][j][i+1]){
+          alpha_l += alpha[materials[k][j][i+1]-1];
+          beta_l +=  beta[materials[k][j][i+1]-1];
+          gamma_l += gamma[materials[k][j][i+1]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
 
 
       Enp1 = 0.0;
-		//Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dy*J_c.xy[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E_s.xy[k][j][i];
+    //Enp1 = Ca*Exy[k][j][i]+Cb*(Hzy[k][j][i] + Hzx[k][j][i] - Hzy[k][j-1][i] - Hzx[k][j-1][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.xy[k][j][i] - 1./2.*Cb*dy*((1+alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dy*J_c.xy[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
+      Jnp1 += sigma_l / eo * gamma_l * E_s.xy[k][j][i];
 
-		  E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
-		  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
+      E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
+      J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
       J_s.xy[k][j][i]     = Jnp1;
 
-		  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,Jxy[k][j][i]);
-		}
+      //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,Jxy[k][j][i]);
+    }
 
-		if(is_cond && rho){
-		  J_c.xy[k][j][i] -= rho*(Enp1 + E_s.xy[k][j][i]);
-		}
+    if(is_cond && rho){
+      J_c.xy[k][j][i] -= rho*(Enp1 + E_s.xy[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
-		ca_vec[omp_get_thread_num()][j-1] = Ca;
-		cb_vec[omp_get_thread_num()][j-1] = Cb;
-	      }
-	      if(J_tot>1){
-		j = 0;
-		eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
-		first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				  dk_e_y, N_e_y , pf_exy[omp_get_thread_num()], pb_exy[omp_get_thread_num()]);
+    eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+    ca_vec[omp_get_thread_num()][j-1] = Ca;
+    cb_vec[omp_get_thread_num()][j-1] = Cb;
+        }
+        if(J_tot>1){
+    j = 0;
+    eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+    first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+          dk_e_y, N_e_y , pf_exy[omp_get_thread_num()], pb_exy[omp_get_thread_num()]);
 
 
-		//fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,omp_get_thread_num(),omp_get_num_threads());
+    //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,omp_get_thread_num(),omp_get_num_threads());
 
-		for(j=1;j<J_tot;j++){
+    for(j=1;j<J_tot;j++){
       E_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.xy[k][j][i] + cb_vec[omp_get_thread_num()][j - 1] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
-		}
-	      }
-	    }
-	//PSTD, Exy
+    }
+        }
+      }
+  //PSTD, Exy
 #endif
 
-	/*
-	  if(is_disp){
-	  i=36;
-	  j=36;
-	  k=36;
+  /*
+    if(is_disp){
+    i=36;
+    j=36;
+    k=36;
 
-	  fprintf(stdout,"%e %e",Jxy[k][j][i],Exy[k][j][i]);
-	  }
-	*/
+    fprintf(stdout,"%e %e",Jxy[k][j][i],Exy[k][j][i]);
+    }
+  */
 
-	//fprintf(stderr,"Pos 04:\n");
-	//Exz updates
+  //fprintf(stderr,"Pos 04:\n");
+  //Exz updates
 #ifdef FDFLAG // Use central difference derivatives
 #pragma omp for
-	  for(k=1;k<K_tot;k++)
-	    for(j=0;j<J_tot_p1_bound;j++)
-	      for(i=0;i<I_tot;i++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][j][i+1]){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Caz[k_loc];
-		    Cb = Cbz[k_loc];
-		    if(is_disp_ml)
-		      Cc = Ccz[k_loc];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Caz[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbz[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccz[materials[k][j][i]-1];
-		  }
+    for(k=1;k<K_tot;k++)
+      for(j=0;j<J_tot_p1_bound;j++)
+        for(i=0;i<I_tot;i++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][j][i+1]){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Caz[k_loc];
+        Cb = Cbz[k_loc];
+        if(is_disp_ml)
+          Cc = Ccz[k_loc];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Caz[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbz[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccz[materials[k][j][i]-1];
+      }
 
-		  if(intmatprops){
-		    if( !materials[k][j][i+1] ){
-		      Ca = Ca + Caz[k_loc];
-		      Cb = Cb + Cbz[k_loc];
-		      if(is_disp_ml)
-			Cc = Cc + Ccz[k_loc];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Caz[materials[k][j][i+1]-1];
-		      Cb = Cb + Cmaterial_Cbz[materials[k][j][i+1]-1];
-		      Cc = Cc + Cmaterial_Ccz[materials[k][j][i+1]-1];
-		    }
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Caz[k_loc];
-		  Cb = Cbz[k_loc];
-		  if(is_disp_ml)
-		    Cc = Ccz[k_loc];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_z[k_loc];
-		}
+      if(intmatprops){
+        if( !materials[k][j][i+1] ){
+          Ca = Ca + Caz[k_loc];
+          Cb = Cb + Cbz[k_loc];
+          if(is_disp_ml)
+      Cc = Cc + Ccz[k_loc];
+        }
+        else{
+          Ca = Ca + Cmaterial_Caz[materials[k][j][i+1]-1];
+          Cb = Cb + Cmaterial_Cbz[materials[k][j][i+1]-1];
+          Cc = Cc + Cmaterial_Ccz[materials[k][j][i+1]-1];
+        }
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Caz[k_loc];
+      Cb = Cbz[k_loc];
+      if(is_disp_ml)
+        Cc = Ccz[k_loc];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_z[k_loc];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_z[k_loc];
-		  kappa_l = ml_kappa_z[k_loc];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][j][i+1]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_z[k_loc];
+      kappa_l = ml_kappa_z[k_loc];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][j][i+1]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][j][i+1]){
-		      alpha_l += alpha[materials[k][j][i+1]-1];
-		      beta_l +=  beta[materials[k][j][i+1]-1];
-		      gamma_l += gamma[materials[k][j][i+1]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][j][i+1]){
+          alpha_l += alpha[materials[k][j][i+1]-1];
+          beta_l +=  beta[materials[k][j][i+1]-1];
+          gamma_l += gamma[materials[k][j][i+1]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
-		/*if( materials[k][j][i] || materials[k][j][i+1])
-		  fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,is_disp_ml);
-		  if(tind==0)
-		  fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
-		Enp1 = Ca*Exz[k][j][i]+Cb*(Hyx[k-1][j][i] + Hyz[k-1][j][i] - Hyx[k][j][i] - Hyz[k][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l)*Jxz[k][j][i] + beta_l*J_nm1.xz[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dz*J_c.xz[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l*Jxz[k][j][i] + beta_l*J_nm1.xz[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.xz[k][j][i]);
-		  Jnp1 += sigma_l/eo*gamma_l*Exz[k][j][i];
-		  E_nm1.xz[k][j][i] = Exz[k][j][i];
-		  J_nm1.xz[k][j][i] = Jxz[k][j][i];
-		  Jxz[k][j][i]     = Jnp1;
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
+    /*if( materials[k][j][i] || materials[k][j][i+1])
+      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,is_disp_ml);
+      if(tind==0)
+      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
+    Enp1 = Ca*Exz[k][j][i]+Cb*(Hyx[k-1][j][i] + Hyz[k-1][j][i] - Hyx[k][j][i] - Hyz[k][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l)*Jxz[k][j][i] + beta_l*J_nm1.xz[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dz*J_c.xz[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l*Jxz[k][j][i] + beta_l*J_nm1.xz[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.xz[k][j][i]);
+      Jnp1 += sigma_l/eo*gamma_l*Exz[k][j][i];
+      E_nm1.xz[k][j][i] = Exz[k][j][i];
+      J_nm1.xz[k][j][i] = Jxz[k][j][i];
+      Jxz[k][j][i]     = Jnp1;
 
-		}
+    }
 
-		if(is_cond && rho){
-		  J_c.xz[k][j][i] -= rho*(Enp1 + Exz[k][j][i]);
-		}
+    if(is_cond && rho){
+      J_c.xz[k][j][i] -= rho*(Enp1 + Exz[k][j][i]);
+    }
 
-		Exz[k][j][i] = Enp1;
+    Exz[k][j][i] = Enp1;
 
-	      }
-	//FDTD, Exz
+        }
+  //FDTD, Exz
 #else //PSTD, Exz
-	  //#pragma omp for
-	  for(j=0;j<J_tot_p1_bound;j++)
-	    #pragma omp for
-	    for(i=0;i<I_tot;i++){
-	      for(k=1;k<K_tot;k++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][j][i+1]){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Caz[k_loc];
-		    Cb = Cbz[k_loc];
-		    if(is_disp_ml)
-		      Cc = Ccz[k_loc];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Caz[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbz[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccz[materials[k][j][i]-1];
-		  }
-		  if(intmatprops){
-		    if( !materials[k][j][i+1] ){
-		      Ca = Ca + Caz[k_loc];
-		      Cb = Cb + Cbz[k_loc];
-		      if(is_disp_ml)
-			Cc = Cc + Ccz[k_loc];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Caz[materials[k][j][i+1]-1];
-		      Cb = Cb + Cmaterial_Cbz[materials[k][j][i+1]-1];
-		      Cc = Cc + Cmaterial_Ccz[materials[k][j][i+1]-1];
-		    }
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Caz[k_loc];
-		  Cb = Cbz[k_loc];
-		  if(is_disp_ml)
-		    Cc = Ccz[k_loc];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_z[k_loc];
-		}
+    //#pragma omp for
+    for(j=0;j<J_tot_p1_bound;j++)
+      #pragma omp for
+      for(i=0;i<I_tot;i++){
+        for(k=1;k<K_tot;k++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][j][i+1]){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Caz[k_loc];
+        Cb = Cbz[k_loc];
+        if(is_disp_ml)
+          Cc = Ccz[k_loc];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Caz[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbz[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccz[materials[k][j][i]-1];
+      }
+      if(intmatprops){
+        if( !materials[k][j][i+1] ){
+          Ca = Ca + Caz[k_loc];
+          Cb = Cb + Cbz[k_loc];
+          if(is_disp_ml)
+      Cc = Cc + Ccz[k_loc];
+        }
+        else{
+          Ca = Ca + Cmaterial_Caz[materials[k][j][i+1]-1];
+          Cb = Cb + Cmaterial_Cbz[materials[k][j][i+1]-1];
+          Cc = Cc + Cmaterial_Ccz[materials[k][j][i+1]-1];
+        }
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Caz[k_loc];
+      Cb = Cbz[k_loc];
+      if(is_disp_ml)
+        Cc = Ccz[k_loc];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_z[k_loc];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_z[k_loc];
-		  kappa_l = ml_kappa_z[k_loc];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][j][i+1]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_z[k_loc];
+      kappa_l = ml_kappa_z[k_loc];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][j][i+1]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][j][i+1]){
-		      alpha_l += alpha[materials[k][j][i+1]-1];
-		      beta_l +=  beta[materials[k][j][i+1]-1];
-		      gamma_l += gamma[materials[k][j][i+1]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][j][i+1]){
+          alpha_l += alpha[materials[k][j][i+1]-1];
+          beta_l +=  beta[materials[k][j][i+1]-1];
+          gamma_l += gamma[materials[k][j][i+1]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
-		/*if( materials[k][j][i] || materials[k][j][i+1])
-		  fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,is_disp_ml);
-		  if(tind==0)
-		  fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
-		//Enp1 = Ca*Exz[k][j][i]+Cb*(Hyx[k-1][j][i] + Hyz[k-1][j][i] - Hyx[k][j][i] - Hyz[k][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dz*J_c.xz[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E_s.xz[k][j][i];
-		  E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
-		  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
+    /*if( materials[k][j][i] || materials[k][j][i+1])
+      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,is_disp_ml);
+      if(tind==0)
+      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
+    //Enp1 = Ca*Exz[k][j][i]+Cb*(Hyx[k-1][j][i] + Hyz[k-1][j][i] - Hyx[k][j][i] - Hyz[k][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.xz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dz*J_c.xz[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
+      Jnp1 += sigma_l / eo * gamma_l * E_s.xz[k][j][i];
+      E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
+      J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
       J_s.xz[k][j][i]     = Jnp1;
 
-		}
+    }
 
-		if(is_cond && rho){
-		  J_c.xz[k][j][i] -= rho*(Enp1 + E_s.xz[k][j][i]);
-		}
+    if(is_cond && rho){
+      J_c.xz[k][j][i] -= rho*(Enp1 + E_s.xz[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
-		ca_vec[omp_get_thread_num()][k-1] = Ca;
-		cb_vec[omp_get_thread_num()][k-1] = Cb;
+    eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+    ca_vec[omp_get_thread_num()][k-1] = Ca;
+    cb_vec[omp_get_thread_num()][k-1] = Cb;
 
-	      }
-	      k=0;
-	      eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
-	      /*
-		if (tind==1 & i==25 & j==25){
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",dk_e_z[k][0]);
-		fprintf(stdout,"\n\n");
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",dk_e_z[k][1]);
-		fprintf(stdout,"\n\n");
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][0]);
-		fprintf(stdout,"\n\n");
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][1]);
-		}
-	      */
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_e_z, N_e_z , pf_exz[omp_get_thread_num()], pb_exz[omp_get_thread_num()]);
-	      /*
-		if (tind==1 & i==25 & j==25){
-		fprintf(stdout,"\n\n");
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",eh_vec[k][0]);
-		fprintf(stdout,"\n\n");
-		for(k=0;k<N_e_z;k++)
-		fprintf(stdout,"%e ",eh_vec[k][1]);
-		}
-	      */
-	      for(k=1;k<K_tot;k++){
+        }
+        k=0;
+        eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+        /*
+    if (tind==1 & i==25 & j==25){
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",dk_e_z[k][0]);
+    fprintf(stdout,"\n\n");
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",dk_e_z[k][1]);
+    fprintf(stdout,"\n\n");
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][0]);
+    fprintf(stdout,"\n\n");
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][1]);
+    }
+        */
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_e_z, N_e_z , pf_exz[omp_get_thread_num()], pb_exz[omp_get_thread_num()]);
+        /*
+    if (tind==1 & i==25 & j==25){
+    fprintf(stdout,"\n\n");
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",eh_vec[k][0]);
+    fprintf(stdout,"\n\n");
+    for(k=0;k<N_e_z;k++)
+    fprintf(stdout,"%e ",eh_vec[k][1]);
+    }
+        */
+        for(k=1;k<K_tot;k++){
           E_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.xz[k][j][i] - cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
-	      }
+        }
 
-	    }
+      }
     //PSTD, Exz
 #endif
 
-	//fprintf(stderr,"Pos 05:\n");
-	//Eyx updates
+  //fprintf(stderr,"Pos 05:\n");
+  //Eyx updates
 #ifdef FDFLAG // Use central difference derivatives
     //FDTD, Eyx
 #pragma omp for
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=0;j<J_tot_bound;j++)
-	      for(i=1;i<I_tot;i++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure ){
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		}
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
+    for(k=0;k<(K_tot+1);k++)
+      for(j=0;j<J_tot_bound;j++)
+        for(i=1;i<I_tot;i++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure ){
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
 
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Cax[array_ind];
-		    Cb = Cbx[array_ind];
-		    if(is_disp_ml)
-		      Cc = Ccx[array_ind];
-		    else
-		      Cc = 0;
-		  }
-		  else{
-		    Ca = Cmaterial_Cax[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbx[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccx[materials[k][j][i]-1];
-		  }
-		  if(intmatprops){
-		    if( !materials[k][min(J_tot,j+1)][i] ){
-		      Ca = Ca + Cax[array_ind];
-		      Cb = Cb + Cbx[array_ind];
-		      if(is_disp_ml)
-			Cc = Cc + Ccx[array_ind];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Cax[materials[k][min(J_tot,j+1)][i]-1];
-		      Cb = Cb + Cmaterial_Cbx[materials[k][min(J_tot,j+1)][i]-1];
-		      Cc = Cc + Cmaterial_Ccx[materials[k][min(J_tot,j+1)][i]-1];
-		    }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Cax[array_ind];
+        Cb = Cbx[array_ind];
+        if(is_disp_ml)
+          Cc = Ccx[array_ind];
+        else
+          Cc = 0;
+      }
+      else{
+        Ca = Cmaterial_Cax[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbx[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccx[materials[k][j][i]-1];
+      }
+      if(intmatprops){
+        if( !materials[k][min(J_tot,j+1)][i] ){
+          Ca = Ca + Cax[array_ind];
+          Cb = Cb + Cbx[array_ind];
+          if(is_disp_ml)
+      Cc = Cc + Ccx[array_ind];
+        }
+        else{
+          Ca = Ca + Cmaterial_Cax[materials[k][min(J_tot,j+1)][i]-1];
+          Cb = Cb + Cmaterial_Cbx[materials[k][min(J_tot,j+1)][i]-1];
+          Cc = Cc + Cmaterial_Ccx[materials[k][min(J_tot,j+1)][i]-1];
+        }
 
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Cax[array_ind];
-		  Cb = Cbx[array_ind];
-		  if(is_disp_ml)
-		    Cc = Ccx[array_ind];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_x[array_ind];
-		}
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Cax[array_ind];
+      Cb = Cbx[array_ind];
+      if(is_disp_ml)
+        Cc = Ccx[array_ind];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_x[array_ind];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_x[array_ind];
-		  kappa_l = ml_kappa_x[array_ind];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_x[array_ind];
+      kappa_l = ml_kappa_x[array_ind];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][min(J_tot,j+1)][i]){
-		      alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
-		      beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
-		      gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][min(J_tot,j+1)][i]){
+          alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
+          beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
+          gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
 
-		  }
-		}
+      }
+    }
 
 
-		Enp1 = Ca*Eyx[k][j][i]+Cb*(Hzx[k][j][i-1] + Hzy[k][j][i-1] - Hzx[k][j][i] - Hzy[k][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l)*Jyx[k][j][i] + beta_l*J_nm1.yx[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dx*J_c.yx[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l*Jyx[k][j][i] + beta_l*J_nm1.yx[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.yx[k][j][i]);
-		  Jnp1 += sigma_l/eo*gamma_l*Eyx[k][j][i];
-		  E_nm1.yx[k][j][i] = Eyx[k][j][i];
-		  J_nm1.yx[k][j][i] = Jyx[k][j][i];
-		  Jyx[k][j][i]     = Jnp1;
-		}
-		if(is_cond && rho){
-		  J_c.yx[k][j][i] -= rho*(Enp1 + Eyx[k][j][i]);
-		}
+    Enp1 = Ca*Eyx[k][j][i]+Cb*(Hzx[k][j][i-1] + Hzy[k][j][i-1] - Hzx[k][j][i] - Hzy[k][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l)*Jyx[k][j][i] + beta_l*J_nm1.yx[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dx*J_c.yx[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l*Jyx[k][j][i] + beta_l*J_nm1.yx[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.yx[k][j][i]);
+      Jnp1 += sigma_l/eo*gamma_l*Eyx[k][j][i];
+      E_nm1.yx[k][j][i] = Eyx[k][j][i];
+      J_nm1.yx[k][j][i] = Jyx[k][j][i];
+      Jyx[k][j][i]     = Jnp1;
+    }
+    if(is_cond && rho){
+      J_c.yx[k][j][i] -= rho*(Enp1 + Eyx[k][j][i]);
+    }
 
-		Eyx[k][j][i] = Enp1;
-	      }
-	//FDTD, Eyx
+    Eyx[k][j][i] = Enp1;
+        }
+  //FDTD, Eyx
 #else //PSTD, Eyx
 #pragma omp for
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=0;j<J_tot_bound;j++){
-	      for(i=1;i<I_tot;i++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure ){
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		}
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
+    for(k=0;k<(K_tot+1);k++)
+      for(j=0;j<J_tot_bound;j++){
+        for(i=1;i<I_tot;i++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure ){
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
 
-		//use the average of material parameters between nodes
-		if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Cax[array_ind];
-		    Cb = Cbx[array_ind];
-		    if(is_disp_ml)
-		      Cc = Ccx[array_ind];
-		    else
-		      Cc = 0;
-		  }
-		  else{
-		    Ca = Cmaterial_Cax[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbx[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccx[materials[k][j][i]-1];
-		  }
-		  if(intmatprops){
-		    if( !materials[k][min(J_tot,j+1)][i] ){
-		      Ca = Ca + Cax[array_ind];
-		      Cb = Cb + Cbx[array_ind];
-		      if(is_disp_ml)
-			Cc = Cc + Ccx[array_ind];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Cax[materials[k][min(J_tot,j+1)][i]-1];
-		      Cb = Cb + Cmaterial_Cbx[materials[k][min(J_tot,j+1)][i]-1];
-		      Cc = Cc + Cmaterial_Ccx[materials[k][min(J_tot,j+1)][i]-1];
-		    }
+    //use the average of material parameters between nodes
+    if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Cax[array_ind];
+        Cb = Cbx[array_ind];
+        if(is_disp_ml)
+          Cc = Ccx[array_ind];
+        else
+          Cc = 0;
+      }
+      else{
+        Ca = Cmaterial_Cax[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbx[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccx[materials[k][j][i]-1];
+      }
+      if(intmatprops){
+        if( !materials[k][min(J_tot,j+1)][i] ){
+          Ca = Ca + Cax[array_ind];
+          Cb = Cb + Cbx[array_ind];
+          if(is_disp_ml)
+      Cc = Cc + Ccx[array_ind];
+        }
+        else{
+          Ca = Ca + Cmaterial_Cax[materials[k][min(J_tot,j+1)][i]-1];
+          Cb = Cb + Cmaterial_Cbx[materials[k][min(J_tot,j+1)][i]-1];
+          Cc = Cc + Cmaterial_Ccx[materials[k][min(J_tot,j+1)][i]-1];
+        }
 
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Cax[array_ind];
-		  Cb = Cbx[array_ind];
-		  if(is_disp_ml)
-		    Cc = Ccx[array_ind];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_x[array_ind];
-		}
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Cax[array_ind];
+      Cb = Cbx[array_ind];
+      if(is_disp_ml)
+        Cc = Ccx[array_ind];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_x[array_ind];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_x[array_ind];
-		  kappa_l = ml_kappa_x[array_ind];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_x[array_ind];
+      kappa_l = ml_kappa_x[array_ind];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][min(J_tot,j+1)][i]){
-		      alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
-		      beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
-		      gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][min(J_tot,j+1)][i]){
+          alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
+          beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
+          gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
 
-		  }
-		}
+      }
+    }
 
 
-		//Enp1 = Ca*Eyx[k][j][i]+Cb*(Hzx[k][j][i-1] + Hzy[k][j][i-1] - Hzx[k][j][i] - Hzy[k][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dx*J_c.yx[k][j][i];
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E_s.yx[k][j][i];
-		  E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
-		  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
+    //Enp1 = Ca*Eyx[k][j][i]+Cb*(Hzx[k][j][i-1] + Hzy[k][j][i-1] - Hzx[k][j][i] - Hzy[k][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.yx[k][j][i] - 1./2.*Cb*dx*((1+alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dx*J_c.yx[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
+      Jnp1 += sigma_l / eo * gamma_l * E_s.yx[k][j][i];
+      E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
+      J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
       J_s.yx[k][j][i]     = Jnp1;
-		}
-		if(is_cond && rho){
-		  J_c.yx[k][j][i] -= rho*(Enp1 + E_s.yx[k][j][i]);
-		}
+    }
+    if(is_cond && rho){
+      J_c.yx[k][j][i] -= rho*(Enp1 + E_s.yx[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
-		ca_vec[omp_get_thread_num()][i-1] = Ca;
-		cb_vec[omp_get_thread_num()][i-1] = Cb;
+    eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+    ca_vec[omp_get_thread_num()][i-1] = Ca;
+    cb_vec[omp_get_thread_num()][i-1] = Cb;
 
-	      }
-	      i=0;
-	      eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+        }
+        i=0;
+        eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_e_x, N_e_x , pf_eyx[omp_get_thread_num()], pb_eyx[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_e_x, N_e_x , pf_eyx[omp_get_thread_num()], pb_eyx[omp_get_thread_num()]);
 
-	      for(i=1;i<I_tot;i++){
+        for(i=1;i<I_tot;i++){
           E_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.yx[k][j][i] - cb_vec[omp_get_thread_num()][i - 1] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
-		//Eyx[k][j][i] = Enp1;
-	      }
-	    }
+    //Eyx[k][j][i] = Enp1;
+        }
+      }
     //PSTD, Eyx
 #endif
 
-	//fprintf(stderr,"Pos 06:\n");
-	//Eyz updates
+  //fprintf(stderr,"Pos 06:\n");
+  //Eyz updates
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Eyz
 #pragma omp for
-	  for(k=1;k<K_tot;k++)
-	    for(j=0;j<J_tot_bound;j++)
-	      for(i=0;i<(I_tot+1);i++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Caz[k_loc];
-		    Cb = Cbz[k_loc];
-		    if(is_disp_ml)
-		      Cc = Ccz[k_loc];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Caz[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbz[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccz[materials[k][j][i]-1];
-		  }
+    for(k=1;k<K_tot;k++)
+      for(j=0;j<J_tot_bound;j++)
+        for(i=0;i<(I_tot+1);i++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Caz[k_loc];
+        Cb = Cbz[k_loc];
+        if(is_disp_ml)
+          Cc = Ccz[k_loc];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Caz[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbz[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccz[materials[k][j][i]-1];
+      }
 
-		  if(intmatprops){
-		    if( !materials[k][min(J_tot,j+1)][i] ){
-		      Ca = Ca + Caz[k_loc];
-		      Cb = Cb + Cbz[k_loc];
-		      if(is_disp_ml)
-			Cc = Cc + Ccz[k_loc];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Caz[materials[k][min(J_tot,j+1)][i]-1];
-		      Cb = Cb + Cmaterial_Cbz[materials[k][min(J_tot,j+1)][i]-1];
-		      Cc = Cc + Cmaterial_Ccz[materials[k][min(J_tot,j+1)][i]-1];
-		    }
+      if(intmatprops){
+        if( !materials[k][min(J_tot,j+1)][i] ){
+          Ca = Ca + Caz[k_loc];
+          Cb = Cb + Cbz[k_loc];
+          if(is_disp_ml)
+      Cc = Cc + Ccz[k_loc];
+        }
+        else{
+          Ca = Ca + Cmaterial_Caz[materials[k][min(J_tot,j+1)][i]-1];
+          Cb = Cb + Cmaterial_Cbz[materials[k][min(J_tot,j+1)][i]-1];
+          Cc = Cc + Cmaterial_Ccz[materials[k][min(J_tot,j+1)][i]-1];
+        }
 
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Caz[k_loc];
-		  Cb = Cbz[k_loc];
-		  if(is_disp_ml)
-		    Cc = Ccz[k_loc];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_z[k_loc];
-		}
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Caz[k_loc];
+      Cb = Cbz[k_loc];
+      if(is_disp_ml)
+        Cc = Ccz[k_loc];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_z[k_loc];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_z[k_loc];
-		  kappa_l = ml_kappa_z[k_loc];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_z[k_loc];
+      kappa_l = ml_kappa_z[k_loc];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][min(J_tot,j+1)][i]){
-		      alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
-		      beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
-		      gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][min(J_tot,j+1)][i]){
+          alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
+          beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
+          gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
 
-		//fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
-		Enp1 = Ca*Eyz[k][j][i]+Cb*(Hxy[k][j][i] + Hxz[k][j][i] - Hxy[k-1][j][i] - Hxz[k-1][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l)*Jyz[k][j][i] + beta_l*J_nm1.yz[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dz*J_c.yz[k][j][i];
+    //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
+    Enp1 = Ca*Eyz[k][j][i]+Cb*(Hxy[k][j][i] + Hxz[k][j][i] - Hxy[k-1][j][i] - Hxz[k-1][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l)*Jyz[k][j][i] + beta_l*J_nm1.yz[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dz*J_c.yz[k][j][i];
 
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l*Jyz[k][j][i] + beta_l*J_nm1.yz[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.yz[k][j][i]);
-		  Jnp1 += sigma_l/eo*gamma_l*Eyz[k][j][i];
-		  E_nm1.yz[k][j][i] = Eyz[k][j][i];
-		  J_nm1.yz[k][j][i] = Jyz[k][j][i];
-		  Jyz[k][j][i]     = Jnp1;
-		  //	      if(i==40 && j==40 && k==40)
-		  //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
-		  //	      fflush(outfile);
-		}
-		if(is_cond && rho){
-		  J_c.yz[k][j][i] -= rho*(Enp1 + Eyz[k][j][i]);
-		}
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l*Jyz[k][j][i] + beta_l*J_nm1.yz[k][j][i] + kappa_l*gamma_l/(2.*dt[0])*(Enp1 - E_nm1.yz[k][j][i]);
+      Jnp1 += sigma_l/eo*gamma_l*Eyz[k][j][i];
+      E_nm1.yz[k][j][i] = Eyz[k][j][i];
+      J_nm1.yz[k][j][i] = Jyz[k][j][i];
+      Jyz[k][j][i]     = Jnp1;
+      //	      if(i==40 && j==40 && k==40)
+      //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
+      //	      fflush(outfile);
+    }
+    if(is_cond && rho){
+      J_c.yz[k][j][i] -= rho*(Enp1 + Eyz[k][j][i]);
+    }
 
-		Eyz[k][j][i] = Enp1;
+    Eyz[k][j][i] = Enp1;
 
-	      }
+        }
 //FDTD, Eyz
 #else //PSTD, Eyz
 #pragma omp for
-	  for(j=0;j<J_tot_bound;j++)
-	    for(i=0;i<(I_tot+1);i++){
-	      for(k=1;k<K_tot;k++){
-		rho = 0.;
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
-		  rho = 0.;
-		  if( !materials[k][j][i] ){
-		    Ca = Caz[k_loc];
-		    Cb = Cbz[k_loc];
-		    if(is_disp_ml)
-		      Cc = Ccz[k_loc];
-		    else
-		      Cc = 0.;
-		  }
-		  else{
-		    Ca = Cmaterial_Caz[materials[k][j][i]-1];
-		    Cb = Cmaterial_Cbz[materials[k][j][i]-1];
-		    Cc = Cmaterial_Ccz[materials[k][j][i]-1];
-		  }
+    for(j=0;j<J_tot_bound;j++)
+      for(i=0;i<(I_tot+1);i++){
+        for(k=1;k<K_tot;k++){
+    rho = 0.;
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i] ){
+      rho = 0.;
+      if( !materials[k][j][i] ){
+        Ca = Caz[k_loc];
+        Cb = Cbz[k_loc];
+        if(is_disp_ml)
+          Cc = Ccz[k_loc];
+        else
+          Cc = 0.;
+      }
+      else{
+        Ca = Cmaterial_Caz[materials[k][j][i]-1];
+        Cb = Cmaterial_Cbz[materials[k][j][i]-1];
+        Cc = Cmaterial_Ccz[materials[k][j][i]-1];
+      }
 
-		  if(intmatprops){
-		    if( !materials[k][min(J_tot,j+1)][i] ){
-		      Ca = Ca + Caz[k_loc];
-		      Cb = Cb + Cbz[k_loc];
-		      if(is_disp_ml)
-			Cc = Cc + Ccz[k_loc];
-		    }
-		    else{
-		      Ca = Ca + Cmaterial_Caz[materials[k][min(J_tot,j+1)][i]-1];
-		      Cb = Cb + Cmaterial_Cbz[materials[k][min(J_tot,j+1)][i]-1];
-		      Cc = Cc + Cmaterial_Ccz[materials[k][min(J_tot,j+1)][i]-1];
-		    }
+      if(intmatprops){
+        if( !materials[k][min(J_tot,j+1)][i] ){
+          Ca = Ca + Caz[k_loc];
+          Cb = Cb + Cbz[k_loc];
+          if(is_disp_ml)
+      Cc = Cc + Ccz[k_loc];
+        }
+        else{
+          Ca = Ca + Cmaterial_Caz[materials[k][min(J_tot,j+1)][i]-1];
+          Cb = Cb + Cmaterial_Cbz[materials[k][min(J_tot,j+1)][i]-1];
+          Cc = Cc + Cmaterial_Ccz[materials[k][min(J_tot,j+1)][i]-1];
+        }
 
-		    Ca = Ca/2.;
-		    Cb = Cb/2.;
-		    Cc = Cc/2.;
-		  }
-		}
-		else{
-		  Ca = Caz[k_loc];
-		  Cb = Cbz[k_loc];
-		  if(is_disp_ml)
-		    Cc = Ccz[k_loc];
-		  else
-		    Cc = 0.;
-		  if(is_cond)
-		    rho = rho_z[k_loc];
-		}
+        Ca = Ca/2.;
+        Cb = Cb/2.;
+        Cc = Cc/2.;
+      }
+    }
+    else{
+      Ca = Caz[k_loc];
+      Cb = Cbz[k_loc];
+      if(is_disp_ml)
+        Cc = Ccz[k_loc];
+      else
+        Cc = 0.;
+      if(is_cond)
+        rho = rho_z[k_loc];
+    }
 
-		alpha_l = 0.;
-		beta_l  = 0.;
-		gamma_l = 0.;
-		kappa_l = 1.;
-		sigma_l = 0.;
+    alpha_l = 0.;
+    beta_l  = 0.;
+    gamma_l = 0.;
+    kappa_l = 1.;
+    sigma_l = 0.;
 
-		if(is_disp || is_disp_ml){
-		  sigma_l = ml_sigma_z[k_loc];
-		  kappa_l = ml_kappa_z[k_loc];
-		  alpha_l = ml_alpha[k_loc];
-		  beta_l = ml_beta[k_loc];
-		  gamma_l = ml_gamma[k_loc];
-		  if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
-		    if(materials[k][j][i]){
-		      alpha_l = alpha[materials[k][j][i]-1];
-		      beta_l =  beta[materials[k][j][i]-1];
-		      gamma_l = gamma[materials[k][j][i]-1];
-		    }
-		    else{
-		      alpha_l = ml_alpha[k_loc];
-		      beta_l = ml_beta[k_loc];
-		      gamma_l = ml_gamma[k_loc];
-		    }
+    if(is_disp || is_disp_ml){
+      sigma_l = ml_sigma_z[k_loc];
+      kappa_l = ml_kappa_z[k_loc];
+      alpha_l = ml_alpha[k_loc];
+      beta_l = ml_beta[k_loc];
+      gamma_l = ml_gamma[k_loc];
+      if( materials[k][j][i] || materials[k][min(J_tot,j+1)][i]){
+        if(materials[k][j][i]){
+          alpha_l = alpha[materials[k][j][i]-1];
+          beta_l =  beta[materials[k][j][i]-1];
+          gamma_l = gamma[materials[k][j][i]-1];
+        }
+        else{
+          alpha_l = ml_alpha[k_loc];
+          beta_l = ml_beta[k_loc];
+          gamma_l = ml_gamma[k_loc];
+        }
 
-		    if(materials[k][min(J_tot,j+1)][i]){
-		      alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
-		      beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
-		      gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
-		    }
-		    else{
-		      alpha_l += ml_alpha[k_loc];
-		      beta_l += ml_beta[k_loc];
-		      gamma_l += ml_gamma[k_loc];
+        if(materials[k][min(J_tot,j+1)][i]){
+          alpha_l += alpha[materials[k][min(J_tot,j+1)][i]-1];
+          beta_l +=  beta[materials[k][min(J_tot,j+1)][i]-1];
+          gamma_l += gamma[materials[k][min(J_tot,j+1)][i]-1];
+        }
+        else{
+          alpha_l += ml_alpha[k_loc];
+          beta_l += ml_beta[k_loc];
+          gamma_l += ml_gamma[k_loc];
 
-		    }
-		    alpha_l = alpha_l/2.;
-		    beta_l = beta_l/2.;
-		    gamma_l = gamma_l/2.;
-		  }
-		}
+        }
+        alpha_l = alpha_l/2.;
+        beta_l = beta_l/2.;
+        gamma_l = gamma_l/2.;
+      }
+    }
 
-		//fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
-		//Enp1 = Ca*Eyz[k][j][i]+Cb*(Hxy[k][j][i] + Hxz[k][j][i] - Hxy[k-1][j][i] - Hxz[k-1][j][i]);
-		if( (is_disp || is_disp_ml) && gamma_l)
-		  Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-		if(is_cond && rho)
-		  Enp1 += Cb*dz*J_c.yz[k][j][i];
+    //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
+    //Enp1 = Ca*Eyz[k][j][i]+Cb*(Hxy[k][j][i] + Hxz[k][j][i] - Hxy[k-1][j][i] - Hxz[k-1][j][i]);
+    if( (is_disp || is_disp_ml) && gamma_l)
+      Enp1 += Cc*E_nm1.yz[k][j][i] - 1./2.*Cb*dz*((1+alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
+    if(is_cond && rho)
+      Enp1 += Cb*dz*J_c.yz[k][j][i];
 
-		if( (is_disp || is_disp_ml) && gamma_l){
-		  Jnp1  = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
-		  Jnp1 += sigma_l / eo * gamma_l * E_s.yz[k][j][i];
-		  E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
-		  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
+    if( (is_disp || is_disp_ml) && gamma_l){
+      Jnp1  = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] + kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
+      Jnp1 += sigma_l / eo * gamma_l * E_s.yz[k][j][i];
+      E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
+      J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
       J_s.yz[k][j][i]     = Jnp1;
-		  //	      if(i==40 && j==40 && k==40)
-		  //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
-		  //	      fflush(outfile);
-		}
-		if(is_cond && rho){
-		  J_c.yz[k][j][i] -= rho*(Enp1 + E_s.yz[k][j][i]);
-		}
+      //	      if(i==40 && j==40 && k==40)
+      //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
+      //	      fflush(outfile);
+    }
+    if(is_cond && rho){
+      J_c.yz[k][j][i] -= rho*(Enp1 + E_s.yz[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
-		ca_vec[omp_get_thread_num()][k-1] = Ca;
-		cb_vec[omp_get_thread_num()][k-1] = Cb;
+    eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+    ca_vec[omp_get_thread_num()][k-1] = Ca;
+    cb_vec[omp_get_thread_num()][k-1] = Cb;
 
-	      }
-	      k = 0;
-	      eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_e_z, N_e_z , pf_eyz[omp_get_thread_num()], pb_eyz[omp_get_thread_num()]);
+        }
+        k = 0;
+        eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_e_z, N_e_z , pf_eyz[omp_get_thread_num()], pb_eyz[omp_get_thread_num()]);
 
 
-	      for(k=1;k<K_tot;k++){
+        for(k=1;k<K_tot;k++){
           E_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.yz[k][j][i] + cb_vec[omp_get_thread_num()][k - 1] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
-		//Eyz[k][j][i] = Enp1;
-	      }
-	    }
+    //Eyz[k][j][i] = Enp1;
+        }
+      }
   //PSTD, Eyz
 #endif
   }//if(dimension==THREE || dimension==TE)
@@ -4866,184 +4866,184 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
       complex<double> commonPhase = exp(-I*fmod(omega_an[0]*time_H,2.*dcpi));
       double commonAmplitude = linearRamp(time_H, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
-	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
-	  if( (int)I0[1] ){//Perform across I0
+  for(j=((int)J0[0]);j<=((int)J1[0]);j++){
+    if( (int)I0[1] ){//Perform across I0
 
-	    if( !is_multilayer )
-	      array_ind = (int)I0[0];
-	    else
-	      array_ind = (I_tot+1)*k+(int)I0[0];
+      if( !is_multilayer )
+        array_ind = (int)I0[0];
+      else
+        array_ind = (I_tot+1)*k+(int)I0[0];
 
-	    if( k < ((int)K1[0]) || dimension==TM ){
+      if( k < ((int)K1[0]) || dimension==TM ){
         E_s.zx[k][j][(int)I0[0]] = E_s.zx[k][j][(int)I0[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
-	      if(is_cond)
-		J_c.zx[k][j][(int)I0[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.zx[k][j][(int)I0[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
+        if(is_disp_ml)
           J_s.zx[k][j][(int)I0[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][2] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][2]));
-	    }
-	    if( j < ((int)J1[0]) ){
+      }
+      if( j < ((int)J1[0]) ){
         E_s.yx[k][j][(int)I0[0]] = E_s.yx[k][j][(int)I0[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
-	      if(is_cond)
-		J_c.yx[k][j][(int)I0[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.yx[k][j][(int)I0[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
+        if(is_disp_ml)
           J_s.yx[k][j][(int)I0[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][3] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][3]));
-	    }
-	  }
-	  if( (int)I1[1] ){//Perform across I1
+      }
+    }
+    if( (int)I1[1] ){//Perform across I1
 
-	    if( !is_multilayer )
-	      array_ind = (int)I1[0];
-	    else
-	      array_ind = (I_tot+1)*k+(int)I1[0];
+      if( !is_multilayer )
+        array_ind = (int)I1[0];
+      else
+        array_ind = (I_tot+1)*k+(int)I1[0];
 
-	    if( k < ((int)K1[0]) || dimension==TM ){
+      if( k < ((int)K1[0]) || dimension==TM ){
         E_s.zx[k][j][(int)I1[0]] = E_s.zx[k][j][(int)I1[0]] + Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
-	      if(is_cond)
-		J_c.zx[k][j][(int)I1[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.zx[k][j][(int)I1[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
+        if(is_disp_ml)
           J_s.zx[k][j][(int)I1[0]] -= ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][6] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][6]));
-	    }
-	    if( j < ((int)J1[0]) ){
+      }
+      if( j < ((int)J1[0]) ){
         E_s.yx[k][j][(int)I1[0]] = E_s.yx[k][j][(int)I1[0]] - Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
-	      if(is_cond)
-		J_c.yx[k][j][(int)I1[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.yx[k][j][(int)I1[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
+        if(is_disp_ml)
           J_s.yx[k][j][(int)I1[0]] += ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][7] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][7]));
-	    }
-	  }
-	}
+      }
+    }
+  }
 
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
-	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
-	  if( (int)J0[1] ){//Perform across J0
-	    if( k < ((int)K1[0]) || dimension==TM ){
+  for(i=((int)I0[0]);i<=((int)I1[0]);i++){
+    if( (int)J0[1] ){//Perform across J0
+      if( k < ((int)K1[0]) || dimension==TM ){
 
-	      if( !is_multilayer )
-		array_ind = (int)J0[0];
-	      else
-		array_ind = (J_tot+1)*k+(int)J0[0];
+        if( !is_multilayer )
+    array_ind = (int)J0[0];
+        else
+    array_ind = (J_tot+1)*k+(int)J0[0];
 
         E_s.zy[k][((int)J0[0])][i] = E_s.zy[k][((int)J0[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
-	      if(is_cond)
-		J_c.zy[k][((int)J0[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.zy[k][((int)J0[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
+        if(is_disp_ml)
           J_s.zy[k][((int)J0[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][2] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][2]));
-	    }
-	    if( i < ((int)I1[0]) ){
+      }
+      if( i < ((int)I1[0]) ){
         E_s.xy[k][((int)J0[0])][i] = E_s.xy[k][((int)J0[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
-	      if(is_cond)
-		J_c.xy[k][((int)J0[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.xy[k][((int)J0[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
+        if(is_disp_ml)
           J_s.xy[k][((int)J0[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][3] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][3]));
-	    }
-	  }
-	  if( (int)J1[1] ){//Perform across J1
+      }
+    }
+    if( (int)J1[1] ){//Perform across J1
 
-	    if( !is_multilayer )
-	      array_ind = (int)J1[0];
-	    else
-	      array_ind = (J_tot+1)*k+(int)J1[0];
+      if( !is_multilayer )
+        array_ind = (int)J1[0];
+      else
+        array_ind = (J_tot+1)*k+(int)J1[0];
 
-	    if( k < ((int)K1[0]) || dimension==TM ){
+      if( k < ((int)K1[0]) || dimension==TM ){
         E_s.zy[k][((int)J1[0])][i] = E_s.zy[k][((int)J1[0])][i] - Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
-	      if(is_cond)
-		J_c.zy[k][((int)J1[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.zy[k][((int)J1[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
+        if(is_disp_ml)
           J_s.zy[k][((int)J1[0])][i] -= ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][6] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][6]));
-	    }
-	    if( i < ((int)I1[0]) ){
+      }
+      if( i < ((int)I1[0]) ){
         E_s.xy[k][((int)J1[0])][i] = E_s.xy[k][((int)J1[0])][i] + Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
-	      if(is_cond)
-		J_c.xy[k][((int)J1[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.xy[k][((int)J1[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
+        if(is_disp_ml)
           J_s.xy[k][((int)J1[0])][i] += ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * Cby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][7] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][7]));
-	    }
-	  }
-	}
+      }
+    }
+  }
 
       for(j=((int)J0[0]);j<=((int)J1[0]);j++)
-	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
-	  if( (int)K0[1] ){//Perform across K0
-	    if( j < ((int)J1[0]) ){
+  for(i=((int)I0[0]);i<=((int)I1[0]);i++){
+    if( (int)K0[1] ){//Perform across K0
+      if( j < ((int)J1[0]) ){
         E_s.yz[((int)K0[0])][j][i] = E_s.yz[((int)K0[0])][j][i] - Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
-	      if(is_cond)
-		J_c.yz[((int)K0[0])][j][i] += rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.yz[((int)K0[0])][j][i] += rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
+        if(is_disp_ml)
           J_s.yz[((int)K0[0])][j][i] -= ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]));
-	    }
-	    if( i < ((int)I1[0]) ){
+      }
+      if( i < ((int)I1[0]) ){
         E_s.xz[((int)K0[0])][j][i] = E_s.xz[((int)K0[0])][j][i] + Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
-	      if(is_cond)
-		J_c.xz[((int)K0[0])][j][i]  -= rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.xz[((int)K0[0])][j][i]  -= rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
+        if(is_disp_ml)
           J_s.xz[((int)K0[0])][j][i] += ml_kappa_z[((int)K0[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K0[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]));
-	    }
-	  }
-	  if( (int)K1[1] ){//Perform across K1
-	    if( j < ((int)J1[0]) ){
+      }
+    }
+    if( (int)K1[1] ){//Perform across K1
+      if( j < ((int)J1[0]) ){
         E_s.yz[((int)K1[0])][j][i] = E_s.yz[((int)K1[0])][j][i] + Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
-	      if(is_cond)
-		J_c.yz[((int)K1[0])][j][i] -= rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.yz[((int)K1[0])][j][i] -= rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
+        if(is_disp_ml)
           J_s.yz[((int)K1[0])][j][i] += ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][6] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][6]));
-	    }
-	    if( i < ((int)I1[0]) ){
+      }
+      if( i < ((int)I1[0]) ){
         E_s.xz[((int)K1[0])][j][i] = E_s.xz[((int)K1[0])][j][i] - Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
-	      if(is_cond)
-		J_c.xz[((int)K1[0])][j][i] += rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
-	      if(is_disp_ml)
+        if(is_cond)
+    J_c.xz[((int)K1[0])][j][i] += rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
+        if(is_disp_ml)
           J_s.xz[((int)K1[0])][j][i] -= ml_kappa_z[((int)K1[0])] * ml_gamma[k] / (2. * dt[0]) * Cbz[(int)K1[0]] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][7] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][7]));
-	    }
-	  }
-	}
+      }
+    }
+  }
       H.ft = real(commonAmplitude * commonPhase);
     }
     else if(sourcemode==1){//pulsed
 
       if(J_tot==0){
-	j=0;
-	for(i=0;i<(I_tot+1);i++){
+  j=0;
+  for(i=0;i<(I_tot+1);i++){
     E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-	  //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-	  if(is_cond)
-	    J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	  //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-	  if(is_disp_ml){
+    //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+    if(is_cond)
+      J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+    //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+    if(is_disp_ml){
       J_s.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[0][i - ((int)I0[0])][2] + I * KsourceI[0][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-	    //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 
-	  }
-	}
+    }
+  }
       }
       else
-	for(j=0;j<J_tot;j++)
-	  for(i=0;i<(I_tot+1);i++){
-	    /*
-	      if(i==41 & j==41)
-	      fprintf(stderr,"Cbz = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",Cbz[(int)K0[0]],KsourceR[j-((int)J0[0])][i-((int)I0[0])][2],KsourceI[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
-	    */
-	    E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-	    //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-	    if(is_cond)
-	      J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	    //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-	    if(is_disp_ml){
+  for(j=0;j<J_tot;j++)
+    for(i=0;i<(I_tot+1);i++){
+      /*
+        if(i==41 & j==41)
+        fprintf(stderr,"Cbz = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",Cbz[(int)K0[0]],KsourceR[j-((int)J0[0])][i-((int)I0[0])][2],KsourceI[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
+      */
+      E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
+      //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      if(is_cond)
+        J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+      //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      if(is_disp_ml){
         J_s.yz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][2] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][2]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-	      //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+        //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 
-	    }
-	  }
+      }
+    }
       for(j=0;j<(J_tot+1);j++)
-	for(i=0;i<I_tot;i++){
+  for(i=0;i<I_tot;i++){
     E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
-	  //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
-	  if(is_cond)
-	    J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
-	  //J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
-	  if(is_disp_ml)
+    //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+    if(is_cond)
+      J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
+    //J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+    if(is_disp_ml)
       J_s.xz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]] * ml_gamma[(int)K0[0]] / (2. * dt[0]) * Cbz[(int)K0[0]] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][3] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][3]) * (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2 ));
-	  //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
-	}
+    //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+  }
       //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
       H.ft = real((-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) * exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
       //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
@@ -5072,469 +5072,469 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hxz
 #pragma omp for
-	  //Hxz updates
-	  for(k=0;k<K_tot;k++)
-	    for(j=0;j<J_tot_bound;j++)
-	      for(i=0;i<(I_tot+1);i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
+    //Hxz updates
+    for(k=0;k<K_tot;k++)
+      for(j=0;j<J_tot_bound;j++)
+        for(i=0;i<(I_tot+1);i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
 
-		if(  !materials[k][j][i])
-		  Hxz[k][j][i] = Daz[k_loc]*Hxz[k][j][i]+Dbz[k_loc]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
-		else
-		  Hxz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
+    if(  !materials[k][j][i])
+      Hxz[k][j][i] = Daz[k_loc]*Hxz[k][j][i]+Dbz[k_loc]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
+    else
+      Hxz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
 
-	      }
+        }
 //FDTD, Hxz
 #else //PSTD, Hxz
 #pragma omp for
-	  //Hxz updates
-	  for(j=0;j<J_tot_bound;j++)
-	    for(i=0;i<(I_tot+1);i++){
-	      for(k=0;k<K_tot;k++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
+    //Hxz updates
+    for(j=0;j<J_tot_bound;j++)
+      for(i=0;i<(I_tot+1);i++){
+        for(k=0;k<K_tot;k++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
 
-		if(  !materials[k][j][i]){
-		  ca_vec[omp_get_thread_num()][k]=Daz[k_loc];
-		  cb_vec[omp_get_thread_num()][k]=Dbz[k_loc];
-		  //Hxz[k][j][i] = Daz[k_loc]*Hxz[k][j][i]+Dbz[k_loc]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
-		}
-		else{
-		  ca_vec[omp_get_thread_num()][k]=Dmaterial_Daz[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][k]=Dmaterial_Dbz[materials[k][j][i]-1];
-		  //Hxz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
-		}
+    if(  !materials[k][j][i]){
+      ca_vec[omp_get_thread_num()][k]=Daz[k_loc];
+      cb_vec[omp_get_thread_num()][k]=Dbz[k_loc];
+      //Hxz[k][j][i] = Daz[k_loc]*Hxz[k][j][i]+Dbz[k_loc]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
+    }
+    else{
+      ca_vec[omp_get_thread_num()][k]=Dmaterial_Daz[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][k]=Dmaterial_Dbz[materials[k][j][i]-1];
+      //Hxz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+    eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 
-	      }
-	      k = K_tot;
-	      eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+        }
+        k = K_tot;
+        eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_z, N_h_z , pf_hxz[omp_get_thread_num()], pb_hxz[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_z, N_h_z , pf_hxz[omp_get_thread_num()], pb_hxz[omp_get_thread_num()]);
 
-	      for(k=0;k<K_tot;k++){
+        for(k=0;k<K_tot;k++){
           H_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.xz[k][j][i] + cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
-	      }
-	    }
+        }
+      }
 
-	//PSTD, Hxz
+  //PSTD, Hxz
 #endif
 
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hxy
 #pragma omp for
-	  //Hxy updates
-	  for(k=0;k<K_tot;k++)
-	    for(j=0;j<J_tot;j++)
-	      for(i=0;i<(I_tot+1);i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
-		if(  !materials[k][j][i])
-		  Hxy[k][j][i] = Day[array_ind]*Hxy[k][j][i]+Dby[array_ind]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
-		else
-		  Hxy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
-	      }
+    //Hxy updates
+    for(k=0;k<K_tot;k++)
+      for(j=0;j<J_tot;j++)
+        for(i=0;i<(I_tot+1);i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
+    if(  !materials[k][j][i])
+      Hxy[k][j][i] = Day[array_ind]*Hxy[k][j][i]+Dby[array_ind]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
+    else
+      Hxy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
+        }
 //FDTD, Hxy
 #else //PSTD, Hxy
 #pragma omp for
-	  //Hxy updates
-	  for(k=0;k<K_tot;k++)
-	    for(i=0;i<(I_tot+1);i++){
-	      for(j=0;j<J_tot;j++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
-		if(  !materials[k][j][i]){
-		  ca_vec[omp_get_thread_num()][j] = Day[array_ind];
-		  cb_vec[omp_get_thread_num()][j] = Dby[array_ind];
-		  //		Hxy[k][j][i] = Day[array_ind]*Hxy[k][j][i]+Dby[array_ind]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
-		}
-		else{
-		  ca_vec[omp_get_thread_num()][j] = Dmaterial_Day[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][j] = Dmaterial_Dby[materials[k][j][i]-1];
-		  //		Hxy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
-		}
+    //Hxy updates
+    for(k=0;k<K_tot;k++)
+      for(i=0;i<(I_tot+1);i++){
+        for(j=0;j<J_tot;j++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
+    if(  !materials[k][j][i]){
+      ca_vec[omp_get_thread_num()][j] = Day[array_ind];
+      cb_vec[omp_get_thread_num()][j] = Dby[array_ind];
+      //		Hxy[k][j][i] = Day[array_ind]*Hxy[k][j][i]+Dby[array_ind]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
+    }
+    else{
+      ca_vec[omp_get_thread_num()][j] = Dmaterial_Day[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][j] = Dmaterial_Dby[materials[k][j][i]-1];
+      //		Hxy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+    eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 
-	      }
-	      j=J_tot;
-	      eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+        }
+        j=J_tot;
+        eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_y, N_h_y , pf_hxy[omp_get_thread_num()], pb_hxy[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_y, N_h_y , pf_hxy[omp_get_thread_num()], pb_hxy[omp_get_thread_num()]);
 
-	      for(j=0;j<J_tot;j++){
+        for(j=0;j<J_tot;j++){
           H_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.xy[k][j][i] - cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
-	      }
+        }
 
-	      /*
-		if( i==12 && k==24){
-		fprintf(stdout,"tind: %d\n",tind);
-		fprintf(stdout,"Da: ");
-		for(j=0;j<J_tot;j++)
-		fprintf(stdout,"%e ",ca_vec[omp_get_thread_num()][j]);
-		fprintf(stdout,"\nDb: ");
-		for(j=0;j<J_tot;j++)
-		fprintf(stdout,"%e ",cb_vec[omp_get_thread_num()][j]);
+        /*
+    if( i==12 && k==24){
+    fprintf(stdout,"tind: %d\n",tind);
+    fprintf(stdout,"Da: ");
+    for(j=0;j<J_tot;j++)
+    fprintf(stdout,"%e ",ca_vec[omp_get_thread_num()][j]);
+    fprintf(stdout,"\nDb: ");
+    for(j=0;j<J_tot;j++)
+    fprintf(stdout,"%e ",cb_vec[omp_get_thread_num()][j]);
 
-		fprintf(stdout,"\neh_vec: ");
-		for(j=0;j<J_tot;j++)
-		fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][j][0]/((double) N_e_y));
-		fprintf(stdout,"\n");
-		}
-	      */
-	    }
+    fprintf(stdout,"\neh_vec: ");
+    for(j=0;j<J_tot;j++)
+    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][j][0]/((double) N_e_y));
+    fprintf(stdout,"\n");
+    }
+        */
+      }
 //PSTD, Hxy
 #endif
 
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hyx
 #pragma omp for
-	  //Hyx updates
-	  for(k=0;k<K_tot;k++)
-	    for(j=0;j<J_tot_p1_bound;j++)
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
-		if(  !materials[k][j][i])
-		  Hyx[k][j][i] = Dax[array_ind]*Hyx[k][j][i]+Dbx[array_ind]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
-		else{
-		  Hyx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
-		}
+    //Hyx updates
+    for(k=0;k<K_tot;k++)
+      for(j=0;j<J_tot_p1_bound;j++)
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
+    if(  !materials[k][j][i])
+      Hyx[k][j][i] = Dax[array_ind]*Hyx[k][j][i]+Dbx[array_ind]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
+    else{
+      Hyx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
+    }
 
-	      }
+        }
 //FDTD, Hyx
 #else //PSTD, Hyx
 #pragma omp for
-	  //Hyx updates
-	  for(k=0;k<K_tot;k++)
-	    for(j=0;j<J_tot_p1_bound;j++){
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
-		if(  !materials[k][j][i]){
-		  ca_vec[omp_get_thread_num()][i] = Dax[array_ind];
-		  cb_vec[omp_get_thread_num()][i] = Dbx[array_ind];
-		  //		Hyx[k][j][i] = Dax[array_ind]*Hyx[k][j][i]+Dbx[array_ind]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
-		}
-		else{
-		  ca_vec[omp_get_thread_num()][i] = Dmaterial_Dax[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][i] = Dmaterial_Dbx[materials[k][j][i]-1];
-		  //	Hyx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
-		}
+    //Hyx updates
+    for(k=0;k<K_tot;k++)
+      for(j=0;j<J_tot_p1_bound;j++){
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
+    if(  !materials[k][j][i]){
+      ca_vec[omp_get_thread_num()][i] = Dax[array_ind];
+      cb_vec[omp_get_thread_num()][i] = Dbx[array_ind];
+      //		Hyx[k][j][i] = Dax[array_ind]*Hyx[k][j][i]+Dbx[array_ind]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
+    }
+    else{
+      ca_vec[omp_get_thread_num()][i] = Dmaterial_Dax[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][i] = Dmaterial_Dbx[materials[k][j][i]-1];
+      //	Hyx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+    eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
-	      }
-	      i = I_tot;
-	      eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+        }
+        i = I_tot;
+        eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_x, N_h_x , pf_hyx[omp_get_thread_num()], pb_hyx[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_x, N_h_x , pf_hyx[omp_get_thread_num()], pb_hyx[omp_get_thread_num()]);
 
-	      for(i=0;i<I_tot;i++){
+        for(i=0;i<I_tot;i++){
           H_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.yx[k][j][i] + cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
-	      }
-	    }
+        }
+      }
 //PSTD, Hyx
 #endif
 
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hyz
 #pragma omp for
-	  //Hyz updates
-	  for(k=0;k<K_tot;k++){
-	    for(j=0;j<J_tot_p1_bound;j++)
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if(  !materials[k][j][i]){
-		  /*if(tind==0)
-		    fprintf(stdout,"%d %d %e %e\n",i,k,Daz[k_loc], Dbz[k_loc]);*/
-		  Hyz[k][j][i] = Daz[k_loc]*Hyz[k][j][i]+Dbz[k_loc]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
-		}
-		else{
-		  /*if(tind==0)
-		    fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial_Daz[materials[k][j][i]-1],Dmaterial_Dbz[materials[k][j][i]-1]);*/
-		  Hyz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
-		}
-	      }
-	  }
+    //Hyz updates
+    for(k=0;k<K_tot;k++){
+      for(j=0;j<J_tot_p1_bound;j++)
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if(  !materials[k][j][i]){
+      /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Daz[k_loc], Dbz[k_loc]);*/
+      Hyz[k][j][i] = Daz[k_loc]*Hyz[k][j][i]+Dbz[k_loc]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
+    }
+    else{
+      /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial_Daz[materials[k][j][i]-1],Dmaterial_Dbz[materials[k][j][i]-1]);*/
+      Hyz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
+    }
+        }
+    }
 //FDTD, Hyz
 #else //PSTD, Hyz
-	  //#pragma omp for
-	  //Hyz updates
-	  for(j=0;j<J_tot_p1_bound;j++)
-	    #pragma omp for
-	    for(i=0;i<I_tot;i++){
-	      for(k=0;k<K_tot;k++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if(  !materials[k][j][i]){
-		  ca_vec[omp_get_thread_num()][k] = Daz[k_loc];
-		  cb_vec[omp_get_thread_num()][k] = Dbz[k_loc];
-		  /*if(tind==0)
-		    fprintf(stdout,"%d %d %e %e\n",i,k,Daz[k_loc], Dbz[k_loc]);*/
-		  //Hyz[k][j][i] = Daz[k_loc]*Hyz[k][j][i]+Dbz[k_loc]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
-		}
-		else{
-		  ca_vec[omp_get_thread_num()][k] = Dmaterial_Daz[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][k] = Dmaterial_Dbz[materials[k][j][i]-1];
-		  /*if(tind==0)
-		    fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial_Daz[materials[k][j][i]-1],Dmaterial_Dbz[materials[k][j][i]-1]);*/
-		  //Hyz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
-		}
+    //#pragma omp for
+    //Hyz updates
+    for(j=0;j<J_tot_p1_bound;j++)
+      #pragma omp for
+      for(i=0;i<I_tot;i++){
+        for(k=0;k<K_tot;k++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if(  !materials[k][j][i]){
+      ca_vec[omp_get_thread_num()][k] = Daz[k_loc];
+      cb_vec[omp_get_thread_num()][k] = Dbz[k_loc];
+      /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Daz[k_loc], Dbz[k_loc]);*/
+      //Hyz[k][j][i] = Daz[k_loc]*Hyz[k][j][i]+Dbz[k_loc]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
+    }
+    else{
+      ca_vec[omp_get_thread_num()][k] = Dmaterial_Daz[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][k] = Dmaterial_Dbz[materials[k][j][i]-1];
+      /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial_Daz[materials[k][j][i]-1],Dmaterial_Dbz[materials[k][j][i]-1]);*/
+      //Hyz[k][j][i] = Dmaterial_Daz[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial_Dbz[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+    eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 
-	      }
-	      k=K_tot;
-	      eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
+        }
+        k=K_tot;
+        eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][k][1] = 0.;
 
-	      /*
-		if( i==12 & j==12 ){
-		for(k=0;k<K_tot;k++)
-		fprintf(stdout,"%.10e ",eh_vec[omp_get_thread_num()][k][0]);
-		fprintf(stdout,"\n");
-		}
-	      */
+        /*
+    if( i==12 & j==12 ){
+    for(k=0;k<K_tot;k++)
+    fprintf(stdout,"%.10e ",eh_vec[omp_get_thread_num()][k][0]);
+    fprintf(stdout,"\n");
+    }
+        */
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_z, N_h_z , pf_hyz[omp_get_thread_num()], pb_hyz[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_z, N_h_z , pf_hyz[omp_get_thread_num()], pb_hyz[omp_get_thread_num()]);
 
-	      for(k=0;k<K_tot;k++){
+        for(k=0;k<K_tot;k++){
           H_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.yz[k][j][i] - cb_vec[omp_get_thread_num()][k] * eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
-	      }
-	    }
+        }
+      }
 //PSTD, Hyz
 #endif
       }//(dimension==THREE || dimension==TE)
       else{
 
 #pragma omp for
-	for(k=0;k<=K_tot;k++)
-	  for(j=0;j<J_tot;j++)
-	    for(i=0;i<(I_tot+1);i++)
-	      if(  !materials[k][j][i])
+  for(k=0;k<=K_tot;k++)
+    for(j=0;j<J_tot;j++)
+      for(i=0;i<(I_tot+1);i++)
+        if(  !materials[k][j][i])
           H_s.xz[k][j][i] = 0.;
-	      else
+        else
           H_s.xz[k][j][i] = 0.;
 
 #pragma omp for
-	//Hxy update
-	for(k=0;k<=K_tot;k++)
-	  for(j=0;j<J_tot;j++)
-	    for(i=0;i<(I_tot+1);i++){
-	      k_loc = k;
-	      if( is_structure )
-		if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		  if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		    k_loc = k - structure[i][1];
-		  else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		    k_loc = Dzl[0]+K-1;
-		  else
-		    k_loc = Dzl[0]+1;
-		}
-	      if( !is_multilayer )
-		array_ind = j;
-	      else
-		array_ind = (J_tot+1)*k_loc+j;
-	      if(  !materials[k][j][i])
+  //Hxy update
+  for(k=0;k<=K_tot;k++)
+    for(j=0;j<J_tot;j++)
+      for(i=0;i<(I_tot+1);i++){
+        k_loc = k;
+        if( is_structure )
+    if( k>Dzl[0] && k<(Dzl[0]+K) ){
+      if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+        k_loc = k - structure[i][1];
+      else if( (k-structure[i][1])>=(K+Dzl[0]) )
+        k_loc = Dzl[0]+K-1;
+      else
+        k_loc = Dzl[0]+1;
+    }
+        if( !is_multilayer )
+    array_ind = j;
+        else
+    array_ind = (J_tot+1)*k_loc+j;
+        if(  !materials[k][j][i])
           H_s.xy[k][j][i] = Day[array_ind] * H_s.xy[k][j][i] + Dby[array_ind] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
-	      else
+        else
           H_s.xy[k][j][i] = Dmaterial_Day[materials[k][j][i] - 1] * H_s.xy[k][j][i] + Dmaterial_Dby[materials[k][j][i] - 1] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
-	    }
+      }
 
 #pragma omp for
-	//Hyx update
-	for(k=0;k<=K_tot;k++)
-	  for(j=0;j<(J_tot+1);j++)
-	    for(i=0;i<I_tot;i++){
-	      k_loc = k;
-	      if( is_structure )
-		if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		  if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		    k_loc = k - structure[i][1];
-		  else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		    k_loc = Dzl[0]+K-1;
-		  else
-		    k_loc = Dzl[0]+1;
-		}
-	      if( !is_multilayer )
-		array_ind = i;
-	      else
-		array_ind = (I_tot+1)*k_loc+i;
-	      if(  !materials[k][j][i])
+  //Hyx update
+  for(k=0;k<=K_tot;k++)
+    for(j=0;j<(J_tot+1);j++)
+      for(i=0;i<I_tot;i++){
+        k_loc = k;
+        if( is_structure )
+    if( k>Dzl[0] && k<(Dzl[0]+K) ){
+      if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+        k_loc = k - structure[i][1];
+      else if( (k-structure[i][1])>=(K+Dzl[0]) )
+        k_loc = Dzl[0]+K-1;
+      else
+        k_loc = Dzl[0]+1;
+    }
+        if( !is_multilayer )
+    array_ind = i;
+        else
+    array_ind = (I_tot+1)*k_loc+i;
+        if(  !materials[k][j][i])
           H_s.yx[k][j][i] = Dax[array_ind] * H_s.yx[k][j][i] + Dbx[array_ind] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-	      else
+        else
           H_s.yx[k][j][i] = Dmaterial_Dax[materials[k][j][i] - 1] * H_s.yx[k][j][i] + Dmaterial_Dbx[materials[k][j][i] - 1] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-	    }
+      }
 
 #pragma omp for
-	for(k=0;k<=K_tot;k++){
-	  for(j=0;j<(J_tot+1);j++)
-	    for(i=0;i<I_tot;i++)
-	      if(  !materials[k][j][i])
+  for(k=0;k<=K_tot;k++){
+    for(j=0;j<(J_tot+1);j++)
+      for(i=0;i<I_tot;i++)
+        if(  !materials[k][j][i])
           H_s.yz[k][j][i] = 0.;
-	      else
+        else
           H_s.yz[k][j][i] = 0.;
-	}
+  }
       }
 
       if(dimension==THREE || dimension==TE){
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hzy
 #pragma omp for
-	  //Hzy update
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=0;j<J_tot;j++)
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
-		if(  !materials[k][j][i])
-		  Hzy[k][j][i] = Day[array_ind]*Hzy[k][j][i]+Dby[array_ind]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
-		else
-		  Hzy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
-	      }
+    //Hzy update
+    for(k=0;k<(K_tot+1);k++)
+      for(j=0;j<J_tot;j++)
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
+    if(  !materials[k][j][i])
+      Hzy[k][j][i] = Day[array_ind]*Hzy[k][j][i]+Dby[array_ind]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
+    else
+      Hzy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
+        }
 //FDTD, Hzy
 #else //PSTD, Hzy
 #pragma omp for
-	  //Hzy update
-	  for(k=0;k<(K_tot+1);k++)
-	    for(i=0;i<I_tot;i++){
-	      for(j=0;j<J_tot;j++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = j;
-		else
-		  array_ind = (J_tot+1)*k_loc+j;
-		if(  !materials[k][j][i]){
-		  ca_vec[omp_get_thread_num()][j] = Day[array_ind];
-		  cb_vec[omp_get_thread_num()][j] = Dby[array_ind];
-		  //	      Hzy[k][j][i] = Day[array_ind]*Hzy[k][j][i]+Dby[array_ind]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
-		}
-		else{
-		  ca_vec[omp_get_thread_num()][j] = Dmaterial_Day[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][j] = Dmaterial_Dby[materials[k][j][i]-1];
-		  //	      Hzy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
-		}
+    //Hzy update
+    for(k=0;k<(K_tot+1);k++)
+      for(i=0;i<I_tot;i++){
+        for(j=0;j<J_tot;j++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = j;
+    else
+      array_ind = (J_tot+1)*k_loc+j;
+    if(  !materials[k][j][i]){
+      ca_vec[omp_get_thread_num()][j] = Day[array_ind];
+      cb_vec[omp_get_thread_num()][j] = Dby[array_ind];
+      //	      Hzy[k][j][i] = Day[array_ind]*Hzy[k][j][i]+Dby[array_ind]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
+    }
+    else{
+      ca_vec[omp_get_thread_num()][j] = Dmaterial_Day[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][j] = Dmaterial_Dby[materials[k][j][i]-1];
+      //	      Hzy[k][j][i] = Dmaterial_Day[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial_Dby[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
+    }
 
-		eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
-	      }
-	      j=J_tot;
-	      eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+    eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
+        }
+        j=J_tot;
+        eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];eh_vec[omp_get_thread_num()][j][1] = 0.;
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_y, N_h_y , pf_hzy[omp_get_thread_num()], pb_hzy[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_y, N_h_y , pf_hzy[omp_get_thread_num()], pb_hzy[omp_get_thread_num()]);
 
-	      for(j=0;j<J_tot;j++){
+        for(j=0;j<J_tot;j++){
           H_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.zy[k][j][i] + cb_vec[omp_get_thread_num()][j] * eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
-	      }
-	    }
+        }
+      }
  //PSTD, Hzy
 #endif
 
@@ -5543,75 +5543,75 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
 #ifdef FDFLAG // Use central difference derivatives
 //FDTD, Hzx
 #pragma omp for
-	  //Hzx update
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=0;j<J_tot_bound;j++)
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
-		if(  !materials[k][j][i])
-		  Hzx[k][j][i] = Dax[array_ind]*Hzx[k][j][i]+Dbx[array_ind]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-		else
-		  Hzx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hzx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-	      }
+    //Hzx update
+    for(k=0;k<(K_tot+1);k++)
+      for(j=0;j<J_tot_bound;j++)
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
+    if(  !materials[k][j][i])
+      Hzx[k][j][i] = Dax[array_ind]*Hzx[k][j][i]+Dbx[array_ind]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
+    else
+      Hzx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hzx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
+        }
 //FDTD, Hzx
 #else //PSTD, Hzx
 #pragma omp for
-	  //Hzx update
-	  for(k=0;k<(K_tot+1);k++)
-	    for(j=0;j<J_tot_bound;j++){
-	      for(i=0;i<I_tot;i++){
-		k_loc = k;
-		if( is_structure )
-		  if( k>Dzl[0] && k<(Dzl[0]+K) ){
-		    if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
-		      k_loc = k - structure[i][1];
-		    else if( (k-structure[i][1])>=(K+Dzl[0]) )
-		      k_loc = Dzl[0]+K-1;
-		    else
-		      k_loc = Dzl[0]+1;
-		  }
-		if( !is_multilayer )
-		  array_ind = i;
-		else
-		  array_ind = (I_tot+1)*k_loc+i;
-		if(  !materials[k][j][i]){
-		  //		Hzx[k][j][i] = Dax[array_ind]*Hzx[k][j][i]+Dbx[array_ind]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-		  ca_vec[omp_get_thread_num()][i] = Dax[array_ind];
-		  cb_vec[omp_get_thread_num()][i] = Dbx[array_ind];
-		}
-		else{
-		  //		Hzx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hzx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-		  ca_vec[omp_get_thread_num()][i] = Dmaterial_Dax[materials[k][j][i]-1];
-		  cb_vec[omp_get_thread_num()][i] = Dmaterial_Dbx[materials[k][j][i]-1];
-		}
+    //Hzx update
+    for(k=0;k<(K_tot+1);k++)
+      for(j=0;j<J_tot_bound;j++){
+        for(i=0;i<I_tot;i++){
+    k_loc = k;
+    if( is_structure )
+      if( k>Dzl[0] && k<(Dzl[0]+K) ){
+        if( (k-structure[i][1])<(K+Dzl[0]) && (k-structure[i][1])>Dzl[0] )
+          k_loc = k - structure[i][1];
+        else if( (k-structure[i][1])>=(K+Dzl[0]) )
+          k_loc = Dzl[0]+K-1;
+        else
+          k_loc = Dzl[0]+1;
+      }
+    if( !is_multilayer )
+      array_ind = i;
+    else
+      array_ind = (I_tot+1)*k_loc+i;
+    if(  !materials[k][j][i]){
+      //		Hzx[k][j][i] = Dax[array_ind]*Hzx[k][j][i]+Dbx[array_ind]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
+      ca_vec[omp_get_thread_num()][i] = Dax[array_ind];
+      cb_vec[omp_get_thread_num()][i] = Dbx[array_ind];
+    }
+    else{
+      //		Hzx[k][j][i] = Dmaterial_Dax[materials[k][j][i]-1]*Hzx[k][j][i]+Dmaterial_Dbx[materials[k][j][i]-1]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
+      ca_vec[omp_get_thread_num()][i] = Dmaterial_Dax[materials[k][j][i]-1];
+      cb_vec[omp_get_thread_num()][i] = Dmaterial_Dbx[materials[k][j][i]-1];
+    }
 
-		eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
-	      }
-	      i=I_tot;
-	      eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+    eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
+        }
+        i=I_tot;
+        eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];eh_vec[omp_get_thread_num()][i][1] = 0.;
 
 
-	      first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
-				dk_h_x, N_h_x , pf_hzx[omp_get_thread_num()], pb_hzx[omp_get_thread_num()]);
+        first_derivative( eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()],
+        dk_h_x, N_h_x , pf_hzx[omp_get_thread_num()], pb_hzx[omp_get_thread_num()]);
 
-	      for(i=0;i<I_tot;i++){
+        for(i=0;i<I_tot;i++){
           H_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.zx[k][j][i] - cb_vec[omp_get_thread_num()][i] * eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
-	      }
+        }
 
-	    }
+      }
 //PSTD, Hzx
 #endif
     }//(dimension==THREE || dimension==TE)
@@ -5626,120 +5626,120 @@ J_c.zy[k][j][i] -= rho*(Enp1 + E_s.zy[k][j][i]);
       complex<double> commonPhase = exp(-I*fmod(omega_an[0]*time_E,2.*dcpi));
       double commonAmplitude = linearRamp(time_E, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
-	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
-	  if( (int)I0[1] ){//Perform across I0
+  for(j=((int)J0[0]);j<=((int)J1[0]);j++){
+    if( (int)I0[1] ){//Perform across I0
 
-	    if( !is_multilayer )
-	      array_ind = (int)I0[0] - 1;
-	    else
-	      array_ind = (I_tot+1)*k+(int)I0[0] - 1;
+      if( !is_multilayer )
+        array_ind = (int)I0[0] - 1;
+      else
+        array_ind = (I_tot+1)*k+(int)I0[0] - 1;
 
-	    if( j < ((int)J1[0]) )
+      if( j < ((int)J1[0]) )
         H_s.zx[k][j][((int)I0[0]) - 1] = H_s.zx[k][j][((int)I0[0]) - 1] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][0] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][0]));
-	    if( k < ((int)K1[0]) || dimension==TM )
+      if( k < ((int)K1[0]) || dimension==TM )
         H_s.yx[k][j][((int)I0[0]) - 1] = H_s.yx[k][j][((int)I0[0]) - 1] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][1] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][1]));
 
-	  }
-	  if( (int)I1[1] ){//Perform across I1
+    }
+    if( (int)I1[1] ){//Perform across I1
 
-	    if( !is_multilayer )
-	      array_ind = (int)I1[0];
-	    else
-	      array_ind = (I_tot+1)*k+(int)I1[0];
+      if( !is_multilayer )
+        array_ind = (int)I1[0];
+      else
+        array_ind = (I_tot+1)*k+(int)I1[0];
 
-	    if( j < ((int)J1[0]) )
+      if( j < ((int)J1[0]) )
         H_s.zx[k][j][((int)I1[0])] = H_s.zx[k][j][((int)I1[0])] - Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][4] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][4]));
-	    if( k < ((int)K1[0]) || dimension==TM )
+      if( k < ((int)K1[0]) || dimension==TM )
         H_s.yx[k][j][((int)I1[0])] = H_s.yx[k][j][((int)I1[0])] + Dbx[array_ind] * real(commonAmplitude * commonPhase * (IsourceR[k - ((int)K0[0])][j - ((int)J0[0])][5] + I * IsourceI[k - ((int)K0[0])][j - ((int)J0[0])][5]));
-	  }
-	}
+    }
+  }
 
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
-	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
-	  if( (int)J0[1] ){//Perform across J0
+  for(i=((int)I0[0]);i<=((int)I1[0]);i++){
+    if( (int)J0[1] ){//Perform across J0
 
-	    if( !is_multilayer )
-	      array_ind = (int)J0[0];
-	    else
-	      array_ind = (J_tot+1)*k+(int)J0[0];
+      if( !is_multilayer )
+        array_ind = (int)J0[0];
+      else
+        array_ind = (J_tot+1)*k+(int)J0[0];
 
-	    if( i < ((int)I1[0]) )
+      if( i < ((int)I1[0]) )
         H_s.zy[k][((int)J0[0]) - 1][i] = H_s.zy[k][((int)J0[0]) - 1][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][0] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][0]));
 
-	    if( k < ((int)K1[0]) || dimension==TM )
+      if( k < ((int)K1[0]) || dimension==TM )
         H_s.xy[k][((int)J0[0]) - 1][i] = H_s.xy[k][((int)J0[0]) - 1][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][1] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][1]));
-	  }
-	  if( (int)J1[1] ){//Perform across J1
+    }
+    if( (int)J1[1] ){//Perform across J1
 
-	    if( !is_multilayer )
-	      array_ind = (int)J1[0];
-	    else
-	      array_ind = (J_tot+1)*k+(int)J1[0];
+      if( !is_multilayer )
+        array_ind = (int)J1[0];
+      else
+        array_ind = (J_tot+1)*k+(int)J1[0];
 
-	    if( i < ((int)I1[0]) )
+      if( i < ((int)I1[0]) )
         H_s.zy[k][((int)J1[0])][i] = H_s.zy[k][((int)J1[0])][i] + Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][4] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][4]));
-	    if( k < ((int)K1[0]) || dimension==TM )
+      if( k < ((int)K1[0]) || dimension==TM )
         H_s.xy[k][((int)J1[0])][i] = H_s.xy[k][((int)J1[0])][i] - Dby[array_ind] * real(commonAmplitude * commonPhase * (JsourceR[k - ((int)K0[0])][i - ((int)I0[0])][5] + I * JsourceI[k - ((int)K0[0])][i - ((int)I0[0])][5]));
-	  }
-	}
+    }
+  }
 
       for(j=((int)J0[0]);j<=((int)J1[0]);j++)
-	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
-	  if( (int)K0[1] ){//Perform across K0
-	    if( i < ((int)I1[0]) )
+  for(i=((int)I0[0]);i<=((int)I1[0]);i++){
+    if( (int)K0[1] ){//Perform across K0
+      if( i < ((int)I1[0]) )
         H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]));
-	    if( j < ((int)J1[0]) )
+      if( j < ((int)J1[0]) )
         H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]));
-	  }
-	  if( (int)K1[1] ){//Perform across K1
-	    if( i < ((int)I1[0]) )
+    }
+    if( (int)K1[1] ){//Perform across K1
+      if( i < ((int)I1[0]) )
         H_s.yz[((int)K1[0])][j][i] = H_s.yz[((int)K1[0])][j][i] - Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][4] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][4]));
-	    if( j < ((int)J1[0]) )
+      if( j < ((int)J1[0]) )
         H_s.xz[((int)K1[0])][j][i] = H_s.xz[((int)K1[0])][j][i] + Dbz[((int)K1[0])] * real(commonAmplitude * commonPhase * (KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][5] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][5]));
-	  }
-	}
+    }
+  }
       E.ft = real(commonAmplitude * commonPhase);
     }
     else if(sourcemode==1){//pulsed
       //fprintf(stderr,"Pos 11c\n");
       if(J_tot==0){
-	//fprintf(stderr,"Pos 11d\n");
-	j=0;
-	for(i=0;i<(I_tot+1);i++){
+  //fprintf(stderr,"Pos 11d\n");
+  j=0;
+  for(i=0;i<(I_tot+1);i++){
     H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][1] + I * KsourceI[0][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
-	  //broadband source term
-	  if(eyi_present)
+    //broadband source term
+    if(eyi_present)
       H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
-	}
-	//fprintf(stderr,"Pos 11e\n");
-	for(i=0;i<I_tot;i++){
+  }
+  //fprintf(stderr,"Pos 11e\n");
+  for(i=0;i<I_tot;i++){
     H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[0][i - ((int)I0[0])][0] + I * KsourceI[0][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
-	  //broadband source term
-	  if(exi_present)
+    //broadband source term
+    if(exi_present)
       H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
-	  //if(i==511)
-	  //  fprintf(stdout,"%e\n",Dbz[((int)K0[0])-1]*exi[tind][j][i]);
-	}
-	//fprintf(stderr,"Pos 11f\n");
+    //if(i==511)
+    //  fprintf(stdout,"%e\n",Dbz[((int)K0[0])-1]*exi[tind][j][i]);
+  }
+  //fprintf(stderr,"Pos 11f\n");
       }
       else{
-	//fprintf(stderr,"Pos 11g\n");
-	for(j=0;j<J_tot;j++)
-	  for(i=0;i<(I_tot+1);i++){
+  //fprintf(stderr,"Pos 11g\n");
+  for(j=0;j<J_tot;j++)
+    for(i=0;i<(I_tot+1);i++){
       H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][1] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][1]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2. ));
-	    //broadband source term
-	    if(eyi_present)
+      //broadband source term
+      if(eyi_present)
         H_s.xz[((int)K0[0]) - 1][j][i] = H_s.xz[((int)K0[0]) - 1][j][i] - Dbz[((int)K0[0]) - 1] * eyi[tind][j][i];
-	  }
-	//fprintf(stderr,"Pos 11h\n");
-	for(j=0;j<(J_tot+1);j++)
-	  for(i=0;i<I_tot;i++){
+    }
+  //fprintf(stderr,"Pos 11h\n");
+  for(j=0;j<(J_tot+1);j++)
+    for(i=0;i<I_tot;i++){
       H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * real((KsourceR[j - ((int)J0[0])][i - ((int)I0[0])][0] + I * KsourceI[j - ((int)J0[0])][i - ((int)I0[0])][0]) * (-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
-	    //broadband source term
-	    if(exi_present)
+      //broadband source term
+      if(exi_present)
         H_s.yz[((int)K0[0]) - 1][j][i] = H_s.yz[((int)K0[0]) - 1][j][i] + Dbz[((int)K0[0]) - 1] * exi[tind][j][i];
-	  }
-	//fprintf(stderr,"Pos 11i\n");
+    }
+  //fprintf(stderr,"Pos 11i\n");
       }
       E.ft = real((-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) * exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]) , 2.));
       //fprintf(stderr,"Pos 11j\n");
@@ -5833,15 +5833,15 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
       int ic=0;
       //fprintf(stderr,"Pos td01\n");
       for(i=0;i<I_tot;i++){
-	kc = 0;
-	if( (i % skip_tdf) == 0){
-	  for(k=0;k<K_tot;k++)
-	    if( (k % skip_tdf) == 0){
-	      ex_tdf[kc++][ic] = E_s.xy[k][0][i] + E_s.xz[k][0][i];
-	      //fprintf(stderr,"%d %d\n",kc,ic);
-	    }
-	ic++;
-	}
+  kc = 0;
+  if( (i % skip_tdf) == 0){
+    for(k=0;k<K_tot;k++)
+      if( (k % skip_tdf) == 0){
+        ex_tdf[kc++][ic] = E_s.xy[k][0][i] + E_s.xz[k][0][i];
+        //fprintf(stderr,"%d %d\n",kc,ic);
+      }
+  ic++;
+  }
       }
       //fprintf(stderr,"Pos td02\n");
 
@@ -5902,16 +5902,16 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
   if(runmode == rm_complete && exphasorssurface)
     for(int ifx=0;ifx<N_f_ex_vec;ifx++){
       normaliseSurface( surface_EHr[ifx], surface_EHi[ifx],
-			surface_vertices, n_surface_vertices, E_norm[ifx], H_norm[ifx]);
+      surface_vertices, n_surface_vertices, E_norm[ifx], H_norm[ifx]);
       //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
 if(runmode == rm_complete && (nvertices>0) )
    for(int ifx=0;ifx<N_f_ex_vec;ifx++){
       normaliseVertices( camplitudesR[ifx], camplitudesI[ifx],
-			vertices, nvertices,
-			 components, ncomponents,
-			 E_norm[ifx], H_norm[ifx]);
+      vertices, nvertices,
+       components, ncomponents,
+       E_norm[ifx], H_norm[ifx]);
       fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
@@ -5920,14 +5920,14 @@ if(runmode == rm_complete && (nvertices>0) )
   if( sourcemode==sm_pulsed && runmode==rm_complete && exdetintegral ){
     for(int im=0;im<Ndetmodes;im++)
       for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	Idx[ifx][im]=Idx[ifx][im]/E_norm[ifx];
-	Idy[ifx][im]=Idy[ifx][im]/E_norm[ifx];
+  Idx[ifx][im]=Idx[ifx][im]/E_norm[ifx];
+  Idy[ifx][im]=Idy[ifx][im]/E_norm[ifx];
 
-	Idx_re[ifx][im] = real(Idx[ifx][im]);
-	Idx_im[ifx][im] = imag(Idx[ifx][im]);
+  Idx_re[ifx][im] = real(Idx[ifx][im]);
+  Idx_im[ifx][im] = imag(Idx[ifx][im]);
 
-	Idy_re[ifx][im] = real(Idy[ifx][im]);
-	Idy_im[ifx][im] = imag(Idy[ifx][im]);
+  Idy_re[ifx][im] = real(Idy[ifx][im]);
+  Idy_im[ifx][im] = imag(Idy[ifx][im]);
 
       }
   }
@@ -5989,31 +5989,31 @@ if(runmode == rm_complete && (nvertices>0) )
       fprintf(stderr,"mxInterpolateFieldCentralE: %d %d %d \n",pind_iu - pind_il - 1,pind_ju - pind_jl - 1,pind_ku - pind_kl - 1);
       //fprintf(stderr,"Pos 15_m1a\n");
       mxInterpolateFieldCentralE( plhs[0]   , plhs[1]  , plhs[2]  ,
-				  &plhs[13] ,&plhs[14] , &plhs[15],
-				  2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
+          &plhs[13] ,&plhs[14] , &plhs[15],
+          2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
       //fprintf(stderr,"Pos 15_m1b\n");
 
     }
     else if(dimension==TE)
       mxInterpolateFieldCentralE_TE( plhs[0]   , plhs[1]  , plhs[2]  ,
-				     &plhs[13] ,&plhs[14] , &plhs[15],
-				     2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+             &plhs[13] ,&plhs[14] , &plhs[15],
+             2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
     else
       mxInterpolateFieldCentralE_TM( plhs[0]   , plhs[1]  , plhs[2]  ,
-				     &plhs[13] ,&plhs[14] , &plhs[15],
-				     2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+             &plhs[13] ,&plhs[14] , &plhs[15],
+             2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
     if(dimension==THREE)
       mxInterpolateFieldCentralH( plhs[3]   , plhs[4]  , plhs[5],
-				  &plhs[16] ,&plhs[17] , &plhs[18],
-				  2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
+          &plhs[16] ,&plhs[17] , &plhs[18],
+          2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
     else if(dimension==TE)
       mxInterpolateFieldCentralH_TE( plhs[3]   , plhs[4]  , plhs[5],
-				     &plhs[16] ,&plhs[17] , &plhs[18],
-				     2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+             &plhs[16] ,&plhs[17] , &plhs[18],
+             2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
     else
       mxInterpolateFieldCentralH_TM( plhs[3]   , plhs[4]  , plhs[5],
-				     &plhs[16] ,&plhs[17] , &plhs[18],
-				     2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+             &plhs[16] ,&plhs[17] , &plhs[18],
+             2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
 
     //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
@@ -6044,11 +6044,11 @@ if(runmode == rm_complete && (nvertices>0) )
     if(dimension==THREE){
       //fprintf(stderr,"Pos 15a-1\n");
       setGridLabels(output_grid_labels, interp_output_grid_labels,
-		    2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
+        2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
     }
     else
       setGridLabels(output_grid_labels, interp_output_grid_labels,
-		    2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+        2, pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
     //fprintf(stderr,"Pos 15f\n");
   }
   else{
@@ -6074,11 +6074,11 @@ if(runmode == rm_complete && (nvertices>0) )
     mxArray *dummy_vertex_list;
     if(J_tot==0)
       conciseCreateBoundary(cuboid[0], cuboid[1],cuboid[4], cuboid[5],
-			    &dummy_vertex_list, &mx_surface_facets);
+          &dummy_vertex_list, &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip( cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-				    phasorinc[0],phasorinc[1],phasorinc[2],
-				    &dummy_vertex_list, &mx_surface_facets);
+            phasorinc[0],phasorinc[1],phasorinc[2],
+            &dummy_vertex_list, &mx_surface_facets);
     mxDestroyArray(dummy_vertex_list);
     mxArray *vertex_list;
     double **vertex_list_ptr;
@@ -6141,7 +6141,7 @@ if(runmode == rm_complete && (nvertices>0) )
     free(Idx);free(Idy);
     for(int j=0;j<Nfy_vec;j++){
       for(int i=0;i<Nfx_vec;i++){
-	free(Dx_tilde[j][i]);free(Dy_tilde[j][i]);
+  free(Dx_tilde[j][i]);free(Dy_tilde[j][i]);
       }
       free(Dx_tilde[j]);free(Dy_tilde[j]);
     }
@@ -6374,7 +6374,7 @@ void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim)
   for(int k_var=0;k_var<k_lim;k_var++)
     for(int j_var=0;j_var<j_lim;j_var++)
       for(int i_var=0;i_var<i_lim;i_var++)
-	inArray[k_var][j_var][i_var] = 0.0;
+  inArray[k_var][j_var][i_var] = 0.0;
 }
 
 /*Sets the contents of the 2 dimensional double array to zero
@@ -6397,7 +6397,7 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim){
 //
 //result gives field according to the exp(-iwt) convention
 void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s,
-			  int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
+        int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
 
   complex<double> phaseTerm, subResult;
   double ex_m, ey_m, ez_m;
@@ -6409,42 +6409,42 @@ void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s,
 #pragma omp for
     for(int k=k_l; k<= k_u; k++)
       for(int j=j_l; j<= j_u; j++)
-	for(int i=i_l; i<= i_u; i++){
+  for(int i=i_l; i<= i_u; i++){
 
-	  /*
-	    ex_m = 0.5 * (Exy[k][j][i] + Exz[k][j][i] + Exy[k][j][i-1] + Exz[k][j][i-1]);
-	    ey_m = 0.5 * (Eyx[k][j][i] + Eyz[k][j][i] + Eyx[k][j-1][i] + Eyz[k][j-1][i]);
-	    ez_m = 0.5 * (Ezx[k][j][i] + Ezy[k][j][i] + Ezx[k-1][j][i] + Ezy[k-1][j][i]);
-	  */
+    /*
+      ex_m = 0.5 * (Exy[k][j][i] + Exz[k][j][i] + Exy[k][j][i-1] + Exz[k][j][i-1]);
+      ey_m = 0.5 * (Eyx[k][j][i] + Eyz[k][j][i] + Eyx[k][j-1][i] + Eyz[k][j-1][i]);
+      ez_m = 0.5 * (Ezx[k][j][i] + Ezy[k][j][i] + Ezx[k-1][j][i] + Ezy[k-1][j][i]);
+    */
 
-	  ex_m = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-	  ey_m = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-	  ez_m = E_s.zx[k][j][i] + E_s.zy[k][j][i];
+    ex_m = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+    ey_m = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+    ez_m = E_s.zx[k][j][i] + E_s.zy[k][j][i];
 
-	  subResult = ex_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = ex_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  E.real.x[k-k_l][j-j_l][i-i_l] = E.real.x[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  E.imag.x[k-k_l][j-j_l][i-i_l] = E.imag.x[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    E.real.x[k-k_l][j-j_l][i-i_l] = E.real.x[k-k_l][j-j_l][i-i_l] + real(subResult);
+    E.imag.x[k-k_l][j-j_l][i-i_l] = E.imag.x[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = ey_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = ey_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  E.real.y[k-k_l][j-j_l][i-i_l] = E.real.y[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  E.imag.y[k-k_l][j-j_l][i-i_l] = E.imag.y[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    E.real.y[k-k_l][j-j_l][i-i_l] = E.real.y[k-k_l][j-j_l][i-i_l] + real(subResult);
+    E.imag.y[k-k_l][j-j_l][i-i_l] = E.imag.y[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = ez_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = ez_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  E.real.z[k-k_l][j-j_l][i-i_l] = E.real.z[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  E.imag.z[k-k_l][j-j_l][i-i_l] = E.imag.z[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    E.real.z[k-k_l][j-j_l][i-i_l] = E.real.z[k-k_l][j-j_l][i-i_l] + real(subResult);
+    E.imag.z[k-k_l][j-j_l][i-i_l] = E.imag.z[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
 
 
-	}
+  }
   }//end of parallel region
 
 }
 
 void normaliseSurface( double **surface_EHr, double **surface_EHi ,
-		       int **surface_vertices, int n_surface_vertices,  complex<double> Enorm , complex<double> Hnorm ){
+           int **surface_vertices, int n_surface_vertices,  complex<double> Enorm , complex<double> Hnorm ){
   double norm_r, norm_i, denom, temp_r, temp_i;
 
   norm_r = real(Enorm);
@@ -6476,9 +6476,9 @@ void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 
 
 void normaliseVertices( double **EHr, double **EHi ,
-			int **vertices, int nvertices,
-			int *components, int ncomponents,
-			complex<double> Enorm , complex<double> Hnorm ){
+      int **vertices, int nvertices,
+      int *components, int ncomponents,
+      complex<double> Enorm , complex<double> Hnorm ){
 
   double norm_r, norm_i, denom, temp_r, temp_i;
   int ii;
@@ -6491,11 +6491,11 @@ void normaliseVertices( double **EHr, double **EHi ,
     for(int i=0; i<3; i++){
       ii = find( components, ncomponents, i+1);
       if( ii>=0 ){
-	temp_r = EHr[ii][vindex];
-	temp_i = EHi[ii][vindex];
+  temp_r = EHr[ii][vindex];
+  temp_i = EHi[ii][vindex];
 
-	EHr[ii][vindex] = (norm_r*temp_r + norm_i*temp_i)/denom;
-	EHi[ii][vindex] = (norm_r*temp_i - norm_i*temp_r)/denom;
+  EHr[ii][vindex] = (norm_r*temp_r + norm_i*temp_i)/denom;
+  EHi[ii][vindex] = (norm_r*temp_i - norm_i*temp_r)/denom;
       }
     }
 
@@ -6507,17 +6507,17 @@ void normaliseVertices( double **EHr, double **EHi ,
     for(int i=3; i<6; i++){
       ii = find( components, ncomponents, i+1);
       if( ii>=0 ){
-	temp_r = EHr[ii][vindex];
-	temp_i = EHi[ii][vindex];
+  temp_r = EHr[ii][vindex];
+  temp_i = EHi[ii][vindex];
 
-	EHr[ii][vindex] = (norm_r*temp_r + norm_i*temp_i)/denom;
-	EHi[ii][vindex] = (norm_r*temp_i - norm_i*temp_r)/denom;
+  EHr[ii][vindex] = (norm_r*temp_r + norm_i*temp_i)/denom;
+  EHi[ii][vindex] = (norm_r*temp_i - norm_i*temp_r)/denom;
       }
     }
 }
 
 void normaliseVolume(Field &F,
-		     int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,  complex<double> norm){
+         int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,  complex<double> norm){
   double norm_r, norm_i, denom, temp_r, temp_i;
 
   norm_r = real(norm);
@@ -6528,18 +6528,18 @@ void normaliseVolume(Field &F,
     for(int j=j_l; j<= j_u; j++)
       for(int i=i_l; i<= i_u; i++){
 
-	temp_r = F.real.x[k - k_l][j - j_l][i - i_l];
-	temp_i = F.imag.x[k - k_l][j - j_l][i - i_l];
+  temp_r = F.real.x[k - k_l][j - j_l][i - i_l];
+  temp_i = F.imag.x[k - k_l][j - j_l][i - i_l];
         F.real.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
         F.imag.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
 
-	temp_r = F.real.y[k - k_l][j - j_l][i - i_l];
-	temp_i = F.imag.y[k - k_l][j - j_l][i - i_l];
+  temp_r = F.real.y[k - k_l][j - j_l][i - i_l];
+  temp_i = F.imag.y[k - k_l][j - j_l][i - i_l];
         F.real.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
         F.imag.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
 
-	temp_r = F.real.z[k - k_l][j - j_l][i - i_l];
-	temp_i = F.imag.z[k - k_l][j - j_l][i - i_l];
+  temp_r = F.real.z[k - k_l][j - j_l][i - i_l];
+  temp_i = F.imag.z[k - k_l][j - j_l][i - i_l];
         F.real.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
         F.imag.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
       }
@@ -6562,7 +6562,7 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
 //
 //result gives field according to the exp(-iwt) convention
 void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
-			   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
+         int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
 
   complex<double> phaseTerm, subResult;
   double hx_m, hy_m, hz_m;
@@ -6575,34 +6575,34 @@ void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
 #pragma omp for
     for(int k=k_l; k<= k_u; k++)
       for(int j=j_l; j<= j_u; j++)
-	for(int i=i_l; i<= i_u; i++){
+  for(int i=i_l; i<= i_u; i++){
 
-	  hx_m = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-	  hy_m = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-	  hz_m = H_s.zx[k][j][i] + H_s.zy[k][j][i];
+    hx_m = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+    hy_m = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+    hz_m = H_s.zx[k][j][i] + H_s.zy[k][j][i];
 
-	  subResult = hx_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = hx_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  H.real.x[k-k_l][j-j_l][i-i_l] = H.real.x[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  H.imag.x[k-k_l][j-j_l][i-i_l] = H.imag.x[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    H.real.x[k-k_l][j-j_l][i-i_l] = H.real.x[k-k_l][j-j_l][i-i_l] + real(subResult);
+    H.imag.x[k-k_l][j-j_l][i-i_l] = H.imag.x[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = hy_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = hy_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  H.real.y[k-k_l][j-j_l][i-i_l] = H.real.y[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  H.imag.y[k-k_l][j-j_l][i-i_l] = H.imag.y[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    H.real.y[k-k_l][j-j_l][i-i_l] = H.real.y[k-k_l][j-j_l][i-i_l] + real(subResult);
+    H.imag.y[k-k_l][j-j_l][i-i_l] = H.imag.y[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = hz_m * exp(phaseTerm * I) * 1./((double) Nt);
+    subResult = hz_m * exp(phaseTerm * I) * 1./((double) Nt);
 
-	  H.real.z[k-k_l][j-j_l][i-i_l] = H.real.z[k-k_l][j-j_l][i-i_l] + real(subResult);
-	  H.imag.z[k-k_l][j-j_l][i-i_l] = H.imag.z[k-k_l][j-j_l][i-i_l] + imag(subResult);
+    H.real.z[k-k_l][j-j_l][i-i_l] = H.real.z[k-k_l][j-j_l][i-i_l] + real(subResult);
+    H.imag.z[k-k_l][j-j_l][i-i_l] = H.imag.z[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	}
+  }
   }//end parallel region
 }
 
 void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
                             MagneticSplitField &H, ElectricSplitField &E,
-			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
+          int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH ;
@@ -6620,52 +6620,52 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
     for(vindex = 0; vindex<n_surface_vertices; vindex++){
       //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
       if(dimension==THREE)
-	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-						  surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-						  &Ex, &Ey, &Ez);
-	}
-	else
-	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-							      surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-							      &Ex, &Ey, &Ez);
-	  else
-	    interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-							   surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-							   &Ex, &Ey, &Ez);
+  if(J_tot==0){
+    interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+              surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+              &Ex, &Ey, &Ez);
+  }
+  else
+    if( intmethod==1 )
+        interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                    surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                    &Ex, &Ey, &Ez);
+    else
+      interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-					       &Ex, &Ey, &Ez);
+  interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       else
-	interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-					       &Ex, &Ey, &Ez);
+  interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       //    fprintf(stderr,"1st interp donezn");
       if(dimension==THREE)
-	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-						  surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-						  &Hx, &Hy, &Hz);
-	}
-	else
-	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-							      surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-							      &Hx, &Hy, &Hz);
-	  else
-	    interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-							   surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-							   &Hx, &Hy, &Hz);
+  if(J_tot==0){
+    interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+              surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+              &Hx, &Hy, &Hz);
+  }
+  else
+    if( intmethod==1 )
+        interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                    surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                    &Hx, &Hy, &Hz);
+    else
+      interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-					       &Hx, &Hy, &Hz);
+  interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       else
-	interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
-					       &Hx, &Hy, &Hz);
+  interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
@@ -6708,8 +6708,8 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
 
 void extractPhasorsVertices( double **EHr, double **EHi,
                              MagneticSplitField &H, ElectricSplitField &E,
-			     int **vertices, int nvertices, int *components, int ncomponents,
-			     int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
+           int **vertices, int nvertices, int *components, int ncomponents,
+           int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH ;
@@ -6727,52 +6727,52 @@ void extractPhasorsVertices( double **EHr, double **EHi,
     for(vindex = 0; vindex<nvertices; vindex++){
       //fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,vertices[0][vindex],vertices[1][vindex],vertices[2][vindex]);
       if(dimension==THREE)
-	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-						  vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-						  &Ex, &Ey, &Ez);
-	}
-	else
-	  if( intmethod==1 )
-	    interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-						vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-						&Ex, &Ey, &Ez);
-	  else
-	    interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-							   vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-							   &Ex, &Ey, &Ez);
+  if(J_tot==0){
+    interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+              vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+              &Ex, &Ey, &Ez);
+  }
+  else
+    if( intmethod==1 )
+      interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+            vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+            &Ex, &Ey, &Ez);
+    else
+      interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-					       &Ex, &Ey, &Ez);
+  interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       else
-	interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-					       &Ex, &Ey, &Ez);
+  interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Ex, &Ey, &Ez);
       //    fprintf(stderr,"1st interp donezn");
       if(dimension==THREE)
-	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-						  vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-						  &Hx, &Hy, &Hz);
-	}
-	else
-	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-							      vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-							      &Hx, &Hy, &Hz);
-	  else
-	    interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-							   vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-							   &Hx, &Hy, &Hz);
+  if(J_tot==0){
+    interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+              vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+              &Hx, &Hy, &Hz);
+  }
+  else
+    if( intmethod==1 )
+        interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                    vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                    &Hx, &Hy, &Hz);
+    else
+      interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-					       &Hx, &Hy, &Hz);
+  interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       else
-	interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
-					       &Hx, &Hy, &Hz);
+  interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
+                 vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
+                 &Hx, &Hy, &Hz);
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
@@ -6781,12 +6781,12 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
       //now update the master array
       if( find(components, ncomponents, 1) >= 0 ){
-	EHr[find(components, ncomponents, 1)][vindex] = EHr[find(components, ncomponents, 1)][vindex] + real(subResultE);
-	EHi[find(components, ncomponents, 1)][vindex] = EHi[find(components, ncomponents, 1)][vindex] + imag(subResultE);
+  EHr[find(components, ncomponents, 1)][vindex] = EHr[find(components, ncomponents, 1)][vindex] + real(subResultE);
+  EHi[find(components, ncomponents, 1)][vindex] = EHi[find(components, ncomponents, 1)][vindex] + imag(subResultE);
       }
       if( find(components, ncomponents, 4) >= 0 ){
-	EHr[find(components, ncomponents, 4)][vindex] = EHr[find(components, ncomponents, 4)][vindex] + real(subResultH);
-	EHi[find(components, ncomponents, 4)][vindex] = EHi[find(components, ncomponents, 4)][vindex] + imag(subResultH);
+  EHr[find(components, ncomponents, 4)][vindex] = EHr[find(components, ncomponents, 4)][vindex] + real(subResultH);
+  EHi[find(components, ncomponents, 4)][vindex] = EHi[find(components, ncomponents, 4)][vindex] + imag(subResultH);
       }
 
       /*Ey and Hy*/
@@ -6795,12 +6795,12 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
       //now update the master array
       if( find(components, ncomponents, 2) >= 0){
-	EHr[find(components, ncomponents, 2)][vindex] = EHr[find(components, ncomponents, 2)][vindex] + real(subResultE);
-	EHi[find(components, ncomponents, 2)][vindex] = EHi[find(components, ncomponents, 2)][vindex] + imag(subResultE);
+  EHr[find(components, ncomponents, 2)][vindex] = EHr[find(components, ncomponents, 2)][vindex] + real(subResultE);
+  EHi[find(components, ncomponents, 2)][vindex] = EHi[find(components, ncomponents, 2)][vindex] + imag(subResultE);
       }
       if( find(components, ncomponents, 5) >= 0 ){
-	EHr[find(components, ncomponents, 5)][vindex] = EHr[find(components, ncomponents, 5)][vindex] + real(subResultH);
-	EHi[find(components, ncomponents, 5)][vindex] = EHi[find(components, ncomponents, 5)][vindex] + imag(subResultH);
+  EHr[find(components, ncomponents, 5)][vindex] = EHr[find(components, ncomponents, 5)][vindex] + real(subResultH);
+  EHi[find(components, ncomponents, 5)][vindex] = EHi[find(components, ncomponents, 5)][vindex] + imag(subResultH);
       }
 
 
@@ -6810,12 +6810,12 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
       //now update the master array
       if( find(components, ncomponents, 3) >= 0 ){
-	EHr[find(components, ncomponents, 3)][vindex] = EHr[find(components, ncomponents, 3)][vindex] + real(subResultE);
-	EHi[find(components, ncomponents, 3)][vindex] = EHi[find(components, ncomponents, 3)][vindex] + imag(subResultE);
+  EHr[find(components, ncomponents, 3)][vindex] = EHr[find(components, ncomponents, 3)][vindex] + real(subResultE);
+  EHi[find(components, ncomponents, 3)][vindex] = EHi[find(components, ncomponents, 3)][vindex] + imag(subResultE);
       }
       if( find(components, ncomponents, 6) >= 0 ){
-	EHr[find(components, ncomponents, 6)][vindex] = EHr[find(components, ncomponents, 6)][vindex] + real(subResultH);
-	EHi[find(components, ncomponents, 6)][vindex] = EHi[find(components, ncomponents, 6)][vindex] + imag(subResultH);
+  EHr[find(components, ncomponents, 6)][vindex] = EHr[find(components, ncomponents, 6)][vindex] + real(subResultH);
+  EHi[find(components, ncomponents, 6)][vindex] = EHi[find(components, ncomponents, 6)][vindex] + imag(subResultH);
       }
     }
   }//end parallel region
@@ -6824,7 +6824,7 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
 void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi,
                                            MagneticSplitField &H, ElectricSplitField &E,
-					   int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot ){
+             int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot ){
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH ;
@@ -6887,10 +6887,10 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
 }
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs,
-			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
+        double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
                           double ***Exz, double ***Eyz, double ***Hxz, double ***Hyz,
                           double ***Exy, double ***Eyx, double ***Hxy, double ***Hyx,
-			  int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt){
+        int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt){
 
   complex<double> phaseTerm = 0., subResult = 0.;
 
@@ -6955,7 +6955,7 @@ double linearRamp(double t, double period, double rampwidth){
 //i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
 //i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
 double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricSplitField &E_s,
-			      int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
+            int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt){
 
   //first find the maximum absolute value
   double maxabs = 0., tmaxabs = 0.;
@@ -6965,17 +6965,17 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricS
     for(int j=j_l; j<= j_u; j++)
       for(int i=i_l; i<= i_u; i++){
 
-	tmaxabs = complexAbs(E.real.x[k-k_l][j-j_l][i-i_l] + I*E.imag.x[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxabs)
-	  maxabs = tmaxabs;
+  tmaxabs = complexAbs(E.real.x[k-k_l][j-j_l][i-i_l] + I*E.imag.x[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxabs)
+    maxabs = tmaxabs;
 
-	tmaxabs = complexAbs(E.real.y[k-k_l][j-j_l][i-i_l] + I*E.imag.y[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxabs)
-	  maxabs = tmaxabs;
+  tmaxabs = complexAbs(E.real.y[k-k_l][j-j_l][i-i_l] + I*E.imag.y[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxabs)
+    maxabs = tmaxabs;
 
-	tmaxabs = complexAbs(E.real.z[k-k_l][j-j_l][i-i_l] + I*E.imag.z[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxabs)
-	  maxabs = tmaxabs;
+  tmaxabs = complexAbs(E.real.z[k-k_l][j-j_l][i-i_l] + I*E.imag.z[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxabs)
+    maxabs = tmaxabs;
 
       }
   //now find the largest difference (in absolute value) between phasors
@@ -6985,17 +6985,17 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricS
 
 
 
-	tmaxabs = complexAbs(E.real.x[k-k_l][j-j_l][i-i_l] - E_copy.real.x[k-k_l][j-j_l][i-i_l] + I*E.imag.x[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.x[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxdiff)
-	  maxdiff = tmaxabs;
+  tmaxabs = complexAbs(E.real.x[k-k_l][j-j_l][i-i_l] - E_copy.real.x[k-k_l][j-j_l][i-i_l] + I*E.imag.x[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.x[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxdiff)
+    maxdiff = tmaxabs;
 
-	tmaxabs = complexAbs(E.real.y[k-k_l][j-j_l][i-i_l] - E_copy.real.y[k-k_l][j-j_l][i-i_l] + I*E.imag.y[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.y[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxdiff)
-	  maxdiff = tmaxabs;
+  tmaxabs = complexAbs(E.real.y[k-k_l][j-j_l][i-i_l] - E_copy.real.y[k-k_l][j-j_l][i-i_l] + I*E.imag.y[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.y[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxdiff)
+    maxdiff = tmaxabs;
 
-	tmaxabs = complexAbs(E.real.z[k-k_l][j-j_l][i-i_l] - E_copy.real.z[k-k_l][j-j_l][i-i_l] + I*E.imag.z[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.z[k-k_l][j-j_l][i-i_l]);
-	if(tmaxabs > maxdiff)
-	  maxdiff = tmaxabs;
+  tmaxabs = complexAbs(E.real.z[k-k_l][j-j_l][i-i_l] - E_copy.real.z[k-k_l][j-j_l][i-i_l] + I*E.imag.z[k-k_l][j-j_l][i-i_l] - I*E_copy.imag.z[k-k_l][j-j_l][i-i_l]);
+  if(tmaxabs > maxdiff)
+    maxdiff = tmaxabs;
 
       }
 
@@ -7023,7 +7023,7 @@ void copyPhasors(ElectricField &from, ElectricField &to, int nelements){
 /*Load up the output grid labels*/
 void setGridLabels(GridLabels &input_labels,
                    GridLabels &output_labels,
-		   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
+       int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
   //fprintf(stderr,"Entered: setGridLabels\n");
   //fprintf(stderr,"setGridLabels: %d,%d\n",j_u,j_l);
   for(int i=i_l; i<= i_u; i++){
@@ -7048,8 +7048,8 @@ int is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot
   for(int k=0;k<(K_tot+1);k++)
     for(int j=0;j<(J_tot+1);j++)
       for(int i=0;i<(I_tot+1);i++){
-	if(materials[k][j][i] > max_mat)
-	  max_mat = materials[k][j][i];
+  if(materials[k][j][i] > max_mat)
+    max_mat = materials[k][j][i];
       }
   //now see if there are any non zero alphas
   for(int i=0;i<max_mat;i++){
