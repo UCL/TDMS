@@ -16,7 +16,7 @@
  */
 class Grid{
 
-protected:
+public:
     int I_tot = 0;
     int J_tot = 0;
     int K_tot = 0;

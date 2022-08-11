@@ -2037,6 +2037,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   else
     pind_ku = K_tot;
 
+  E.I_tot = pind_iu - pind_il + 1;
+  E.J_tot = pind_ju - pind_jl + 1;
+  E.K_tot = pind_ku - pind_kl + 1;
+
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
   /*
@@ -2573,7 +2577,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if ((dft_counter == Nsteps) && (runmode == rm_complete) && (sourcemode == sm_steadystate) &&
         exphasorsvolume) {//runmode=complete,sourcemode=steadystate
       dft_counter = 0;
-      double tol = checkPhasorConvergence(E, E_copy, E_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku);
+      double tol = checkPhasorConvergence(E, E_copy, E_s);
 
       //      mexPrintf("tol: %.5e \n",tol);
       fprintf(stderr, "tol: %.5e \n", tol);
@@ -7025,35 +7029,29 @@ double linearRamp(double t, double period, double rampwidth) {
     return t / (period * rampwidth);
 }
 
-//i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
-//i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
-double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricSplitField &E_s,
-                              int i_l, int i_u, int j_l, int j_u, int k_l, int k_u) {
+double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricSplitField &E_s) {
 
-  //first find the maximum absolute value
-  double maxabs = 0.;
-  double maxdiff = 0.;
+  double maxabs = 0., maxdiff = 0.;
 
-  for (int k = 0; k <= k_u - k_l; k++)          // k_l -> k_u  in a zero indexed array
-    for (int j = 0; j <= j_u - j_l; j++)
-      for (int i = 0; i <= i_u - j_l; i++)
+  //find the largest maximum absolute value the largest difference (in absolute value) between phasors
+  for (int k = 0; k < E.K_tot; k++)
+    for (int j = 0; j < E.J_tot; j++)
+      for (int i = 0; i < E.I_tot; i++)
           for (char c : {'x', 'y', 'z'}){
 
-            auto tmaxabs = abs(E.real(c)[k][j][i] + I * E.imag(c)[k][j][i]);  // |Re(E_x) + i Im(E_x)|
-            if (tmaxabs > maxabs){
-              maxabs = tmaxabs;
-            }
-      }
-  //now find the largest difference (in absolute value) between phasors
-  for (int k = 0; k <= k_u - k_l; k++)          // k_l -> k_u  in a zero indexed array
-    for (int j = 0; j <= j_u - j_l; j++)
-      for (int i = 0; i <= i_u - j_l; i++)
-        for (char c : {'x', 'y', 'z'}){
+            auto E_ijk = E.real(c)[k][j][i] + I * E.imag(c)[k][j][i];
+            auto E_copy_ijk = E_copy.real(c)[k][j][i] + I * E_copy.imag(c)[k][j][i];
 
-        auto tmaxabs = abs(E.real(c)[k][j][i] - E_copy.real(c)[k][j][i] +
-                             I * E.imag(c)[k][j][i] - I * E_copy.imag(c)[k][j][i]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-      }
+            auto temp_abs = abs(E_ijk);  // |Re(E_x) + i Im(E_x)|
+            if (temp_abs > maxabs){
+              maxabs = temp_abs;
+            }
+
+            auto temp_diff = abs(E_ijk - E_copy_ijk);
+            if (temp_diff > maxdiff){
+              maxdiff = temp_diff;
+            }
+          }
 
   return maxdiff / maxabs;
 }
