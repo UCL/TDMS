@@ -89,7 +89,6 @@ public:
      */
     void zero();
 
-
     /**
      * Allocate and set to zero all components of the field
      */
