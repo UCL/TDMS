@@ -1,3 +1,4 @@
+#include "stdexcept"
 #include "complex"
 #include "simulation_parameters.h"
 
@@ -28,10 +29,20 @@ protected:
 };
 
 
-struct xyz_arrays{
-    double ***x;
-    double ***y;
-    double ***z;
+class xyz_arrays{   // TODO: remove in a future iteration
+public:
+    double ***x = nullptr;
+    double ***y = nullptr;
+    double ***z = nullptr;
+
+    double*** operator() (char c) const{
+      switch (c) {
+        case 'x': return x;
+        case 'y': return y;
+        case 'z': return z;
+        default: throw std::runtime_error("Have no element" + std::to_string(c));
+      }
+    }
 };
 
 
@@ -45,8 +56,8 @@ public:
     std::complex<double> angular_norm = 0.;
 
     // TODO: this is likely better as a set of complex arrays
-    xyz_arrays real = xyz_arrays{nullptr, nullptr, nullptr};
-    xyz_arrays imag = xyz_arrays{nullptr, nullptr, nullptr};
+    xyz_arrays real;
+    xyz_arrays imag;
 };
 
 

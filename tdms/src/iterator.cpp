@@ -2573,9 +2573,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if ((dft_counter == Nsteps) && (runmode == rm_complete) && (sourcemode == sm_steadystate) &&
         exphasorsvolume) {//runmode=complete,sourcemode=steadystate
       dft_counter = 0;
-      double tol = checkPhasorConvergence(E, E_copy, E_s, pind_il, pind_iu, pind_jl, pind_ju,
-                                          pind_kl, pind_ku, tind, *omega_an, *dt, *Nt);
-
+      double tol = checkPhasorConvergence(E, E_copy, E_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku);
 
       //      mexPrintf("tol: %.5e \n",tol);
       fprintf(stderr, "tol: %.5e \n", tol);
@@ -7030,71 +7028,43 @@ double linearRamp(double t, double period, double rampwidth) {
 //i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
 //i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
 double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricSplitField &E_s,
-                              int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n,
-                              double omega, double dt, int Nt) {
+                              int i_l, int i_u, int j_l, int j_u, int k_l, int k_u) {
 
   //first find the maximum absolute value
-  double maxabs = 0., tmaxabs = 0.;
+  double maxabs = 0.;
   double maxdiff = 0.;
 
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
+  for (int k = 0; k <= k_u - k_l; k++)          // k_l -> k_u  in a zero indexed array
+    for (int j = 0; j <= j_u - j_l; j++)
+      for (int i = 0; i <= i_u - j_l; i++)
+          for (char c : {'x', 'y', 'z'}){
 
-        tmaxabs = complexAbs(E.real.x[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.x[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.y[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.y[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.z[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.z[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
+            auto tmaxabs = abs(E.real(c)[k][j][i] + I * E.imag(c)[k][j][i]);  // |Re(E_x) + i Im(E_x)|
+            if (tmaxabs > maxabs){
+              maxabs = tmaxabs;
+            }
       }
   //now find the largest difference (in absolute value) between phasors
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
+  for (int k = 0; k <= k_u - k_l; k++)          // k_l -> k_u  in a zero indexed array
+    for (int j = 0; j <= j_u - j_l; j++)
+      for (int i = 0; i <= i_u - j_l; i++)
+        for (char c : {'x', 'y', 'z'}){
 
-
-        tmaxabs = complexAbs(E.real.x[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.x[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.x[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.x[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.y[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.y[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.y[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.y[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.z[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.z[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.z[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.z[k - k_l][j - j_l][i - i_l]);
+        auto tmaxabs = abs(E.real(c)[k][j][i] - E_copy.real(c)[k][j][i] +
+                             I * E.imag(c)[k][j][i] - I * E_copy.imag(c)[k][j][i]);
         if (tmaxabs > maxdiff) maxdiff = tmaxabs;
       }
 
   return maxdiff / maxabs;
 }
 
-
-/* Returns the absolute value of complex number z*/
-double complexAbs(complex<double> z) { return sqrt(real(z) * real(z) + imag(z) * imag(z)); }
-
-
 /*Copy the phasors from E to E_copy */
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements) {
 
-  memcpy(to.real.x, from.real.x, nelements * sizeof(double));
-  memcpy(to.imag.x, from.imag.x, nelements * sizeof(double));
-  memcpy(to.real.y, from.real.y, nelements * sizeof(double));
-  memcpy(to.imag.y, from.imag.y, nelements * sizeof(double));
-  memcpy(to.real.z, from.real.z, nelements * sizeof(double));
-  memcpy(to.imag.z, from.imag.z, nelements * sizeof(double));
+  for (char c : {'x', 'y', 'z'}){
+    memcpy(to.real(c), from.real(c), nelements * sizeof(double));
+    memcpy(to.imag(c), from.imag(c), nelements * sizeof(double));
+  }
 }
 
 /*Load up the output grid labels*/
