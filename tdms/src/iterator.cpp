@@ -2422,29 +2422,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     is_disp_ml = is_dispersive_ml(ml_gamma, K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, is_disp_ml: %d\n",is_disp,is_cond,is_disp_ml);
   //if we have dispersive materials we need to create additional field variables
-  auto E_nm1 = ElectricSplitField();
-  auto J_nm1 = CurrentDensitySplitField();
-
+  auto E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
+  auto J_nm1 = CurrentDensitySplitField(I_tot, J_tot, K_tot);
 
   if(is_disp || is_disp_ml){
-    allocate_auxilliary_mem(I_tot, J_tot, K_tot,
-                            &E_nm1.xy, &E_nm1.xz,
-                            &E_nm1.yx, &E_nm1.yz,
-                            &E_nm1.zx, &E_nm1.zy,
-                            &J_s.xy, &J_s.xz,
-                            &J_s.yx, &J_s.yz,
-                            &J_s.zx, &J_s.zy,
-                            &J_nm1.xy, &J_nm1.xz,
-                            &J_nm1.yx, &J_nm1.yz,
-                            &J_nm1.zx, &J_nm1.zy);
+    E_nm1.allocate_and_zero();
+    J_nm1.allocate_and_zero();
+    J_s.allocate_and_zero();
   }
 //fprintf(stderr,"Pre 14\n");
-  auto J_c = CurrentDensitySplitField();
+  auto J_c = CurrentDensitySplitField(I_tot, J_tot, K_tot);
   if(is_cond){
-    allocate_auxilliary_mem_conductive(I_tot, J_tot, K_tot,
-				       &J_c.xy, &J_c.xz,
-				       &J_c.yx, &J_c.yz,
-				       &J_c.zx, &J_c.zy);
+    J_c.allocate_and_zero();
   }
   /*end dispersive*/
 
@@ -6368,27 +6357,6 @@ if(runmode == rm_complete && (nvertices>0) )
   free(K1);
   free(dims);
   free(label_dims);
-  if(is_disp || is_disp_ml){
-    destroy_auxilliary_mem(I_tot, J_tot, K_tot,
-                           &E_nm1.xy, &E_nm1.xz,
-                           &E_nm1.yx, &E_nm1.yz,
-                           &E_nm1.zx, &E_nm1.zy,
-                           &J_s.xy, &J_s.xz,
-                           &J_s.yx, &J_s.yz,
-                           &J_s.zx, &J_s.zy,
-                           &J_nm1.xy, &J_nm1.xz,
-                           &J_nm1.yx, &J_nm1.yz,
-                           &J_nm1.zx, &J_nm1.zy);
-
-  }
-
-  //fprintf(stderr,"Pos 22\n");
-  if(is_cond){
-    destroy_auxilliary_mem_conductive(I_tot, J_tot, K_tot,
-				      &J_c.xy, &J_c.xz,
-				      &J_c.yx, &J_c.yz,
-				      &J_c.zx, &J_c.zy);
-  }
 
   if(sourcemode==sm_steadystate && runmode==rm_complete){
     mxDestroyArray(dummy_array[0]);
@@ -6749,7 +6717,6 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
 }
 
 
-
 void extractPhasorsVertices( double **EHr, double **EHi,
 			     double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 			     double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
@@ -6865,7 +6832,6 @@ void extractPhasorsVertices( double **EHr, double **EHi,
     }
   }//end parallel region
 }
-
 
 
 void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi,
@@ -7130,148 +7096,6 @@ int is_dispersive_ml(double *ml_gamma, int K_tot){
       return 1;
   return 0;
 }
-
-/*Allocate auxilliary memory for En-1 and J*/
-void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
-			     double ****Exy, double ****Exz, 
-			     double ****Eyx, double ****Eyz,  
-			     double ****Ezx, double ****Ezy,
-			     double ****Jxy, double ****Jxz, 
-			     double ****Jyx, double ****Jyz,  
-			     double ****Jzx, double ****Jzy,
-			     double ****Jxy2, double ****Jxz2, 
-			     double ****Jyx2, double ****Jyz2,  
-			     double ****Jzx2, double ****Jzy2){
-
-
-  construct3dArray(Exy, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Exz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Eyx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Eyz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Ezx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Ezy, I_tot + 1, J_tot + 1, K_tot + 1);
-
-  construct3dArray(Jxy, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jxz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzy, I_tot + 1, J_tot + 1, K_tot + 1);
-
-  construct3dArray(Jxy2, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jxz2, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyx2, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyz2, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzx2, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzy2, I_tot + 1, J_tot + 1, K_tot + 1);
-
-
-  for(int k=0;k<(K_tot+1);k++)
-    for(int j=0;j<(J_tot+1);j++)
-      for(int i=0;i<(I_tot+1);i++){
-	(*Exy)[k][j][i] = 0.;
-	(*Exz)[k][j][i] = 0.;
-	(*Eyx)[k][j][i] = 0.;
-	(*Eyz)[k][j][i] = 0.;
-	(*Ezx)[k][j][i] = 0.;
-	(*Ezy)[k][j][i] = 0.;
-
-	(*Jxy)[k][j][i] = 0.;
-	(*Jxz)[k][j][i] = 0.;
-	(*Jyx)[k][j][i] = 0.;
-	(*Jyz)[k][j][i] = 0.;
-	(*Jzx)[k][j][i] = 0.;
-	(*Jzy)[k][j][i] = 0.;
-
-	(*Jxy2)[k][j][i] = 0.;
-	(*Jxz2)[k][j][i] = 0.;
-	(*Jyx2)[k][j][i] = 0.;
-	(*Jyz2)[k][j][i] = 0.;
-	(*Jzx2)[k][j][i] = 0.;
-	(*Jzy2)[k][j][i] = 0.;
-      }
-  
-    
-}
-
-/*Allocate auxilliary memory for J in case of dispersive background*/
-void allocate_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,
-					double ****Jxy, double ****Jxz, 
-					double ****Jyx, double ****Jyz,  
-					double ****Jzx, double ****Jzy){
-
-  construct3dArray(Jxy, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jxz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jyz, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzx, I_tot + 1, J_tot + 1, K_tot + 1);
-  construct3dArray(Jzy, I_tot + 1, J_tot + 1, K_tot + 1);
-
-  for(int k=0;k<(K_tot+1);k++)
-    for(int j=0;j<(J_tot+1);j++)
-      for(int i=0;i<(I_tot+1);i++){
-	
-	(*Jxy)[k][j][i] = 0.;
-	(*Jxz)[k][j][i] = 0.;
-	(*Jyx)[k][j][i] = 0.;
-	(*Jyz)[k][j][i] = 0.;
-	(*Jzx)[k][j][i] = 0.;
-	(*Jzy)[k][j][i] = 0.;
-      }
-}
-
-void destroy_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,
-				       double ****Jxy, double ****Jxz, 
-				       double ****Jyx, double ****Jyz,  
-				       double ****Jzx, double ****Jzy){
-
-  destroy3DArray(Jxy, J_tot+1, K_tot+1);
-  destroy3DArray(Jxz, J_tot+1, K_tot+1);
-  destroy3DArray(Jyx, J_tot+1, K_tot+1);
-  destroy3DArray(Jyz, J_tot+1, K_tot+1);
-  destroy3DArray(Jzx, J_tot+1, K_tot+1);
-  destroy3DArray(Jzy, J_tot+1, K_tot+1);
-
-
-}
-
-/*Destroy the previously allocated memory*/
-void destroy_auxilliary_mem(int I_tot, int J_tot, int K_tot,
-			    double ****Exy, double ****Exz, 
-			    double ****Eyx, double ****Eyz,  
-			    double ****Ezx, double ****Ezy,
-			    double ****Jxy, double ****Jxz, 
-			    double ****Jyx, double ****Jyz,  
-			    double ****Jzx, double ****Jzy,
-			    double ****Jxy2, double ****Jxz2, 
-			    double ****Jyx2, double ****Jyz2,  
-			    double ****Jzx2, double ****Jzy2){
-  
-
-  destroy3DArray(Exy, J_tot+1, K_tot+1);
-  destroy3DArray(Exz, J_tot+1, K_tot+1);
-  destroy3DArray(Eyx, J_tot+1, K_tot+1);
-  destroy3DArray(Eyz, J_tot+1, K_tot+1);
-  destroy3DArray(Ezx, J_tot+1, K_tot+1);
-  destroy3DArray(Ezy, J_tot+1, K_tot+1);
-  
-  destroy3DArray(Jxy, J_tot+1, K_tot+1);
-  destroy3DArray(Jxz, J_tot+1, K_tot+1);
-  destroy3DArray(Jyx, J_tot+1, K_tot+1);
-  destroy3DArray(Jyz, J_tot+1, K_tot+1);
-  destroy3DArray(Jzx, J_tot+1, K_tot+1);
-  destroy3DArray(Jzy, J_tot+1, K_tot+1);
-
-  destroy3DArray(Jxy2, J_tot+1, K_tot+1);
-  destroy3DArray(Jxz2, J_tot+1, K_tot+1);
-  destroy3DArray(Jyx2, J_tot+1, K_tot+1);
-  destroy3DArray(Jyz2, J_tot+1, K_tot+1);
-  destroy3DArray(Jzx2, J_tot+1, K_tot+1);
-  destroy3DArray(Jzy2, J_tot+1, K_tot+1);
-
-
-}
-
 
 /*check if the integer b appears in the vector a and return the index into a. Returns -1 if b cannot be found
  */
