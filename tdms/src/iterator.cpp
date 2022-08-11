@@ -2770,17 +2770,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       if( exphasorssurface ){
 	if(intphasorssurface){
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx],
-                            H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
-                            E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                             surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot, intmethod );
 	  dft_counter++;
 	}
 	else{
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx],
-                                           H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
-                                           E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                            surface_vertices, n_surface_vertices, dft_counter, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps, dimension, J_tot );
 	  dft_counter++;
 	}
@@ -2840,16 +2836,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       if( (tind-start_tind) % Np == 0 ){
 	if(intphasorssurface)
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx],
-                            H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
-                            E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+	    extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                             surface_vertices, n_surface_vertices, tind,
 				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
 	else
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx],
-                                           H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
-                                           E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+	    extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                            surface_vertices, n_surface_vertices, tind,
 				   f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot );
 
@@ -2865,9 +2857,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	  //fprintf(stderr,"loc 03\n");
 	  //	  fprintf(stderr,"EPV 01\n");
 	  for(int ifx=0;ifx<N_f_ex_vec;ifx++)
-	    extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx],
-                             H_s.xy, H_s.xz, H_s.yx, H_s.yz, H_s.zx, H_s.zy,
-                             E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+	    extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s,
                              vertices, nvertices, components, ncomponents, tind,
 				    f_ex_vec[ifx]*2*dcpi, *dt, Npe, dimension, J_tot, intmethod );
 	}
@@ -6611,8 +6601,7 @@ void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
 }
 
 void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
-			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+                            MagneticSplitField &H, ElectricSplitField &E,
 			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
@@ -6632,49 +6621,49 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
       //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
       if(dimension==THREE)
 	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralE_2Dy( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	  interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 						  surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 						  &Ex, &Ey, &Ez);
 	}
 	else
 	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralE( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+			  interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 							      surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 							      &Ex, &Ey, &Ez);
 	  else
-	    interpolateTimeDomainFieldCentralEBandLimited( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	    interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 							   surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 							   &Ex, &Ey, &Ez);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralE_TE( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 					       &Ex, &Ey, &Ez);
       else
-	interpolateTimeDomainFieldCentralE_TM( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 					       &Ex, &Ey, &Ez);
       //    fprintf(stderr,"1st interp donezn");
       if(dimension==THREE)
 	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralH_2Dy( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	  interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 						  surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 						  &Hx, &Hy, &Hz);
 	}
 	else
 	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralH( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+			  interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 							      surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 							      &Hx, &Hy, &Hz);
 	  else
-	    interpolateTimeDomainFieldCentralHBandLimited( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	    interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 							   surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 							   &Hx, &Hy, &Hz);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralH_TE( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 					       &Hx, &Hy, &Hz);
       else
-	interpolateTimeDomainFieldCentralH_TM( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 					       surface_vertices[0][vindex], surface_vertices[1][vindex], surface_vertices[2][vindex],
 					       &Hx, &Hy, &Hz);
       //    fprintf(stderr,"2nd interp donezn");
@@ -6718,8 +6707,7 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
 
 
 void extractPhasorsVertices( double **EHr, double **EHi,
-			     double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			     double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+                             MagneticSplitField &H, ElectricSplitField &E,
 			     int **vertices, int nvertices, int *components, int ncomponents,
 			     int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod ){
   int vindex;
@@ -6740,49 +6728,49 @@ void extractPhasorsVertices( double **EHr, double **EHi,
       //fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,vertices[0][vindex],vertices[1][vindex],vertices[2][vindex]);
       if(dimension==THREE)
 	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralE_2Dy( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	  interpolateTimeDomainFieldCentralE_2Dy( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 						  vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 						  &Ex, &Ey, &Ez);
 	}
 	else
 	  if( intmethod==1 )
-	    interpolateTimeDomainFieldCentralE( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	    interpolateTimeDomainFieldCentralE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 						vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 						&Ex, &Ey, &Ez);
 	  else
-	    interpolateTimeDomainFieldCentralEBandLimited( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	    interpolateTimeDomainFieldCentralEBandLimited( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 							   vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 							   &Ex, &Ey, &Ez);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralE_TE( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	interpolateTimeDomainFieldCentralE_TE( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 					       &Ex, &Ey, &Ez);
       else
-	interpolateTimeDomainFieldCentralE_TM( Exy, Exz, Eyx, Eyz, Ezx, Ezy,
+	interpolateTimeDomainFieldCentralE_TM( E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
 					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 					       &Ex, &Ey, &Ez);
       //    fprintf(stderr,"1st interp donezn");
       if(dimension==THREE)
 	if(J_tot==0){
-	  interpolateTimeDomainFieldCentralH_2Dy( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	  interpolateTimeDomainFieldCentralH_2Dy( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 						  vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 						  &Hx, &Hy, &Hz);
 	}
 	else
 	  if( intmethod==1 )
-			  interpolateTimeDomainFieldCentralH( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+			  interpolateTimeDomainFieldCentralH( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 							      vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 							      &Hx, &Hy, &Hz);
 	  else
-	    interpolateTimeDomainFieldCentralHBandLimited( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	    interpolateTimeDomainFieldCentralHBandLimited( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 							   vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 							   &Hx, &Hy, &Hz);
       else if(dimension==TE)
-	interpolateTimeDomainFieldCentralH_TE( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	interpolateTimeDomainFieldCentralH_TE( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 					       &Hx, &Hy, &Hz);
       else
-	interpolateTimeDomainFieldCentralH_TM( Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+	interpolateTimeDomainFieldCentralH_TM( H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
 					       vertices[0][vindex], vertices[1][vindex], vertices[2][vindex],
 					       &Hx, &Hy, &Hz);
       //    fprintf(stderr,"2nd interp donezn");
@@ -6835,8 +6823,7 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
 
 void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi,
-					   double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-					   double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+                                           MagneticSplitField &H, ElectricSplitField &E,
 					   int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot ){
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
@@ -6854,13 +6841,13 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
 #pragma omp for
     for(vindex = 0; vindex<n_surface_vertices; vindex++){
       //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      Ex = Exy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Exz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
-      Ey = Eyx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Eyz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
-      Ez = Ezx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Ezy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Ex = E.xy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + E.xz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Ey = E.yx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + E.yz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Ez = E.zx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + E.zy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
 
-      Hx = Hxy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Hxz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
-      Hy = Hyx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Hyz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
-      Hz = Hzx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Hzy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Hx = H.xy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + H.xz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Hy = H.yx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + H.yz[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
+      Hz = H.zx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + H.zy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
 
       /*Ex and Hx*/
       subResultH = Hx * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
@@ -6901,8 +6888,8 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs,
 			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
-			  double ***Exz, double ***Eyz, double ***Hxz, double ***Hyz,
-			  double ***Exy, double ***Eyx, double ***Hxy, double ***Hyx,
+                          double ***Exz, double ***Eyz, double ***Hxz, double ***Hyz,
+                          double ***Exy, double ***Eyx, double ***Hxy, double ***Hyx,
 			  int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt){
 
   complex<double> phaseTerm = 0., subResult = 0.;

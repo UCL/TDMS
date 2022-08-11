@@ -28,18 +28,13 @@ double checkPhasorConvergence(ElectricField &A, ElectricField &B, ElectricSplitF
 
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements);
 
-void setGridLabels(GridLabels &input_labels,
-                   GridLabels &output_labels,
+void setGridLabels(GridLabels &input_labels, GridLabels &output_labels,
                    int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
 
-void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
-			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void extractPhasorsSurface( double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
 			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod );
 
-void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi,
-			    double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			    double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
 					   int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot );
 
 int is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot, int J_tot, int K_tot);
@@ -63,9 +58,7 @@ int is_conductive(double *rho_x, double *rho_y, double *rho_z, int I_tot, int J_
 
 int is_dispersive_ml(double *ml_gamma, int K_tot);
 
-void extractPhasorsVertices( double **EHr, double **EHi,  
-			     double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
-			     double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void extractPhasorsVertices( double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
 			     int **vertices, int nvertices, int *components, int ncomponents,
 			     int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod );
 
