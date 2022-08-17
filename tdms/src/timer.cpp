@@ -12,7 +12,7 @@ void Timer::end() {
 }
 
 double Timer::delta_seconds() const {
-  return start_time - end_time;
+  return end_time - start_time ;
 }
 
 /**
