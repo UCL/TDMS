@@ -256,9 +256,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
 /**
  * @brief Performs bandlimited interpolation with 8 sample points, to position i.5
  *
- * Given equidistant sample points a0,....,a[7, the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
+ * Given equidistant sample points a0,....,a7, the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
  *  a[i.5] = \sum_{k=0}^7 a[k] * b^{(i.5)}[k],
- * where (for each i), b^{i.5)}[k] is a vector of constant coefficients coded into this function.
+ * where (for each i), b^{(i.5)}[k] is a vector of constant coefficients coded into this function.
  *
  * @param interp_pos The value i in the formula above
  * @param a0,a1,a2,a3,a4,a5,a6,a7 Equidistant sample values
@@ -304,7 +304,7 @@ interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
         {
             return CUBIC_INTERP_FIRST;
         }
-        else if (cell_id == cells_in_direction - 1)
+        else if (cell_id == (cells_in_direction - 1))
         {
             return CUBIC_INTERP_LAST;
         }
@@ -316,7 +316,7 @@ interp_scheme determineInterpScheme(int cells_in_direction, int cell_id)
     else
     {
         // we can apply bandlimited interpolation
-        if ((cell_id >= 4) && (cell_id <= cells_in_direction - 3))
+        if ((cell_id >= 4) && (cell_id <= cells_in_direction - 4))
         {
             return BAND_LIMITED_3;
         } // best, and most frequent, case
