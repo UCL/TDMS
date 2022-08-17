@@ -1,5 +1,5 @@
 # include "catch2/catch_test_macros.hpp"
-# include "interpolate.h"
+# include "interpolation_methods.h"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), runtime_error);
 }
 
-TEST_CASE("checkInterpolationPoints: correct scheme identified") {
+TEST_CASE("checkInterpolationPoints: check valid inputs") {
 
     // setup some fake field dimensions
     int I = 6, J = 7, K = 8;
@@ -71,20 +71,31 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
     REQUIRE_THROWS_AS(determineInterpScheme(N,0), out_of_range);
     REQUIRE_THROWS_AS(determineInterpScheme(N,N), out_of_range);
 
-    /* Suppose we have N Yee cells in a dimension. The program should determine:
-        - cell_id == 1 : Use interp2
-        - cell_id == 2,3 : Use interp1
-        - cell_id == 4,...,N-4 : Use bandlimited
-        - cell_id == N-3,N-2 : Use interp1
-        - cell_id == N-1 : Use interp3
+    /* Suppose we have N >= 8 Yee cells in a dimension. The program should determine:
+        - cell_id == 0 : Interpolation impossible (checked previously)
+        - cell_id == 1,2,3 : Use BAND_LIMITED_(0,1,2) scheme respectively
+        - cell_id == 4,...,N-4 : Use BAND_LIMITED_3 scheme
+        - cell_id == N-3,N-2,N-1 : Use BAND_LIMITED_(4,5,6) scheme respectively
     */
-    CHECK(determineInterpScheme(N, 1) == INTERP2);
-    CHECK(determineInterpScheme(N, 2) == INTERP1);
-    CHECK(determineInterpScheme(N, 3) == INTERP1);
-    for(int i=4; i<=N-4; i++) {CHECK(determineInterpScheme(N, i) == BAND_LIMITED);}
-    CHECK(determineInterpScheme(N, N-3) == INTERP1);
-    CHECK(determineInterpScheme(N, N-2) == INTERP1);
-    CHECK(determineInterpScheme(N, N-1) == INTERP3);
+    N = 10;
+    CHECK(determineInterpScheme(N, 1) == BAND_LIMITED_0);
+    CHECK(determineInterpScheme(N, 2) == BAND_LIMITED_1);
+    CHECK(determineInterpScheme(N, 3) == BAND_LIMITED_2);
+    for(int i=4; i<=N-4; i++) {CHECK(determineInterpScheme(N, i) == BAND_LIMITED_3);}
+    CHECK(determineInterpScheme(N, N-3) == BAND_LIMITED_4);
+    CHECK(determineInterpScheme(N, N-2) == BAND_LIMITED_5);
+    CHECK(determineInterpScheme(N, N-1) == BAND_LIMITED_6);
+
+    /* If 4<=N<=8 we can still fall back on cubic interpolation 
+        - cell_id == 0 : Interpolation impossible (checked previously)
+        - cell_id == 1 : Use CUBIC_FIRST
+        - cell_id == 2,...,N-2 : Use CUBIC_MIDDLE
+        - cell_id == N-1 : Use CUBIC_LAST
+    */
+    N = 7;
+    CHECK(determineInterpScheme(N, 1) == CUBIC_INTERP_FIRST);
+    for(int i=2; i<=N-2; i++) {CHECK(determineInterpScheme(N, i) == CUBIC_INTERP_MIDDLE);}
+    CHECK(determineInterpScheme(N, N-1) == CUBIC_INTERP_LAST);
 }
 
 /**
