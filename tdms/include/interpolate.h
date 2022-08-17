@@ -1,5 +1,4 @@
 # include "matrix.h"
-# include "interpolation_methods.h"
 
 void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
@@ -73,13 +72,3 @@ void interpolateTimeDomainFieldCentralH_TM( double ***Hxy, double ***Hxz, double
 void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
 					int i, int j, int k,
 						   double *Hx, double *Hy, double *Hz);
-
-// declare E-field interpolation functions
-
-void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int I, double *Ex);
-void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int J, double *Ey);
-void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int K, double *Ez);
-void interpolateTimeDomainEField(double ***Exy, double ***Exz, double ***Eyx,
-								 double ***Eyz, double ***Ezx, double ***Ezy,
-								 int i, int j, int k, int I, int J, int K,
-								 double *Ex, double *Ey, double *Ez);

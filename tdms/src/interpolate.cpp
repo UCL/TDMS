@@ -15,44 +15,6 @@
 using namespace std;
 
 /**
- * @brief Checks whether the limits of field extraction are within range of the FDTD grid
- *
- * Since cubic interpolation is being used, it must be ensured that (in any given direction) that the least index used is no smaller than 2, whilst the greatest no larger than the maximum number of cells in that direction - 2.
- * 
- * @param i_l Least i index into the FDTD grid to evaluate the field at
- * @param i_u Greatest i index into the FDTD grid to evaluate the field at
- * @param j_l Least j index into the FDTD grid to evaluate the field at
- * @param j_u Greatest j index into the FDTD grid to evaluate the field at
- * @param k_l Least k index into the FDTD grid to evaluate the field at
- * @param k_u Greatest k index into the FDTD grid to evaluate the field at
- * @param I Number of elements in the i direction of the FDTD grid
- * @param J Number of elements in the j direction of the FDTD grid
- * @param K Number of elements in the k direction of the FDTD grid
- * 
- * @throws runtime_error In the event that the limits of field extraction are outside the FDTD grid
- */
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K) {
-  if (i_l < 2) {
-    throw runtime_error("Interpolation error: i_l too small");
-  }
-  else if (i_u > I-2) {
-    throw runtime_error("Interpolation error: i_u too large");
-  }
-  else if (j_l < 2) {
-    throw runtime_error("Interpolation error: j_l too small");
-  }
-  else if (j_u > J-2) {
-    throw runtime_error("Interpolation error: j_u too large");
-  }
-  else if (k_l < 2) {
-    throw runtime_error("Interpolation error: k_l too small");
-  }
-  else if (k_u > K-2) {
-    throw runtime_error("Interpolation error: k_u too large");
-  }
-}
-
-/**
  * @brief Interpolate the electric field to the origin of the Yee cell
  *
  * @param[in] Ex_yee Steady state x component of electric field calculated at points in the Yee cell
