@@ -24,8 +24,7 @@ double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2
  * The choice of expansion is not arbitrary: for the band-limited cases, the expanded number can be used to tell us the range of Yee indicies we need to extract values from, to then interpolate.
  * Similarly for cubic interpolation: the expanded number, offset by 7, fulfils the same role.
  */
-enum interp_scheme
-{
+enum interp_scheme {
     BAND_LIMITED_0 = 0, // use bandlimited_interpolation w/ interp position = 0
     BAND_LIMITED_1 = 1, // use bandlimited_interpolation w/ interp position = 1
     BAND_LIMITED_2 = 2, // use bandlimited_interpolation w/ interp position = 2
