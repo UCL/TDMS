@@ -65,8 +65,8 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
 TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
     int N = 10;
-    // should throw out_of_range exception if interpolation is impossible (<=4 Yee cells in direction)
-    REQUIRE_THROWS_AS(determineInterpScheme(4, 2), out_of_range);
+    // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
+    REQUIRE_THROWS_AS(determineInterpScheme(3, 2), out_of_range);
     // should throw out_of_range exception if Yee cell of invalid index is requested
     REQUIRE_THROWS_AS(determineInterpScheme(N,0), out_of_range);
     REQUIRE_THROWS_AS(determineInterpScheme(N,N), out_of_range);
