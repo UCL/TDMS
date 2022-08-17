@@ -62,8 +62,8 @@ set(SOURCES
     src/argument_parser.cpp
     src/fdtd_grid_initialiser.cpp
     src/interpolate.cpp
-    src/interpolation_methods.cpp
     src/iterator.cpp
+    src/interpolation_methods.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
@@ -98,14 +98,9 @@ install(TARGETS tdms)
 if (CMAKE_BUILD_TYPE STREQUAL "Test")
     enable_testing()
 
-<<<<<<< HEAD
-add_executable(tdms_tests
-        tests/unit/test_openandorder.cpp
-        tests/unit/test_interpolate.cpp)
-=======
     add_executable(tdms_tests
-            tests/unit/test_openandorder.cpp)
->>>>>>> 9a8a2291ec4783a320e1a9b75018d5e92bfb0082
+            tests/unit/test_openandorder.cpp
+            tests/unit/test_interpolate.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
