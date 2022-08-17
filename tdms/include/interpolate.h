@@ -74,5 +74,12 @@ void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz
 					int i, int j, int k,
 						   double *Hx, double *Hy, double *Hz);
 
-void interpolateTimeDomainEcomponent(dimension aID, double ***Eab, double ***Eac, int a, int b, int c, int A, double *Ea);
-void interpolateTimeDomainE(double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy, int i, int j, int k, int I, int J, int K, double *Ex, double *Ey, double *Ez);
+// declare E-field interpolation functions
+
+void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int I, double *Ex);
+void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int J, double *Ey);
+void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int K, double *Ez);
+void interpolateTimeDomainEField(double ***Exy, double ***Exz, double ***Eyx,
+								 double ***Eyz, double ***Ezx, double ***Ezy,
+								 int i, int j, int k, int I, int J, int K,
+								 double *Ex, double *Ey, double *Ez);
