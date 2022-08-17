@@ -1,13 +1,18 @@
-// these could do with being renamed to something more informative later!
+// cubic interpolation functions
 double interp1(double v1, double v2, double v3, double v4);
 double interp1(double *v);
 double interp2(double v1, double v2, double v3, double v4);
 double interp2(double *v);
 double interp3(double v1, double v2, double v3, double v4);
 double interp3(double *v);
+
 double cubic_interpolation(int interp_pos, double *v);
 
+// error checking (whether interpolation can be performed)
+
 void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
+
+// bandlimited interpolation functions
 
 double bandlimited_interpolation(int interp_pos, double *a, int offset = 0);
 double bandlimited_interpolation(int interp_pos, double a0, double a1, double a2, double a3,
