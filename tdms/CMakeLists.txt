@@ -78,6 +78,7 @@ target_sources(tdms_lib PUBLIC
         src/argument_parser.cpp
         src/fdtd_grid_initialiser.cpp
         src/interpolate.cpp
+        src/interpolation_methods.cpp
         src/iterator.cpp
         src/matrix_collection.cpp
         src/mesh_base.cpp

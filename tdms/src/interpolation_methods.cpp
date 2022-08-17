@@ -154,7 +154,7 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
     {
         const double b45[8] = {-0.006777513830539, 0.039457774230959, -0.142658093427528, 0.609836360660818,
                                0.609836360660818, -0.142658093427528, 0.039457774230959, -0.006777513830539};
-        for (int i; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             interp_value += a[i+offset] * b45[i];
         }
@@ -165,6 +165,7 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
         switch (interp_pos)
         {
         case 0:
+            {
             // interpolate a[0.5]
             const double b05[5] = {0.389880694606603, 0.752494454088346, -0.182115867658487,
                                    0.046235288061499, -0.006777513830539}; // last 3 terms are 0
@@ -173,7 +174,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b05[i];
             }
             break;
+            }
         case 1:
+            {
             // interpolate a[1.5]
             const double b15[6] = {-0.077297572626688, 0.570378586429859, 0.616613874491358,
                                    -0.142658093427528, 0.039457774230959, -0.006777513830539}; // last 2 terms are 0
@@ -182,7 +185,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b15[i];
             }
             break;
+            }
         case 2:
+            {
             // interpolate a[2.5]
             const double b25[7] = {0.025902746569881, -0.135880579596988, 0.609836360660818,
                                    0.609836360660818, -0.142658093427528, 0.039457774230959,
@@ -192,7 +197,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b25[i];
             }
             break;
+            }
         case 4:
+            {
             // interpolate a[4.5]
             const double b45[7] = {-0.006777513830539, 0.039457774230959, -0.142658093427528,
                                    0.609836360660818, 0.609836360660818, -0.135880579596988,
@@ -202,7 +209,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b45[i - 1];
             }
             break;
+            }
         case 5:
+            {
             // interpolate a[5.5]
             const double b55[6] = {-0.006777513830539, 0.039457774230959, -0.142658093427528,
                                    0.616613874491358, 0.570378586429859, -0.077297572626688}; // first two terms are zero
@@ -211,7 +220,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b55[i - 2];
             }
             break;
+            }
         case 6:
+            {
             // interpolate a[6.5]
             const double b65[5] = {-0.006777513830539, 0.046235288061499, -0.182115867658487,
                                    0.752494454088346, 0.389880694606603}; // first 3 terms are zero
@@ -220,7 +231,9 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b65[i - 3];
             }
             break;
+            }
         case 7:
+            {
             // interpolate a[7.5]
             const double b75[5] = {0.006777513830539, -0.046235288061499, 0.182115867658487,
                                    -0.752494454088346, 1.609553415928240}; // first 3 terms are zero
@@ -229,9 +242,12 @@ double bandlimited_interpolation(int interp_pos, double *a, int offset)
                 interp_value += a[i+offset] * b75[i - 3];
             }
             break;
+            }
         default:
+            {
             throw out_of_range("Requested bandlimited interpolation to position " + to_string((double)interp_pos + 0.5) + ", which is outside limits [0.5,7.5]\n");
             break;
+            }
         } // end switch(interp_pos)
     }     // else
     return interp_value;
