@@ -35,6 +35,7 @@ must pass locally and on CI for a change to be merged.
 
 Code should follow the following guidelines
 
+- Include docstrings in header files only
 - Have docstrings in a javadoc style
 - Use "@" to define [commands](https://doxygen.nl/manual/commands.html)
 - For example:
@@ -47,7 +48,5 @@ Code should follow the following guidelines
  * @param b: real number
  * @return sum of a and b
  */
-double add(double a, double b) {
-    ...
-}
+double add(double a, double b);
 ```
