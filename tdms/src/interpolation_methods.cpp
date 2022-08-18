@@ -223,7 +223,7 @@ int interpScheme::num_nonzero_coeffs() const {
     return last_nonzero_coeff - first_nonzero_coeff + 1;
 }
 
-double interpScheme::interpolate(const double *v, const int offset = 0) const {
+double interpScheme::interpolate(const double *v, const int offset) const {
 
     double interp_value = 0.;
     for(int ind=first_nonzero_coeff; ind<=last_nonzero_coeff; ind++) {
