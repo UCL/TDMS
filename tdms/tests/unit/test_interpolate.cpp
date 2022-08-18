@@ -18,7 +18,7 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     CHECK_NOTHROW(checkInterpolationPoints(2, I - 2, 2, -2, 2, K - 2, I, 0, K));
 
     // conversely, it should throw an error if we try to provide j_l = 0 = j_u, which one may percieve are sensible choices, in this case
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, 0, 0, K - 2, I, 0, K), out_of_range);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, 0, 0, K - 2, I, 0, K), runtime_error);
 
     /* 3D simulation checks
     checkInterpolationPoints should throw errors in each of the following cases:
@@ -28,12 +28,12 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     - i_u > I-2 with text Interpolation error: i_u too large
     - j_u > J-2 with text Interpolation error: j_u too large
     - k_u > K-2 with text Interpolation error: k_u too large */
-    CHECK_THROWS_AS(checkInterpolationPoints(1, I - 2, 2, J - 2, 2, K - 2, I, J, K), out_of_range);
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K - 2, I, J, K), out_of_range);
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 0, J - 2, 2, K - 2, I, J, K), out_of_range);
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, J - 0, 2, K - 2, I, J, K), out_of_range);
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, -1, K - 2, I, J, K), out_of_range);
-    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), out_of_range);
+    CHECK_THROWS_AS(checkInterpolationPoints(1, I - 2, 2, J - 2, 2, K - 2, I, J, K), runtime_error);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K - 2, I, J, K), runtime_error);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 0, J - 2, 2, K - 2, I, J, K), runtime_error);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, J - 0, 2, K - 2, I, J, K), runtime_error);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, -1, K - 2, I, J, K), runtime_error);
+    CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), runtime_error);
 }
 
 TEST_CASE("checkInterpolationPoints: check valid inputs") {
@@ -55,12 +55,7 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
                 for (int j_u = 2; j_u < J - 2; j_u++)
                     for (int i_l = 2; i_l < I - 2; i_l++)
                         for (int i_u = 2; i_u < I - 2; i_u++)
-                            if (i_l > i_u || j_l > j_u || k_l > k_u ) {
-                                CHECK_THROWS_AS(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K), runtime_error);
-                            }
-                            else {
-                                CHECK_NOTHROW(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K));
-                            }
+                            CHECK_NOTHROW(checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K));
 }
 
 /**
