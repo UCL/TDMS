@@ -51,167 +51,103 @@ double interp3(double *v);
 void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
 
 /**
- * @brief Defines aliases for the flags that will determine the interpolation scheme to be used.
- *
- * The choice of expansion is not arbitrary: for the band-limited cases, the expanded number can be used to tell us the range of Yee indicies we need to extract values from, to then interpolate.
- * Similarly for cubic interpolation: the expanded number, offset by 7, fulfils the same role.
- */
-enum interp_scheme
-{
-    BAND_LIMITED_0 = 0,      // use bandlimited_interpolation w/ interp position = 0
-    BAND_LIMITED_1 = 1,      // use bandlimited_interpolation w/ interp position = 1
-    BAND_LIMITED_2 = 2,      // use bandlimited_interpolation w/ interp position = 2
-    BAND_LIMITED_3 = 3,      // use bandlimited_interpolation w/ interp position = 3 [Preferred method if available]
-    BAND_LIMITED_4 = 4,      // use bandlimited_interpolation w/ interp position = 4
-    BAND_LIMITED_5 = 5,      // use bandlimited_interpolation w/ interp position = 5
-    BAND_LIMITED_6 = 6,      // use bandlimited_interpolation w/ interp position = 6
-    CUBIC_INTERP_MIDDLE = 8, // cubic interpolation to middle 2 of 4 points (interp1)
-    CUBIC_INTERP_FIRST = 7,  // cubic interpolation to first 2 of 4 points (interp2)
-    CUBIC_INTERP_LAST = 9    // cubic interpolation to last 2 of 4 points (interp3)
-};
-
-/**
- * @brief Defines aliases for our preference of interpolation scheme to apply.
- *
- * Lower values correspond to higher preference.
+ * @brief Defines our order of preference for the use of the various schemes.
+ * 
+ * There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.
+ * 
+ * MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!
  */
 enum scheme_value
 {
-    VAL_BL_3 = 0,  // highest priority is BLi at position 3
-    VAL_BL_42 = 1, // BLi at position 4 or 2
-    VAL_BL_51 = 2, // BLi at position 5 or 1
-    VAL_BL_60 = 3, // BLi at position 6 or 0
-    VAL_C_MID = 4, // Cubic at middle position
-    VAL_C_OTH = 5  // Cubic at either 1st or last position
+    BAND_LIMITED_0 = 4,      // use bandlimited_interpolation w/ interp position = 0.
+    BAND_LIMITED_1 = 6,      // use bandlimited_interpolation w/ interp position = 1
+    BAND_LIMITED_2 = 8,      // use bandlimited_interpolation w/ interp position = 2
+    BAND_LIMITED_3 = 9,      // use bandlimited_interpolation w/ interp position = 3 [Preferred method if available]
+    BAND_LIMITED_4 = 7,      // use bandlimited_interpolation w/ interp position = 4
+    BAND_LIMITED_5 = 5,      // use bandlimited_interpolation w/ interp position = 5
+    BAND_LIMITED_6 = 3,      // use bandlimited_interpolation w/ interp position = 6
+    BAND_LIMITED_7 = -1,     // use bandlimited_interpolation w/ interp position = 7
+    CUBIC_INTERP_MIDDLE = 2, // cubic interpolation to middle 2 of 4 points (interp1)
+    CUBIC_INTERP_FIRST = 1,  // cubic interpolation to first 2 of 4 points (interp2)
+    CUBIC_INTERP_LAST = 0    // cubic interpolation to last 2 of 4 points (interp3)
 };
 
-/**
- * @brief Holds information about the interpolation scheme that is to be applied to a given dataset.
- * 
- */
 class interpScheme {
-    public:
-        // constructors
-
-        /**
-         * @brief Default constructor - assumes we can use bandlimited interpolation
-         * 
-         */
-        interpScheme();
-        /**
-         * @brief Creates an instance of the interpScheme class, by determining the appropriate interpolation scheme to use
-         *
-         * @param[in] cells_in_direction The number of Yee cells in the interpolation direction of interest
-         * @param[in] cell_id The current ID (in this dimension) of the Yee cell
-         * @return interp_scheme Indicating the appropriate interpolation scheme to use
-         */
-        interpScheme(int cells_in_direction, int cell_id);
-        /**
-         * @brief Implicit conversion to interpScheme by only providing the scheme to use
-         * 
-         * @param s Interpolation scheme to use
-         */
-        interpScheme(interp_scheme s);
-
-        // standard fetch methods
-
-        interp_scheme get_scheme();
-        scheme_value get_value();
-
-        // comparison methods
-
-        /**
-         * @brief Determines if this scheme has higher preference than the scheme s1.
-         * 
-         * Colloquially, this is the operation "this > s1".
-         *
-         * @param s1 Interpolation scheme to compare against
-         * @return true This is the optimal scheme.
-         * @return false s1 is the optimal scheme, or is of equal preference.
-         */
-        bool is_better_than(interpScheme s1);
-
-        // interpolation method, and overloaded call method
-
-        /**
-         * @brief Interpolate the data v using the interpolation scheme
-         * 
-         * @param v Data points to interpolate
-         * @param offset Read buffer from v[offset] rather than v[0]
-         * @return double Interpolated value
-         */
-        double interpolate(double *v, int offset = 0);
-        /**
-         * @brief Interpolate the data v using the interpolation scheme
-         * 
-         * @param v Data points to interpolate
-         * @param offset Read buffer from v[offset] rather than v[0]
-         * @return double Interpolated value
-         */
-        double operator()(double *v, int offset = 0);
-
     private:
-        // the interpolation scheme to be applied
-        interp_scheme scheme;
-        // the preference of this interpolation scheme relative to the other schemes
+        // the "preference" or "value" of applying this scheme. It may be better to apply another scheme with a higher value.
         scheme_value value;
 
-        // private interpolation methods (used internally on call to interpolate)
+        // the constants that will be used in the interpolation scheme.
+        double scheme_coeffs[8];
+    public:
+        /**
+         * @brief Construct a new interp Scheme object, by providing the scheme value
+         * 
+         * @param value A value associtated to one of the possible schemes
+         */
+        interpScheme(scheme_value value);
+
+        /* FETCH METHODS */
 
         /**
-         * @brief Performs bandlimited interpolation with 8 sample points, to position i.5
-         *
-         * Given equidistant sample points a[0],....,a[7], the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
-         *  a[i.5] = \sum_{k=0}^7 a[k] * b^{(i.5)}[k],
-         * where (for each i), b^{i.5)}[k] is a vector of constant coefficients coded into this function.
-         *
-         * @param interp_pos The value i in the formula above
-         * @param a Equally spaced sample points, must contain (at least 8) elements
-         * @param offset {Default 0} a[offset] will be treated as a[0]
-         * @return double The interpolated value a[interp_pos.5]
+         * @brief Get the value object
+         * 
+         * @return scheme_value 
          */
-        double bandlimited_interpolation(double *a, int offset = 0);
-        /**
-         * @brief Performs bandlimited interpolation with 8 sample points, to position i.5
-         *
-         * Given equidistant sample points a0,....,a7, the bandlimited interpolation to the midpoint of a[i] and a[i+1], denoted a[i.5], is
-         *  a[i.5] = \sum_{k=0}^7 a[k] * b^{(i.5)}[k],
-         * where (for each i), b^{(i.5)}[k] is a vector of constant coefficients coded into this function.
-         *
-         * @param interp_pos The value i in the formula above
-         * @param a0,a1,a2,a3,a4,a5,a6,a7 Equidistant sample values
-         * @return double The interpolated value a[interp_pos.5]
-         */
-        double bandlimited_interpolation(double a0, double a1, double a2, double a3,
-                                         double a4, double a5, double a6, double a7);
+        scheme_value get_value() const;
+
+        /* END FETCH METHODS */
+        
+        // stores the index-offset that we require when extracting data from the field component arrays
+        int index;
+
+        // cubic and BLi schemes use different numbers of coefficients. To avoid switches, we store these variables.
+        int first_nonzero_coeff, last_nonzero_coeff;
 
         /**
-         * @brief Performs cubic interpolation (to the appropriate interpolation point) given 4 data points.
+         * @brief Compute the number of non-zero coefficients in the interpolation scheme
          *
-         * Interpolation can be made to 3 different positions between the 4 data points. The scheme determines which position to interpolate to.
-         *
-         * scheme               v0      v1      v2      v3
-         *  CUBIC_FIRST             x
-         *  CUBIC_MIDDLE                     x
-         *  CUBIC_LAST                              x
-         *
-         * @param v Equally spaced data points to use for interpolation
-         * @param offset [Default 0] Read buffer starting from a[offset] rather than a[0]
-         * @return double Interpolated value
+         * @return int Number of non-zero coefficients in the interpolation scheme
          */
-        double cubic_interpolation(double *v, int offset = 0);
+        int num_nonzero_coeffs() const;
+
         /**
-         * @brief Performs cubic interpolation (to the appropriate interpolation point) given 4 data points.
-         *
-         * Interpolation can be made to 3 different positions between the 4 data points. The scheme determines which position to interpolate to.
-         *
-         * scheme               v0      v1      v2      v3
-         *  CUBIC_FIRST             x
-         *  CUBIC_MIDDLE                     x
-         *  CUBIC_LAST                              x
-         *
-         * @param v0,v1,v2,v3 Equally spaced data points to use for interpolation
+         * @brief Executes the interpolation scheme on the data provided
+         * 
+         * @param v Sample datapoints to use in interpolation
+         * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
          */
-        double cubic_interpolation(double v0, double v1, double v2, double v3);
+        double interpolate(const double *v, const int offset = 0) const;
+
+        /**
+         * @brief Determines whether another interpScheme has greater value than this one
+         * 
+         * @param s The other interpScheme to compare against
+         * @return true This scheme has greater value
+         * @return false This scheme has lesser, or equal, value to s
+         */
+        bool is_better_than(const interpScheme s) const;
 };
+
+/* Constant members of the interpScheme class */
+const interpScheme BL0 = interpScheme(BAND_LIMITED_0);
+const interpScheme BL1 = interpScheme(BAND_LIMITED_1);
+const interpScheme BL2 = interpScheme(BAND_LIMITED_2);
+const interpScheme BL3 = interpScheme(BAND_LIMITED_3);
+const interpScheme BL4 = interpScheme(BAND_LIMITED_4);
+const interpScheme BL5 = interpScheme(BAND_LIMITED_5);
+const interpScheme BL6 = interpScheme(BAND_LIMITED_6);
+const interpScheme BL7 = interpScheme(BAND_LIMITED_7);
+const interpScheme CBFst = interpScheme(CUBIC_INTERP_FIRST);
+const interpScheme CBMid = interpScheme(CUBIC_INTERP_MIDDLE);
+const interpScheme CBLst = interpScheme(CUBIC_INTERP_LAST);
+
+/**
+ * @brief Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.
+ * 
+ * @param cells_in_direction The number of cells in the direction parallel to interpolation
+ * @param cell_id The current cell index to interpolate to the centre of
+ * @return const interpScheme* The interpolation scheme that should be used
+ */
+const interpScheme &best_interp_scheme(int cells_in_direction, int cell_id);

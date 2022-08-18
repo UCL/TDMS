@@ -66,10 +66,10 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
     int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
-    REQUIRE_THROWS_AS(interpScheme(3, 2), out_of_range);
+    REQUIRE_THROWS_AS(best_interp_scheme(3, 2), out_of_range);
     // should throw out_of_range exception if Yee cell of invalid index is requested
-    REQUIRE_THROWS_AS(interpScheme(N,0), out_of_range);
-    REQUIRE_THROWS_AS(interpScheme(N,N), out_of_range);
+    REQUIRE_THROWS_AS(best_interp_scheme(N,0), out_of_range);
+    REQUIRE_THROWS_AS(best_interp_scheme(N,N), out_of_range);
 
     /* Suppose we have N >= 8 Yee cells in a dimension. The program should determine:
         - cell_id == 0 : Interpolation impossible (checked previously)
@@ -78,13 +78,13 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
         - cell_id == N-3,N-2,N-1 : Use BAND_LIMITED_(4,5,6) scheme respectively
     */
     N = 10;
-    CHECK(interpScheme(N, 1).get_scheme() == BAND_LIMITED_0);
-    CHECK(interpScheme(N, 2).get_scheme() == BAND_LIMITED_1);
-    CHECK(interpScheme(N, 3).get_scheme() == BAND_LIMITED_2);
-    for(int i=4; i<=N-4; i++) {CHECK(interpScheme(N, i).get_scheme() == BAND_LIMITED_3);}
-    CHECK(interpScheme(N, N-3).get_scheme() == BAND_LIMITED_4);
-    CHECK(interpScheme(N, N-2).get_scheme() == BAND_LIMITED_5);
-    CHECK(interpScheme(N, N-1).get_scheme() == BAND_LIMITED_6);
+    CHECK(best_interp_scheme(N, 1).get_value() == BAND_LIMITED_0);
+    CHECK(best_interp_scheme(N, 2).get_value() == BAND_LIMITED_1);
+    CHECK(best_interp_scheme(N, 3).get_value() == BAND_LIMITED_2);
+    for(int i=4; i<=N-4; i++) {CHECK(best_interp_scheme(N, i).get_value() == BAND_LIMITED_3);}
+    CHECK(best_interp_scheme(N, N-3).get_value() == BAND_LIMITED_4);
+    CHECK(best_interp_scheme(N, N-2).get_value() == BAND_LIMITED_5);
+    CHECK(best_interp_scheme(N, N-1).get_value() == BAND_LIMITED_6);
 
     /* If 4<=N<=8 we can still fall back on cubic interpolation 
         - cell_id == 0 : Interpolation impossible (checked previously)
@@ -93,9 +93,9 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
         - cell_id == N-1 : Use CUBIC_LAST
     */
     N = 7;
-    CHECK(interpScheme(N, 1).get_scheme() == CUBIC_INTERP_FIRST);
-    for(int i=2; i<=N-2; i++) {CHECK(interpScheme(N, i).get_scheme() == CUBIC_INTERP_MIDDLE);}
-    CHECK(interpScheme(N, N-1).get_scheme() == CUBIC_INTERP_LAST);
+    CHECK(best_interp_scheme(N, 1).get_value() == CUBIC_INTERP_FIRST);
+    for(int i=2; i<=N-2; i++) {CHECK(best_interp_scheme(N, i).get_value() == CUBIC_INTERP_MIDDLE);}
+    CHECK(best_interp_scheme(N, N-1).get_value() == CUBIC_INTERP_LAST);
 }
 
 /**
