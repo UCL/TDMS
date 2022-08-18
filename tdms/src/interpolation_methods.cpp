@@ -58,7 +58,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
     }
     else if (i_l > i_u) 
     {
-        throw runtime_error("Interpolation error: lower cell index greater than upper (i)")
+        throw runtime_error("Interpolation error: lower cell index greater than upper (i)");
     }
     else if (j_l > j_u)
     {
