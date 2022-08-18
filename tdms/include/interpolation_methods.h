@@ -131,7 +131,7 @@ class interpScheme {
          */
         bool is_better_than(interpScheme s1);
 
-        // interpolation method
+        // interpolation method, and overloaded call method
 
         /**
          * @brief Interpolate the data v using the interpolation scheme
@@ -141,6 +141,14 @@ class interpScheme {
          * @return double Interpolated value
          */
         double interpolate(double *v, int offset = 0);
+        /**
+         * @brief Interpolate the data v using the interpolation scheme
+         * 
+         * @param v Data points to interpolate
+         * @param offset Read buffer from v[offset] rather than v[0]
+         * @return double Interpolated value
+         */
+        double operator()(double *v, int offset = 0);
 
     private:
         // the interpolation scheme to be applied

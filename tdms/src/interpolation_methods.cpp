@@ -189,6 +189,9 @@ bool interpScheme::is_better_than(interpScheme s1) {
 }
 
 double interpScheme::interpolate(double *v, int offset) {
+    return this->operator()(v, offset);
+}
+double interpScheme::operator()(double *v, int offset) {
     if (is_better_than(CUBIC_INTERP_MIDDLE)) {
         return bandlimited_interpolation(v, offset);
     }
