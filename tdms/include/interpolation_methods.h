@@ -4,50 +4,32 @@
  * v0    v1    v2    v3
  * o     o  x   o    o
  */
-double interp1(double v1, double v2, double v3, double v4)
-{
-    return -1. / 16. * v1 + 9. / 16. * v2 + 9. / 16. * v3 - 1. / 16. * v4;
-}
+double interp1(double v1, double v2, double v3, double v4);
 /*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
  * o     o  x   o    o
  */
-double interp1(double *v)
-{
-    return -1. / 16. * v[0] + 9. / 16. * v[1] + 9. / 16. * v[2] - 1. / 16. * v[3];
-}
+double interp1(double *v);
 /*Use cubic interpolation to interpolate between the first 2 of 4 points
  * v0    v1    v2    v3
  * o  x   o     o    o
  */
-double interp2(double v1, double v2, double v3, double v4)
-{
-    return 5. / 16. * v1 + 15. / 16. * v2 - 5. / 16. * v3 + 1. / 16. * v4;
-}
+double interp2(double v1, double v2, double v3, double v4);
 /*Use cubic interpolation to interpolate between the first 2 of 4 points
  * v0    v1    v2    v3
  * o  x   o     o    o
  */
-double interp2(double *v)
-{
-    return 5. / 16. * v[0] + 15. / 16. * v[1] - 5. / 16. * v[2] + 1. / 16. * v[3];
-}
+double interp2(double *v);
 /*Use cubic interpolation to interpolate between the last 2 of 4 points
  * v0    v1    v2    v3
  * o     o     o  x  o
  */
-double interp3(double v1, double v2, double v3, double v4)
-{
-    return 1. / 16. * v1 - 5. / 16. * v2 + 15. / 16. * v3 + 5. / 16. * v4;
-}
+double interp3(double v1, double v2, double v3, double v4);
 /*Use cubic interpolation to interpolate between the last 2 of 4 points
  * v0    v1    v2    v3
  * o     o     o  x  o
  */
-double interp3(double *v)
-{
-    return 1. / 16. * v[0] - 5. / 16. * v[1] + 15. / 16. * v[2] + 5. / 16. * v[3];
-}
+double interp3(double *v);
 
 /**
  * @brief Checks whether the limits of field extraction are within range of the FDTD grid

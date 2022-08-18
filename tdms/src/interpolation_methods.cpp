@@ -34,33 +34,33 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
 {
     if (i_l < 2)
     {
-        throw runtime_error("Interpolation error: i_l too small");
+        throw out_of_range("Interpolation error: i_l too small");
     }
     else if (i_u > I - 2)
     {
-        throw runtime_error("Interpolation error: i_u too large");
+        throw out_of_range("Interpolation error: i_u too large");
     }
     else if (j_l < 2)
     {
-        throw runtime_error("Interpolation error: j_l too small");
+        throw out_of_range("Interpolation error: j_l too small");
     }
     else if (j_u > J - 2)
     {
-        throw runtime_error("Interpolation error: j_u too large");
+        throw out_of_range("Interpolation error: j_u too large");
     }
     else if (k_l < 2)
     {
-        throw runtime_error("Interpolation error: k_l too small");
+        throw out_of_range("Interpolation error: k_l too small");
     }
     else if (k_u > K - 2)
     {
-        throw runtime_error("Interpolation error: k_u too large");
+        throw out_of_range("Interpolation error: k_u too large");
     }
     else if (i_l > i_u) 
     {
         throw runtime_error("Interpolation error: lower cell index greater than upper (i)");
     }
-    else if (j_l > j_u)
+    else if (j_l > j_u && J!=0) // in a 2D simulation (J==0) we allow this beahviour
     {
         throw runtime_error("Interpolation error: lower cell index greater than upper (j)");
     }

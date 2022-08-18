@@ -64,14 +64,6 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
     *Ey = scheme_to_use.interpolate(interp_data);
 }
 
-/**
- * @brief Interpolate the Ez field component to the centre of a Yee cell
- * 
- * @param[in] Ezx,Ezy split components of the Yee cell 
- * @param[in] i,j,k Yee cell index 
- * @param[in] K Number of Yee cells in the z-dimension
- * @param[out] Ez Interpolated value of the Ez field at centre of Yee cell i,j,k
- */
 void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int K, double *Ez) {
 
     // determine the interpolation scheme to use
