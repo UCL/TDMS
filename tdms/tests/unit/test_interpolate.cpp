@@ -109,39 +109,51 @@ TEST_CASE("interp: cubic interpolation is exact") {
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
+    // get interpScheme instances for each interpolation method
+    interpScheme cubic_mid(CUBIC_INTERP_MIDDLE);
+    interpScheme cubic_fst(CUBIC_INTERP_FIRST);
+    interpScheme cubic_lst(CUBIC_INTERP_LAST);
 
     // constant field
     double c0 = 3.1415;
-    double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
+    // data points to use for interpolation
+    double v[8];
+    v[0] = c0, v[1] = c0, v[2] = c0, v[3] = c0;
+    // exact values (interpolate f(x) = c0)
     double v12 = c0, v23 = c0, v34 = c0;
     
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4) <= tol));
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4) <= tol));
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4) <= tol));
+    CHECK(abs(v12 - cubic_fst(v) <= tol));
+    CHECK(abs(v23 - cubic_mid(v) <= tol));
+    CHECK(abs(v34 - cubic_lst(v) <= tol));
 
-    // linear
+    // linear, create coefficient
     double c1 = -2.7182818;
-    v1 += c1*x[0]; v2 += c1*x[1]; v3 += c1*x[2]; v4 += c1*x[3];
+    // update interpolation data points
+    v[0] += c1*x[0]; v[1] += c1*x[1]; v[2] += c1*x[2]; v[3] += c1*x[3];
+    // update exact values (f(x) = c0 + c1*x)
     v12 += c1*(x[1]+x[0])/2.; v23 += c1*(x[2]+x[1])/2.; v34 += c1*(x[3]+x[2])/2.;
 
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v12 - interp2(v)) <= tol);
+    CHECK(abs(v23 - interp1(v)) <= tol);
+    CHECK(abs(v34 - interp3(v)) <= tol);
 
-    // quadratic
+    // quadratic, create coefficient
     double c2 = 9.81;
-    v1 += c2*x[0]*x[0]; v2 += c2*x[1]*x[1]; v3 += c2*x[2]*x[2]; v4 += c2*x[3]*x[3];
+    // update interpolation data points
+    v[0] += c2*x[0]*x[0]; v[1] += c2*x[1]*x[1]; v[2] += c2*x[2]*x[2]; v[3] += c2*x[3]*x[3];
+    // update exact values (f(x) = c0 + c1*x + c2*x^2)
     v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v12 - interp2(v)) <= tol);
+    CHECK(abs(v23 - interp1(v)) <= tol);
+    CHECK(abs(v34 - interp3(v)) <= tol);
 
-    // cubic
+    // cubic, create coefficient
     double c3 = 4.2;
-    v1 += c3*x[0]*x[0]*x[0]; v2 += c3*x[1]*x[1]*x[1]; v3 += c3*x[2]*x[2]*x[2]; v4 += c3*x[3]*x[3]*x[3];
+    // update interpolation data points
+    v[0] += c3*x[0]*x[0]*x[0]; v[1] += c3*x[1]*x[1]*x[1]; v[2] += c3*x[2]*x[2]*x[2]; v[3] += c3*x[3]*x[3]*x[3];
     v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
@@ -150,3 +162,90 @@ TEST_CASE("interp: cubic interpolation is exact") {
     CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 }
+
+/**
+ * @brief The hard-coded numerical values for the interpolation constant should all sum to the same value
+ *
+ * Note - the coefficients are not required to sum to unity!
+ */ /*
+TEST_CASE("bandlimited_interpolation: coefficient sum")
+{
+
+    double tol = __DBL_EPSILON__;
+    double coeff_sums[8];
+    double a[8] = {1., 1., 1., 1., 1., 1., 1., 1.};
+
+    // fast way to sum the coefficients is to "interpolate" the constant function
+    for (int i = 0; i < 8; i++)
+    {
+        coeff_sums[i] = bandlimited_interpolation(i, a);
+    }
+    // now check that the entries of coeff_sums are the same
+    int n = 8;
+    while (--n > 0 && abs(a[n] - a[0]) < tol)
+        ;
+    // we only reach the end of the while loop, IE get to n==0, when all elements in the array are the same
+    REQUIRE(n == 0);
+}
+
+/**
+ * @brief We will check that BLi interpolation gives comparible error to the equivalent functions in MATLAB
+ *
+ * For 100 sample points, we will use BLi to interpolate the following functions with 100 sample points:
+ * - The constant function 1    : range 0,1
+ * - sin(x)                     : range 0-2\pi
+ *
+ * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, off of which the bandlimited_interpolation method is based.
+ *
+ */ /*
+TEST_CASE("bandlimited_interpolation: order of error")
+{
+
+    int N = 100;
+    double x[N], x5[N];
+    for (int i = 0; i < N; i++)
+    {
+        x[i] = ((double)i / (double)N) * 2. * M_PI;
+        x5[i] = (2. * i + 1.) * M_PI / (double)N;
+    }
+
+    double sin_vals[N], interp_vals[N], diffs[N];
+    double exact_vals[N];
+
+    // sin_vals[i] = sin(2pi i/N)
+    for (int i = 0; i < N; i++)
+    {
+        sin_vals[i] = sin(x[i]);
+        exact_vals[i] = sin(x5[i]);
+    }
+
+    // now try interpolating...
+    interp_vals[0] = bandlimited_interpolation(0, sin_vals);
+    interp_vals[1] = bandlimited_interpolation(1, sin_vals);
+    interp_vals[2] = bandlimited_interpolation(2, sin_vals);
+    for (int i = 3; i < N - 4; i++)
+    {
+        interp_vals[i] = bandlimited_interpolation(3, sin_vals, i - 3);
+    }
+    interp_vals[N - 4] = bandlimited_interpolation(4, sin_vals, N - 8 - 1);
+    interp_vals[N - 3] = bandlimited_interpolation(5, sin_vals, N - 8 - 1);
+    interp_vals[N - 2] = bandlimited_interpolation(6, sin_vals, N - 8 - 1);
+    interp_vals[N - 1] = bandlimited_interpolation(7, sin_vals, N - 8 - 1);
+
+    // print maximum difference?
+    cout << "index | difference | interp_value \n";
+    for (int i = 0; i < N; i++)
+    {
+        diffs[i] = abs(sin_vals[i] - interp_vals[i]);
+        cout << to_string(i) + " | " + to_string(diffs[i]) + " | " + to_string(interp_vals[i]) + "\n";
+    }
+    cout << "Maximum difference : " + to_string(*max_element(diffs, diffs + N)) + "\n";
+}
+
+/**
+ * @brief Test whether the implimentation of band-limited interpolation is performing correctly.
+ *
+ * We will attempt to interpolate the function
+ * f(x) =
+ * which can be interpolated exactly by our band-limited interpolation scheme.
+ */
