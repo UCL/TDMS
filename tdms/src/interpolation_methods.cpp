@@ -63,7 +63,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
 interpScheme::interpScheme(scheme_value val) {
 
     // set the value field
-    value = val;
+    priority = val;
 
     // set values for this method based on the scheme_value passed in
     // these are all hard-coded values - there is no way around a long list of cases!
@@ -173,6 +173,19 @@ interpScheme::interpScheme(scheme_value val) {
             index = 7;
             break;
         }
+        case BAND_LIMITED_CELL_ZERO:
+        {
+            // by symmetry, we can reflect the setup for BLi to position 7 in order to interpolate to the centre of Yee cell 0 
+            scheme_coeffs[0] = 1.609553415928240;
+            scheme_coeffs[1] = -0.752494454088346;
+            scheme_coeffs[2] = 0.182115867658487;
+            scheme_coeffs[3] = -0.046235288061499;
+            scheme_coeffs[4] = 0.006777513830539;
+            first_nonzero_coeff = 0;
+            last_nonzero_coeff = 4;
+            index = 1; // so that scheme.index-1 gives v[0] as the first data point
+            break;
+        }
         case CUBIC_INTERP_FIRST:
         {
             scheme_coeffs[0] = 5. / 16.;
@@ -209,14 +222,14 @@ interpScheme::interpScheme(scheme_value val) {
         default:
         {
             // if we cannot identify the scheme from it's value, throw an error
-            throw runtime_error("Error: could not assign value " + std::to_string(value) + " to interpolation scheme.\n");
+            throw runtime_error("Error: could not assign value " + std::to_string(val) + " to interpolation scheme.\n");
             break;
         }
     }
 }
 
-scheme_value interpScheme::get_value() const {
-    return value;
+scheme_value interpScheme::get_priority() const {
+    return priority;
 }
 
 int interpScheme::num_nonzero_coeffs() const {
@@ -233,7 +246,7 @@ double interpScheme::interpolate(const double *v, const int offset) const {
 }
 
 bool interpScheme::is_better_than(const interpScheme s) const {
-    return (value > s.get_value());
+    return (priority > s.get_priority());
 }
 
 const interpScheme &best_interp_scheme(int cells_in_direction, int cell_id) {
@@ -243,11 +256,13 @@ const interpScheme &best_interp_scheme(int cells_in_direction, int cell_id) {
         throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and bandlimited interpolation impossible.\n");
     }
     // Yee cell with index <0 does exist (starts from 0)
-    // IN FUTURE: We could use BL7 ("in reverse") to interpolate to the centre of Yee cell 0 though
+    // Current code functionality is to error if we attempt to interpolate to cell 0, because the cubic interpolation found this impossible
+    // However, BL_TO_CELL_0 can handle this, provided cells_in_direction >= 8.
     else if (cell_id <= 0) {
         throw out_of_range("Error: Yee cell index <=0 requested (must be >=1).\n");
     }
     // Yee cell with index >= cells_in_direction doesn't exist
+    // Again, we can in theory determine the value "here" using BL7, however cubic interpolation cannot do this, and so current code functionality is to throw an error here.
     else if (cell_id >= cells_in_direction) {
         throw out_of_range("Error: Yee cell index beyond maximum number of Yee cells requested.\n");
     }

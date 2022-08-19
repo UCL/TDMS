@@ -59,23 +59,24 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
  */
 enum scheme_value
 {
-    BAND_LIMITED_0 = 4,      // use bandlimited_interpolation w/ interp position = 0.
-    BAND_LIMITED_1 = 6,      // use bandlimited_interpolation w/ interp position = 1
-    BAND_LIMITED_2 = 8,      // use bandlimited_interpolation w/ interp position = 2
-    BAND_LIMITED_3 = 9,      // use bandlimited_interpolation w/ interp position = 3 [Preferred method if available]
-    BAND_LIMITED_4 = 7,      // use bandlimited_interpolation w/ interp position = 4
-    BAND_LIMITED_5 = 5,      // use bandlimited_interpolation w/ interp position = 5
-    BAND_LIMITED_6 = 3,      // use bandlimited_interpolation w/ interp position = 6
-    BAND_LIMITED_7 = -1,     // use bandlimited_interpolation w/ interp position = 7
-    CUBIC_INTERP_MIDDLE = 2, // cubic interpolation to middle 2 of 4 points (interp1)
-    CUBIC_INTERP_FIRST = 1,  // cubic interpolation to first 2 of 4 points (interp2)
-    CUBIC_INTERP_LAST = 0    // cubic interpolation to last 2 of 4 points (interp3)
+    BAND_LIMITED_0 = 4,             // use bandlimited interpolation w/ interp position = 0.
+    BAND_LIMITED_1 = 6,             // use bandlimited interpolation w/ interp position = 1
+    BAND_LIMITED_2 = 8,             // use bandlimited interpolation w/ interp position = 2
+    BAND_LIMITED_3 = 9,             // use bandlimited interpolation w/ interp position = 3 [Preferred method if available]
+    BAND_LIMITED_4 = 7,             // use bandlimited interpolation w/ interp position = 4
+    BAND_LIMITED_5 = 5,             // use bandlimited interpolation w/ interp position = 5
+    BAND_LIMITED_6 = 3,             // use bandlimited interpolation w/ interp position = 6
+    BAND_LIMITED_7 = -1,            // use bandlimited interpolation w/ interp position = 7 [Only applicable if we want to extend beyond the final Yee cell, current code functionality is to throw an error in the case where this would be used.]
+    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell 0 [implimented, but current code functionality is to throw an error here]
+    CUBIC_INTERP_MIDDLE = 2,        // cubic interpolation to middle 2 of 4 points (interp1)
+    CUBIC_INTERP_FIRST = 1,         // cubic interpolation to first 2 of 4 points (interp2)
+    CUBIC_INTERP_LAST = 0           // cubic interpolation to last 2 of 4 points (interp3)
 };
 
 class interpScheme {
     private:
-        // the "preference" or "value" of applying this scheme. It may be better to apply another scheme with a higher value.
-        scheme_value value;
+        // the "preference" or "value" of applying this scheme. It may be better to apply another scheme with a higher priority.
+        scheme_value priority;
 
         // the constants that will be used in the interpolation scheme.
         double scheme_coeffs[8];
@@ -94,7 +95,7 @@ class interpScheme {
          * 
          * @return scheme_value 
          */
-        scheme_value get_value() const;
+        scheme_value get_priority() const;
 
         /* END FETCH METHODS */
         
@@ -113,6 +114,10 @@ class interpScheme {
 
         /**
          * @brief Executes the interpolation scheme on the data provided
+         * 
+         * The interpolation schemes are all of the form
+         * interpolated_value = \sum_{i=first_nonzero_coeff}^{last_nonzero_coeff} scheme_coeffs[i] * v[i],
+         * so provided that the coefficients have been set correctly in construction (and the data gathered appropriately), we can run the same for loop for each interpolation scheme.
          * 
          * @param v Sample datapoints to use in interpolation
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
@@ -139,6 +144,7 @@ const interpScheme BL4 = interpScheme(BAND_LIMITED_4);
 const interpScheme BL5 = interpScheme(BAND_LIMITED_5);
 const interpScheme BL6 = interpScheme(BAND_LIMITED_6);
 const interpScheme BL7 = interpScheme(BAND_LIMITED_7);
+const interpScheme BL_TO_CELL_0 = interpScheme(BAND_LIMITED_CELL_ZERO);
 const interpScheme CBFst = interpScheme(CUBIC_INTERP_FIRST);
 const interpScheme CBMid = interpScheme(CUBIC_INTERP_MIDDLE);
 const interpScheme CBLst = interpScheme(CUBIC_INTERP_LAST);
