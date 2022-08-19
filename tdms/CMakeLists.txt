@@ -63,6 +63,7 @@ set(SOURCES
     src/fdtd_grid_initialiser.cpp
     src/interpolate.cpp
     src/iterator.cpp
+    src/interpolation_methods.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
@@ -98,7 +99,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
     enable_testing()
 
     add_executable(tdms_tests
-            tests/unit/test_openandorder.cpp)
+            tests/unit/test_openandorder.cpp
+            tests/unit/test_interpolate.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain

@@ -1,6 +1,5 @@
 #include "interpolate_Hfield.h"
 #include "interpolation_methods.h"
-#include <stdlib.h>
 
 void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, int K, double *Hx) {
     // first, we need to determine the non-x dimension that we will interpolate into, in order to bring the fields parallel to the Yee cell centre
