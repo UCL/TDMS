@@ -46,18 +46,4 @@ void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
                                  int i, int j, int k, int I, int J, int K,
                                  double *Hx, double *Hy, double *Hz);
-
-/**
- * @brief Determines which of two dimensions is optimal to perform interpolation in.
- *
- * Interpolating the magnetic field requires us to first interpolate to obtain points parallel to the centre of the Yee cell, then again in the direction corresponding to the field component we are interested in.
- * This function determines which of the remaining two dimensions, labelled d0 and d1, is optimal for the first set of interpolations.
- *
- * (d0,d1) represents any combination of (x,y), (x,z), or (z,y) dimensions.
- *
- * @param n_cells_d0,n_cells_d1 The maxmium number of Yee cells in dimensions d0 and d1
- * @param cid0,cid1 The component of the Yee cell index in dimensions d0 and d1
- * @return true Dimension d0 should be used.
- * @return false Dimension d1 should be used. In the event of a tie, prefer this dimension.
- */
-bool determine_second_dim(int n_cells_d0, int n_cells_d1, int cid0, int cid1);
+                                 
