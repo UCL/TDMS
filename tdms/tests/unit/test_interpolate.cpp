@@ -1,12 +1,18 @@
 # include "catch2/catch_test_macros.hpp"
 # include "interpolation_methods.h"
 
+# include <algorithm>
+# include <cmath>
+# include <iostream>
+
 using namespace std;
 
 /**
  * @brief Test whether checkInterpolationPoints throws exceptions in the correct cases.
- * 
+ *
  * This function checks whether it is possible to use cubic interpolation over a given index range.
+ *
+ * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
  */
 TEST_CASE("checkInterpolationPoints: exceptions thrown") {
 
@@ -36,6 +42,11 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), runtime_error);
 }
 
+/**
+ * @brief Test whether checkInterpolationPoints confirms interpolation is possible for the give cases.
+ * 
+ * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
+ */
 TEST_CASE("checkInterpolationPoints: check valid inputs") {
 
     // setup some fake field dimensions
@@ -99,10 +110,11 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
 }
 
 /**
- * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
  * 
+ * The constant class instances for cubic interpolation are CBFst, CBMid, and CBLst.
  */
-TEST_CASE("interp: cubic interpolation is exact") {
+TEST_CASE("interpScheme: cubic interpolation is exact") {
 
     // equidistant points
     double x[] = {0.,1.,2.,3.};
@@ -163,7 +175,7 @@ TEST_CASE("interp: cubic interpolation is exact") {
  * @brief The hard-coded numerical values for the interpolation constant should all sum to the same value
  *
  * Note - the coefficients are not required to sum to unity!
- */ /*
+ */
 TEST_CASE("bandlimited_interpolation: coefficient sum")
 {
 
@@ -171,15 +183,18 @@ TEST_CASE("bandlimited_interpolation: coefficient sum")
     double coeff_sums[8];
     double a[8] = {1., 1., 1., 1., 1., 1., 1., 1.};
 
-    // fast way to sum the coefficients is to "interpolate" the constant function
-    for (int i = 0; i < 8; i++)
-    {
-        coeff_sums[i] = bandlimited_interpolation(i, a);
-    }
+    // fast way to sum the coefficients is to "interpolate" the constant function 1
+    coeff_sums[0] = BL0.interpolate(a);
+    coeff_sums[1] = BL1.interpolate(a);
+    coeff_sums[2] = BL2.interpolate(a);
+    coeff_sums[3] = BL3.interpolate(a);
+    coeff_sums[4] = BL4.interpolate(a);
+    coeff_sums[5] = BL5.interpolate(a);
+    coeff_sums[6] = BL6.interpolate(a);
+    coeff_sums[7] = BL7.interpolate(a);
     // now check that the entries of coeff_sums are the same
     int n = 8;
-    while (--n > 0 && abs(a[n] - a[0]) < tol)
-        ;
+    while (--n > 0 && abs(a[n] - a[0]) < tol);
     // we only reach the end of the while loop, IE get to n==0, when all elements in the array are the same
     REQUIRE(n == 0);
 }
@@ -188,60 +203,123 @@ TEST_CASE("bandlimited_interpolation: coefficient sum")
  * @brief We will check that BLi interpolation gives comparible error to the equivalent functions in MATLAB
  *
  * For 100 sample points, we will use BLi to interpolate the following functions with 100 sample points:
- * - The constant function 1    : range 0,1
- * - sin(x)                     : range 0-2\pi
+ * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
+ * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
+ * - e^(-1/(2|x-0.5|-1))^2)     : range 0,1         : max. element-wise error (MATLAB) 1.57403846e-03
  *
- * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, off of which the bandlimited_interpolation method is based.
+ * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, and determine whether the order of magnitude of the errors is the same.
  *
- */ /*
+ */
 TEST_CASE("bandlimited_interpolation: order of error")
 {
 
-    int N = 100;
-    double x[N], x5[N];
-    for (int i = 0; i < N; i++)
+    int nSamples = 100;
+    double field_positions[nSamples], Yee_cell_centres[nSamples];
+
+    // constant function variables
+    double const_fn_vals[nSamples], const_fn_interp[nSamples], const_fn_exact[nSamples], const_fn_errors[nSamples-1], const_fn_max_error, const_fn_MATLAB_error;
+
+    // sin(2\pi x) function variables
+    double sin_vals[nSamples], sin_interp[nSamples], sin_exact[nSamples], sin_errors[nSamples-1], sin_max_error, sin_MATLAB_error;
+
+    // pulse function e^(-1/(2|x-0.5|-1))^2) variables
+    double pulse_vals[nSamples], pulse_interp[nSamples], pulse_exact[nSamples], pulse_errors[nSamples], pulse_max_error, pulse_MATLAB_error;
+
+    // input the MATLAB errors
+    const_fn_MATLAB_error = 2.82944733e-04;
+    sin_MATLAB_error = 2.63468327e-04;
+    pulse_MATLAB_error = 1.57403846e-03;
+
+    // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
+    for (int i = 0; i < nSamples; i++)
     {
-        x[i] = ((double)i / (double)N) * 2. * M_PI;
-        x5[i] = (2. * i + 1.) * M_PI / (double)N;
+        field_positions[i] = ((double)i / (double)nSamples);
+        Yee_cell_centres[i] = field_positions[i] - 1./(2.*(double)nSamples);
+
+        const_fn_vals[i] = 1.; const_fn_exact[i] = 1.;
+
+        sin_vals[i] = sin(field_positions[i]); sin_exact[i] = sin(Yee_cell_centres[i]);
+
+        if (2. * abs(field_positions[i]-0.5) >= 1) {
+            pulse_vals[i] = 0.;
+        }
+        else {
+            double x = 2. * abs(field_positions[i] - 0.5);
+            pulse_vals[i] = exp( -1. / ((x-1.)*(x-1.)) );
+        }
+        if (2. * abs(Yee_cell_centres[i] - 0.5) >= 1)
+        {
+            pulse_exact[i] = 0.;
+        }
+        else
+        {
+            double x = 2. * abs(Yee_cell_centres[i] - 0.5);
+            pulse_exact[i] = exp(-1. / ((x - 1.) * (x - 1.)));
+        }
     }
 
-    double sin_vals[N], interp_vals[N], diffs[N];
-    double exact_vals[N];
+    // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
+    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
-    // sin_vals[i] = sin(2pi i/N)
-    for (int i = 0; i < N; i++)
-    {
-        sin_vals[i] = sin(x[i]);
-        exact_vals[i] = sin(x5[i]);
+    // constant function interpolation
+    const_fn_interp[1] = best_interp_scheme(nSamples, 1).interpolate(const_fn_vals);
+    const_fn_interp[2] = best_interp_scheme(nSamples, 2).interpolate(const_fn_vals);
+    const_fn_interp[3] = best_interp_scheme(nSamples, 3).interpolate(const_fn_vals);
+    for (int i=4; i<nSamples-4; i++) {
+        // need to offset now so that the correct sample points are provided
+        const_fn_interp[i] = best_interp_scheme(nSamples, i).interpolate(const_fn_vals, i-4);
+    }
+    const_fn_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(const_fn_vals, nSamples-8);
+
+    // sin function interpolation
+    sin_interp[1] = best_interp_scheme(nSamples, 1).interpolate(sin_vals);
+    sin_interp[2] = best_interp_scheme(nSamples, 2).interpolate(sin_vals);
+    sin_interp[3] = best_interp_scheme(nSamples, 3).interpolate(sin_vals);
+    for (int i=4; i<nSamples-4; i++) {
+        // need to offset now so that the correct sample points are provided
+        sin_interp[i] = best_interp_scheme(nSamples, i).interpolate(sin_vals, i-4);
+    }
+    sin_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(sin_vals, nSamples-8);
+    sin_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(sin_vals, nSamples-8);
+    sin_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(sin_vals, nSamples-8);
+    sin_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(sin_vals, nSamples-8);
+
+    // pulse function interpolation
+    pulse_interp[1] = best_interp_scheme(nSamples, 1).interpolate(pulse_vals);
+    pulse_interp[2] = best_interp_scheme(nSamples, 2).interpolate(pulse_vals);
+    pulse_interp[3] = best_interp_scheme(nSamples, 3).interpolate(pulse_vals);
+    for (int i=4; i<nSamples-4; i++) {
+        // need to offset now so that the correct sample points are provided
+        pulse_interp[i] = best_interp_scheme(nSamples, i).interpolate(pulse_vals, i-4);
+    }
+    pulse_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(pulse_vals, nSamples-8);
+    pulse_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(pulse_vals, nSamples-8);
+    pulse_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(pulse_vals, nSamples-8);
+    pulse_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(pulse_vals, nSamples-8);
+
+    // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
+    for (int i=0; i<nSamples-1; i++) {
+        const_fn_errors[i] = abs( const_fn_exact[i+1] - const_fn_interp[i+1] );
+
+        sin_errors[i] = abs( sin_exact[i+1] - sin_interp[i+1] );
+
+        pulse_errors[i] = abs( pulse_exact[i+1] - pulse_interp[i+1]);
     }
 
-    // now try interpolating...
-    interp_vals[0] = bandlimited_interpolation(0, sin_vals);
-    interp_vals[1] = bandlimited_interpolation(1, sin_vals);
-    interp_vals[2] = bandlimited_interpolation(2, sin_vals);
-    for (int i = 3; i < N - 4; i++)
-    {
-        interp_vals[i] = bandlimited_interpolation(3, sin_vals, i - 3);
-    }
-    interp_vals[N - 4] = bandlimited_interpolation(4, sin_vals, N - 8 - 1);
-    interp_vals[N - 3] = bandlimited_interpolation(5, sin_vals, N - 8 - 1);
-    interp_vals[N - 2] = bandlimited_interpolation(6, sin_vals, N - 8 - 1);
-    interp_vals[N - 1] = bandlimited_interpolation(7, sin_vals, N - 8 - 1);
+    // get maximum errors
+    const_fn_max_error = *max_element( const_fn_errors, const_fn_errors + nSamples - 1 );
+    sin_max_error = *max_element(sin_errors, sin_errors + nSamples - 1);
+    pulse_max_error = *max_element(pulse_errors, pulse_errors + nSamples - 1);
 
-    // print maximum difference?
-    cout << "index | difference | interp_value \n";
-    for (int i = 0; i < N; i++)
-    {
-        diffs[i] = abs(sin_vals[i] - interp_vals[i]);
-        cout << to_string(i) + " | " + to_string(diffs[i]) + " | " + to_string(interp_vals[i]) + "\n";
-    }
-    cout << "Maximum difference : " + to_string(*max_element(diffs, diffs + N)) + "\n";
+    // check errors are no worse than MATLAB errors
+    cout << "Case \t | interp error \t | MATLAB error \n";
+    CHECK( floor(log10(const_fn_max_error)) <= floor(log10(const_fn_MATLAB_error)) );
+    cout << "const_fn \t | " + to_string(const_fn_max_error) + "\t\t | " + to_string(const_fn_MATLAB_error) + "\n";
+    CHECK( floor(log10(sin_max_error)) <= floor(log10(sin_MATLAB_error)) );
+    cout << "sin(2 pi x) \t | " + to_string(sin_max_error) + "\t\t | " + to_string(sin_MATLAB_error) + "\n";
+    CHECK( floor(log10(pulse_max_error)) <= floor(log10(pulse_MATLAB_error)) );
+    cout << "pulse \t | " + to_string(pulse_max_error) + "\t\t | " + to_string(pulse_MATLAB_error) + "\n";
 }
-
-/**
- * @brief Test whether the implimentation of band-limited interpolation is performing correctly.
- *
- * We will attempt to interpolate the function
- * f(x) =
- * which can be interpolated exactly by our band-limited interpolation scheme.
- */
