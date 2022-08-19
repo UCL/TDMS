@@ -62,7 +62,7 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
  * @brief Test whether determineInterpScheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
  * 
  */
-TEST_CASE("determineInterpScheme: correct interpolation chosen") {
+TEST_CASE("best_interp_scheme: correct interpolation chosen") {
 
     int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
@@ -86,7 +86,7 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
     CHECK(best_interp_scheme(N, N-2).get_priority() == BAND_LIMITED_5);
     CHECK(best_interp_scheme(N, N-1).get_priority() == BAND_LIMITED_6);
 
-    /* If 4<=N<=8 we can still fall back on cubic interpolation 
+    /* If 4 <= N < 8 we can still fall back on cubic interpolation 
         - cell_id == 0 : Interpolation impossible (checked previously)
         - cell_id == 1 : Use CUBIC_FIRST
         - cell_id == 2,...,N-2 : Use CUBIC_MIDDLE
@@ -109,10 +109,6 @@ TEST_CASE("interp: cubic interpolation is exact") {
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
-    // get interpScheme instances for each interpolation method
-    interpScheme cubic_mid(CUBIC_INTERP_MIDDLE);
-    interpScheme cubic_fst(CUBIC_INTERP_FIRST);
-    interpScheme cubic_lst(CUBIC_INTERP_LAST);
 
     // constant field
     double c0 = 3.1415;
@@ -122,9 +118,9 @@ TEST_CASE("interp: cubic interpolation is exact") {
     // exact values (interpolate f(x) = c0)
     double v12 = c0, v23 = c0, v34 = c0;
     
-    CHECK(abs(v12 - cubic_fst(v) <= tol));
-    CHECK(abs(v23 - cubic_mid(v) <= tol));
-    CHECK(abs(v34 - cubic_lst(v) <= tol));
+    CHECK(abs(v12 - CBFst.interpolate(v) <= tol));
+    CHECK(abs(v23 - CBMid.interpolate(v) <= tol));
+    CHECK(abs(v34 - CBLst.interpolate(v) <= tol));
 
     // linear, create coefficient
     double c1 = -2.7182818;
@@ -133,9 +129,9 @@ TEST_CASE("interp: cubic interpolation is exact") {
     // update exact values (f(x) = c0 + c1*x)
     v12 += c1*(x[1]+x[0])/2.; v23 += c1*(x[2]+x[1])/2.; v34 += c1*(x[3]+x[2])/2.;
 
-    CHECK(abs(v12 - interp2(v)) <= tol);
-    CHECK(abs(v23 - interp1(v)) <= tol);
-    CHECK(abs(v34 - interp3(v)) <= tol);
+    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
 
     // quadratic, create coefficient
     double c2 = 9.81;
@@ -146,9 +142,9 @@ TEST_CASE("interp: cubic interpolation is exact") {
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
-    CHECK(abs(v12 - interp2(v)) <= tol);
-    CHECK(abs(v23 - interp1(v)) <= tol);
-    CHECK(abs(v34 - interp3(v)) <= tol);
+    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
 
     // cubic, create coefficient
     double c3 = 4.2;
@@ -158,9 +154,9 @@ TEST_CASE("interp: cubic interpolation is exact") {
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
 }
 
 /**
