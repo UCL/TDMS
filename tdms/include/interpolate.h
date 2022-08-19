@@ -1,6 +1,5 @@
-double interp1(double v1, double v2, double v3, double v4);
-double interp2(double v1, double v2, double v3, double v4);
-double interp3(double v1, double v2, double v3, double v4);
+# include "matrix.h"
+
 void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
                               int       I     , int       J     , int       K     ,
