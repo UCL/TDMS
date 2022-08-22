@@ -1,3 +1,4 @@
+#include "matlabio.h"
 #include "field.h"
 
 using namespace std;
@@ -29,4 +30,11 @@ void Field::zero() {
         for (int j = 0; j < J_tot; j++)
           for (int i = 0; i < I_tot; i++)
               arr(c)[k][j][i] = 0.;
+}
+
+Field::~Field() {
+
+  for (auto &arr : {real, imag})
+    for (char c : {'x', 'y', 'z'})
+      freeCastMatlab3DArray(arr(c), K_tot);
 }

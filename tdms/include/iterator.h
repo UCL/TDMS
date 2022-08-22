@@ -10,10 +10,10 @@ void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double
 			  int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt);
 
 void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s,
-			  int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt);
+                          int n, double omega, double dt, int Nt);
 
 void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
-			   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt);
+                           int n, double omega, double dt, int Nt);
 
 void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim);
 

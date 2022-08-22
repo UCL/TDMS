@@ -335,7 +335,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int input_counter = 0;
   int is_multilayer = 0;
   int start_tind;
-  int pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku;
   int cuboid[6];
   int **vertices;
   int nvertices = 0;
@@ -1918,35 +1917,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     see page III.80 for explanation of the following. This has been extended so that interpolation
     is done at the end of the FDTD run and also to handle the case of when there is no PML in place
     more appropriatley*/
-  if (*Dxl) pind_il = *Dxl + 2;
-  else
-    pind_il = 0;
+  E.il = H.il = (*Dxl) ? *Dxl + 2 : 0;
+  E.iu = H.iu = (*Dxu) ? I_tot - *Dxu - 1 : I_tot;
+  E.jl = H.jl = (*Dyl) ? *Dyl + 2 : 0;
+  E.ju = H.ju = (*Dyu) ? J_tot - *Dyu - 1 : J_tot;
+  E.kl = H.kl = (*Dzl) ? *Dzl + 2 : 0;
+  E.ku = H.ku = (*Dzu) ? K_tot - *Dzu - 1 : K_tot;
 
-  if (*Dxu) pind_iu = I_tot - *Dxu - 1;
-  else
-    pind_iu = I_tot;
-
-
-  if (*Dyl) pind_jl = *Dyl + 2;
-  else
-    pind_jl = 0;
-
-  if (*Dyu) pind_ju = J_tot - *Dyu - 1;
-  else
-    pind_ju = J_tot;
-
-
-  if (*Dzl) pind_kl = *Dzl + 2;
-  else
-    pind_kl = 0;
-
-  if (*Dzu) pind_ku = K_tot - *Dzu - 1;
-  else
-    pind_ku = K_tot;
-
-  H.I_tot = E.I_tot = pind_iu - pind_il + 1;
-  H.J_tot = E.J_tot = pind_ju - pind_jl + 1;
-  H.K_tot = E.K_tot = pind_ku - pind_kl + 1;
+  E.I_tot = H.I_tot = E.iu - E.il + 1;
+  E.J_tot = H.J_tot = E.ju - E.jl + 1;
+  E.K_tot = H.K_tot = E.ku - E.kl + 1;
 
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
@@ -1961,9 +1941,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (runmode == rm_complete && exphasorsvolume) {
     ndims = 3;
 
-    dims[0] = pind_iu - pind_il + 1;
-    dims[1] = pind_ju - pind_jl + 1;
-    dims[2] = pind_ku - pind_kl + 1;
+    dims[0] = E.I_tot;
+    dims[1] = E.J_tot;
+    dims[2] = E.K_tot;
 
     fprintf(stderr, "dims:(%d,%d,%d)\n", dims[0], dims[1], dims[2]);
 
@@ -1975,23 +1955,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[4] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hy
     plhs[5] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hz
 
-    E.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[0]), dims[0], dims[1], dims[2]);
-    E.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[0]), dims[0], dims[1], dims[2]);
+    E.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[1]), dims[0], dims[1], dims[2]);
-    E.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[1]), dims[0], dims[1], dims[2]);
+    E.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[2]), dims[0], dims[1], dims[2]);
-    E.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[2]), dims[0], dims[1], dims[2]);
+    E.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
 
-    H.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[3]), dims[0], dims[1], dims[2]);
-    H.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[3]), dims[0], dims[1], dims[2]);
+    H.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[4]), dims[0], dims[1], dims[2]);
-    H.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[4]), dims[0], dims[1], dims[2]);
+    H.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[5]), dims[0], dims[1], dims[2]);
-    H.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[5]), dims[0], dims[1], dims[2]);
+    H.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
     //fprintf(stderr,"Pre 05\n");
     //fprintf(stderr,"Qos 02:\n");
     //these will ultimately be copies of the phasors used to test convergence
@@ -2475,10 +2455,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     if ((sourcemode == sm_steadystate) && (runmode == rm_complete) && exphasorsvolume) {
 
-      extractPhasorsVolume(E, E_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku,
-                           dft_counter, *omega_an, *dt, Nsteps);
-      extractPhasorsVolumeH(H, H_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku,
-                            dft_counter, *omega_an, *dt, Nsteps);
+      extractPhasorsVolume(E, E_s, dft_counter, *omega_an, *dt, Nsteps);
+      extractPhasorsVolumeH(H, H_s, dft_counter, *omega_an, *dt, Nsteps);
 
       if (exphasorssurface) {
         if (intphasorssurface) {
@@ -2501,11 +2479,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if (TIME_EXEC) { timer.click(); }
 
       if ((tind - start_tind) % Np == 0) {
-        extractPhasorsVolume(E, E_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, tind,
-                             *omega_an, *dt, Npe);
+        extractPhasorsVolume(E, E_s, tind, *omega_an, *dt, Npe);
         //fprintf(stderr,"Pos 01a:\n");
-        extractPhasorsVolumeH(H, H_s, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, tind,
-                              *omega_an, *dt, Npe);
+        extractPhasorsVolumeH(H, H_s, tind, *omega_an, *dt, Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
@@ -5818,56 +5794,54 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   *mxGetPr((mxArray *) plhs[25]) = maxfield;
 
   if (runmode == rm_complete && exphasorsvolume) {
-    setGridLabels(input_grid_labels, output_grid_labels, pind_il, pind_iu, pind_jl, pind_ju,
-                  pind_kl, pind_ku);
+    setGridLabels(input_grid_labels, output_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
-
-
+  
   auto interp_output_grid_labels = GridLabels();
 
   //fprintf(stderr,"Pos 15_m1\n");
   if (runmode == rm_complete && exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", pind_iu - pind_il - 1,
-              pind_ju - pind_jl - 1, pind_ku - pind_kl - 1);
+      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
+              E.J_tot - 2, E.K_tot - 2);
       //fprintf(stderr,"Pos 15_m1a\n");
       mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                 pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2,
-                                 pind_ku - pind_kl - 1);
+                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
+                                 E.K_tot - 2);
       //fprintf(stderr,"Pos 15_m1b\n");
 
     } else if (dimension == TE)
       mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     else
       mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     if (dimension == THREE)
       mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                 pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 2,
-                                 pind_ku - pind_kl - 1);
+                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
+                                 E.K_tot - 2);
     else if (dimension == TE)
       mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     else
       mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    pind_iu - pind_il - 1, 2, pind_ju - pind_jl - 1, 0, 0);
+                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
 
     //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
     label_dims[0] = 1;
-    label_dims[1] = pind_iu - pind_il - 2;
+    label_dims[1] = E.I_tot - 3;
     plhs[19] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//x
     //fprintf(stderr,"Pos 15b\n");
     label_dims[0] = 1;
-    label_dims[1] = pind_ju - pind_jl - 2;
+    label_dims[1] = E.J_tot - 3;
     if (label_dims[1] < 1) label_dims[1] = 1;
     //fprintf(stderr,"creating plhs[20]: %d,%d\n",label_dims[0],label_dims[1]);
     plhs[20] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//y
     //fprintf(stderr,"Pos 15c\n");
     label_dims[0] = 1;
-    if (dimension == THREE) label_dims[1] = pind_ku - pind_kl - 2;
+    if (dimension == THREE) label_dims[1] = E.K_tot - 3;
     else
       label_dims[1] = 1;
     //fprintf(stderr,"Pos 15d\n");
@@ -5880,11 +5854,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     if (dimension == THREE) {
       //fprintf(stderr,"Pos 15a-1\n");
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, pind_iu - pind_il - 1, 2,
-                    pind_ju - pind_jl - 1, 2, pind_ku - pind_kl - 1);
+      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
+                    E.J_tot - 2, 2, E.K_tot - 2);
     } else
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, pind_iu - pind_il - 1, 2,
-                    pind_ju - pind_jl - 1, 0, 0);
+      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
+                    E.J_tot - 2, 0, 0);
     //fprintf(stderr,"Pos 15f\n");
   } else {
     mwSize *emptydims;
@@ -6004,41 +5978,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   if (exi_present) freeCastMatlab3DArray(exi, *Nt);
   if (eyi_present) freeCastMatlab3DArray(eyi, *Nt);
-
-  //fprintf(stderr,"Pos 19\n");
-  //this should be fixed to take into account the change to steady state matrix size
-  //when we have a PML layer of zero thickness
-  if (runmode == rm_complete && exphasorsvolume) {
-    if (dimension == THREE) {
-      freeCastMatlab3DArray(E.real.x, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(E.imag.x, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(E.real.y, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(E.imag.y, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(E.real.z, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(E.imag.z, K_tot - *Dzu - *Dzl - 3 + 1);
-
-      freeCastMatlab3DArray(H.real.x, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(H.imag.x, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(H.real.y, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(H.imag.y, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(H.real.z, K_tot - *Dzu - *Dzl - 3 + 1);
-      freeCastMatlab3DArray(H.imag.z, K_tot - *Dzu - *Dzl - 3 + 1);
-    } else {
-      freeCastMatlab3DArray(E.real.x, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(E.imag.x, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(E.real.y, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(E.imag.y, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(E.real.z, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(E.imag.z, pind_ku - pind_kl + 1);
-
-      freeCastMatlab3DArray(H.real.x, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(H.imag.x, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(H.real.y, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(H.imag.y, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(H.real.z, pind_ku - pind_kl + 1);
-      freeCastMatlab3DArray(H.imag.z, pind_ku - pind_kl + 1);
-    }
-  }
 
   //fprintf(stderr,"Pos 20\n");
   if ((int) I0[1] || (int) I1[1]) {
@@ -6212,55 +6151,43 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim) {
     for (int i_var = 0; i_var < i_lim; i_var++) inArray[j_var][i_var] = 0.0;
 }
 
-//i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
-//i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
-//
 //result gives field according to the exp(-iwt) convention
-void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s, int i_l, int i_u, int j_l,
-                          int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt) {
+void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s,
+                          int n, double omega, double dt, int Nt) {
 
-  complex<double> phaseTerm, subResult;
+  complex<double> subResult;
   double ex_m, ey_m, ez_m;
 
-  phaseTerm = fmod(omega * ((double) n) * dt, 2 * dcpi);
+  auto phase = fmod(omega * ((double) n) * dt, 2 * dcpi);
+  auto phaseTerm = exp(phase * I) * 1. / ((double) Nt);
+
   //  fprintf(stdout,"phi: %.10e, dt: %.10e, omega: %.10e\n",omega*((double) n)*dt,dt,omega);
 #pragma omp parallel default(shared) private(ex_m, ey_m, ez_m, subResult)
   {
 #pragma omp for
-    for (int k = k_l; k <= k_u; k++)
-      for (int j = j_l; j <= j_u; j++)
-        for (int i = i_l; i <= i_u; i++) {
-
-          /*
-      ex_m = 0.5 * (Exy[k][j][i] + Exz[k][j][i] + Exy[k][j][i-1] + Exz[k][j][i-1]);
-      ey_m = 0.5 * (Eyx[k][j][i] + Eyz[k][j][i] + Eyx[k][j-1][i] + Eyz[k][j-1][i]);
-      ez_m = 0.5 * (Ezx[k][j][i] + Ezy[k][j][i] + Ezx[k-1][j][i] + Ezy[k-1][j][i]);
-    */
+    for (int k = E.kl; k <= E.ku; k++)
+      for (int j = E.jl; j <= E.ju; j++)
+        for (int i = E.il; i <= E.iu; i++) {
 
           ex_m = E_s.xy[k][j][i] + E_s.xz[k][j][i];
           ey_m = E_s.yx[k][j][i] + E_s.yz[k][j][i];
           ez_m = E_s.zx[k][j][i] + E_s.zy[k][j][i];
 
-          subResult = ex_m * exp(phaseTerm * I) * 1. / ((double) Nt);
+          int di = i - E.il;
+          int dj = j - E.jl;
+          int dk = k - E.kl;
+          
+          subResult = ex_m * phaseTerm;
+          E.real.x[dk][dj][di] += real(subResult);
+          E.imag.x[dk][dj][di] += imag(subResult);
 
-          E.real.x[k - k_l][j - j_l][i - i_l] =
-                  E.real.x[k - k_l][j - j_l][i - i_l] + real(subResult);
-          E.imag.x[k - k_l][j - j_l][i - i_l] =
-                  E.imag.x[k - k_l][j - j_l][i - i_l] + imag(subResult);
+          subResult = ey_m * phaseTerm;
+          E.real.y[dk][dj][di] += real(subResult);
+          E.imag.y[dk][dj][di] += imag(subResult);
 
-          subResult = ey_m * exp(phaseTerm * I) * 1. / ((double) Nt);
-
-          E.real.y[k - k_l][j - j_l][i - i_l] =
-                  E.real.y[k - k_l][j - j_l][i - i_l] + real(subResult);
-          E.imag.y[k - k_l][j - j_l][i - i_l] =
-                  E.imag.y[k - k_l][j - j_l][i - i_l] + imag(subResult);
-
-          subResult = ez_m * exp(phaseTerm * I) * 1. / ((double) Nt);
-
-          E.real.z[k - k_l][j - j_l][i - i_l] =
-                  E.real.z[k - k_l][j - j_l][i - i_l] + real(subResult);
-          E.imag.z[k - k_l][j - j_l][i - i_l] =
-                  E.imag.z[k - k_l][j - j_l][i - i_l] + imag(subResult);
+          subResult = ez_m * phaseTerm;
+          E.real.z[dk][dj][di] += real(subResult);
+          E.imag.z[dk][dj][di] += imag(subResult);
         }
   }//end of parallel region
 }
@@ -6350,8 +6277,8 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
 //i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
 //
 //result gives field according to the exp(-iwt) convention
-void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s, int i_l, int i_u, int j_l,
-                           int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt) {
+void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
+                           int n, double omega, double dt, int Nt) {
 
   complex<double> phaseTerm, subResult;
   double hx_m, hy_m, hz_m;
@@ -6362,34 +6289,38 @@ void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s, int i_l, i
 #pragma omp parallel default(shared) private(hx_m, hy_m, hz_m, subResult)
   {
 #pragma omp for
-    for (int k = k_l; k <= k_u; k++)
-      for (int j = j_l; j <= j_u; j++)
-        for (int i = i_l; i <= i_u; i++) {
+    for (int k = H.kl; k <= H.ku; k++)
+      for (int j = H.jl; j <= H.ju; j++)
+        for (int i = H.il; i <= H.iu; i++) {
 
           hx_m = H_s.xy[k][j][i] + H_s.xz[k][j][i];
           hy_m = H_s.yx[k][j][i] + H_s.yz[k][j][i];
           hz_m = H_s.zx[k][j][i] + H_s.zy[k][j][i];
 
+          int di = i - H.il;
+          int dj = j - H.jl;
+          int dk = k - H.kl;
+
           subResult = hx_m * exp(phaseTerm * I) * 1. / ((double) Nt);
 
-          H.real.x[k - k_l][j - j_l][i - i_l] =
-                  H.real.x[k - k_l][j - j_l][i - i_l] + real(subResult);
-          H.imag.x[k - k_l][j - j_l][i - i_l] =
-                  H.imag.x[k - k_l][j - j_l][i - i_l] + imag(subResult);
+          H.real.x[dk][dj][di] =
+                  H.real.x[dk][dj][di] + real(subResult);
+          H.imag.x[dk][dj][di] =
+                  H.imag.x[dk][dj][di] + imag(subResult);
 
           subResult = hy_m * exp(phaseTerm * I) * 1. / ((double) Nt);
 
-          H.real.y[k - k_l][j - j_l][i - i_l] =
-                  H.real.y[k - k_l][j - j_l][i - i_l] + real(subResult);
-          H.imag.y[k - k_l][j - j_l][i - i_l] =
-                  H.imag.y[k - k_l][j - j_l][i - i_l] + imag(subResult);
+          H.real.y[dk][dj][di] =
+                  H.real.y[dk][dj][di] + real(subResult);
+          H.imag.y[dk][dj][di] =
+                  H.imag.y[dk][dj][di] + imag(subResult);
 
           subResult = hz_m * exp(phaseTerm * I) * 1. / ((double) Nt);
 
-          H.real.z[k - k_l][j - j_l][i - i_l] =
-                  H.real.z[k - k_l][j - j_l][i - i_l] + real(subResult);
-          H.imag.z[k - k_l][j - j_l][i - i_l] =
-                  H.imag.z[k - k_l][j - j_l][i - i_l] + imag(subResult);
+          H.real.z[dk][dj][di] =
+                  H.real.z[dk][dj][di] + real(subResult);
+          H.imag.z[dk][dj][di] =
+                  H.imag.z[dk][dj][di] + imag(subResult);
         }
   }//end parallel region
 }

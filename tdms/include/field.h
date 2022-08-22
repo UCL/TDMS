@@ -61,6 +61,13 @@ public:
     xyz_arrays real;
     xyz_arrays imag;
 
+    /**
+     * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
+     * il is the first non-pml cell in the i direction and iu the last in the corresponding split
+     * field grid
+     */
+    int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
+
     // TODO: Docstring. Not implemented because I'm not sure what this does!
     void normalise_volume();
 
@@ -68,6 +75,8 @@ public:
      * Zero all components of the real and imaginary parts of the field
      */
     void zero();
+
+    ~Field();
 };
 
 
