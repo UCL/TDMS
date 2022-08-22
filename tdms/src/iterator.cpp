@@ -260,10 +260,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double **ex_tdf;
   mxArray *ex_tdf_array;
 
-  double Ex_temp, Ey_temp, Ez_temp;
-
   double ***exi, ***eyi;
-  int exi_present, eyi_present;
   double *I0, *I1, *J0, *J1, *K0, *K1;
   double ***IsourceI, ***JsourceI, ***KsourceI, ***IsourceR, ***JsourceR, ***KsourceR;
   double ***surface_EHr, ***surface_EHi;
@@ -300,7 +297,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
 
   double air_interface;
-  int air_interface_present;
+  bool air_interface_present;
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
 
@@ -334,7 +331,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   unsigned char ***materials;
   unsigned char *array_ptr_uint8;
 
-  //  int *lower_boundary_update;
   int *Dxl, *Dxu, *Dyl, *Dyu, *Dzl, *Dzu, *Nt;
   int i, j, k, material_nlayers, is_disp, is_cond, is_disp_ml = 0;
   int k_loc;
@@ -1641,11 +1637,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    air_interface_present = 1;
+    air_interface_present = true;
     air_interface = *mxGetPr((mxArray *) prhs[input_counter]);
     fprintf(stderr, "air_interface: %e\nz_obs: %e\n", air_interface, z_obs);
   } else {
-    air_interface_present = 0;
+    air_interface_present = false;
   }
   input_counter++;
   /*Got air_interface*/
@@ -1670,6 +1666,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Got intmatprops*/
 
   /*Get tdfield*/
+  bool exi_present, eyi_present;
+
   if (mxIsStruct(prhs[input_counter])) {
     fprintf(stderr, "tdfield 01\n");
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
@@ -1685,12 +1683,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       dimptr_out = mxGetDimensions(element);
       exi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
                               dimptr_out[2]);
-      exi_present = 1;
+      exi_present = true;
       fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
               dimptr_out[1], dimptr_out[2]);
       fprintf(stderr, "ddfield is empty\n");
     } else {
-      exi_present = 0;
+      exi_present = false;
       fprintf(stderr, "exi not present\n");
     }
 
@@ -1704,9 +1702,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       dimptr_out = mxGetDimensions(element);
       eyi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
                               dimptr_out[2]);
-      eyi_present = 1;
+      eyi_present = true;
     } else {
-      eyi_present = 0;
+      eyi_present = false;
       fprintf(stderr, "eyi not present\n");
     }
 
@@ -2663,10 +2661,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
           (N_fieldsample_n == 0))) {
       //if( (tind-start_tind) % Np == 0){
-      if (1) {
+      double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
+
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
         {
-
 #pragma omp for
           for (int kt = 0; kt < N_fieldsample_k; kt++)
             for (int jt = 0; jt < N_fieldsample_j; jt++)
@@ -2686,7 +2684,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
               }
         }
-      }
     }
 
     /*end extract fieldsample*/
@@ -6524,7 +6521,6 @@ void normaliseSurface(double **surface_EHr, double **surface_EHi, int **surface_
     }
 }
 
-
 void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices, int *components,
                        int ncomponents, complex<double> Enorm, complex<double> Hnorm) {
 
@@ -6563,8 +6559,6 @@ void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices
       }
     }
 }
-
-
 
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
   *Enorm += ft * exp(fmod(omega * ((double) (n + 1)) * dt, 2 * dcpi) * I) * 1. / ((double) Nt);
