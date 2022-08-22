@@ -355,7 +355,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int K, max_IJK;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
-  int poutfile = 0;
   int Np = 0; //The phasor extraction algorithm will be executed every Np iterations.
   int Npe = 0;//The number of terms in the algorithm to extract the phasors
   int Ni_tdf = 0, Nk_tdf = 0;
@@ -408,9 +407,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   char *sourcemodestr;
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
-
-  FILE *outfile;
-  if (poutfile) { outfile = fopen("out.1.2.txt", "w"); }
 
   //  FILE *eyfile;
   //  FILE *jyfile;
@@ -3673,9 +3669,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 E_nm1.yz[k][j][i] = Eyz[k][j][i];
                 J_nm1.yz[k][j][i] = Jyz[k][j][i];
                 Jyz[k][j][i] = Jnp1;
-                //	      if(i==40 && j==40 && k==40)
-                //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
-                //	      fflush(outfile);
               }
               if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + Eyz[k][j][i]); }
 
@@ -3789,9 +3782,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
                 J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
                 J_s.yz[k][j][i] = Jnp1;
-                //	      if(i==40 && j==40 && k==40)
-                //		fprintf(outfile,"%e %e %e\n",E_nm1.yz[k][j][i],J_nm1.yz[k][j][i],Jyz[k][j][i]);
-                //	      fflush(outfile);
               }
               if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
 
@@ -4907,14 +4897,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
     }
     //fprintf(stderr,"Pos 10:\n");
-    /**Debugging**/
-    //    for(k=0;k<(K_tot+1);k++)
-    //      fprintf(outfile,"%e ",Jxz[k][30][30]+Jxy[k][30][30]);
-    //for(k=0;k<(K_tot+1);k++)
-    //    fprintf(outfile,"%e ",Exz[k][30][30]+Exy[k][30][30]);
-    //   fprintf(outfile,"\n");
-    /**End Debugging**/
-    //fprintf(stderr,"Pos 11a:\n");
 
     //end of source terms
     if (TIME_EXEC) { timer.click(); }
@@ -6242,9 +6224,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     mxDestroyArray(dummy_array[1]);
     mxDestroyArray(dummy_array[2]);
   }
-  if (poutfile) fclose(outfile);
-  //  fclose(eyfile);
-  //  fclose(jyfile);
+
   //must destroy mx_surface_amplitudes
 }
 
