@@ -258,9 +258,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   auto H = MagneticField();
   auto E_copy = ElectricField();
 
-  double **ex_tdf;
-  mxArray *ex_tdf_array;
-
   double ***exi, ***eyi;
   double *I0, *I1, *J0, *J1, *K0, *K1;
   double ***IsourceI, ***JsourceI, ***KsourceI, ***IsourceR, ***JsourceR, ***KsourceR;
@@ -412,7 +409,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   const char campssample_elements[][15] = {"vertices", "components"};
 
   char *sourcemodestr;
-  char *tdfdirstr;
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
@@ -1715,20 +1711,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get tdfdir*/
   //fprintf(stderr,"tdfdir: %d (%d)\n", mxIsChar(prhs[input_counter]),input_counter);
-  if (mxIsChar(prhs[input_counter])) {
-    tdfdirstr = (char *) malloc((1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])) *
-                                sizeof(char));
-    mxGetString((mxArray *) prhs[input_counter], tdfdirstr,
-                (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])));
-    //fprintf(stderr,"tdfdirstr = %s\n",tdfdirstr);
+  auto ex_td_field_exporter = TDFieldExporter2D();
 
-    //calculate the Ni_tdf
+  if (mxIsChar(prhs[input_counter])) {
+
+    int n = 1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter]);
+    ex_td_field_exporter.folder_name = (char *) malloc(n * sizeof(char));
+    mxGetString((mxArray *) prhs[input_counter], ex_td_field_exporter.folder_name, n);
+
     for (k = 0; k < K_tot; k++)
       if ((k % skip_tdf) == 0) Nk_tdf++;
 
     for (i = 0; i < I_tot; i++)
       if ((i % skip_tdf) == 0) Ni_tdf++;
     fprintf(stderr, "Ni_tdf=%d, Nk_tdf=%d\n", Ni_tdf, Nk_tdf);
+
+    if (!are_equal(ex_td_field_exporter.folder_name, "")){
+      params.has_tdfdir = true;
+      ex_td_field_exporter.allocate(Ni_tdf, Nk_tdf);
+    }
+    
     input_counter++;
   }
   /*Got tdfdir*/
@@ -2524,16 +2526,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       J_tot_p1_bound = 0;
   }
   //fprintf(stderr,"Pre 22a\n");
-  //fprintf(stderr,"Pre 22, %d\n",strcmp(tdfdirstr,""));
-  /*setup time domain field export matrices*/
-  if (strcmp(tdfdirstr, "")) {
-    ndims = 2;
-    dims[0] = Ni_tdf;
-    dims[1] = Nk_tdf;
-    ex_tdf_array = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    ex_tdf = castMatlab2DArray(mxGetPr((mxArray *) ex_tdf_array), dims[0], dims[1]);
-  }
-
   //fprintf(stderr,"Pre 23\n");
 
   /*Start of FDTD iteration*/
@@ -5883,37 +5875,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fflush(stdout);
     //fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
-    if (strcmp(tdfdirstr, "")) {
-      //fprintf(stderr,"tind:%d\n",tind);
-      if ((tind % Np) == 0) {
-        MATFile *toutfile;
-        char toutputfilename[512];
-        int kc = 0;
-        int ic = 0;
-        //fprintf(stderr,"Pos td01\n");
-        for (i = 0; i < I_tot; i++) {
-          kc = 0;
-          if ((i % skip_tdf) == 0) {
-            for (k = 0; k < K_tot; k++)
-              if ((k % skip_tdf) == 0) {
-                ex_tdf[kc++][ic] = E_s.xy[k][0][i] + E_s.xz[k][0][i];
-                //fprintf(stderr,"%d %d\n",kc,ic);
-              }
-            ic++;
-          }
-        }
-        //fprintf(stderr,"Pos td02\n");
-
-        sprintf(toutputfilename, "%s/ex_%06d.mat", tdfdirstr, tind);
-        //fprintf(stderr,"Pos td03\n");
-        fprintf(stderr, "time domain output: %s\n", toutputfilename);
-        toutfile = matOpen(toutputfilename, "w");
-        //fprintf(stderr,"Pos td04\n");
-        matPutVariable(toutfile, "ex_tdf", (mxArray *) ex_tdf_array);
-        //fprintf(stderr,"Pos td05\n");
-        matClose(toutfile);
-        //fprintf(stderr,"Pos td06\n");
-      }
+    if (params.has_tdfdir && (tind % Np) == 0) {
+      fprintf(stderr,"Saving field\n");
+      ex_td_field_exporter.export_field(E_s, skip_tdf, tind);
     }
     //fprintf(stderr,"Post-iter 6\n");
     /*write out fdtdgrid to a file*/
@@ -6194,9 +6158,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   if (exi_present) freeCastMatlab3DArray(exi, *Nt);
   if (eyi_present) freeCastMatlab3DArray(eyi, *Nt);
-
-  if (strcmp(tdfdirstr, "")) freeCastMatlab2DArray(ex_tdf);
-
 
   //fprintf(stderr,"Pos 18\n");
   if (dimension == THREE) {
