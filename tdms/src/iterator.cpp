@@ -1944,21 +1944,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   else
     pind_ku = K_tot;
 
-  E.I_tot = pind_iu - pind_il + 1;
-  E.J_tot = pind_ju - pind_jl + 1;
-  E.K_tot = pind_ku - pind_kl + 1;
-  H.I_tot = E.I_tot;
-  H.J_tot = E.J_tot;
-  H.K_tot = E.K_tot;
+  H.I_tot = E.I_tot = pind_iu - pind_il + 1;
+  H.J_tot = E.J_tot = pind_ju - pind_jl + 1;
+  H.K_tot = E.K_tot = pind_ku - pind_kl + 1;
 
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
-  /*
-   pind_il = 0;
-   pind_iu = I_tot;
-   pind_jl = 0;
-   pind_ju = J_tot;
-  */
 
   //fprintf(stderr,"Qos 01:\n");
 
@@ -2082,19 +2073,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //initialise arrays
   if (runmode == rm_complete && exphasorsvolume) {
-    initialiseDouble3DArray(E.real.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E.imag.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E.real.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E.imag.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E.real.z, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E.imag.z, dims[0], dims[1], dims[2]);
-
-    initialiseDouble3DArray(H.real.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(H.imag.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(H.real.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(H.imag.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(H.real.z, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(H.imag.z, dims[0], dims[1], dims[2]);
+    E.zero();
+    H.zero();
   }
   //fprintf(stderr,"Pre 11\n");
   if (exdetintegral && runmode == rm_complete) {
@@ -2148,12 +2128,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   //fprintf(stderr,"Pre 12\n");
   if (runmode == rm_complete && sourcemode == sm_steadystate && exphasorsvolume) {
-    initialiseDouble3DArray(E_copy.real.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E_copy.imag.x, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E_copy.real.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E_copy.imag.y, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E_copy.real.z, dims[0], dims[1], dims[2]);
-    initialiseDouble3DArray(E_copy.imag.z, dims[0], dims[1], dims[2]);
+    E_copy.zero();
   }
   //fprintf(stderr,"Pre 13\n");
   /*This is just for efficiency */
@@ -2487,29 +2462,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       copyPhasors(E, E_copy, (int) mxGetNumberOfElements((mxArray *) plhs[0]));
 
       //clean the phasors
-      dims[0] = pind_iu - pind_il + 1;
-      dims[1] = pind_ju - pind_jl + 1;
-      dims[2] = pind_ku - pind_kl + 1;
-
-      /*
-  dims[0] = I_tot - *Dxu - *Dxl - 3 + 1;
-  dims[1] = J_tot - *Dyu - *Dyl - 3 + 1;
-  dims[2] = K_tot - *Dzu - *Dzl - 3 + 1;
-      */
-
-      initialiseDouble3DArray(E.real.x, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(E.imag.x, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(E.real.y, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(E.imag.y, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(E.real.z, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(E.imag.z, dims[0], dims[1], dims[2]);
-
-      initialiseDouble3DArray(H.real.x, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(H.imag.x, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(H.real.y, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(H.imag.y, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(H.real.z, dims[0], dims[1], dims[2]);
-      initialiseDouble3DArray(H.imag.z, dims[0], dims[1], dims[2]);
+      E.zero();
+      H.zero();
 
       if (exphasorssurface) {
         initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, N_f_ex_vec);

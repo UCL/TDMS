@@ -61,7 +61,13 @@ public:
     xyz_arrays real;
     xyz_arrays imag;
 
+    // TODO: Docstring. Not implemented because I'm not sure what this does!
     void normalise_volume();
+
+    /**
+     * Zero all components of the real and imaginary parts of the field
+     */
+    void zero();
 };
 
 
