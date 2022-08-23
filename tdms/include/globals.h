@@ -2,19 +2,9 @@
 #include <complex>
 #include <cmath>
 
-// ********
-//  Macros
-// ********
-
-
-#define round(x)			( (int)((x)+ 0.5) ) 
-#define RoundToZero(x)		( fabs(x) > 1.0e-12 ? (x) : 0.0 )
-
-
 // ******************
 //  Type Definitions
 // ******************
-
 
 typedef int*				IArray_1d;
 typedef IArray_1d*			IArray_2d;
