@@ -1,6 +1,4 @@
-#define _USE_MATH_DEFINES
 #include <complex>
-#include <cmath>
 
 // ******************
 //  Type Definitions
@@ -47,7 +45,7 @@ enum RCSType   { parallel , perpendicular };
 //			Mathematical Constants
 // **************************************
 
-const double dcpi  = M_PI;
+const double dcpi  = 3.14159265358979323846;
 
 
 // **************************************
