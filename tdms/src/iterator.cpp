@@ -4,17 +4,17 @@
  *                 such as phasor extraction etc. Works in both pulsed 
  *                 and steady state mode.
  ******************************************************************/
-#include "omp.h"
+#include <complex>
+#include <algorithm>
+#include <cstring>
+#include <ctime>
+#include <omp.h>
 #include "mat_io.h"
-#include "complex"
-#include "algorithm"
 #include "iterator.h"
-#include "cstring"
 #include "interpolate.h"
 #include "numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
-#include "ctime"
 #include "globals.h"
 #include "matlabio.h"
 #include "mesh_base.h"
