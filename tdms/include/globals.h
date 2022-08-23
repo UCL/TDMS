@@ -1,4 +1,5 @@
 #include "complex"
+#include "cmath"
 
 // ********
 //  Macros
@@ -55,7 +56,7 @@ enum RCSType   { parallel , perpendicular };
 //			Mathematical Constants
 // **************************************
 
-const double dcpi  = 3.14159265358979;
+const double dcpi  = M_PI;
 
 
 // **************************************
