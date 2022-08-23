@@ -5,14 +5,10 @@
 using namespace std;
 
 
-inline bool is_close(double a, double b){
-  return abs(a - b) < 1E-10;
+template<typename T>
+inline bool is_close(T a, T b){
+  return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
 }
-
-inline bool is_close(complex<double> a, complex<double> b){
-  return is_close(a.real(), b.real()) && is_close(a.imag(), b.imag());
-}
-
 
 TEST_CASE("Test electric field angular norm addition") {
 
@@ -33,7 +29,6 @@ TEST_CASE("Test electric field angular norm addition") {
   E.add_to_angular_norm(1., N, N_T, params);
   REQUIRE(is_close(E.angular_norm, expected));
 }
-
 
 TEST_CASE("Test magnetic field angular norm addition") {
 
