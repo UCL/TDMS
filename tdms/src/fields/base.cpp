@@ -11,15 +11,15 @@ void Field::normalise_volume() {
   double norm_i = std::imag(angular_norm);
   double denom = norm_r * norm_r + norm_i * norm_i;
 
-  for (int k = 0; k < K_tot; k++)
-    for (int j = 0; j < J_tot; j++)
-      for (int i = 0; i < I_tot; i++)
-        for (char c : {'x', 'y', 'z'}){
+  for (char c : {'x', 'y', 'z'})
+    for (int k = 0; k < K_tot; k++)
+      for (int j = 0; j < J_tot; j++)
+        for (int i = 0; i < I_tot; i++){
 
-          auto temp_r = real(c)[k][j][i];
-          auto temp_i = imag(c)[k][j][i];
-          real(c)[k][j][i] = (norm_r * temp_r + norm_i * temp_i) / denom;
-          imag(c)[k][j][i] = (norm_r * temp_i - norm_i * temp_r) / denom;
+          auto temp_r = real[c][k][j][i];
+          auto temp_i = imag[c][k][j][i];
+          real[c][k][j][i] = (norm_r * temp_r + norm_i * temp_i) / denom;
+          imag[c][k][j][i] = (norm_r * temp_i - norm_i * temp_r) / denom;
         }
 }
 
@@ -30,7 +30,7 @@ void Field::zero() {
       for (int k = 0; k < K_tot; k++)
         for (int j = 0; j < J_tot; j++)
           for (int i = 0; i < I_tot; i++)
-              arr(c)[k][j][i] = 0.;
+              arr[c][k][j][i] = 0.;
 }
 
 complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int Nt){
@@ -43,7 +43,7 @@ Field::~Field() {
 
   for (auto &arr : {real, imag})
     for (char c : {'x', 'y', 'z'})
-      freeCastMatlab3DArray(arr(c), K_tot);
+      freeCastMatlab3DArray(arr[c], K_tot);
 }
 
 void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {

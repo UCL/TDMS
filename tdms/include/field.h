@@ -37,7 +37,7 @@ public:
     double ***y = nullptr;
     double ***z = nullptr;
 
-    double*** operator() (char c) const{
+    double*** operator[] (char c) const{
       switch (c) {
         case 'x': return x;
         case 'y': return y;

@@ -6612,13 +6612,13 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricS
   double maxabs = 0., maxdiff = 0.;
 
   //find the largest maximum absolute value the largest difference (in absolute value) between phasors
-  for (int k = 0; k < E.K_tot; k++)
-    for (int j = 0; j < E.J_tot; j++)
-      for (int i = 0; i < E.I_tot; i++)
-          for (char c : {'x', 'y', 'z'}){
+  for (char c : {'x', 'y', 'z'})
+    for (int k = 0; k < E.K_tot; k++)
+      for (int j = 0; j < E.J_tot; j++)
+        for (int i = 0; i < E.I_tot; i++){
 
-            auto E_ijk = E.real(c)[k][j][i] + I * E.imag(c)[k][j][i];
-            auto E_copy_ijk = E_copy.real(c)[k][j][i] + I * E_copy.imag(c)[k][j][i];
+            auto E_ijk = E.real[c][k][j][i] + I * E.imag[c][k][j][i];
+            auto E_copy_ijk = E_copy.real[c][k][j][i] + I * E_copy.imag[c][k][j][i];
 
             auto temp_abs = abs(E_ijk);  // |Re(E_x) + i Im(E_x)|
             if (temp_abs > maxabs){
@@ -6638,8 +6638,8 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricS
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements) {
 
   for (char c : {'x', 'y', 'z'}){
-    memcpy(to.real(c), from.real(c), nelements * sizeof(double));
-    memcpy(to.imag(c), from.imag(c), nelements * sizeof(double));
+    memcpy(to.real[c], from.real[c], nelements * sizeof(double));
+    memcpy(to.imag[c], from.imag[c], nelements * sizeof(double));
   }
 }
 
