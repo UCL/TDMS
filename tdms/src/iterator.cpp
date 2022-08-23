@@ -407,11 +407,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
-  //  FILE *eyfile;
-  //  FILE *jyfile;
-
-  //  eyfile = fopen("Eyz.txt","w");
-  //  jyfile = fopen("Jyz.txt","w");
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
 
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
