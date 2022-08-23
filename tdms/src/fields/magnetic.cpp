@@ -1,4 +1,3 @@
-#include "complex"
 #include "globals.h"
 #include "field.h"
 
@@ -9,8 +8,6 @@ void MagneticField::add_to_angular_norm(int n, int Nt, SimulationParameters &par
   angular_norm += phasor_norm(ft, n, params.omega_an, params.dt, Nt);
 }
 
-complex<double> MagneticField::phasor_norm(double f, int n, double omega, double dt, int Nt){
-  return f
-         * exp( fmod(omega*((double) n + 0.5)*dt, 2*dcpi) * I)
-         * 1./((double) Nt);
+double MagneticField::phase(int n, double omega, double dt){
+  return omega * ((double) n + 0.5) * dt;
 }

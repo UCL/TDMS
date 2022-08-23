@@ -47,39 +47,6 @@ public:
     }
 };
 
-
-/**
- * A complex field defined over a grid. Has real and imaginary components
- * at each (x, y, z) grid point
- */
-class Field : public Grid{
-
-public:
-    std::complex<double> angular_norm = 0.;
-
-    // TODO: this is likely better as a set of complex arrays
-    xyz_arrays real;
-    xyz_arrays imag;
-
-    /**
-     * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
-     * il is the first non-pml cell in the i direction and iu the last in the corresponding split
-     * field grid
-     */
-    int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
-
-    // TODO: Docstring. Not implemented because I'm not sure what this does!
-    void normalise_volume();
-
-    /**
-     * Zero all components of the real and imaginary parts of the field
-     */
-    void zero();
-
-    ~Field();
-};
-
-
 /**
  * A split field defined over a grid.
  * To reconstruct the components we have e.g.: Ex = Exy + Exz multiplied by
@@ -178,13 +145,61 @@ public:
             SplitField(I_total, J_total, K_total){};
 };
 
+/**
+ * A complex field defined over a grid. Has real and imaginary components
+ * at each (x, y, z) grid point
+ */
+class Field : public Grid{
+
+public:
+  double ft = 0.;  // TODO: an explanation of what this is
+
+  std::complex<double> angular_norm = 0.;
+
+  // TODO: this is likely better as a set of complex arrays
+  xyz_arrays real;
+  xyz_arrays imag;
+
+  /**
+     * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
+     * il is the first non-pml cell in the i direction and iu the last in the corresponding split
+     * field grid
+     */
+  int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
+
+  // TODO: Docstring. Not implemented because I'm not sure what this does!
+  void normalise_volume();
+
+  /**
+     * Zero all components of the real and imaginary parts of the field
+     */
+  void zero();
+
+  /**
+   * Set the phasors for this field, given a split field. Result gives field according to the
+   * exp(-iwt) convention
+   * @param F
+   * @param n
+   * @param omega
+   * @param dt
+   * @param Nt
+   */
+  void set_phasors(SplitField &F, int n, double omega, double dt, int Nt);
+
+  // TODO: Docstring
+  std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt);
+
+  virtual double phase(int n, double omega, double dt) = 0;
+
+  ~Field();
+};
+
 class ElectricField: public Field{
 
 private:
-    static std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt);
+  double phase(int n, double omega, double dt) override;
 
 public:
-    double ft = 0.;  // TODO: an explanation of what this is
 
     void add_to_angular_norm(int n, int Nt, SimulationParameters &params);
 
@@ -193,11 +208,9 @@ public:
 class MagneticField: public Field{
 
 private:
-    static std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt);
+  double phase(int n, double omega, double dt) override;
 
 public:
-    double ft = 0.;  // TODO: an explanation of what this is
-
     void add_to_angular_norm(int n, int Nt, SimulationParameters &params);
 
 };
