@@ -15,9 +15,6 @@ double Timer::delta_seconds() const {
   return end_time - start_time ;
 }
 
-/**
- * Log the difference in time and reset the timer
- */
 void Timer::click(){
   end();
   fprintf(stdout, "∆time = %.03e s\n", delta_seconds());

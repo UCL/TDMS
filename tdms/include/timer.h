@@ -6,7 +6,13 @@ class Timer{
 
 public:
     void start();
+
     void end();
+
+    /**
+     * Log the difference in time and reset the timer
+     */
     void click();
+
     double delta_seconds() const;
 };
