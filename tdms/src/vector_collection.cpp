@@ -1,5 +1,6 @@
 #include <utility>
 #include "vector_collection.h"
+#include "utils.h"
 
 
 using namespace std;
@@ -9,7 +10,7 @@ void XYZVectors::set_ptr(const char c, double* ptr){
     case 'x': {x = ptr; break;}
     case 'y': {y = ptr; break;}
     case 'z': {z = ptr; break;}
-    default: throw std::runtime_error("Have no element " + std::string(1, c));
+    default: throw std::runtime_error("Have no element " + to_string(c));
   }
 }
 

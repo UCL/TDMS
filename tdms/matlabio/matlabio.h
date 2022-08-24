@@ -21,7 +21,6 @@ void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &na
 
 void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::string &name);
 
-
 /**
  * Get a pointer to a matrix within a struct with a given name. Throws a runtime error if the
  * resulting tensor is not two dimensional.

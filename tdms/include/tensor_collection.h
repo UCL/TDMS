@@ -1,5 +1,7 @@
+#include "utils.h"
 
-class XYZTensor3D {   // TODO: remove in a future iteration
+
+class XYZTensor3D {
 public:
   double ***x = nullptr;
   double ***y = nullptr;
