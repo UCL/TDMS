@@ -376,9 +376,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   const char conductive_aux_elements[][10] = {"rho_x", "rho_y", "rho_z"};
   const char dispersive_aux_elements[][10] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
-  const char interface_fields[][5] = {"I0", "I1", "J0", "J1", "K0", "K1"};
   const char grid_labels_fields[][15] = {"x_grid_labels", "y_grid_labels", "z_grid_labels"};
-
   const char fieldsample_elements[][2] = {"i", "j", "k", "n"};
   const char campssample_elements[][15] = {"vertices", "components"};
 
