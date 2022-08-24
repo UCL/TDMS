@@ -1,7 +1,6 @@
-#include "string"
-#include "utils.h"
-#include "matlabio.h"
 #include "tensor_init.h"
+#include "matlabio.h"
+#include "utils.h"
 
 using namespace std;
 
