@@ -266,7 +266,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *rho_x, *rho_y, *rho_z, rho;
   double alpha_l, beta_l, gamma_l;
   double kappa_l, sigma_l;
-  double dx, dy, dz;
   double t0;
 
   double Ca, Cb, Cc;     //used by interpolation scheme
@@ -374,12 +373,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   complex<double> Idxt, Idyt, kprop;
 
   char dimension_str[3];
-
-  const char freespace_elements[][10] = {"Cbx", "Cby", "Cbz", "Dbx", "Dby", "Dbz"};
   const char conductive_aux_elements[][10] = {"rho_x", "rho_y", "rho_z"};
   const char dispersive_aux_elements[][10] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
-  const char delta_elements[][10] = {"x", "y", "z"};
   const char interface_fields[][5] = {"I0", "I1", "J0", "J1", "K0", "K1"};
   const char grid_labels_fields[][15] = {"x_grid_labels", "y_grid_labels", "z_grid_labels"};
 
@@ -428,15 +424,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Got D\n");
 
   /*Get freespace*/  // Cby Cbz Dbx Dby Dbz are unused
-  assert_is_struct(prhs[input_counter], "freespace, argument " + to_string(input_counter));
-  assert_num_fields_equals(6, prhs[input_counter], "freespace");
+  assert_is_struct_with_n_fields(prhs[input_counter], 6, "freespace, argument " + to_string(input_counter));
   auto freespace_Cbx = mxGetPr(ptr_to_vector_in(prhs[input_counter], "Cbx", "freespace"));
   input_counter++;
   //fprintf(stderr,"Got freespace\n");
 
   /*Get disp_params */
-  assert_is_struct(prhs[input_counter], "disp_params, argument " + to_string(input_counter));
-  assert_num_fields_equals(3, prhs[input_counter], "disp_params");
+  assert_is_struct_with_n_fields(prhs[input_counter], 3, "disp_params, argument " + to_string(input_counter));
   auto alpha = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "alpha", "disp_params"));
   auto beta  = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "beta",  "disp_params"));
   auto gamma = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "gamma", "disp_params"));
@@ -444,42 +438,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Got disp_params\n");
 
   /*Get delta params*/
-  if (!mxIsStruct(prhs[input_counter])) {
-    throw runtime_error("Argument " + to_string(input_counter) + " was expected to be a structure");
-  }
-
-  num_fields = mxGetNumberOfFields(prhs[input_counter]);
-  //check that all fields are present
-  if (num_fields != 3) {
-    throw runtime_error("delta should have 3 members, it has " + to_string(num_fields));
-  }
-
-  for (int i = 0; i < 3; i++) {
-    element = mxGetField((mxArray *) prhs[input_counter], 0, delta_elements[i]);
-    string element_name = freespace_elements[i];
-    ndims = mxGetNumberOfDimensions(element);
-    if (ndims != 2) { throw runtime_error("Incorrect dimension on delta"); }
-
-    dimptr_out = mxGetDimensions(element);
-    if (dimptr_out[0] != 1) {
-      throw runtime_error("Incorrect dimension on delta. " + element_name);
-    }
-    if (are_equal(delta_elements[i], "x")) {
-      dx = *mxGetPr((mxArray *) element);
-    } else if (are_equal(delta_elements[i], "y")) {
-      dy = *mxGetPr((mxArray *) element);
-    } else if (are_equal(delta_elements[i], "z")) {
-      dz = *mxGetPr((mxArray *) element);
-    } else {
-      throw runtime_error("Element delta " + element_name + " not handled");
-    }
-  }
+  assert_is_struct_with_n_fields(prhs[input_counter], 3, "delta, argument " + to_string(input_counter));
+  auto dx = *mxGetPr(ptr_to_vector_in(prhs[input_counter], "x", "delta"));
+  auto dy = *mxGetPr(ptr_to_vector_in(prhs[input_counter], "y", "delta"));
+  auto dz = *mxGetPr(ptr_to_vector_in(prhs[input_counter], "z", "delta"));
   input_counter++;
-
-
-  /*Got delta params*/
-
   //fprintf(stderr,"Got delta params\n");
+
   /*Get interface*/
   if (mxIsStruct(prhs[input_counter])) {
     num_fields = mxGetNumberOfFields(prhs[input_counter]);

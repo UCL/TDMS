@@ -233,6 +233,11 @@ void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &na
   }
 }
 
+void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::string &name){
+  assert_is_struct(ptr, name);
+  assert_num_fields_equals(num, ptr, name);
+}
+
 mxArray* ptr_to_matrix_in(const mxArray* ptr, const string &name, const string &struct_name){
 
   auto element = mxGetField((mxArray *) ptr, 0, name.c_str());
