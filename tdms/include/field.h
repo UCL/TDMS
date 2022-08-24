@@ -2,7 +2,9 @@
 #include "stdexcept"
 #include "complex"
 #include "mat_io.h"
+#include "tensor_collection.h"
 #include "simulation_parameters.h"
+#include "utils.h"
 
 
 /**
@@ -28,23 +30,6 @@ public:
      * @return True if there are no components
      */
     bool has_no_elements() const {return I_tot == 0 && J_tot == 0 && K_tot == 0;};
-};
-
-
-class xyz_arrays{   // TODO: remove in a future iteration
-public:
-    double ***x = nullptr;
-    double ***y = nullptr;
-    double ***z = nullptr;
-
-    double*** operator[] (char c) const{
-      switch (c) {
-        case 'x': return x;
-        case 'y': return y;
-        case 'z': return z;
-        default: throw std::runtime_error("Have no element" + std::to_string(c));
-      }
-    }
 };
 
 /**
@@ -105,7 +90,6 @@ public:
     ~SplitField();
 };
 
-
 class ElectricSplitField: public SplitField{
 
 public:
@@ -157,8 +141,8 @@ public:
   std::complex<double> angular_norm = 0.;
 
   // TODO: this is likely better as a set of complex arrays
-  xyz_arrays real;
-  xyz_arrays imag;
+  XYZTensor3D real;
+  XYZTensor3D imag;
 
   /**
      * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
