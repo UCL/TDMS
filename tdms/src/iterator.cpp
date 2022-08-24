@@ -261,7 +261,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *I0, *I1, *J0, *J1, *K0, *K1;
   double ***IsourceI, ***JsourceI, ***KsourceI, ***IsourceR, ***JsourceR, ***KsourceR;
   double ***surface_EHr, ***surface_EHi;
-  double *alpha, *beta, *gamma;
   double *ml_alpha, *ml_beta, *ml_gamma, *ml_kappa_x, *ml_kappa_y, *ml_kappa_z, *ml_sigma_x,
           *ml_sigma_y, *ml_sigma_z;
   double *rho_x, *rho_y, *rho_z, rho;
@@ -270,7 +269,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double dx, dy, dz;
   double t0;
 
-  double *freespace_Cbx; //freespace variables
   double Ca, Cb, Cc;     //used by interpolation scheme
   double *f_ex_vec;
   int N_f_ex_vec;
@@ -370,7 +368,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   mxArray *mx_fieldsample;
   double ****fieldsample;
 
-
   mxArray *mx_Idx, *mx_Idy;
   double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
   complex<double> **Idx, **Idy;
@@ -379,7 +376,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   char dimension_str[3];
 
   const char freespace_elements[][10] = {"Cbx", "Cby", "Cbz", "Dbx", "Dby", "Dbz"};
-  const char disp_params_elements[][10] = {"alpha", "beta", "gamma"};
   const char conductive_aux_elements[][10] = {"rho_x", "rho_y", "rho_z"};
   const char dispersive_aux_elements[][10] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
@@ -431,79 +427,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
   //fprintf(stderr,"Got D\n");
 
-  /*Get freespace*/
-  if (mxIsStruct(prhs[input_counter])) {
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    //check that all fields are present
-    if (num_fields != 6) {
-      throw runtime_error("freespace should have 6 members, it has " + to_string(num_fields));
-    }
-
-    for (int i = 0; i < 6; i++) {
-      element = mxGetField((mxArray *) prhs[input_counter], 0, freespace_elements[i]);
-      string element_name = freespace_elements[i];
-      ndims = mxGetNumberOfDimensions(element);
-      if (ndims == 2) {
-        dimptr_out = mxGetDimensions(element);
-        if (dimptr_out[0] != 1) {
-          throw runtime_error("Incorrect dimension on freespace. " + element_name);
-        }
-        if (are_equal(freespace_elements[i], "Cbx")) {
-          freespace_Cbx = mxGetPr(element);
-        } else {// Unused in the code: Cby Cbz Dbx Dby Dbz
-          fprintf(stderr, "Unused freespace element: %s\n", element_name.c_str());
-        }
-      } else {
-        throw runtime_error("Incorrect dimension on freespace");
-      }
-    }
-    input_counter++;
-  } else {
-    throw runtime_error("Argument " + to_string(input_counter) + " was expected to be a structure");
-  }
-
-  /*Got freespace*/
-
+  /*Get freespace*/  // Cby Cbz Dbx Dby Dbz are unused
+  assert_is_struct(prhs[input_counter], "freespace, argument " + to_string(input_counter));
+  assert_num_fields_equals(6, prhs[input_counter], "freespace");
+  auto freespace_Cbx = mxGetPr(ptr_to_vector_in(prhs[input_counter], "Cbx", "freespace"));
+  input_counter++;
   //fprintf(stderr,"Got freespace\n");
+
   /*Get disp_params */
-
-  if (mxIsStruct(prhs[input_counter])) {
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    //check that all fields are present
-    if (num_fields != 3) {
-      throw runtime_error("disp_params should have 3 members, it has " + to_string(num_fields));
-    }
-
-    for (int i = 0; i < 3; i++) {
-      element = mxGetField((mxArray *) prhs[input_counter], 0, disp_params_elements[i]);
-      string element_name = disp_params_elements[i];
-      ndims = mxGetNumberOfDimensions(element);
-      if (ndims == 2) {
-        dimptr_out = mxGetDimensions(element);
-        if (!(dimptr_out[0] == 1 || dimptr_out[0] == 0)) {
-          throw runtime_error("Incorrect dimension on disp_params. " + element_name);
-        }
-        if (are_equal(disp_params_elements[i], "alpha")) {
-          alpha = mxGetPr(element);
-        } else if (are_equal(disp_params_elements[i], "beta")) {
-          beta = mxGetPr(element);
-        } else if (are_equal(disp_params_elements[i], "gamma")) {
-          gamma = mxGetPr(element);
-        } else {
-          throw runtime_error("element disp_params. " + element_name + " not handled");
-        }
-      } else
-        throw runtime_error("Incorrect dimension on disp_params");
-    }
-    input_counter++;
-  } else {
-    throw runtime_error("Argument " + to_string(input_counter) + " was expected to be a structure");
-  }
-
-
-  /*Got disp_params */
-
+  assert_is_struct(prhs[input_counter], "disp_params, argument " + to_string(input_counter));
+  assert_num_fields_equals(3, prhs[input_counter], "disp_params");
+  auto alpha = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "alpha", "disp_params"));
+  auto beta  = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "beta",  "disp_params"));
+  auto gamma = mxGetPr(ptr_to_vector_or_empty_in(prhs[input_counter], "gamma", "disp_params"));
+  input_counter++;
   //fprintf(stderr,"Got disp_params\n");
+
   /*Get delta params*/
   if (!mxIsStruct(prhs[input_counter])) {
     throw runtime_error("Argument " + to_string(input_counter) + " was expected to be a structure");

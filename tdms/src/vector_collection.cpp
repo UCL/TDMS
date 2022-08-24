@@ -25,11 +25,7 @@ CMaterial::CMaterial(const mxArray *ptr) {
 void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
-
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
-    if (mxGetDimensions(element)[0] != 1) {
-      throw runtime_error("Incorrect dimension on material: " + prefix + component);
-    }
+    auto element = ptr_to_vector_in(ptr, prefix + component, "material");
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -38,7 +34,7 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
 
   for (char component : {'x', 'y', 'z'}) {
 
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
+    auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
     is_multilayer = mxGetDimensions(element)[0] != 1;
     arrays.set_ptr(component, mxGetPr(element));
   }
@@ -79,8 +75,7 @@ DCollection::DCollection(const mxArray *ptr) {
 void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
-
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
+    auto element = ptr_to_matrix_in(ptr, prefix + component, "D");
     arrays.set_ptr(component, mxGetPr(element));
   }
 }

@@ -233,12 +233,33 @@ void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &na
   }
 }
 
-mxArray* ptr_to_2d_array_in(const mxArray* ptr, const std::string &name){
+mxArray* ptr_to_matrix_in(const mxArray* ptr, const string &name, const string &struct_name){
 
   auto element = mxGetField((mxArray *) ptr, 0, name.c_str());
 
   if (mxGetNumberOfDimensions(element) != 2) {
-    throw runtime_error("Incorrect dimension on " + name + ". Required 2D but was not");
+    throw runtime_error("Incorrect dimension on " + struct_name + "." + name + ". Required 2D");
+  }
+  return element;
+}
+
+mxArray* ptr_to_vector_in(const mxArray* ptr, const string &name, const string &struct_name){
+
+  auto element = ptr_to_matrix_in(ptr, name, struct_name);
+
+  if (mxGetDimensions(element)[0] != 1) {
+    throw runtime_error("Incorrect dimension " + struct_name + "." + name + ". Required 1D");
+  }
+  return element;
+}
+
+mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const string &name, const string &struct_name){
+
+  auto element = ptr_to_matrix_in(ptr, name, struct_name);
+  auto n = mxGetDimensions(element)[0];
+
+  if (!(n == 1 || n == 0)) {
+    throw runtime_error("Incorrect dimension on " + struct_name + "." + name + ". Required 1D or 0D");
   }
   return element;
 }
