@@ -68,6 +68,7 @@ set(SOURCES
     src/argument_parser.cpp
     src/fdtd_grid_initialiser.cpp
     src/grid_labels.cpp
+    src/interface.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
