@@ -64,6 +64,8 @@ set(SOURCES
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
+    src/interpolate_Efield.cpp
+    src/interpolate_Hfield.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
@@ -101,7 +103,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
     add_executable(tdms_tests
             tests/unit/test_openandorder.cpp
             tests/unit/test_interp_determination.cpp
-            tests/unit/test_interp_fns.cpp)
+            tests/unit/test_interp_fns.cpp
+            tests/unit/test_field_interpolation.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
