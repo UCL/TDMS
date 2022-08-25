@@ -1,14 +1,17 @@
-# include "catch2/catch_test_macros.hpp"
+# include <catch2/catch_test_macros.hpp>
 # include "interpolation_methods.h"
 
 using namespace std;
 
 /**
  * @brief Test whether checkInterpolationPoints throws exceptions in the correct cases.
- * 
+ *
  * This function checks whether it is possible to use cubic interpolation over a given index range.
+ *
+ * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
  */
-TEST_CASE("checkInterpolationPoints: exceptions thrown") {
+TEST_CASE("checkInterpolationPoints: exceptions thrown")
+{
 
     // setup some fake field dimensions
     int I = 6, J = 7, K = 8;
@@ -36,7 +39,13 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), runtime_error);
 }
 
-TEST_CASE("checkInterpolationPoints: check valid inputs") {
+/**
+ * @brief Test whether checkInterpolationPoints confirms interpolation is possible for the give cases.
+ *
+ * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
+ */
+TEST_CASE("checkInterpolationPoints: check valid inputs")
+{
 
     // setup some fake field dimensions
     int I = 6, J = 7, K = 8;
@@ -59,17 +68,18 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
 }
 
 /**
- * @brief Test whether determineInterpScheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
- * 
+ * @brief Test whether best_interp_scheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
+ *
  */
-TEST_CASE("determineInterpScheme: correct interpolation chosen") {
+TEST_CASE("best_interp_scheme: correct interpolation chosen")
+{
 
     int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
     REQUIRE_THROWS_AS(best_interp_scheme(3, 2), out_of_range);
     // should throw out_of_range exception if Yee cell of invalid index is requested
-    REQUIRE_THROWS_AS(best_interp_scheme(N,0), out_of_range);
-    REQUIRE_THROWS_AS(best_interp_scheme(N,N), out_of_range);
+    REQUIRE_THROWS_AS(best_interp_scheme(N, 0), out_of_range);
+    REQUIRE_THROWS_AS(best_interp_scheme(N, N), out_of_range);
 
     /* Suppose we have N >= 8 Yee cells in a dimension. The program should determine:
         - cell_id == 0 : Interpolation impossible (checked previously)
@@ -81,12 +91,15 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
     CHECK(best_interp_scheme(N, 1).get_priority() == BAND_LIMITED_0);
     CHECK(best_interp_scheme(N, 2).get_priority() == BAND_LIMITED_1);
     CHECK(best_interp_scheme(N, 3).get_priority() == BAND_LIMITED_2);
-    for(int i=4; i<=N-4; i++) {CHECK(best_interp_scheme(N, i).get_priority() == BAND_LIMITED_3);}
-    CHECK(best_interp_scheme(N, N-3).get_priority() == BAND_LIMITED_4);
-    CHECK(best_interp_scheme(N, N-2).get_priority() == BAND_LIMITED_5);
-    CHECK(best_interp_scheme(N, N-1).get_priority() == BAND_LIMITED_6);
+    for (int i = 4; i <= N - 4; i++)
+    {
+        CHECK(best_interp_scheme(N, i).get_priority() == BAND_LIMITED_3);
+    }
+    CHECK(best_interp_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
+    CHECK(best_interp_scheme(N, N - 2).get_priority() == BAND_LIMITED_5);
+    CHECK(best_interp_scheme(N, N - 1).get_priority() == BAND_LIMITED_6);
 
-    /* If 4<=N<=8 we can still fall back on cubic interpolation 
+    /* If 4 <= N < 8 we can still fall back on cubic interpolation
         - cell_id == 0 : Interpolation impossible (checked previously)
         - cell_id == 1 : Use CUBIC_FIRST
         - cell_id == 2,...,N-2 : Use CUBIC_MIDDLE
