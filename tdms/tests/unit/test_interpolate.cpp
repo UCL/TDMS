@@ -119,7 +119,7 @@ TEST_CASE("interpScheme: cubic interpolation is exact") {
     // equidistant points
     double x[] = {0.,1.,2.,3.};
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
-    // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
+    // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL_EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
 
     // constant field
@@ -179,7 +179,13 @@ TEST_CASE("interpScheme: cubic interpolation is exact") {
 TEST_CASE("bandlimited_interpolation: coefficient sum")
 {
 
-    double tol = __DBL_EPSILON__;
+    /* Tolerance to accept imprecision to
+    max. 16 FLOPs implies max discrepency of 8*_DBL_EPSILON__ error
+    (8 additions, error in each number max __DBL_EPSILON__).
+    tol should be \approx 10 * __DBL_EPSILON__ , 
+    after accounting for funny-business multiplying everything by 1
+    */
+    double tol = 1e1 * __DBL_EPSILON__;
     double coeff_sums[8];
     double a[8] = {1., 1., 1., 1., 1., 1., 1., 1.};
 
@@ -194,7 +200,7 @@ TEST_CASE("bandlimited_interpolation: coefficient sum")
     coeff_sums[7] = BL7.interpolate(a);
     // now check that the entries of coeff_sums are the same
     int n = 8;
-    while (--n > 0 && abs(a[n] - a[0]) < tol);
+    while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol);
     // we only reach the end of the while loop, IE get to n==0, when all elements in the array are the same
     REQUIRE(n == 0);
 }
