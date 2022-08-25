@@ -8,65 +8,68 @@
 using namespace std;
 
 /**
- * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
- * 
- * The constant class instances for cubic interpolation are CBFst, CBMid, and CBLst.
+ * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ *
  */
-TEST_CASE("interpScheme: cubic interpolation is exact") {
+TEST_CASE("interp: cubic interpolation is exact")
+{
 
     // equidistant points
-    double x[] = {0.,1.,2.,3.};
+    double x[] = {0., 1., 2., 3.};
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
-    // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL_EPSILON__
+    // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
 
     // constant field
     double c0 = 3.1415;
-    // data points to use for interpolation
-    double v[8];
-    v[0] = c0, v[1] = c0, v[2] = c0, v[3] = c0;
-    // exact values (interpolate f(x) = c0)
+    double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
-    
-    CHECK(abs(v12 - CBFst.interpolate(v) <= tol));
-    CHECK(abs(v23 - CBMid.interpolate(v) <= tol));
-    CHECK(abs(v34 - CBLst.interpolate(v) <= tol));
 
-    // linear, create coefficient
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // linear
     double c1 = -2.7182818;
-    // update interpolation data points
-    v[0] += c1*x[0]; v[1] += c1*x[1]; v[2] += c1*x[2]; v[3] += c1*x[3];
-    // update exact values (f(x) = c0 + c1*x)
-    v12 += c1*(x[1]+x[0])/2.; v23 += c1*(x[2]+x[1])/2.; v34 += c1*(x[3]+x[2])/2.;
+    v1 += c1 * x[0];
+    v2 += c1 * x[1];
+    v3 += c1 * x[2];
+    v4 += c1 * x[3];
+    v12 += c1 * (x[1] + x[0]) / 2.;
+    v23 += c1 * (x[2] + x[1]) / 2.;
+    v34 += c1 * (x[3] + x[2]) / 2.;
 
-    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 
-    // quadratic, create coefficient
+    // quadratic
     double c2 = 9.81;
-    // update interpolation data points
-    v[0] += c2*x[0]*x[0]; v[1] += c2*x[1]*x[1]; v[2] += c2*x[2]*x[2]; v[3] += c2*x[3]*x[3];
-    // update exact values (f(x) = c0 + c1*x + c2*x^2)
+    v1 += c2 * x[0] * x[0];
+    v2 += c2 * x[1] * x[1];
+    v3 += c2 * x[2] * x[2];
+    v4 += c2 * x[3] * x[3];
     v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
-    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 
-    // cubic, create coefficient
+    // cubic
     double c3 = 4.2;
-    // update interpolation data points
-    v[0] += c3*x[0]*x[0]*x[0]; v[1] += c3*x[1]*x[1]*x[1]; v[2] += c3*x[2]*x[2]*x[2]; v[3] += c3*x[3]*x[3]*x[3];
+    v1 += c3 * x[0] * x[0] * x[0];
+    v2 += c3 * x[1] * x[1] * x[1];
+    v3 += c3 * x[2] * x[2] * x[2];
+    v4 += c3 * x[3] * x[3] * x[3];
     v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
-    CHECK(abs(v12 - CBFst.interpolate(v)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(v)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(v)) <= tol);
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 }
 
 /**
