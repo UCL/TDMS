@@ -51,5 +51,4 @@ mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const std::string &name, 
  */
 double double_in(const mxArray* ptr, const std::string &name);
 
-
 int int_cast_from_double_in(const mxArray* ptr, const std::string &name);
