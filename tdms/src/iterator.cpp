@@ -446,20 +446,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
   //fprintf(stderr,"Got interface\n");
 
-  /*Get Isource*/
-  auto Isource = Source(prhs[input_counter], J1.index - J0.index + 1, K1.index - K0.index + 1, "Isource");
-  input_counter++;
-  //fprintf(stderr,"Got   Isource\n");
-  
-  /*Get Jsource*/
-  auto Jsource = Source(prhs[input_counter], I1.index - I0.index + 1, K1.index - K0.index + 1, "Jsource");
-  input_counter++;
-  //fprintf(stderr,"Got   Jsource\n");
-  
-  /*Get Ksource*/
-  auto Ksource = Source(prhs[input_counter], I1.index - I0.index + 1, J1.index - J0.index + 1, "Ksource");
-  input_counter++;
-  //fprintf(stderr,"Got   Ksource\n");
+  auto Isource = Source(prhs[input_counter++], J1.index - J0.index + 1, K1.index - K0.index + 1, "Isource");
+  auto Jsource = Source(prhs[input_counter++], I1.index - I0.index + 1, K1.index - K0.index + 1, "Jsource");
+  auto Ksource = Source(prhs[input_counter++], I1.index - I0.index + 1, J1.index - J0.index + 1, "Ksource");
 
   /*Get grid_labels*/
   assert_is_struct_with_n_fields(prhs[input_counter], 3, "grid_labels, argument " + to_string(input_counter));
@@ -467,46 +456,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
   //fprintf(stderr,"Got   grid_labels\n");
 
-  /*Get omega_an*/
-  params.omega_an = double_in(prhs[input_counter], "omega_an");
-  input_counter++;
+  params.omega_an = double_in(prhs[input_counter++], "omega_an");
+  params.to_l = double_in(prhs[input_counter++], "to_l");
+  params.hwhm = double_in(prhs[input_counter++], "hwhm");
+  params.pml.Dxl = int_cast_from_double_in(prhs[input_counter++], "Dxl");
+  params.pml.Dxu = int_cast_from_double_in(prhs[input_counter++], "Dxu");
+  params.pml.Dyl = int_cast_from_double_in(prhs[input_counter++], "Dyl");
+  params.pml.Dyu = int_cast_from_double_in(prhs[input_counter++], "Dyu");
+  params.pml.Dzl = int_cast_from_double_in(prhs[input_counter++], "Dzl");
+  params.pml.Dzu = int_cast_from_double_in(prhs[input_counter++], "Dzu");
 
-  /*Get to_l*/
-  params.to_l = double_in(prhs[input_counter], "to_l");
-  input_counter++;
-
-  /*Get hwhm*/
-  params.hwhm = double_in(prhs[input_counter], "hwhm");
-  input_counter++;
-
-  /*Get Dxl*/
-  params.pml.Dxl = int_cast_from_double_in(prhs[input_counter], "Dxl");
-  input_counter++;
-  params.pml.Dxu = int_cast_from_double_in(prhs[input_counter], "Dxu");
-  input_counter++;
-  params.pml.Dyl = int_cast_from_double_in(prhs[input_counter], "Dyl");
-  input_counter++;
-  params.pml.Dyu = int_cast_from_double_in(prhs[input_counter], "Dyu");
-  input_counter++;
-  params.pml.Dzl = int_cast_from_double_in(prhs[input_counter], "Dzl");
-  input_counter++;
-  params.pml.Dzu = int_cast_from_double_in(prhs[input_counter], "Dzu");
-  input_counter++;
-  
-  /*Get Nt*/
-  params.Nt = int_cast_from_double_in(prhs[input_counter], "Nt");
-  input_counter++;
-  
-  /*Get dt*/
-  params.dt = double_in(prhs[input_counter], "dt");
-  input_counter++;
-
-  /*Get tind*/
-  params.start_tind = int_cast_from_double_in(prhs[input_counter], "tind");
-  input_counter++;
+  params.Nt = int_cast_from_double_in(prhs[input_counter++], "Nt");
+  params.dt = double_in(prhs[input_counter++], "dt");
+  params.start_tind = int_cast_from_double_in(prhs[input_counter++], "tind");
 
   /*Get sourcemode*/
-  auto source_mode_string = string_in(prhs[input_counter], "sourcemode string");
+  auto source_mode_string = string_in(prhs[input_counter++], "sourcemode string");
   if (source_mode_string == "steadystate") {
     sourcemode = sm_steadystate;
   } else if (source_mode_string == "pulsed") {
@@ -514,10 +479,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   } else {
     throw runtime_error("value of sourcemode (" + source_mode_string + ") is invalid\n");
   }
-  input_counter++;
 
   /*Get runmode*/
-  auto run_mode_string = string_in(prhs[input_counter], "runmode string");
+  auto run_mode_string = string_in(prhs[input_counter++], "runmode string");
   if (run_mode_string == "complete") {
     runmode = rm_complete;
   } else if (run_mode_string == "analyse") {
@@ -525,19 +489,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   } else {
     throw runtime_error("value of runmode (" + run_mode_string + ") is invalid\n");
   }
-  input_counter++;
 
-  /*Get exphasorsvolume*/
-  params.exphasorsvolume = bool_cast_from_double_in(prhs[input_counter], "exphasorsvolume");
-  input_counter++;
-
-  /*Get exphasorssurface*/
-  params.exphasorssurface = bool_cast_from_double_in(prhs[input_counter], "exphasorssurface");
-  input_counter++;
-
-  /*Get intphasorssurface*/
-  params.intphasorssurface = bool_cast_from_double_in(prhs[input_counter], "intphasorssurface");
-  input_counter++;
+  params.exphasorsvolume = bool_cast_from_double_in(prhs[input_counter++], "exphasorsvolume");
+  params.exphasorssurface = bool_cast_from_double_in(prhs[input_counter++], "exphasorssurface");
+  params.intphasorssurface = bool_cast_from_double_in(prhs[input_counter++], "intphasorssurface");
 
   /*Get phasorsurface*/
   /*Only do if exphasorssurface is true*/
