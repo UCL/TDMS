@@ -467,46 +467,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Get Ksource*/
   auto Ksource = Source(prhs[input_counter], I1.index - I0.index + 1, J1.index - J0.index + 1, "Ksource");
   input_counter++;
-  
-  /*Got Ksource*/
   //fprintf(stderr,"Got   Ksource\n");
+
   /*Get grid_labels*/
-  auto input_grid_labels = GridLabels();
-
-  if (mxIsStruct(prhs[input_counter])) {
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    //check that all fields are present
-    if (num_fields != 3) {
-      throw runtime_error("grid_labels should have 3 members, it has " + to_string(num_fields));
-    }
-    for (int i = 0; i < 3; i++) {
-      element = mxGetField((mxArray *) prhs[input_counter], 0, grid_labels_fields[i]);
-      ndims = mxGetNumberOfDimensions(element);
-      string grid_label = grid_labels_fields[i];
-
-      if (ndims == 2) {
-        dimptr_out = mxGetDimensions(element);
-        if (dimptr_out[0] != 1) {
-          throw runtime_error("Incorrect dimension on grid_labels: " + grid_label);
-        }
-        if (are_equal(grid_labels_fields[i], "x_grid_labels")) {
-          input_grid_labels.x = mxGetPr((mxArray *) element);
-        } else if (are_equal(grid_labels_fields[i], "y_grid_labels")) {
-          input_grid_labels.y = mxGetPr((mxArray *) element);
-        } else if (are_equal(grid_labels_fields[i], "z_grid_labels")) {
-          input_grid_labels.z = mxGetPr((mxArray *) element);
-        } else {
-          throw runtime_error("element grid_labels. " + grid_label + " not handled");
-        }
-      } else {
-        throw runtime_error("Incorrect dimension on grid_labels. " + grid_label);
-      }
-    }
-
-    input_counter++;
-  }
-  /*Get grid_labels*/
+  assert_is_struct_with_n_fields(prhs[input_counter], 3, "grid_labels, argument " + to_string(input_counter));
+  auto input_grid_labels = GridLabels(prhs[input_counter]);
+  input_counter++;
   //fprintf(stderr,"Got   grid_labels\n");
+
   /*Get tvec_E - no longer used*/
   /*
     if(mxIsDouble(prhs[input_counter])){

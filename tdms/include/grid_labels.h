@@ -1,3 +1,5 @@
+#include "matlabio.h"
+
 
 class GridLabels{
 public:
@@ -5,5 +7,7 @@ public:
     double *y = nullptr;  //                                           y
     double *z = nullptr;  //                                           z
 
-    GridLabels();
+    GridLabels() = default;
+
+    explicit GridLabels(const mxArray *ptr);
 };
