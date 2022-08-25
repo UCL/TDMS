@@ -268,3 +268,11 @@ mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const string &name, const
   }
   return element;
 }
+
+double double_in(const mxArray* ptr, const string &name){
+
+  if (mxIsDouble(ptr)) {
+    return *mxGetPr(ptr);
+  }
+  throw runtime_error(name + " was expected to be a double but was not");
+}
