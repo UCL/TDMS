@@ -277,7 +277,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double maxfield = 0, tempfield;
-  double *place_holder;
   int intmatprops = 1;//means the material properties will be interpolated
   int intmethod;      //method of interpolating surface field quantities
 
@@ -322,7 +321,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int k_loc;
   int tind;
   int input_counter = 0;
-  int start_tind;
   int cuboid[6];
   int **vertices;
   int nvertices = 0;
@@ -505,17 +503,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Get dt*/
   params.dt = double_in(prhs[input_counter], "dt");
   input_counter++;
-  
-  /*Got dt*/
 
   /*Get tind*/
-  if (mxIsDouble(prhs[input_counter])) {
-    start_tind = (int) (*mxGetPr((mxArray *) prhs[input_counter]));
-    input_counter++;
-  } else {
-    throw runtime_error("expected start_tind to be a double");
-  }
-  /*Got tind*/
+  params.start_tind = int_cast_from_double_in(prhs[input_counter], "tind");
+  input_counter++;
 
   /*Get sourcemode*/
   if (mxIsChar(prhs[input_counter])) {
@@ -1213,8 +1204,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
 
   //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
-  for (tind = start_tind; tind < params.Nt; tind++)
-    if ((tind - start_tind) % Np == 0) Npe++;
+  for (tind = params.start_tind; tind < params.Nt; tind++)
+    if ((tind - params.start_tind) % Np == 0) Npe++;
   fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, params.Nt, Npe, f_max,
           2.5 * params.dt * f_max);
   //fprintf(stderr,"Pre 01\n");
@@ -1770,14 +1761,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double time_E;
   double time_H;
   t0 = (double) time(NULL);
-  //    fprintf(stderr,"start_tind: %d\n",start_tind);
+  //    fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"dz: %e, c: %e, dz/c: %e\n",dz,light_v,dz/light_v);
   //Begin of main iteration loop
   auto main_loop_timer = Timer();
 
   if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
 
-  for (tind = start_tind; tind < params.Nt; tind++) {
+  for (tind = params.start_tind; tind < params.Nt; tind++) {
     //fprintf(stderr,"Pos 00:\n");
     time_E = ((double) (tind + 1)) * params.dt;
     time_H = time_E - params.dt / 2.;
@@ -1832,7 +1823,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     } else if ((sourcemode == sm_pulsed) && (runmode == rm_complete) && exphasorsvolume) {
       if (TIME_EXEC) { timer.click(); }
 
-      if ((tind - start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % Np == 0) {
         E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, Npe);
         H.set_phasors(H_s, tind, params.omega_an, params.dt, Npe);
       }
@@ -1842,7 +1833,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*extract fieldsample*/
     if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
           (N_fieldsample_n == 0))) {
-      //if( (tind-start_tind) % Np == 0){
+      //if( (tind-params.start_tind) % Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
@@ -1872,7 +1863,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02:\n");
     if (sourcemode == sm_pulsed && runmode == rm_complete && exphasorssurface) {
-      if ((tind - start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % Np == 0) {
         if (intphasorssurface)
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
@@ -1887,8 +1878,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
 
     if (sourcemode == sm_pulsed && runmode == rm_complete && (nvertices > 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,start_tind,Np);
-      if ((tind - start_tind) % Np == 0) {
+      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,Np);
+      if ((tind - params.start_tind) % Np == 0) {
         //	fprintf(stderr,"loc 02\n");
         if (nvertices > 0) {
           //fprintf(stderr,"loc 03\n");
@@ -1904,7 +1895,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02a:\n");
     if (sourcemode == sm_pulsed && runmode == rm_complete && exdetintegral) {
-      if ((tind - start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % Np == 0) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
@@ -4998,7 +4989,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
         }
       } else {
-        if ((tind - start_tind) % Np == 0) {
+        if ((tind - params.start_tind) % Np == 0) {
 
           E.add_to_angular_norm(tind, Npe, params);
           H.add_to_angular_norm(tind, Npe, params);
