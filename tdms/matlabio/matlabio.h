@@ -52,3 +52,13 @@ mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const std::string &name, 
 double double_in(const mxArray* ptr, const std::string &name);
 
 int int_cast_from_double_in(const mxArray* ptr, const std::string &name);
+
+bool bool_cast_from_double_in(const mxArray* ptr, const std::string &name);
+
+/**
+ * Get the (C++) string defined in a matlab array given as a pointer
+ * @param ptr Pointer to a matlab array
+ * @param name Name of the field which this pointer corresponds to
+ * @return The string
+ */
+std::string string_in(const mxArray* ptr, const std::string &name);

@@ -331,7 +331,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   int sourcemode = sm_steadystate;//0 - steadystate, 1 - pulsed
   int runmode = rm_complete;      //0 - complete, 1 - analyse
-  int exphasorsvolume, exphasorssurface, intphasorssurface;
   int phasorinc[3];
   int dimension = 0;
   int num_fields = 0;
@@ -374,8 +373,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
   const char fieldsample_elements[][2] = {"i", "j", "k", "n"};
   const char campssample_elements[][15] = {"vertices", "components"};
-
-  char *sourcemodestr;
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
@@ -509,73 +506,42 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
 
   /*Get sourcemode*/
-  if (mxIsChar(prhs[input_counter])) {
-    sourcemodestr = (char *) malloc(
-            (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])) * sizeof(char));
-    string sourcemode_string = sourcemodestr;
-    mxGetString((mxArray *) prhs[input_counter], sourcemodestr,
-                (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])));
-    if (!strncmp(sourcemodestr, "steadystate", 11)) sourcemode = sm_steadystate;
-    else if (!strncmp(sourcemodestr, "pulsed", 6))
-      sourcemode = sm_pulsed;
-    else {
-      throw runtime_error("value of sourcemode (" + sourcemode_string + ") is invalid\n");
-    }
-    free(sourcemodestr);
-    input_counter++;
+  auto source_mode_string = string_in(prhs[input_counter], "sourcemode string");
+  if (source_mode_string == "steadystate") {
+    sourcemode = sm_steadystate;
+  } else if (source_mode_string == "pulsed") {
+    sourcemode = sm_pulsed;
   } else {
-    throw runtime_error("Expected sourcemode to be a string");
+    throw runtime_error("value of sourcemode (" + source_mode_string + ") is invalid\n");
   }
-  /*Got sourcemode*/
+  input_counter++;
 
   /*Get runmode*/
-  if (mxIsChar(prhs[input_counter])) {
-    sourcemodestr = (char *) malloc(
-            (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])) * sizeof(char));
-    string runmode_string = sourcemodestr;
-    mxGetString((mxArray *) prhs[input_counter], sourcemodestr,
-                (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])));
-    if (!strncmp(sourcemodestr, "complete", 8)) runmode = rm_complete;
-    else if (!strncmp(sourcemodestr, "analyse", 7))
-      runmode = rm_analyse;
-    else {
-      throw runtime_error("value of runmode (" + runmode_string + ") is invalid\n");
-    }
-    free(sourcemodestr);
-    input_counter++;
+  auto run_mode_string = string_in(prhs[input_counter], "runmode string");
+  if (run_mode_string == "complete") {
+    runmode = rm_complete;
+  } else if (run_mode_string == "analyse") {
+    runmode = rm_analyse;
   } else {
-    throw runtime_error("Expected runmode to be a string");
+    throw runtime_error("value of runmode (" + run_mode_string + ") is invalid\n");
   }
-  /*Got runmode*/
+  input_counter++;
 
   /*Get exphasorsvolume*/
-  if (mxIsDouble(prhs[input_counter])) {
-    exphasorsvolume = (int) *mxGetPr((mxArray *) prhs[input_counter++]);
-
-  } else {
-    throw runtime_error("expected exphasorsvolume to be a double");
-  }
-  /*Got exphasorsvolume*/
+  params.exphasorsvolume = bool_cast_from_double_in(prhs[input_counter], "exphasorsvolume");
+  input_counter++;
 
   /*Get exphasorssurface*/
-  if (mxIsDouble(prhs[input_counter])) {
-    exphasorssurface = (int) *mxGetPr((mxArray *) prhs[input_counter++]);
-  } else {
-    throw runtime_error("expected exphasorssurface to be a double");
-  }
-  /*Got exphasorssurface*/
+  params.exphasorssurface = bool_cast_from_double_in(prhs[input_counter], "exphasorssurface");
+  input_counter++;
 
   /*Get intphasorssurface*/
-  if (mxIsDouble(prhs[input_counter])) {
-    intphasorssurface = (int) *mxGetPr((mxArray *) prhs[input_counter++]);
-  } else {
-    throw runtime_error("expected intphasorssurface to be a double");
-  }
-  /*Got intphasorssurface*/
+  params.intphasorssurface = bool_cast_from_double_in(prhs[input_counter], "intphasorssurface");
+  input_counter++;
 
   /*Get phasorsurface*/
   /*Only do if exphasorssurface is true*/
-  if (exphasorssurface && runmode == rm_complete) {
+  if (params.exphasorssurface && runmode == rm_complete) {
     ndims = mxGetNumberOfDimensions(prhs[input_counter]);
     dimptr_out = mxGetDimensions((mxArray *) prhs[input_counter]);
     if (ndims != 2) { throw runtime_error("expected phasorsurface to be a vector of length 6"); }
@@ -1222,7 +1188,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Qos 00 (%d) (%d,%d,%d,%d):\n",J_tot,cuboid[0], cuboid[1],cuboid[4], cuboid[5]);
   /*set up surface mesh if required*/
 
-  if (exphasorssurface && runmode == rm_complete) {
+  if (params.exphasorssurface && runmode == rm_complete) {
     if (J_tot == 0)
       conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5], &mx_surface_vertices,
                             &mx_surface_facets);
@@ -1283,7 +1249,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       dims[2] = K_tot - params.pml.Dzu - params.pml.Dzl - 3 + 1;*/
   auto output_grid_labels = GridLabels();
 
-  if (runmode == rm_complete && exphasorsvolume) {
+  if (runmode == rm_complete && params.exphasorsvolume) {
     ndims = 3;
 
     dims[0] = E.I_tot;
@@ -1397,7 +1363,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //plhs[16] -> plhs[18] are the interpolated magnetic field values
 
   //initialise arrays
-  if (runmode == rm_complete && exphasorsvolume) {
+  if (runmode == rm_complete && params.exphasorsvolume) {
     E.zero();
     H.zero();
   }
@@ -1452,7 +1418,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[26] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
   }
   //fprintf(stderr,"Pre 12\n");
-  if (runmode == rm_complete && sourcemode == sm_steadystate && exphasorsvolume) {
+  if (runmode == rm_complete && sourcemode == sm_steadystate && params.exphasorsvolume) {
     E_copy.zero();
   }
   //fprintf(stderr,"Pre 13\n");
@@ -1775,7 +1741,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     //Extract phasors
     auto timer = Timer();
     if ((dft_counter == Nsteps) && (runmode == rm_complete) && (sourcemode == sm_steadystate) &&
-        exphasorsvolume) {//runmode=complete,sourcemode=steadystate
+        params.exphasorsvolume) {//runmode=complete,sourcemode=steadystate
       dft_counter = 0;
       double tol = checkPhasorConvergence(E, E_copy, E_s);
 
@@ -1790,7 +1756,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       E.zero();
       H.zero();
 
-      if (exphasorssurface) {
+      if (params.exphasorssurface) {
         initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, N_f_ex_vec);
         initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, N_f_ex_vec);
       }
@@ -1798,13 +1764,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     //fprintf(stderr,"Pos 01:\n");
 
-    if ((sourcemode == sm_steadystate) && (runmode == rm_complete) && exphasorsvolume) {
+    if ((sourcemode == sm_steadystate) && (runmode == rm_complete) && params.exphasorsvolume) {
 
       E.set_phasors(E_s, dft_counter - 1, params.omega_an, params.dt, Nsteps);
       H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
 
-      if (exphasorssurface) {
-        if (intphasorssurface) {
+      if (params.exphasorssurface) {
+        if (params.intphasorssurface) {
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, params.dt,
@@ -1820,7 +1786,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
       }
 
-    } else if ((sourcemode == sm_pulsed) && (runmode == rm_complete) && exphasorsvolume) {
+    } else if ((sourcemode == sm_pulsed) && (runmode == rm_complete) && params.exphasorsvolume) {
       if (TIME_EXEC) { timer.click(); }
 
       if ((tind - params.start_tind) % Np == 0) {
@@ -1862,9 +1828,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*end extract fieldsample*/
 
     //fprintf(stderr,"Pos 02:\n");
-    if (sourcemode == sm_pulsed && runmode == rm_complete && exphasorssurface) {
+    if (sourcemode == sm_pulsed && runmode == rm_complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % Np == 0) {
-        if (intphasorssurface)
+        if (params.intphasorssurface)
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe,
@@ -4979,7 +4945,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     if (TIME_EXEC) { timer.click(); }
 
-    if (exphasorssurface || exphasorsvolume || exdetintegral || (nvertices > 0)) {
+    if (params.exphasorssurface || params.exphasorsvolume || exdetintegral || (nvertices > 0)) {
       if (sourcemode == sm_steadystate) {
         E.add_to_angular_norm(tind, Nsteps, params);
         H.add_to_angular_norm(tind, Nsteps, params);
@@ -5033,7 +4999,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     //fprintf(stderr,"Post-iter 3\n");
     if ((sourcemode == sm_steadystate) && (tind == (params.Nt - 1)) && (runmode == rm_complete) &&
-        exphasorsvolume) {
+        params.exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
       copyPhasors(E_copy, E, (int) mxGetNumberOfElements((mxArray *) plhs[0]));
     }
@@ -5071,13 +5037,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //save state of fdtdgrid
 
   //fprintf(stderr,"Pos 12\n");
-  if (runmode == rm_complete && exphasorsvolume) {
+  if (runmode == rm_complete && params.exphasorsvolume) {
     E.normalise_volume();
     H.normalise_volume();
   }
 
   //fprintf(stderr,"Pos 13\n");
-  if (runmode == rm_complete && exphasorssurface)
+  if (runmode == rm_complete && params.exphasorssurface)
     for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
       normaliseSurface(surface_EHr[ifx], surface_EHi[ifx], surface_vertices, n_surface_vertices,
                        E_norm[ifx], H_norm[ifx]);
@@ -5137,14 +5103,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[25] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
   *mxGetPr((mxArray *) plhs[25]) = maxfield;
 
-  if (runmode == rm_complete && exphasorsvolume) {
+  if (runmode == rm_complete && params.exphasorsvolume) {
     setGridLabels(input_grid_labels, output_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
   
   auto interp_output_grid_labels = GridLabels();
 
   //fprintf(stderr,"Pos 15_m1\n");
-  if (runmode == rm_complete && exphasorsvolume) {
+  if (runmode == rm_complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (dimension == THREE) {
       fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
@@ -5223,7 +5189,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Pos 16\n");
   /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
     these vertices and a list of facets*/
-  if (exphasorssurface && runmode == rm_complete) {
+  if (params.exphasorssurface && runmode == rm_complete) {
     //first regenerate the mesh since we threw away the facet list before iterating
     mxArray *dummy_vertex_list;
     if (J_tot == 0)
@@ -5269,7 +5235,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //fprintf(stderr,"Pos 17\n");
   /*Free the additional data structures used to cast the matlab arrays*/
-  if (exphasorssurface && runmode == rm_complete) {
+  if (params.exphasorssurface && runmode == rm_complete) {
     freeCastMatlab2DArrayInt(surface_vertices);
     freeCastMatlab3DArray(surface_EHr, N_f_ex_vec);
     freeCastMatlab3DArray(surface_EHi, N_f_ex_vec);
