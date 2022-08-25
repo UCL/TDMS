@@ -78,9 +78,10 @@ double ***allocate3dmemory(int I, int J, int K) {
 TEST_CASE("E-field interpolation check") {
 
     // error tolerance
-    // this needs to be set based on some kind of reference value... to MATLAB?
-    // for the record, 3e-3 seems to be the cut-off "yes, this works"
-    double tol = 3e-3;
+    // this needs to be set based on some kind of reference value.
+    // Implementing this scheme in MATLAB (for the fields above) yields an error of
+    // Ex : 6.30866994e-02 | Ey : 1.26746769e-01 | Ez : 2.55475206e-01
+    double Ex_tol = 6.30866994e-02, Ey_tol = 1.26746769e-01, Ez_tol = 2.55475206e-01;
 
     // fake domain setup
     int Nx = 100, Ny = 50, Nz = 25;
@@ -148,9 +149,9 @@ TEST_CASE("E-field interpolation check") {
         {
             for (int kk = 1; kk < Nz; kk++)
             {
-                CHECK(abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]) < tol);
-                CHECK(abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]) < tol);
-                CHECK(abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]) < tol);
+                CHECK(abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]) < Ex_tol);
+                CHECK(abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]) < Ey_tol);
+                CHECK(abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]) < Ez_tol);
                 // cout << ii; cout << ", "; cout << jj; cout << ", "; cout << kk; cout << " \t | ";
                 // cout << abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]); cout << "\t | ";
                 // cout << abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]); cout << "\t | ";
