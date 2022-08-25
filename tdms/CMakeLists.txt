@@ -101,7 +101,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
     add_executable(tdms_tests
             tests/unit/test_openandorder.cpp
             tests/unit/test_interp_determination.cpp
-            tests/unit/test_interp_methods.cpp)
+            tests/unit/test_interp_fns.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
