@@ -4,13 +4,13 @@
  *                 such as phasor extraction etc. Works in both pulsed 
  *                 and steady state mode.
  ******************************************************************/
-#include "omp.h"
-#include "complex"
-#include "ctime"
-#include "cstring"
-#include "algorithm"
 
 #include "globals.h"
+#include <complex>
+#include <algorithm>
+#include <cstring>
+#include <ctime>
+#include <omp.h>
 #include "interpolate.h"
 #include "iterator.h"
 #include "interface.h"

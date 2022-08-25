@@ -1,5 +1,5 @@
-#include "cstdio"
-#include "omp.h"
+#include <cstdio>
+#include <omp.h>
 #include "timer.h"
 
 

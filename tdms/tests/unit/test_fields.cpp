@@ -1,21 +1,14 @@
-#include "catch2/catch_test_macros.hpp"
-#include "complex"
+#include <catch2/catch_test_macros.hpp>
+#include <complex>
 #include "field.h"
-#include "numeric.h"
-
-#include "iostream"
 
 using namespace std;
 
 
-inline bool is_close(double a, double b){
-  return abs(a - b) < 1E-10;
+template<typename T>
+inline bool is_close(T a, T b){
+  return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
 }
-
-inline bool is_close(complex<double> a, complex<double> b){
-  return is_close(a.real(), b.real()) && is_close(a.imag(), b.imag());
-}
-
 
 TEST_CASE("Test electric field angular norm addition") {
 
@@ -26,7 +19,6 @@ TEST_CASE("Test electric field angular norm addition") {
   auto I = complex<double>(0., 1.);
 
   auto E = ElectricField();
-  E.ft = 1.0;
   auto params = SimulationParameters();
   params.omega_an = OMEGA;
   params.dt = DT;
@@ -34,7 +26,7 @@ TEST_CASE("Test electric field angular norm addition") {
   // z = e^(iω(n+1)dt) / N_t
   auto expected = exp(OMEGA * ((double)N + 1) * DT * I) / ((double) N_T);
 
-  E.add_to_angular_norm(N, N_T, params);
+  E.add_to_angular_norm(1., N, N_T, params);
   REQUIRE(is_close(E.angular_norm, expected));
 }
 
@@ -47,8 +39,6 @@ TEST_CASE("Test magnetic field angular norm addition") {
   auto I = complex<double>(0., 1.);
 
   auto H = MagneticField();
-  H.ft = 1.0;
-  
   auto params = SimulationParameters();
   params.omega_an = OMEGA;
   params.dt = DT;
@@ -56,15 +46,10 @@ TEST_CASE("Test magnetic field angular norm addition") {
   // z = e^(iω(n+1/2)dt) / N_t
   auto expected = exp(OMEGA * ((double)N + 0.5) * DT * I) / ((double) N_T);
 
-  H.add_to_angular_norm(N, N_T, params);
+  H.add_to_angular_norm(1., N, N_T, params);
   REQUIRE(is_close(H.angular_norm, expected));
 }
 
-TEST_CASE("Test that a split field can be constructed without allocation"){
-
-  auto field = ElectricSplitField();
-  REQUIRE(field.xy == nullptr);
-}
 
 TEST_CASE("Test that a split field can be allocated and zeroed"){
 

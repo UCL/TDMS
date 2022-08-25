@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tdms LANGUAGES CXX)
+include(CTest)
 
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
@@ -73,6 +74,7 @@ set(SOURCES
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
+    src/magnetic_field.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
@@ -86,7 +88,7 @@ set(SOURCES
     matlabio/matlabio.cpp
     )
 
-if (CMAKE_BUILD_TYPE STREQUAL "Test")
+if (BUILD_TESTING)
     test_target()
 else()
     release_target()
@@ -109,7 +111,7 @@ endif()
 install(TARGETS tdms)
 
 # Testing ---------------------------------------------------------------------
-if (CMAKE_BUILD_TYPE STREQUAL "Test")
+if (BUILD_TESTING)
     enable_testing()
 
     add_executable(tdms_tests
