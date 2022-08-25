@@ -5,12 +5,12 @@
  *                 and steady state mode.
  ******************************************************************/
 
-#include "globals.h"
 #include <complex>
 #include <algorithm>
 #include <cstring>
 #include <ctime>
 #include <omp.h>
+#include "globals.h"
 #include "interpolate.h"
 #include "iterator.h"
 #include "interface.h"

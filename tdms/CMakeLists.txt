@@ -74,8 +74,7 @@ set(SOURCES
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
-    src/magnetic_field.cpp
-    src/matrix_collection.cpp
+        src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
     src/numerical_derivative.cpp
