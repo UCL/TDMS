@@ -8,5 +8,5 @@ private:
 public:
   void initialise(const mxArray *ptr, int J_tot);
 
-  int operator[] (int value) const;
+  inline int operator[] (int value) const { return array[value]; };
 };

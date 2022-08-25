@@ -81,3 +81,17 @@ public:
 public:
   explicit DispersiveMultiLayer(const mxArray *ptr);
 };
+
+class GratingStructure{
+private:
+  int** matrix = nullptr;
+
+public:
+  inline int* operator[] (int value) const { return matrix[value]; }
+
+  GratingStructure(const mxArray *ptr, int I_tot);
+
+  bool has_elements(){ return matrix != nullptr; };
+
+  ~GratingStructure();
+};

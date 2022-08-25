@@ -24,7 +24,3 @@ void Cuboid::initialise(const mxArray *ptr, int J_tot) {
       throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
   }
 }
-
-int Cuboid::operator[](int value) const {
-  return array[value];
-}

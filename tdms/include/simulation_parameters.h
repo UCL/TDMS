@@ -47,6 +47,7 @@ public:
     RunMode      run_mode     = complete;   // Run mode
     SourceMode   source_mode  = pulsed;     // Source mode
     Dimension    dimension    = THREE;      // Dimensions to calculate in
+    bool         is_structure = false;      // Has a grating structure been defined?
 
     void set_run_mode(std::string mode_string);
 
