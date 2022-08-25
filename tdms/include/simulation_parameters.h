@@ -15,7 +15,7 @@ public:
 
     double       omega_an      = 0.0;       // Angular ω
     unsigned int Nt            = 0;         // Number of simulation steps
-    int          start_tind    = 0;         // Starting iteration number for the time steps
+    unsigned int start_tind    = 0;         // Starting iteration number for the time steps
     double       dt            = 0.0;       // Time step
     bool         has_tdfdir    = false;     // Is the tdfdir (time domain field directory) defined?
     bool         is_multilayer = false;     // Is this simulation of a multilayer?

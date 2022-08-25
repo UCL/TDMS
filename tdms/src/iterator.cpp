@@ -319,7 +319,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   int i, j, k, is_disp, is_cond = 0;
   int k_loc;
-  int tind;
   int input_counter = 0;
   int cuboid[6];
   int **vertices;
@@ -1125,7 +1124,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
 
   //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
-  for (tind = params.start_tind; tind < params.Nt; tind++)
+  for (unsigned int tind = params.start_tind; tind < params.Nt; tind++)
     if ((tind - params.start_tind) % Np == 0) Npe++;
   fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, params.Nt, Npe, f_max,
           2.5 * params.dt * f_max);
@@ -1689,7 +1688,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
 
-  for (tind = params.start_tind; tind < params.Nt; tind++) {
+  for (unsigned int tind = params.start_tind; tind < params.Nt; tind++) {
     //fprintf(stderr,"Pos 00:\n");
     time_E = ((double) (tind + 1)) * params.dt;
     time_H = time_E - params.dt / 2.;
