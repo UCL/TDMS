@@ -80,3 +80,21 @@ void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
+
+DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
+
+  if (mxIsEmpty(ptr)) {
+    return;
+  }
+  assert_is_struct_with_n_fields(ptr, 9, "dispersive_aux");
+
+  alpha = mxGetPr(ptr_to_vector_in(ptr, "alpha", "dispersive_aux"));
+  beta = mxGetPr(ptr_to_vector_in(ptr, "beta", "dispersive_aux"));
+  gamma = mxGetPr(ptr_to_vector_in(ptr, "gamma", "dispersive_aux"));
+  kappa.x = mxGetPr(ptr_to_matrix_in(ptr, "kappa_x", "dispersive_aux"));
+  kappa.y = mxGetPr(ptr_to_matrix_in(ptr, "kappa_y", "dispersive_aux"));
+  kappa.z = mxGetPr(ptr_to_matrix_in(ptr, "kappa_z", "dispersive_aux"));
+  sigma.x = mxGetPr(ptr_to_matrix_in(ptr, "sigma_x", "dispersive_aux"));
+  sigma.y = mxGetPr(ptr_to_matrix_in(ptr, "sigma_y", "dispersive_aux"));
+  sigma.z = mxGetPr(ptr_to_matrix_in(ptr, "sigma_z", "dispersive_aux"));
+}

@@ -285,7 +285,7 @@ bool bool_cast_from_double_in(const mxArray* ptr, const std::string &name){
   return (bool) double_in(ptr, name);
 }
 
-std::string string_in(const mxArray *ptr, const string &name) {
+string string_in(const mxArray *ptr, const string &name) {
 
   if (mxIsChar(ptr)){
     auto n = 1 + (int) mxGetNumberOfElements(ptr);

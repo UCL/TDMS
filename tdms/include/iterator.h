@@ -45,7 +45,7 @@ void normaliseVertices( double **EHr, double **EHi ,
 
 bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 
-int is_dispersive_ml(double *ml_gamma, int K_tot);
+bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
 
 void extractPhasorsVertices( double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
 			     int **vertices, int nvertices, int *components, int ncomponents,
