@@ -78,6 +78,7 @@ set(SOURCES
     src/mesh_base.cpp
     src/numeric.cpp
     src/numerical_derivative.cpp
+    src/shapes.cpp
     src/simulation_parameters.cpp
     src/source.cpp
     src/tensor_init.cpp

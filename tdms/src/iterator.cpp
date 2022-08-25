@@ -18,6 +18,7 @@
 #include "mesh_base.h"
 #include "numeric.h"
 #include "numerical_derivative.h"
+#include "shapes.h"
 #include "source.h"
 #include "tensor_init.h"
 #include "timer.h"
@@ -320,7 +321,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int i, j, k, is_disp, is_cond = 0;
   int k_loc;
   int input_counter = 0;
-  int cuboid[6];
   int **vertices;
   int nvertices = 0;
   int *components;
@@ -366,7 +366,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
 
-  char dimension_str[3];
   const char conductive_aux_elements[][10] = {"rho_x", "rho_y", "rho_z"};
   const char dispersive_aux_elements[][10] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
@@ -495,27 +494,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get phasorsurface*/
   /*Only do if exphasorssurface is true*/
+  auto cuboid = Cuboid();
   if (params.exphasorssurface && runmode == rm_complete) {
-    ndims = mxGetNumberOfDimensions(prhs[input_counter]);
-    dimptr_out = mxGetDimensions((mxArray *) prhs[input_counter]);
-    if (ndims != 2) { throw runtime_error("expected phasorsurface to be a vector of length 6"); }
-    if (dimptr_out[0] * dimptr_out[1] != 6) {
-      throw runtime_error("expected phasorsurface to be a vector of length 6");
-    }
-    //now safe to extract the indices
-    for (i = 0; i < 6; i++) {
-      cuboid[i] = (int) *(mxGetPr((mxArray *) prhs[input_counter]) + i) -
-                  1;//must go from matlab coords to C
-      if (cuboid[i] < 0) { cuboid[i] = 0; }
-    }
-    if (J_tot == 0)
-      if (cuboid[2] != cuboid[3]) {
-        throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
-      }
+    cuboid.initialise(prhs[input_counter], J_tot);
   }
   input_counter++;
-  /*Got phasorsurface*/
   //fprintf(stderr,"Got   phasorsurface\n");
+
   /*Get phasorinc*/
   if (mxIsDouble(prhs[input_counter])) {
     double *tmpptr = mxGetPr((mxArray *) prhs[input_counter++]);
@@ -526,19 +511,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Got phasorinc*/
 
   /*Get dimension*/
-  mxGetString((mxArray *) prhs[input_counter], dimension_str, 3);
-  //now set the dimension integer
-  if (are_equal(dimension_str, "3")) dimension = THREE;
-  else if (are_equal(dimension_str, "TE"))
+  auto dimension_string = string_in(prhs[input_counter++], "sourcemode string");
+  if (dimension_string == "3"){
+    dimension = THREE;
+  } else if (dimension_string == "TE"){
     dimension = TE;
-  else
+  } else{
     dimension = TM;
-
-  input_counter++;
-  /*Got dimension*/
+  }
 
   /*Get conductive_aux */
-
   if (mxIsStruct(prhs[input_counter])) {
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
     if (num_fields != 3) {
