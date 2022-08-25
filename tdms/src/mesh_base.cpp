@@ -89,7 +89,7 @@ void triangulatePlane(int I0, int I1, int J0, int J1, int K,int coordmap[], int 
    
   *vertexMatrix =  mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
 
-  vertices = castMatlab2DArrayInt((int *)mxGetPr(*vertexMatrix), dims[0], dims[1]);
+  vertices = cast_matlab_2D_array((int *) mxGetPr(*vertexMatrix), dims[0], dims[1]);
   
   if( !(order==1 || order==-1) )
     mexErrMsgTxt("Error in triangulatePlane(), order can take the value of +1 or -1");
@@ -168,8 +168,8 @@ void triangulatePlane(int I0, int I1, int J0, int J1, int K,int coordmap[], int 
       }
 
   //now free memory
-  
-  freeCastMatlab2DArrayInt(vertices);
+
+  free_cast_matlab_2D_array(vertices);
 }
 
 void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ){
@@ -209,7 +209,7 @@ void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], 
   dims[0] = 2*(countI-1)*(countJ-1);//number of triangles
   
   *vertexMatrix =  mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
-  vertices = castMatlab2DArrayInt((int *)mxGetPr(*vertexMatrix), dims[0], dims[1]);
+  vertices = cast_matlab_2D_array((int *) mxGetPr(*vertexMatrix), dims[0], dims[1]);
   if(1){  
   if( !(order==1 || order==-1) )
     mexErrMsgTxt("Error in triangulatePlane(), order can take the value of +1 or -1");
@@ -289,8 +289,8 @@ void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], 
       }
   
   //now free memory
-  
-  freeCastMatlab2DArrayInt(vertices);
+
+  free_cast_matlab_2D_array(vertices);
   }
 }
 
@@ -397,7 +397,7 @@ void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
   dims[2] = K1-K0+1;
  
   index_map = mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
-  index_map_int = castMatlab3DArrayInt((int *)mxGetPr(index_map), dims[0], dims[1], dims[2]) ;
+  index_map_int = cast_matlab_3D_array((int *) mxGetPr(index_map), dims[0], dims[1], dims[2]) ;
 
   //now initialise each entry to -1
   for(i=0;i<dims[0];i++)
@@ -420,7 +420,7 @@ void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
   dims_v[0] = nindices;
   dims_v[1] = 3;
   *vertices = mxCreateNumericArray( ndims_v, (const mwSize *)dims_v, mxINT32_CLASS, mxREAL);
-  vertices_int = castMatlab2DArrayInt((int *)mxGetPr(*vertices),dims_v[0], dims_v[1]);
+  vertices_int = cast_matlab_2D_array((int *) mxGetPr(*vertices), dims_v[0], dims_v[1]);
   //now generate triangles
   triangulateCuboid(I0,I1,J0,J1,K0,K1,triangles);
   
@@ -431,14 +431,14 @@ void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
     dims_f[0] = dims_f[0]/2;
   dims_f[1] = 3;
   *facets = mxCreateNumericArray( ndims_f, (const mwSize *)dims_f, mxINT32_CLASS, mxREAL);
-  facets_int = castMatlab2DArrayInt((int *)mxGetPr(*facets), dims_f[0], dims_f[1]);
+  facets_int = cast_matlab_2D_array((int *) mxGetPr(*facets), dims_f[0], dims_f[1]);
   //now populate the matrices
   for(i=0;i<6;i++){//loop over each plane
    
     if( !(i==2 && I0==I1) && !(i==0 && K0==K1) && !(i==4 && J0==J1) ){
       
       dims_t = mxGetDimensions(triangles[i]);
-      triangles_int = castMatlab2DArrayInt((int *)mxGetPr(triangles[i]), dims_t[0], dims_t[1]);
+      triangles_int = cast_matlab_2D_array((int *) mxGetPr(triangles[i]), dims_t[0], dims_t[1]);
       for(j=0;j<(int)dims_t[0];j++){//now iterate over triangle
 	
 	for(k=0;k<3;k++){//now each vertex in the triangle
@@ -462,15 +462,15 @@ void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
 	facets_int[2][facets_counter++] = temp_vertex[2];
 	
       }//of loope on each triangle
-      freeCastMatlab2DArrayInt(triangles_int);
+      free_cast_matlab_2D_array(triangles_int);
     }
   }//of loop over each plane
   
 
   //free memory etc
-  freeCastMatlab3DArrayInt(index_map_int,dims[2]);
-  freeCastMatlab2DArrayInt(facets_int);
-  freeCastMatlab2DArrayInt(vertices_int);
+  free_cast_matlab_3D_array(index_map_int, dims[2]);
+  free_cast_matlab_2D_array(facets_int);
+  free_cast_matlab_2D_array(vertices_int);
 
   for(i=0;i<6;i++)
     mxDestroyArray(triangles[i]);
@@ -576,12 +576,12 @@ void conciseCreateBoundary(int I0, int I1,int K0, int K1,
   dims[0] = Nverts;
   dims[1] = 3;
   *vertices = mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
-  int **vertices_int =  castMatlab2DArrayInt((int *)mxGetPr(*vertices),dims[0], dims[1]);
+  int **vertices_int = cast_matlab_2D_array((int *) mxGetPr(*vertices), dims[0], dims[1]);
   
   dims[0] = Nfacets;
   dims[1] = 3;
   *facets = mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
-  int **facets_int =castMatlab2DArrayInt((int *)mxGetPr(*facets),dims[0], dims[1]);
+  int **facets_int = cast_matlab_2D_array((int *) mxGetPr(*facets), dims[0], dims[1]);
   
   int vertc=0;int vind_i;int vind_k;int verti;
   for(fcount=0;fcount<Nfacets;fcount++){
@@ -599,9 +599,9 @@ void conciseCreateBoundary(int I0, int I1,int K0, int K1,
     }
     facets_int[2][fcount]=verti;
   }
-  
-  freeCastMatlab2DArrayInt(facets_int);
-  freeCastMatlab2DArrayInt(vertices_int);
+
+  free_cast_matlab_2D_array(facets_int);
+  free_cast_matlab_2D_array(vertices_int);
   
   for(int i=0;i<(Nverts+4);i++)
     free(verts_t[i]);
@@ -649,7 +649,7 @@ void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1
   dims[2] = (K1-K0)/dK+1;
  
   index_map = mxCreateNumericArray( ndims, (const mwSize *)dims, mxINT32_CLASS, mxREAL);
-  index_map_int = castMatlab3DArrayInt((int *)mxGetPr(index_map), dims[0], dims[1], dims[2]) ;
+  index_map_int = cast_matlab_3D_array((int *) mxGetPr(index_map), dims[0], dims[1], dims[2]) ;
   
   //now initialise each entry to -1
   for(i=0;i<(int)dims[0];i++)
@@ -677,7 +677,7 @@ void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1
   dims_v[1] = 3;
   *vertices = mxCreateNumericArray( ndims_v, (const mwSize *)dims_v, mxINT32_CLASS, mxREAL);
   
-  vertices_int = castMatlab2DArrayInt((int *)mxGetPr(*vertices),dims_v[0], dims_v[1]);
+  vertices_int = cast_matlab_2D_array((int *) mxGetPr(*vertices), dims_v[0], dims_v[1]);
   //now generate triangles
   triangulateCuboidSkip(I0,I1,J0,J1,K0,K1,triangles,dI,dJ,dK);
   
@@ -688,14 +688,14 @@ void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1
     dims_f[0] = dims_f[0]/2;
   dims_f[1] = 3;
   *facets = mxCreateNumericArray( ndims_f, (const mwSize *)dims_f, mxINT32_CLASS, mxREAL);
-  facets_int = castMatlab2DArrayInt((int *)mxGetPr(*facets), dims_f[0], dims_f[1]);
+  facets_int = cast_matlab_2D_array((int *) mxGetPr(*facets), dims_f[0], dims_f[1]);
  
   //now populate the matrices
   for(i=0;i<6;i++){//loop over each plane
     //    fprintf(stderr,"Here %d\n",i);
     if( !(i==2 && (I1-I0)<dI) && !(i==0 && (K1-K0)<dK) && !(i==4 && (J1-J0)<dJ) ){
       dims_t = mxGetDimensions(triangles[i]);
-      triangles_int = castMatlab2DArrayInt((int *)mxGetPr(triangles[i]), dims_t[0], dims_t[1]);
+      triangles_int = cast_matlab_2D_array((int *) mxGetPr(triangles[i]), dims_t[0], dims_t[1]);
       	    
       for(j=0;j<(int)dims_t[0];j++){//now iterate over triangle
 	
@@ -717,14 +717,14 @@ void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1
 	facets_int[1][facets_counter] = temp_vertex[1];
 	facets_int[2][facets_counter++] = temp_vertex[2];
       }//of loope on each triangle
-      freeCastMatlab2DArrayInt(triangles_int);
+      free_cast_matlab_2D_array(triangles_int);
     }
   }//of loop over each plane
   
   //free memory etc
-  freeCastMatlab3DArrayInt(index_map_int,dims[2]);
-  freeCastMatlab2DArrayInt(facets_int);
-  freeCastMatlab2DArrayInt(vertices_int);
+  free_cast_matlab_3D_array(index_map_int, dims[2]);
+  free_cast_matlab_2D_array(facets_int);
+  free_cast_matlab_2D_array(vertices_int);
 
   for(i=0;i<6;i++)
     mxDestroyArray(triangles[i]);

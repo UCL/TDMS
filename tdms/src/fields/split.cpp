@@ -37,7 +37,7 @@ SplitField::~SplitField() {
     if (component == nullptr || has_no_elements()) continue;
 
     if (is_matlab_allocated) {
-      freeCastMatlab3DArray(component, K_tot+1);
+      free_cast_matlab_3D_array(component, K_tot + 1);
     } else {
       destroy3DArray(&component, J_tot+1, K_tot+1);
     }

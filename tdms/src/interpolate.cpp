@@ -188,14 +188,14 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
 
   // cast data in the Yee cells to complex MATLAB arrays
   //fprintf(stderr, "mxInterpolateFieldCentralE Pos 02\n");
-  Ex_yee_R = castMatlab3DArray(mxGetPr(Ex_yee), indims[0], indims[1], indims[2]);
-  Ex_yee_I = castMatlab3DArray(mxGetPi(Ex_yee), indims[0], indims[1], indims[2]);
+  Ex_yee_R = cast_matlab_3D_array(mxGetPr(Ex_yee), indims[0], indims[1], indims[2]);
+  Ex_yee_I = cast_matlab_3D_array(mxGetPi(Ex_yee), indims[0], indims[1], indims[2]);
 
-  Ey_yee_R = castMatlab3DArray(mxGetPr(Ey_yee), indims[0], indims[1], indims[2]);
-  Ey_yee_I = castMatlab3DArray(mxGetPi(Ey_yee), indims[0], indims[1], indims[2]);
+  Ey_yee_R = cast_matlab_3D_array(mxGetPr(Ey_yee), indims[0], indims[1], indims[2]);
+  Ey_yee_I = cast_matlab_3D_array(mxGetPi(Ey_yee), indims[0], indims[1], indims[2]);
 
-  Ez_yee_R = castMatlab3DArray(mxGetPr(Ez_yee), indims[0], indims[1], indims[2]);
-  Ez_yee_I = castMatlab3DArray(mxGetPi(Ez_yee), indims[0], indims[1], indims[2]);
+  Ez_yee_R = cast_matlab_3D_array(mxGetPr(Ez_yee), indims[0], indims[1], indims[2]);
+  Ez_yee_I = cast_matlab_3D_array(mxGetPi(Ez_yee), indims[0], indims[1], indims[2]);
   //fprintf(stderr, "mxInterpolateFieldCentralE Pos 03\n");
 
   //now construct the output matrices
@@ -212,14 +212,14 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 //fprintf(stderr, "mxInterpolateFieldCentralE Pos 04a\n");
-  ExR = castMatlab3DArray(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
-  ExI = castMatlab3DArray(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExR = cast_matlab_3D_array(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExI = cast_matlab_3D_array(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
 //fprintf(stderr, "mxInterpolateFieldCentralE Pos 04b\n");
-  EyR = castMatlab3DArray(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
-  EyI = castMatlab3DArray(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyR = cast_matlab_3D_array(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyI = cast_matlab_3D_array(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
 //fprintf(stderr, "mxInterpolateFieldCentralE Pos 04c\n");
-  EzR = castMatlab3DArray(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
-  EzI = castMatlab3DArray(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzR = cast_matlab_3D_array(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzI = cast_matlab_3D_array(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
   //fprintf(stderr, "mxInterpolateFieldCentralE Pos 05\n");
 
   //now interpolate fields
@@ -229,19 +229,19 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   interpolateFieldCentralE( Ex_yee_R, Ey_yee_R, Ez_yee_R, ExR, EyR, EzR, indims[0], indims[1], indims[2], i_l, i_u, j_l, j_u, k_l, k_u);
   
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Ex_yee_R,indims[2]);
-  freeCastMatlab3DArray(Ex_yee_I,indims[2]);
-  freeCastMatlab3DArray(Ey_yee_R,indims[2]);
-  freeCastMatlab3DArray(Ey_yee_I,indims[2]);
-  freeCastMatlab3DArray(Ez_yee_R,indims[2]);
-  freeCastMatlab3DArray(Ez_yee_I,indims[2]);
+  free_cast_matlab_3D_array(Ex_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Ex_yee_I, indims[2]);
+  free_cast_matlab_3D_array(Ey_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Ey_yee_I, indims[2]);
+  free_cast_matlab_3D_array(Ez_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Ez_yee_I, indims[2]);
 
-  freeCastMatlab3DArray(ExR,outdims[2]);
-  freeCastMatlab3DArray(ExI,outdims[2]);
-  freeCastMatlab3DArray(EyR,outdims[2]);
-  freeCastMatlab3DArray(EyI,outdims[2]);
-  freeCastMatlab3DArray(EzR,outdims[2]);
-  freeCastMatlab3DArray(EzI,outdims[2]);
+  free_cast_matlab_3D_array(ExR, outdims[2]);
+  free_cast_matlab_3D_array(ExI, outdims[2]);
+  free_cast_matlab_3D_array(EyR, outdims[2]);
+  free_cast_matlab_3D_array(EyI, outdims[2]);
+  free_cast_matlab_3D_array(EzR, outdims[2]);
+  free_cast_matlab_3D_array(EzI, outdims[2]);
 }
 
 /**
@@ -288,14 +288,14 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
     mexErrMsgTxt("Ez_yee is not complex");
   }
 
-  Ex_yee_R = castMatlab3DArray(mxGetPr(Ex_yee), indims[0], indims[1],0);
-  Ex_yee_I = castMatlab3DArray(mxGetPi(Ex_yee), indims[0], indims[1],0);
+  Ex_yee_R = cast_matlab_3D_array(mxGetPr(Ex_yee), indims[0], indims[1], 0);
+  Ex_yee_I = cast_matlab_3D_array(mxGetPi(Ex_yee), indims[0], indims[1], 0);
 
-  Ey_yee_R = castMatlab3DArray(mxGetPr(Ey_yee), indims[0], indims[1],0);
-  Ey_yee_I = castMatlab3DArray(mxGetPi(Ey_yee), indims[0], indims[1],0);
+  Ey_yee_R = cast_matlab_3D_array(mxGetPr(Ey_yee), indims[0], indims[1], 0);
+  Ey_yee_I = cast_matlab_3D_array(mxGetPi(Ey_yee), indims[0], indims[1], 0);
 
-  Ez_yee_R = castMatlab3DArray(mxGetPr(Ez_yee), indims[0], indims[1],0);
-  Ez_yee_I = castMatlab3DArray(mxGetPi(Ez_yee), indims[0], indims[1],0);
+  Ez_yee_R = cast_matlab_3D_array(mxGetPr(Ez_yee), indims[0], indims[1], 0);
+  Ez_yee_I = cast_matlab_3D_array(mxGetPi(Ez_yee), indims[0], indims[1], 0);
 
   //now construct the output matrices
   ndims = 3;
@@ -308,14 +308,14 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 
-  ExR = castMatlab3DArray(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
-  ExI = castMatlab3DArray(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExR = cast_matlab_3D_array(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExI = cast_matlab_3D_array(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
 
-  EyR = castMatlab3DArray(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
-  EyI = castMatlab3DArray(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyR = cast_matlab_3D_array(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyI = cast_matlab_3D_array(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
 
-  EzR = castMatlab3DArray(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
-  EzI = castMatlab3DArray(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzR = cast_matlab_3D_array(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzI = cast_matlab_3D_array(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
   //now finally ready for interpolation
   interpolateFieldCentralE_TE( Ex_yee_I, Ey_yee_I, Ez_yee_I,
 			       ExI     , EyI     , EzI    ,
@@ -327,19 +327,19 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
 			       indims[0]     , indims[1]     , indims[2]     ,
 			       i_l, i_u, j_l, j_u, k_l, k_u);
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Ex_yee_R,0);
-  freeCastMatlab3DArray(Ex_yee_I,0);
-  freeCastMatlab3DArray(Ey_yee_R,0);
-  freeCastMatlab3DArray(Ey_yee_I,0);
-  freeCastMatlab3DArray(Ez_yee_R,0);
-  freeCastMatlab3DArray(Ez_yee_I,0);
+  free_cast_matlab_3D_array(Ex_yee_R, 0);
+  free_cast_matlab_3D_array(Ex_yee_I, 0);
+  free_cast_matlab_3D_array(Ey_yee_R, 0);
+  free_cast_matlab_3D_array(Ey_yee_I, 0);
+  free_cast_matlab_3D_array(Ez_yee_R, 0);
+  free_cast_matlab_3D_array(Ez_yee_I, 0);
 
-  freeCastMatlab3DArray(ExR,outdims[2]);
-  freeCastMatlab3DArray(ExI,outdims[2]);
-  freeCastMatlab3DArray(EyR,outdims[2]);
-  freeCastMatlab3DArray(EyI,outdims[2]);
-  freeCastMatlab3DArray(EzR,outdims[2]);
-  freeCastMatlab3DArray(EzI,outdims[2]);
+  free_cast_matlab_3D_array(ExR, outdims[2]);
+  free_cast_matlab_3D_array(ExI, outdims[2]);
+  free_cast_matlab_3D_array(EyR, outdims[2]);
+  free_cast_matlab_3D_array(EyI, outdims[2]);
+  free_cast_matlab_3D_array(EzR, outdims[2]);
+  free_cast_matlab_3D_array(EzI, outdims[2]);
 }
 
 /**
@@ -387,14 +387,14 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   }
 
 
-  Ex_yee_R = castMatlab3DArray(mxGetPr(Ex_yee), indims[0], indims[1],0);
-  Ex_yee_I = castMatlab3DArray(mxGetPi(Ex_yee), indims[0], indims[1],0);
+  Ex_yee_R = cast_matlab_3D_array(mxGetPr(Ex_yee), indims[0], indims[1], 0);
+  Ex_yee_I = cast_matlab_3D_array(mxGetPi(Ex_yee), indims[0], indims[1], 0);
 
-  Ey_yee_R = castMatlab3DArray(mxGetPr(Ey_yee), indims[0], indims[1],0);
-  Ey_yee_I = castMatlab3DArray(mxGetPi(Ey_yee), indims[0], indims[1],0);
+  Ey_yee_R = cast_matlab_3D_array(mxGetPr(Ey_yee), indims[0], indims[1], 0);
+  Ey_yee_I = cast_matlab_3D_array(mxGetPi(Ey_yee), indims[0], indims[1], 0);
 
-  Ez_yee_R = castMatlab3DArray(mxGetPr(Ez_yee), indims[0], indims[1],0);
-  Ez_yee_I = castMatlab3DArray(mxGetPi(Ez_yee), indims[0], indims[1],0);
+  Ez_yee_R = cast_matlab_3D_array(mxGetPr(Ez_yee), indims[0], indims[1], 0);
+  Ez_yee_I = cast_matlab_3D_array(mxGetPi(Ez_yee), indims[0], indims[1], 0);
 
   //now construct the output matrices
   ndims = 3;
@@ -407,14 +407,14 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 
-  ExR = castMatlab3DArray(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
-  ExI = castMatlab3DArray(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExR = cast_matlab_3D_array(mxGetPr(*Ex), outdims[0], outdims[1], outdims[2]);
+  ExI = cast_matlab_3D_array(mxGetPi(*Ex), outdims[0], outdims[1], outdims[2]);
 
-  EyR = castMatlab3DArray(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
-  EyI = castMatlab3DArray(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyR = cast_matlab_3D_array(mxGetPr(*Ey), outdims[0], outdims[1], outdims[2]);
+  EyI = cast_matlab_3D_array(mxGetPi(*Ey), outdims[0], outdims[1], outdims[2]);
 
-  EzR = castMatlab3DArray(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
-  EzI = castMatlab3DArray(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzR = cast_matlab_3D_array(mxGetPr(*Ez), outdims[0], outdims[1], outdims[2]);
+  EzI = cast_matlab_3D_array(mxGetPi(*Ez), outdims[0], outdims[1], outdims[2]);
 
   //now finally ready for interpolation
   interpolateFieldCentralE_TM( Ex_yee_I, Ey_yee_I, Ez_yee_I,
@@ -429,19 +429,19 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
 			       i_l, i_u, j_l, j_u, k_l, k_u);
   
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Ex_yee_R,0);
-  freeCastMatlab3DArray(Ex_yee_I,0);
-  freeCastMatlab3DArray(Ey_yee_R,0);
-  freeCastMatlab3DArray(Ey_yee_I,0);
-  freeCastMatlab3DArray(Ez_yee_R,0);
-  freeCastMatlab3DArray(Ez_yee_I,0);
+  free_cast_matlab_3D_array(Ex_yee_R, 0);
+  free_cast_matlab_3D_array(Ex_yee_I, 0);
+  free_cast_matlab_3D_array(Ey_yee_R, 0);
+  free_cast_matlab_3D_array(Ey_yee_I, 0);
+  free_cast_matlab_3D_array(Ez_yee_R, 0);
+  free_cast_matlab_3D_array(Ez_yee_I, 0);
 
-  freeCastMatlab3DArray(ExR,outdims[2]);
-  freeCastMatlab3DArray(ExI,outdims[2]);
-  freeCastMatlab3DArray(EyR,outdims[2]);
-  freeCastMatlab3DArray(EyI,outdims[2]);
-  freeCastMatlab3DArray(EzR,outdims[2]);
-  freeCastMatlab3DArray(EzI,outdims[2]);
+  free_cast_matlab_3D_array(ExR, outdims[2]);
+  free_cast_matlab_3D_array(ExI, outdims[2]);
+  free_cast_matlab_3D_array(EyR, outdims[2]);
+  free_cast_matlab_3D_array(EyI, outdims[2]);
+  free_cast_matlab_3D_array(EzR, outdims[2]);
+  free_cast_matlab_3D_array(EzI, outdims[2]);
 }
 
 /**
@@ -707,14 +707,14 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   }
 
 
-  Hx_yee_R = castMatlab3DArray(mxGetPr(Hx_yee), indims[0], indims[1], indims[2]);
-  Hx_yee_I = castMatlab3DArray(mxGetPi(Hx_yee), indims[0], indims[1], indims[2]);
+  Hx_yee_R = cast_matlab_3D_array(mxGetPr(Hx_yee), indims[0], indims[1], indims[2]);
+  Hx_yee_I = cast_matlab_3D_array(mxGetPi(Hx_yee), indims[0], indims[1], indims[2]);
 
-  Hy_yee_R = castMatlab3DArray(mxGetPr(Hy_yee), indims[0], indims[1], indims[2]);
-  Hy_yee_I = castMatlab3DArray(mxGetPi(Hy_yee), indims[0], indims[1], indims[2]);
+  Hy_yee_R = cast_matlab_3D_array(mxGetPr(Hy_yee), indims[0], indims[1], indims[2]);
+  Hy_yee_I = cast_matlab_3D_array(mxGetPi(Hy_yee), indims[0], indims[1], indims[2]);
 
-  Hz_yee_R = castMatlab3DArray(mxGetPr(Hz_yee), indims[0], indims[1], indims[2]);
-  Hz_yee_I = castMatlab3DArray(mxGetPi(Hz_yee), indims[0], indims[1], indims[2]);
+  Hz_yee_R = cast_matlab_3D_array(mxGetPr(Hz_yee), indims[0], indims[1], indims[2]);
+  Hz_yee_I = cast_matlab_3D_array(mxGetPi(Hz_yee), indims[0], indims[1], indims[2]);
 
   //now construct the output matrices
   ndims = 3;
@@ -729,14 +729,14 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 
-  HxR = castMatlab3DArray(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
-  HxI = castMatlab3DArray(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxR = cast_matlab_3D_array(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxI = cast_matlab_3D_array(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
 
-  HyR = castMatlab3DArray(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
-  HyI = castMatlab3DArray(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyR = cast_matlab_3D_array(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyI = cast_matlab_3D_array(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
 
-  HzR = castMatlab3DArray(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
-  HzI = castMatlab3DArray(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzR = cast_matlab_3D_array(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzI = cast_matlab_3D_array(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
 
   //now finally ready for interpolation
   interpolateFieldCentralH( Hx_yee_I, Hy_yee_I, Hz_yee_I,
@@ -751,19 +751,19 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
 			    i_l, i_u, j_l, j_u, k_l, k_u);
   
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Hx_yee_R,indims[2]);
-  freeCastMatlab3DArray(Hx_yee_I,indims[2]);
-  freeCastMatlab3DArray(Hy_yee_R,indims[2]);
-  freeCastMatlab3DArray(Hy_yee_I,indims[2]);
-  freeCastMatlab3DArray(Hz_yee_R,indims[2]);
-  freeCastMatlab3DArray(Hz_yee_I,indims[2]);
+  free_cast_matlab_3D_array(Hx_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Hx_yee_I, indims[2]);
+  free_cast_matlab_3D_array(Hy_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Hy_yee_I, indims[2]);
+  free_cast_matlab_3D_array(Hz_yee_R, indims[2]);
+  free_cast_matlab_3D_array(Hz_yee_I, indims[2]);
 
-  freeCastMatlab3DArray(HxR,outdims[2]);
-  freeCastMatlab3DArray(HxI,outdims[2]);
-  freeCastMatlab3DArray(HyR,outdims[2]);
-  freeCastMatlab3DArray(HyI,outdims[2]);
-  freeCastMatlab3DArray(HzR,outdims[2]);
-  freeCastMatlab3DArray(HzI,outdims[2]);
+  free_cast_matlab_3D_array(HxR, outdims[2]);
+  free_cast_matlab_3D_array(HxI, outdims[2]);
+  free_cast_matlab_3D_array(HyR, outdims[2]);
+  free_cast_matlab_3D_array(HyI, outdims[2]);
+  free_cast_matlab_3D_array(HzR, outdims[2]);
+  free_cast_matlab_3D_array(HzI, outdims[2]);
 }
 
 /**
@@ -811,14 +811,14 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   }
 
 
-  Hx_yee_R = castMatlab3DArray(mxGetPr(Hx_yee), indims[0], indims[1], 0);
-  Hx_yee_I = castMatlab3DArray(mxGetPi(Hx_yee), indims[0], indims[1], 0);
+  Hx_yee_R = cast_matlab_3D_array(mxGetPr(Hx_yee), indims[0], indims[1], 0);
+  Hx_yee_I = cast_matlab_3D_array(mxGetPi(Hx_yee), indims[0], indims[1], 0);
 
-  Hy_yee_R = castMatlab3DArray(mxGetPr(Hy_yee), indims[0], indims[1], 0);
-  Hy_yee_I = castMatlab3DArray(mxGetPi(Hy_yee), indims[0], indims[1], 0);
+  Hy_yee_R = cast_matlab_3D_array(mxGetPr(Hy_yee), indims[0], indims[1], 0);
+  Hy_yee_I = cast_matlab_3D_array(mxGetPi(Hy_yee), indims[0], indims[1], 0);
 
-  Hz_yee_R = castMatlab3DArray(mxGetPr(Hz_yee), indims[0], indims[1], 0);
-  Hz_yee_I = castMatlab3DArray(mxGetPi(Hz_yee), indims[0], indims[1], 0);
+  Hz_yee_R = cast_matlab_3D_array(mxGetPr(Hz_yee), indims[0], indims[1], 0);
+  Hz_yee_I = cast_matlab_3D_array(mxGetPi(Hz_yee), indims[0], indims[1], 0);
 
   //now construct the output matrices
   ndims = 3;
@@ -831,14 +831,14 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 
-  HxR = castMatlab3DArray(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
-  HxI = castMatlab3DArray(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxR = cast_matlab_3D_array(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxI = cast_matlab_3D_array(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
 
-  HyR = castMatlab3DArray(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
-  HyI = castMatlab3DArray(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyR = cast_matlab_3D_array(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyI = cast_matlab_3D_array(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
 
-  HzR = castMatlab3DArray(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
-  HzI = castMatlab3DArray(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzR = cast_matlab_3D_array(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzI = cast_matlab_3D_array(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
 
   //now finally ready for interpolation
   interpolateFieldCentralH_TE( Hx_yee_I, Hy_yee_I, Hz_yee_I,
@@ -853,19 +853,19 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 			       i_l, i_u, j_l, j_u, k_l, k_u);
   
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Hx_yee_R,0);
-  freeCastMatlab3DArray(Hx_yee_I,0);
-  freeCastMatlab3DArray(Hy_yee_R,0);
-  freeCastMatlab3DArray(Hy_yee_I,0);
-  freeCastMatlab3DArray(Hz_yee_R,0);
-  freeCastMatlab3DArray(Hz_yee_I,0);
+  free_cast_matlab_3D_array(Hx_yee_R, 0);
+  free_cast_matlab_3D_array(Hx_yee_I, 0);
+  free_cast_matlab_3D_array(Hy_yee_R, 0);
+  free_cast_matlab_3D_array(Hy_yee_I, 0);
+  free_cast_matlab_3D_array(Hz_yee_R, 0);
+  free_cast_matlab_3D_array(Hz_yee_I, 0);
 
-  freeCastMatlab3DArray(HxR,outdims[2]);
-  freeCastMatlab3DArray(HxI,outdims[2]);
-  freeCastMatlab3DArray(HyR,outdims[2]);
-  freeCastMatlab3DArray(HyI,outdims[2]);
-  freeCastMatlab3DArray(HzR,outdims[2]);
-  freeCastMatlab3DArray(HzI,outdims[2]);
+  free_cast_matlab_3D_array(HxR, outdims[2]);
+  free_cast_matlab_3D_array(HxI, outdims[2]);
+  free_cast_matlab_3D_array(HyR, outdims[2]);
+  free_cast_matlab_3D_array(HyI, outdims[2]);
+  free_cast_matlab_3D_array(HzR, outdims[2]);
+  free_cast_matlab_3D_array(HzI, outdims[2]);
 }
 
 /**
@@ -911,14 +911,14 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   }
 
 
-  Hx_yee_R = castMatlab3DArray(mxGetPr(Hx_yee), indims[0], indims[1], 0);
-  Hx_yee_I = castMatlab3DArray(mxGetPi(Hx_yee), indims[0], indims[1], 0);
+  Hx_yee_R = cast_matlab_3D_array(mxGetPr(Hx_yee), indims[0], indims[1], 0);
+  Hx_yee_I = cast_matlab_3D_array(mxGetPi(Hx_yee), indims[0], indims[1], 0);
 
-  Hy_yee_R = castMatlab3DArray(mxGetPr(Hy_yee), indims[0], indims[1], 0);
-  Hy_yee_I = castMatlab3DArray(mxGetPi(Hy_yee), indims[0], indims[1], 0);
+  Hy_yee_R = cast_matlab_3D_array(mxGetPr(Hy_yee), indims[0], indims[1], 0);
+  Hy_yee_I = cast_matlab_3D_array(mxGetPi(Hy_yee), indims[0], indims[1], 0);
 
-  Hz_yee_R = castMatlab3DArray(mxGetPr(Hz_yee), indims[0], indims[1], 0);
-  Hz_yee_I = castMatlab3DArray(mxGetPi(Hz_yee), indims[0], indims[1], 0);
+  Hz_yee_R = cast_matlab_3D_array(mxGetPr(Hz_yee), indims[0], indims[1], 0);
+  Hz_yee_I = cast_matlab_3D_array(mxGetPi(Hz_yee), indims[0], indims[1], 0);
 
   //now construct the output matrices
   ndims = 3;
@@ -931,14 +931,14 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
 
-  HxR = castMatlab3DArray(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
-  HxI = castMatlab3DArray(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxR = cast_matlab_3D_array(mxGetPr(*Hx), outdims[0], outdims[1], outdims[2]);
+  HxI = cast_matlab_3D_array(mxGetPi(*Hx), outdims[0], outdims[1], outdims[2]);
 
-  HyR = castMatlab3DArray(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
-  HyI = castMatlab3DArray(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyR = cast_matlab_3D_array(mxGetPr(*Hy), outdims[0], outdims[1], outdims[2]);
+  HyI = cast_matlab_3D_array(mxGetPi(*Hy), outdims[0], outdims[1], outdims[2]);
 
-  HzR = castMatlab3DArray(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
-  HzI = castMatlab3DArray(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzR = cast_matlab_3D_array(mxGetPr(*Hz), outdims[0], outdims[1], outdims[2]);
+  HzI = cast_matlab_3D_array(mxGetPi(*Hz), outdims[0], outdims[1], outdims[2]);
 
   //now finally ready for interpolation
   interpolateFieldCentralH_TM( Hx_yee_I, Hy_yee_I, Hz_yee_I,
@@ -953,19 +953,19 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 			       i_l, i_u, j_l, j_u, k_l, k_u);
   
   //free the extra memory used by casting array
-  freeCastMatlab3DArray(Hx_yee_R,0);
-  freeCastMatlab3DArray(Hx_yee_I,0);
-  freeCastMatlab3DArray(Hy_yee_R,0);
-  freeCastMatlab3DArray(Hy_yee_I,0);
-  freeCastMatlab3DArray(Hz_yee_R,0);
-  freeCastMatlab3DArray(Hz_yee_I,0);
+  free_cast_matlab_3D_array(Hx_yee_R, 0);
+  free_cast_matlab_3D_array(Hx_yee_I, 0);
+  free_cast_matlab_3D_array(Hy_yee_R, 0);
+  free_cast_matlab_3D_array(Hy_yee_I, 0);
+  free_cast_matlab_3D_array(Hz_yee_R, 0);
+  free_cast_matlab_3D_array(Hz_yee_I, 0);
 
-  freeCastMatlab3DArray(HxR,outdims[2]);
-  freeCastMatlab3DArray(HxI,outdims[2]);
-  freeCastMatlab3DArray(HyR,outdims[2]);
-  freeCastMatlab3DArray(HyI,outdims[2]);
-  freeCastMatlab3DArray(HzR,outdims[2]);
-  freeCastMatlab3DArray(HzI,outdims[2]);
+  free_cast_matlab_3D_array(HxR, outdims[2]);
+  free_cast_matlab_3D_array(HxI, outdims[2]);
+  free_cast_matlab_3D_array(HyR, outdims[2]);
+  free_cast_matlab_3D_array(HyI, outdims[2]);
+  free_cast_matlab_3D_array(HzR, outdims[2]);
+  free_cast_matlab_3D_array(HzI, outdims[2]);
 }
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain

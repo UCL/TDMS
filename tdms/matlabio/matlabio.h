@@ -1,19 +1,78 @@
+#pragma once
+#include <algorithm>
 #include <complex>
 #include <string>
 #include "mat_io.h"
 
-double ****castMatlab4DArray(double *array, int nrows, int ncols, int nlayers, int nblocks);
-void freeCastMatlab4DArray(double ****castArray, int nlayers, int nblocks);
-double ***castMatlab3DArray(double *array, int nrows, int ncols, int nlayers);
-void freeCastMatlab3DArray(double ***castArray, int nlayers);
-double **castMatlab2DArray(double *array, int nrows, int ncols);
-void freeCastMatlab2DArray(double **castArray);
-unsigned char ***castMatlab3DArrayUint8(unsigned char *array, int nrows, int ncols, int nlayers);
-void freeCastMatlab3DArrayUint8(unsigned char ***castArray, int nlayers);
-int ***castMatlab3DArrayInt(int *array, int nrows, int ncols, int nlayers);
-void freeCastMatlab3DArrayInt(int ***castArray, int nlayers);
-int **castMatlab2DArrayInt(int *array, int nrows, int ncols);
-void freeCastMatlab2DArrayInt(int **castArray);
+/**
+ * Casts a 4-dimensional array such that it may be indexed according to the usual array indexing
+ * scheme array[l,k,j,i].
+ * @param array is a point to a matlab 4 dimensional array
+ * @param nrows the number of rows in the array
+ * @param ncols the number of columns in the array
+ * @param nlayers the number of layers, each of dimension nrows*ncols
+ * @param nblocks the number of blocks, each of dimension nrows*ncols*nlayers
+ */
+double**** cast_matlab_4D_array(double *array, int nrows, int ncols, int nlayers, int nblocks);
+
+void free_cast_matlab_4D_array(double ****castArray, int nlayers, int nblocks);
+
+/**
+ * Casts a 3-dimensional array such that it may be indexed according to the usual array indexing
+ * scheme array[k,j,i].
+ * @param array is a point to a matlab 4 dimensional array
+ * @param nrows the number of rows in the array
+ * @param ncols the number of columns in the array
+ * @param nlayers the number of layers, each of dimension nrows*ncols
+ */
+template<typename T>
+T*** cast_matlab_3D_array(T *array, int nrows, int ncols, int nlayers){
+
+  T ***p;
+  nlayers = std::max(nlayers, 1);
+  p = (T ***)malloc((unsigned) (nlayers*sizeof(T **)));
+
+  for(int k =0; k<nlayers;k++){
+    p[k] = (T **)malloc((unsigned) (ncols*sizeof(T *)));
+  }
+  for(int k =0; k<nlayers;k++)
+    for(int j =0; j<ncols;j++){
+      p[k][j] = (array + k*nrows*ncols+ j*nrows);
+    }
+
+  return p;
+};
+
+template<typename T>
+void free_cast_matlab_3D_array(T ***castArray, int nlayers){
+  for(int k =0; k<nlayers;k++)
+    free(castArray[k]);
+  free(castArray);
+}
+
+/**
+ * Casts a 2-dimensional array such that it may be indexed according to the usual array indexing
+ * scheme array[j,i].
+ * @param array is a point to a matlab 4 dimensional array
+ * @param nrows the number of rows in the array
+ * @param ncols the number of columns in the array
+ */
+template<typename T>
+T** cast_matlab_2D_array(T *array, int nrows, int ncols){
+
+  T **p;
+  p = (T **)malloc((unsigned) (ncols*sizeof(T *)));
+
+  for(int j =0; j<ncols;j++){
+    p[j] = (array + j*nrows);
+  }
+  return p;
+};
+
+template<typename T>
+void free_cast_matlab_2D_array(T **castArray){
+  free(castArray);
+}
 
 void assert_is_struct(const mxArray* ptr, const std::string &name);
 

@@ -495,10 +495,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     if (dimptr_out[0] != 2 || dimptr_out[1] != (I_tot + 1))
       throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
-    //castMatlab2DArrayInt(int *array, int nrows, int ncols)
-    structure =
-            castMatlab2DArrayInt((int *) mxGetPr((mxArray *) prhs[input_counter]), 2, I_tot + 1);
-    //    fprintf(stderr,"%2d %2d %2d\n%2d %2d %2d\n",structure[0][0],structure[1][0],structure[2][0],structure[0][1],structure[1][1],structure[1][1]);
+    //castMatlab2DArray(int *array, int nrows, int ncols)
+    structure = cast_matlab_2D_array((int *) mxGetPr(prhs[input_counter]), 2, I_tot + 1);
 
     is_structure = 1;
   } else
@@ -568,7 +566,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if (dimptr_out[0] != Nfx_vec || dimptr_out[1] != Nfy_vec)
         fprintf(stderr, "Pupil has dimension %dx%d yet it should have dimension %dx%d\n",
                 dimptr_out[0], dimptr_out[1], Nfx_vec, Nfy_vec);
-      Pupil = castMatlab2DArray(mxGetPr(prhs[input_counter]), dimptr_out[0], dimptr_out[1]);
+      Pupil = cast_matlab_2D_array(mxGetPr(prhs[input_counter]), dimptr_out[0], dimptr_out[1]);
     }
     input_counter++;
     /*Got Pupil*/
@@ -602,9 +600,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
 
         D_temp_re =
-                castMatlab3DArray(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+                cast_matlab_3D_array(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
         D_temp_im =
-                castMatlab3DArray(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+                cast_matlab_3D_array(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
 
 
         for (int k = 0; k < Ndetmodes; k++)
@@ -613,8 +611,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
             }
         //fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
-        freeCastMatlab3DArray(D_temp_re, Nfy_vec);
-        freeCastMatlab3DArray(D_temp_im, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_re, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_im, Nfy_vec);
 
         element = mxGetField((mxArray *) prhs[input_counter], 0, "Dy_tilde");
         ndims = mxGetNumberOfDimensions(element);
@@ -636,9 +634,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
 
         D_temp_re =
-                castMatlab3DArray(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+                cast_matlab_3D_array(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
         D_temp_im =
-                castMatlab3DArray(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
+                cast_matlab_3D_array(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
 
 
         for (int k = 0; k < Ndetmodes; k++)
@@ -646,8 +644,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (int i = 0; i < Nfx_vec; i++) {
               Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
             }
-        freeCastMatlab3DArray(D_temp_re, Nfy_vec);
-        freeCastMatlab3DArray(D_temp_im, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_re, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_im, Nfy_vec);
       }
     }
     input_counter++;
@@ -719,8 +717,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!mxIsEmpty(element)) {
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
-      exi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                              dimptr_out[2]);
+      exi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
+                                 dimptr_out[2]);
       exi_present = true;
       fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
               dimptr_out[1], dimptr_out[2]);
@@ -738,8 +736,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!mxIsEmpty(element)) {
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
-      eyi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                              dimptr_out[2]);
+      eyi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
+                                 dimptr_out[2]);
       eyi_present = true;
     } else {
       eyi_present = false;
@@ -823,7 +821,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (!mxIsEmpty(element)) {
           dimptr_out = mxGetDimensions(element);
           fprintf(stderr, "found vertices (%d x %d)\n", dimptr_out[0], dimptr_out[1]);
-          vertices = castMatlab2DArrayInt((int *) mxGetPr((mxArray *) element), dimptr_out[0],
+          vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) element), dimptr_out[0],
                                           dimptr_out[1]);
           //fprintf(stderr,"vertices[1000] = %d %d %d\n",vertices[0][10],vertices[1][10],vertices[2][10]);
           nvertices = dimptr_out[0];
@@ -1027,7 +1025,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dimptr_out = mxGetDimensions(mx_surface_vertices);
     n_surface_vertices = dimptr_out[0];
     //cast the vertex array as a 2-d integer array
-    surface_vertices = castMatlab2DArrayInt((int *) mxGetPr((mxArray *) mx_surface_vertices),
+    surface_vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) mx_surface_vertices),
                                             dimptr_out[0], dimptr_out[1]);
     //create space for the complex amplitudes E and H around the surface. These will be in a large complex
     //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
@@ -1040,10 +1038,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     mx_surface_amplitudes =
             mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    surface_EHr = castMatlab3DArray(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                    dims[2]);
-    surface_EHi = castMatlab3DArray(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                    dims[2]);
+    surface_EHr = cast_matlab_3D_array(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                       dims[2]);
+    surface_EHi = cast_matlab_3D_array(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                       dims[2]);
     //now need to add a command to update the complex amplitudes
   }
 
@@ -1091,23 +1089,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[4] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hy
     plhs[5] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hz
 
-    E.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
 
-    H.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
     //fprintf(stderr,"Pre 05\n");
     //fprintf(stderr,"Qos 02:\n");
     //these will ultimately be copies of the phasors used to test convergence
@@ -1123,19 +1121,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     //fprintf(stderr,"Qos 03:\n");
     if (params.source_mode == SourceMode::steadystate) {
       E_copy.real.x =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
       E_copy.imag.x =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
 
       E_copy.real.y =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
       E_copy.imag.y =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
 
       E_copy.real.z =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
       E_copy.imag.z =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
     }
     //fprintf(stderr,"Pre 07\n");
     //this will be a copy of the phasors which are extracted from the previous cycle
@@ -1205,12 +1203,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[1] = N_f_ex_vec;
 
     mx_Idx = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idx_re = castMatlab2DArray(mxGetPr(mx_Idx), dims[0], dims[1]);
-    Idx_im = castMatlab2DArray(mxGetPi(mx_Idx), dims[0], dims[1]);
+    Idx_re = cast_matlab_2D_array(mxGetPr(mx_Idx), dims[0], dims[1]);
+    Idx_im = cast_matlab_2D_array(mxGetPi(mx_Idx), dims[0], dims[1]);
 
     mx_Idy = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idy_re = castMatlab2DArray(mxGetPr(mx_Idy), dims[0], dims[1]);
-    Idy_im = castMatlab2DArray(mxGetPi(mx_Idy), dims[0], dims[1]);
+    Idy_re = cast_matlab_2D_array(mxGetPr(mx_Idy), dims[0], dims[1]);
+    Idy_im = cast_matlab_2D_array(mxGetPi(mx_Idy), dims[0], dims[1]);
 
     Idx = (complex<double> **) malloc(sizeof(complex<double> *) * N_f_ex_vec);
     Idy = (complex<double> **) malloc(sizeof(complex<double> *) * N_f_ex_vec);
@@ -1259,8 +1257,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot + 1;
   plhs[6] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x electric field source phasor - boot strapping
-  iwave_lEx_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
-  iwave_lEx_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
+  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
+  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Ibs, dims[0], dims[1]);
 
@@ -1268,8 +1266,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot;
   plhs[7] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y electric field source phasor - boot strapping
-  iwave_lEy_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
-  iwave_lEy_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
+  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
+  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Ibs, dims[0], dims[1]);
 
@@ -1278,8 +1276,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[8] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x magnetic field source phasor - boot strapping
 
-  iwave_lHx_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
-  iwave_lHx_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
+  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
+  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Ibs, dims[0], dims[1]);
 
@@ -1287,8 +1285,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot + 1;
   plhs[9] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y magnetic field source phasor - boot strapping
-  iwave_lHy_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
-  iwave_lHy_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
+  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
+  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Ibs, dims[0], dims[1]);
 
@@ -1325,8 +1323,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[3] = N_fieldsample_n;
 
     mx_fieldsample = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample = castMatlab4DArray(mxGetPr(mx_fieldsample), N_fieldsample_i, N_fieldsample_j,
-                                    N_fieldsample_k, N_fieldsample_n);
+    fieldsample = cast_matlab_4D_array(mxGetPr(mx_fieldsample), N_fieldsample_i, N_fieldsample_j,
+                                       N_fieldsample_k, N_fieldsample_n);
     //these variables are temporary storage to reduce the need for interpolation during the algorithm
   } else {
     ndims = 4;
@@ -1345,8 +1343,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[1] = ncomponents;
     dims[2] = N_f_ex_vec;
     mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    camplitudesR = castMatlab3DArray(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
-    camplitudesI = castMatlab3DArray(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
+    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
+    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
 
   } else {
     ndims = 3;
@@ -5031,7 +5029,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[0] = n_surface_vertices;
     dims[1] = 3;
     vertex_list = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    vertex_list_ptr = castMatlab2DArray(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
+    vertex_list_ptr = cast_matlab_2D_array(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
 
     //now populate the vertex list
     for (i = 0; i < n_surface_vertices; i++) {
@@ -5045,7 +5043,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[23] = mx_surface_amplitudes;
     plhs[24] = mx_surface_facets;
 
-    freeCastMatlab2DArray(vertex_list_ptr);
+    free_cast_matlab_2D_array(vertex_list_ptr);
   } else {//still set outputs
     ndims = 2;
     dims[0] = 0;
@@ -5061,25 +5059,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Pos 17\n");
   /*Free the additional data structures used to cast the matlab arrays*/
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    freeCastMatlab2DArrayInt(surface_vertices);
-    freeCastMatlab3DArray(surface_EHr, N_f_ex_vec);
-    freeCastMatlab3DArray(surface_EHi, N_f_ex_vec);
+    free_cast_matlab_2D_array(surface_vertices);
+    free_cast_matlab_3D_array(surface_EHr, N_f_ex_vec);
+    free_cast_matlab_3D_array(surface_EHi, N_f_ex_vec);
 
     mxDestroyArray(mx_surface_vertices);
   }
 
   if (nvertices > 0) {
-    freeCastMatlab2DArrayInt(vertices);
-    freeCastMatlab3DArray(camplitudesR, N_f_ex_vec);
-    freeCastMatlab3DArray(camplitudesI, N_f_ex_vec);
+    free_cast_matlab_2D_array(vertices);
+    free_cast_matlab_3D_array(camplitudesR, N_f_ex_vec);
+    free_cast_matlab_3D_array(camplitudesI, N_f_ex_vec);
   }
 
   if (exdetintegral == 1) {
-    freeCastMatlab2DArray(Pupil);
-    freeCastMatlab2DArray(Idx_re);
-    freeCastMatlab2DArray(Idx_im);
-    freeCastMatlab2DArray(Idy_re);
-    freeCastMatlab2DArray(Idy_im);
+    free_cast_matlab_2D_array(Pupil);
+    free_cast_matlab_2D_array(Idx_re);
+    free_cast_matlab_2D_array(Idx_im);
+    free_cast_matlab_2D_array(Idy_re);
+    free_cast_matlab_2D_array(Idy_im);
     for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
       free(Idx[ifx]);
       free(Idy[ifx]);
@@ -5111,44 +5109,44 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Position 10\n");
     */
   }
-  if (exi_present) freeCastMatlab3DArray(exi, params.Nt);
-  if (eyi_present) freeCastMatlab3DArray(eyi, params.Nt);
+  if (exi_present) free_cast_matlab_3D_array(exi, params.Nt);
+  if (eyi_present) free_cast_matlab_3D_array(eyi, params.Nt);
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {
-    freeCastMatlab3DArray(Isource.imag, (K1.index - K0.index + 1));
-    freeCastMatlab3DArray(Isource.real, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
   }
   if (J0.apply || J1.apply) {
-    freeCastMatlab3DArray(Jsource.imag, (K1.index - K0.index + 1));
-    freeCastMatlab3DArray(Jsource.real, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Jsource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Jsource.real, (K1.index - K0.index + 1));
   }
   if (K0.apply || K1.apply) {
-    freeCastMatlab3DArray(Ksource.imag, (J1.index - J0.index + 1));
-    freeCastMatlab3DArray(Ksource.real, (J1.index - J0.index + 1));
+    free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
+    free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
   }
 
   if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
         (N_fieldsample_n == 0))) {
-    freeCastMatlab4DArray(fieldsample, N_fieldsample_k, N_fieldsample_n);
+    free_cast_matlab_4D_array(fieldsample, N_fieldsample_k, N_fieldsample_n);
   }
 
-  freeCastMatlab2DArray(iwave_lEx_Rbs);
-  freeCastMatlab2DArray(iwave_lEx_Ibs);
-  freeCastMatlab2DArray(iwave_lEy_Rbs);
-  freeCastMatlab2DArray(iwave_lEy_Ibs);
+  free_cast_matlab_2D_array(iwave_lEx_Rbs);
+  free_cast_matlab_2D_array(iwave_lEx_Ibs);
+  free_cast_matlab_2D_array(iwave_lEy_Rbs);
+  free_cast_matlab_2D_array(iwave_lEy_Ibs);
 
-  freeCastMatlab2DArray(iwave_lHx_Rbs);
-  freeCastMatlab2DArray(iwave_lHx_Ibs);
-  freeCastMatlab2DArray(iwave_lHy_Rbs);
-  freeCastMatlab2DArray(iwave_lHy_Ibs);
+  free_cast_matlab_2D_array(iwave_lHx_Rbs);
+  free_cast_matlab_2D_array(iwave_lHx_Ibs);
+  free_cast_matlab_2D_array(iwave_lHy_Rbs);
+  free_cast_matlab_2D_array(iwave_lHy_Ibs);
 
   //fprintf(stderr,"Pos 21\n");
-  if (is_structure) freeCastMatlab2DArrayInt(structure);
+  if (is_structure) free_cast_matlab_2D_array(structure);
 
-  if (params.dimension == THREE) freeCastMatlab3DArrayUint8(materials, E_s.K_tot + 1);
+  if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
   else
-    freeCastMatlab3DArrayUint8(materials, 0);
+    free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
 #ifndef FDFLAG// Using PS
