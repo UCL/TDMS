@@ -276,3 +276,7 @@ double double_in(const mxArray* ptr, const string &name){
   }
   throw runtime_error(name + " was expected to be a double but was not");
 }
+
+int int_cast_from_double_in(const mxArray* ptr, const std::string &name){
+  return (int) double_in(ptr, name);
+}
