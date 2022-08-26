@@ -26,6 +26,12 @@ enum Dimension{
   TE      // Transverse magnetic - only compute Hx, Hy, and Ez components
 };
 
+enum InterpolationMethod{
+  null,
+  cubic,
+  band_limited
+};
+
 class SimulationParameters{
 
 public:
@@ -54,6 +60,7 @@ public:
     bool         air_interface_present = false;
     double       air_interface = 0.0;       // TODO: what is this?!
     bool         interp_mat_props = false;  // Should the material properties be interpolated?
+    InterpolationMethod interp_method = cubic; // Type of surface field interpolation to do
 
     void set_run_mode(std::string mode_string);
 

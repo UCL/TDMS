@@ -12,7 +12,6 @@
 #include "interpolate.h"
 #include "matlabio.h"
 #include "mesh_base.h"
-#include "numeric.h"
 #include "numerical_derivative.h"
 #include "shapes.h"
 #include "source.h"
@@ -264,7 +263,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double maxfield = 0, tempfield;
-  int intmethod;      //method of interpolating surface field quantities
 
   double *fieldsample_i, *fieldsample_j, *fieldsample_k, *fieldsample_n;
   int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
@@ -515,11 +513,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get intmethod*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    intmethod = (int) *mxGetPr((mxArray *) prhs[input_counter]);
-  } else {
-    intmethod = 1;
+    params.interp_method = InterpolationMethod(int_cast_from_double_in(prhs[input_counter], "intmethod"));
   }
-  fprintf(stderr, "intmethod=%d\n", intmethod);
+  fprintf(stderr, "intmethod=%d\n", params.interp_method);
   input_counter++;
 
   /*Get tdfield*/
@@ -1418,7 +1414,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, params.dt,
-                                  Nsteps, params.dimension, J_tot, intmethod);
+                                  Nsteps, params.dimension, J_tot, params.interp_method);
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
@@ -1478,7 +1474,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe,
-                                  params.dimension, J_tot, intmethod);
+                                  params.dimension, J_tot, params.interp_method);
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
@@ -1497,7 +1493,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, vertices,
                                    nvertices, components, ncomponents, tind,
-                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, intmethod);
+                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, params.interp_method);
         }
       }
     }
