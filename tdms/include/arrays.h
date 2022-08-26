@@ -99,41 +99,49 @@ public:
   explicit DispersiveMultiLayer(const mxArray *ptr);
 };
 
-class GratingStructure{
-private:
-  int** matrix = nullptr;
+template<typename T>
+class Matrix{
+protected:
+  size_t n_rows = 0;
+  size_t n_cols = 0;
+  T** matrix = nullptr;
 
 public:
-  inline int* operator[] (int value) const { return matrix[value]; }
-
-  GratingStructure(const mxArray *ptr, int I_tot);
+  inline T* operator[] (int value) const { return matrix[value]; }
 
   bool has_elements(){ return matrix != nullptr; };
+};
+
+class GratingStructure: public Matrix<int>{
+
+public:
+  GratingStructure(const mxArray *ptr, int I_tot);
 
   ~GratingStructure();
 };
 
+template<typename T>
 class Vector{
 protected:
-  double* vector = nullptr; // Internal array
-  size_t n = 0;                // Number of elements
+  size_t n = 0;        // Number of elements
+  T* vector = nullptr; // Internal array
 
 public:
   Vector() = default;
 
   explicit Vector(const mxArray *ptr);
 
-  inline double operator[] (int value) const { return vector[value]; };
+  inline T operator[] (int value) const { return vector[value]; };
 
   inline size_t size() const{ return n; };
 };
 
-class FrequencyExtractVector: public Vector{
+class FrequencyExtractVector: public Vector<double>{
 public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
 };
 
-class FrequencyVectors: public Vector{
+class FrequencyVectors: public Vector<double>{
 public:
   Vector x;
   Vector y;
