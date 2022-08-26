@@ -295,8 +295,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double ***D_temp_re, ***D_temp_im;
   double **Pupil;
   int k_det_obs_global = 0;
-  double *fx_vec, *fy_vec;
-  int Nfx_vec, Nfy_vec;
   double z_obs = 0.;
 
   //end PSTD storage
@@ -494,35 +492,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   input_counter++;
 
-
+  auto f_vec = FrequencyVectors();
   if (params.exdetintegral) {
-    /*Get f_vec*/
-    if (!mxIsEmpty(prhs[input_counter])) {
-      if (mxIsStruct(prhs[input_counter])) {
-        num_fields = mxGetNumberOfFields(prhs[input_counter]);
-        if (num_fields != 2) {
-          throw runtime_error("f_vec should have 2 members, it has " + to_string(num_fields));
-        }
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "fx_vec");
-        fx_vec = mxGetPr(element);
-        Nfx_vec = mxGetNumberOfElements(element);
-
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "fy_vec");
-        fy_vec = mxGetPr(element);
-        Nfy_vec = mxGetNumberOfElements(element);
-      }
-    }
-    input_counter++;
-    /*Got f_vec*/
-
+    f_vec.initialise(prhs[input_counter++]);
+    
     /*Get Pupil*/
     if (!mxIsEmpty(prhs[input_counter])) {
       ndims = mxGetNumberOfDimensions(prhs[input_counter]);
       dimptr_out = mxGetDimensions(prhs[input_counter]);
       if (ndims != 2) fprintf(stderr, "Pupil should be two dimensional\n");
-      if (dimptr_out[0] != Nfx_vec || dimptr_out[1] != Nfy_vec)
-        fprintf(stderr, "Pupil has dimension %dx%d yet it should have dimension %dx%d\n",
-                dimptr_out[0], dimptr_out[1], Nfx_vec, Nfy_vec);
+      if (dimptr_out[0] != f_vec.x.size() || dimptr_out[1] != f_vec.y.size())
+        fprintf(stderr, "Pupil has dimension %dx%d yet it should have dimension %zux%zu\n",
+                dimptr_out[0], dimptr_out[1], f_vec.x.size(), f_vec.y.size());
       Pupil = cast_matlab_2D_array(mxGetPr(prhs[input_counter]), dimptr_out[0], dimptr_out[1]);
     }
     input_counter++;
@@ -542,16 +523,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
         Ndetmodes = dimptr_out[0];
 
-        if (dimptr_out[1] != Nfx_vec || dimptr_out[2] != Nfy_vec)
+        if (dimptr_out[1] != f_vec.x.size() || dimptr_out[2] != f_vec.y.size())
           fprintf(stderr, "Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",
-                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], Nfx_vec, Nfy_vec);
+                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], f_vec.x.size(), f_vec.y.size());
 
         /*Now create Dx_tilde*/
-        //fprintf(stderr,"Dx_tilde: %d x %d x %d\n",Ndetmodes,Nfx_vec,Nfy_vec);
-        Dx_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * Nfy_vec);
-        for (int j = 0; j < Nfy_vec; j++) {
-          Dx_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * Nfx_vec);
-          for (int i = 0; i < Nfx_vec; i++) {
+        //fprintf(stderr,"Dx_tilde: %d x %d x %d\n",Ndetmodes,f_vec.x.size(),f_vec.y.size());
+        Dx_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * f_vec.y.size());
+        for (int j = 0; j < f_vec.y.size(); j++) {
+          Dx_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * f_vec.x.size());
+          for (int i = 0; i < f_vec.x.size(); i++) {
             Dx_tilde[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
           }
         }
@@ -563,29 +544,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 
         for (int k = 0; k < Ndetmodes; k++)
-          for (int j = 0; j < Nfy_vec; j++)
-            for (int i = 0; i < Nfx_vec; i++) {
+          for (int j = 0; j < f_vec.y.size(); j++)
+            for (int i = 0; i < f_vec.x.size(); i++) {
               Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
             }
         //fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
-        free_cast_matlab_3D_array(D_temp_re, Nfy_vec);
-        free_cast_matlab_3D_array(D_temp_im, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_re, f_vec.y.size());
+        free_cast_matlab_3D_array(D_temp_im, f_vec.y.size());
 
         element = mxGetField((mxArray *) prhs[input_counter], 0, "Dy_tilde");
         ndims = mxGetNumberOfDimensions(element);
         dimptr_out = mxGetDimensions(element);
         if (ndims != 3) fprintf(stderr, "Dy_tilde should be three dimensional\n");
 
-        if (dimptr_out[1] != Nfx_vec || dimptr_out[2] != Nfy_vec)
+        if (dimptr_out[1] != f_vec.x.size() || dimptr_out[2] != f_vec.y.size())
           fprintf(stderr, "Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",
-                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], Nfx_vec, Nfy_vec);
+                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], f_vec.x.size(), f_vec.y.size());
 
         /*Now create Dy_tilde*/
 
-        Dy_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * Nfy_vec);
-        for (int j = 0; j < Nfy_vec; j++) {
-          Dy_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * Nfx_vec);
-          for (int i = 0; i < Nfx_vec; i++) {
+        Dy_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * f_vec.y.size());
+        for (int j = 0; j < f_vec.y.size(); j++) {
+          Dy_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * f_vec.x.size());
+          for (int i = 0; i < f_vec.x.size(); i++) {
             Dy_tilde[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
           }
         }
@@ -597,12 +578,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 
         for (int k = 0; k < Ndetmodes; k++)
-          for (int j = 0; j < Nfy_vec; j++)
-            for (int i = 0; i < Nfx_vec; i++) {
+          for (int j = 0; j < f_vec.y.size(); j++)
+            for (int i = 0; i < f_vec.x.size(); i++) {
               Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
             }
-        free_cast_matlab_3D_array(D_temp_re, Nfy_vec);
-        free_cast_matlab_3D_array(D_temp_im, Nfy_vec);
+        free_cast_matlab_3D_array(D_temp_re, f_vec.y.size());
+        free_cast_matlab_3D_array(D_temp_im, f_vec.y.size());
       }
     }
     input_counter++;
@@ -625,8 +606,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   }//end of if(exdetintegral==1)
   else
-    input_counter +=
-            4;//need to advance beyond fields which were not read in as exdetintegral was set to 0
+    //need to advance beyond fields which were not read in as exdetintegral was set to 0
+    input_counter += 4;
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
@@ -1689,24 +1670,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               //now loop over all angular frequencies
               for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
                 for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-                  if ((lambda_an_t * fx_vec[i] * lambda_an_t * fx_vec[i] +
-                       lambda_an_t * fy_vec[j] * lambda_an_t * fy_vec[j]) < 1) {
+                  if ((lambda_an_t * f_vec.x[i] * lambda_an_t * f_vec.x[i] +
+                       lambda_an_t * f_vec.y[j] * lambda_an_t * f_vec.y[j]) < 1) {
 
                     if (!air_interface_present) {
                       /*This had to be fixed since we must take into account the refractive index of the medium.
 
            */
                       kprop = exp(I * z_obs * 2. * dcpi / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i] / refind, 2.) -
-                                       pow(lambda_an_t * fy_vec[j] / refind, 2.)));
-                      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,fx_vec[i],fy_vec[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
+                                       pow(lambda_an_t * f_vec.y[j] / refind, 2.)));
+                      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
                     } else {
                       kprop = exp(I * (-air_interface + z_obs) * 2. * dcpi / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i] / refind, 2.) -
-                                       pow(lambda_an_t * fy_vec[j] / refind, 2.))) *
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
+                                       pow(lambda_an_t * f_vec.y[j] / refind, 2.))) *
                               exp(I * air_interface * 2. * dcpi / lambda_an_t *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i], 2.) -
-                                       pow(lambda_an_t * fy_vec[j], 2.)));
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i], 2.) -
+                                       pow(lambda_an_t * f_vec.y[j], 2.)));
                     }
                   } else
                     kprop = 0.;
@@ -5041,8 +5022,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     free(Idx);
     free(Idy);
-    for (int j = 0; j < Nfy_vec; j++) {
-      for (int i = 0; i < Nfx_vec; i++) {
+    for (int j = 0; j < f_vec.y.size(); j++) {
+      for (int i = 0; i < f_vec.x.size(); i++) {
         free(Dx_tilde[j][i]);
         free(Dy_tilde[j][i]);
       }

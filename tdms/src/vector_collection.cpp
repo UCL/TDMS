@@ -119,6 +119,11 @@ GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
 }
 
+Vector::Vector(const mxArray *ptr) {
+  vector = mxGetPr(ptr);
+  n = mxGetNumberOfElements(ptr);
+}
+
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
 
   if (mxIsEmpty(ptr)) {
@@ -138,4 +143,15 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     n = max(dims[0], dims[1]);
     vector = (double *) mxGetPr(ptr);
   }
+}
+
+void FrequencyVectors::initialise(const mxArray *ptr){
+
+  if (mxIsEmpty(ptr)) {
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 2, "f_vec");
+  x = Vector(ptr_to_vector_in(ptr, "fx_vec", "f_vec"));
+  y = Vector(ptr_to_vector_in(ptr, "fy_vec", "f_vec"));
 }

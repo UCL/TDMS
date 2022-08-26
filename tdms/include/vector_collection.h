@@ -96,16 +96,30 @@ public:
   ~GratingStructure();
 };
 
-class FrequencyExtractVector{
-private:
+class Vector{
+protected:
   double* vector = nullptr; // Internal array
-  int n = 0;               // Number of elements
+  size_t n = 0;                // Number of elements
 
 public:
+  Vector() = default;
 
+  explicit Vector(const mxArray *ptr);
+
+  inline double operator[] (int value) const { return vector[value]; };
+
+  inline size_t size() const{ return n; };
+};
+
+class FrequencyExtractVector: public Vector{
+public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
+};
 
-  inline double operator[] (int value) const { return vector[value]; }
+class FrequencyVectors: public Vector{
+public:
+  Vector x;
+  Vector y;
 
-  inline int size() const{ return n; }
+  void initialise(const mxArray *ptr);
 };
