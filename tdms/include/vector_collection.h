@@ -95,3 +95,17 @@ public:
 
   ~GratingStructure();
 };
+
+class FrequencyExtractVector{
+private:
+  double* vector = nullptr; // Internal array
+  int n = 0;               // Number of elements
+
+public:
+
+  FrequencyExtractVector(const mxArray *ptr, double omega_an);
+
+  inline double operator[] (int value) const { return vector[value]; }
+
+  inline int size() const{ return n; }
+};

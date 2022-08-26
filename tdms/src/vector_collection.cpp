@@ -1,4 +1,6 @@
 #include <utility>
+#include <iostream>
+#include "globals.h"
 #include "vector_collection.h"
 #include "utils.h"
 
@@ -115,4 +117,25 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
 GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
+}
+
+FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
+
+  if (mxIsEmpty(ptr)) {
+    n = 1;
+    vector = (double *) malloc(sizeof(double));
+    vector[0] = omega_an / 2. / dcpi;
+
+  } else {
+    auto dims = mxGetDimensions(ptr);
+    auto n_dims = mxGetNumberOfDimensions(ptr);
+
+    if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
+      throw runtime_error("f_ex_vec should be a vector with N>0 elements");
+    }
+    cerr << "f_ex_vec has ndims=" << n_dims << "N=" << dims[0] << endl;
+
+    n = max(dims[0], dims[1]);
+    vector = (double *) mxGetPr(ptr);
+  }
 }

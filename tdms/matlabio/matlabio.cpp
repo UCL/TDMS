@@ -97,7 +97,7 @@ mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const string &name, const
 
 double double_in(const mxArray* ptr, const string &name){
 
-  if (mxIsDouble(ptr)) {
+  if (mxIsDouble(ptr) && mxGetNumberOfElements(ptr) == 1) {
     return *mxGetPr(ptr);
   }
   throw runtime_error(name + " was expected to be a double but was not");
