@@ -140,7 +140,7 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
       throw runtime_error("f_ex_vec should be a vector with N>0 elements");
     }
-    cerr << "f_ex_vec has ndims=" << n_dims << "N=" << dims[0] << endl;
+    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
 
     n = max(dims[0], dims[1]);
     vector = (double *) mxGetPr(ptr);
@@ -236,4 +236,29 @@ void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   x = component_in(ptr, "Dx_tilde", n_rows, n_cols);
   y = component_in(ptr, "Dy_tilde", n_rows, n_cols);
   n_det_modes = mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
+}
+
+Tensor3D<double> IncidentField::component_in(const mxArray *ptr, const std::string &name){
+
+  if (mxIsEmpty(mxGetField(ptr, 0, name.c_str()))) {
+    cerr << name+" not present" << endl;
+    return {};
+  }
+
+  auto element = ptr_to_nd_array_in(ptr, 3, name, "tdfield");
+  auto dims = mxGetDimensions(element);
+  int N = dims[0], M = dims[1], O = dims[2];
+  auto field = Tensor3D<double>(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N);
+  field.is_matlab_initialised = true;
+
+  cerr << "Got tdfield, dims=("+to_string(N)+","+to_string(M)+","+to_string(O)+")" << endl;
+
+  return field;
+}
+
+IncidentField::IncidentField(const mxArray *ptr){
+
+  assert_is_struct_with_n_fields(ptr, 2, "tdfield");
+  x = component_in(ptr, "exi");
+  y = component_in(ptr, "eyi");
 }

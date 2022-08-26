@@ -249,7 +249,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   auto H = MagneticField();
   auto E_copy = ElectricField();
 
-  double ***exi, ***eyi;
   double ***surface_EHr, ***surface_EHi;
   double rho;
   double alpha_l, beta_l, gamma_l;
@@ -519,51 +518,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
 
   /*Get tdfield*/
-  bool exi_present, eyi_present;
-
-  if (mxIsStruct(prhs[input_counter])) {
-    fprintf(stderr, "tdfield 01\n");
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-
-    //check that all fields are present
-    if (num_fields != 2) {
-      throw runtime_error("tdfield should have 2 members, it has " + to_string(num_fields));
-    }
-    element = mxGetField((mxArray *) prhs[input_counter], 0, "exi");
-    //fprintf(stderr,"isempty ?: (%d)\n", !mxIsEmpty(element));
-    if (!mxIsEmpty(element)) {
-      ndims = mxGetNumberOfDimensions(element);
-      dimptr_out = mxGetDimensions(element);
-      exi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                                 dimptr_out[2]);
-      exi_present = true;
-      fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
-              dimptr_out[1], dimptr_out[2]);
-      fprintf(stderr, "ddfield is empty\n");
-    } else {
-      exi_present = false;
-      fprintf(stderr, "exi not present\n");
-    }
-
-    /*
-    for(int iti=0;iti<(20000-1);iti++)
-      fprintf(stdout,"%e ",exi[iti][0][511]);
-    */
-    element = mxGetField((mxArray *) prhs[input_counter], 0, "eyi");
-    if (!mxIsEmpty(element)) {
-      ndims = mxGetNumberOfDimensions(element);
-      dimptr_out = mxGetDimensions(element);
-      eyi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                                 dimptr_out[2]);
-      eyi_present = true;
-    } else {
-      eyi_present = false;
-      fprintf(stderr, "eyi not present\n");
-    }
-
-    input_counter++;
-  }
-  /*Got tdfield*/
+  auto Ei = IncidentField(prhs[input_counter++]);
+  params.exi_present = Ei.x.has_elements();
+  params.eyi_present = Ei.y.has_elements();
 
   /*Get tdfdir*/
   //fprintf(stderr,"tdfdir: %d (%d)\n", mxIsChar(prhs[input_counter]),input_counter);
@@ -1328,12 +1285,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int J_tot_p1_bound = J_tot + 1;
   if (J_tot == 0) {
     //TE case
-    if (ksource_nz[2] || ksource_nz[1] || eyi_present) J_tot_bound = 1;
+    if (ksource_nz[2] || ksource_nz[1] || params.eyi_present) J_tot_bound = 1;
     else
       J_tot_bound = 0;
 
     //TM case
-    if (ksource_nz[3] || ksource_nz[0] || exi_present) J_tot_p1_bound = 1;
+    if (ksource_nz[3] || ksource_nz[0] || params.exi_present) J_tot_p1_bound = 1;
     else
       J_tot_p1_bound = 0;
   }
@@ -4521,9 +4478,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                           exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
-          if (eyi_present)
+          if (params.eyi_present)
             H_s.xz[(K0.index) - 1][j][i] =
-                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * eyi[tind][j][i];
+                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
         }
         //fprintf(stderr,"Pos 11e\n");
         for (i = 0; i < I_tot; i++) {
@@ -4536,9 +4493,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                           exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
-          if (exi_present)
+          if (params.exi_present)
             H_s.yz[(K0.index) - 1][j][i] =
-                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * exi[tind][j][i];
+                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
           //if(i==511)
           //  fprintf(stdout,"%e\n",D.b.z[((int)K0[0])-1]*exi[tind][j][i]);
         }
@@ -4556,9 +4513,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                  exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                             exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
-            if (eyi_present)
+            if (params.eyi_present)
               H_s.xz[(K0.index) - 1][j][i] =
-                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * eyi[tind][j][i];
+                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
           }
         //fprintf(stderr,"Pos 11h\n");
         for (j = 0; j < (J_tot + 1); j++)
@@ -4572,9 +4529,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                  exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                             exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
-            if (exi_present)
+            if (params.exi_present)
               H_s.yz[(K0.index) - 1][j][i] =
-                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * exi[tind][j][i];
+                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
           }
         //fprintf(stderr,"Pos 11i\n");
       }
@@ -4913,8 +4870,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Position 10\n");
     */
   }
-  if (exi_present) free_cast_matlab_3D_array(exi, params.Nt);
-  if (eyi_present) free_cast_matlab_3D_array(eyi, params.Nt);
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {

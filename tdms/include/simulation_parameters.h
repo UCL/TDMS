@@ -61,6 +61,8 @@ public:
     double       air_interface = 0.0;       // TODO: what is this?!
     bool         interp_mat_props = false;  // Should the material properties be interpolated?
     InterpolationMethod interp_method = cubic; // Type of surface field interpolation to do
+    bool         exi_present = false;       // Is the time dependent x incident field present?
+    bool         eyi_present = false;       // Is the time dependent x incident field present?
 
     void set_run_mode(std::string mode_string);
 
