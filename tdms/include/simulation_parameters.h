@@ -49,6 +49,11 @@ public:
     Dimension    dimension    = THREE;      // Dimensions to calculate in
     bool         is_structure = false;      // Has a grating structure been defined?
     bool         exdetintegral = false;     // TODO: detector sensitivity evaluation ?
+    int          k_det_obs    = 0;          // TODO: no idea what this is?!
+    double       z_obs        = 0.0;        // Value of the input grid_labels_z at k_det_obs
+    bool         air_interface_present = false;
+    double       air_interface = 0.0;       // TODO: what is this?!
+    bool         interp_mat_props = false;  // Should the material properties be interpolated?
 
     void set_run_mode(std::string mode_string);
 

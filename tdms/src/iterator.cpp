@@ -264,14 +264,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double maxfield = 0, tempfield;
-  int intmatprops = 1;//means the material properties will be interpolated
   int intmethod;      //method of interpolating surface field quantities
 
   double *fieldsample_i, *fieldsample_j, *fieldsample_k, *fieldsample_n;
   int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
 
-  double air_interface;
-  bool air_interface_present;
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
 
@@ -290,8 +287,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   fftw_complex *Ex_t, *Ey_t;
   complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
-  int k_det_obs_global = 0;
-  double z_obs = 0.;
 
   //end PSTD storage
 
@@ -497,45 +492,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     pupil.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
     D_tilde.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
 
-    /*Get k_det_obs*/
     if (!mxIsEmpty(prhs[input_counter])) {
-      if (mxGetNumberOfElements(prhs[input_counter]) != 1) {
-        int n = (int) mxGetNumberOfElements(prhs[input_counter]);
-        throw runtime_error("k_det_obs has " + to_string(n) +
-                            " elements, it should only have 1.\n");
-      }
-
-      k_det_obs_global = (int) *mxGetPr((mxArray *) prhs[input_counter]) - 1;
+      params.k_det_obs = int_cast_from_double_in(prhs[input_counter], "k_det_obs") - 1;
     }
     input_counter++;
-    /*Got k_det_obs*/
-    //now set z_obs
-    z_obs = input_grid_labels.z[k_det_obs_global];
 
-  }//end of if(exdetintegral==1)
-  else
-    //need to advance beyond fields which were not read in as exdetintegral was set to 0
-    input_counter += 4;
+    params.z_obs = input_grid_labels.z[params.k_det_obs];
+  }
+  else {
+    input_counter += 4; // advance beyond fields which were not read in as exdetintegral was false
+  }
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    air_interface_present = true;
-    air_interface = *mxGetPr((mxArray *) prhs[input_counter]);
-    fprintf(stderr, "air_interface: %e\nz_obs: %e\n", air_interface, z_obs);
-  } else {
-    air_interface_present = false;
+    params.air_interface_present = true;
+    params.air_interface = double_in(prhs[input_counter], "air_interface");
+    //fprintf(stderr, "air_interface: %e\nz_obs: %e\n", params.air_interface, params.z_obs);
   }
   input_counter++;
-  /*Got air_interface*/
 
-  /*Get intmatprops*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    intmatprops = (int) *mxGetPr((mxArray *) prhs[input_counter]);
-  } else {
-    intmatprops = 0;
-  }
-  input_counter++;
-  /*Got intmatprops*/
+  params.interp_mat_props = bool_cast_from_double_in(prhs[input_counter++], "intmatprops");
 
   /*Get intmethod*/
   if (!mxIsEmpty(prhs[input_counter])) {
@@ -545,7 +521,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   fprintf(stderr, "intmethod=%d\n", intmethod);
   input_counter++;
-  /*Got intmatprops*/
 
   /*Get tdfield*/
   bool exi_present, eyi_present;
@@ -1535,10 +1510,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
             Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];
+                    E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
             Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
             Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];
+                    E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
             Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
           }
         //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
@@ -1581,19 +1556,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   if ((lambda_an_t * f_vec.x[i] * lambda_an_t * f_vec.x[i] +
                        lambda_an_t * f_vec.y[j] * lambda_an_t * f_vec.y[j]) < 1) {
 
-                    if (!air_interface_present) {
+                    if (!params.air_interface_present) {
                       /*This had to be fixed since we must take into account the refractive index of the medium.
 
            */
-                      kprop = exp(I * z_obs * 2. * dcpi / lambda_an_t * refind *
+                      kprop = exp(I * params.z_obs * 2. * dcpi / lambda_an_t * refind *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
                                        pow(lambda_an_t * f_vec.y[j] / refind, 2.)));
                       //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
                     } else {
-                      kprop = exp(I * (-air_interface + z_obs) * 2. * dcpi / lambda_an_t * refind *
+                      kprop = exp(I * (-params.air_interface + params.z_obs) * 2. * dcpi / lambda_an_t * refind *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
                                        pow(lambda_an_t * f_vec.y[j] / refind, 2.))) *
-                              exp(I * air_interface * 2. * dcpi / lambda_an_t *
+                              exp(I * params.air_interface * 2. * dcpi / lambda_an_t *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i], 2.) -
                                        pow(lambda_an_t * f_vec.y[j], 2.)));
                     }
@@ -1695,7 +1670,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -1818,7 +1793,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -1969,7 +1944,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2085,7 +2060,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.z[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2248,7 +2223,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.x[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2366,7 +2341,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.x[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2500,7 +2475,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2614,7 +2589,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2755,7 +2730,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2875,7 +2850,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -3100,7 +3075,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -3220,7 +3195,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
