@@ -1,7 +1,9 @@
 #pragma once
+#include <complex>
 #include <string>
 #include <stdexcept>
 #include "matlabio.h"
+#include "numeric.h"
 #include "utils.h"
 
 
@@ -102,8 +104,8 @@ public:
 template<typename T>
 class Matrix{
 protected:
-  size_t n_rows = 0;
-  size_t n_cols = 0;
+  int n_rows = 0;
+  int n_cols = 0;
   T** matrix = nullptr;
 
 public:
@@ -123,7 +125,7 @@ public:
 template<typename T>
 class Vector{
 protected:
-  size_t n = 0;        // Number of elements
+  int n = 0;        // Number of elements
   T* vector = nullptr; // Internal array
 
 public:
@@ -133,7 +135,7 @@ public:
 
   inline T operator[] (int value) const { return vector[value]; };
 
-  inline size_t size() const{ return n; };
+  inline int size() const{ return n; };
 };
 
 class FrequencyExtractVector: public Vector<double>{
@@ -153,7 +155,44 @@ class Pupil: public Matrix<double>{
 public:
   Pupil() = default;
 
-  void initialise(const mxArray *ptr, size_t n_rows, size_t n_cols);
+  void initialise(const mxArray *ptr, int n_rows, int n_cols);
 
   ~Pupil();
+};
+
+template<typename T>
+class Tensor3D{
+protected:
+  int n_layers = 0;
+  int n_cols = 0;
+  int n_rows = 0;
+  T*** tensor = nullptr;
+  bool is_matlab_initialised = false;
+
+public:
+  Tensor3D() = default;
+
+  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows);
+
+  inline T** operator[] (int value) const { return tensor[value]; };
+
+  ~Tensor3D(){
+    if (!is_matlab_initialised){
+      destroy_3D_array(&tensor, n_cols, n_layers);
+    }
+  };
+};
+
+class DTilde{
+protected:
+  int n_det_modes = 0;
+  static Tensor3D<std::complex<double>> component_in(const mxArray *ptr, const std::string &name,
+                                                     int n_rows, int n_cols);
+public:
+  inline int num_det_modes() const { return n_det_modes; };
+
+  Tensor3D<std::complex<double>> x;
+  Tensor3D<std::complex<double>> y;
+
+  void initialise(const mxArray *ptr, int n_rows, int n_cols);
 };

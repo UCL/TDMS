@@ -29,7 +29,7 @@ template<typename T, typename S>
 T*** cast_matlab_3D_array(T *array, S nrows, S ncols, S nlayers){
 
   T ***p;
-  nlayers = std::max(nlayers, 1);
+  nlayers = std::max(nlayers, S(1));
   p = (T ***)malloc((unsigned) (nlayers*sizeof(T **)));
 
   for(S k =0; k<nlayers; k++){
@@ -43,9 +43,9 @@ T*** cast_matlab_3D_array(T *array, S nrows, S ncols, S nlayers){
   return p;
 };
 
-template<typename T>
-void free_cast_matlab_3D_array(T ***castArray, int nlayers){
-  for(int k =0; k<nlayers;k++)
+template<typename T, typename S>
+void free_cast_matlab_3D_array(T ***castArray, S nlayers){
+  for(S k=0; k<nlayers; k++)
     free(castArray[k]);
   free(castArray);
 }
@@ -81,23 +81,18 @@ void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &na
 void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::string &name);
 
 /**
- * Get a pointer to a matrix within a struct with a given name. Throws a runtime error if the
- * resulting tensor is not two dimensional.
+ * Get a pointer to a tensor/array within a struct with a given name. Throws a runtime error if the
+ * resulting tensor is not n dimensional.
  * @param ptr Pointer to the struct
+ * @param n Dimensionality of the tensor
  * @param name Name of the attribute
  * @param struct_name Name of the struct
  * @return Pointer to the matrix
  */
+mxArray* ptr_to_nd_array_in(const mxArray* ptr, int n, const std::string &name, const std::string &struct_name);
+
 mxArray* ptr_to_matrix_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
 
-/**
- * Get a pointer to an array within a struct with a given name. Throws a runtime error if the
- * resulting tensor is not a vector with dimensions 1xN.
- * @param ptr Pointer to the struct
- * @param name Name of the attribute
- * @param struct_name Name of the struct
- * @return Pointer to the vector
- */
 mxArray* ptr_to_vector_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
 
 mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);

@@ -64,14 +64,18 @@ void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::stri
   assert_num_fields_equals(num, ptr, name);
 }
 
-mxArray* ptr_to_matrix_in(const mxArray* ptr, const string &name, const string &struct_name){
-
+mxArray* ptr_to_nd_array_in(const mxArray* ptr, int n, const std::string &name, const std::string &struct_name){
   auto element = mxGetField((mxArray *) ptr, 0, name.c_str());
 
-  if (mxGetNumberOfDimensions(element) != 2) {
-    throw runtime_error("Incorrect dimension on " + struct_name + "." + name + ". Required 2D");
+  if (mxGetNumberOfDimensions(element) != n) {
+    throw runtime_error("Incorrect dimension on " + struct_name + "." + name + ". Required " +
+                        to_string(n) + "D");
   }
   return element;
+}
+
+mxArray* ptr_to_matrix_in(const mxArray* ptr, const string &name, const string &struct_name){
+  return ptr_to_nd_array_in(ptr, 2, name, struct_name);
 }
 
 mxArray* ptr_to_vector_in(const mxArray* ptr, const string &name, const string &struct_name){

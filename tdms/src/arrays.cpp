@@ -2,6 +2,7 @@
 #include <utility>
 #include "arrays.h"
 #include "globals.h"
+#include "numeric.h"
 #include "utils.h"
 
 
@@ -122,7 +123,7 @@ GratingStructure::~GratingStructure() {
 template <typename T>
 Vector<T>::Vector(const mxArray *ptr) {
   vector = mxGetPr(ptr);
-  n = mxGetNumberOfElements(ptr);
+  n = (int)mxGetNumberOfElements(ptr);
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
@@ -157,21 +158,82 @@ void FrequencyVectors::initialise(const mxArray *ptr){
   y = Vector<double>(ptr_to_vector_in(ptr, "fy_vec", "f_vec"));
 }
 
-void Pupil::initialise(const mxArray *ptr, size_t n_rows, size_t n_cols) {
+void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
   if (mxIsEmpty(ptr)){
     return;
   }
 
-  auto dims = mxGetDimensions(ptr);
+  auto dims = (int *)mxGetDimensions(ptr);
+  
   if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols){
     throw runtime_error("Pupil has dimension "+ to_string(dims[0]) + "x"
                         + to_string(dims[1]) + " but it needed to be " +
                         to_string(n_rows) + "x" + to_string(n_cols));
   }
+
   matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
+  this->n_cols = n_cols;
+  this->n_rows = n_rows;
 }
 
 Pupil::~Pupil() {
   free_cast_matlab_2D_array(matrix);
+}
+
+template<typename T>
+Tensor3D<T>::Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows){
+  this->tensor = tensor;
+  this->n_layers = n_layers;
+  this->n_cols = n_cols;
+  this->n_rows = n_rows;
+}
+
+Tensor3D<complex<double>> DTilde::component_in(const mxArray *ptr, const string &name,
+                                               int n_rows, int n_cols){
+
+  auto element = ptr_to_nd_array_in(ptr, 3, name, "D_tilde");
+
+  auto dims = (int *)mxGetDimensions(element);
+  int n_det_modes = dims[0];
+
+  if (dims[1] != n_rows || dims[2] != n_cols){
+    throw runtime_error("D_tilde.{x, y} has final dimensions "+ to_string(dims[1]) + "x"
+                        + to_string(dims[2]) + " but it needed to be " +
+                        to_string(n_rows) + "x" + to_string(n_cols));
+  }
+
+  auto p = (complex<double> ***) malloc(sizeof(complex<double> **) * n_cols);
+  for (int j = 0; j < n_cols; j++) {
+    p[j] = (complex<double> **) malloc(sizeof(complex<double> *) * n_rows);
+    for (int i = 0; i < n_rows; i++) {
+      p[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * n_det_modes);
+    }
+  }
+
+  auto temp_re = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
+  auto temp_im = cast_matlab_3D_array(mxGetPi(element), dims[0], dims[1], dims[2]);
+
+  for (int k = 0; k < n_det_modes; k++)
+    for (int j = 0; j < n_cols; j++)
+      for (int i = 0; i < n_rows; i++) {
+        p[j][i][k] = temp_re[j][i][k] + I * temp_im[j][i][k];
+      }
+
+  free_cast_matlab_3D_array(temp_re, n_cols);
+  free_cast_matlab_3D_array(temp_im, n_cols);
+
+  return {p, n_cols, n_rows, n_det_modes};
+}
+
+void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
+
+  if (mxIsEmpty(ptr)){
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 2, "D_tilde");
+  x = component_in(ptr, "Dx_tilde", n_rows, n_cols);
+  y = component_in(ptr, "Dy_tilde", n_rows, n_cols);
+  n_det_modes = mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
 }

@@ -78,7 +78,6 @@ set(SOURCES
     src/interpolation_methods.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
-    src/numeric.cpp
     src/numerical_derivative.cpp
     src/shapes.cpp
     src/simulation_parameters.cpp
