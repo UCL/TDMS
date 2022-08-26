@@ -2,7 +2,7 @@
 #include "stdexcept"
 #include "complex"
 #include "mat_io.h"
-#include "tensor_collection.h"
+#include "arrays.h"
 #include "simulation_parameters.h"
 #include "utils.h"
 

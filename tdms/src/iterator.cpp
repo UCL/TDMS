@@ -5,24 +5,24 @@
  *                 and steady state mode.
  ******************************************************************/
 
-#include <complex>
-#include <algorithm>
-#include <cstring>
-#include <ctime>
-#include <omp.h>
-#include "globals.h"
-#include "interpolate.h"
 #include "iterator.h"
+#include "array_init.h"
+#include "globals.h"
 #include "interface.h"
+#include "interpolate.h"
 #include "matlabio.h"
 #include "mesh_base.h"
 #include "numeric.h"
 #include "numerical_derivative.h"
 #include "shapes.h"
 #include "source.h"
-#include "tensor_init.h"
 #include "timer.h"
 #include "utils.h"
+#include <algorithm>
+#include <complex>
+#include <cstring>
+#include <ctime>
+#include <omp.h>
 
 
 using namespace std;
@@ -353,7 +353,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get fdtdgrid */
   assert_is_struct(prhs[input_counter], "fdtdgrid, argument " + to_string(input_counter));
-  init_grid_tensors(prhs[input_counter], E_s, H_s, materials);
+  init_grid_arrays(prhs[input_counter], E_s, H_s, materials);
   int I_tot = E_s.I_tot, J_tot = E_s.J_tot, K_tot = E_s.K_tot;
   input_counter++;
   //fprintf(stderr,"Got fdtdgrid\n");

@@ -1,12 +1,12 @@
+#include "array_init.h"
 #include "dimensions.h"
-#include "tensor_init.h"
 #include "matlabio.h"
 #include "utils.h"
 
 using namespace std;
 
 
-void init_grid_tensors(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint8_t*** &materials){
+void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint8_t*** &materials){
 
   const char elements[][15] = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
                                "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy", "materials"};
