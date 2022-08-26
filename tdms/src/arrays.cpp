@@ -119,7 +119,8 @@ GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
 }
 
-Vector::Vector(const mxArray *ptr) {
+template <typename T>
+Vector<T>::Vector(const mxArray *ptr) {
   vector = mxGetPr(ptr);
   n = mxGetNumberOfElements(ptr);
 }
@@ -152,6 +153,25 @@ void FrequencyVectors::initialise(const mxArray *ptr){
   }
 
   assert_is_struct_with_n_fields(ptr, 2, "f_vec");
-  x = Vector(ptr_to_vector_in(ptr, "fx_vec", "f_vec"));
-  y = Vector(ptr_to_vector_in(ptr, "fy_vec", "f_vec"));
+  x = Vector<double>(ptr_to_vector_in(ptr, "fx_vec", "f_vec"));
+  y = Vector<double>(ptr_to_vector_in(ptr, "fy_vec", "f_vec"));
+}
+
+void Pupil::initialise(const mxArray *ptr, size_t n_rows, size_t n_cols) {
+
+  if (mxIsEmpty(ptr)){
+    return;
+  }
+
+  auto dims = mxGetDimensions(ptr);
+  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols){
+    throw runtime_error("Pupil has dimension "+ to_string(dims[0]) + "x"
+                        + to_string(dims[1]) + " but it needed to be " +
+                        to_string(n_rows) + "x" + to_string(n_cols));
+  }
+  matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
+}
+
+Pupil::~Pupil() {
+  free_cast_matlab_2D_array(matrix);
 }

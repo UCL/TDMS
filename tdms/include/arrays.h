@@ -141,10 +141,19 @@ public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
 };
 
-class FrequencyVectors: public Vector<double>{
+class FrequencyVectors{
 public:
-  Vector x;
-  Vector y;
+  Vector<double> x;
+  Vector<double> y;
 
   void initialise(const mxArray *ptr);
+};
+
+class Pupil: public Matrix<double>{
+public:
+  Pupil() = default;
+
+  void initialise(const mxArray *ptr, size_t n_rows, size_t n_cols);
+
+  ~Pupil();
 };

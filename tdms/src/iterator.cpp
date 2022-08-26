@@ -293,7 +293,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
   double ***D_temp_re, ***D_temp_im;
-  double **Pupil;
   int k_det_obs_global = 0;
   double z_obs = 0.;
 
@@ -493,21 +492,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
 
   auto f_vec = FrequencyVectors();
+  auto pupil = Pupil();
+
   if (params.exdetintegral) {
     f_vec.initialise(prhs[input_counter++]);
-    
-    /*Get Pupil*/
-    if (!mxIsEmpty(prhs[input_counter])) {
-      ndims = mxGetNumberOfDimensions(prhs[input_counter]);
-      dimptr_out = mxGetDimensions(prhs[input_counter]);
-      if (ndims != 2) fprintf(stderr, "Pupil should be two dimensional\n");
-      if (dimptr_out[0] != f_vec.x.size() || dimptr_out[1] != f_vec.y.size())
-        fprintf(stderr, "Pupil has dimension %dx%d yet it should have dimension %zux%zu\n",
-                dimptr_out[0], dimptr_out[1], f_vec.x.size(), f_vec.y.size());
-      Pupil = cast_matlab_2D_array(mxGetPr(prhs[input_counter]), dimptr_out[0], dimptr_out[1]);
-    }
-    input_counter++;
-    /*Got Pupil*/
+    pupil.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
 
     /*Get D_tilde*/
     if (!mxIsEmpty(prhs[input_counter])) {
@@ -1651,8 +1640,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t_cm[j][i] * Pupil[j][i] * Dx_tilde[j][i][im];
-              Ey_t_cm[j][i] = Ey_t_cm[j][i] * Pupil[j][i] * Dy_tilde[j][i][im];
+              Ex_t_cm[j][i] = Ex_t_cm[j][i] * pupil[j][i] * Dx_tilde[j][i][im];
+              Ey_t_cm[j][i] = Ey_t_cm[j][i] * pupil[j][i] * Dy_tilde[j][i][im];
             }
             //fprintf(stderr,"Pos 02a [4]:\n");
             //now iterate over each frequency to extract phasors at
@@ -5011,7 +5000,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   if (params.exdetintegral) {
-    free_cast_matlab_2D_array(Pupil);
     free_cast_matlab_2D_array(Idx_re);
     free_cast_matlab_2D_array(Idx_im);
     free_cast_matlab_2D_array(Idy_re);

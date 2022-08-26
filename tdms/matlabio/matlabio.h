@@ -25,18 +25,18 @@ void free_cast_matlab_4D_array(double ****castArray, int nlayers, int nblocks);
  * @param ncols the number of columns in the array
  * @param nlayers the number of layers, each of dimension nrows*ncols
  */
-template<typename T>
-T*** cast_matlab_3D_array(T *array, int nrows, int ncols, int nlayers){
+template<typename T, typename S>
+T*** cast_matlab_3D_array(T *array, S nrows, S ncols, S nlayers){
 
   T ***p;
   nlayers = std::max(nlayers, 1);
   p = (T ***)malloc((unsigned) (nlayers*sizeof(T **)));
 
-  for(int k =0; k<nlayers;k++){
+  for(S k =0; k<nlayers; k++){
     p[k] = (T **)malloc((unsigned) (ncols*sizeof(T *)));
   }
-  for(int k =0; k<nlayers;k++)
-    for(int j =0; j<ncols;j++){
+  for(S k =0; k<nlayers; k++)
+    for(S j =0; j<ncols; j++){
       p[k][j] = (array + k*nrows*ncols+ j*nrows);
     }
 
@@ -57,13 +57,13 @@ void free_cast_matlab_3D_array(T ***castArray, int nlayers){
  * @param nrows the number of rows in the array
  * @param ncols the number of columns in the array
  */
-template<typename T>
-T** cast_matlab_2D_array(T *array, int nrows, int ncols){
+template<typename T, typename S>
+T** cast_matlab_2D_array(T *array, S nrows, S ncols){
 
   T **p;
   p = (T **)malloc((unsigned) (ncols*sizeof(T *)));
 
-  for(int j =0; j<ncols;j++){
+  for(S j =0; j<ncols;j++){
     p[j] = (array + j*nrows);
   }
   return p;
