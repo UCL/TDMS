@@ -528,9 +528,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   if (mxIsChar(prhs[input_counter])) {
 
-    int n = 1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter]);
-    ex_td_field_exporter.folder_name = (char *) malloc(n * sizeof(char));
-    mxGetString((mxArray *) prhs[input_counter], ex_td_field_exporter.folder_name, n);
+    ex_td_field_exporter.folder_name = string_in(prhs[input_counter], "tdfdir").c_str();
 
     for (k = 0; k < K_tot; k++)
       if ((k % skip_tdf) == 0) Nk_tdf++;

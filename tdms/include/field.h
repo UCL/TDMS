@@ -207,7 +207,7 @@ class TDFieldExporter2D{
 public:
   mxArray* matlab_array = nullptr;
   double** array = nullptr;
-  char* folder_name = nullptr;
+  const char* folder_name = nullptr;
 
   /**
    * Allocate the arrays to hol the field
