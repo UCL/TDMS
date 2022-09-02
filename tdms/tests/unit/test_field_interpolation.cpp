@@ -201,10 +201,10 @@ TEST_CASE("H-field interpolation check") {
     // error tolerance
     // this needs to be set based on some kind of reference value.
     // Implementing this scheme in MATLAB (for the fields above) yields an error of
-    // Hx : 6.35268084e-02 (using y-component 1st)
-    // Hy : 9.99873462e-01 (using z-component 1st)
-    // Hz : 9.99545033e-01 (using y-component 1st)
-    double Hx_tol = 6.35268084e-02, Hy_tol = 9.99873462e-01, Hz_tol = 9.99545033e-01;
+    // Hx : 1.27905543e-01
+    // Hy : 1.27654146e-01
+    // Hz : 1.28199239e-01
+    double Hx_tol = 1.27905543e-01, Hy_tol = 1.27654146e-01, Hz_tol = 1.28199239e-01;
 
     // fake domain setup
     int Nx = 100, Ny = 50, Nz = 25;
