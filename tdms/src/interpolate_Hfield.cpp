@@ -223,3 +223,13 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
         *Hz = y_scheme.interpolate(pass_to_second_scheme);
     }
 }
+
+void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
+                                 double ***Hyz, double ***Hzx, double ***Hzy,
+                                 int i, int j, int k, int I, int J, int K,
+                                 double *Hx, double *Hy, double *Hz)
+{
+    interpolateTimeDomainHx(Hxy, Hxz, i, j, k, J, K, Hx);
+    interpolateTimeDomainHy(Hyx, Hyz, i, j, k, I, K, Hy);
+    interpolateTimeDomainHz(Hzx, Hzy, i, j, k, I, J, Hz);
+}
