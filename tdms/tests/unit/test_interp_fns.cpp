@@ -112,199 +112,212 @@ TEST_CASE("bandlimited_interpolation: coefficient sum")
  * For 100 sample points, we will use BLi to interpolate the following functions with 100 sample points:
  * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
  * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
- * - e^(-1/(2|x-0.5|-1))^2)     : range 0,1         : max. element-wise error (MATLAB) 1.57403846e-03
+ * - pulse function             : range 0,1         : max. element-wise error (MATLAB) 4.87599933e-04
  *
  * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, and determine whether the order of magnitude of the errors is the same.
  *
  * For readability, we break this out into separate test cases for each function.
- * 
+ *
  */
 
-// BLi: constant function interpolation
+// BLi: constant function f(x)=1, interpolation over [0,1]
 TEST_CASE("bandlimited_interpolation: order of error, constant function")
 {
 
-    int nSamples = 100;
-    double field_positions[nSamples], Yee_cell_centres[nSamples];
+    int nSamples = 100;                         // number of "Yee cells" in this dimension
+    double const_fn_data[nSamples];             // function data (only need 8 data points, but simulate 100 cells)
+    fill_n(const_fn_data, nSamples, 1);         // initalise to f(x)=1
+    double const_fn_interp[nSamples];           // interpolated values
+    double const_fn_errors[nSamples];           // error in interpolated values
+    double const_fn_max_error;                  // maximum error
 
-    // constant function variables
-    double const_fn_vals[nSamples], const_fn_interp[nSamples], const_fn_exact[nSamples], const_fn_errors[nSamples-1], const_fn_max_error, const_fn_MATLAB_error;
-
-    // input the MATLAB error
-    const_fn_MATLAB_error = 2.82944733e-04;
-
-    // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
-    for (int i = 0; i < nSamples; i++)
-    {
-        field_positions[i] = ((double)i / (double)nSamples);
-        Yee_cell_centres[i] = field_positions[i] - 1./(2.*(double)nSamples);
-
-        const_fn_vals[i] = 1.; const_fn_exact[i] = 1.;
-    }
-
+    double const_fn_MATLAB_error = 2.82944733e-04;  // the MATLAB error
+    
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // Also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i
 
     // constant function interpolation
-    const_fn_interp[1] = best_interp_scheme(nSamples, 1).interpolate(const_fn_vals);
-    const_fn_interp[2] = best_interp_scheme(nSamples, 2).interpolate(const_fn_vals);
-    const_fn_interp[3] = best_interp_scheme(nSamples, 3).interpolate(const_fn_vals);
+    const_fn_interp[1] = best_interp_scheme(nSamples, 1).interpolate(const_fn_data);
+    const_fn_interp[2] = best_interp_scheme(nSamples, 2).interpolate(const_fn_data);
+    const_fn_interp[3] = best_interp_scheme(nSamples, 3).interpolate(const_fn_data);
     for (int i=4; i<nSamples-4; i++) {
         // need to offset now so that the correct sample points are provided
-        const_fn_interp[i] = best_interp_scheme(nSamples, i).interpolate(const_fn_vals, i-4);
+        const_fn_interp[i] = best_interp_scheme(nSamples, i).interpolate(const_fn_data, i-4);
     }
-    const_fn_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(const_fn_data, nSamples-8);
 
-    // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
+    // Compare interpolated values to the true values, which are just f(x)=1.
+    // NOTE: cont_fn_interp[0] is uninitialised, since we don't presently interpolate to cell 0's centre, and is thus skipped
     for (int i=0; i<nSamples-1; i++) {
-        const_fn_errors[i] = abs( const_fn_exact[i+1] - const_fn_interp[i+1] );
+        const_fn_errors[i] = abs( 1. - const_fn_interp[i+1] );
     }
-
     // get maximum error
     const_fn_max_error = *max_element( const_fn_errors, const_fn_errors + nSamples - 1 );
 
-    // compare O.o.Mag of error
-    CHECK(floor(log10(const_fn_max_error)) <= floor(log10(const_fn_MATLAB_error)));
+    // compare O.o.Mag of error - fail if we are orders of magnitude out
+    REQUIRE(floor(log10(const_fn_max_error)) <= floor(log10(const_fn_MATLAB_error)));
+    // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
+    CHECK(const_fn_max_error <= const_fn_MATLAB_error);
     cout << "const_fn \t | " + to_string(const_fn_max_error) + "\t\t | " + to_string(const_fn_MATLAB_error) + "\n";
 }
 
+inline double s2pi(double x) {
+    return sin(2. * M_PI * x);
+}
 // BLi: sine function interpolation
 TEST_CASE("bandlimited_interpolation: order of error, sine function")
 {
 
-    int nSamples = 100;
-    double field_positions[nSamples], Yee_cell_centres[nSamples];
+    int nSamples = 100;                             // number of "Yee cells" in this dimension
+    double spacing = 1. / (double)(nSamples - 1);   // spacing between Yee cell centres
+    double xi[nSamples];                            // positions of the "field components"
+    double xi5[nSamples];                           // positions of the "Yee cell" centres, xi5[i] = centre of cell i
+    double f_data[nSamples];                        // function data at xi
+    double f_exact[nSamples];                       // function exact values at xi5
+    double f_interp[nSamples];                      // interpolated values at xi5
+    double f_errors[nSamples];                      // error at xi5
+    double max_error;                               // maximum error across xi5 points
 
-    // sin(2\pi x) function variables
-    double sin_vals[nSamples], sin_interp[nSamples], sin_exact[nSamples], sin_errors[nSamples - 1], sin_max_error, sin_MATLAB_error;
-
-    // input the MATLAB error
-    sin_MATLAB_error = 2.63468327e-04;
+    double sin_MATLAB_error = 2.63468327e-04;       // the MATLAB error
 
     // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
     for (int i = 0; i < nSamples; i++)
     {
-        field_positions[i] = ((double)i / (double)nSamples);
-        Yee_cell_centres[i] = field_positions[i] - 1. / (2. * (double)nSamples);
+        xi[i] = ((double)i) / ((double)(nSamples - 1));
+        xi5[i] = xi[i] - spacing / 2.;
 
-        sin_vals[i] = sin(field_positions[i]);
-        sin_exact[i] = sin(Yee_cell_centres[i]);
+        f_data[i] = s2pi(xi[i]);
+        f_exact[i] = s2pi(xi5[i]);
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
 
     // sin function interpolation
-    sin_interp[1] = best_interp_scheme(nSamples, 1).interpolate(sin_vals);
-    sin_interp[2] = best_interp_scheme(nSamples, 2).interpolate(sin_vals);
-    sin_interp[3] = best_interp_scheme(nSamples, 3).interpolate(sin_vals);
+    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        sin_interp[i] = best_interp_scheme(nSamples, i).interpolate(sin_vals, i - 4);
+        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
     }
-    sin_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(sin_vals, nSamples - 8);
+    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
 
-    // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
+    // Compare interpolated values to the true values. 
+    // NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++)
     {
-        sin_errors[i] = abs(sin_exact[i + 1] - sin_interp[i + 1]);
+        f_errors[i] = abs(f_exact[i + 1] - f_interp[i + 1]);
     }
 
     // get maximum error
-    sin_max_error = *max_element(sin_errors, sin_errors + nSamples - 1);
+    max_error = *max_element(f_errors, f_errors + nSamples - 1);
 
-    // compare O.o.Mag of error
-    CHECK(floor(log10(sin_max_error)) <= floor(log10(sin_MATLAB_error)));
-    cout << "sin(2 pi x) \t | " + to_string(sin_max_error) + "\t\t | " + to_string(sin_MATLAB_error) + "\n";
+    // compare O.o.Mag of error - fail if we are orders of magnitude out
+    REQUIRE(floor(log10(max_error)) <= floor(log10(sin_MATLAB_error)));
+    // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
+    CHECK(max_error < sin_MATLAB_error);
+    cout << "sin(2 pi x) \t | " + to_string(max_error) + "\t\t | " + to_string(sin_MATLAB_error) + "\n";
 }
 
+/**
+ * @brief Evaluates the smooth pulse/ mollifier Kernel function, supported between 0 and 1
+ *
+ * The smooth mollifier \phi(x) is the function
+ * \phi(x) =
+ * \begin{cases}
+ *  0                   &   when |x| >= 1,
+ *  e^{-1/(1-|x|^2)}    &   when |x| < 1
+ * \end{cases}
+ * This function is compactly supported over the interval [-1,1].
+ * By evaluating pulse(x) = \phi(3[2x-1]), we obtain a smooth function with support in [1/3,2/3] \subset [0,1]
+ *
+ * @param x Point of evaluation
+ * @return double Evaluted value
+ */
+inline double pulse(double x) {
+    double absxhat = abs(3. * (2.*x - 1.));
+    if (absxhat >= 1) {
+        return 0.;
+    }
+    else {
+        return exp( -1. / (1 - absxhat*absxhat) );
+    }
+}
 // BLi: pulse function interpolation
 TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
 {
 
-    int nSamples = 100;
-    double field_positions[nSamples], Yee_cell_centres[nSamples];
+    int nSamples = 100;                           // number of "Yee cells" in this dimension
+    double spacing = 1. / (double)(nSamples - 1); // spacing between Yee cell centres
+    double xi[nSamples];                          // positions of the "field components"
+    double xi5[nSamples];                         // positions of the "Yee cell" centres, xi5[i] = centre of cell i
+    double f_data[nSamples];                      // constant function data at xi
+    double f_exact[nSamples];                     // constant function exact values at xi5
+    double f_interp[nSamples];                    // interpolated values at xi5
+    double f_errors[nSamples];                    // error at xi5
+    double max_error;                             // maximum error across xi5 points
 
-    // pulse function e^(-1/(2|x-0.5|-1))^2) variables
-    double pulse_vals[nSamples], pulse_interp[nSamples], pulse_exact[nSamples], pulse_errors[nSamples], pulse_max_error, pulse_MATLAB_error;
-
-    // input the MATLAB error
-    pulse_MATLAB_error = 1.57403846e-03;
+    double pulse_MATLAB_error = 4.87599933e-04;   // the MATLAB error
 
     // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
     for (int i = 0; i < nSamples; i++)
     {
-        field_positions[i] = ((double)i / (double)nSamples);
-        Yee_cell_centres[i] = field_positions[i] - 1. / (2. * (double)nSamples);
+        xi[i] = ((double)i) / ((double)(nSamples - 1));
+        xi5[i] = xi[i] - spacing / 2.;
 
-        if (2. * abs(field_positions[i] - 0.5) >= 1)
-        {
-            pulse_vals[i] = 0.;
-        }
-        else
-        {
-            double x = 2. * abs(field_positions[i] - 0.5);
-            pulse_vals[i] = exp(-1. / ((x - 1.) * (x - 1.)));
-        }
-        if (2. * abs(Yee_cell_centres[i] - 0.5) >= 1)
-        {
-            pulse_exact[i] = 0.;
-        }
-        else
-        {
-            double x = 2. * abs(Yee_cell_centres[i] - 0.5);
-            pulse_exact[i] = exp(-1. / ((x - 1.) * (x - 1.)));
-        }
+        f_data[i] = pulse(xi[i]);
+        f_exact[i] = pulse(xi5[i]);
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
 
     // pulse function interpolation
-    pulse_interp[1] = best_interp_scheme(nSamples, 1).interpolate(pulse_vals);
-    pulse_interp[2] = best_interp_scheme(nSamples, 2).interpolate(pulse_vals);
-    pulse_interp[3] = best_interp_scheme(nSamples, 3).interpolate(pulse_vals);
+    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        pulse_interp[i] = best_interp_scheme(nSamples, i).interpolate(pulse_vals, i - 4);
+        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
     }
-    pulse_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(pulse_vals, nSamples - 8);
+    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++)
     {
-        pulse_errors[i] = abs(pulse_exact[i + 1] - pulse_interp[i + 1]);
+        f_errors[i] = abs(f_exact[i + 1] - f_interp[i + 1]);
     }
 
     // get maximum error
-    pulse_max_error = *max_element(pulse_errors, pulse_errors + nSamples - 1);
+    max_error = *max_element(f_errors, f_errors + nSamples - 1);
 
-    // compare O.o.Mag of error
-    CHECK(floor(log10(pulse_max_error)) <= floor(log10(pulse_MATLAB_error)));
-    cout << "pulse \t | " + to_string(pulse_max_error) + "\t\t | " + to_string(pulse_MATLAB_error) + "\n";
+    // compare O.o.Mag of error - fail if we are orders of magnitude out
+    REQUIRE(floor(log10(max_error)) <= floor(log10(pulse_MATLAB_error)));
+    // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
+    CHECK(max_error < pulse_MATLAB_error);
+    cout << "pulse \t | " + to_string(max_error) + "\t\t | " + to_string(pulse_MATLAB_error) + "\n";
 }
 
 /**
- * @brief We will check that BLi gives a better approximation than cubic interpolation.
+ * @brief We will check that BLi gives a better approximation than cubic interpolation. PLACEHOLDER UNTIL INFORMATION ABOUT A FUNCTION THAT CUBIC SHOULD DO WORSE ON!
  * 
  * This is not a clear-cut scenario: there are certain function classes (specifically, low-order polynomials, or slowly-varying non-compactly supported functions) in which we expect cubic interpolation to be superior.
  * However, there are other function classes on which we expect BLi to be superior, which in particular encompasses the functional forms of the fields we expect to encounter in the simulations.
  * 
- * As such, we will perform both BLi and cubic interpolation on the function
- * f:[-1,1] \mapsto \mathbb{R}, f(x) = sinc(2\pi*x) = sin(2*\pi x)/(2*\pi x)
+ * As such, we will perform both BLi and cubic interpolation on the pulse function (given above)
  * We will check that, in each case, the interpolated value given by the BLi scheme is a superior approximation to its cubic counterpart.
- *  
  */
 TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
     // number of samples to use
@@ -314,7 +327,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         throw runtime_error("nSamples < 8 - cannot interpolate using BLi!");
     }
     // point-spacing
-    double spacing = 2./(double) (nSamples-1);
+    double spacing = 1./(double) (nSamples-1);
 
     // coordinates of the "field components" we have data for
     double xi[nSamples]; 
@@ -335,13 +348,13 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
 
     // populate arrays
     for(int i=0; i<nSamples-1; i++) {
-        xi[i] = -1. + i*spacing;
+        xi[i] = 0. + i*spacing;
         xi5[i] = xi[i] + spacing/2.;
-        f_data[i] = sin(2.*M_PI*xi[i]) / (2.*M_PI*xi[i]);
-        f_exact[i] = sin(2.*M_PI*xi5[i]) / (2.*M_PI*xi5[i]);
+        f_data[i] = pulse(xi[i]);
+        f_exact[i] = pulse(xi5[i]);
     }
     xi[nSamples-1] = 1.;
-    f_data[nSamples-1] = 0.; // sin(2\pi) = 0
+    f_data[nSamples-1] = pulse(1.);
 
     // perform interpolation
     // cubic interpolation only changes at the first and last cells
@@ -371,7 +384,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         BLi_err[i] = abs( BLi_interp[i] - f_exact[i] );
         cubic_err[i] = abs( cubic_interp[i] - f_exact[i] );
         // check that BLi beats cubic in all cases
-        CHECK( BLi_err[i] < cubic_err[i] );
+        CHECK( BLi_err[i] <= cubic_err[i] );
     }
 
     // sanity check: max BLi error?

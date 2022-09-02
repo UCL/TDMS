@@ -54,12 +54,11 @@ and the H-field by
 */
 
 // Fast functions for sin(2\pi t) and cos(2\pi t)
-
-double s2pi(double t) { return sin(2.*M_PI*t); }
-double c2pi(double t) { return cos(2.*M_PI*t); }
+inline double s2pi(double t) { return sin(2.*M_PI*t); }
+inline double c2pi(double t) { return cos(2.*M_PI*t); }
 
 // for memory allocation of 3D arrays
-double ***allocate3dmemory(int I, int J, int K) {
+inline double ***allocate3dmemory(int I, int J, int K) {
 
     double ***p = (double ***)malloc(K * sizeof(double **));
     for (int k = 0; k < K; k++) {
@@ -140,25 +139,38 @@ TEST_CASE("E-field interpolation check") {
         }
     }
 
+    // can now deallocate our "fake" split field arrays, and "input data" arrays
+    delete Exy, Exz, Eyx, Eyz, Ezx, Ezy;
+
+    // values to hold the maximum errors
+    double Ex_max_error = 0., Ey_max_error = 0., Ez_max_error = 0.;
     // now we compare the values across the exact and interp arrays,
     // across all indices from 1 to N{x,y,z}.
-    // cout << "ii, jj, kk \t | x-diff \t | y-diff \t | z-diff \n";
     for (int ii = 1; ii < Nx; ii++)
     {
         for (int jj = 1; jj < Ny; jj++)
         {
             for (int kk = 1; kk < Nz; kk++)
             {
-                CHECK(abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]) < Ex_tol);
-                CHECK(abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]) < Ey_tol);
-                CHECK(abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]) < Ez_tol);
-                // cout << ii; cout << ", "; cout << jj; cout << ", "; cout << kk; cout << " \t | ";
-                // cout << abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]); cout << "\t | ";
-                // cout << abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]); cout << "\t | ";
-                // cout << abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]); cout << "\n";
+                double curr_err_Ex = abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]);
+                if (curr_err_Ex > Ex_max_error){ Ex_max_error = curr_err_Ex;}
+
+                double curr_err_Ey = abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]);
+                if (curr_err_Ey > Ey_max_error) { Ey_max_error = curr_err_Ey;}
+
+                double curr_err_Ez = abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]);
+                if (curr_err_Ez > Ez_max_error) { Ez_max_error = curr_err_Ez;}
             }
         }
     }
+
+    // delete large arrays to save memory again
+    delete Ex_exact, Ex_interp, Ey_exact, Ey_interp, Ez_exact, Ez_interp;
+
+    // check max errors do not exceed tolerances
+    CHECK(Ex_max_error < Ex_tol);
+    CHECK(Ey_max_error < Ey_tol);
+    CHECK(Ez_max_error < Ez_tol);
 }
 
 /**
