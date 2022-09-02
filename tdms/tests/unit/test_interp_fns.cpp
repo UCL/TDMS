@@ -302,7 +302,6 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
 
     // get maximum error
     max_error = *max_element(f_errors, f_errors + nSamples - 1);
-
     // compare O.o.Mag of error - fail if we are orders of magnitude out
     REQUIRE(floor(log10(max_error)) <= floor(log10(pulse_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
