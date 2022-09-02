@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tdms LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 14)
 
 # Allow building with testing, and default to off
 option(BUILD_TESTING "" OFF)
@@ -86,13 +87,15 @@ endif()
 
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
+    src/fields/base.cpp
+    src/fields/electric.cpp
+    src/fields/magnetic.cpp
     src/argument_parser.cpp
-    src/electric_field.cpp
     src/fdtd_grid_initialiser.cpp
+    src/grid_labels.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
-    src/magnetic_field.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
