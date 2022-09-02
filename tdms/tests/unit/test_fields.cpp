@@ -19,6 +19,7 @@ TEST_CASE("Test electric field angular norm addition") {
   auto I = complex<double>(0., 1.);
 
   auto E = ElectricField();
+  E.ft = 1.0;
   auto params = SimulationParameters();
   params.omega_an = OMEGA;
   params.dt = DT;
@@ -26,7 +27,7 @@ TEST_CASE("Test electric field angular norm addition") {
   // z = e^(iω(n+1)dt) / N_t
   auto expected = exp(OMEGA * ((double)N + 1) * DT * I) / ((double) N_T);
 
-  E.add_to_angular_norm(1., N, N_T, params);
+  E.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(E.angular_norm, expected));
 }
 
@@ -39,6 +40,8 @@ TEST_CASE("Test magnetic field angular norm addition") {
   auto I = complex<double>(0., 1.);
 
   auto H = MagneticField();
+  H.ft = 1.0;
+  
   auto params = SimulationParameters();
   params.omega_an = OMEGA;
   params.dt = DT;
@@ -46,7 +49,7 @@ TEST_CASE("Test magnetic field angular norm addition") {
   // z = e^(iω(n+1/2)dt) / N_t
   auto expected = exp(OMEGA * ((double)N + 0.5) * DT * I) / ((double) N_T);
 
-  H.add_to_angular_norm(1., N, N_T, params);
+  H.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(H.angular_norm, expected));
 }
 
