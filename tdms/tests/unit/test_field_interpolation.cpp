@@ -160,3 +160,108 @@ TEST_CASE("E-field interpolation check") {
         }
     }
 }
+
+/**
+ * @brief Test the interpolation of the H-field components to the centre of the Yee cells
+ * 
+ */ /*
+TEST_CASE("H-field interpolation check") {
+
+    // error tolerance
+    // this needs to be set based on some kind of reference value.
+    // Implementing this scheme in MATLAB (for the fields above) yields an error of
+    // Hx : 6.32764074e-02 | Hy : 1.26527983e-01 | Hz : 2.53096328e-01
+    double Hx_tol = 6.32764074e-02, Hy_tol = 1.26527983e-01, Hz_tol = 2.53096328e-01;
+
+    // fake domain setup
+    int Nx = 100, Ny = 50, Nz = 25;
+    double Dx = 1. / (double)Nx, Dy = 1. / (double)Ny, Dz = 1. / (double)Nz;
+
+    // setup the gridpoints
+    double x[2 * Nx + 1], y[2 * Ny + 1], z[2 * Nz + 1];
+    for (int i = 0; i < 2 * Nx + 1; i++)
+    {
+        x[i] = i * Dx / 2.;
+    }
+    for (int j = 0; j < 2 * Ny + 1; j++)
+    {
+        y[j] = j * Dy / 2.;
+    }
+    for (int k = 0; k < 2 * Nz + 1; k++)
+    {
+        z[k] = k * Dz / 2.;
+    }
+
+    // setup the "split" E-field components
+    double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
+           ***Hyx = allocate3dmemory(Nx, Ny, Nz), ***Hyz = allocate3dmemory(Nx, Ny, Nz),
+           ***Hzx = allocate3dmemory(Nx, Ny, Nz), ***Hzy = allocate3dmemory(Nx, Ny, Nz);
+    // setup the arrays that will store the interpolated and exact values at the Yee cell centres
+    double ***Hx_exact = allocate3dmemory(Nx, Ny, Nz), ***Hx_interp = allocate3dmemory(Nx, Ny, Nz),
+           ***Hy_exact = allocate3dmemory(Nx, Ny, Nz), ***Hy_interp = allocate3dmemory(Nx, Ny, Nz),
+           ***Hz_exact = allocate3dmemory(Nx, Ny, Nz), ***Hz_interp = allocate3dmemory(Nx, Ny, Nz);
+
+    // compute the exact field and the "split field" components
+    for (int ii = 0; ii < Nx; ii++)
+    {
+        for (int jj = 0; jj < Ny; jj++)
+        {
+            for (int kk = 0; kk < Nz; kk++)
+            {
+                // x components EX_{ii,jj,kk} := Ex[2*ii+1, 2*jj, 2*kk]
+                Hxy[kk][jj][ii] = 1.0 * s2pi(x[2 * ii + 1]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
+                Hxz[kk][jj][ii] = 0.0 * s2pi(x[2 * ii + 1]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
+                // y components EY_{ii,jj,kk} := Ex[2*ii, 2*jj+1, 2*kk]
+                Hyx[kk][jj][ii] = 1.0 * c2pi(x[2 * ii]) * s2pi(y[2 * jj + 1]) * c2pi(z[2 * kk]);
+                Hyz[kk][jj][ii] = 0.0 * c2pi(x[2 * ii]) * s2pi(y[2 * jj + 1]) * c2pi(z[2 * kk]);
+                // z components EZ_{ii,jj,kk} := Ex[2*ii, 2*jj, 2*kk+1]
+                Hzx[kk][jj][ii] = 1.0 * c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk + 1]);
+                Hzy[kk][jj][ii] = 0.0 * c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk + 1]);
+
+                // exact field components
+                Hx_exact[kk][jj][ii] = s2pi(x[2 * ii]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
+                Hy_exact[kk][jj][ii] = c2pi(x[2 * ii]) * s2pi(y[2 * jj]) * c2pi(z[2 * kk]);
+                Hz_exact[kk][jj][ii] = c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk]);
+            }
+        }
+    }
+
+    // now we try to interpolate
+    // for the sake of argument we assume a PML of 0 cells
+    // so we need to interpolate to the centre of cells 1 through N{x,y,z}-1
+    // note we still can't interpolate to the centre of cell 0 (until BAND_LIMITED_CELL_ZERO is implimented)
+    for (int ii = 1; ii < Nx; ii++)
+    {
+        for (int jj = 1; jj < Ny; jj++)
+        {
+            for (int kk = 1; kk < Nz; kk++)
+            {
+                // interpolate to the centre of cell (ii,jj,kk)
+                double *Hx_val, *Hy_val, *Hz_val;
+                interpolateTimeDomainHField(Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
+                                            ii, jj, kk, Nx, Ny, Nz,
+                                            &Hx_interp[kk][jj][ii], &Hy_interp[kk][jj][ii], &Hz_interp[kk][jj][ii]);
+            }
+        }
+    }
+
+    // now we compare the values across the exact and interp arrays,
+    // across all indices from 1 to N{x,y,z}.
+    // cout << "ii, jj, kk \t | x-diff \t | y-diff \t | z-diff \n";
+    for (int ii = 1; ii < Nx; ii++)
+    {
+        for (int jj = 1; jj < Ny; jj++)
+        {
+            for (int kk = 1; kk < Nz; kk++)
+            {
+                CHECK(abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]) < Hx_tol);
+                CHECK(abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]) < Hy_tol);
+                CHECK(abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]) < Hz_tol);
+                // cout << ii; cout << ", "; cout << jj; cout << ", "; cout << kk; cout << " \t | ";
+                // cout << abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]); cout << "\t | ";
+                // cout << abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]); cout << "\t | ";
+                // cout << abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]); cout << "\n";
+            }
+        }
+    }
+} */

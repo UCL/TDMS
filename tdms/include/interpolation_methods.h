@@ -116,10 +116,13 @@ class interpScheme {
          * @brief Executes the interpolation scheme on the data provided
          * 
          * The interpolation schemes are all of the form
-         * interpolated_value = \sum_{i=first_nonzero_coeff}^{last_nonzero_coeff} scheme_coeffs[i] * v[i],
+         * interpolated_value = \sum_{i=0}^{7} scheme_coeffs[i] * v[i],
          * so provided that the coefficients have been set correctly in construction (and the data gathered appropriately), we can run the same for loop for each interpolation scheme.
          * 
-         * @param v Sample datapoints to use in interpolation
+         * For slight speedup, the actual sum performed loops over those i such that
+         * 0 <= first_nonzero_coeff <= i <= last_nonzero_coeff <= 7.
+         * 
+         * @param v Sample datapoints to use in interpolation; v[0] should be the first of 8 values
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
          */
