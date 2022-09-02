@@ -65,6 +65,7 @@ set(SOURCES
     src/fields/electric.cpp
     src/fields/magnetic.cpp
     src/fields/split.cpp
+    src/fields/td_field_exporter_2d.cpp
     src/argument_parser.cpp
     src/fdtd_grid_initialiser.cpp
     src/grid_labels.cpp

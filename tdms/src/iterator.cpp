@@ -257,13 +257,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   auto H = MagneticField();
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
 
-  double **ex_tdf;
-  mxArray *ex_tdf_array;
-
-  double Ex_temp, Ey_temp, Ez_temp;
-
   double ***exi, ***eyi;
-  int exi_present, eyi_present;
   double *I0, *I1, *J0, *J1, *K0, *K1;
   double ***IsourceI, ***JsourceI, ***KsourceI, ***IsourceR, ***JsourceR, ***KsourceR;
   double ***surface_EHr, ***surface_EHi;
@@ -300,7 +294,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
 
   double air_interface;
-  int air_interface_present;
+  bool air_interface_present;
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
 
@@ -334,7 +328,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   unsigned char ***materials;
   unsigned char *array_ptr_uint8;
 
-  //  int *lower_boundary_update;
   int *Dxl, *Dxu, *Dyl, *Dyu, *Dzl, *Dzu, *Nt;
   int i, j, k, material_nlayers, is_disp, is_cond, is_disp_ml = 0;
   int k_loc;
@@ -415,7 +408,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   const char campssample_elements[][15] = {"vertices", "components"};
 
   char *sourcemodestr;
-  char *tdfdirstr;
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
@@ -951,7 +943,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (ndims == 3) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (J1[0] - J0[0] + 1))) &&
             (dimptr_out[2] == ((int) (K1[0] - K0[0] + 1)))))
-        throw runtime_error("Isource has incorresct size");
+        throw runtime_error("Isource has incorrect size");
     } else {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (J1[0] - J0[0] + 1)))))
         throw runtime_error("Isource has incorrect size");
@@ -1023,11 +1015,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (ndims == 3) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (I1[0] - I0[0] + 1))) &&
             (dimptr_out[2] == ((int) (J1[0] - J0[0] + 1)))))
-        fprintf(stderr, "Ksource has incorresct size\n");
+        fprintf(stderr, "Ksource has incorrect size\n");
     } else if (ndims == 2) {
       if (!((dimptr_out[0] == 8) && (dimptr_out[1] == ((int) (I1[0] - I0[0] + 1))) &&
             (0 == ((int) (J1[0] - J0[0] + 1)))))
-        fprintf(stderr, "Ksource has incorresct size\n");
+        fprintf(stderr, "Ksource has incorrect size\n");
     }
     fprintf(stderr, "Ksource-4\n");
     if (!mxIsComplex((mxArray *) prhs[input_counter]))
@@ -1641,11 +1633,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    air_interface_present = 1;
+    air_interface_present = true;
     air_interface = *mxGetPr((mxArray *) prhs[input_counter]);
     fprintf(stderr, "air_interface: %e\nz_obs: %e\n", air_interface, z_obs);
   } else {
-    air_interface_present = 0;
+    air_interface_present = false;
   }
   input_counter++;
   /*Got air_interface*/
@@ -1670,6 +1662,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Got intmatprops*/
 
   /*Get tdfield*/
+  bool exi_present, eyi_present;
+
   if (mxIsStruct(prhs[input_counter])) {
     fprintf(stderr, "tdfield 01\n");
     num_fields = mxGetNumberOfFields(prhs[input_counter]);
@@ -1685,12 +1679,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       dimptr_out = mxGetDimensions(element);
       exi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
                               dimptr_out[2]);
-      exi_present = 1;
+      exi_present = true;
       fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
               dimptr_out[1], dimptr_out[2]);
       fprintf(stderr, "ddfield is empty\n");
     } else {
-      exi_present = 0;
+      exi_present = false;
       fprintf(stderr, "exi not present\n");
     }
 
@@ -1704,9 +1698,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       dimptr_out = mxGetDimensions(element);
       eyi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
                               dimptr_out[2]);
-      eyi_present = 1;
+      eyi_present = true;
     } else {
-      eyi_present = 0;
+      eyi_present = false;
       fprintf(stderr, "eyi not present\n");
     }
 
@@ -1716,20 +1710,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get tdfdir*/
   //fprintf(stderr,"tdfdir: %d (%d)\n", mxIsChar(prhs[input_counter]),input_counter);
-  if (mxIsChar(prhs[input_counter])) {
-    tdfdirstr = (char *) malloc((1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])) *
-                                sizeof(char));
-    mxGetString((mxArray *) prhs[input_counter], tdfdirstr,
-                (1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter])));
-    //fprintf(stderr,"tdfdirstr = %s\n",tdfdirstr);
+  auto ex_td_field_exporter = TDFieldExporter2D();
 
-    //calculate the Ni_tdf
+  if (mxIsChar(prhs[input_counter])) {
+
+    int n = 1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter]);
+    ex_td_field_exporter.folder_name = (char *) malloc(n * sizeof(char));
+    mxGetString((mxArray *) prhs[input_counter], ex_td_field_exporter.folder_name, n);
+
     for (k = 0; k < K_tot; k++)
       if ((k % skip_tdf) == 0) Nk_tdf++;
 
     for (i = 0; i < I_tot; i++)
       if ((i % skip_tdf) == 0) Ni_tdf++;
     fprintf(stderr, "Ni_tdf=%d, Nk_tdf=%d\n", Ni_tdf, Nk_tdf);
+
+    if (!are_equal(ex_td_field_exporter.folder_name, "")){
+      params.has_tdfdir = true;
+      ex_td_field_exporter.allocate(Ni_tdf, Nk_tdf);
+    }
+    
     input_counter++;
   }
   /*Got tdfdir*/
@@ -2036,6 +2036,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (*Dzu) pind_ku = K_tot - *Dzu - 1;
   else
     pind_ku = K_tot;
+
+  E.I_tot = pind_iu - pind_il + 1;
+  E.J_tot = pind_ju - pind_jl + 1;
+  E.K_tot = pind_ku - pind_kl + 1;
+  H.I_tot = E.I_tot;
+  H.J_tot = E.J_tot;
+  H.K_tot = E.K_tot;
 
   //fprintf(stderr,"Pre 04\n");
   //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
@@ -2518,16 +2525,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       J_tot_p1_bound = 0;
   }
   //fprintf(stderr,"Pre 22a\n");
-  //fprintf(stderr,"Pre 22, %d\n",strcmp(tdfdirstr,""));
-  /*setup time domain field export matrices*/
-  if (strcmp(tdfdirstr, "")) {
-    ndims = 2;
-    dims[0] = Ni_tdf;
-    dims[1] = Nk_tdf;
-    ex_tdf_array = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    ex_tdf = castMatlab2DArray(mxGetPr((mxArray *) ex_tdf_array), dims[0], dims[1]);
-  }
-
   //fprintf(stderr,"Pre 23\n");
 
   /*Start of FDTD iteration*/
@@ -2573,9 +2570,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if ((dft_counter == Nsteps) && (runmode == rm_complete) && (sourcemode == sm_steadystate) &&
         exphasorsvolume) {//runmode=complete,sourcemode=steadystate
       dft_counter = 0;
-      double tol = checkPhasorConvergence(E, E_copy, E_s, pind_il, pind_iu, pind_jl, pind_ju,
-                                          pind_kl, pind_ku, tind, *omega_an, *dt, *Nt);
-
+      double tol = checkPhasorConvergence(E, E_copy);
 
       //      mexPrintf("tol: %.5e \n",tol);
       fprintf(stderr, "tol: %.5e \n", tol);
@@ -2658,10 +2653,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
           (N_fieldsample_n == 0))) {
       //if( (tind-start_tind) % Np == 0){
-      if (1) {
+      double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
+
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
         {
-
 #pragma omp for
           for (int kt = 0; kt < N_fieldsample_k; kt++)
             for (int jt = 0; jt < N_fieldsample_j; jt++)
@@ -2681,7 +2676,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
               }
         }
-      }
     }
 
     /*end extract fieldsample*/
@@ -5880,37 +5874,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fflush(stdout);
     //fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
-    if (strcmp(tdfdirstr, "")) {
-      //fprintf(stderr,"tind:%d\n",tind);
-      if ((tind % Np) == 0) {
-        MATFile *toutfile;
-        char toutputfilename[512];
-        int kc = 0;
-        int ic = 0;
-        //fprintf(stderr,"Pos td01\n");
-        for (i = 0; i < I_tot; i++) {
-          kc = 0;
-          if ((i % skip_tdf) == 0) {
-            for (k = 0; k < K_tot; k++)
-              if ((k % skip_tdf) == 0) {
-                ex_tdf[kc++][ic] = E_s.xy[k][0][i] + E_s.xz[k][0][i];
-                //fprintf(stderr,"%d %d\n",kc,ic);
-              }
-            ic++;
-          }
-        }
-        //fprintf(stderr,"Pos td02\n");
-
-        sprintf(toutputfilename, "%s/ex_%06d.mat", tdfdirstr, tind);
-        //fprintf(stderr,"Pos td03\n");
-        fprintf(stderr, "time domain output: %s\n", toutputfilename);
-        toutfile = matOpen(toutputfilename, "w");
-        //fprintf(stderr,"Pos td04\n");
-        matPutVariable(toutfile, "ex_tdf", (mxArray *) ex_tdf_array);
-        //fprintf(stderr,"Pos td05\n");
-        matClose(toutfile);
-        //fprintf(stderr,"Pos td06\n");
-      }
+    if (params.has_tdfdir && (tind % Np) == 0) {
+      fprintf(stderr,"Saving field\n");
+      ex_td_field_exporter.export_field(E_s, skip_tdf, tind);
     }
     //fprintf(stderr,"Post-iter 6\n");
     /*write out fdtdgrid to a file*/
@@ -5939,9 +5905,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //fprintf(stderr,"Pos 12\n");
   if (runmode == rm_complete && exphasorsvolume) {
-    normaliseVolume(E, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, E.angular_norm);
-
-    normaliseVolume(H, pind_il, pind_iu, pind_jl, pind_ju, pind_kl, pind_ku, H.angular_norm);
+    E.normalise_volume();
+    H.normalise_volume();
   }
 
   //fprintf(stderr,"Pos 13\n");
@@ -6192,9 +6157,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   if (exi_present) freeCastMatlab3DArray(exi, *Nt);
   if (eyi_present) freeCastMatlab3DArray(eyi, *Nt);
-
-  if (strcmp(tdfdirstr, "")) freeCastMatlab2DArray(ex_tdf);
-
 
   //fprintf(stderr,"Pos 18\n");
   if (dimension == THREE) {
@@ -6520,7 +6482,6 @@ void normaliseSurface(double **surface_EHr, double **surface_EHi, int **surface_
     }
 }
 
-
 void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices, int *components,
                        int ncomponents, complex<double> Enorm, complex<double> Hnorm) {
 
@@ -6558,35 +6519,6 @@ void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices
         EHi[ii][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
       }
     }
-}
-
-void normaliseVolume(Field &F, int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,
-                     complex<double> norm) {
-  double norm_r, norm_i, denom, temp_r, temp_i;
-
-  norm_r = real(norm);
-  norm_i = imag(norm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
-
-        temp_r = F.real.x[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.x[k - k_l][j - j_l][i - i_l];
-        F.real.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.x[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-
-        temp_r = F.real.y[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.y[k - k_l][j - j_l][i - i_l];
-        F.real.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.y[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-
-        temp_r = F.real.z[k - k_l][j - j_l][i - i_l];
-        temp_i = F.imag.z[k - k_l][j - j_l][i - i_l];
-        F.real.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        F.imag.z[k - k_l][j - j_l][i - i_l] = (norm_r * temp_i - norm_i * temp_r) / denom;
-      }
 }
 
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
@@ -7027,74 +6959,33 @@ double linearRamp(double t, double period, double rampwidth) {
     return t / (period * rampwidth);
 }
 
-//i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
-//i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
-double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy, ElectricSplitField &E_s,
-                              int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n,
-                              double omega, double dt, int Nt) {
+double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
 
-  //first find the maximum absolute value
-  double maxabs = 0., tmaxabs = 0.;
-  double maxdiff = 0.;
+  double max_abs = 0., max_abs_diff = 0.;
 
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
+  //find the largest maximum absolute value the largest difference (in absolute value) between phasors
+  for (int k = 0; k < E.K_tot; k++)
+    for (int j = 0; j < E.J_tot; j++)
+      for (int i = 0; i < E.I_tot; i++)
+          for (char c : {'x', 'y', 'z'}){
 
-        tmaxabs = complexAbs(E.real.x[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.x[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
+            auto E_ijk = E.real(c)[k][j][i] + I * E.imag(c)[k][j][i];
+            auto E_copy_ijk = E_copy.real(c)[k][j][i] + I * E_copy.imag(c)[k][j][i];
 
-        tmaxabs = complexAbs(E.real.y[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.y[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
+            max_abs = max(max_abs, abs(E_ijk));  // max(max_abs, |Re(E_x) + i Im(E_x)|)
+            max_abs_diff = max(max_abs_diff, abs(E_ijk - E_copy_ijk));
+          }
 
-        tmaxabs = complexAbs(E.real.z[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.z[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxabs) maxabs = tmaxabs;
-      }
-  //now find the largest difference (in absolute value) between phasors
-  for (int k = k_l; k <= k_u; k++)
-    for (int j = j_l; j <= j_u; j++)
-      for (int i = i_l; i <= i_u; i++) {
-
-
-        tmaxabs = complexAbs(E.real.x[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.x[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.x[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.x[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.y[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.y[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.y[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.y[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-
-        tmaxabs = complexAbs(E.real.z[k - k_l][j - j_l][i - i_l] -
-                             E_copy.real.z[k - k_l][j - j_l][i - i_l] +
-                             I * E.imag.z[k - k_l][j - j_l][i - i_l] -
-                             I * E_copy.imag.z[k - k_l][j - j_l][i - i_l]);
-        if (tmaxabs > maxdiff) maxdiff = tmaxabs;
-      }
-
-  return maxdiff / maxabs;
+  return max_abs_diff / max_abs;
 }
-
-
-/* Returns the absolute value of complex number z*/
-double complexAbs(complex<double> z) { return sqrt(real(z) * real(z) + imag(z) * imag(z)); }
-
 
 /*Copy the phasors from E to E_copy */
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements) {
 
-  memcpy(to.real.x, from.real.x, nelements * sizeof(double));
-  memcpy(to.imag.x, from.imag.x, nelements * sizeof(double));
-  memcpy(to.real.y, from.real.y, nelements * sizeof(double));
-  memcpy(to.imag.y, from.imag.y, nelements * sizeof(double));
-  memcpy(to.real.z, from.real.z, nelements * sizeof(double));
-  memcpy(to.imag.z, from.imag.z, nelements * sizeof(double));
+  for (char c : {'x', 'y', 'z'}){
+    memcpy(to.real(c), from.real(c), nelements * sizeof(double));
+    memcpy(to.imag(c), from.imag(c), nelements * sizeof(double));
+  }
 }
 
 /*Load up the output grid labels*/

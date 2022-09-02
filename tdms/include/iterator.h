@@ -21,10 +21,7 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
 
 double linearRamp(double t, double period, double rampwidth);
 
-double complexAbs(std::complex<double> z);
-
-double checkPhasorConvergence(ElectricField &A, ElectricField &B, ElectricSplitField &E_s,
-			      int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int n, double omega, double dt, int Nt);
+double checkPhasorConvergence(ElectricField &A, ElectricField &B);
 
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements);
 
@@ -42,9 +39,6 @@ int is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot
 void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
-
-void normaliseVolume(Field &F,
-		     int i_l, int i_u, int j_l, int j_u, int k_l, int k_u,  std::complex<double> norm);
 
 void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 		       int **surface_vertices, int n_surface_vertices,  std::complex<double> Enorm , std::complex<double> Hnorm );
