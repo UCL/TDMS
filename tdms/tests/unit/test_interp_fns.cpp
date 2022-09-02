@@ -302,7 +302,7 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
  * However, there are other function classes on which we expect BLi to be superior, which in particular encompasses the functional forms of the fields we expect to encounter in the simulations.
  * 
  * As such, we will perform both BLi and cubic interpolation on the function
- * f:[0,1] \mapsto \mathbb{R}, f(x) = [placeholder sin(2\pi x)]
+ * f:[-1,1] \mapsto \mathbb{R}, f(x) = sinc(2\pi*x) = sin(2*\pi x)/(2*\pi x)
  * We will check that, in each case, the interpolated value given by the BLi scheme is a superior approximation to its cubic counterpart.
  *  
  */
@@ -314,7 +314,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         throw runtime_error("nSamples < 8 - cannot interpolate using BLi!");
     }
     // point-spacing
-    double spacing = 1./(double) (nSamples-1);
+    double spacing = 2./(double) (nSamples-1);
 
     // coordinates of the "field components" we have data for
     double xi[nSamples]; 
@@ -335,10 +335,10 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
 
     // populate arrays
     for(int i=0; i<nSamples-1; i++) {
-        xi[i] = 0 + i*spacing;
+        xi[i] = -1. + i*spacing;
         xi5[i] = xi[i] + spacing/2.;
-        f_data[i] = sin(2.*M_PI*xi[i]);
-        f_exact[i] = sin(2.*M_PI*xi5[i]);
+        f_data[i] = sin(2.*M_PI*xi[i]) / (2.*M_PI*xi[i]);
+        f_exact[i] = sin(2.*M_PI*xi5[i]) / (2.*M_PI*xi5[i]);
     }
     xi[nSamples-1] = 1.;
     f_data[nSamples-1] = 0.; // sin(2\pi) = 0
@@ -373,4 +373,8 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         // check that BLi beats cubic in all cases
         CHECK( BLi_err[i] < cubic_err[i] );
     }
+
+    // sanity check: max BLi error?
+    double max_BLi_error = *max_element(BLi_err, BLi_err + nSamples - 2);
+    cout << "Max BLi error (sinc): " << max_BLi_error << endl;
 }
