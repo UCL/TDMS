@@ -1,4 +1,6 @@
 #include <complex>
+#include <stdexcept>
+#include "mat_io.h"
 #include "simulation_parameters.h"
 
 
@@ -15,7 +17,7 @@
  */
 class Grid{
 
-protected:
+public:
     int I_tot = 0;
     int J_tot = 0;
     int K_tot = 0;
@@ -28,10 +30,20 @@ protected:
 };
 
 
-struct xyz_arrays{
-    double ***x;
-    double ***y;
-    double ***z;
+class xyz_arrays{   // TODO: remove in a future iteration
+public:
+    double ***x = nullptr;
+    double ***y = nullptr;
+    double ***z = nullptr;
+
+    double*** operator() (char c) const{
+      switch (c) {
+        case 'x': return x;
+        case 'y': return y;
+        case 'z': return z;
+        default: throw std::runtime_error("Have no element" + std::to_string(c));
+      }
+    }
 };
 
 
@@ -47,12 +59,17 @@ public:
     std::complex<double> angular_norm = 0.;
 
     // TODO: this is likely better as a set of complex arrays
-    xyz_arrays real = xyz_arrays{nullptr, nullptr, nullptr};
-    xyz_arrays imag = xyz_arrays{nullptr, nullptr, nullptr};
+    xyz_arrays real;
+    xyz_arrays imag;
 
     void add_to_angular_norm(int n, int Nt, SimulationParameters &params);
 
     virtual std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt) = 0;
+
+    /**
+     * Normalise. This will modify the values of the field in place
+     */
+    void normalise_volume();
 };
 
 
@@ -94,7 +111,6 @@ public:
      * Set all the values of all components of the field to zero
      */
     void zero();
-
 
     /**
      * Allocate and set to zero all components of the field
@@ -160,4 +176,31 @@ class MagneticField: public Field{
 
 private:
     std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt) override;
+};
+
+/**
+ * Structure to hold a field and allow saving it to a file
+ */
+class TDFieldExporter2D{
+
+public:
+  mxArray* matlab_array = nullptr;
+  double** array = nullptr;
+  char* folder_name = nullptr;
+
+  /**
+   * Allocate the arrays to hold the field
+   */
+  void allocate(int nI, int nJ);
+
+  /**
+   * Export/save a field
+   *
+   * @param F Field to save
+   * @param stride Interval to compute the field component at
+   * @param iteration Iteration number of the main loop. Used in the filename
+   */
+  void export_field(SplitField& F, int stride, int iteration) const;
+
+  ~TDFieldExporter2D();
 };

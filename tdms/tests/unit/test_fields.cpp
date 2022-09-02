@@ -1,12 +1,22 @@
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
 #include "field.h"
+#include "numeric.h"
+
+#include "iostream"
 
 using namespace std;
 
 
 template<typename T>
 inline bool is_close(T a, T b){
+
+  auto max_norm = max(abs(a), abs(b));
+
+  if (max_norm < 1E-30){  // Prevent dividing by zero
+    return true;
+  }
+
   return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
 }
 
@@ -53,3 +63,37 @@ TEST_CASE("Test magnetic field angular norm addition") {
   REQUIRE(is_close(H.angular_norm, expected));
 }
 
+TEST_CASE("Test that a split field can be constructed without allocation"){
+
+  auto field = ElectricSplitField();
+  REQUIRE(field.xy == nullptr);
+}
+
+TEST_CASE("Test that a split field can be allocated and zeroed"){
+
+  auto field = ElectricSplitField(2, 1, 0);
+  field.allocate_and_zero();
+
+  REQUIRE(field.xy != nullptr);
+
+  // NOTE: the allocated field is actually [I_tot+1, J_tot+1, K_tot+1] in size
+  for (int k = 0; k < 1; k++){
+    for (int j = 0; j < 2; j++){
+      for (int i = 0; i < 3; i++){
+        REQUIRE(is_close(field.xy[k][j][i], 0.0));
+        REQUIRE(is_close(field.zy[k][j][i], 0.0));
+        REQUIRE(is_close(field.yz[k][j][i], 0.0));
+      }
+    }
+  }
+}
+
+TEST_CASE("Test setting a component of a vector field"){
+
+  auto arrays = xyz_arrays();
+  construct3dArray(&arrays.x, 1, 1, 1);
+
+  arrays('x')[0][0][0] = 1.0;
+
+  REQUIRE(is_close(arrays('x')[0][0][0], 1.0));
+}
