@@ -11,7 +11,7 @@ using namespace std;
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
  *
  */
-TEST_CASE("interp: cubic interpolation is exact")
+TEST_CASE("cubic_interpolation: cubic interpolation is exact")
 {
 
     // equidistant points
@@ -119,6 +119,8 @@ TEST_CASE("bandlimited_interpolation: coefficient sum")
  * For readability, we break this out into separate test cases for each function.
  * 
  */
+
+// BLi: constant function interpolation
 TEST_CASE("bandlimited_interpolation: order of error, constant function")
 {
 
@@ -169,6 +171,7 @@ TEST_CASE("bandlimited_interpolation: order of error, constant function")
     cout << "const_fn \t | " + to_string(const_fn_max_error) + "\t\t | " + to_string(const_fn_MATLAB_error) + "\n";
 }
 
+// BLi: sine function interpolation
 TEST_CASE("bandlimited_interpolation: order of error, sine function")
 {
 
@@ -222,6 +225,7 @@ TEST_CASE("bandlimited_interpolation: order of error, sine function")
     cout << "sin(2 pi x) \t | " + to_string(sin_max_error) + "\t\t | " + to_string(sin_MATLAB_error) + "\n";
 }
 
+// BLi: pulse function interpolation
 TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
 {
 
