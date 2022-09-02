@@ -41,8 +41,9 @@ HX_{ii,jj,kk} := Hx[2*ii+2, 2*jj, 2*kk+1] is the value of Hx associated to Yee c
 HY_{ii,jj,kk} := Hy[2*ii+1, 2*jj, 2*kk+1] is the value of Hy associated to Yee cell (i,j,k)
 HZ_{ii,jj,kk} := Hz[2*ii+1, 2*jj+1, 2*kk] is the value of Hx associated to Yee cell (i,j,k)
 
-As such, we can perform interpolation on fields that we define, and compare to the exact values of the field at those given points.
+As such, we can perform interpolation on fields that we define, and compare to the exact values of the field at those given points. */
 
+/*
 We will define the E-field to be
  * Ex(x,y,z) = cos(2\pi x)sin(2\pi y)sin(2\pi z),
  * Ey(x,y,z) = sin(2\pi x)cos(2\pi y)sin(2\pi z),
@@ -52,10 +53,30 @@ and the H-field by
  * Hy(x,y,z) = cos(2\pi x)sin(2\pi y)cos(2\pi z),
  * Hz(x,y,z) = cos(2\pi x)cos(2\pi y)sin(2\pi z),
 */
-
-// Fast functions for sin(2\pi t) and cos(2\pi t)
-inline double s2pi(double t) { return sin(2.*M_PI*t); }
-inline double c2pi(double t) { return cos(2.*M_PI*t); }
+inline double s2pi(double x) {
+    return sin(2.*M_PI*x);
+}
+inline double c2pi(double x) {
+    return cos(2.*M_PI*x);
+}
+inline double Ex(double x, double y, double z) {
+    return c2pi(x) * s2pi(y) * s2pi(z);
+}
+inline double Ey(double x, double y, double z) {
+    return s2pi(x) * c2pi(y) * s2pi(z);
+}
+inline double Ez(double x, double y, double z) {
+    return s2pi(x) * s2pi(y) * c2pi(z);
+}
+inline double Hx(double x, double y, double z) {
+    return s2pi(x) * c2pi(y) * c2pi(z);
+}
+inline double Hy(double x, double y, double z) {
+    return c2pi(x) * s2pi(y) * c2pi(z);
+}
+inline double Hz(double x, double y, double z) {
+    return c2pi(x) * c2pi(y) * s2pi(z);
+}
 
 // for memory allocation of 3D arrays
 inline double ***allocate3dmemory(int I, int J, int K) {
@@ -102,23 +123,24 @@ TEST_CASE("E-field interpolation check") {
            ***Ez_exact = allocate3dmemory(Nx, Ny, Nz), ***Ez_interp = allocate3dmemory(Nx, Ny, Nz);
 
     // compute the exact field and the "split field" components
+    // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
     for(int ii=0; ii<Nx; ii++) {
         for(int jj=0; jj<Ny; jj++) {
             for(int kk=0; kk<Nz; kk++) {
                 // x components EX_{ii,jj,kk} := Ex[2*ii+1, 2*jj, 2*kk]
-                Exy[kk][jj][ii] = 1.0 * c2pi(x[2 * ii + 1]) * s2pi(y[2 * jj]) * s2pi(z[2 * kk]);
-                Exz[kk][jj][ii] = 0.0 * c2pi(x[2 * ii + 1]) * s2pi(y[2 * jj]) * s2pi(z[2 * kk]);
-                // y components EY_{ii,jj,kk} := Ex[2*ii, 2*jj+1, 2*kk]
-                Eyx[kk][jj][ii] = 1.0 * s2pi(x[2 * ii]) * c2pi(y[2 * jj + 1]) * s2pi(z[2 * kk]);
-                Eyz[kk][jj][ii] = 0.0 * s2pi(x[2 * ii]) * c2pi(y[2 * jj + 1]) * s2pi(z[2 * kk]);
-                // z components EZ_{ii,jj,kk} := Ex[2*ii, 2*jj, 2*kk+1]
-                Ezx[kk][jj][ii] = 1.0 * s2pi(x[2 * ii]) * s2pi(y[2 * jj]) * c2pi(z[2 * kk + 1]);
-                Ezy[kk][jj][ii] = 0.0 * s2pi(x[2 * ii]) * s2pi(y[2 * jj]) * c2pi(z[2 * kk + 1]);
+                Exy[kk][jj][ii] = Ex(x[2 * ii + 1], y[2 * jj], z[2 * kk]);
+                Exz[kk][jj][ii] = 0.0;
+                // y components EY_{ii,jj,kk} := Ey[2*ii, 2*jj+1, 2*kk]
+                Eyx[kk][jj][ii] = Ey(x[2 * ii], y[2 * jj + 1], z[2 * kk]);
+                Eyz[kk][jj][ii] = 0.0;
+                // z components EZ_{ii,jj,kk} := Ez[2*ii, 2*jj, 2*kk+1]
+                Ezx[kk][jj][ii] = Ez(x[2 * ii], y[2 * jj], z[2 * kk + 1]);
+                Ezy[kk][jj][ii] = 0.0;
 
                 // exact field components
-                Ex_exact[kk][jj][ii] = c2pi(x[2 * ii]) * s2pi(y[2 * jj]) * s2pi(z[2 * kk]);
-                Ey_exact[kk][jj][ii] = s2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk]);
-                Ez_exact[kk][jj][ii] = s2pi(x[2 * ii]) * s2pi(y[2 * jj]) * c2pi(z[2 * kk]);
+                Ex_exact[kk][jj][ii] = Ex(x[2 * ii], y[2 * jj], z[2 * kk]);
+                Ey_exact[kk][jj][ii] = Ey(x[2 * ii], y[2 * jj], z[2 * kk]);
+                Ez_exact[kk][jj][ii] = Ez(x[2 * ii], y[2 * jj], z[2 * kk]);
             }
         }
     }
@@ -146,12 +168,9 @@ TEST_CASE("E-field interpolation check") {
     double Ex_max_error = 0., Ey_max_error = 0., Ez_max_error = 0.;
     // now we compare the values across the exact and interp arrays,
     // across all indices from 1 to N{x,y,z}.
-    for (int ii = 1; ii < Nx; ii++)
-    {
-        for (int jj = 1; jj < Ny; jj++)
-        {
-            for (int kk = 1; kk < Nz; kk++)
-            {
+    for (int ii = 1; ii < Nx; ii++) {
+        for (int jj = 1; jj < Ny; jj++) {
+            for (int kk = 1; kk < Nz; kk++) {
                 double curr_err_Ex = abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]);
                 if (curr_err_Ex > Ex_max_error){ Ex_max_error = curr_err_Ex;}
 
@@ -216,26 +235,27 @@ TEST_CASE("H-field interpolation check") {
            ***Hz_exact = allocate3dmemory(Nx, Ny, Nz), ***Hz_interp = allocate3dmemory(Nx, Ny, Nz);
 
     // compute the exact field and the "split field" components
+    //Hx | (0.5, 0.0, 0.5)Hy | (0.5, 0.0, 0.5)Hz | (0.5, 0.5, 0.0)
     for (int ii = 0; ii < Nx; ii++)
     {
         for (int jj = 0; jj < Ny; jj++)
         {
             for (int kk = 0; kk < Nz; kk++)
             {
-                // x components EX_{ii,jj,kk} := Ex[2*ii+1, 2*jj, 2*kk]
-                Hxy[kk][jj][ii] = 1.0 * s2pi(x[2 * ii + 1]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
-                Hxz[kk][jj][ii] = 0.0 * s2pi(x[2 * ii + 1]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
-                // y components EY_{ii,jj,kk} := Ex[2*ii, 2*jj+1, 2*kk]
-                Hyx[kk][jj][ii] = 1.0 * c2pi(x[2 * ii]) * s2pi(y[2 * jj + 1]) * c2pi(z[2 * kk]);
-                Hyz[kk][jj][ii] = 0.0 * c2pi(x[2 * ii]) * s2pi(y[2 * jj + 1]) * c2pi(z[2 * kk]);
-                // z components EZ_{ii,jj,kk} := Ex[2*ii, 2*jj, 2*kk+1]
-                Hzx[kk][jj][ii] = 1.0 * c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk + 1]);
-                Hzy[kk][jj][ii] = 0.0 * c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk + 1]);
+                // x components HX_{ii,jj,kk} := Hx[2*ii+1, 2*jj, 2*kk+1]
+                Hxy[kk][jj][ii] = Hx(x[2 * ii + 1], y[2 * jj], z[2 * kk + 1]);
+                Hxz[kk][jj][ii] = 0.;
+                // y components HY_{ii,jj,kk} := Hy[2*ii+1, 2*jj, 2*kk+1]
+                Hyx[kk][jj][ii] = Hy(x[2 * ii + 1], y[2 * jj], z[2 * kk + 1]);
+                Hyz[kk][jj][ii] = 0.;
+                // z components HZ_{ii,jj,kk} := Hz[2*ii+1, 2*jj+1, 2*kk]
+                Hzx[kk][jj][ii] = Hz(x[2 * ii + 1], y[2 * jj + 1], z[2 * kk]);
+                Hzy[kk][jj][ii] = 0.;
 
                 // exact field components
-                Hx_exact[kk][jj][ii] = s2pi(x[2 * ii]) * c2pi(y[2 * jj]) * c2pi(z[2 * kk]);
-                Hy_exact[kk][jj][ii] = c2pi(x[2 * ii]) * s2pi(y[2 * jj]) * c2pi(z[2 * kk]);
-                Hz_exact[kk][jj][ii] = c2pi(x[2 * ii]) * c2pi(y[2 * jj]) * s2pi(z[2 * kk]);
+                Hx_exact[kk][jj][ii] = Hx(x[2 * ii], y[2 * jj], z[2 * kk]);
+                Hy_exact[kk][jj][ii] = Hy(x[2 * ii], y[2 * jj], z[2 * kk]);
+                Hz_exact[kk][jj][ii] = Hz(x[2 * ii], y[2 * jj], z[2 * kk]);
             }
         }
     }
