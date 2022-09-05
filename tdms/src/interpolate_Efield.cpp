@@ -2,10 +2,10 @@
 #include "interpolation_methods.h"
 
 
-void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int I, double *Ex) {
+void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int nI, double *Ex) {
 
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(I, i);
+    const interpScheme &scheme = best_interp_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 
@@ -20,10 +20,10 @@ void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, 
     *Ex = scheme.interpolate(interp_data);
 }
 
-void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int J, double *Ey)
+void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int nJ, double *Ey)
 {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(J, j);
+    const interpScheme &scheme = best_interp_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 
@@ -39,10 +39,10 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
     *Ey = scheme.interpolate(interp_data);
 }
 
-void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int K, double *Ez) {
+void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int nK, double *Ez) {
 
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(K, k);
+    const interpScheme &scheme = best_interp_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 
@@ -60,10 +60,10 @@ void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, 
 
 void interpolateTimeDomainEField(double ***Exy, double ***Exz, double ***Eyx,
                                  double ***Eyz, double ***Ezx, double ***Ezy,
-                                 int i, int j, int k, int I, int J, int K,
+                                 int i, int j, int k, int nI, int nJ, int nK,
                                  double *Ex, double *Ey, double *Ez) 
 {
-    interpolateTimeDomainEx(Exy, Exz, i, j, k, I, Ex);
-    interpolateTimeDomainEy(Eyx, Eyz, i, j, k, J, Ey);
-    interpolateTimeDomainEz(Ezx, Ezy, i, j, k, K, Ez);
+    interpolateTimeDomainEx(Exy, Exz, i, j, k, nI, Ex);
+    interpolateTimeDomainEy(Eyx, Eyz, i, j, k, nJ, Ey);
+    interpolateTimeDomainEz(Ezx, Ezy, i, j, k, nK, Ez);
 }
