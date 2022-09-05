@@ -25,3 +25,20 @@ void Field::normalise_volume() {
           imag(c)[k][j][i] = (norm_r * temp_i - norm_i * temp_r) / denom;
         }
 }
+
+void Field::zero() {
+
+  for (auto &arr : {real, imag})
+    for (char c : {'x', 'y', 'z'})
+      for (int k = 0; k < K_tot; k++)
+        for (int j = 0; j < J_tot; j++)
+          for (int i = 0; i < I_tot; i++)
+              arr(c)[k][j][i] = 0.;
+}
+
+Field::~Field() {
+
+  for (auto &arr : {real, imag})
+    for (char c : {'x', 'y', 'z'})
+      freeCastMatlab3DArray(arr(c), K_tot);
+}

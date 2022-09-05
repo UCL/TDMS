@@ -1,3 +1,4 @@
+#pragma once
 #include <complex>
 #include <stdexcept>
 #include "mat_io.h"
@@ -62,6 +63,13 @@ public:
     xyz_arrays real;
     xyz_arrays imag;
 
+    /**
+     * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
+     * il is the first non-pml cell in the i direction and iu the last in the corresponding split
+     * field grid
+     */
+    int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
+
     void add_to_angular_norm(int n, int Nt, SimulationParameters &params);
 
     virtual std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt) = 0;
@@ -70,6 +78,13 @@ public:
      * Normalise. This will modify the values of the field in place
      */
     void normalise_volume();
+
+    /**
+     * Zero all components of the real and imaginary parts of the field
+     */
+    void zero();
+
+    ~Field();
 };
 
 
@@ -89,6 +104,12 @@ public:
     double ***yz = nullptr;
     double ***zx = nullptr;
     double ***zy = nullptr;
+
+    /**
+     * Has this split field been initialised from MATLAB? If it has, then a different destructor
+     * needs to be used
+     */
+    bool is_matlab_allocated = false;
 
     /**
      * Default no arguments constructor
