@@ -30,6 +30,7 @@ cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+# -DBUILD_TESTING=ON
 make install
 ```
 where lines need to be commented in and the paths modified if cmake cannot 
