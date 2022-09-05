@@ -122,8 +122,13 @@ GratingStructure::~GratingStructure() {
 
 template <typename T>
 Vector<T>::Vector(const mxArray *ptr) {
-  vector = mxGetPr(ptr);
   n = (int)mxGetNumberOfElements(ptr);
+  vector = (T*) malloc((unsigned) (n * sizeof(T)));
+
+  auto matlab_ptr = mxGetPr(ptr);
+  for (int i = 0; i < n; i++){
+    vector[i] = (T) matlab_ptr[i];
+  }
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
@@ -261,4 +266,33 @@ IncidentField::IncidentField(const mxArray *ptr){
   assert_is_struct_with_n_fields(ptr, 2, "tdfield");
   x = component_in(ptr, "exi");
   y = component_in(ptr, "eyi");
+}
+
+FieldSample::FieldSample(const mxArray *ptr){
+
+  if (mxIsEmpty(ptr)){
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 4, "fieldsample");
+  i = Vector<int>(ptr_to_vector_or_empty_in(ptr, "i", "fieldsample"));
+  j = Vector<int>(ptr_to_vector_or_empty_in(ptr, "j", "fieldsample"));
+  k = Vector<int>(ptr_to_vector_or_empty_in(ptr, "k", "fieldsample"));
+  n = Vector<double>(ptr_to_vector_or_empty_in(ptr, "n", "fieldsample"));
+
+  int n_dims = 4;
+  if (all_vectors_are_non_empty()){
+    int dims[4] = {i.size(), j.size(), k.size(), n.size()};
+    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+    tensor = cast_matlab_4D_array(mxGetPr(mx), i.size(), j.size(), k.size(), n.size());
+  } else {
+    int dims[4] = {0, 0, 0, 0};
+    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+  }
+}
+
+FieldSample::~FieldSample() {
+  if (all_vectors_are_non_empty()) {
+    free_cast_matlab_4D_array(tensor, k.size(), n.size());
+  }
 }

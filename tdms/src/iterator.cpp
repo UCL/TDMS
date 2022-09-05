@@ -263,9 +263,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double maxfield = 0, tempfield;
 
-  double *fieldsample_i, *fieldsample_j, *fieldsample_k, *fieldsample_n;
-  int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
-
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
 
@@ -323,14 +320,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   mxArray *dummy_array[3];
   mxArray *element;
   mxArray *mx_surface_vertices, *mx_surface_facets, *mx_surface_amplitudes;
-  mxArray *mx_fieldsample;
-  double ****fieldsample;
   mxArray *mx_Idx, *mx_Idy;
   double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
   complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
 
-  const char fieldsample_elements[][2] = {"i", "j", "k", "n"};
   const char campssample_elements[][15] = {"vertices", "components"};
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
@@ -539,38 +533,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Got tdfdir*/
 
   /*Get fieldsample*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    if (mxIsStruct(prhs[input_counter])) {
-      num_fields = mxGetNumberOfFields(prhs[input_counter]);
-      if (num_fields != 4) {
-        throw runtime_error("fieldsample should have 4 members, it has " + to_string(num_fields));
-      }
-      for (int i = 0; i < 4; i++) {
-        element = mxGetField((mxArray *) prhs[input_counter], 0, fieldsample_elements[i]);
-
-        if (are_equal(fieldsample_elements[i], "i")) {
-          fieldsample_i = mxGetPr(element);
-          N_fieldsample_i = mxGetNumberOfElements(element);
-          //fprintf(stderr,"Number of elements in fieldsample_i: %d\n",N_fieldsample_i);
-        } else if (are_equal(fieldsample_elements[i], "j")) {
-          fieldsample_j = mxGetPr(element);
-          N_fieldsample_j = mxGetNumberOfElements(element);
-        } else if (are_equal(fieldsample_elements[i], "k")) {
-          fieldsample_k = mxGetPr(element);
-          N_fieldsample_k = mxGetNumberOfElements(element);
-        } else if (are_equal(fieldsample_elements[i], "n")) {
-          fieldsample_n = mxGetPr(element);
-          N_fieldsample_n = mxGetNumberOfElements(element);
-        }
-      }
-    }
-    input_counter++;
-  } else {
-    N_fieldsample_i = 0;
-    N_fieldsample_j = 0;
-    N_fieldsample_k = 0;
-    N_fieldsample_n = 0;
-  }
+  auto fieldsample = FieldSample(prhs[input_counter++]);
 
   /*Get campssample*/
   if (!mxIsEmpty(prhs[input_counter])) {
@@ -613,7 +576,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   /*Got campssample*/
-  //fprintf(stderr,"Number of elements in fieldsample_*: %d %d %d %d\n",N_fieldsample_i,N_fieldsample_j,N_fieldsample_k,N_fieldsample_n);
+  //fprintf(stderr,"Number of elements in fieldsample_*: %d %d %d %d\n",fieldsample_vecs.i.size(),fieldsample_vecs.j.size(),fieldsample_vecs.k.size(),fieldsample_vecs.n.size());
   /*Got fieldsample*/
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
@@ -1077,29 +1040,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (is_cond) { J_c.allocate_and_zero(); }
   /*end dispersive*/
 
-  /*setup the output array for the sampled field*/
-  if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
-        (N_fieldsample_n == 0))) {
-    ndims = 4;
-    dims[0] = N_fieldsample_i;
-    dims[1] = N_fieldsample_j;
-    dims[2] = N_fieldsample_k;
-    dims[3] = N_fieldsample_n;
-
-    mx_fieldsample = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample = cast_matlab_4D_array(mxGetPr(mx_fieldsample), N_fieldsample_i, N_fieldsample_j,
-                                       N_fieldsample_k, N_fieldsample_n);
-    //these variables are temporary storage to reduce the need for interpolation during the algorithm
-  } else {
-    ndims = 4;
-    dims[0] = 0;
-    dims[1] = 0;
-    dims[2] = 0;
-    dims[3] = 0;
-
-    mx_fieldsample = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-  }
-  plhs[27] = mx_fieldsample;
+  plhs[27] = fieldsample.mx;
 
   if (nvertices > 0) {
     ndims = 3;
@@ -1384,30 +1325,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Pos 01b:\n");
     }
     /*extract fieldsample*/
-    if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
-          (N_fieldsample_n == 0))) {
+    if (fieldsample.all_vectors_are_non_empty()) {
       //if( (tind-params.start_tind) % Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
         {
 #pragma omp for
-          for (int kt = 0; kt < N_fieldsample_k; kt++)
-            for (int jt = 0; jt < N_fieldsample_j; jt++)
-              for (int it = 0; it < N_fieldsample_i; it++) {
+          for (int kt = 0; kt < fieldsample.k.size(); kt++)
+            for (int jt = 0; jt < fieldsample.j.size(); jt++)
+              for (int it = 0; it < fieldsample.i.size(); it++) {
                 ////fprintf(stderr,"Pos fs 1\n");
                 interpolateTimeDomainFieldCentralEBandLimited(
                         E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        (int) fieldsample_i[it] + params.pml.Dxl - 1, (int) fieldsample_j[jt] + params.pml.Dyl - 1,
-                        (int) fieldsample_k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
+                        fieldsample.i[it] + params.pml.Dxl - 1,
+                        fieldsample.j[jt] + params.pml.Dyl - 1,
+                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
                 //fprintf(stderr,"Pos fs 2\n");
-                for (int nt = 0; nt < N_fieldsample_n; nt++)
+                for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
-                              fieldsample_n[nt] / 2.) /
+                              fieldsample.n[nt] / 2.) /
                                   params.Nt;
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + params.pml.Dxl - 1, (int)fieldsample_j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
+                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_vecs.n[nt], (int)fieldsample_vecs.i[it] + params.pml.Dxl - 1, (int)fieldsample_vecs.j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_vecs.k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_vecs.n[nt] - 2);
               }
         }
     }
@@ -4873,11 +4814,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (K0.apply || K1.apply) {
     free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
     free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
-  }
-
-  if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
-        (N_fieldsample_n == 0))) {
-    free_cast_matlab_4D_array(fieldsample, N_fieldsample_k, N_fieldsample_n);
   }
 
   free_cast_matlab_2D_array(iwave_lEx_Rbs);
