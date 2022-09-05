@@ -53,6 +53,7 @@ and the H-field by
  * Hy(x,y,z) = cos(2\pi x)sin(2\pi y)cos(2\pi z),
  * Hz(x,y,z) = cos(2\pi x)cos(2\pi y)sin(2\pi z),
 */
+
 inline double s2pi(double x) {
     return sin(2.*M_PI*x);
 }
@@ -279,23 +280,30 @@ TEST_CASE("H-field interpolation check") {
         }
     }
 
+    // values to hold the maximum errors
+    double Hx_max_error = 0., Hy_max_error = 0., Hz_max_error = 0.;
     // now we compare the values across the exact and interp arrays,
     // across all indices from 1 to N{x,y,z}.
-    // cout << "ii, jj, kk \t | x-diff \t | y-diff \t | z-diff \n";
-    for (int ii = 1; ii < Nx; ii++)
-    {
-        for (int jj = 1; jj < Ny; jj++)
-        {
-            for (int kk = 1; kk < Nz; kk++)
-            {
-                CHECK(abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]) < Hx_tol);
-                CHECK(abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]) < Hy_tol);
-                CHECK(abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]) < Hz_tol);
-                // cout << ii; cout << ", "; cout << jj; cout << ", "; cout << kk; cout << " \t | ";
-                // cout << abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]); cout << "\t | ";
-                // cout << abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]); cout << "\t | ";
-                // cout << abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]); cout << "\n";
+    for (int ii = 1; ii < Nx; ii++) {
+        for (int jj = 1; jj < Ny; jj++) {
+            for (int kk = 1; kk < Nz; kk++) {
+                double curr_err_Ex = abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]);
+                if (curr_err_Ex > Hx_max_error){ Hx_max_error = curr_err_Ex;}
+
+                double curr_err_Ey = abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]);
+                if (curr_err_Ey > Hy_max_error) { Hy_max_error = curr_err_Ey;}
+
+                double curr_err_Ez = abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]);
+                if (curr_err_Ez > Hz_max_error) { Hz_max_error = curr_err_Ez;}
             }
         }
     }
+
+    // delete large arrays to save memory again
+    delete Hx_exact, Hx_interp, Hy_exact, Hy_interp, Hz_exact, Hz_interp;
+
+    // check max errors do not exceed tolerances
+    CHECK(Hx_max_error < Hx_tol);
+    CHECK(Hy_max_error < Hy_tol);
+    CHECK(Hz_max_error < Hz_tol);
 }
