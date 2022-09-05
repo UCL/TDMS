@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tdms LANGUAGES CXX)
+
+# Allow building with testing, and default to off
+option(BUILD_TESTING "" OFF)
 include(CTest)
 
 # Allow RPATH on mac
