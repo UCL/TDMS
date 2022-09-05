@@ -7,10 +7,10 @@
  *
  * @param[in] Hxy,Hxz Split components of the Yee cell
  * @param[in] i,j,k Yee cell index
- * @param[in] J,K Number of Yee cells in the j,k directions respectively
+ * @param[in] nJ,nK Number of Yee cells in the j,k directions respectively
  * @param[out] Hx Interpolated value of the Hx field at centre of Yee cell i,j,k
  */
-void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int J, int K, double *Hx);
+void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int nJ, int nK, double *Hx);
 
 /**
  * @brief Interpolate the y-component of the magnetic field to the centre of Yee cell i,j,k
@@ -21,10 +21,10 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
  *
  * @param[in] Hyx,Hyz Split components of the Yee cell
  * @param[in] i,j,k Yee cell index
- * @param[in] I,K Number of Yee cells in the i,k directions respectively
+ * @param[in] nI,nK Number of Yee cells in the i,k directions respectively
  * @param[out] Hy Interpolated value of the Hy field at centre of Yee cell i,j,k
  */
-void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int K, double *Hy);
+void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int nI, int nK, double *Hy);
 
 /**
  * @brief Interpolate the z-component of the magnetic field to the centre of Yee cell i,j,k
@@ -35,20 +35,20 @@ void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, 
  *
  * @param[in] Hzx,Hzy Split components of the Yee cell
  * @param[in] i,j,k Yee cell index
- * @param[in] I,J Number of Yee cells in the i,j directions respectively
+ * @param[in] nI,nJ Number of Yee cells in the i,j directions respectively
  * @param[out] Hz Interpolated value of the Hz field at centre of Yee cell i,j,k
  */
-void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, double *Hz);
+void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int nI, int nJ, double *Hz);
 
 /**
  * @brief Interpolate the H-field to the centre of Yee cell i,j,k
  *
  * @param[in] Hxy,Hxz,Hyx,Hyz,Hzx,Hzy Split components of the Yee cell
  * @param[in] i,j.k Index of the Yee cell to interpolate to the centre of
- * @param[in] I,J,K Number of Yee cells in the i,j,k directions (respectively)
+ * @param[in] nI,nJ,nK Number of Yee cells in the i,j,k directions (respectively)
  * @param[out] Hx,Hy,Hz Interpolated values of the x,y,z (respectively) field component
  */
 void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
-                                 int i, int j, int k, int I, int J, int K,
+                                 int i, int j, int k, int nI, int nJ, int nK,
                                  double *Hx, double *Hy, double *Hz);

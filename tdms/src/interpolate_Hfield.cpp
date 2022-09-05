@@ -1,7 +1,7 @@
 #include "interpolate_Hfield.h"
 #include "interpolation_methods.h"
 
-void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int J, int K, double *Hx)
+void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int nJ, int nK, double *Hx)
 {
     /* There is a choice in the order of interpolation; either interpolate in y first, then z, or vice-versa.
     For optimal accuracy, we must determine the best interpolation scheme we can use in the y and z directions at cell (i,j,k).
@@ -18,9 +18,9 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
     */
 
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(K, k);
+    const interpScheme &z_scheme = best_interp_scheme(nK, k);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(J, j);
+    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     double pass_to_second_scheme[8];
@@ -76,7 +76,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
     }
 }
 
-void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, int I, int K, double *Hy)
+void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, int nI, int nK, double *Hy)
 {
     /* There is a choice in the order of interpolation; either interpolate in x first, then z, or vice-versa.
     For optimal accuracy, we must determine the best interpolation scheme we can use in the x and z directions at cell (i,j,k).
@@ -92,9 +92,9 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
     The case when x and z have their roles reversed is similar.
     */
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(I, i);
+    const interpScheme &x_scheme = best_interp_scheme(nI, i);
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(K, k);
+    const interpScheme &z_scheme = best_interp_scheme(nK, k);
 
     // this data will be passed to the second interpolation scheme
     double pass_to_second_scheme[8];
@@ -150,7 +150,7 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
     }
 }
 
-void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, int I, int J, double *Hz)
+void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, int nI, int nJ, double *Hz)
 {
     /* There is a choice in the order of interpolation; either interpolate in x first, then y, or vice-versa.
     For optimal accuracy, we must determine the best interpolation scheme we can use in the x and y directions at cell (i,j,k).
@@ -166,9 +166,9 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
     The case when x and y have their roles reversed is similar.
     */
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(I, i);
+    const interpScheme &x_scheme = best_interp_scheme(nI, i);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(J, j);
+    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     double pass_to_second_scheme[8];
@@ -226,10 +226,10 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
 
 void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
-                                 int i, int j, int k, int I, int J, int K,
+                                 int i, int j, int k, int nI, int nJ, int nK,
                                  double *Hx, double *Hy, double *Hz)
 {
-    interpolateTimeDomainHx(Hxy, Hxz, i, j, k, J, K, Hx);
-    interpolateTimeDomainHy(Hyx, Hyz, i, j, k, I, K, Hy);
-    interpolateTimeDomainHz(Hzx, Hzy, i, j, k, I, J, Hz);
+    interpolateTimeDomainHx(Hxy, Hxz, i, j, k, nJ, nK, Hx);
+    interpolateTimeDomainHy(Hyx, Hyz, i, j, k, nI, nK, Hy);
+    interpolateTimeDomainHz(Hzx, Hzy, i, j, k, nI, nJ, Hz);
 }

@@ -30,13 +30,13 @@ double interp3(double *v)
     return 1. / 16. * v[0] - 5. / 16. * v[1] + 15. / 16. * v[2] + 5. / 16. * v[3];
 }
 
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K)
+void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK)
 {
     if (i_l < 2)
     {
         throw runtime_error("Interpolation error: i_l too small");
     }
-    else if (i_u > I - 2)
+    else if (i_u > nI - 2)
     {
         throw runtime_error("Interpolation error: i_u too large");
     }
@@ -44,7 +44,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
     {
         throw runtime_error("Interpolation error: j_l too small");
     }
-    else if (j_u > J - 2)
+    else if (j_u > nJ - 2)
     {
         throw runtime_error("Interpolation error: j_u too large");
     }
@@ -52,7 +52,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
     {
         throw runtime_error("Interpolation error: k_l too small");
     }
-    else if (k_u > K - 2)
+    else if (k_u > nK - 2)
     {
         throw runtime_error("Interpolation error: k_u too large");
     }

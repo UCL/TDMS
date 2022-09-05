@@ -42,13 +42,11 @@ double interp3(double *v);
  * @param j_u Greatest j index into the FDTD grid to evaluate the field at
  * @param k_l Least k index into the FDTD grid to evaluate the field at
  * @param k_u Greatest k index into the FDTD grid to evaluate the field at
- * @param I Number of elements in the i direction of the FDTD grid
- * @param J Number of elements in the j direction of the FDTD grid
- * @param K Number of elements in the k direction of the FDTD grid
+ * @param nI,nJ,nK Number of elements in the i,j,k (respectively) direction of the FDTD grid
  *
  * @throws runtime_error In the event that the limits of field extraction are outside the FDTD grid
  */
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
+void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK);
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
@@ -99,7 +97,11 @@ class interpScheme {
 
         /* END FETCH METHODS */
         
-        // stores the index-offset that we require when extracting data from the field component arrays
+        /* Stores the index-offset that we require when extracting data from the field component arrays
+        Let F be the (split field) Yee cell components of some field component, and suppose we are interested in interpolating this field to the centre of the cell with index u.
+        Then the data point F[u - (index+1)] is plays the role of v[0] in the interpolation scheme.
+        NOTE: index+1 appears due to Yee cells being associated with values "to the right" of their centre.
+        */
         int index;
 
         // cubic and BLi schemes use different numbers of coefficients. To avoid switches, we store these variables.
