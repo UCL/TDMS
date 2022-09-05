@@ -1,21 +1,45 @@
 #include "interpolate_Hfield.h"
 #include "interpolation_methods.h"
 
+/* INTERPOLATION SCHEMES FOR THE MAGNETIC FIELD
+
+Unlike the E-field, the H-field components associated with Yee cell i,j,k are _not_ aligned with the centre of the Yee cells.
+Instead, the position of the field components (relative to the Yee cell centre is):
+
+Hx  | (0.0, 0.5, 0.5) .* (Dx, Dy, Dx)
+Hy  | (0.5, 0.0, 0.5) .* (Dx, Dy, Dz)
+Hz  | (0.5, 0.5, 0.0) .* (Dx, Dy, Dz)
+
+where Dx, Dy, Dz are the dimensions of the Yee cell.
+This requires us to interpolate twice to recover (any of the) field components at the centre of Yee cell i,j,k.
+
+Henceforth, let {a,b,c} = {x,y,z} be some 1-to-1 assignment of the co-ordinate axes to the labels a,b,c.
+The values Da, Db, Dc are the corresponding permutation of Dx, Dy, Dz.
+Suppose that we wish to interpolate the Ha field component to the centre a particular Yee cell.
+
+We will use the notation (a_i,b_j,c_k) for the Yee cell indices, although bear in mind that this does not reflect the order the indices appear in the code.
+For example; if a = y, b = x, c = z, then the value of Ha at cell (a_i,b_j,c_k) is accessed via Ha[c_k][a_i][b_j], due to the interchanging of the x and y directions.
+Similarly; we will write Ha[a_i, b_j, c_k] to refer to the value of Ha associated to cell (a_i,b_j,c_k).
+
+Suppose now that we have selected cell a_i,b_j,c_k to interpolate to the centre of.
+We must interpolate in the b-direction, then c-direction, or vice-versa.
+For optimal accuracy we must determine the best interpolation scheme we can use in each direction at cell (a_i,b_j,c_k), and use the WORSE scheme second.
+
+Let us assume WLOG that the b-direction interpolation scheme (b_scheme) is inferior to that of the c-direction (c_scheme).
+We now need to interpolate Ha in the c-direction to obtain the value of Ha at the spatial positions (a_i, cell_b + Db, c_k) where
+b_j - b_scheme.index-1 + b_scheme.first_nonzero_coeff <= cell_b <= b_j - b_scheme.index-1 + b_scheme.last_nonzero_coeff.
+
+    Let cell_b be one particular index in this range.
+    To apply c_scheme to obtain the value of Ha at (a_i, cell_b + Db, c_k), we require the values Ha[a_i, cell_b, cell_c] where
+    c_k - c_scheme-1 + c_scheme.first_nonzero_coeff <= cell_c <= c_k - c_scheme.index-1 + c_scheme.last_nonzero_coeff.
+    These values are fed to c_scheme.interpolate, which provides us with Ha at the spatial position (a_i, cell_b + Db, c_k).
+
+Now with approximations of Ha at each (a_i, cell_b + Db, c_k), we can pass this information to b_scheme.interpolate to recover the value of Ha at the centre of Yee cell (a_i, b_j, c_k).
+*/
+
 void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int nJ, int nK, double *Hx)
 {
-    /* There is a choice in the order of interpolation; either interpolate in y first, then z, or vice-versa.
-    For optimal accuracy, we must determine the best interpolation scheme we can use in the y and z directions at cell (i,j,k).
-    The WORSE scheme is the scheme that will be applied second, let us assume WLOG that the y-direction has the worse scheme.
-    We now need to interpolate Hx in the z-direction, to position (i, cell_j+Dy, k) of cells (i, j-y_scheme.index-1, k) through (i,j-y_scheme.index-1+7, k). In reality, we can also skip over the cells which fall on indices that coincide with 0-coefficents in the y_scheme.
-        Let cell_j be a particular index such that
-            j-y_scheme.index-1+y_scheme.first_nonzero_coeff <= cell_j <= j-y_scheme.index-1+y_scheme.last_nonzero_coeff.
-        We need to run z_scheme to obtain the value of Hx at (i,cell_j+Dy, k), which requires us to pull the values of Hx from cells (i, cell_j, k-z_scheme.index-1) through (i, cell_j, k-z_scheme.index-1+7).
-        Again, we can shorten this loop by looking at the non-zero coefficients in the z_scheme.
-    Each time we interpolate in z, we place the value into another array.
-    We then pass this array to y_scheme to interpolate on.
-
-    The case when y and z have their roles reversed is similar.
-    */
+    // Associations: a = x, b = y, c = z
 
     // determine the z-direction scheme
     const interpScheme &z_scheme = best_interp_scheme(nK, k);
@@ -23,7 +47,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
     const interpScheme &y_scheme = best_interp_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
-    double pass_to_second_scheme[8];
+    double data_for_second_scheme[8];
     // this data will hold values for the interpolation in the first interpolation scheme
     double data_for_first_scheme[8];
 
@@ -31,7 +55,6 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
     if (z_scheme.is_better_than(y_scheme))
     {
         // we will be interpolating in the z-direction first, then in y
-        // this is the scenario described above
         for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
         {
             // this is the j-index of the cell we are looking at
@@ -46,15 +69,14 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
             }
             // interpolate in z to obtain a value for the Hx field at position (i, cell_j+Dy, k)
             // place this into the appropriate index in the data being passed to the y_scheme
-            pass_to_second_scheme[jj] = z_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[jj] = z_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
-        *Hx = y_scheme.interpolate(pass_to_second_scheme);
+        *Hx = y_scheme.interpolate(data_for_second_scheme);
     }
     else
     {
         // we will be interpolating in the y-direction first, then in z
-        // this is the converse scenario described above
         for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
         {
             // this is the k-index of the cell we are looking at
@@ -69,35 +91,24 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
             }
             // interpolate in y to obtain a value for the Hx field at position (i, j, cell_k+Dz)
             // place this into the appropriate index in the data being passed to the y_scheme
-            pass_to_second_scheme[kk] = y_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[kk] = y_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
-        *Hx = z_scheme.interpolate(pass_to_second_scheme);
+        *Hx = z_scheme.interpolate(data_for_second_scheme);
     }
 }
 
 void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, int nI, int nK, double *Hy)
 {
-    /* There is a choice in the order of interpolation; either interpolate in x first, then z, or vice-versa.
-    For optimal accuracy, we must determine the best interpolation scheme we can use in the x and z directions at cell (i,j,k).
-    The WORSE scheme is the scheme that will be applied second, let us assume WLOG that the x-direction has the worse scheme.
-    We now need to interpolate Hy in the z-direction, to position (cell_i+Dx, j, k) of cells (i - x_scheme.index-1, j, k) through (i-x_scheme.index-1+7,j, k). In reality, we can also skip over the cells which fall on indices that coincide with 0-coefficents in the x_scheme.
-        Let cell_i be a particular index such that
-            i-x_scheme.index-1+x_scheme.first_nonzero_coeff <= cell_i <= i-x_scheme.index-1+x_scheme.last_nonzero_coeff.
-        We need to run z_scheme to obtain the value of Hy at (cell_i+Dx,j, k), which requires us to pull the values of Hy from cells (cell_i, j, k-z_scheme.index-1) through (cell_i, j, k-z_scheme.index-1+7).
-        Again, we can shorten this loop by looking at the non-zero coefficients in the z_scheme.
-    Each time we interpolate in z, we place the value into another array.
-    We then pass this array to x_scheme to interpolate on.
+    // Associations: a = y, b = z, c = x
 
-    The case when x and z have their roles reversed is similar.
-    */
     // determine the x-direction scheme
     const interpScheme &x_scheme = best_interp_scheme(nI, i);
     // determine the z-direction scheme
     const interpScheme &z_scheme = best_interp_scheme(nK, k);
 
     // this data will be passed to the second interpolation scheme
-    double pass_to_second_scheme[8];
+    double data_for_second_scheme[8];
     // this data will hold values for the interpolation in the first interpolation scheme
     double data_for_first_scheme[8];
 
@@ -105,7 +116,6 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
     if (z_scheme.is_better_than(x_scheme))
     {
         // we will be interpolating in the z-direction first, then in x
-        // this is the scenario described above
         for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
             // this is the i-index of the cell we are looking at
@@ -120,15 +130,14 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
             }
             // interpolate in z to obtain a value for the Hy field at position (cell_i+Dx, j, k)
             // place this into the appropriate index in the data being passed to the x_scheme
-            pass_to_second_scheme[ii] = z_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[ii] = z_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
-        *Hy = x_scheme.interpolate(pass_to_second_scheme);
+        *Hy = x_scheme.interpolate(data_for_second_scheme);
     }
     else
     {
         // we will be interpolating in the x-direction first, then in z
-        // this is the converse scenario described above
         for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
         {
             // this is the k-index of the cell we are looking at
@@ -143,35 +152,24 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
             }
             // interpolate in x to obtain a value for the Hy field at position (i, j, cell_k+Dz)
             // place this into the appropriate index in the data being passed to the y_scheme
-            pass_to_second_scheme[kk] = x_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[kk] = x_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
-        *Hy = z_scheme.interpolate(pass_to_second_scheme);
+        *Hy = z_scheme.interpolate(data_for_second_scheme);
     }
 }
 
 void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, int nI, int nJ, double *Hz)
 {
-    /* There is a choice in the order of interpolation; either interpolate in x first, then y, or vice-versa.
-    For optimal accuracy, we must determine the best interpolation scheme we can use in the x and y directions at cell (i,j,k).
-    The WORSE scheme is the scheme that will be applied second, let us assume WLOG that the x-direction has the worse scheme.
-    We now need to interpolate Hz in the y-direction, to position (cell_i+Dx, j, k) of cells (i - x_scheme.index-1, j, k) through (i-x_scheme.index-1+7,j, k). In reality, we can also skip over the cells which fall on indices that coincide with 0-coefficents in the x_scheme.
-        Let cell_i be a particular index such that
-            i-x_scheme.index-1+x_scheme.first_nonzero_coeff <= cell_i <= i-x_scheme.index-1+x_scheme.last_nonzero_coeff.
-        We need to run y_scheme to obtain the value of Hz at (cell_i+Dx,j, k), which requires us to pull the values of Hz from cells (cell_i, j-y_scheme.index-1, k) through (cell_i, j-y_scheme.index-1+7, k).
-        Again, we can shorten this loop by looking at the non-zero coefficients in the y_scheme.
-    Each time we interpolate in y, we place the value into another array.
-    We then pass this array to x_scheme to interpolate on.
+    // Associations: a = z, b = x, c = y
 
-    The case when x and y have their roles reversed is similar.
-    */
     // determine the x-direction scheme
     const interpScheme &x_scheme = best_interp_scheme(nI, i);
     // determine the y-direction scheme
     const interpScheme &y_scheme = best_interp_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
-    double pass_to_second_scheme[8];
+    double data_for_second_scheme[8];
     // this data will hold values for the interpolation in the first interpolation scheme
     double data_for_first_scheme[8];
 
@@ -179,7 +177,6 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
     if (y_scheme.is_better_than(x_scheme))
     {
         // we will be interpolating in the y-direction first, then in x
-        // this is the scenario described above
         for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
             // this is the i-index of the cell we are looking at
@@ -194,15 +191,14 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
             }
             // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
             // place this into the appropriate index in the data being passed to the x_scheme
-            pass_to_second_scheme[ii] = y_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[ii] = y_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
-        *Hz = x_scheme.interpolate(pass_to_second_scheme);
+        *Hz = x_scheme.interpolate(data_for_second_scheme);
     }
     else
     {
         // we will be interpolating in the x-direction first, then in y
-        // this is the converse scenario described above
         for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
         {
             // this is the j-index of the cell we are looking at
@@ -217,10 +213,10 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
             }
             // interpolate in x to obtain a value for the Hz field at position (i, j, cell_k+Dz)
             // place this into the appropriate index in the data being passed to the y_scheme
-            pass_to_second_scheme[jj] = x_scheme.interpolate(data_for_first_scheme);
+            data_for_second_scheme[jj] = x_scheme.interpolate(data_for_first_scheme);
         }
         // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
-        *Hz = y_scheme.interpolate(pass_to_second_scheme);
+        *Hz = y_scheme.interpolate(data_for_second_scheme);
     }
 }
 
