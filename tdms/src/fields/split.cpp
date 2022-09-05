@@ -1,3 +1,4 @@
+#include "matlabio.h"
 #include "numeric.h"
 #include "field.h"
 
@@ -32,8 +33,15 @@ void SplitField::zero() {
 SplitField::~SplitField() {
 
   for (auto component : {xy, xz, yx, yz, zx, zy}){
-    if (component != nullptr && !has_no_elements()) {
+
+    if (component == nullptr || has_no_elements()) continue;
+
+    if (is_matlab_allocated) {
+      freeCastMatlab3DArray(component, K_tot+1);
+    } else {
       destroy3DArray(&component, J_tot+1, K_tot+1);
     }
   }
 }
+
+

@@ -77,6 +77,7 @@ set(SOURCES
     src/numeric.cpp
     src/numerical_derivative.cpp
     src/simulation_parameters.cpp
+    src/tensor_init.cpp
     src/timer.cpp
     src/utils.cpp
     matlabio/matlabio.cpp
