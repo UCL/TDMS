@@ -24,7 +24,7 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
  * @param[in] I,K Number of Yee cells in the i,k directions respectively
  * @param[out] Hy Interpolated value of the Hy field at centre of Yee cell i,j,k
  */
-void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int K, double *Hx);
+void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int K, double *Hy);
 
 /**
  * @brief Interpolate the z-component of the magnetic field to the centre of Yee cell i,j,k
