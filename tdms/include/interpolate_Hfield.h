@@ -38,7 +38,7 @@ void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, 
  * @param[in] I,J Number of Yee cells in the i,j directions respectively
  * @param[out] Hz Interpolated value of the Hz field at centre of Yee cell i,j,k
  */
-void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, double *Hx);
+void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, double *Hz);
 
 /**
  * @brief Interpolate the H-field to the centre of Yee cell i,j,k
