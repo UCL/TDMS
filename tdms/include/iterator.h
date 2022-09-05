@@ -38,17 +38,16 @@ void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double om
 void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 		       int **surface_vertices, int n_surface_vertices,  std::complex<double> Enorm , std::complex<double> Hnorm );
 
-void normaliseVertices( double **EHr, double **EHi ,
-			int **vertices, int nvertices,
-			int *components, int ncomponents,
-			std::complex<double> Enorm , std::complex<double> Hnorm );
+void normaliseVertices( double **EHr, double **EHi, CAmpsSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
+
+void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<double> phase_term, double value);
 
 bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 
 bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
 
-void extractPhasorsVertices( double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
-			     int **vertices, int nvertices, int *components, int ncomponents,
-			     int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod );
+void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
+                            CAmpsSample &campssample, int n, double omega, double dt, int Nt,
+                            int dimension,int J_tot,int intmethod );
 
 int find(int *a, int na, int b);

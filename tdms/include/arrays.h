@@ -238,3 +238,48 @@ public:
 
   ~FieldSample();
 };
+
+/**
+ * List of field components as integers
+ */
+class FieldComponentsVector: public Vector<int>{
+public:
+
+  FieldComponentsVector() = default;
+
+  explicit FieldComponentsVector(const mxArray *ptr);
+
+  /**
+   * Get the index of a particular integer in this vector. If it does not exist
+   * then return -1. Returns the first occurrence.
+   * @param value value to find in the vector
+   * @return index or -1
+   */
+  int index(int value);
+};
+
+class Vertices: public Matrix<int>{
+public:
+
+  Vertices() = default;
+
+  explicit Vertices(const mxArray *ptr);
+
+  int n_vertices(){ return n_rows; }
+
+  ~Vertices(){ free_cast_matlab_2D_array(matrix); };
+};
+
+/**
+ * Complex amplitude samples
+ */
+class CAmpsSample{
+
+public:
+  Vertices vertices;                 // N x 3 matrix of indices to sample
+  FieldComponentsVector components;  //
+
+  explicit CAmpsSample(const mxArray *ptr);
+
+  int n_vertices(){ return vertices.n_vertices(); }
+};

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <stdexcept>
 #include "arrays.h"
 #include "globals.h"
 #include "numeric.h"
@@ -296,3 +297,62 @@ FieldSample::~FieldSample() {
     free_cast_matlab_4D_array(tensor, k.size(), n.size());
   }
 }
+
+FieldComponentsVector::FieldComponentsVector(const mxArray *ptr) {
+
+  auto element = ptr_to_matrix_in(ptr, "vertices", "components");
+  if (mxIsEmpty(element)){
+    return;
+  }
+
+  auto dims = mxGetDimensions(element);
+  vector = (int *) mxGetPr((mxArray *) element);
+  n = max(dims[0], dims[1]);
+}
+
+int FieldComponentsVector::index(int value) {
+
+  for (int i = 0; i < n; n++){
+    if (vector[i] == value) return i;
+  }
+
+  return -1;
+}
+
+
+Vertices::Vertices(const mxArray *ptr) {
+
+  auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
+  if (mxIsEmpty(element)){
+    return;
+  }
+
+  auto dims = mxGetDimensions(element);
+  int n_vertices = n_rows = dims[0];
+  n_cols = dims[1];
+
+  if (n_cols != 3){
+    throw runtime_error("Second dimension in campssample.vertices must be 3");
+  }
+
+  cerr << "found vertices (" << n_vertices << " x 3)\n";
+  matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, 3);
+
+  for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
+    for (int k = 0; k < 3; k++) {
+      matrix[k][j] -= 1;
+    }
+}
+
+CAmpsSample::CAmpsSample(const mxArray *ptr) {
+
+  if (mxIsEmpty(ptr)){
+    cerr << "campssample is empty" << endl;
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 2, "campssample");
+  vertices = Vertices(ptr);
+  components = FieldComponentsVector(ptr);
+}
+

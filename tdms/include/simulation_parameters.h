@@ -44,6 +44,19 @@ struct PhasorInc{
   int z = 1;
 };
 
+
+/**
+ * Enum defining a mapping to integers used in the MATLAB initialisation
+ */
+enum FieldComponents{
+  Ex = 1,
+  Ey,
+  Ez,
+  Hx,
+  Hy,
+  Hz
+};
+
 class SimulationParameters{
 
 public:

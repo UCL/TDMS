@@ -289,15 +289,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int i, j, k, is_disp, is_cond = 0;
   int k_loc;
   int input_counter = 0;
-  int **vertices;
-  int nvertices = 0;
-  int *components;
-  int ncomponents = 0;
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
   
 
-  int num_fields = 0;
   int ndims;
   int K, max_IJK;
   int Nsteps = 0, dft_counter = 0;
@@ -318,14 +313,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   mwSize *label_dims;
   label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
   mxArray *dummy_array[3];
-  mxArray *element;
   mxArray *mx_surface_vertices, *mx_surface_facets, *mx_surface_amplitudes;
   mxArray *mx_Idx, *mx_Idy;
   double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
   complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
-
-  const char campssample_elements[][15] = {"vertices", "components"};
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
@@ -532,52 +524,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   /*Got tdfdir*/
 
-  /*Get fieldsample*/
   auto fieldsample = FieldSample(prhs[input_counter++]);
-
-  /*Get campssample*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    fprintf(stderr, "num_fields=%d\n", num_fields);
-    if (num_fields != 2) {
-      throw runtime_error("campssample should have 2 members, it has " + to_string(num_fields));
-    }
-    for (int i = 0; i < 2; i++) {
-      element = mxGetField((mxArray *) prhs[input_counter], 0, campssample_elements[i]);
-      if (are_equal(campssample_elements[i], "vertices")) {
-        if (!mxIsEmpty(element)) {
-          dimptr_out = mxGetDimensions(element);
-          fprintf(stderr, "found vertices (%d x %d)\n", dimptr_out[0], dimptr_out[1]);
-          vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) element), dimptr_out[0],
-                                          dimptr_out[1]);
-          //fprintf(stderr,"vertices[1000] = %d %d %d\n",vertices[0][10],vertices[1][10],vertices[2][10]);
-          nvertices = dimptr_out[0];
-          //convert vertices to index base 0
-
-          for (int j = 0; j < nvertices; j++)
-            for (int k = 0; k < 3; k++) { vertices[k][j] = vertices[k][j] - 1; }
-        }
-      } else if (are_equal(campssample_elements[i], "components")) {
-
-        if (!mxIsEmpty(element)) {
-          dimptr_out = mxGetDimensions(element);
-          components = (int *) mxGetPr((mxArray *) element);
-          if (dimptr_out[0] > dimptr_out[1]) {
-            ncomponents = dimptr_out[0];
-          } else {
-            ncomponents = dimptr_out[1];
-          }
-        }
-        fprintf(stderr, "found components (%d)\n", ncomponents);
-      }
-    }
-  } else {
-    fprintf(stderr, "campssample is empty\n");
-  }
-
-  /*Got campssample*/
-  //fprintf(stderr,"Number of elements in fieldsample_*: %d %d %d %d\n",fieldsample_vecs.i.size(),fieldsample_vecs.j.size(),fieldsample_vecs.k.size(),fieldsample_vecs.n.size());
-  /*Got fieldsample*/
+  auto campssample = CAmpsSample(prhs[input_counter++]);
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * dx) / eo);
@@ -1042,10 +990,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   plhs[27] = fieldsample.mx;
 
-  if (nvertices > 0) {
+  if (campssample.n_vertices() > 0) {
     ndims = 3;
-    dims[0] = nvertices;
-    dims[1] = ncomponents;
+    dims[0] = campssample.n_vertices();
+    dims[1] = campssample.components.size();
     dims[2] = f_ex_vec.size();
     mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
     camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
@@ -1370,16 +1318,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       }
     }
 
-    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (nvertices > 0)) {
+    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
       //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,Np);
       if ((tind - params.start_tind) % Np == 0) {
         //	fprintf(stderr,"loc 02\n");
-        if (nvertices > 0) {
+        if (campssample.n_vertices() > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, vertices,
-                                   nvertices, components, ncomponents, tind,
+            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample, tind,
                                    f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, params.interp_method);
         }
       }
@@ -4472,7 +4419,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     if (TIME_EXEC) { timer.click(); }
 
-    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || (nvertices > 0)) {
+    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || (campssample.n_vertices() > 0)) {
       if (params.source_mode == SourceMode::steadystate) {
         E.add_to_angular_norm(tind, Nsteps, params);
         H.add_to_angular_norm(tind, Nsteps, params);
@@ -4577,10 +4524,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
-  if (params.run_mode == RunMode::complete && (nvertices > 0))
+  if (params.run_mode == RunMode::complete && (campssample.n_vertices() > 0))
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      normaliseVertices(camplitudesR[ifx], camplitudesI[ifx], vertices, nvertices, components,
-                        ncomponents, E_norm[ifx], H_norm[ifx]);
+      normaliseVertices(camplitudesR[ifx], camplitudesI[ifx], campssample, E_norm[ifx], H_norm[ifx]);
       fprintf(stderr, "E_norm[%d]: %e %e\n", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
 
@@ -4770,8 +4716,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     mxDestroyArray(mx_surface_vertices);
   }
 
-  if (nvertices > 0) {
-    free_cast_matlab_2D_array(vertices);
+  if (campssample.n_vertices() > 0) {
     free_cast_matlab_3D_array(camplitudesR, f_ex_vec.size());
     free_cast_matlab_3D_array(camplitudesI, f_ex_vec.size());
   }
@@ -4983,43 +4928,27 @@ void normaliseSurface(double **surface_EHr, double **surface_EHi, int **surface_
     }
 }
 
-void normaliseVertices(double **EHr, double **EHi, int **vertices, int nvertices, int *components,
-                       int ncomponents, complex<double> Enorm, complex<double> Hnorm) {
+void normaliseVertices(double **EHr, double **EHi, CAmpsSample &campssample, complex<double> Enorm, complex<double> Hnorm) {
 
-  double norm_r, norm_i, denom, temp_r, temp_i;
-  int ii;
+  for (int i = 0; i < 6; i++) {
+    
+    auto norm = i < 3 ? Enorm : Hnorm;
+    double norm_r = real(norm);
+    double norm_i = imag(norm);
+    double denom = norm_r * norm_r + norm_i * norm_i;
 
-  norm_r = real(Enorm);
-  norm_i = imag(Enorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
+    auto ii = campssample.components.index(i + 1);
+    if (ii >= 0) {
+      for (int vindex = 0; vindex < campssample.n_vertices(); vindex++){
 
-  for (int vindex = 0; vindex < nvertices; vindex++)
-    for (int i = 0; i < 3; i++) {
-      ii = find(components, ncomponents, i + 1);
-      if (ii >= 0) {
-        temp_r = EHr[ii][vindex];
-        temp_i = EHi[ii][vindex];
-
-        EHr[ii][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        EHi[ii][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
-      }
-    }
-
-  norm_r = real(Hnorm);
-  norm_i = imag(Hnorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
-  for (int vindex = 0; vindex < nvertices; vindex++)
-    for (int i = 3; i < 6; i++) {
-      ii = find(components, ncomponents, i + 1);
-      if (ii >= 0) {
-        temp_r = EHr[ii][vindex];
-        temp_i = EHi[ii][vindex];
+        double temp_r = EHr[ii][vindex];
+        double temp_i = EHi[ii][vindex];
 
         EHr[ii][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
         EHi[ii][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
       }
     }
+  }
 }
 
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
@@ -5134,9 +5063,8 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
 }
 
 void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H,
-                            ElectricSplitField &E, int **vertices, int nvertices, int *components,
-                            int ncomponents, int n, double omega, double dt, int Nt, int dimension,
-                            int J_tot, int intmethod) {
+                            ElectricSplitField &E, CAmpsSample &campssample, int n, double omega,
+                            double dt, int Nt, int dimension, int J_tot, int intmethod) {
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
@@ -5152,109 +5080,65 @@ void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H,
                                              subResultE, subResultH, vindex)
   {
 #pragma omp for
-    for (vindex = 0; vindex < nvertices; vindex++) {
-      //fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,vertices[0][vindex],vertices[1][vindex],vertices[2][vindex]);
+    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {
+
+      int* i_vec = campssample.vertices[0];
+      int* j_vec = campssample.vertices[1];
+      int* k_vec = campssample.vertices[2];
+
       if (dimension == THREE)
         if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                                 vertices[0][vindex], vertices[1][vindex],
-                                                 vertices[2][vindex], &Ex, &Ey, &Ez);
+          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
+                                                 j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
         } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                             vertices[0][vindex], vertices[1][vindex],
-                                             vertices[2][vindex], &Ex, &Ey, &Ez);
+          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
+                                             j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
         else
           interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                                        vertices[0][vindex], vertices[1][vindex],
-                                                        vertices[2][vindex], &Ex, &Ey, &Ez);
+                                                        i_vec[vindex], j_vec[vindex], k_vec[vindex],
+                                                        &Ex, &Ey, &Ez);
       else if (dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                              vertices[0][vindex], vertices[1][vindex],
-                                              vertices[2][vindex], &Ex, &Ey, &Ez);
+        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
+                                              j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
       else
-        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                              vertices[0][vindex], vertices[1][vindex],
-                                              vertices[2][vindex], &Ex, &Ey, &Ez);
-      //    fprintf(stderr,"1st interp donezn");
+        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
+                                              j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
       if (dimension == THREE)
         if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                                 vertices[0][vindex], vertices[1][vindex],
-                                                 vertices[2][vindex], &Hx, &Hy, &Hz);
+          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
+                                                 j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
         } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                             vertices[0][vindex], vertices[1][vindex],
-                                             vertices[2][vindex], &Hx, &Hy, &Hz);
+          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
+                                             j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
         else
           interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                                        vertices[0][vindex], vertices[1][vindex],
-                                                        vertices[2][vindex], &Hx, &Hy, &Hz);
+                                                        i_vec[vindex], j_vec[vindex], k_vec[vindex],
+                                                        &Hx, &Hy, &Hz);
       else if (dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                              vertices[0][vindex], vertices[1][vindex],
-                                              vertices[2][vindex], &Hx, &Hy, &Hz);
+        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
+                                              j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
       else
-        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                              vertices[0][vindex], vertices[1][vindex],
-                                              vertices[2][vindex], &Hx, &Hy, &Hz);
-      //    fprintf(stderr,"2nd interp donezn");
+        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
+                                              j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
 
-      /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
-
-      //now update the master array
-      if (find(components, ncomponents, 1) >= 0) {
-        EHr[find(components, ncomponents, 1)][vindex] =
-                EHr[find(components, ncomponents, 1)][vindex] + real(subResultE);
-        EHi[find(components, ncomponents, 1)][vindex] =
-                EHi[find(components, ncomponents, 1)][vindex] + imag(subResultE);
-      }
-      if (find(components, ncomponents, 4) >= 0) {
-        EHr[find(components, ncomponents, 4)][vindex] =
-                EHr[find(components, ncomponents, 4)][vindex] + real(subResultH);
-        EHi[find(components, ncomponents, 4)][vindex] =
-                EHi[find(components, ncomponents, 4)][vindex] + imag(subResultH);
-      }
-
-      /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
-
-      //now update the master array
-      if (find(components, ncomponents, 2) >= 0) {
-        EHr[find(components, ncomponents, 2)][vindex] =
-                EHr[find(components, ncomponents, 2)][vindex] + real(subResultE);
-        EHi[find(components, ncomponents, 2)][vindex] =
-                EHi[find(components, ncomponents, 2)][vindex] + imag(subResultE);
-      }
-      if (find(components, ncomponents, 5) >= 0) {
-        EHr[find(components, ncomponents, 5)][vindex] =
-                EHr[find(components, ncomponents, 5)][vindex] + real(subResultH);
-        EHi[find(components, ncomponents, 5)][vindex] =
-                EHi[find(components, ncomponents, 5)][vindex] + imag(subResultH);
-      }
-
-
-      /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
-
-      //now update the master array
-      if (find(components, ncomponents, 3) >= 0) {
-        EHr[find(components, ncomponents, 3)][vindex] =
-                EHr[find(components, ncomponents, 3)][vindex] + real(subResultE);
-        EHi[find(components, ncomponents, 3)][vindex] =
-                EHi[find(components, ncomponents, 3)][vindex] + imag(subResultE);
-      }
-      if (find(components, ncomponents, 6) >= 0) {
-        EHr[find(components, ncomponents, 6)][vindex] =
-                EHr[find(components, ncomponents, 6)][vindex] + real(subResultH);
-        EHi[find(components, ncomponents, 6)][vindex] =
-                EHi[find(components, ncomponents, 6)][vindex] + imag(subResultH);
-      }
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
     }
   }//end parallel region
+}
+
+
+void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> phase_term, double value){
+
+  if (idx >= 0) {
+    auto tmp = value * phase_term; //exp(phaseTermE * I) * 1./((double) Nt);
+    EHr[idx][vindex] += real(tmp);
+    EHi[idx][vindex] += imag(tmp);
+  }
 }
 
 
@@ -5492,15 +5376,4 @@ bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot) {
   for (int i = 0; i < K_tot; i++)
     if (fabs(ml.gamma[i]) > 1e-15) return true;
   return false;
-}
-
-/*check if the integer b appears in the vector a and return the index into a. Returns -1 if b cannot be found
- */
-int find(int *a, int na, int b) {
-  int res = -1;
-
-  for (int i = 0; i < na; i++)
-    if (a[i] == b) res = i;
-
-  return res;
 }
