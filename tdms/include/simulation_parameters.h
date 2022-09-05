@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 
@@ -32,6 +33,17 @@ enum InterpolationMethod{
   band_limited
 };
 
+/**
+ * A three-tuple of integers that contain the stride in each direction
+ * to extract the phasors on. the surface i.e. x = 2 means extract from
+ * every 2nd Yee cell.
+ */
+struct PhasorInc{
+  int x = 1;
+  int y = 1;
+  int z = 1;
+};
+
 class SimulationParameters{
 
 public:
@@ -63,10 +75,13 @@ public:
     InterpolationMethod interp_method = cubic; // Type of surface field interpolation to do
     bool         exi_present = false;       // Is the time dependent x incident field present?
     bool         eyi_present = false;       // Is the time dependent x incident field present?
+    PhasorInc    phasorinc;                 // Surface stride for extracting phasors
 
     void set_run_mode(std::string mode_string);
 
     void set_source_mode(std::string mode_string);
 
     void set_dimension(std::string mode_string);
+
+    void set_phasorinc(const double* vector);
 };

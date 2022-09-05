@@ -41,3 +41,9 @@ void SimulationParameters::set_dimension(string mode_string) {
     dimension = Dimension::TM;
   }
 }
+
+void SimulationParameters::set_phasorinc(const double* vector) {
+  phasorinc.x = (int) vector[0];
+  phasorinc.y = (int) vector[1];
+  phasorinc.z = (int) vector[2];
+}

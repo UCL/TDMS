@@ -299,7 +299,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
   
-  int phasorinc[3];
+
   int num_fields = 0;
   int ndims;
   int K, max_IJK;
@@ -445,15 +445,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
   //fprintf(stderr,"Got   phasorsurface\n");
 
-  /*Get phasorinc*/
-  if (mxIsDouble(prhs[input_counter])) {
-    auto tmpptr = mxGetPr((mxArray *) prhs[input_counter++]);
-    for (i = 0; i < 3; i++) phasorinc[i] = (int) tmpptr[i];
-  } else {
-    throw runtime_error("expected phasorinc to be a double");
-  }
-
-  /*Get dimension*/
+  params.set_phasorinc(mxGetPr(prhs[input_counter++]));
   params.set_dimension(string_in(prhs[input_counter++], "dimension"));
 
   /*Get conductive_aux */
@@ -789,7 +781,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   phasorinc[0], phasorinc[1], phasorinc[2], &mx_surface_vertices,
+                                   params.phasorinc, &mx_surface_vertices,
                                    &mx_surface_facets);
     //fprintf(stderr,"Qos 00a:\n");
     //we don't need the facets so destroy the matrix now to save memory
@@ -4791,7 +4783,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   phasorinc[0], phasorinc[1], phasorinc[2], &dummy_vertex_list,
+                                   params.phasorinc, &dummy_vertex_list,
                                    &mx_surface_facets);
     mxDestroyArray(dummy_vertex_list);
     mxArray *vertex_list;
