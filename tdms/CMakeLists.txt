@@ -104,6 +104,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
             tests/unit/test_openandorder.cpp
             tests/unit/test_interp_determination.cpp
             tests/unit/test_interp_fns.cpp
+            tests/unit/test_BLi_vs_cubic_interpolation.cpp
             tests/unit/test_field_interpolation.cpp)
 
     target_link_libraries(tdms_tests PRIVATE

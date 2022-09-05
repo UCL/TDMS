@@ -3,7 +3,6 @@
 
 # include <algorithm>
 # include <cmath>
-# include <iostream>
 
 using namespace std;
 
@@ -161,7 +160,6 @@ TEST_CASE("bandlimited_interpolation: order of error, constant function")
     REQUIRE(floor(log10(const_fn_max_error)) <= floor(log10(const_fn_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(const_fn_max_error <= const_fn_MATLAB_error);
-    cout << "const_fn \t | " + to_string(const_fn_max_error) + "\t\t | " + to_string(const_fn_MATLAB_error) + "\n";
 }
 
 inline double s2pi(double x) {
@@ -224,7 +222,6 @@ TEST_CASE("bandlimited_interpolation: order of error, sine function")
     REQUIRE(floor(log10(max_error)) <= floor(log10(sin_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < sin_MATLAB_error);
-    cout << "sin(2 pi x) \t | " + to_string(max_error) + "\t\t | " + to_string(sin_MATLAB_error) + "\n";
 }
 
 /**
@@ -306,87 +303,4 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
     REQUIRE(floor(log10(max_error)) <= floor(log10(pulse_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < pulse_MATLAB_error);
-    cout << "pulse \t | " + to_string(max_error) + "\t\t | " + to_string(pulse_MATLAB_error) + "\n";
-}
-
-/**
- * @brief We will check that BLi gives a better approximation than cubic interpolation. PLACEHOLDER UNTIL INFORMATION ABOUT A FUNCTION THAT CUBIC SHOULD DO WORSE ON!
- * 
- * This is not a clear-cut scenario: there are certain function classes (specifically, low-order polynomials, or slowly-varying non-compactly supported functions) in which we expect cubic interpolation to be superior.
- * However, there are other function classes on which we expect BLi to be superior, which in particular encompasses the functional forms of the fields we expect to encounter in the simulations.
- * 
- * As such, we will perform both BLi and cubic interpolation on the pulse function (given above)
- * We will check that, in each case, the interpolated value given by the BLi scheme is a superior approximation to its cubic counterpart.
- */
-TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
-    // number of samples to use
-    int nSamples = 100;
-    if (nSamples < 8) {
-        // BLi cannot run, throw error
-        throw runtime_error("nSamples < 8 - cannot interpolate using BLi!");
-    }
-    // point-spacing
-    double spacing = 1./(double) (nSamples-1);
-
-    // coordinates of the "field components" we have data for
-    double xi[nSamples]; 
-    // coordinates of the "Yee cell" centres - recall that we currently do not interpolate to the centre of Yee cell 0
-    double xi5[nSamples-1];
-
-    // field values
-    double f_data[nSamples];
-    // BLi interpolated values, BLi_interp[i] approximates f(xi5[i]) via BLi
-    double BLi_interp[nSamples-1];
-    // cubic interpolated values, cubic_interp[i] approximates f(xi5[i]) via cubic interp
-    double cubic_interp[nSamples-1];
-    // exact function values
-    double f_exact[nSamples-1];
-
-    // errors
-    double BLi_err[nSamples-1], cubic_err[nSamples-1];
-
-    // populate arrays
-    for(int i=0; i<nSamples-1; i++) {
-        xi[i] = 0. + i*spacing;
-        xi5[i] = xi[i] + spacing/2.;
-        f_data[i] = pulse(xi[i]);
-        f_exact[i] = pulse(xi5[i]);
-    }
-    xi[nSamples-1] = 1.;
-    f_data[nSamples-1] = pulse(1.);
-
-    // perform interpolation
-    // cubic interpolation only changes at the first and last cells
-    cubic_interp[0] = CBFst.interpolate(f_data, 0);
-    for (int i=1; i<nSamples-2; i++) {
-        cubic_interp[i] = CBMid.interpolate(f_data, i-1);
-    }
-    cubic_interp[nSamples-2] = CBLst.interpolate(f_data, nSamples-4); // i = nSamples-2, need to start reading buffer from i-2
-
-    // BLi interpolation is slightly more complex
-    // interpolating to xi5[0,1,2] requires us to read f_data from buffer 0
-    BLi_interp[0] = BL0.interpolate(f_data);
-    BLi_interp[1] = BL1.interpolate(f_data);
-    BLi_interp[2] = BL2.interpolate(f_data);
-    for (int i = 3; i < nSamples - 4; i++)
-    {
-        // need to offset now so that the correct sample points are provided
-        BLi_interp[i] = BL3.interpolate(f_data, i - 3);
-    }
-    // running out of data points to the right means we need to fix the buffer again
-    BLi_interp[nSamples - 4] = BL4.interpolate(f_data, nSamples - 8);
-    BLi_interp[nSamples - 3] = BL5.interpolate(f_data, nSamples - 8);
-    BLi_interp[nSamples - 2] = BL6.interpolate(f_data, nSamples - 8);
-
-    // now we should be able to compare the interpolated values to the exact values
-    for (int i=0; i<nSamples-1; i++) {
-        BLi_err[i] = abs( BLi_interp[i] - f_exact[i] );
-        cubic_err[i] = abs( cubic_interp[i] - f_exact[i] );
-        // check that BLi beats cubic in all cases
-        CHECK( BLi_err[i] <= cubic_err[i] );
-    }
-
-    // sanity check: max BLi error?
-    double max_BLi_error = *max_element(BLi_err, BLi_err + nSamples - 2);
-    cout << "Max BLi error (sinc): " << max_BLi_error << endl;
 }
