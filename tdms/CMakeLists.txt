@@ -10,6 +10,9 @@ include(CTest)
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
 
+# Add -fPIC flag
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
