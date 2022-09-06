@@ -7,8 +7,9 @@
 using namespace std;
 
 /**
- * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
  *
+ * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
 TEST_CASE("cubic_interpolation: cubic interpolation is exact")
 {
@@ -18,57 +19,82 @@ TEST_CASE("cubic_interpolation: cubic interpolation is exact")
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
+    // array that will be passed to Interp_scheme::interpolate 
+    double interp_data[4];
 
     // constant field
     double c0 = 3.1415;
+    interp_data[0] = c0; interp_data[1] = c0; 
+    interp_data[2] = c0; interp_data[3] = c0;
+
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
 
+    // check old interp methods
     CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    // check Interp_scheme class method
+    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
 
     // linear
     double c1 = -2.7182818;
-    v1 += c1 * x[0];
-    v2 += c1 * x[1];
-    v3 += c1 * x[2];
-    v4 += c1 * x[3];
+    v1 += c1 * x[0]; interp_data[0] += c1 * x[0];
+    v2 += c1 * x[1]; interp_data[1] += c1 * x[1];
+    v3 += c1 * x[2]; interp_data[2] += c1 * x[2];
+    v4 += c1 * x[3]; interp_data[3] += c1 * x[3];
     v12 += c1 * (x[1] + x[0]) / 2.;
     v23 += c1 * (x[2] + x[1]) / 2.;
     v34 += c1 * (x[3] + x[2]) / 2.;
 
+    // check old interp methods
     CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    // check Interp_scheme class method
+    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
 
     // quadratic
     double c2 = 9.81;
-    v1 += c2 * x[0] * x[0];
-    v2 += c2 * x[1] * x[1];
-    v3 += c2 * x[2] * x[2];
-    v4 += c2 * x[3] * x[3];
+    v1 += c2 * x[0] * x[0]; interp_data[0] += c2 * x[0] * x[0];
+    v2 += c2 * x[1] * x[1]; interp_data[1] += c2 * x[1] * x[1];
+    v3 += c2 * x[2] * x[2]; interp_data[2] += c2 * x[2] * x[2];
+    v4 += c2 * x[3] * x[3]; interp_data[3] += c2 * x[3] * x[3];
     v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
+    // check old interp methods
     CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    // check Interp_scheme class method
+    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
 
     // cubic
     double c3 = 4.2;
-    v1 += c3 * x[0] * x[0] * x[0];
-    v2 += c3 * x[1] * x[1] * x[1];
-    v3 += c3 * x[2] * x[2] * x[2];
-    v4 += c3 * x[3] * x[3] * x[3];
+    v1 += c3 * x[0] * x[0] * x[0]; interp_data[0] += c3 * x[0] * x[0] * x[0];
+    v2 += c3 * x[1] * x[1] * x[1]; interp_data[1] += c3 * x[1] * x[1] * x[1];
+    v3 += c3 * x[2] * x[2] * x[2]; interp_data[2] += c3 * x[2] * x[2] * x[2];
+    v4 += c3 * x[3] * x[3] * x[3]; interp_data[3] += c3 * x[3] * x[3] * x[3];
     v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
+    // check old interp methods
     CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
     CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    // check Interp_scheme class method
+    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
+    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
+    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
 }
 
 /**

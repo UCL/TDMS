@@ -4,23 +4,25 @@
 #include <algorithm>
 #include <cmath>
 
+#include <iostream>
 using namespace std;
 
-// Computes the 2-norm of the vector v of length n
-inline double norm(double *v, int n)
+// Computes the 2-norm of the vector v from buffer start to buffer end
+inline double norm(double *v, int end, int start=0)
 {
-    double norm = 0.;
-    for (int i = 0; i < n; i++)
+    double norm_val = 0.;
+    for (int i = start; i <= end; i++)
     {
-        norm += v[i] * v[i];
+        norm_val += v[i] * v[i];
     }
-    return sqrt(norm);
+    return sqrt(norm_val);
 }
 
 inline double f_BLi_vs_Cubic(double x)
 {
-    return 1. / (10. * x * x + 1.);
-};
+    return 1. / ((10. * x * x) + 1.);
+}
+
 /**
  * @brief We will check that BLi gives a better approximation than cubic interpolation.
  *
@@ -61,13 +63,13 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
     // spatial extent of the domain will be [x_lower, x_lower+extent]
     double extent = 4.;
     // norm errors recorded across runs
-    double BLi_norm_errs[4], cub_norm_errs[4];
+    double BLi_norm_errs[n_trials], cub_norm_errs[n_trials];
 
-    for(int i=0; i<n_trials; i++) {
+    for(int trial=0; trial<n_trials; trial++) {
         // Yee cell "size" to use
-        double cellSize = 0.1;
+        double cellSize = cell_sizes[trial];
         // the number of Yee cells that we want
-        int n_YCs = ceil(4. / cellSize);
+        int n_YCs = ceil(extent / cellSize);
         if (n_YCs < 8)
         {
             // BLi cannot run, throw error
@@ -85,7 +87,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
         for (int i = 0; i < n_YCs; i++)
         {
             cell_centres[i] = x_lower + (((double)i) + 0.5) * cellSize;
-            field_positions[i] = x_lower + i * cellSize;
+            field_positions[i] = x_lower + (i+1) * cellSize;
 
             exact_field_values[i] = f_BLi_vs_Cubic(cell_centres[i]);
             field_samples[i] = f_BLi_vs_Cubic(field_positions[i]);
@@ -105,12 +107,12 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
 
         // have to manually do cubic interpolation since best_interp_scheme will always want to do BLi
         // cubic interpolation only changes at the first and last cells
-        cub_interp[1] = CBFst.interpolate(field_samples);
+        cub_interp[1] = CBFst.interpolate(field_samples, 1 - (CBFst.index + 1));
         for (int i = 2; i < n_YCs - 2; i++)
         {
-            cub_interp[i] = CBMid.interpolate(field_samples, i - 2);
+            cub_interp[i] = CBMid.interpolate(field_samples, i - (CBMid.index + 1));
         }
-        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 4);
+        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - (CBFst.index + 1));
 
         // BLi interpolation
         for (int i = 1; i < n_YCs; i++)
@@ -128,17 +130,16 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
             cub_err[i] = abs(cub_interp[i] - exact_field_values[i]);
         }
         // compute square-norm error
-        BLi_norm_errs[i] = norm(BLi_err, n_YCs);
-        cub_norm_errs[i] = norm(cub_err, n_YCs);
-    }
+        BLi_norm_errs[trial] = norm(BLi_err, n_YCs-1, 1);
+        cub_norm_errs[trial] = norm(cub_err, n_YCs-1, 1);
 
-    // value-testing commences
-    for(int i=0; i<n_trials; i++) {
+        cout << trial << " (norm errors): BLi " << BLi_norm_errs[trial] << " , Cubic " << cub_norm_errs[trial] << endl;
+        // value-testing commences
         // assert a lower error when expected, and _not_ a lower error when we don't
-        CHECK( (BLi_norm_errs[i] <= cub_norm_errs[i]) == BLi_is_better[i] );
+        CHECK( (BLi_norm_errs[trial] <= cub_norm_errs[trial]) == BLi_is_better[trial] );
 
         // in all cases, assert that the order of magnitude of error is what we expect, if we had used MATLAB
-        CHECK(floor(log10(BLi_norm_errs[i])) == floor(log10(MATLAB_BLi_errs[i])));
-        CHECK(floor(log10(cub_norm_errs[i])) == floor(log10(MATLAB_cub_errs[i])));
+        CHECK(floor(log10(BLi_norm_errs[trial])) == floor(log10(MATLAB_BLi_errs[trial])));
+        CHECK(floor(log10(cub_norm_errs[trial])) == floor(log10(MATLAB_cub_errs[trial])));
     }
 }
