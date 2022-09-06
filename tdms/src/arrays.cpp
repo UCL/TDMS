@@ -300,7 +300,7 @@ FieldSample::~FieldSample() {
 
 void FieldComponentsVector::initialise(const mxArray *ptr) {
 
-  auto element = ptr_to_matrix_in(ptr, "vertices", "components");
+  auto element = ptr_to_matrix_in(ptr, "components", "campssample");
   if (mxIsEmpty(element)){
     return;
   }
