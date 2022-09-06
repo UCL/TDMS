@@ -47,7 +47,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
     // Yee cell sizes to test across
     double cell_sizes[n_trials] = {0.25, 0.1, 0.05, 0.01};
     // Flags for whether or not we expect BLi to perform better
-    bool BLi_is_better[n_trials] = {true, true, true, false};
+    bool BLi_is_better[n_trials] = {true, true, false, false};
     // MATLAB errors for BLi
     double MATLAB_BLi_errs[n_trials] = { 1.25953429e-02,
                                          7.10587711e-04,
@@ -108,11 +108,11 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
         // have to manually do cubic interpolation since best_interp_scheme will always want to do BLi
         // cubic interpolation only changes at the first and last cells
         cub_interp[1] = CBFst.interpolate(field_samples, 1 - (CBFst.index + 1));
-        for (int i = 2; i < n_YCs - 2; i++)
+        for (int i = 2; i <= n_YCs - 2; i++)
         {
             cub_interp[i] = CBMid.interpolate(field_samples, i - (CBMid.index + 1));
         }
-        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - (CBFst.index + 1));
+        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - (CBLst.index + 1));
 
         // BLi interpolation
         for (int i = 1; i < n_YCs; i++)
@@ -120,6 +120,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
             // we checked earlier that BLi should always be available, so this is always a BLi scheme
             interpScheme use_scheme = best_interp_scheme(n_YCs, i);
             // interpolate using the cell data we have provided
+            // i - (use_scheme.index + 1) is the index of field_samples to read as the point v[0] in the scheme
             BLi_interp[i] = use_scheme.interpolate(field_samples, i - (use_scheme.index + 1));
         }
 
@@ -133,11 +134,10 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
         BLi_norm_errs[trial] = norm(BLi_err, n_YCs-1, 1);
         cub_norm_errs[trial] = norm(cub_err, n_YCs-1, 1);
 
-        cout << trial << " (norm errors): BLi " << BLi_norm_errs[trial] << " , Cubic " << cub_norm_errs[trial] << endl;
         // value-testing commences
         // assert a lower error when expected, and _not_ a lower error when we don't
         CHECK( (BLi_norm_errs[trial] <= cub_norm_errs[trial]) == BLi_is_better[trial] );
-
+        
         // in all cases, assert that the order of magnitude of error is what we expect, if we had used MATLAB
         CHECK(floor(log10(BLi_norm_errs[trial])) == floor(log10(MATLAB_BLi_errs[trial])));
         CHECK(floor(log10(cub_norm_errs[trial])) == floor(log10(MATLAB_cub_errs[trial])));
