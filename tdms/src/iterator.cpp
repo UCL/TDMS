@@ -406,11 +406,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
 
-  //  FILE *eyfile;
-  //  FILE *jyfile;
-
-  //  eyfile = fopen("Eyz.txt","w");
-  //  jyfile = fopen("Jyz.txt","w");
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
 
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
@@ -2454,8 +2449,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     if ((sourcemode == sm_steadystate) && (runmode == rm_complete) && exphasorsvolume) {
 
-      extractPhasorsVolume(E, E_s, dft_counter, *omega_an, *dt, Nsteps);
-      extractPhasorsVolumeH(H, H_s, dft_counter, *omega_an, *dt, Nsteps);
+      E.set_phasors(E_s, dft_counter - 1, *omega_an, *dt, Nsteps);
+      H.set_phasors(H_s, dft_counter, *omega_an, *dt, Nsteps);
 
       if (exphasorssurface) {
         if (intphasorssurface) {
@@ -2478,9 +2473,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if (TIME_EXEC) { timer.click(); }
 
       if ((tind - start_tind) % Np == 0) {
-        extractPhasorsVolume(E, E_s, tind, *omega_an, *dt, Npe);
-        //fprintf(stderr,"Pos 01a:\n");
-        extractPhasorsVolumeH(H, H_s, tind, *omega_an, *dt, Npe);
+        E.set_phasors(E_s, tind - 1, *omega_an, *dt, Npe);
+        H.set_phasors(H_s, tind, *omega_an, *dt, Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
@@ -6150,47 +6144,6 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim) {
     for (int i_var = 0; i_var < i_lim; i_var++) inArray[j_var][i_var] = 0.0;
 }
 
-//result gives field according to the exp(-iwt) convention
-void extractPhasorsVolume(ElectricField &E, ElectricSplitField &E_s,
-                          int n, double omega, double dt, int Nt) {
-
-  complex<double> subResult;
-  double ex_m, ey_m, ez_m;
-
-  auto phase = fmod(omega * ((double) n) * dt, 2 * dcpi);
-  auto phaseTerm = exp(phase * I) * 1. / ((double) Nt);
-
-  //  fprintf(stdout,"phi: %.10e, dt: %.10e, omega: %.10e\n",omega*((double) n)*dt,dt,omega);
-#pragma omp parallel default(shared) private(ex_m, ey_m, ez_m, subResult)
-  {
-#pragma omp for
-    for (int k = E.kl; k <= E.ku; k++)
-      for (int j = E.jl; j <= E.ju; j++)
-        for (int i = E.il; i <= E.iu; i++) {
-
-          ex_m = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-          ey_m = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-          ez_m = E_s.zx[k][j][i] + E_s.zy[k][j][i];
-
-          int di = i - E.il;
-          int dj = j - E.jl;
-          int dk = k - E.kl;
-          
-          subResult = ex_m * phaseTerm;
-          E.real.x[dk][dj][di] += real(subResult);
-          E.imag.x[dk][dj][di] += imag(subResult);
-
-          subResult = ey_m * phaseTerm;
-          E.real.y[dk][dj][di] += real(subResult);
-          E.imag.y[dk][dj][di] += imag(subResult);
-
-          subResult = ez_m * phaseTerm;
-          E.real.z[dk][dj][di] += real(subResult);
-          E.imag.z[dk][dj][di] += imag(subResult);
-        }
-  }//end of parallel region
-}
-
 void normaliseSurface(double **surface_EHr, double **surface_EHi, int **surface_vertices,
                       int n_surface_vertices, complex<double> Enorm, complex<double> Hnorm) {
   double norm_r, norm_i, denom, temp_r, temp_i;
@@ -6269,60 +6222,6 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
   *Hnorm += ft * exp(fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi) * I) * 1. / ((double) Nt);
 }
 
-//these indices are set according to the electric part of the pml - since the index of the
-//first cell is different in the case of the electric update eqns.
-
-//i_l is the index into the fdtd grid which is the first non-pml cell in the i direction
-//i_u is the index into the fdtd grid which is the last non-pml cell in the i direction
-//
-//result gives field according to the exp(-iwt) convention
-void extractPhasorsVolumeH(MagneticField &H, MagneticSplitField &H_s,
-                           int n, double omega, double dt, int Nt) {
-
-  complex<double> phaseTerm, subResult;
-  double hx_m, hy_m, hz_m;
-
-  //a + 0.5 is added because we always know H half a time step
-  //after we know E.
-  phaseTerm = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
-#pragma omp parallel default(shared) private(hx_m, hy_m, hz_m, subResult)
-  {
-#pragma omp for
-    for (int k = H.kl; k <= H.ku; k++)
-      for (int j = H.jl; j <= H.ju; j++)
-        for (int i = H.il; i <= H.iu; i++) {
-
-          hx_m = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-          hy_m = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-          hz_m = H_s.zx[k][j][i] + H_s.zy[k][j][i];
-
-          int di = i - H.il;
-          int dj = j - H.jl;
-          int dk = k - H.kl;
-
-          subResult = hx_m * exp(phaseTerm * I) * 1. / ((double) Nt);
-
-          H.real.x[dk][dj][di] =
-                  H.real.x[dk][dj][di] + real(subResult);
-          H.imag.x[dk][dj][di] =
-                  H.imag.x[dk][dj][di] + imag(subResult);
-
-          subResult = hy_m * exp(phaseTerm * I) * 1. / ((double) Nt);
-
-          H.real.y[dk][dj][di] =
-                  H.real.y[dk][dj][di] + real(subResult);
-          H.imag.y[dk][dj][di] =
-                  H.imag.y[dk][dj][di] + imag(subResult);
-
-          subResult = hz_m * exp(phaseTerm * I) * 1. / ((double) Nt);
-
-          H.real.z[dk][dj][di] =
-                  H.real.z[dk][dj][di] + real(subResult);
-          H.imag.z[dk][dj][di] =
-                  H.imag.z[dk][dj][di] + imag(subResult);
-        }
-  }//end parallel region
-}
 
 void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticSplitField &H,
                            ElectricSplitField &E, int **surface_vertices, int n_surface_vertices,
@@ -6426,7 +6325,6 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
     }
   }//end parallel region
 }
-
 
 void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H,
                             ElectricSplitField &E, int **vertices, int nvertices, int *components,
@@ -6708,13 +6606,13 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
   double max_abs = 0., max_abs_diff = 0.;
 
   //find the largest maximum absolute value the largest difference (in absolute value) between phasors
-  for (int k = 0; k < E.K_tot; k++)
-    for (int j = 0; j < E.J_tot; j++)
-      for (int i = 0; i < E.I_tot; i++)
-          for (char c : {'x', 'y', 'z'}){
+  for (char c : {'x', 'y', 'z'})
+    for (int k = 0; k < E.K_tot; k++)
+      for (int j = 0; j < E.J_tot; j++)
+        for (int i = 0; i < E.I_tot; i++){
 
-            auto E_ijk = E.real(c)[k][j][i] + I * E.imag(c)[k][j][i];
-            auto E_copy_ijk = E_copy.real(c)[k][j][i] + I * E_copy.imag(c)[k][j][i];
+            auto E_ijk = E.real[c][k][j][i] + I * E.imag[c][k][j][i];
+            auto E_copy_ijk = E_copy.real[c][k][j][i] + I * E_copy.imag[c][k][j][i];
 
             max_abs = max(max_abs, abs(E_ijk));  // max(max_abs, |Re(E_x) + i Im(E_x)|)
             max_abs_diff = max(max_abs_diff, abs(E_ijk - E_copy_ijk));
@@ -6727,8 +6625,8 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
 void copyPhasors(ElectricField &from, ElectricField &to, int nelements) {
 
   for (char c : {'x', 'y', 'z'}){
-    memcpy(to.real(c), from.real(c), nelements * sizeof(double));
-    memcpy(to.imag(c), from.imag(c), nelements * sizeof(double));
+    memcpy(to.real[c], from.real[c], nelements * sizeof(double));
+    memcpy(to.imag[c], from.imag[c], nelements * sizeof(double));
   }
 }
 

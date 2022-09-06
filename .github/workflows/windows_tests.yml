@@ -68,7 +68,6 @@ jobs:
           cmake --build . --config Release
 
       - name: Copy TDMS exe
-        if: runner.os == 'Windows'
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |

@@ -1,14 +1,5 @@
 #include "complex"
 
-void updateMatlabArray(double *mArray, double arrayVal, int i, int j, int nrows);
-void updateMatlab3DArray(double *mArray, double arrayVal, int i, int j, int k, int nrows, int ncols);
-double getMatlab3DArray(double *mArray, int i, int j, int k, int nrows, int ncols);
-double getMatlabArray(double *mArray, int i, int j, int nrows);
-void MatlabDisplayDouble(char *desc,double x);
-void MatlabDisplayComplex(char *desc,std::complex<double> x);
-void MatlabDisplayString(char *desc,char *outstring);
-void MatlabDisplayString(char *desc,char outchar);
-int ReportVerbosely();
 double ****castMatlab4DArray(double *array, int nrows, int ncols, int nlayers, int nblocks);
 void freeCastMatlab4DArray(double ****castArray, int nlayers, int nblocks);
 double ***castMatlab3DArray(double *array, int nrows, int ncols, int nlayers);

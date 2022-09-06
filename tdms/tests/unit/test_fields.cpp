@@ -93,7 +93,7 @@ TEST_CASE("Test setting a component of a vector field"){
   auto arrays = xyz_arrays();
   construct3dArray(&arrays.x, 1, 1, 1);
 
-  arrays('x')[0][0][0] = 1.0;
+  arrays['x'][0][0][0] = 1.0;
 
-  REQUIRE(is_close(arrays('x')[0][0][0], 1.0));
+  REQUIRE(is_close(arrays['x'][0][0][0], 1.0));
 }
