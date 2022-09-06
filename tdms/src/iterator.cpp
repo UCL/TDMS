@@ -5062,64 +5062,61 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
   }//end parallel region
 }
 
-void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H,
-                            ElectricSplitField &E, CAmpsSample &campssample, int n, double omega,
+void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField &H,
+                            const ElectricSplitField &E, CAmpsSample &campssample, int n, double omega,
                             double dt, int Nt, int dimension, int J_tot, int intmethod) {
-  int vindex;
+
+  int vindex, i, j, k;
   double Ex, Ey, Ez, Hx, Hy, Hz;
-  complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
+  
+  auto phaseTermE = fmod(omega * ((double) n) * dt, 2 * dcpi);
+  auto phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
 
-  phaseTermE = fmod(omega * ((double) n) * dt, 2 * dcpi);
-  phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
-
-  cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
-  cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
+  auto cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
+  auto cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
 
   //loop over every vertex in the list
-#pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, phaseTermE, phaseTermH,       \
-                                             subResultE, subResultH, vindex)
+#pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, cphaseTermH, cphaseTermE, vindex, i, j, k)
   {
 #pragma omp for
     for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {
 
-      int* i_vec = campssample.vertices[0];
-      int* j_vec = campssample.vertices[1];
-      int* k_vec = campssample.vertices[2];
+      i = campssample.vertices[0][vindex];
+      j = campssample.vertices[1][vindex];
+      k = campssample.vertices[2][vindex];
 
       if (dimension == THREE)
         if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
-                                                 j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
+          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex,
+                                                 &Ey, &Ez);
         } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
-                                             j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
+          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
+                                             &Ez);
         else
-          interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy,
-                                                        i_vec[vindex], j_vec[vindex], k_vec[vindex],
+          interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k,
                                                         &Ex, &Ey, &Ez);
       else if (dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
-                                              j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
+        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
+                                              &Ez);
       else
-        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i_vec[vindex],
-                                              j_vec[vindex], k_vec[vindex], &Ex, &Ey, &Ez);
+        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
+                                              &Ez);
       if (dimension == THREE)
         if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
-                                                 j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
+          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx,
+                                                 &Hy, &Hz);
         } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
-                                             j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
+          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
+                                             &Hz);
         else
-          interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy,
-                                                        i_vec[vindex], j_vec[vindex], k_vec[vindex],
+          interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k,
                                                         &Hx, &Hy, &Hz);
       else if (dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
-                                              j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
+        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
+                                              &Hz);
       else
-        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i_vec[vindex],
-                                              j_vec[vindex], k_vec[vindex], &Hx, &Hy, &Hz);
+        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
+                                              &Hz);
 
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);

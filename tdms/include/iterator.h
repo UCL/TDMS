@@ -46,7 +46,7 @@ bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 
 bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
 
-void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
+void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField &H, const ElectricSplitField &E,
                             CAmpsSample &campssample, int n, double omega, double dt, int Nt,
                             int dimension,int J_tot,int intmethod );
 

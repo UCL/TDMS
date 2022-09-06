@@ -171,7 +171,7 @@ void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   }
 
   auto dims = (int *)mxGetDimensions(ptr);
-  
+
   if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols){
     throw runtime_error("Pupil has dimension "+ to_string(dims[0]) + "x"
                         + to_string(dims[1]) + " but it needed to be " +
@@ -298,7 +298,7 @@ FieldSample::~FieldSample() {
   }
 }
 
-FieldComponentsVector::FieldComponentsVector(const mxArray *ptr) {
+void FieldComponentsVector::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "vertices", "components");
   if (mxIsEmpty(element)){
@@ -312,15 +312,14 @@ FieldComponentsVector::FieldComponentsVector(const mxArray *ptr) {
 
 int FieldComponentsVector::index(int value) {
 
-  for (int i = 0; i < n; n++){
+  for (int i = 0; i < n; i++){
     if (vector[i] == value) return i;
   }
 
   return -1;
 }
 
-
-Vertices::Vertices(const mxArray *ptr) {
+void Vertices::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
   if (mxIsEmpty(element)){
@@ -336,10 +335,10 @@ Vertices::Vertices(const mxArray *ptr) {
   }
 
   cerr << "found vertices (" << n_vertices << " x 3)\n";
-  matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, 3);
+  matrix = cast_matlab_2D_array((int *)mxGetPr(element), n_vertices, n_cols);
 
   for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
-    for (int k = 0; k < 3; k++) {
+    for (int k = 0; k < n_cols; k++) {
       matrix[k][j] -= 1;
     }
 }
@@ -352,7 +351,6 @@ CAmpsSample::CAmpsSample(const mxArray *ptr) {
   }
 
   assert_is_struct_with_n_fields(ptr, 2, "campssample");
-  vertices = Vertices(ptr);
-  components = FieldComponentsVector(ptr);
+  vertices.initialise(ptr);
+  components.initialise(ptr);
 }
-

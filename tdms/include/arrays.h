@@ -247,7 +247,7 @@ public:
 
   FieldComponentsVector() = default;
 
-  explicit FieldComponentsVector(const mxArray *ptr);
+  void initialise(const mxArray *ptr);
 
   /**
    * Get the index of a particular integer in this vector. If it does not exist
@@ -263,11 +263,15 @@ public:
 
   Vertices() = default;
 
-  explicit Vertices(const mxArray *ptr);
+  void initialise(const mxArray *ptr);
 
   int n_vertices(){ return n_rows; }
 
-  ~Vertices(){ free_cast_matlab_2D_array(matrix); };
+  ~Vertices(){
+    if (has_elements()){
+      free_cast_matlab_2D_array(matrix);
+    }
+  };
 };
 
 /**
