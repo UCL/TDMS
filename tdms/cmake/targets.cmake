@@ -10,6 +10,7 @@ function(release_target)
             ${Matlab_MAT_LIBRARY}
             ${LIBCXX_LIBRARY}
             OpenMP::OpenMP_CXX
+            spdlog::spdlog
             )
 endfunction()
 
@@ -19,7 +20,7 @@ function(test_target)
         message(FATAL_ERROR Cannot build TDMS tests on Windows)
     endif(WIN32)
 
-    # catch2 tests ----------------------------------------------------------------
+    # catch2 tests ------------------------------------------------------------
     Include(FetchContent)
 
     FetchContent_Declare(
@@ -44,6 +45,7 @@ function(test_target)
             ${Matlab_MAT_LIBRARY}
             ${LIBCXX_LIBRARY}
             OpenMP::OpenMP_CXX
+            spdlog::spdlog
             )
 
     target_link_libraries(tdms tdms_lib)
