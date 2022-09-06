@@ -4,79 +4,47 @@
 
 # include <cmath>
 # include <iostream>
+# include <iomanip>
 
 using namespace std;
 
-/* OVERVIEW OF TESTS
+/* Overview of Tests
 
-Assume there is no illumination origin offset.
-Let Dx, Dy, Dz be the dimensions of the Yee cell, so cell (i,j,k) has centre at position O_{ijk} = (i Dx, j Dy, k Dz).
-The components associated to the cell (i,j,k) are located at O_{ijk} + vOffset, where vOffset is given by
+We will test the performance of BLi at interpolating a known field to the centre of each Yee cell, for both the E- and H- fields.
+The benchmark for success will be superior or equivalent error (Frobenius and 1D-dimension-wise norm) to that produced by MATLAB performing the same functionality.
+Frobenious error is the Frobenius norm of the 3D matrix whose (i,j,k)-th entry is the error in the interpolated value at Yee cell centre (i,j,k).
+The slice error, for a fixed j,k, is the norm-error of the 1D array of interpolated values along the axis (:,j,k).
+The maximum of this is then the max-slice error: keeping track of this ensures us that the behaviour of BLi is consistent, and does not dramaically over-compensate in some areas and under-compensate in others.
 
-Component           | vOffset ./ (Dx, Dy, Dz)
-    Ex              | (0.5, 0.0, 0.0)
-    Ey              | (0.0, 0.5, 0.0)
-    Ez              | (0.0, 0.0, 0.5)
-    Hx              | (0.5, 0.0, 0.5)
-    Hy              | (0.5, 0.0, 0.5)
-    Hz              | (0.5, 0.5, 0.0)
+All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over the range [-2,2].
 
-Let Nx, Ny, Nz be integers. Set:
-Dx = 1/(Nx-1), Dy = 1/(Ny-1), Dz = 1/(Nz-1),
-
-and let x,y,z be arrays of 2N_{x,y,x}+1 elements such that:
-x[i] = i*Dx/2, y[j] = j*Dy/2, z[k] = k*Dz/2.
-
-Using the slice notation start:step:stop (inclusive), this means that:
-{x,y,z}[0:2:end] triples give the coordinates of the Yee cell centres
-{x,y,z}[1:2:end] give the coordinates of the samples associated to the Yee cells.
-
-Now use the notation F[i,j,k] =  F(x[i],y[j],z[k]) for some known vector field F.
-For ii,jj,kk from 0 to N_{x,y,z} inclusive, we have that:
-{E,H}{x,y,z}[{2*ii, 2*jj, 2*kk] is the value of {E,H}{x,y,z} at the centre of Yee cell (i,j,k)
-EX_{ii,jj,kk} := Ex[2*ii+1, 2*jj, 2*kk] is the value of Ex associated to Yee cell (i,j,k)
-EY_{ii,jj,kk} := Ey[2*ii, 2*jj+1, 2*kk] is the value of Ey associated to Yee cell (i,j,k)
-EZ_{ii,jj,kk} := Ez[2*ii, 2*jj, 2*kk+1] is the value of Ez associated to Yee cell (i,j,k)
-HX_{ii,jj,kk} := Hx[2*ii+2, 2*jj, 2*kk+1] is the value of Hx associated to Yee cell (i,j,k)
-HY_{ii,jj,kk} := Hy[2*ii+1, 2*jj, 2*kk+1] is the value of Hy associated to Yee cell (i,j,k)
-HZ_{ii,jj,kk} := Hz[2*ii+1, 2*jj+1, 2*kk] is the value of Hx associated to Yee cell (i,j,k)
-
-As such, we can perform interpolation on fields that we define, and compare to the exact values of the field at those given points. */
-
-/*
-We will define the E-field to be
- * Ex(x,y,z) = cos(2\pi x)sin(2\pi y)sin(2\pi z),
- * Ey(x,y,z) = sin(2\pi x)cos(2\pi y)sin(2\pi z),
- * Ez(x,y,z) = sin(2\pi x)sin(2\pi y)cos(2\pi z),
-and the H-field by
- * Hx(x,y,z) = sin(2\pi x)cos(2\pi y)cos(2\pi z),
- * Hy(x,y,z) = cos(2\pi x)sin(2\pi y)cos(2\pi z),
- * Hz(x,y,z) = cos(2\pi x)cos(2\pi y)sin(2\pi z),
+NOTE: Rather than direct (<=) comparison, should impliment a relative-value check instead?
 */
 
-inline double s2pi(double x) {
-    return sin(2.*M_PI*x);
+inline double Frobenius(double ***M, int d1, int d2, int d3) {
+    double norm_val = 0.;
+    for(int i1=0; i1<d1; i1++) {
+        for(int i2=0; i2<d2; i2++) {
+            for(int i3=0; i3<d3; i3++) {
+                norm_val += M[i1][i2][i3] * M[i1][i2][i3];
+            }
+        }
+    }
+    return sqrt(norm_val);
 }
-inline double c2pi(double x) {
-    return cos(2.*M_PI*x);
+inline double Euclidean(double *v, int end, int start=0) {
+    double norm_val = 0.;
+    for(int i=start; i<=end; i++) {
+        norm_val += v[i]*v[i];
+    }
+    return sqrt(norm_val);
 }
-inline double Ex(double x, double y, double z) {
-    return c2pi(x) * s2pi(y) * s2pi(z);
+
+inline double Ecomponent(double x, double y, double z) {
+    return sin(2. * M_PI * z) * exp(-y * y) * (1. / (10 * x * x + 1.));
 }
-inline double Ey(double x, double y, double z) {
-    return s2pi(x) * c2pi(y) * s2pi(z);
-}
-inline double Ez(double x, double y, double z) {
-    return s2pi(x) * s2pi(y) * c2pi(z);
-}
-inline double Hx(double x, double y, double z) {
-    return s2pi(x) * c2pi(y) * c2pi(z);
-}
-inline double Hy(double x, double y, double z) {
-    return c2pi(x) * s2pi(y) * c2pi(z);
-}
-inline double Hz(double x, double y, double z) {
-    return c2pi(x) * c2pi(y) * s2pi(z);
+inline double Hcomponent(double x, double y, double z) {
+    return cos(0.5 * M_PI * z) * exp(-y * y) * (1. / (5 * x * x + 1.));
 }
 
 // for memory allocation of 3D arrays
@@ -95,215 +63,392 @@ inline double ***allocate3dmemory(int I, int J, int K) {
 /**
  * @brief Test the interpolation of the E-field components to the centre of the Yee cells
  *
+ * Each component of the E-field will take the form
+ * E{x,y,z}(xx,yy,zz) = sin(2\pi zz) * exp(-yy^2) * ( 1./ (10xx^2+1) ).
+ * 
+ * We test both the Fro- and slice-norm metrics, since interpolation only happens along one axis
  */
-TEST_CASE("E-field interpolation check") {
+TEST_CASE("E-field interpolation check") 
+{
+    cout << "Beginning E-field BLi test..." << endl;
+    // error tolerance, based on MATLAB performance
+    double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
+    double Ey_fro_tol = 7.8295329699969822e-03, Ey_ms_tol = 7.5320765734192925e-04;
+    double Ez_fro_tol = 7.5650677900775624e-03, Ez_ms_tol = 1.3131049239745484e-03;
 
-    // error tolerance
-    // this needs to be set based on some kind of reference value.
-    // Implementing this scheme in MATLAB (for the fields above) yields an error of
-    // Ex : 6.30866994e-02 | Ey : 1.26746769e-01 | Ez : 2.55475206e-01
-    double Ex_tol = 6.30866994e-02, Ey_tol = 1.26746769e-01, Ez_tol = 2.55475206e-01;
+    // additional tolerance to allow for floating-point rounding imprecisions, etc
+    double acc_tol = 1e-12;
 
     // fake domain setup
-    int Nx = 100, Ny = 50, Nz = 25;
-    double Dx = 1./(double)Nx, Dy = 1./(double)Ny, Dz = 1./(double)Nz;
-
-    // setup the gridpoints
-    double x[2*Nx+1], y[2*Ny+1], z[2*Nz+1];
-    for(int i=0; i<2*Nx+1; i++) {x[i] = i*Dx / 2.;}
-    for(int j=0; j<2*Ny+1; j++) {y[j] = j*Dy / 2.;}
-    for(int k=0; k<2*Nz+1; k++) {z[k] = k*Dz / 2.;}
+    double cellDims[3] = {0.25, 0.1, 0.05};
+    double x_lower = -2., y_lower = -2., z_lower = -2.;
+    double extent_x = 4., extent_y = 4., extent_z = 4.;
+    int Nx = ceil(extent_x/cellDims[0]), Ny = ceil(extent_y/cellDims[1]), Nz = ceil(extent_z/cellDims[2]);
 
     // setup the "split" E-field components
     double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
            ***Eyx = allocate3dmemory(Nx, Ny, Nz), ***Eyz = allocate3dmemory(Nx, Ny, Nz),
            ***Ezx = allocate3dmemory(Nx, Ny, Nz), ***Ezy = allocate3dmemory(Nx, Ny, Nz);
-    // setup the arrays that will store the interpolated and exact values at the Yee cell centres
-    double ***Ex_exact = allocate3dmemory(Nx, Ny, Nz), ***Ex_interp = allocate3dmemory(Nx, Ny, Nz),
-           ***Ey_exact = allocate3dmemory(Nx, Ny, Nz), ***Ey_interp = allocate3dmemory(Nx, Ny, Nz),
-           ***Ez_exact = allocate3dmemory(Nx, Ny, Nz), ***Ez_interp = allocate3dmemory(Nx, Ny, Nz);
+    // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
+    double ***Ex_error = allocate3dmemory(Nx - 1, Ny, Nz),
+           ***Ey_error = allocate3dmemory(Nx, Ny - 1, Nz),
+           ***Ez_error = allocate3dmemory(Nx, Ny, Nz - 1);
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
     for(int ii=0; ii<Nx; ii++) {
         for(int jj=0; jj<Ny; jj++) {
             for(int kk=0; kk<Nz; kk++) {
-                // x components EX_{ii,jj,kk} := Ex[2*ii+1, 2*jj, 2*kk]
-                Exy[kk][jj][ii] = Ex(x[2 * ii + 1], y[2 * jj], z[2 * kk]);
-                Exz[kk][jj][ii] = 0.0;
-                // y components EY_{ii,jj,kk} := Ey[2*ii, 2*jj+1, 2*kk]
-                Eyx[kk][jj][ii] = Ey(x[2 * ii], y[2 * jj + 1], z[2 * kk]);
-                Eyz[kk][jj][ii] = 0.0;
-                // z components EZ_{ii,jj,kk} := Ez[2*ii, 2*jj, 2*kk+1]
-                Ezx[kk][jj][ii] = Ez(x[2 * ii], y[2 * jj], z[2 * kk + 1]);
-                Ezy[kk][jj][ii] = 0.0;
+                // these are the coordinates of Yee cell i,j,k's centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 0.5)*cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5)*cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5)*cellDims[2];
 
-                // exact field components
-                Ex_exact[kk][jj][ii] = Ex(x[2 * ii], y[2 * jj], z[2 * kk]);
-                Ey_exact[kk][jj][ii] = Ey(x[2 * ii], y[2 * jj], z[2 * kk]);
-                Ez_exact[kk][jj][ii] = Ez(x[2 * ii], y[2 * jj], z[2 * kk]);
+                // Initialise sample values that we will pass to the interpolation schemes:
+                // in each case, set one component of the split field to be the "whole" field,
+                // and the other to be 0.
+
+                // E{x,y,z} offsets from cell centres are 0.5*D{x,y,z}
+                Exy[kk][jj][ii] = Ecomponent(cell_centre[0] + 0.5*cellDims[0], cell_centre[1], cell_centre[2]);
+                Exz[kk][jj][ii] = 0.;
+                Eyx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1] + 0.5*cellDims[1], cell_centre[2]);
+                Eyz[kk][jj][ii] = 0.;
+                Ezx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5*cellDims[2]);
+                Ezy[kk][jj][ii] = 0.;
             }
         }
     }
 
-    // now we try to interpolate
-    // for the sake of argument we assume a PML of 0 cells
-    // so we need to interpolate to the centre of cells 1 through N{x,y,z}-1
-    // note we still can't interpolate to the centre of cell 0 (until BAND_LIMITED_CELL_ZERO is implimented)
-    for(int ii=1; ii<Nx; ii++) {
-        for(int jj=1; jj<Ny; jj++) {
-            for(int kk=1; kk<Nz; kk++) {
-                // interpolate to the centre of cell (ii,jj,kk)
-                double *Ex_val, *Ey_val, *Ez_val;
-                interpolateTimeDomainEField(Exy, Exz, Eyx, Eyz, Ezx, Ezy,
-                                            ii, jj, kk, Nx, Ny, Nz,
-                                            &Ex_interp[kk][jj][ii], &Ey_interp[kk][jj][ii], &Ez_interp[kk][jj][ii]);
+    // run interpolation functions
+
+    // interpolate Ex
+    for (int ii = 0; ii < Nx - 1; ii++)
+    {
+        for (int jj = 0; jj < Ny; jj++)
+        {
+            for (int kk = 0; kk < Nz; kk++)
+            {
+                // we are interpolating to the centre of cell ii+1,jj,kk
+                // these are the coordinates of the Yee cell's centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 1.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Ex_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Ex_interp;
+                interpolateTimeDomainEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_interp);
+
+                // compute the errors
+                Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
+            }
+        }
+    }
+    // interpolate Ey
+    for (int ii = 0; ii < Nx; ii++)
+    {
+        for (int jj = 0; jj < Ny - 1; jj++)
+        {
+            for (int kk = 0; kk < Nz; kk++)
+            {
+                // we are interpolating to the centre of cell ii,jj+1,kk
+                // these are the coordinates of the Yee cell's centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 1.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Ey_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Ey_interp;
+                interpolateTimeDomainEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_interp);
+
+                // compute the errors
+                Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
+            }
+        }
+    }
+    // interpolate Ez
+    for (int ii = 0; ii < Nx; ii++)
+    {
+        for (int jj = 0; jj < Ny; jj++)
+        {
+            for (int kk = 0; kk < Nz - 1; kk++)
+            {
+                // we are interpolating to the centre of cell ii,jj,kk+1
+                // these are the coordinates of the Yee cell's centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Ez_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Ez_interp;
+                interpolateTimeDomainEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_interp);
+
+                // compute the errors
+                Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;
             }
         }
     }
 
-    // can now deallocate our "fake" split field arrays, and "input data" arrays
+    // can now deallocate our sample field arrays
     delete Exy, Exz, Eyx, Eyz, Ezx, Ezy;
 
-    // values to hold the maximum errors
-    double Ex_max_error = 0., Ey_max_error = 0., Ez_max_error = 0.;
-    // now we compare the values across the exact and interp arrays,
-    // across all indices from 1 to N{x,y,z}.
-    for (int ii = 1; ii < Nx; ii++) {
-        for (int jj = 1; jj < Ny; jj++) {
-            for (int kk = 1; kk < Nz; kk++) {
-                double curr_err_Ex = abs(Ex_exact[kk][jj][ii] - Ex_interp[kk][jj][ii]);
-                if (curr_err_Ex > Ex_max_error){ Ex_max_error = curr_err_Ex;}
+    // compute Frobenius norms
+    double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1);
+    double Ey_fro_err = Frobenius(Ey_error, Nz, Ny - 1, Nx);
+    double Ez_fro_err = Frobenius(Ez_error, Nz - 1, Ny, Nx);
 
-                double curr_err_Ey = abs(Ey_exact[kk][jj][ii] - Ey_interp[kk][jj][ii]);
-                if (curr_err_Ey > Ey_max_error) { Ey_max_error = curr_err_Ey;}
-
-                double curr_err_Ez = abs(Ez_exact[kk][jj][ii] - Ez_interp[kk][jj][ii]);
-                if (curr_err_Ez > Ez_max_error) { Ez_max_error = curr_err_Ez;}
+    // compute max-slice errors
+    double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.;
+    // Ex-slices
+    for (int jj=0; jj<Ny; jj++) {
+        for (int kk=0; kk<Nz; kk++) {
+            // "slices" might not constitute sequential memory
+            // as such, make a new array for safety
+            double jk_errors[Nx-1];
+            for (int ii=0; ii<Nx-1; ii++) {
+                jk_errors[ii] = Ex_error[kk][jj][ii];
+            }
+            // compute norm-error of this slice
+            double jk_slice_error = Euclidean(jk_errors, Nx-1);
+            // if this exceeds the current recorded maximum error, record this
+            if (jk_slice_error > Ex_ms_err) {
+                Ex_ms_err = jk_slice_error;
+            }
+        }
+    }
+    // Ey-slices
+    for (int ii=0; ii<Nx; ii++) {
+        for (int kk=0; kk<Nz; kk++) {
+            double ik_errors[Ny-1];
+            for (int jj=0; jj<Ny-1; jj++) {
+                ik_errors[jj] = Ey_error[kk][jj][ii];
+            }
+            double ik_slice_error = Euclidean(ik_errors, Ny-1);
+            if (ik_slice_error > Ey_ms_err) {
+                Ey_ms_err = ik_slice_error;
+            }
+        }
+    }
+    // Ez-slices
+    for (int ii=0; ii<Nx; ii++) {
+        for (int jj=0; jj<Ny; jj++) {
+            double ij_errors[Nz-1];
+            for (int kk=0; kk<Nz-1; kk++) {
+                ij_errors[kk] = Ez_error[kk][jj][ii];
+            }
+            double ij_slice_error = Euclidean(ij_errors, Nz-1);
+            if (ij_slice_error > Ez_ms_err) {
+                Ez_ms_err = ij_slice_error;
             }
         }
     }
 
-    // delete large arrays to save memory again
-    delete Ex_exact, Ex_interp, Ey_exact, Ey_interp, Ez_exact, Ez_interp;
+    // check Frobenius errors are acceptable
+    CHECK(Ex_fro_err <= Ex_fro_tol + acc_tol);
+    CHECK(Ey_fro_err <= Ey_fro_tol + acc_tol);
+    CHECK(Ez_fro_err <= Ez_fro_tol + acc_tol);
+    
+    // check max-slice errors are acceptable
+    CHECK(Ex_ms_err <= Ex_ms_tol + acc_tol);
+    CHECK(Ey_ms_err <= Ey_ms_tol + acc_tol);
+    CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
 
-    // check max errors do not exceed tolerances
-    CHECK(Ex_max_error < Ex_tol);
-    CHECK(Ey_max_error < Ey_tol);
-    CHECK(Ez_max_error < Ez_tol);
+    // print information to the debugger/log
+    cout << " Component | Frobenius err. : (     diff     ) | Max-slice err. : (     diff     )" << endl;
+    cout << fixed << scientific << setprecision(8);
+    cout << "    x      | " << Ex_fro_err << " : (" << abs(Ex_fro_err - Ex_fro_tol);
+    cout << ") | " << Ex_ms_err << " : (" << abs(Ex_ms_err - Ex_ms_tol) << ")" << endl;
+    cout << "    y      | " << Ey_fro_err << " : (" << abs(Ey_fro_err - Ey_fro_tol);
+    cout << ") | " << Ey_ms_err << " : (" << abs(Ey_ms_err - Ey_ms_tol) << ")" << endl;
+    cout << "    z      | " << Ez_fro_err << " : (" << abs(Ez_fro_err - Ez_fro_tol);
+    cout << ") | " << Ez_ms_err << " : (" << abs(Ez_ms_err - Ez_ms_tol) << ")" << endl;
+
+    // memory cleanup
+    delete Ex_error, Ey_error, Ez_error;
 }
 
 /**
  * @brief Test the interpolation of the H-field components to the centre of the Yee cells
- * 
+ *
+ * Each component of the H-field will take the form
+ * H{x,y,z}(xx,yy,zz) = cos(0.5\pi zz) * exp(-yy^2) * ( 1./ (5xx^2+1) ).
+ *
+ * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
  */
-TEST_CASE("H-field interpolation check") {
+TEST_CASE("H-field interpolation check")
+{
+    cout << "Beginning H-field BLi test..." <<endl;
+    // error tolerance, based on MATLAB performance
+    double Hx_fro_tol = 1.8564584213212786e-02;
+    double Hy_fro_tol = 8.0005513762062608e-02;
+    double Hz_fro_tol = 8.0012805533365733e-02;
 
-    // error tolerance
-    // this needs to be set based on some kind of reference value.
-    // Implementing this scheme in MATLAB (for the fields above) yields an error of
-    // Hx : 1.27905543e-01
-    // Hy : 1.27654146e-01
-    // Hz : 1.28199239e-01
-    double Hx_tol = 1.27905543e-01, Hy_tol = 1.27654146e-01, Hz_tol = 1.28199239e-01;
+    // additional tolerance to allow for floating-point rounding imprecisions, etc
+    double acc_tol = 1e-8;
 
     // fake domain setup
-    int Nx = 100, Ny = 50, Nz = 25;
-    double Dx = 1. / (double)Nx, Dy = 1. / (double)Ny, Dz = 1. / (double)Nz;
-
-    // setup the gridpoints
-    double x[2 * Nx + 1], y[2 * Ny + 1], z[2 * Nz + 1];
-    for (int i = 0; i < 2 * Nx + 1; i++)
-    {
-        x[i] = i * Dx / 2.;
-    }
-    for (int j = 0; j < 2 * Ny + 1; j++)
-    {
-        y[j] = j * Dy / 2.;
-    }
-    for (int k = 0; k < 2 * Nz + 1; k++)
-    {
-        z[k] = k * Dz / 2.;
-    }
+    double cellDims[3] = {0.25, 0.1, 0.05};
+    double x_lower = -2., y_lower = -2., z_lower = -2.;
+    double extent_x = 4., extent_y = 4., extent_z = 4.;
+    int Nx = ceil(extent_x / cellDims[0]), Ny = ceil(extent_y / cellDims[1]), Nz = ceil(extent_z / cellDims[2]);
 
     // setup the "split" E-field components
     double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
            ***Hyx = allocate3dmemory(Nx, Ny, Nz), ***Hyz = allocate3dmemory(Nx, Ny, Nz),
            ***Hzx = allocate3dmemory(Nx, Ny, Nz), ***Hzy = allocate3dmemory(Nx, Ny, Nz);
-    // setup the arrays that will store the interpolated and exact values at the Yee cell centres
-    double ***Hx_exact = allocate3dmemory(Nx, Ny, Nz), ***Hx_interp = allocate3dmemory(Nx, Ny, Nz),
-           ***Hy_exact = allocate3dmemory(Nx, Ny, Nz), ***Hy_interp = allocate3dmemory(Nx, Ny, Nz),
-           ***Hz_exact = allocate3dmemory(Nx, Ny, Nz), ***Hz_interp = allocate3dmemory(Nx, Ny, Nz);
+    // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
+    double ***Hx_error = allocate3dmemory(Nx, Ny - 1, Nz - 1),
+           ***Hy_error = allocate3dmemory(Nx - 1, Ny, Nz - 1),
+           ***Hz_error = allocate3dmemory(Nx - 1, Ny - 1, Nz);
 
     // compute the exact field and the "split field" components
-    //Hx | (0.5, 0.0, 0.5)Hy | (0.5, 0.0, 0.5)Hz | (0.5, 0.5, 0.0)
+    // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
     for (int ii = 0; ii < Nx; ii++)
     {
         for (int jj = 0; jj < Ny; jj++)
         {
             for (int kk = 0; kk < Nz; kk++)
             {
-                // x components HX_{ii,jj,kk} := Hx[2*ii+1, 2*jj, 2*kk+1]
-                Hxy[kk][jj][ii] = Hx(x[2 * ii + 1], y[2 * jj], z[2 * kk + 1]);
+                // these are the coordinates of Yee cell i,j,k's centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
+
+                // Initialise sample values that we will pass to the interpolation schemes:
+                // in each case, set one component of the split field to be the "whole" field,
+                // and the other to be 0.
+
+                // H{x,y,z} offsets from cell centres are 0.5 * D{!{x,y,z}} IE, 0.5 away from the centre in the two directions that are _not_ the field component
+                Hxy[kk][jj][ii] = Hcomponent(cell_centre[0],
+                                             cell_centre[1] + 0.5 * cellDims[1],
+                                             cell_centre[2] + 0.5 * cellDims[2]);
                 Hxz[kk][jj][ii] = 0.;
-                // y components HY_{ii,jj,kk} := Hy[2*ii+1, 2*jj, 2*kk+1]
-                Hyx[kk][jj][ii] = Hy(x[2 * ii + 1], y[2 * jj], z[2 * kk + 1]);
+                Hyx[kk][jj][ii] = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
+                                             cell_centre[1],
+                                             cell_centre[2] + 0.5 * cellDims[2]);
                 Hyz[kk][jj][ii] = 0.;
-                // z components HZ_{ii,jj,kk} := Hz[2*ii+1, 2*jj+1, 2*kk]
-                Hzx[kk][jj][ii] = Hz(x[2 * ii + 1], y[2 * jj + 1], z[2 * kk]);
+                Hzx[kk][jj][ii] = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
+                                             cell_centre[1] + 0.5 * cellDims[1],
+                                             cell_centre[2]);
                 Hzy[kk][jj][ii] = 0.;
-
-                // exact field components
-                Hx_exact[kk][jj][ii] = Hx(x[2 * ii], y[2 * jj], z[2 * kk]);
-                Hy_exact[kk][jj][ii] = Hy(x[2 * ii], y[2 * jj], z[2 * kk]);
-                Hz_exact[kk][jj][ii] = Hz(x[2 * ii], y[2 * jj], z[2 * kk]);
             }
         }
     }
 
-    // now we try to interpolate
-    // for the sake of argument we assume a PML of 0 cells
-    // so we need to interpolate to the centre of cells 1 through N{x,y,z}-1
-    // note we still can't interpolate to the centre of cell 0 (until BAND_LIMITED_CELL_ZERO is implimented)
-    for (int ii = 1; ii < Nx; ii++)
+    // run interpolation functions
+    
+    // interpolate Hx
+    for (int ii = 0; ii < Nx; ii++)
     {
-        for (int jj = 1; jj < Ny; jj++)
+        for (int jj = 0; jj < Ny - 1; jj++)
         {
-            for (int kk = 1; kk < Nz; kk++)
+            for (int kk = 0; kk < Nz - 1; kk++)
             {
-                // interpolate to the centre of cell (ii,jj,kk)
-                double *Hx_val, *Hy_val, *Hz_val;
-                interpolateTimeDomainHField(Hxy, Hxz, Hyx, Hyz, Hzx, Hzy,
-                                            ii, jj, kk, Nx, Ny, Nz,
-                                            &Hx_interp[kk][jj][ii], &Hy_interp[kk][jj][ii], &Hz_interp[kk][jj][ii]);
+                // we are interpolating to the centre of cell ii,jj+1,kk+1
+                // these are the coordinates of Yee cell centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 1.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Hx_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Hx_interp;
+                interpolateTimeDomainHx(Hxy, Hxz, ii, jj+1, kk+1, Ny, Nz, &Hx_interp);
+
+                // compute the errors
+                Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
+            }
+        }
+    }
+    // interpolate Hy
+    for (int ii = 0; ii < Nx - 1; ii++)
+    {
+        for (int jj = 0; jj < Ny; jj++)
+        {
+            for (int kk = 0; kk < Nz - 1; kk++)
+            {
+                // we are interpolating to the centre of cell ii,jj+1,kk+1
+                // these are the coordinates of Yee cell centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 1.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Hy_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Hy_interp;
+                interpolateTimeDomainHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
+
+                // compute the errors
+                Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
+            }
+        }
+    }
+    // interpolate Hz
+    for (int ii = 0; ii < Nx - 1; ii++)
+    {
+        for (int jj = 0; jj < Ny - 1; jj++)
+        {
+            for (int kk = 0; kk < Nz; kk++)
+            {
+                // we are interpolating to the centre of cell ii+1,jj+1,kk
+                // these are the coordinates of Yee cell centre
+                double cell_centre[3];
+                cell_centre[0] = x_lower + ((double)ii + 1.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 1.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
+
+                // compute the true value of the field components at the centre of this Yee cell
+                double Hz_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+
+                // interpolate to the centre of this cell
+                double Hz_interp;
+                interpolateTimeDomainHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
+
+                // compute the errors
+                Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
             }
         }
     }
 
-    // values to hold the maximum errors
-    double Hx_max_error = 0., Hy_max_error = 0., Hz_max_error = 0.;
-    // now we compare the values across the exact and interp arrays,
-    // across all indices from 1 to N{x,y,z}.
-    for (int ii = 1; ii < Nx; ii++) {
-        for (int jj = 1; jj < Ny; jj++) {
-            for (int kk = 1; kk < Nz; kk++) {
-                double curr_err_Ex = abs(Hx_exact[kk][jj][ii] - Hx_interp[kk][jj][ii]);
-                if (curr_err_Ex > Hx_max_error){ Hx_max_error = curr_err_Ex;}
+    // can now deallocate our sample field arrays
+    delete Hxy, Hxz, Hyx, Hyz, Hzx, Hzy;
+    
+    // compute Frobenius norms
+    double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx);
+    double Hy_fro_err = Frobenius(Hy_error, Nz - 1, Ny, Nx - 1);
+    double Hz_fro_err = Frobenius(Hz_error, Nz, Ny - 1, Nx - 1);
 
-                double curr_err_Ey = abs(Hy_exact[kk][jj][ii] - Hy_interp[kk][jj][ii]);
-                if (curr_err_Ey > Hy_max_error) { Hy_max_error = curr_err_Ey;}
+    // check Frobenius errors are acceptable
+    CHECK(Hx_fro_err <= Hx_fro_tol + acc_tol);
+    CHECK(Hy_fro_err <= Hy_fro_tol + acc_tol);
+    CHECK(Hz_fro_err <= Hz_fro_tol + acc_tol);
 
-                double curr_err_Ez = abs(Hz_exact[kk][jj][ii] - Hz_interp[kk][jj][ii]);
-                if (curr_err_Ez > Hz_max_error) { Hz_max_error = curr_err_Ez;}
-            }
-        }
-    }
+    // print information to the debugger/log
+    cout << " Component | Frobenius err. : (     diff     )" << endl;
+    cout << fixed << scientific << setprecision(8);
+    cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << endl;
+    cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << endl;
+    cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << endl;
 
-    // delete large arrays to save memory again
-    delete Hx_exact, Hx_interp, Hy_exact, Hy_interp, Hz_exact, Hz_interp;
-
-    // check max errors do not exceed tolerances
-    CHECK(Hx_max_error < Hx_tol);
-    CHECK(Hy_max_error < Hy_tol);
-    CHECK(Hz_max_error < Hz_tol);
+    // memory cleanup
+    delete Hx_error, Hy_error, Hz_error;
 }
