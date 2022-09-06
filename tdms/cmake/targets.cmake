@@ -49,6 +49,10 @@ function(test_target)
             )
 
     target_link_libraries(tdms tdms_lib)
-    target_compile_options(tdms_lib PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
+    target_compile_options(tdms_lib PUBLIC
+            -c ${DFLAG}
+            -O3
+            -DSPDLOG_BUILD_SHARED=ON
+            -DMX_COMPAT_32)
 
 endfunction()
