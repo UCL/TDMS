@@ -62,15 +62,16 @@ endif()
 
 
 # spdlog ----------------------------------------------------------------------
-find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY)
+find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
 if(NOT spdlog_FOUND)
     include(FetchContent)
     FetchContent_Declare(spdlog
             GIT_REPOSITORY https://github.com/gabime/spdlog.git
-            GIT_TAG v1.3.1
+            GIT_TAG v1.10.0
             )
     FetchContent_MakeAvailable(spdlog)
 endif()
+
 # Set the active logging level
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Test")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)

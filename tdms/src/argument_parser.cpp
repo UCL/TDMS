@@ -17,6 +17,10 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
     exit(0);
   }
 
+  if (args.have_flag("-q")){  // quiet operation
+    spdlog::set_level(spdlog::level::off);
+  }
+
   if (!args.have_correct_number_of_filenames()){
     fprintf(stderr,"Incorrect number of arguments. See below for help\n\n");
     print_help_message();
@@ -37,6 +41,7 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
             args.have_flag("-m"));
   }
 
+  spdlog::debug("Finished parsing arguments");
   return args;
 }
 
@@ -46,6 +51,7 @@ void ArgumentParser::print_help_message(){
                  "openandorder [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
+                 "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
 
