@@ -5118,23 +5118,23 @@ void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField
         interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
                                               &Hz);
 
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
+      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
     }
   }//end parallel region
 }
 
 
-void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> phase_term, double value){
+void update_EH(double ***EHr, double ***EHi, int vindex, int idx, complex<double> phase_term, double value){
 
   if (idx >= 0) {
     auto tmp = value * phase_term; //exp(phaseTermE * I) * 1./((double) Nt);
-    EHr[idx][vindex] += real(tmp);
-    EHi[idx][vindex] += imag(tmp);
+    (*EHr)[idx][vindex] += real(tmp);
+    (*EHi)[idx][vindex] += imag(tmp);
   }
 }
 
