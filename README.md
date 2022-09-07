@@ -1,6 +1,7 @@
 [![Linux tests](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml)
 [![Windows tests](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml)
 [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml)
+[![MacOS tests](https://github.com/UCL/TDMS/actions/workflows/macos_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/macos_tests.yml)
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
 # TDMS
 
