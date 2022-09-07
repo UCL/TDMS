@@ -272,14 +272,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   fftw_plan *pb_exy, *pf_exy, *pb_exz, *pf_exz, *pb_eyx, *pf_eyx, *pb_eyz, *pf_eyz, *pb_ezx,
           *pf_ezx, *pb_ezy, *pf_ezy, *pb_hxy, *pf_hxy, *pb_hxz, *pf_hxz, *pb_hyx, *pf_hyx, *pb_hyz,
           *pf_hyz, *pb_hzx, *pf_hzx, *pb_hzy, *pf_hzy;
-  fftw_plan pex_t, pey_t;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
 
   double phaseTermE;
   complex<double> cphaseTermE;
   //these are 2d matrices and must be in row-major order, which diffes from Matlab
-  fftw_complex *Ex_t, *Ey_t;
-  complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
 
   //end PSTD storage
@@ -530,26 +527,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * dx) / eo);
   fprintf(stderr, "refind=%e\n", refind);
+
   /*Setup temporary storage for detector sensitivity evaluation*/
+  auto Ex_t = DetectorSensitivityArrays();
+  auto Ey_t = DetectorSensitivityArrays();
+
   if (params.exdetintegral) {
-    //These are 2D matrices in row-major order
-    Ex_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
-                                        sizeof(fftw_complex));
-    Ey_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
-                                        sizeof(fftw_complex));
-
-    pex_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ex_t, Ex_t, FFTW_FORWARD,
-                             FFTW_MEASURE);
-    pey_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ey_t, Ey_t, FFTW_FORWARD,
-                             FFTW_MEASURE);
-
-    fprintf(stderr, "Ex_t_cm has size %dx%d\n", (J_tot - params.pml.Dyl - params.pml.Dyu), (I_tot - params.pml.Dxl - params.pml.Dxu));
-    Ex_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
-    Ey_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
-    for (int j = 0; j < (J_tot - params.pml.Dyl - params.pml.Dyu); j++) {
-      Ex_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
-      Ey_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
-    }
+    int n0 = I_tot - params.pml.Dxl - params.pml.Dxu;
+    int n1 = J_tot - params.pml.Dyl - params.pml.Dyu;
+    Ex_t.initialise(n1, n0);
+    Ey_t.initialise(n1, n0);
   }
 
   double f_max = 0.;
@@ -1340,33 +1327,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
-            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
-            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
-            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
-            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
+            int n = j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl);
+            Ex_t.v[n][0] = E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
+            Ex_t.v[n][1] = 0.;
+            Ey_t.v[n][0] = E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
+            Ey_t.v[n][1] = 0.;
           }
         //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
-        fftw_execute(pex_t);
-        fftw_execute(pey_t);
+        fftw_execute(Ex_t.plan);
+        fftw_execute(Ey_t.plan);
         //fprintf(stderr,"Pos 02a [2]:\n");
         //Iterate over each mode
         for (int im = 0; im < D_tilde.num_det_modes(); im++) {
           //Now go back to column-major
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
-                              I * Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
-              Ey_t_cm[j][i] = Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
-                              I * Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
+              int n = j + i * (J_tot - params.pml.Dyu - params.pml.Dyl);
+              Ex_t.cm[j][i] = Ex_t.v[n][0] + I * Ex_t.v[n][1];
+              Ey_t.cm[j][i] = Ey_t.v[n][0] + I * Ey_t.v[n][1];
             }
           //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t_cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
-              Ey_t_cm[j][i] = Ey_t_cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
+              Ex_t.cm[j][i] = Ex_t.cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
+              Ey_t.cm[j][i] = Ey_t.cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
             }
             //fprintf(stderr,"Pos 02a [4]:\n");
             //now iterate over each frequency to extract phasors at
@@ -1406,8 +1391,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   } else
                     kprop = 0.;
 
-                  Idxt += Ex_t_cm[j][i] * kprop;
-                  Idyt += Ey_t_cm[j][i] * kprop;
+                  Idxt += Ex_t.cm[j][i] * kprop;
+                  Idyt += Ey_t.cm[j][i] * kprop;
                 }
               phaseTermE = fmod(f_ex_vec[ifx] * 2. * dcpi * ((double) tind) * params.dt, 2 * dcpi);
               cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Npe);
@@ -4733,14 +4718,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     free(Idx);
     free(Idy);
-    fftw_free(Ex_t);
-    fftw_free(Ey_t);
-    fftw_destroy_plan(pey_t);
-    fftw_destroy_plan(pex_t);
-
     /*
       for(int j=0;j<(J_tot-params.pml.Dyl-params.pml.Dyu);j++){
-      free(Ex_t_cm[j]);free(Ey_t_cm[j]);
+      free(Ex_t.cm[j]);free(Ey_t.cm[j]);
       }
       //fprintf(stderr,"Position 9\n");
       free(Ex_t_cm);free(Ey_t_cm);
