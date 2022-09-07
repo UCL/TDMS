@@ -40,7 +40,7 @@ void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 
 void normaliseVertices( double **EHr, double **EHi, CAmpsSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
 
-void update_EH(double ***EHr, double ***EHi, int vindex, int idx, std::complex<double> phase_term, double value);
+void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<double> &phase_term, double &value);
 
 bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 

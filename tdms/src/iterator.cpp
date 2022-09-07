@@ -1325,14 +1325,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (campssample.n_vertices() > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample, tind,
-                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, params.interp_method);
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample,
+                                   tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension,
+                                   J_tot, params.interp_method);
+          }
         }
       }
     }
-
-
+    
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % Np == 0) {
@@ -5068,18 +5069,21 @@ void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField
 
   int vindex, i, j, k;
   double Ex, Ey, Ez, Hx, Hy, Hz;
-  
+  complex<double> cphaseTermE, cphaseTermH;
+
   auto phaseTermE = fmod(omega * ((double) n) * dt, 2 * dcpi);
   auto phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
 
-  auto cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
-  auto cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
+  cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
+  cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
 
-  //loop over every vertex in the list
-#pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, cphaseTermH, cphaseTermE, vindex, i, j, k)
+#pragma omp parallel default(none) \
+        shared(E, H, EHr, EHi, campssample) \
+        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k) \
+        firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
   {
 #pragma omp for
-    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {
+    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
 
       i = campssample.vertices[0][vindex];
       j = campssample.vertices[1][vindex];
@@ -5118,23 +5122,23 @@ void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField
         interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
                                               &Hz);
 
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
-      update_EH(&EHr, &EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
     }
   }//end parallel region
 }
 
 
-void update_EH(double ***EHr, double ***EHi, int vindex, int idx, complex<double> phase_term, double value){
+void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> &phase_term, double &value){
 
   if (idx >= 0) {
     auto tmp = value * phase_term; //exp(phaseTermE * I) * 1./((double) Nt);
-    (*EHr)[idx][vindex] += real(tmp);
-    (*EHi)[idx][vindex] += imag(tmp);
+    EHr[idx][vindex] += real(tmp);
+    EHi[idx][vindex] += imag(tmp);
   }
 }
 
