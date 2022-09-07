@@ -282,20 +282,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //end PSTD storage
 
   uint8_t ***materials;
-
   int i, j, k, is_disp, is_cond = 0;
   int k_loc;
   int input_counter = 0;
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
-  
 
   int ndims;
   int K, max_IJK;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
-  int Np = 0; //The phasor extraction algorithm will be executed every Np iterations.
-  int Npe = 0;//The number of terms in the algorithm to extract the phasors
   int Ni_tdf = 0, Nk_tdf = 0;
 
 #ifdef FDFLAG
@@ -538,12 +534,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     Ex_t.initialise(n1, n0);
     Ey_t.initialise(n1, n0);
   }
-
-  double f_max = 0.;
-  for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-    if (f_ex_vec[ifx] > f_max) f_max = f_ex_vec[ifx];
-
-
+  
 #ifndef FDFLAG// only perform if using the PSTD method
   //find the largest dimension, i.e., maximum of I_tot, J_tot and K_tot
   max_IJK = I_tot;
@@ -647,18 +638,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   init_diff_shift_op(0.5, dk_h_z, N_h_z);
 #endif
 
-  /*Now evaluate Np*/
-  //evaluate maximum optical frequency
+  params.set_Np(f_ex_vec);
 
-  Np = (int) floor(1. / (2.5 * params.dt * f_max));
-  //double dtp = ((double)Np)*params.dt;
-  //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
-
-  //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
-  for (unsigned int tind = params.start_tind; tind < params.Nt; tind++)
-    if ((tind - params.start_tind) % Np == 0) Npe++;
-  fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, params.Nt, Npe, f_max,
-          2.5 * params.dt * f_max);
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
   auto E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
@@ -1252,16 +1233,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
       if (TIME_EXEC) { timer.click(); }
 
-      if ((tind - params.start_tind) % Np == 0) {
-        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, Npe);
-        H.set_phasors(H_s, tind, params.omega_an, params.dt, Npe);
+      if ((tind - params.start_tind) % params.Np == 0) {
+        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
+        H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
     }
     /*extract fieldsample*/
     if (fieldsample.all_vectors_are_non_empty()) {
-      //if( (tind-params.start_tind) % Np == 0){
+      //if( (tind-params.start_tind) % params.Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
@@ -1292,29 +1273,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
-      if ((tind - params.start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
+                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
                     surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
+                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
       }
     }
 
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,Np);
-      if ((tind - params.start_tind) % Np == 0) {
+      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
+      if ((tind - params.start_tind) % params.Np == 0) {
         //	fprintf(stderr,"loc 02\n");
         if (campssample.n_vertices() > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample,
-                                   tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension,
+                                   tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe, params.dimension,
                                    J_tot, params.interp_method);
           }
         }
@@ -1323,7 +1304,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
-      if ((tind - params.start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % params.Np == 0) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
@@ -1395,7 +1376,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Idyt += Ey_t.cm[j][i] * kprop;
                 }
               phaseTermE = fmod(f_ex_vec[ifx] * 2. * dcpi * ((double) tind) * params.dt, 2 * dcpi);
-              cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Npe);
+              cphaseTermE = exp(phaseTermE * I) * 1. / ((double) params.Npe);
 
               Idx[ifx][im] += Idxt * cphaseTermE;
               Idy[ifx][im] += Idyt * cphaseTermE;
@@ -4415,14 +4396,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
         }
       } else {
-        if ((tind - params.start_tind) % Np == 0) {
+        if ((tind - params.start_tind) % params.Np == 0) {
 
-          E.add_to_angular_norm(tind, Npe, params);
-          H.add_to_angular_norm(tind, Npe, params);
+          E.add_to_angular_norm(tind, params.Npe, params);
+          H.add_to_angular_norm(tind, params.Npe, params);
 
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
-            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
+            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe);
+            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe);
           }
         }
       }
@@ -4467,7 +4448,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fflush(stdout);
     //fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
-    if (params.has_tdfdir && (tind % Np) == 0) {
+    if (params.has_tdfdir && (tind % params.Np) == 0) {
       fprintf(stderr,"Saving field\n");
       ex_td_field_exporter.export_field(E_s, skip_tdf, tind);
     }
@@ -4476,7 +4457,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*
      MATFile *toutfile;
      char toutputfilename[100];
-     if(tind % Np == 0){
+     if(tind % params.Np == 0){
      //if(tind <= 1000){
        sprintf(toutputfilename,"tdata/fdtdgrid_%04d.mat",tind);
        toutfile = matOpen(toutputfilename, "w");

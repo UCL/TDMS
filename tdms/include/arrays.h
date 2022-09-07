@@ -136,12 +136,14 @@ public:
 
   inline T operator[] (int value) const { return vector[value]; };
 
-  inline int size() const{ return n; };
+  inline int size() const { return n; };
 };
 
 class FrequencyExtractVector: public Vector<double>{
 public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
+
+  double max();
 };
 
 class FrequencyVectors{

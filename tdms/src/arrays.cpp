@@ -148,9 +148,17 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     }
     cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
 
-    n = max(dims[0], dims[1]);
+    n = std::max(dims[0], dims[1]);
     vector = (double *) mxGetPr(ptr);
   }
+}
+
+double FrequencyExtractVector::max() {
+  double tmp = -DBL_MAX;
+  for (int i = 0; i < n; i++){
+    tmp = std::max(tmp, vector[i]);
+  }
+  return tmp;
 }
 
 void FrequencyVectors::initialise(const mxArray *ptr){

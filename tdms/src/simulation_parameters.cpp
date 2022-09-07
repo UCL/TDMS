@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 #include "simulation_parameters.h"
 
@@ -46,4 +47,17 @@ void SimulationParameters::set_phasorinc(const double* vector) {
   phasorinc.x = (int) vector[0];
   phasorinc.y = (int) vector[1];
   phasorinc.z = (int) vector[2];
+}
+
+void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
+
+  double f_max = f_ex_vec.max();
+  Np = (int) floor(1. / (2.5 * dt * f_max));
+
+  //calculate Npe, the temporal DFT will be evaluated whenever tind increments by Npe
+  for (unsigned int tind = start_tind; tind < Nt; tind++){
+    if ((tind - start_tind) % Np == 0) Npe++;
+  }
+  cerr << "Np=" << Np << " Nt=" << Nt << " Npe=" << Npe
+       <<  " f_max=" << f_max << " Npraw=" << 2.5 * dt * f_max << endl;
 }

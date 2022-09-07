@@ -1,4 +1,5 @@
 #pragma once
+#include "arrays.h"
 #include <string>
 
 
@@ -64,6 +65,8 @@ public:
 
     double       omega_an      = 0.0;       // Angular ω
     unsigned int Nt            = 0;         // Number of simulation steps
+    unsigned int Np            = 0;         // Number of times to extract the phasors
+    unsigned int Npe           = 0;         // Extract the phasors every this number of iterations
     unsigned int start_tind    = 0;         // Starting iteration number for the time steps
     double       dt            = 0.0;       // Time step
     bool         has_tdfdir    = false;     // Is the tdfdir (time domain field directory) defined?
@@ -97,4 +100,6 @@ public:
     void set_dimension(std::string mode_string);
 
     void set_phasorinc(const double* vector);
+
+    void set_Np(FrequencyExtractVector &f_ex_vec);
 };
