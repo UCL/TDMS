@@ -281,9 +281,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //these are used for boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
-  double *to_l, *hwhm, *omega_an, *dt;
   double maxfield = 0, tempfield;
-  double *place_holder;
   int intmatprops = 1;//means the material properties will be interpolated
   int intmethod;      //method of interpolating surface field quantities
 
@@ -324,12 +322,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   uint8_t ***materials;
 
-  int *Dxl, *Dxu, *Dyl, *Dyu, *Dzl, *Dzu, *Nt;
   int i, j, k, is_disp, is_cond = 0;
   int k_loc;
   int tind;
   int input_counter = 0;
-  int start_tind;
   int cuboid[6];
   int **vertices;
   int nvertices = 0;
@@ -381,7 +377,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   const char conductive_aux_elements[][10] = {"rho_x", "rho_y", "rho_z"};
   const char dispersive_aux_elements[][10] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
-  const char grid_labels_fields[][15] = {"x_grid_labels", "y_grid_labels", "z_grid_labels"};
   const char fieldsample_elements[][2] = {"i", "j", "k", "n"};
   const char campssample_elements[][15] = {"vertices", "components"};
 
@@ -472,216 +467,51 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Get Ksource*/
   auto Ksource = Source(prhs[input_counter], I1.index - I0.index + 1, J1.index - J0.index + 1, "Ksource");
   input_counter++;
-  
-  /*Got Ksource*/
   //fprintf(stderr,"Got   Ksource\n");
+
   /*Get grid_labels*/
-  auto input_grid_labels = GridLabels();
-
-  if (mxIsStruct(prhs[input_counter])) {
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-    //check that all fields are present
-    if (num_fields != 3) {
-      throw runtime_error("grid_labels should have 3 members, it has " + to_string(num_fields));
-    }
-    for (int i = 0; i < 3; i++) {
-      element = mxGetField((mxArray *) prhs[input_counter], 0, grid_labels_fields[i]);
-      ndims = mxGetNumberOfDimensions(element);
-      string grid_label = grid_labels_fields[i];
-
-      if (ndims == 2) {
-        dimptr_out = mxGetDimensions(element);
-        if (dimptr_out[0] != 1) {
-          throw runtime_error("Incorrect dimension on grid_labels: " + grid_label);
-        }
-        if (are_equal(grid_labels_fields[i], "x_grid_labels")) {
-          input_grid_labels.x = mxGetPr((mxArray *) element);
-        } else if (are_equal(grid_labels_fields[i], "y_grid_labels")) {
-          input_grid_labels.y = mxGetPr((mxArray *) element);
-        } else if (are_equal(grid_labels_fields[i], "z_grid_labels")) {
-          input_grid_labels.z = mxGetPr((mxArray *) element);
-        } else {
-          throw runtime_error("element grid_labels. " + grid_label + " not handled");
-        }
-      } else {
-        throw runtime_error("Incorrect dimension on grid_labels. " + grid_label);
-      }
-    }
-
-    input_counter++;
-  }
-  /*Get grid_labels*/
+  assert_is_struct_with_n_fields(prhs[input_counter], 3, "grid_labels, argument " + to_string(input_counter));
+  auto input_grid_labels = GridLabels(prhs[input_counter]);
+  input_counter++;
   //fprintf(stderr,"Got   grid_labels\n");
-  /*Get tvec_E - no longer used*/
-  /*
-    if(mxIsDouble(prhs[input_counter])){
-    tvec_E = mxGetPr(prhs[input_counter]);
-    input_counter++;
-    }
-    else{
-    sprintf(message_buffer, "Expected tvec_E to be a double vector");
-    mexfprintf(message_buffer);
-    }
-  */
-  /*Got tvec_E*/
 
   /*Get omega_an*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    omega_an = mxGetPr((mxArray *) prhs[input_counter]);
-    params.omega_an = *omega_an;
-    input_counter++;
-  } else {
-    throw runtime_error("expected omega_an to be a double");
-  }
-
-  /*Got omega_an*/
+  params.omega_an = double_in(prhs[input_counter], "omega_an");
+  input_counter++;
 
   /*Get to_l*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    to_l = mxGetPr((mxArray *) prhs[input_counter]);
-    input_counter++;
-  } else {
-    throw runtime_error("expected to_l to be a double");
-  }
-
-  /*Got to_l*/
+  params.to_l = double_in(prhs[input_counter], "to_l");
+  input_counter++;
 
   /*Get hwhm*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    hwhm = mxGetPr((mxArray *) prhs[input_counter]);
-    input_counter++;
-  } else {
-    throw runtime_error("expected hwhm to be a double");
-  }
-
-  /*Got hwhm*/
+  params.hwhm = double_in(prhs[input_counter], "hwhm");
+  input_counter++;
 
   /*Get Dxl*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dxl = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dxl = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dxl to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dxl*/
-
-  /*Get Dxu*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dxu = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dxu = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dxu to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dxu*/
-
-  /*Get Dyl*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dyl = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dyl = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dyl to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dyl*/
-
-  /*Get Dyu*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dyu = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dyu = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dyu to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dyu*/
-
-  /*Get Dzl*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dzl = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dzl = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dzl to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dzl*/
-
-  /*Get Dzu*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    Dzu = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Dzu = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Dzu to be a double, although i will cast it as an int!");
-  }
-
-  /*Got Dzu*/
-
-  /*Get lower_boundary_update
-
-    if(mxIsDouble(prhs[input_counter])){
-    lower_boundary_update = (int *)malloc(sizeof(int));
-    place_holder = mxGetPr( (mxArray *)prhs[input_counter]);
-    *lower_boundary_update = (int)*place_holder;
-    input_counter++;
-    }
-    else{
-    sprintf(message_buffer, "expected lower_boundary_update to be a double");
-    mexfprintf(message_buffer);
-    }
-    Got lower_boundary_update*/
-
+  params.pml.Dxl = int_cast_from_double_in(prhs[input_counter], "Dxl");
+  input_counter++;
+  params.pml.Dxu = int_cast_from_double_in(prhs[input_counter], "Dxu");
+  input_counter++;
+  params.pml.Dyl = int_cast_from_double_in(prhs[input_counter], "Dyl");
+  input_counter++;
+  params.pml.Dyu = int_cast_from_double_in(prhs[input_counter], "Dyu");
+  input_counter++;
+  params.pml.Dzl = int_cast_from_double_in(prhs[input_counter], "Dzl");
+  input_counter++;
+  params.pml.Dzu = int_cast_from_double_in(prhs[input_counter], "Dzu");
+  input_counter++;
+  
   /*Get Nt*/
-  if (mxIsDouble(prhs[input_counter])) {
-    Nt = (int *) malloc(sizeof(int));
-    place_holder = mxGetPr((mxArray *) prhs[input_counter]);
-    *Nt = (int) *place_holder;
-    input_counter++;
-  } else {
-    throw runtime_error("expected Nt to be a double");
-  }
-  /*Got Nt*/
-
+  params.Nt = int_cast_from_double_in(prhs[input_counter], "Nt");
+  input_counter++;
+  
   /*Get dt*/
-
-  if (mxIsDouble(prhs[input_counter])) {
-    dt = mxGetPr((mxArray *) prhs[input_counter]);
-    params.dt = *dt;
-    input_counter++;
-  } else {
-    throw runtime_error("expected dt to be a double");
-  }
-
-  /*Got dt*/
+  params.dt = double_in(prhs[input_counter], "dt");
+  input_counter++;
 
   /*Get tind*/
-  if (mxIsDouble(prhs[input_counter])) {
-    start_tind = (int) (*mxGetPr((mxArray *) prhs[input_counter]));
-    input_counter++;
-  } else {
-    throw runtime_error("expected start_tind to be a double");
-  }
-  /*Got tind*/
+  params.start_tind = int_cast_from_double_in(prhs[input_counter], "tind");
+  input_counter++;
 
   /*Get sourcemode*/
   if (mxIsChar(prhs[input_counter])) {
@@ -907,7 +737,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   } else {
     N_f_ex_vec = 1;
     f_ex_vec = (double *) malloc(sizeof(double));
-    f_ex_vec[0] = omega_an[0] / 2. / dcpi;
+    f_ex_vec[0] = params.omega_an / 2. / dcpi;
   }
   input_counter++;
   /*Got f_ex_vec*/
@@ -1239,27 +1069,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Got fieldsample*/
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
-  refind = sqrt(1. / (freespace_Cbx[0] / dt[0] * dx) / eo);
+  refind = sqrt(1. / (freespace_Cbx[0] / params.dt * dx) / eo);
   fprintf(stderr, "refind=%e\n", refind);
   /*Setup temporary storage for detector sensitivity evaluation*/
   if (exdetintegral) {
     //These are 2D matrices in row-major order
-    Ex_t = (fftw_complex *) fftw_malloc((J_tot - *Dyl - *Dyu) * (I_tot - *Dxl - *Dxu) *
+    Ex_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
                                         sizeof(fftw_complex));
-    Ey_t = (fftw_complex *) fftw_malloc((J_tot - *Dyl - *Dyu) * (I_tot - *Dxl - *Dxu) *
+    Ey_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
                                         sizeof(fftw_complex));
 
-    pex_t = fftw_plan_dft_2d(I_tot - *Dxl - *Dxu, J_tot - *Dyl - *Dyu, Ex_t, Ex_t, FFTW_FORWARD,
+    pex_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ex_t, Ex_t, FFTW_FORWARD,
                              FFTW_MEASURE);
-    pey_t = fftw_plan_dft_2d(I_tot - *Dxl - *Dxu, J_tot - *Dyl - *Dyu, Ey_t, Ey_t, FFTW_FORWARD,
+    pey_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ey_t, Ey_t, FFTW_FORWARD,
                              FFTW_MEASURE);
 
-    fprintf(stderr, "Ex_t_cm has size %dx%d\n", (J_tot - *Dyl - *Dyu), (I_tot - *Dxl - *Dxu));
-    Ex_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - *Dyl - *Dyu));
-    Ey_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - *Dyl - *Dyu));
-    for (int j = 0; j < (J_tot - *Dyl - *Dyu); j++) {
-      Ex_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - *Dxl - *Dxu));
-      Ey_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - *Dxl - *Dxu));
+    fprintf(stderr, "Ex_t_cm has size %dx%d\n", (J_tot - params.pml.Dyl - params.pml.Dyu), (I_tot - params.pml.Dxl - params.pml.Dxu));
+    Ex_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
+    Ey_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
+    for (int j = 0; j < (J_tot - params.pml.Dyl - params.pml.Dyu); j++) {
+      Ex_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
+      Ey_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
     }
   }
 
@@ -1374,15 +1204,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Now evaluate Np*/
   //evaluate maximum optical frequency
 
-  Np = (int) floor(1. / (2.5 * dt[0] * f_max));
-  //double dtp = ((double)Np)*dt[0];
+  Np = (int) floor(1. / (2.5 * params.dt * f_max));
+  //double dtp = ((double)Np)*params.dt;
   //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
 
   //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
-  for (tind = start_tind; tind < *Nt; tind++)
-    if ((tind - start_tind) % Np == 0) Npe++;
-  fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, *Nt, Npe, f_max,
-          2.5 * dt[0] * f_max);
+  for (tind = params.start_tind; tind < params.Nt; tind++)
+    if ((tind - params.start_tind) % Np == 0) Npe++;
+  fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, params.Nt, Npe, f_max,
+          2.5 * params.dt * f_max);
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
   auto E_norm = (complex<double> *) malloc(N_f_ex_vec * sizeof(complex<double>));
@@ -1437,12 +1267,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     see page III.80 for explanation of the following. This has been extended so that interpolation
     is done at the end of the FDTD run and also to handle the case of when there is no PML in place
     more appropriatley*/
-  E.il = H.il = (*Dxl) ? *Dxl + 2 : 0;
-  E.iu = H.iu = (*Dxu) ? I_tot - *Dxu - 1 : I_tot;
-  E.jl = H.jl = (*Dyl) ? *Dyl + 2 : 0;
-  E.ju = H.ju = (*Dyu) ? J_tot - *Dyu - 1 : J_tot;
-  E.kl = H.kl = (*Dzl) ? *Dzl + 2 : 0;
-  E.ku = H.ku = (*Dzu) ? K_tot - *Dzu - 1 : K_tot;
+  E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
+  E.iu = H.iu = (params.pml.Dxu) ? I_tot - params.pml.Dxu - 1 : I_tot;
+  E.jl = H.jl = (params.pml.Dyl) ? params.pml.Dyl + 2 : 0;
+  E.ju = H.ju = (params.pml.Dyu) ? J_tot - params.pml.Dyu - 1 : J_tot;
+  E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
+  E.ku = H.ku = (params.pml.Dzu) ? K_tot - params.pml.Dzu - 1 : K_tot;
 
   E.I_tot = H.I_tot = E.iu - E.il + 1;
   E.J_tot = H.J_tot = E.ju - E.jl + 1;
@@ -1453,9 +1283,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //fprintf(stderr,"Qos 01:\n");
 
-  /*  dims[0] = I_tot - *Dxu - *Dxl - 3 + 1;
-      dims[1] = J_tot - *Dyu - *Dyl - 3 + 1;
-      dims[2] = K_tot - *Dzu - *Dzl - 3 + 1;*/
+  /*  dims[0] = I_tot - params.pml.Dxu - params.pml.Dxl - 3 + 1;
+      dims[1] = J_tot - params.pml.Dyu - params.pml.Dyl - 3 + 1;
+      dims[2] = K_tot - params.pml.Dzu - params.pml.Dzl - 3 + 1;*/
   auto output_grid_labels = GridLabels();
 
   if (runmode == rm_complete && exphasorsvolume) {
@@ -1632,7 +1462,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   //fprintf(stderr,"Pre 13\n");
   /*This is just for efficiency */
-  K = K_tot - Dxl[0] - Dxu[0];
+  K = K_tot - params.pml.Dxl - params.pml.Dxu;
 
   /*Now set up the phasor arrays for storing the fdtd version of the input fields,
     these will be used in a boot strapping procedure. Calculated over a complete
@@ -1679,7 +1509,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*start dispersive*/
 
   //work out if we have any disperive materials
-  is_disp = is_dispersive(materials, gamma, dt[0], I_tot, J_tot, K_tot);
+  is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
   //work out if we have conductive background
   is_cond = is_conductive(rho_x, rho_y, rho_z, I_tot, J_tot, K_tot);
   //work out if we have a dispersive background
@@ -1750,25 +1580,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double Nsteps_tmp = 0.0;
   double dt_old;
   if (sourcemode == sm_steadystate) {
-    dt_old = dt[0];
-    Nsteps_tmp = ceil(2. * dcpi / omega_an[0] / dt[0] * 3);
-    dt[0] = 2. * dcpi / omega_an[0] * 3 / Nsteps_tmp;
+    dt_old = params.dt;
+    Nsteps_tmp = ceil(2. * dcpi / params.omega_an / params.dt * 3);
+    params.dt = 2. * dcpi / params.omega_an * 3 / Nsteps_tmp;
   }
 
   //fprintf(stderr,"Pre 16\n");
   if (sourcemode == sm_steadystate && runmode == rm_complete)
-    fprintf(stderr, "Changing dt from %.10e to %.10e\n", dt_old, dt[0]);
+    fprintf(stderr, "Changing dt from %.10e to %.10e\n", dt_old, params.dt);
   Nsteps = (int) lround(Nsteps_tmp);
   //fprintf(stderr,"Pre 17\n");
-  //Nsteps = (int)(floor(3*2.*dcpi/(omega_an[0]*dt[0])) + 1.);//the number of time steps in a sinusoidal period
+  //Nsteps = (int)(floor(3*2.*dcpi/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
   dft_counter = 0;
   //fprintf(stderr,"Pre 18\n");
-  /*Nt should be an integer number of Nsteps in the case of steady-state operation*/
+  /*params.Nt should be an integer number of Nsteps in the case of steady-state operation*/
   if (sourcemode == sm_steadystate && runmode == rm_complete)
-    if (*Nt / Nsteps * Nsteps != *Nt) {
-      fprintf(stderr, "Changing the value of Nt from %d to", *Nt);
-      *Nt = *Nt / Nsteps * Nsteps;
-      fprintf(stderr, " %d for correct phasor extraction\n", *Nt);
+    if (params.Nt / Nsteps * Nsteps != params.Nt) {
+      fprintf(stderr, "Changing the value of Nt from %d to", params.Nt);
+      params.Nt = params.Nt / Nsteps * Nsteps;
+      fprintf(stderr, " %d for correct phasor extraction\n", params.Nt);
     }
   //fprintf(stderr,"Pre 19\n");
 
@@ -1936,17 +1766,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double time_E;
   double time_H;
   t0 = (double) time(NULL);
-  //    fprintf(stderr,"start_tind: %d\n",start_tind);
+  //    fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"dz: %e, c: %e, dz/c: %e\n",dz,light_v,dz/light_v);
   //Begin of main iteration loop
   auto main_loop_timer = Timer();
 
   if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
 
-  for (tind = start_tind; tind < *Nt; tind++) {
+  for (tind = params.start_tind; tind < params.Nt; tind++) {
     //fprintf(stderr,"Pos 00:\n");
-    time_E = ((double) (tind + 1)) * dt[0];
-    time_H = time_E - *dt / 2.;
+    time_E = ((double) (tind + 1)) * params.dt;
+    time_H = time_E - params.dt / 2.;
     //Extract phasors
     auto timer = Timer();
     if ((dft_counter == Nsteps) && (runmode == rm_complete) && (sourcemode == sm_steadystate) &&
@@ -1975,21 +1805,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     if ((sourcemode == sm_steadystate) && (runmode == rm_complete) && exphasorsvolume) {
 
-      E.set_phasors(E_s, dft_counter - 1, *omega_an, *dt, Nsteps);
-      H.set_phasors(H_s, dft_counter, *omega_an, *dt, Nsteps);
+      E.set_phasors(E_s, dft_counter - 1, params.omega_an, params.dt, Nsteps);
+      H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
 
       if (exphasorssurface) {
         if (intphasorssurface) {
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, *dt,
+                                  n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, params.dt,
                                   Nsteps, dimension, J_tot, intmethod);
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
-                                                 f_ex_vec[ifx] * 2 * dcpi, *dt, Nsteps, dimension,
+                                                 f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps, dimension,
                                                  J_tot);
           dft_counter++;
         }
@@ -1998,9 +1828,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     } else if ((sourcemode == sm_pulsed) && (runmode == rm_complete) && exphasorsvolume) {
       if (TIME_EXEC) { timer.click(); }
 
-      if ((tind - start_tind) % Np == 0) {
-        E.set_phasors(E_s, tind - 1, *omega_an, *dt, Npe);
-        H.set_phasors(H_s, tind, *omega_an, *dt, Npe);
+      if ((tind - params.start_tind) % Np == 0) {
+        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, Npe);
+        H.set_phasors(H_s, tind, params.omega_an, params.dt, Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
@@ -2008,7 +1838,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*extract fieldsample*/
     if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
           (N_fieldsample_n == 0))) {
-      //if( (tind-start_tind) % Np == 0){
+      //if( (tind-params.start_tind) % Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
@@ -2020,16 +1850,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 ////fprintf(stderr,"Pos fs 1\n");
                 interpolateTimeDomainFieldCentralEBandLimited(
                         E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        (int) fieldsample_i[it] + Dxl[0] - 1, (int) fieldsample_j[jt] + Dyl[0] - 1,
-                        (int) fieldsample_k[kt] + Dzl[0] - 1, &Ex_temp, &Ey_temp, &Ez_temp);
+                        (int) fieldsample_i[it] + params.pml.Dxl - 1, (int) fieldsample_j[jt] + params.pml.Dyl - 1,
+                        (int) fieldsample_k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
                 //fprintf(stderr,"Pos fs 2\n");
                 for (int nt = 0; nt < N_fieldsample_n; nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
                               fieldsample_n[nt] / 2.) /
-                                  Nt[0];
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + Dxl[0] - 1, (int)fieldsample_j[jt] + Dyl[0] - 1, Dyl[0],(int)fieldsample_k[kt] + Dzl[0] - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
+                                  params.Nt;
+                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_n[nt], (int)fieldsample_i[it] + params.pml.Dxl - 1, (int)fieldsample_j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_n[nt] - 2);
               }
         }
     }
@@ -2038,23 +1868,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02:\n");
     if (sourcemode == sm_pulsed && runmode == rm_complete && exphasorssurface) {
-      if ((tind - start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % Np == 0) {
         if (intphasorssurface)
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Npe,
+                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe,
                                   dimension, J_tot, intmethod);
         else
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsSurfaceNoInterpolation(
                     surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Npe, dimension, J_tot);
+                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, dimension, J_tot);
       }
     }
 
     if (sourcemode == sm_pulsed && runmode == rm_complete && (nvertices > 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,start_tind,Np);
-      if ((tind - start_tind) % Np == 0) {
+      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,Np);
+      if ((tind - params.start_tind) % Np == 0) {
         //	fprintf(stderr,"loc 02\n");
         if (nvertices > 0) {
           //fprintf(stderr,"loc 03\n");
@@ -2062,7 +1892,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
             extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, vertices,
                                    nvertices, components, ncomponents, tind,
-                                   f_ex_vec[ifx] * 2 * dcpi, *dt, Npe, dimension, J_tot, intmethod);
+                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, dimension, J_tot, intmethod);
         }
       }
     }
@@ -2070,35 +1900,35 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02a:\n");
     if (sourcemode == sm_pulsed && runmode == rm_complete && exdetintegral) {
-      if ((tind - start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % Np == 0) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
-        for (j = *Dyl; j < (J_tot - *Dyu); j++)
-          for (i = *Dxl; i < (I_tot - *Dxu); i++) {
-            Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][0] =
+        for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
+          for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
+            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
                     E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];
-            Ex_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1] = 0.;
-            Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][0] =
+            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
+            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
                     E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];
-            Ey_t[j - *Dyl + (i - *Dxl) * (J_tot - *Dyu - *Dyl)][1] = 0.;
+            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
           }
-        //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",*Dyl,J_tot-*Dyu,*Dxl,I_tot-*Dxu);
+        //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
         fftw_execute(pex_t);
         fftw_execute(pey_t);
         //fprintf(stderr,"Pos 02a [2]:\n");
         //Iterate over each mode
         for (int im = 0; im < Ndetmodes; im++) {
           //Now go back to column-major
-          for (j = 0; j < (J_tot - *Dyu - *Dyl); j++)
-            for (i = 0; i < (I_tot - *Dxu - *Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t[j + i * (J_tot - *Dyu - *Dyl)][0] +
-                              I * Ex_t[j + i * (J_tot - *Dyu - *Dyl)][1];
-              Ey_t_cm[j][i] = Ey_t[j + i * (J_tot - *Dyu - *Dyl)][0] +
-                              I * Ey_t[j + i * (J_tot - *Dyu - *Dyl)][1];
+          for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
+            for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
+              Ex_t_cm[j][i] = Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
+                              I * Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
+              Ey_t_cm[j][i] = Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
+                              I * Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
             }
           //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
-          for (j = 0; j < (J_tot - *Dyu - *Dyl); j++)
-            for (i = 0; i < (I_tot - *Dxu - *Dxl); i++) {
+          for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
+            for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
               Ex_t_cm[j][i] = Ex_t_cm[j][i] * Pupil[j][i] * Dx_tilde[j][i][im];
               Ey_t_cm[j][i] = Ey_t_cm[j][i] * Pupil[j][i] * Dy_tilde[j][i][im];
             }
@@ -2116,8 +1946,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               Idyt = 0.;
 
               //now loop over all angular frequencies
-              for (j = 0; j < (J_tot - *Dyu - *Dyl); j++)
-                for (i = 0; i < (I_tot - *Dxu - *Dxl); i++) {
+              for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
+                for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
                   if ((lambda_an_t * fx_vec[i] * lambda_an_t * fx_vec[i] +
                        lambda_an_t * fy_vec[j] * lambda_an_t * fy_vec[j]) < 1) {
 
@@ -2143,7 +1973,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Idxt += Ex_t_cm[j][i] * kprop;
                   Idyt += Ey_t_cm[j][i] * kprop;
                 }
-              phaseTermE = fmod(f_ex_vec[ifx] * 2. * dcpi * ((double) tind) * dt[0], 2 * dcpi);
+              phaseTermE = fmod(f_ex_vec[ifx] * 2. * dcpi * ((double) tind) * params.dt, 2 * dcpi);
               cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Npe);
 
               Idx[ifx][im] += Idxt * cphaseTermE;
@@ -2161,8 +1991,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
                             iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s.xz,
                             E_s.yz, H_s.xz, H_s.yz, E_s.xy, E_s.yx, H_s.xy, H_s.yx, I_tot, J_tot,
-                            K0.index + 1, tind, *omega_an, *dt,
-                            *Nt);//extract the phasors just above the line
+                            K0.index + 1, tind, params.omega_an, params.dt,
+                            params.Nt);//extract the phasors just above the line
       }
     //fprintf(stderr,"Pos 02c:\n");
 
@@ -2207,13 +2037,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -2306,7 +2136,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dy * J_c.xy[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jxy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * Exy[k][j][i];
 
                 E_nm1.xy[k][j][i] = Exy[k][j][i];
@@ -2330,13 +2160,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -2429,7 +2259,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dy * J_c.xy[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xy[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.xy[k][j][i];
 
                 E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
@@ -2486,13 +2316,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               //use the average of material parameters between nodes
               if (materials[k][j][i] || materials[k][j][i + 1]) {
@@ -2582,7 +2412,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dz * J_c.xz[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jxz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * Exz[k][j][i];
                 E_nm1.xz[k][j][i] = Exz[k][j][i];
                 J_nm1.xz[k][j][i] = Jxz[k][j][i];
@@ -2603,13 +2433,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               //use the average of material parameters between nodes
               if (materials[k][j][i] || materials[k][j][i + 1]) {
@@ -2697,7 +2527,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dz * J_c.xz[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.xz[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.xz[k][j][i];
                 E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
                 J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
@@ -2761,13 +2591,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure) {
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               }
               if (!params.is_multilayer) array_ind = i;
@@ -2860,7 +2690,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dx * J_c.yx[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jyx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * Eyx[k][j][i];
                 E_nm1.yx[k][j][i] = Eyx[k][j][i];
                 J_nm1.yx[k][j][i] = Jyx[k][j][i];
@@ -2879,13 +2709,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure) {
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               }
               if (!params.is_multilayer) array_ind = i;
@@ -2977,7 +2807,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dx * J_c.yx[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yx[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.yx[k][j][i];
                 E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
                 J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
@@ -3018,13 +2848,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                 rho = 0.;
@@ -3113,7 +2943,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jyz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * Eyz[k][j][i];
                 E_nm1.yz[k][j][i] = Eyz[k][j][i];
                 J_nm1.yz[k][j][i] = Jyz[k][j][i];
@@ -3132,13 +2962,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                 rho = 0.;
@@ -3226,7 +3056,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.yz[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.yz[k][j][i];
                 E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
                 J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
@@ -3268,13 +3098,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -3369,7 +3199,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dx * J_c.zx[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jzx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * Ezx[k][j][i];
                 E_nm1.zx[k][j][i] = Ezx[k][j][i];
                 J_nm1.zx[k][j][i] = Jzx[k][j][i];
@@ -3388,13 +3218,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -3488,7 +3318,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               if (is_cond && rho) Enp1 += Cb * dx * J_c.zx[k][j][i];
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.zx[k][j][i];
                 E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
                 J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
@@ -3527,13 +3357,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -3590,7 +3420,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zx[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
                 Jnp1 += sigma_l / eo * gamma_l * E_s.zx[k][j][i];
                 E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
                 J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
@@ -3613,13 +3443,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -3713,7 +3543,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * Jzy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
 
                 Jnp1 += sigma_l / eo * gamma_l * Ezy[k][j][i];
                 E_nm1.zy[k][j][i] = Ezy[k][j][i];
@@ -3733,13 +3563,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -3832,7 +3662,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
 
                 Jnp1 += sigma_l / eo * gamma_l * E_s.zy[k][j][i];
                 E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
@@ -3871,13 +3701,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               rho = 0.;
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -3933,7 +3763,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * dt[0]) * (Enp1 - E_nm1.zy[k][j][i]);
+                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
 
                 Jnp1 += sigma_l / eo * gamma_l * E_s.zy[k][j][i];
                 E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
@@ -3952,8 +3782,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //update terms for self consistency across scattered/total interface - E updates##
     if (sourcemode == sm_steadystate) {//steadystate
-      complex<double> commonPhase = exp(-I * fmod(omega_an[0] * time_H, 2. * dcpi));
-      double commonAmplitude = linearRamp(time_H, 1. / (*omega_an / (2 * dcpi)), ramp_width);
+      complex<double> commonPhase = exp(-I * fmod(params.omega_an * time_H, 2. * dcpi));
+      double commonAmplitude = linearRamp(time_H, 1. / (params.omega_an / (2 * dcpi)), ramp_width);
       for (k = (K0.index); k <= (K1.index); k++)
         for (j = (J0.index); j <= (J1.index); j++) {
           if (I0.apply) {//Perform across I0
@@ -3977,7 +3807,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][2]));
               if (params.is_disp_ml)
                 J_s.zx[k][j][I0.index] +=
-                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.x[array_ind] *
+                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][2] +
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][2]));
@@ -3997,7 +3827,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][3]));
               if (params.is_disp_ml)
                 J_s.yx[k][j][I0.index] -=
-                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.x[array_ind] *
+                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][3] +
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][3]));
@@ -4024,7 +3854,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][6]));
               if (params.is_disp_ml)
                 J_s.zx[k][j][I1.index] -=
-                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.x[array_ind] *
+                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][6] +
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][6]));
@@ -4044,7 +3874,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][7]));
               if (params.is_disp_ml)
                 J_s.yx[k][j][I1.index] +=
-                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.x[array_ind] *
+                        ml_kappa_x[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][7] +
                               I * Isource.imag[k - (K0.index)][j - (J0.index)][7]));
@@ -4075,7 +3905,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][2]));
               if (params.is_disp_ml)
                 J_s.zy[k][(J0.index)][i] -=
-                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.y[array_ind] *
+                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][2] +
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][2]));
@@ -4095,7 +3925,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][3]));
               if (params.is_disp_ml)
                 J_s.xy[k][(J0.index)][i] +=
-                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.y[array_ind] *
+                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][3] +
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][3]));
@@ -4122,7 +3952,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][6]));
               if (params.is_disp_ml)
                 J_s.zy[k][(J1.index)][i] -=
-                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.y[array_ind] *
+                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][6] +
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][6]));
@@ -4142,7 +3972,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][7]));
               if (params.is_disp_ml)
                 J_s.xy[k][(J1.index)][i] +=
-                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * dt[0]) * C.b.y[array_ind] *
+                        ml_kappa_y[array_ind] * ml_gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][7] +
                               I * Jsource.imag[k - (K0.index)][i - (I0.index)][7]));
@@ -4168,7 +3998,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][2]));
               if (params.is_disp_ml)
                 J_s.yz[(K0.index)][j][i] -=
-                        ml_kappa_z[(K0.index)] * ml_gamma[k] / (2. * dt[0]) * C.b.z[K0.index] *
+                        ml_kappa_z[(K0.index)] * ml_gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][2]));
@@ -4188,7 +4018,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][3]));
               if (params.is_disp_ml)
                 J_s.xz[(K0.index)][j][i] +=
-                        ml_kappa_z[(K0.index)] * ml_gamma[k] / (2. * dt[0]) * C.b.z[K0.index] *
+                        ml_kappa_z[(K0.index)] * ml_gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][3]));
@@ -4210,7 +4040,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][6]));
               if (params.is_disp_ml)
                 J_s.yz[(K1.index)][j][i] +=
-                        ml_kappa_z[(K1.index)] * ml_gamma[k] / (2. * dt[0]) * C.b.z[K1.index] *
+                        ml_kappa_z[(K1.index)] * ml_gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][6] +
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][6]));
@@ -4230,7 +4060,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][7]));
               if (params.is_disp_ml)
                 J_s.xz[(K1.index)][j][i] -=
-                        ml_kappa_z[(K1.index)] * ml_gamma[k] / (2. * dt[0]) * C.b.z[K1.index] *
+                        ml_kappa_z[(K1.index)] * ml_gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][7] +
                               I * Ksource.imag[j - (J0.index)][i - (I0.index)][7]));
@@ -4249,27 +4079,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                           real((Ksource.real[0][i - (I0.index)][2] +
                                 I * Ksource.imag[0][i - (I0.index)][2]) *
                                (-1.0 * I) *
-                               exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
+                               exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
                           exp(-1.0 * dcpi *
-                              pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-          //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                              pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+          //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
           if (is_cond)
             J_c.yz[K0.index][j][i] +=
                     rho_z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
                           I * Ksource.imag[0][i - (I0.index)][2]) *
-                         (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
-                    exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-          //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                         (-1.0 * I) * exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
+                    exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+          //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
           if (params.is_disp_ml) {
             J_s.yz[K0.index][j][i] -=
-                    ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * dt[0]) *
+                    ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
                           I * Ksource.imag[0][i - (I0.index)][2]) *
-                         (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
-                    exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-            //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                         (-1.0 * I) * exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
+                    exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+            //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + I*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
           }
         }
       } else
@@ -4277,7 +4107,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (i = 0; i < (I_tot + 1); i++) {
             /*
         if(i==41 & j==41)
-        fprintf(stderr,"C.b.z = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",C.b.z[(int)K0[0]],Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2],Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
+        fprintf(stderr,"C.b.z = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, params.to_l=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",C.b.z[(int)K0[0]],Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2],Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2],time_H,params.to_l,dz/light_v/2,params.hwhm,C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l + dz/light_v/2.)/(params.hwhm),2)));
       */
             E_s.yz[K0.index][j][i] =
                     E_s.yz[K0.index][j][i] -
@@ -4285,29 +4115,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                                   I * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                                  (-1.0 * I) *
-                                 exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
+                                 exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
                             exp(-1.0 * dcpi *
-                                pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-            //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                                pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+            //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
             if (is_cond)
               J_c.yz[K0.index][j][i] +=
                       rho_z[K0.index] * C.b.z[K0.index] *
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                             I * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                            (-1.0 * I) *
-                           exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
-                      exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-            //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                           exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
+                      exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+            //J_c.yz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
             if (params.is_disp_ml) {
               J_s.yz[K0.index][j][i] -=
-                      ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * dt[0]) *
+                      ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * params.dt) *
                       C.b.z[K0.index] *
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                             I * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                            (-1.0 * I) *
-                           exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
-                      exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-              //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+                           exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
+                      exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+              //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
             }
           }
       for (j = 0; j < (J_tot + 1); j++)
@@ -4318,32 +4148,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                           real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                                 I * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
                                (-1.0 * I) *
-                               exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) *
+                               exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2 * dcpi))) *
                           exp(-1.0 * dcpi *
-                              pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-          //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+                              pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+          //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2 ));
           if (is_cond)
             J_c.xz[K0.index][j][i] -=
                     rho_z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                           I * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
-                         (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) *
-                    exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-          //J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+                         (-1.0 * I) * exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2 * dcpi))) *
+                    exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+          //J_c.xz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2 ));
           if (params.is_disp_ml)
             J_s.xz[K0.index][j][i] +=
-                    ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * dt[0]) *
+                    ml_kappa_z[K0.index] * ml_gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                           I * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
-                         (-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2 * dcpi))) *
-                    exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-          //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*dt[0])*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+                         (-1.0 * I) * exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2 * dcpi))) *
+                    exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+          //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + I*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2 ));
         }
-      //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-      H.ft = real((-1.0 * I) * exp(-I * fmod(omega_an[0] * (time_H - to_l[0]), 2. * dcpi))) *
-             exp(-1.0 * dcpi * pow((time_H - to_l[0] + dz / light_v / 2.) / (hwhm[0]), 2));
-      //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      //fth = real((-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
+      H.ft = real((-1.0 * I) * exp(-I * fmod(params.omega_an * (time_H - params.to_l), 2. * dcpi))) *
+             exp(-1.0 * dcpi * pow((time_H - params.to_l + dz / light_v / 2.) / (params.hwhm), 2));
+      //fth = real((-1.0*I)*exp(-I*fmod(params.omega_an*(time_H - params.to_l),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - params.to_l)/(params.hwhm),2));
     }
     //fprintf(stderr,"Pos 10:\n");
 
@@ -4365,13 +4195,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
 
               if (!materials[k][j][i])
@@ -4393,13 +4223,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (k = 0; k < K_tot; k++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
 
               if (!materials[k][j][i]) {
@@ -4441,13 +4271,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -4471,13 +4301,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (j = 0; j < J_tot; j++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -4537,13 +4367,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -4568,13 +4398,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -4617,13 +4447,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!materials[k][j][i]) {
                 /*if(tind==0)
@@ -4651,13 +4481,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (k = 0; k < K_tot; k++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!materials[k][j][i]) {
                 ca_vec[omp_get_thread_num()][k] = D.a.z[k_loc];
@@ -4717,13 +4547,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -4746,13 +4576,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -4788,13 +4618,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -4818,13 +4648,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (j = 0; j < J_tot; j++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = j;
               else
@@ -4868,13 +4698,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -4898,13 +4728,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (is_structure)
-                if (k > Dzl[0] && k < (Dzl[0] + K)) {
-                  if ((k - structure[i][1]) < (K + Dzl[0]) && (k - structure[i][1]) > Dzl[0])
+                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + Dzl[0]))
-                    k_loc = Dzl[0] + K - 1;
+                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                    k_loc = params.pml.Dzl + K - 1;
                   else
-                    k_loc = Dzl[0] + 1;
+                    k_loc = params.pml.Dzl + 1;
                 }
               if (!params.is_multilayer) array_ind = i;
               else
@@ -4945,8 +4775,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
     if (sourcemode == sm_steadystate) {//steadystate
-      complex<double> commonPhase = exp(-I * fmod(omega_an[0] * time_E, 2. * dcpi));
-      double commonAmplitude = linearRamp(time_E, 1. / (*omega_an / (2 * dcpi)), ramp_width);
+      complex<double> commonPhase = exp(-I * fmod(params.omega_an * time_E, 2. * dcpi));
+      double commonAmplitude = linearRamp(time_E, 1. / (params.omega_an / (2 * dcpi)), ramp_width);
       for (k = (K0.index); k <= (K1.index); k++)
         for (j = (J0.index); j <= (J1.index); j++) {
           if (I0.apply) {//Perform across I0
@@ -5088,8 +4918,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                           real((Ksource.real[0][i - (I0.index)][1] +
                                 I * Ksource.imag[0][i - (I0.index)][1]) *
                                (-1. * I) *
-                               exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) *
-                          exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2.));
+                               exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
+                          exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
           if (eyi_present)
             H_s.xz[(K0.index) - 1][j][i] =
@@ -5103,8 +4933,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                           real((Ksource.real[0][i - (I0.index)][0] +
                                 I * Ksource.imag[0][i - (I0.index)][0]) *
                                (-1. * I) *
-                               exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) *
-                          exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2.));
+                               exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
+                          exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
           if (exi_present)
             H_s.yz[(K0.index) - 1][j][i] =
@@ -5123,8 +4953,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][1] +
                                   I * Ksource.imag[j - (J0.index)][i - (I0.index)][1]) *
                                  (-1. * I) *
-                                 exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) *
-                            exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2.));
+                                 exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
+                            exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
             if (eyi_present)
               H_s.xz[(K0.index) - 1][j][i] =
@@ -5139,8 +4969,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][0] +
                                   I * Ksource.imag[j - (J0.index)][i - (I0.index)][0]) *
                                  (-1. * I) *
-                                 exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) *
-                            exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2.));
+                                 exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
+                            exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
             if (exi_present)
               H_s.yz[(K0.index) - 1][j][i] =
@@ -5148,8 +4978,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           }
         //fprintf(stderr,"Pos 11i\n");
       }
-      E.ft = real((-1. * I) * exp(-I * fmod(omega_an[0] * (time_E - to_l[0]), 2 * dcpi))) *
-             exp(-1. * dcpi * pow((time_E - to_l[0]) / (hwhm[0]), 2.));
+      E.ft = real((-1. * I) * exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
+             exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
       //fprintf(stderr,"Pos 11j\n");
     }
     if (TIME_EXEC) { timer.click(); }
@@ -5160,18 +4990,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         H.add_to_angular_norm(tind, Nsteps, params);
 
         for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
-          extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Nsteps);
-          extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Nsteps);
+          extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
+          extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
         }
       } else {
-        if ((tind - start_tind) % Np == 0) {
+        if ((tind - params.start_tind) % Np == 0) {
 
           E.add_to_angular_norm(tind, Npe, params);
           H.add_to_angular_norm(tind, Npe, params);
 
           for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
-            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Npe);
-            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, *dt, Npe);
+            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
+            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
           }
         }
       }
@@ -5207,7 +5037,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Post-iter 2\n");
     }
     //fprintf(stderr,"Post-iter 3\n");
-    if ((sourcemode == sm_steadystate) && (tind == (Nt[0] - 1)) && (runmode == rm_complete) &&
+    if ((sourcemode == sm_steadystate) && (tind == (params.Nt - 1)) && (runmode == rm_complete) &&
         exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
       copyPhasors(E_copy, E, (int) mxGetNumberOfElements((mxArray *) plhs[0]));
@@ -5487,7 +5317,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fftw_destroy_plan(pex_t);
 
     /*
-      for(int j=0;j<(J_tot-*Dyl-*Dyu);j++){
+      for(int j=0;j<(J_tot-params.pml.Dyl-params.pml.Dyu);j++){
       free(Ex_t_cm[j]);free(Ey_t_cm[j]);
       }
       //fprintf(stderr,"Position 9\n");
@@ -5495,8 +5325,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Position 10\n");
     */
   }
-  if (exi_present) freeCastMatlab3DArray(exi, *Nt);
-  if (eyi_present) freeCastMatlab3DArray(eyi, *Nt);
+  if (exi_present) freeCastMatlab3DArray(exi, params.Nt);
+  if (eyi_present) freeCastMatlab3DArray(eyi, params.Nt);
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {
@@ -5614,14 +5444,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   free(E_norm);
   free(H_norm);
-  free(Dxl);
-  free(Dxu);
-  free(Dyl);
-  free(Dyu);
-  free(Dzl);
-  free(Dzu);
-  //  free(lower_boundary_update);
-  free(Nt);
   free(dims);
   free(label_dims);
 

@@ -42,3 +42,13 @@ mxArray* ptr_to_matrix_in(const mxArray* ptr, const std::string &name, const std
 mxArray* ptr_to_vector_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
 
 mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
+
+/**
+ * Get a double defined in a matlab array given as a pointer
+ * @param ptr Pointer to a matlab array
+ * @param name Name of the value, for helpful thrown exceptions if the pointer is not to a double
+ * @return Value of the double
+ */
+double double_in(const mxArray* ptr, const std::string &name);
+
+int int_cast_from_double_in(const mxArray* ptr, const std::string &name);
