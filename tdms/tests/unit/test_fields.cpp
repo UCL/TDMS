@@ -90,7 +90,7 @@ TEST_CASE("Test that a split field can be allocated and zeroed"){
 
 TEST_CASE("Test setting a component of a vector field"){
 
-  auto arrays = xyz_arrays();
+  auto arrays = XYZTensor3D();
   construct3dArray(&arrays.x, 1, 1, 1);
 
   arrays['x'][0][0][0] = 1.0;

@@ -19,11 +19,26 @@ void assert_is_struct(const mxArray* ptr, const std::string &name);
 
 void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &name);
 
+void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::string &name);
+
 /**
- * Get a pointer to an array within a struct with a given name. Throws a runtime error if the
- * resulting array is not teo dimensional.
+ * Get a pointer to a matrix within a struct with a given name. Throws a runtime error if the
+ * resulting tensor is not two dimensional.
  * @param ptr Pointer to the struct
  * @param name Name of the attribute
- * @return Pointer to the 2D array
+ * @param struct_name Name of the struct
+ * @return Pointer to the matrix
  */
-mxArray* ptr_to_2d_array_in(const mxArray* ptr, const std::string &name);
+mxArray* ptr_to_matrix_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
+
+/**
+ * Get a pointer to an array within a struct with a given name. Throws a runtime error if the
+ * resulting tensor is not a vector with dimensions 1xN.
+ * @param ptr Pointer to the struct
+ * @param name Name of the attribute
+ * @param struct_name Name of the struct
+ * @return Pointer to the vector
+ */
+mxArray* ptr_to_vector_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);
+
+mxArray* ptr_to_vector_or_empty_in(const mxArray* ptr, const std::string &name, const std::string &struct_name);

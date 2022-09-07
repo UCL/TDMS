@@ -1,5 +1,6 @@
 #include <utility>
 #include "vector_collection.h"
+#include "utils.h"
 
 
 using namespace std;
@@ -9,7 +10,7 @@ void XYZVectors::set_ptr(const char c, double* ptr){
     case 'x': {x = ptr; break;}
     case 'y': {y = ptr; break;}
     case 'z': {z = ptr; break;}
-    default: throw std::runtime_error("Have no element " + std::string(1, c));
+    default: throw std::runtime_error("Have no element " + to_string(c));
   }
 }
 
@@ -25,11 +26,7 @@ CMaterial::CMaterial(const mxArray *ptr) {
 void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
-
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
-    if (mxGetDimensions(element)[0] != 1) {
-      throw runtime_error("Incorrect dimension on material: " + prefix + component);
-    }
+    auto element = ptr_to_vector_in(ptr, prefix + component, "material");
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -38,7 +35,7 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
 
   for (char component : {'x', 'y', 'z'}) {
 
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
+    auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
     is_multilayer = mxGetDimensions(element)[0] != 1;
     arrays.set_ptr(component, mxGetPr(element));
   }
@@ -79,8 +76,7 @@ DCollection::DCollection(const mxArray *ptr) {
 void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
-
-    auto element = ptr_to_2d_array_in(ptr, prefix + component);
+    auto element = ptr_to_matrix_in(ptr, prefix + component, "D");
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
