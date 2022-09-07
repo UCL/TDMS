@@ -7,7 +7,6 @@
  *                 spatial position.
  *****************************************************************************/
 #include <stdexcept>
-#include "mat_io.h"
 #include "interpolate.h"
 #include "interpolation_methods.h"
 #include "matlabio.h"

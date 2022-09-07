@@ -1,6 +1,9 @@
 /**
  * A collection of functions for tensor initialisation given matlab pointers
  */
+#include <string>
+#include <vector>
+#include "vector_collection.h"
 #include "mat_io.h"
 #include "field.h"
 

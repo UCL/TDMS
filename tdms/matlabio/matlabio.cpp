@@ -2,7 +2,6 @@
  *  Application.:  matlab data structure manipulation
  *  Description.:  code for processing the matlab data structures
  ******************************************************************/
-#include "mat_io.h"
 #include "matlabio.h"
 
 
@@ -216,4 +215,30 @@ int **castMatlab2DArrayInt(int *array, int nrows, int ncols){
  */
 void freeCastMatlab2DArrayInt(int **castArray){
   free(castArray);
+}
+
+void assert_is_struct(const mxArray* ptr, const std::string &name){
+  if (!mxIsStruct(ptr)) {
+    throw runtime_error("Pointer " + name + " was expected to be a structure but was not");
+  }
+}
+
+void assert_num_fields_equals(int num, const mxArray* ptr, const std::string &name){
+
+  auto num_fields = mxGetNumberOfFields(ptr);
+
+  if (num_fields != num) {
+    throw runtime_error(name + " should have " + to_string(num) + " members, it has "
+                        + to_string(num_fields));
+  }
+}
+
+mxArray* ptr_to_2d_array_in(const mxArray* ptr, const std::string &name){
+
+  auto element = mxGetField((mxArray *) ptr, 0, name.c_str());
+
+  if (mxGetNumberOfDimensions(element) != 2) {
+    throw runtime_error("Incorrect dimension on " + name + ". Required 2D but was not");
+  }
+  return element;
 }
