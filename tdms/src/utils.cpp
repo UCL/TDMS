@@ -2,6 +2,8 @@
 #include <string>
 #include <cstring>
 #include <stdexcept>
+#include <utils.h>
+
 
 
 using namespace std;
@@ -24,4 +26,8 @@ bool are_equal(const char* a, const char* b){
 
 string to_string(char c){
   return {1, c};
+}
+
+int max(int a, int b, int c) {
+  return std::max(std::max(a, b), c);
 }

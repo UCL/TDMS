@@ -303,3 +303,14 @@ public:
   ~DetectorSensitivityArrays();
 };
 
+
+/**
+ * Matrix of c coefficients. See the pdf documentation for their definition
+ */
+class CCoefficientMatrix: public Matrix<double>{
+public:
+  void allocate(int n_rows, int n_cols);
+
+  ~CCoefficientMatrix();
+};
+

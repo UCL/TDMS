@@ -30,6 +30,12 @@ public:
      * @return True if there are no components
      */
     bool has_no_elements() const {return I_tot == 0 && J_tot == 0 && K_tot == 0;};
+
+    /**
+     * Maximum value out of I_tot, J_tot and K_tot
+     * @return value
+     */
+    int max_IJK_tot(){return max(I_tot, J_tot, K_tot); };
 };
 
 /**

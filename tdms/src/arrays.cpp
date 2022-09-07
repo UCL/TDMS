@@ -379,3 +379,22 @@ DetectorSensitivityArrays::~DetectorSensitivityArrays() {
   fftw_free(v);
   fftw_destroy_plan(plan);
 }
+
+void CCoefficientMatrix::allocate(int n_rows, int n_cols) {
+  this->n_rows = n_rows;
+  this->n_cols = n_cols;
+
+  matrix = (double **) malloc(sizeof(double *) * n_rows);
+  for (int i = 0; i < n_rows; i++){
+    matrix[i] = (double *) malloc(sizeof(double) * n_cols);
+  }
+}
+
+CCoefficientMatrix::~CCoefficientMatrix() {
+  if (matrix == nullptr) return;
+
+  for (int i = 0; i < n_rows; i++){
+    free(matrix[i]);
+  }
+  free(matrix);
+}

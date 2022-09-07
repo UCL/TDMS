@@ -267,7 +267,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double refind;
 
   //PSTD storage
-  double **ca_vec, **cb_vec, **cc_vec;
   fftw_complex **eh_vec, *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
   fftw_plan *pb_exy, *pf_exy, *pb_exz, *pf_exz, *pb_eyx, *pf_eyx, *pb_eyz, *pf_eyz, *pb_ezx,
           *pf_ezx, *pb_ezy, *pf_ezy, *pb_hxy, *pf_hxy, *pb_hxz, *pf_hxz, *pb_hyx, *pf_hyx, *pb_hyz,
@@ -289,7 +288,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   mxArray *mx_camplitudes;
 
   int ndims;
-  int K, max_IJK;
+  int K;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
   int Ni_tdf = 0, Nk_tdf = 0;
@@ -534,23 +533,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     Ex_t.initialise(n1, n0);
     Ey_t.initialise(n1, n0);
   }
-  
+
+  CCoefficientMatrix ca_vec, cb_vec, cc_vec;
+
 #ifndef FDFLAG// only perform if using the PSTD method
-  //find the largest dimension, i.e., maximum of I_tot, J_tot and K_tot
-  max_IJK = I_tot;
-  if (J_tot > max_IJK) max_IJK = J_tot;
-  if (K_tot > max_IJK) max_IJK = K_tot;
-
-  //establish additional memory buffers which are used by the PSTD method
-  ca_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-  cb_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-  cc_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    ca_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-    cb_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-    cc_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-  }
+  int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
+  ca_vec.allocate(n_threads, max_IJK + 1);
+  cb_vec.allocate(n_threads, max_IJK + 1);
+  cc_vec.allocate(n_threads, max_IJK + 1);
 
   eh_vec = (fftw_complex **) malloc(sizeof(fftw_complex *) * omp_get_max_threads());
   for (i = 0; i < omp_get_max_threads(); i++)
@@ -4739,14 +4729,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
 #ifndef FDFLAG// Using PS
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    free(ca_vec[i]);
-    free(cb_vec[i]);
-    free(cc_vec[i]);
-  }
-  free(ca_vec);
-  free(cb_vec);
-  free(cc_vec);
 
   for (i = 0; i < omp_get_max_threads(); i++) fftw_free(*(eh_vec + i));
   free(eh_vec);
