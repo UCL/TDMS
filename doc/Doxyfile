@@ -13,7 +13,7 @@
 # to compare the used configuration file with the template configuration file.
 
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "tdms"
+PROJECT_NAME           = "TDMS"
 PROJECT_BRIEF          = "Time Domain Maxwell Solver"
 # Blank == no logo
 PROJECT_LOGO           =
@@ -24,3 +24,16 @@ FILE_PATTERNS          = *.cpp \
                          *.h \
                          *.py
 GENERATE_LATEX         = NO
+
+# also document private member functions?
+EXTRACT_PRIVATE        = YES
+
+STRIP_CODE_COMMENTS    = NO
+
+# doxygen awesome
+GENERATE_TREEVIEW      = YES
+HTML_EXTRA_STYLESHEET  = doc/doxygen-awesome-css/doxygen-awesome.css
+
+# 'mainpage' gets put on the index page
+INPUT += doc/developers.md
+USE_MDFILE_AS_MAINPAGE = doc/developers.md
