@@ -4,8 +4,10 @@
 #include <fftw3.h>
 #include <stdexcept>
 #include "matlabio.h"
-#include "numeric.h"
 #include "utils.h"
+
+
+#include <iostream>
 
 
 class XYZTensor3D {
@@ -207,13 +209,35 @@ public:
 
   bool has_elements(){ return tensor != nullptr; };
 
-  ~Tensor3D(){
-    if (tensor != nullptr){
-      if (is_matlab_initialised){
-        free_cast_matlab_3D_array(tensor, n_layers);
-      } else {
-        destroy_3D_array(&tensor, n_cols, n_layers);
+  void zero();
+
+  void allocate(int nK, int nJ, int nI){
+    n_layers = nK, n_cols = nJ, n_rows = nI;
+    tensor = (T ***)malloc(n_layers * sizeof(T *));
+
+    for(int k=0; k < n_layers; k++){
+      tensor[k] = (T **)malloc(n_cols * sizeof(T *));
+    }
+
+    for(int k=0; k < n_layers; k++){
+      for(int j=0; j < n_cols; j++){
+        tensor[k][j] = (T *)malloc(n_rows * sizeof(T));
       }
+    }
+  };
+
+  ~Tensor3D(){
+    if (tensor == nullptr) return;
+    if (is_matlab_initialised){
+      free_cast_matlab_3D_array(tensor, n_layers);
+    } else {
+      for (int k = 0; k < n_layers; k++) {
+        for (int j = 0; j < n_cols; j++) {
+          free(tensor[k][j]);
+        }
+        free(tensor[k]);
+      }
+      free(tensor);
     }
   };
 };
@@ -299,6 +323,7 @@ public:
     if (has_elements()){
       free_cast_matlab_2D_array(matrix);
     }
+    matrix = nullptr;
   };
 };
 

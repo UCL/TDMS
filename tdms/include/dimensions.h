@@ -1,3 +1,4 @@
+#pragma once
 #include "matlabio.h"
 
 class Dimensions{

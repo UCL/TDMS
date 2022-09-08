@@ -268,16 +268,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //PSTD storage
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
-  fftw_plan *pb_exy, *pf_exy, *pb_exz, *pf_exz, *pb_eyx, *pf_eyx, *pb_eyz, *pf_eyz, *pb_ezx,
-          *pf_ezx, *pb_ezy, *pf_ezy, *pb_hxy, *pf_hxy, *pb_hxz, *pf_hxz, *pb_hyx, *pf_hyx, *pb_hyz,
-          *pf_hyz, *pb_hzx, *pf_hzx, *pb_hzy, *pf_hzy;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-
   double phaseTermE;
   complex<double> cphaseTermE;
-  //these are 2d matrices and must be in row-major order, which diffes from Matlab
   double lambda_an_t;
-
   //end PSTD storage
 
   uint8_t ***materials;
@@ -544,66 +538,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   cc_vec.allocate(n_threads, max_IJK + 1);
   eh_vec.allocate(n_threads, max_IJK + 1);
 
+  E_s.initialise_fftw_plan(n_threads, eh_vec);
+  H_s.initialise_fftw_plan(n_threads, eh_vec);
+
   N_e_x = I_tot - 1 + 1;
   N_e_y = J_tot - 1 + 1;
   N_e_z = K_tot - 1 + 1;
   N_h_x = I_tot + 1;
   N_h_y = J_tot + 1;
   N_h_z = K_tot + 1;
-
-  pf_exy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_exy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_exz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_exz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_eyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_eyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_eyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_eyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_ezx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_ezx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_ezy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_ezy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-
-  pf_hxy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hxy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hxz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hxz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hzx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hzx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hzy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hzy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    pf_exy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_exy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_exz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_exz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_eyx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_eyx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_eyz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_eyz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_ezx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_ezx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_ezy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_ezy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-
-    pf_hxy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hxy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hxz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hxz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hyx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hyx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hyz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hyz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hzx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hzx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hzy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hzy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-  }
 
   dk_e_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_x));
   dk_e_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_y));
@@ -1200,13 +1143,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
+            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi,
                                   Nsteps, J_tot, params);
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+            extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
                                                  f_ex_vec[ifx] * 2 * dcpi, Nsteps,
                                                  J_tot, params);
@@ -1260,12 +1203,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
+            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
-                    surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
+                    surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                     n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
       }
     }
@@ -1278,7 +1221,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample,
+            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], E_s, H_s, campssample,
                                    tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe, params.dimension,
                                    J_tot, params.interp_method);
           }
@@ -1375,9 +1318,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (params.run_mode == RunMode::complete)
       if (params.dimension == THREE) {
         extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
-                            iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s.xz,
-                            E_s.yz, H_s.xz, H_s.yz, E_s.xy, E_s.yx, H_s.xy, H_s.yx, I_tot, J_tot,
-                            K0.index + 1, tind, params.omega_an, params.dt,
+                            iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s, H_s,
+                            I_tot, J_tot, K0.index + 1, tind, params.omega_an, params.dt,
                             params.Nt);//extract the phasors just above the line
       }
     //fprintf(stderr,"Pos 02c:\n");
@@ -1667,7 +1609,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
               eh_vec[omp_get_thread_num()][j][1] = 0.;
               first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_y,
-                               N_e_y, pf_exy[omp_get_thread_num()], pb_exy[omp_get_thread_num()]);
+                               N_e_y, E_s.xy.plan_f[omp_get_thread_num()], E_s.xy.plan_b[omp_get_thread_num()]);
 
 
               //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,omp_get_thread_num(),omp_get_num_threads());
@@ -1946,7 +1888,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
         */
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_z,
-                             N_e_z, pf_exz[omp_get_thread_num()], pb_exz[omp_get_thread_num()]);
+                             N_e_z, E_s.xz.plan_f[omp_get_thread_num()], E_s.xz.plan_b[omp_get_thread_num()]);
             /*
     if (tind==1 & i==25 & j==25){
     fprintf(stdout,"\n\n");
@@ -2211,7 +2153,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][i][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_x,
-                             N_e_x, pf_eyx[omp_get_thread_num()], pb_eyx[omp_get_thread_num()]);
+                             N_e_x, E_s.yx.plan_f[omp_get_thread_num()], E_s.yx.plan_b[omp_get_thread_num()]);
 
             for (i = 1; i < I_tot; i++) {
               E_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.yx[k][j][i] -
@@ -2459,7 +2401,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
             eh_vec[omp_get_thread_num()][k][1] = 0.;
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_z,
-                             N_e_z, pf_eyz[omp_get_thread_num()], pb_eyz[omp_get_thread_num()]);
+                             N_e_z, E_s.yz.plan_f[omp_get_thread_num()], E_s.yz.plan_b[omp_get_thread_num()]);
 
 
             for (k = 1; k < K_tot; k++) {
@@ -2722,7 +2664,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][i][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_x,
-                             N_e_x, pf_ezx[omp_get_thread_num()], pb_ezx[omp_get_thread_num()]);
+                             N_e_x, E_s.zx.plan_f[omp_get_thread_num()], E_s.zx.plan_b[omp_get_thread_num()]);
 
             for (i = 1; i < I_tot; i++) {
               E_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.zx[k][j][i] +
@@ -3067,7 +3009,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               eh_vec[omp_get_thread_num()][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
               eh_vec[omp_get_thread_num()][j][1] = 0.;
               first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_y,
-                               N_e_y, pf_ezy[omp_get_thread_num()], pb_ezy[omp_get_thread_num()]);
+                               N_e_y, E_s.zy.plan_f[omp_get_thread_num()], E_s.zy.plan_b[omp_get_thread_num()]);
             }
             for (j = 1; j < J_tot; j++) {
               E_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.zy[k][j][i] -
@@ -3636,7 +3578,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][k][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_z,
-                             N_h_z, pf_hxz[omp_get_thread_num()], pb_hxz[omp_get_thread_num()]);
+                             N_h_z, H_s.xz.plan_f[omp_get_thread_num()], H_s.xz.plan_b[omp_get_thread_num()]);
 
             for (k = 0; k < K_tot; k++) {
               H_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.xz[k][j][i] +
@@ -3716,7 +3658,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][j][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_y,
-                             N_h_y, pf_hxy[omp_get_thread_num()], pb_hxy[omp_get_thread_num()]);
+                             N_h_y, H_s.xy.plan_f[omp_get_thread_num()], H_s.xy.plan_b[omp_get_thread_num()]);
 
             for (j = 0; j < J_tot; j++) {
               H_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.xy[k][j][i] -
@@ -3813,7 +3755,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][i][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_x,
-                             N_h_x, pf_hyx[omp_get_thread_num()], pb_hyx[omp_get_thread_num()]);
+                             N_h_x, H_s.yx.plan_f[omp_get_thread_num()], H_s.yx.plan_b[omp_get_thread_num()]);
 
             for (i = 0; i < I_tot; i++) {
               H_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.yx[k][j][i] +
@@ -3905,7 +3847,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         */
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_z,
-                             N_h_z, pf_hyz[omp_get_thread_num()], pb_hyz[omp_get_thread_num()]);
+                             N_h_z, H_s.yz.plan_f[omp_get_thread_num()], H_s.yz.plan_b[omp_get_thread_num()]);
 
             for (k = 0; k < K_tot; k++) {
               H_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.yz[k][j][i] -
@@ -4063,7 +4005,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[omp_get_thread_num()][j][1] = 0.;
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_y,
-                             N_h_y, pf_hzy[omp_get_thread_num()], pb_hzy[omp_get_thread_num()]);
+                             N_h_y, H_s.zy.plan_f[omp_get_thread_num()], H_s.zy.plan_f[omp_get_thread_num()]);
 
             for (j = 0; j < J_tot; j++) {
               H_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.zy[k][j][i] +
@@ -4144,7 +4086,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 
             first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_x,
-                             N_h_x, pf_hzx[omp_get_thread_num()], pb_hzx[omp_get_thread_num()]);
+                             N_h_x, H_s.zx.plan_f[omp_get_thread_num()], H_s.zx.plan_b[omp_get_thread_num()]);
 
             for (i = 0; i < I_tot; i++) {
               H_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.zx[k][j][i] -
@@ -4724,61 +4666,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 #ifndef FDFLAG// Using PS
 
-  for (i = 0; i < omp_get_max_threads(); i++) {
-
-    fftw_destroy_plan(pf_exy[i]);
-    fftw_destroy_plan(pb_exy[i]);
-    fftw_destroy_plan(pf_exz[i]);
-    fftw_destroy_plan(pb_exz[i]);
-    fftw_destroy_plan(pf_eyx[i]);
-    fftw_destroy_plan(pb_eyx[i]);
-    fftw_destroy_plan(pf_eyz[i]);
-    fftw_destroy_plan(pb_eyz[i]);
-    fftw_destroy_plan(pf_ezx[i]);
-    fftw_destroy_plan(pb_ezx[i]);
-    fftw_destroy_plan(pf_ezy[i]);
-    fftw_destroy_plan(pb_ezy[i]);
-
-    fftw_destroy_plan(pf_hxy[i]);
-    fftw_destroy_plan(pb_hxy[i]);
-    fftw_destroy_plan(pf_hxz[i]);
-    fftw_destroy_plan(pb_hxz[i]);
-    fftw_destroy_plan(pf_hyx[i]);
-    fftw_destroy_plan(pb_hyx[i]);
-    fftw_destroy_plan(pf_hyz[i]);
-    fftw_destroy_plan(pb_hyz[i]);
-    fftw_destroy_plan(pf_hzx[i]);
-    fftw_destroy_plan(pb_hzx[i]);
-    fftw_destroy_plan(pf_hzy[i]);
-    fftw_destroy_plan(pb_hzy[i]);
-  }
-
-  free(pf_exy);
-  free(pb_exy);
-  free(pf_exz);
-  free(pb_exz);
-  free(pf_eyx);
-  free(pb_eyx);
-  free(pf_eyz);
-  free(pb_eyz);
-  free(pf_ezx);
-  free(pb_ezx);
-  free(pf_ezy);
-  free(pb_ezy);
-
-  free(pf_hxy);
-  free(pb_hxy);
-  free(pf_hxz);
-  free(pb_hxz);
-  free(pf_hyx);
-  free(pb_hyx);
-  free(pf_hyz);
-  free(pb_hyz);
-  free(pf_hzx);
-  free(pb_hzx);
-  free(pf_hzy);
-  free(pb_hzy);
-
   fftw_free(dk_e_x);
   fftw_free(dk_e_y);
   fftw_free(dk_e_z);
@@ -4895,8 +4782,8 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
 }
 
 
-void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticSplitField &H,
-                           ElectricSplitField &E,int **surface_vertices, int n_surface_vertices,
+void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E,
+                           MagneticSplitField &H, int **surface_vertices, int n_surface_vertices,
                            int n, double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
@@ -4997,8 +4884,8 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
   }//end parallel region
 }
 
-void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField &H,
-                            const ElectricSplitField &E, CAmpsSample &campssample, int n, double omega,
+void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
+                            CAmpsSample &campssample, int n, double omega,
                             double dt, int Nt, int dimension, int J_tot, int intmethod) {
 
   int vindex, i, j, k;
@@ -5078,7 +4965,7 @@ void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> 
 
 
 void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi,
-                                          MagneticSplitField &H, ElectricSplitField &E,
+                                          ElectricSplitField &E, MagneticSplitField &H,
                                           int **surface_vertices, int n_surface_vertices, int n,
                                           double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
@@ -5163,9 +5050,8 @@ void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface
 
 void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs,
                          double **iwave_lEy_Ibs, double **iwave_lHx_Rbs, double **iwave_lHx_Ibs,
-                         double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, double ***Exz,
-                         double ***Eyz, double ***Hxz, double ***Hyz, double ***Exy, double ***Eyx,
-                         double ***Hxy, double ***Hyx, int I_tot, int J_tot, int K1, int n,
+                         double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
+                         ElectricSplitField &E, MagneticSplitField &H, int I_tot, int J_tot, int K1, int n,
                          double omega, double dt, int Nt) {
 
   complex<double> phaseTerm = 0., subResult = 0.;
@@ -5179,13 +5065,13 @@ void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double 
 
 
       //Eyz
-      subResult = (Eyz[K1][j][i] + Eyx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (E.yz[K1][j][i] + E.yx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lEy_Rbs[j][i] = iwave_lEy_Rbs[j][i] + real(subResult);
       iwave_lEy_Ibs[j][i] = iwave_lEy_Ibs[j][i] + imag(subResult);
 
       //Hxz
-      subResult = (Hxz[K1 - 1][j][i] + Hxy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (H.xz[K1 - 1][j][i] + H.xy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lHx_Rbs[j][i] = iwave_lHx_Rbs[j][i] + real(subResult);
       iwave_lHx_Ibs[j][i] = iwave_lHx_Ibs[j][i] + imag(subResult);
@@ -5196,13 +5082,13 @@ void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double 
 
 
       //Exz
-      subResult = (Exz[K1][j][i] + Exy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (E.xz[K1][j][i] + E.xy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lEx_Rbs[j][i] = iwave_lEx_Rbs[j][i] + real(subResult);
       iwave_lEx_Ibs[j][i] = iwave_lEx_Ibs[j][i] + imag(subResult);
 
       //Hyz
-      subResult = (Hyz[K1 - 1][j][i] + Hyx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (H.yz[K1 - 1][j][i] + H.yx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lHy_Rbs[j][i] = iwave_lHy_Rbs[j][i] + real(subResult);
       iwave_lHy_Ibs[j][i] = iwave_lHy_Ibs[j][i] + imag(subResult);

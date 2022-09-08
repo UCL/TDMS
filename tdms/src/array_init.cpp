@@ -30,33 +30,21 @@ void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint
     }
 
     auto dims = Dimensions(element);
+    auto tensor = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
 
-    if (are_equal(elements[i], "Exy")) {
-      E_s.xy = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Exz")) {
-      E_s.xz = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Eyx")) {
-      E_s.yx = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Eyz")) {
-      E_s.yz = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Ezx")) {
-      E_s.zx = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Ezy")) {
-      E_s.zy = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hxy")) {
-      H_s.xy = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hxz")) {
-      H_s.xz = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hyx")) {
-      H_s.yx = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hyz")) {
-      H_s.yz = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hzx")) {
-      H_s.zx = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-    } else if (are_equal(elements[i], "Hzy")) {
-      H_s.zy = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
+    if (are_equal(elements[i], "Exy")) { E_s.xy.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Exz")) { E_s.xz.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Eyx")) { E_s.yx.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Eyz")) { E_s.yz.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Ezx")) { E_s.zx.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Ezy")) { E_s.zy.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hxy")) { H_s.xy.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hxz")) { H_s.xz.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hyx")) { H_s.yx.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hyz")) { H_s.yz.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hzx")) { H_s.zx.initialise_from_matlab(tensor, dims);
+    } else if (are_equal(elements[i], "Hzy")) { H_s.zy.initialise_from_matlab(tensor, dims);
     } else if (are_equal(elements[i], "materials")) {
-
       materials = cast_matlab_3D_array((uint8_t *) mxGetPr(element), dims[0], dims[1], dims[2]);
       E_s.I_tot = H_s.I_tot = dims[0] - 1; // The _tot variables do NOT include the additional cell
       E_s.J_tot = H_s.J_tot = dims[1] - 1; // at the edge of the grid which is only partially used
@@ -65,6 +53,4 @@ void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint
       throw runtime_error("element fdtdgrid.%s not handled " + element_name);
     }
   }
-
-  E_s.is_matlab_allocated = H_s.is_matlab_allocated = true;
 }
