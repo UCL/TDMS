@@ -58,7 +58,7 @@ Don't worry about doxygen for the source files (although obviously please do wri
 ### Compiling and debugging
 
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
-- Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Test` or manually at some specific place in the code with:
+- Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
 spdlog::set_level(spdlog::level::debug);
 
