@@ -113,6 +113,31 @@ public:
   inline T* operator[] (int value) const { return matrix[value]; }
 
   bool has_elements(){ return matrix != nullptr; };
+
+  /**
+   * Allocate the memory for this matrix. Must be defined in the header
+   * @param n_rows Number of rows
+   * @param n_cols Number of columns
+   */
+  void allocate(int n_rows, int n_cols){
+    this->n_rows = n_rows;
+    this->n_cols = n_cols;
+
+    matrix = (T **) malloc(sizeof(T *) * n_rows);
+    for (int i = 0; i < n_rows; i++){
+      matrix[i] = (T *) malloc(sizeof(T) * n_cols);
+    }
+  };
+
+  /**
+   * Destructor. Must be defined in the header
+   */
+  ~Matrix(){
+    if (has_elements()) {
+      for (int i = 0; i < n_rows; i++) { free(matrix[i]); }
+      free(matrix);
+    }
+  };
 };
 
 class GratingStructure: public Matrix<int>{
@@ -291,11 +316,10 @@ public:
   int n_vertices(){ return vertices.n_vertices(); }
 };
 
-
 class DetectorSensitivityArrays{
 public:
-  fftw_complex* v;                      // Flat fftw vector
-  fftw_plan plan;                       // fftw plan for the setup
+  fftw_complex* v = nullptr;            // Flat fftw vector
+  fftw_plan plan = nullptr;             // fftw plan for the setup
   std::complex<double>** cm = nullptr;  // Column major matrix
 
   void initialise(int n_rows, int n_cols);
@@ -303,14 +327,15 @@ public:
   ~DetectorSensitivityArrays();
 };
 
-
 /**
  * Matrix of c coefficients. See the pdf documentation for their definition
  */
-class CCoefficientMatrix: public Matrix<double>{
+class CCoefficientMatrix: public Matrix<double>{};
+
+/**
+ * Temporary storage 'vector'
+ */
+class EHVec: public Matrix<fftw_complex>{
 public:
-  void allocate(int n_rows, int n_cols);
-
-  ~CCoefficientMatrix();
+  ~EHVec();
 };
-

@@ -267,7 +267,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double refind;
 
   //PSTD storage
-  fftw_complex **eh_vec, *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
+  fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
   fftw_plan *pb_exy, *pf_exy, *pb_exz, *pf_exz, *pb_eyx, *pf_eyx, *pb_eyz, *pf_eyz, *pb_ezx,
           *pf_ezx, *pb_ezy, *pf_ezy, *pb_hxy, *pf_hxy, *pb_hxz, *pf_hxz, *pb_hyx, *pf_hyx, *pb_hyz,
           *pf_hyz, *pb_hzx, *pf_hzx, *pb_hzy, *pf_hzy;
@@ -535,20 +535,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   CCoefficientMatrix ca_vec, cb_vec, cc_vec;
+  EHVec eh_vec;
 
 #ifndef FDFLAG// only perform if using the PSTD method
   int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
   ca_vec.allocate(n_threads, max_IJK + 1);
   cb_vec.allocate(n_threads, max_IJK + 1);
   cc_vec.allocate(n_threads, max_IJK + 1);
-
-  eh_vec = (fftw_complex **) malloc(sizeof(fftw_complex *) * omp_get_max_threads());
-  for (i = 0; i < omp_get_max_threads(); i++)
-    *(eh_vec + i) = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (max_IJK + 1));
-  for (i = 0; i < (max_IJK + 1); i++) {
-    eh_vec[omp_get_thread_num()][i][0] = 0.;
-    eh_vec[omp_get_thread_num()][i][1] = 0.;
-  }
+  eh_vec.allocate(n_threads, max_IJK + 1);
 
   N_e_x = I_tot - 1 + 1;
   N_e_y = J_tot - 1 + 1;
@@ -4729,9 +4723,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
 #ifndef FDFLAG// Using PS
-
-  for (i = 0; i < omp_get_max_threads(); i++) fftw_free(*(eh_vec + i));
-  free(eh_vec);
 
   for (i = 0; i < omp_get_max_threads(); i++) {
 
