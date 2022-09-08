@@ -4004,8 +4004,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
             eh_vec[n][j][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_y,
-                             N_h_y, H_s.zy.plan_f[n], H_s.zy.plan_f[n]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.zy.plan_f[n], H_s.zy.plan_b[n]);
 
             for (j = 0; j < J_tot; j++) {
               H_s.zy[k][j][i] = ca_vec[n][j] * H_s.zy[k][j][i] +
