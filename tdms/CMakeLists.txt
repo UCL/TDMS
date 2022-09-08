@@ -76,7 +76,7 @@ if(NOT spdlog_FOUND)
 endif()
 
 # Set the active logging level
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL ""${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo"")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
 else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
