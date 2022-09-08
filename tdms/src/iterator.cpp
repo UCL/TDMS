@@ -275,14 +275,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //end PSTD storage
 
   uint8_t ***materials;
-  int i, j, k, is_disp, is_cond = 0;
-  int k_loc;
-  int input_counter = 0;
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
 
-  int ndims;
-  int K;
+  int i, j, k, k_loc, ndims, K;
+  int input_counter = 0;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
   int Ni_tdf = 0, Nk_tdf = 0;
@@ -863,9 +860,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*start dispersive*/
 
   //work out if we have any disperive materials
-  is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
+  bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
   //work out if we have conductive background
-  is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
+  bool is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
   //work out if we have a dispersive background
   if (params.is_disp_ml) params.is_disp_ml = is_dispersive_ml(ml, K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, params.is_disp_ml: %d\n",is_disp,is_cond,params.is_disp_ml);
@@ -5162,7 +5159,7 @@ void setGridLabels(GridLabels &input_labels, GridLabels &output_labels, int i_l,
 /* These functions are used by the dispersive component of the code*/
 
 /*Work out if there are any non-zero alpha values*/
-int is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_tot, int J_tot,
+bool is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_tot, int J_tot,
                   int K_tot) {
   int max_mat = 0;
 
