@@ -85,4 +85,4 @@ export OMP_NUM_THREADS=4
 
 ## Contributing
 
-You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file.
+You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file and we have [developer documentation on our `gh-pages` site](https://github-pages.ucl.ac.uk/TDMS).

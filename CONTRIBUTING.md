@@ -3,7 +3,7 @@
 ### New features/Issues
 
 To suggest a new feature or report an issue please use the 
-[issue](https://github.com/UCL/TDMS/issues) board providing details of either 
+[issues](https://github.com/UCL/TDMS/issues) board providing details of either 
 the feature or the bug with steps to reproduce it. To contribute to the code
 base please
 1. [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
@@ -24,6 +24,9 @@ PRs should follow the following guidelines
 - Should pass all system and unit tests run on GitHub Actions CI
 - Follow the code style guidelines bellow
 
+### Developer documentation
+
+We have some developer documentation (C++ classes
 
 ### Tests
 
