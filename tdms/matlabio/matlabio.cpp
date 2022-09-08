@@ -280,3 +280,18 @@ double double_in(const mxArray* ptr, const string &name){
 int int_cast_from_double_in(const mxArray* ptr, const std::string &name){
   return (int) double_in(ptr, name);
 }
+
+bool bool_cast_from_double_in(const mxArray* ptr, const std::string &name){
+  return (bool) double_in(ptr, name);
+}
+
+string string_in(const mxArray *ptr, const string &name) {
+
+  if (mxIsChar(ptr)){
+    auto n = 1 + (int) mxGetNumberOfElements(ptr);
+    auto c_str = (char *) malloc(n * sizeof(char));
+    mxGetString(ptr, c_str, n);
+    return c_str;
+  }
+  throw runtime_error(name + " was expected to be a string but was not");
+}

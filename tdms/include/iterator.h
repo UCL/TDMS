@@ -1,5 +1,6 @@
 #include "complex"
 #include "field.h"
+#include "vector_collection.h"
 #include "grid_labels.h"
 
 
@@ -42,9 +43,9 @@ void normaliseVertices( double **EHr, double **EHi ,
 			int *components, int ncomponents,
 			std::complex<double> Enorm , std::complex<double> Hnorm );
 
-int is_conductive(double *rho_x, double *rho_y, double *rho_z, int I_tot, int J_tot, int K_tot);
+bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 
-int is_dispersive_ml(double *ml_gamma, int K_tot);
+bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
 
 void extractPhasorsVertices( double **EHr, double **EHi, MagneticSplitField &H, ElectricSplitField &E,
 			     int **vertices, int nvertices, int *components, int ncomponents,

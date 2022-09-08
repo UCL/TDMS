@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <stdexcept>
 #include "matlabio.h"
@@ -74,3 +75,14 @@ public:
   explicit DMaterial(const mxArray *ptr);
 };
 
+class DispersiveMultiLayer{
+public:
+  double* alpha = nullptr;
+  double* beta = nullptr;
+  double* gamma = nullptr;
+  XYZVectors kappa;
+  XYZVectors sigma;
+
+public:
+  explicit DispersiveMultiLayer(const mxArray *ptr);
+};
