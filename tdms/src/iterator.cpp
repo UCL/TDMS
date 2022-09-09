@@ -1,18 +1,3 @@
-/*****************************************************************
- *
- *  Project.....:  isotropic FDTD code
- *  Application.:  main FDTD algorithm
- *  Module......:  iterater.cpp
- *  Description.:  Contains the main FDTD loop as well as other functions
- *                 such as phasor extraction etc. Works in both pulsed 
- *                 and steady state mode.
- *  Compiler....:  g++
- *  Written by..:  Peter Munro, Imperial College London, 2002-2008
- *  Environment.:  Linux
- *  Modified....:  Numerous times
- *
- ******************************************************************/
-
 /*iterater_OMP_reduced.cpp iterater_OMP.cpp are the same
  *iterater_OMP_full.cpp predates iterater_OMP.cpp and doesn't skip any steps in phasor extraction.
  *
@@ -103,7 +88,7 @@ inline int min ( int a, int b ) { return a < b ? a : b; }
   structure
   tdfield
 
-  fdtdgrid - A structre with the following members, each of which is a 3 dimensional
+  fdtdgrid - A structure with the following members, each of which is a 3 dimensional
   array:
 	   
   fdtdgrid.Exy       (double)
@@ -244,11 +229,11 @@ inline int min ( int a, int b ) { return a < b ? a : b; }
 
   dimension - A string of value "3", "TE" or "TM"
 
-  conductive_aux - auxilliary parameters required to model conductive multilayer
+  conductive_aux - auxiliary parameters required to model conductive multilayer
 
-  dispersive_aux - auxilliary parameters required to model dispersive multilayer
+  dispersive_aux - auxiliary parameters required to model dispersive multilayer
 
-  structure - 2 x (I_tot+1) integer array describing the grating stucture, if one is present
+  structure - 2 x (I_tot+1) integer array describing the grating structure, if one is present
 
   f_ex_vec - 1xN or Nx1 vector of frequencies at which to perform the extraction of complex amplitudes
 
@@ -270,7 +255,7 @@ inline int min ( int a, int b ) { return a < b ? a : b; }
 
   The principle of structuring the program in this way is to be able to compile both a mex-file
   and an executable. This is a monolithic function which performs the entire FDTD simulation. It
-  does farm out tasks to other functions however much of the core functionallity is found here. This
+  does farm out tasks to other functions however much of the core functionality is found here. This
   is certainly not an example of good programming style however it reduces the amount of argument 
   passing.
 
@@ -3029,7 +3014,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
    
     //Update equations for the E field
 
-    /*There are two options for determing the update coefficients for the FDTD cell:
+    /*There are two options for determining the update coefficients for the FDTD cell:
 
       1) If cell (i,j,k) is either free space or PML:
          
@@ -5954,7 +5939,7 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
     //fprintf(stderr,"Post-iter 7\n");
     time_ml_1 = omp_get_wtime();
     //fprintf(stderr,"Post-iter 8\n");
-    fprintf(stdout,"# Time elasped in main loop: %e\n",time_ml_1-time_ml_0);
+    fprintf(stdout,"# Time elapsed in main loop: %e\n",time_ml_1-time_ml_0);
     //fprintf(stderr,"Post-iter 9\n");
   }
   //save state of fdtdgrid
@@ -7190,7 +7175,7 @@ int is_dispersive_ml(double *ml_gamma, int K_tot){
   return 0;
 }
 
-/*Allocate auxilliary memory for En-1 and J*/
+/*Allocate auxiliary memory for En-1 and J*/
 void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
 			     double ****Exy, double ****Exz, 
 			     double ****Eyx, double ****Eyz,  
@@ -7253,7 +7238,7 @@ void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
     
 }
 
-/*Allocate auxilliary memory for J in case of dispersive background*/
+/*Allocate auxiliary memory for J in case of dispersive background*/
 void allocate_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,
 					double ****Jxy, double ****Jxz, 
 					double ****Jyx, double ****Jyz,  
