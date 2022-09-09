@@ -1,7 +1,7 @@
 # Developer documentation
 
 Welcome to the developer documentation for TDMS, the Time Domain Maxwell Solver.
-These pages contain the C++ API [doxygen](https://doxygen.nl) documentation as well as some other useful information for developers.
+These pages contain the C++ API documentation as well as some other useful information for developers.
 
 - 🐣 If you are a new user, you probably want to start with the project's [README.md](https://github.com/UCL/TDMS/blob/main/README.md) on github. There are installation and "getting started" instructions.
 - 🐛 If you've spotted a bug or want to request a feature, we have a short [CONTRIBUTING.md](https://github.com/UCL/TDMS/blob/main/CONTRIBUTING.md). Then please [send an issue through github](https://github.com/UCL/TDMS/issues).
@@ -9,9 +9,9 @@ These pages contain the C++ API [doxygen](https://doxygen.nl) documentation as w
 
 ## What?
 
-The physics and method used by TDMS is described in [this pdf document](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) (the source is in [doc/latex](https://github.com/UCL/TDMS/blob/main/doc/latex)).
+The physics background and numerical methods used by TDMS are described in [this pdf document](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) (the source is in [doc/latex](https://github.com/UCL/TDMS/blob/main/doc/latex)).
 In terms of the code, `tdms` is a C++ binary that can be installed in your path.
-We build with [CMake](https://cmake.org/) to be moderately platform-independent. We run CI builds and tests in Windows, Ubuntu, and MacOS.
+We build with [CMake](https://cmake.org/) to be moderately platform-independent. We run continuous integration builds and tests on Windows, Ubuntu, and MacOS.
 
 ### Dependencies
 

@@ -6,7 +6,7 @@ To suggest a new feature or report an issue please use the
 [issues](https://github.com/UCL/TDMS/issues) board providing details of either 
 the feature or the bug.
 
-For bugs, please provide detailed steps to reproduce, your operating system, and -if it's not obvious- what you expected to happen.
+For bugs, please provide detailed steps to reproduce, your operating system, and what you expected to happen.
 
 To contribute to the code base please
 1. [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
