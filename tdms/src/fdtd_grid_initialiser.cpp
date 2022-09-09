@@ -14,10 +14,6 @@ fdtdGridInitialiser::fdtdGridInitialiser(const mxArray *fdtd_pointer, const char
                 value_of_attribute("K_tot") + 1};
 }
 
-
-/**
- * Get a value from a integer attribute of fdtdgrid defined in a .mat file
- */
 int fdtdGridInitialiser::value_of_attribute(const string& key){
 
   if( mxGetFieldNumber( (mxArray *)pointer, key.c_str()) == -1 ){
@@ -35,9 +31,6 @@ int fdtdGridInitialiser::value_of_attribute(const string& key){
   return value;
 }
 
-/**
- * Set a fdtdgrid attribute to a tensor full of zeros
- */
 void fdtdGridInitialiser::add_tensor(const string &name){
 
   mxAddField((mxArray *)pointer, name.c_str());

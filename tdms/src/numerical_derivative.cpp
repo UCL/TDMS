@@ -28,18 +28,6 @@ void complex_mult_vec( fftw_complex *a, fftw_complex *b, fftw_complex *c, int le
 
 }
 
-/*
-  Initialise the coefficients required to simultaneously perform 
-  differentiation and shifting, by amount delta, using a forward 
-  and backward FFT.
-  
-  delta is a fraction of the spatial step
-
-  Dk is the coefficients
-
-  N is the number of elements in Dk
-
-*/
 void init_diff_shift_op( double delta, fftw_complex *Dk, int N){
   //fprintf(stdout,"init_diff_shift_op, delta=%e\n",delta);
   //define an
@@ -75,36 +63,25 @@ void init_diff_shift_op( double delta, fftw_complex *Dk, int N){
   free(an);
 }
 
-/* 
-   Calculate the first derivative of a sampled function
-
-   in_pb_pf: the buffer containing the data to be differentiated. 
-   Note that it must be the buffer which is the input for both plans 
-   pf and pb
-
-   out_pb_pf: the buffer which will contain the computed derivative. 
-   It must be the output for both plans pf and pb
-
-   pf, pb: plans for forward and backward FFT, respectively.
-
-   N: number of elements in buffers
- */
-
 void first_derivative( fftw_complex *in_pb_pf, fftw_complex *out_pb_pf,
 		       fftw_complex *Dk, int N, fftw_plan pf, fftw_plan pb){
   
-  //fprintf(stderr,"01\n");
+  /*
+   *  1. Fourier transform the data in in_pb_pf, placing the result into out_pb_pf
+   *  2. Multiply the result of the FT (out_pb_pf) by the Dk coefficients place
+   *     the result into in_pb_pf.
+   *  3. Fourier transform back.
+   * 
+   *  Due to how we've organised things, we can use the same fftw_scheme as in the
+   *  first step, providing the data in_pb_pf and getting the output in out_pb_pf
+   */
   fftw_execute(pf);
-  //fprintf(stderr,"02\n");
   complex_mult_vec(out_pb_pf, Dk, in_pb_pf, N);
-  //fprintf(stderr,"03\n");
   fftw_execute(pb);
-  //fprintf(stderr,"04\n");
   for(int i=0;i<=(N-1);i++){
-    out_pb_pf[i][0] = out_pb_pf[i][0]/((double) N);out_pb_pf[i][1] = out_pb_pf[i][1]/((double) N);
+    out_pb_pf[i][0] = out_pb_pf[i][0]/((double) N);
+    out_pb_pf[i][1] = out_pb_pf[i][1]/((double) N);
   }
-  //fprintf(stderr,"05\n");
-
 }
 
 /*

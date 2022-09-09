@@ -15,10 +15,10 @@
 #include "openandorder.h"
 
 
-#define NMATRICES    49           //number of input matrices
-#define NOUTMATRICES_WRITE 23     //number of output matrices to be written to output file
-#define NOUTMATRICES_WRITE_ALL 25 //number of output matrices to be written to output file
-#define NOUTMATRICES_PASSED 31    //number of output matrices passed by mexFunction
+#define NMATRICES 49              //< number of input matrices
+#define NOUTMATRICES_WRITE 23     //< number of output matrices to be written to output file
+#define NOUTMATRICES_WRITE_ALL 25 //< number of output matrices to be written to output file
+#define NOUTMATRICES_PASSED 31    //< number of output matrices passed by mexFunction
 
 using namespace std;
 
@@ -71,9 +71,6 @@ int main(int nargs, char *argv[]){
   return 0;
 }
 
-/**
- * Open the input mat file and check they are as expected
- **/
 void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices){
 
   auto expected = MatrixCollection(matrix_names, n_matrices);
@@ -102,9 +99,6 @@ void openandorder(const char *mat_filename, char **matrix_names, const mxArray *
   }
 }
 
-/**
- * Save the resultant matrices into a file with name outputfilename
- **/
 void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename){
 
   auto outfile = matOpen(outputfilename, "w7.3");
@@ -135,10 +129,6 @@ void check_files_can_be_accessed(ArgumentNamespace &args){
   assert_can_open_file(args.output_filename(), "a+");
 }
 
-/**
- * Iterate through the matrix names and assign the pointer to each matrix
- * into the appropriate entry of pointers
- */
 void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual, const mxArray **pointers){
 
   for(int i=0; i < expected.n_matrices; i++){
