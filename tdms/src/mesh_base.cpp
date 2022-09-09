@@ -1,30 +1,15 @@
 /*****************************************************************
- *
- *  Project.....:  isotropic FDTD code
  *  Application.:  generation of orientated mesh
- *  Module......:  mesh_base.cpp
  *  Description.:  Generate an oriented mesh on the surface of a cuboid
  *                 within the FDTD grid.
- *  Compiler....:  g++
- *  Written by..:  Peter Munro, Imperial College London, 2002-2008
- *  Environment.:  Linux
- *  Modified....:  Numerous times
- *
  ******************************************************************/
-
-/*---------------------------------------------------------------*/
-//                        INCLUDE section
-/*---------------------------------------------------------------*/
-
-#include "math.h"
-#include <complex>
-#include <stdlib.h>
+#include <cstdlib>
 #include "mat_io.h"
-
-using namespace std;
 #include "matlabio.h"
 #include "mesh_base.h"
 
+
+using namespace std;
 
 /*Generate a matrix of vertices which define a triangulation of a regular
   two dimensional grid. This function assumes that the space of interest
@@ -747,71 +732,3 @@ void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1
   free(dims_v);
   free(dims_f);
 }
-
-
-/*Determines the vector which points from p1 to p2*/
-void pointsToVector(int p1[], int p2[], int *vector){
-  int i;
-  for(i=0;i<3;i++)
-    vector[i] = p2[i] - p1[i];
-
-}
-
-/*Calculates v1xv2*/
-void crossProduct(int v1[], int v2[], int *v1crossv2){
-  v1crossv2[0] = v1[1]*v2[2] - v1[2]*v2[1];
-  v1crossv2[1] = v1[2]*v2[0] - v1[0]*v2[2];
-  v1crossv2[2] = v1[0]*v2[1] - v1[1]*v2[0];
-}
-
-
-//mex -v mesh_base.cpp ../matlabio3/matlabio.cpp -DMIOFLAG=matlab  -I../iterater -I../matlabio3 -I../matlabio
-//[v1,f1,v2,f2]=mesh_base(1,2,1,2,1,2,1,1,1) ;
-/*
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[]){
-  int I0, I1, J0, J1, K,K0,K1, dI, dJ,dK, counter = 0,coordmap[3];//triangulate plane
-  int *p1, *p2, *p3, v1[3], v2[3], *cross, dims[2];//testing cross product
-
-  int coordmap1[] = {0,1,2};
-  
-  if(nrhs != 9)
-      mexErrMsgTxt("Incorrect number of input parameters");
-      
-    I0 = ((int) *mxGetPr(prhs[counter++]));
-    I1 = ((int) *mxGetPr(prhs[counter++]));
-    J0 = ((int) *mxGetPr(prhs[counter++]));
-    J1 = ((int) *mxGetPr(prhs[counter++]));
-    
-    //
-    //K = ((int) *mxGetPr(prhs[counter++]));
-
-    K0 = ((int) *mxGetPr(prhs[counter++]));
-    K1 = ((int) *mxGetPr(prhs[counter++]));
-    dI = ((int) *mxGetPr(prhs[counter++]));
-    dJ = ((int) *mxGetPr(prhs[counter++]));
-    dK = ((int) *mxGetPr(prhs[counter++]));
-    
-    if( nlhs != 6)
-      mexErrMsgTxt("Must have 4 output argument");
-    conciseCreateBoundary(I0,I1,K0,K1, (mxArray **)plhs, (mxArray **)(plhs+1));
-    
-    conciseTriangulateCuboidSkip(I0, I1, J0, J1, K0, K1, 
-				 dI, dJ, dK,
-				 (mxArray **)(plhs+4), (mxArray **)(plhs+5));
-    conciseTriangulateCuboid(I0, I1, J0, J1, K0, K1, 
-			  (mxArray **)(plhs+2), (mxArray **)(plhs+3));
-    //triangulatePlaneSkip(I0, I1, J0, J1, K,coordmap1, 1, (mxArray **)&plhs[0], dI, dJ);
-    //triangulatePlane(I0, I1, J0, J1, K,coordmap1, 1, (mxArray **)&plhs[1]);
-    //triangulateCuboidSkip(I0, I1, J0, J1, K0, K1,(mxArray **)plhs,dI, dJ,dK);
-    //triangulateCuboid(I0, I1, J0, J1, K0, K1,(mxArray **)(plhs+6));
-    //[o11 o12 o13 o14 o15 o16 o21 o22 o23 o24 o25 o26] = mesh_base(1,3,1,3,1,3,2,2,2)
-    //[o11 o12 o13 o14 o15 o16] = mesh_base(1,3,1,3,1,3,2,2,2)
-    //mex -v mesh_base.cpp /home/ptpc2/prmunro/code/ptws1/matlablibrary/matlabio3/matlabio.cpp -I/home/ptpc2/prmunro/code/ptws1/matlablibrary/matlabio/
-
-    //conciseTriangulateCuboid(I0, I1, J0, J1, K0, K1, (mxArray **)&plhs[0], (mxArray **)&plhs[1]);
-  
-    
-  
-}
-
-*/

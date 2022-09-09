@@ -1,6 +1,6 @@
-#include "mat.h"
-#include "mex.h"
-#include "matrix.h"
+#include <mat.h>
+#include <mex.h>
+#include <matrix.h>
 
 #ifdef CLUSTER
 typedef int mwSize; 

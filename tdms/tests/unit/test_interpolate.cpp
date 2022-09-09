@@ -1,5 +1,5 @@
-# include "catch2/catch_test_macros.hpp"
-# include "interpolation_methods.h"
+# include <catch2/catch_test_macros.hpp>
+# include <interpolation_methods.h>
 
 using namespace std;
 

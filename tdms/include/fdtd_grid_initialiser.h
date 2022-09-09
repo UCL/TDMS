@@ -1,5 +1,5 @@
+#include <vector>
 #include "mat_io.h"
-#include "vector"
 
 
 class fdtdGridInitialiser {
@@ -9,7 +9,7 @@ private:
     const char *mat_filename;
     std::vector<mwSize> dimensions;
 
-    int value_of_attribute(const std::string& key);
+    mwSize value_of_attribute(const std::string& key);
 
 public:
     fdtdGridInitialiser(const mxArray *fdtd_pointer, const char* mat_filename);
