@@ -112,7 +112,7 @@ int int_cast_from_double_in(const mxArray* ptr, const std::string &name){
 }
 
 bool bool_cast_from_double_in(const mxArray* ptr, const std::string &name){
-  return (bool) double_in(ptr, name);
+  return !mxIsEmpty(ptr) && (bool) double_in(ptr, name);
 }
 
 string string_in(const mxArray *ptr, const string &name) {

@@ -23,11 +23,11 @@ void copyPhasors(ElectricField &from, ElectricField &to, int nelements);
 void setGridLabels(GridLabels &input_labels, GridLabels &output_labels,
                    int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
 
-void extractPhasorsSurface( double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
-			    int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot,int intmethod );
+void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
+			    int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
 
-void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
-					   int **surface_vertices, int n_surface_vertices, int n, double omega, double dt, int Nt, int dimension,int J_tot );
+void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi, MagneticSplitField &H, ElectricSplitField &E,
+					   int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
 
 int is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot, int J_tot, int K_tot);
 

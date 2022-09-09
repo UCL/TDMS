@@ -173,18 +173,25 @@ protected:
   int n_cols = 0;
   int n_rows = 0;
   T*** tensor = nullptr;
-  bool is_matlab_initialised = false;
 
 public:
+  bool is_matlab_initialised = false;
+
   Tensor3D() = default;
 
   Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows);
 
   inline T** operator[] (int value) const { return tensor[value]; };
 
+  bool has_elements(){ return tensor != nullptr; };
+
   ~Tensor3D(){
-    if (!is_matlab_initialised){
-      destroy_3D_array(&tensor, n_cols, n_layers);
+    if (tensor != nullptr){
+      if (is_matlab_initialised){
+        free_cast_matlab_3D_array(tensor, n_layers);
+      } else {
+        destroy_3D_array(&tensor, n_cols, n_layers);
+      }
     }
   };
 };
@@ -201,4 +208,15 @@ public:
   Tensor3D<std::complex<double>> y;
 
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
+};
+
+class IncidentField{
+protected:
+  static Tensor3D<double> component_in(const mxArray *ptr, const std::string &name);
+
+public:
+  Tensor3D<double> x;
+  Tensor3D<double> y;
+
+  explicit IncidentField(const mxArray *ptr);
 };

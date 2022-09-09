@@ -249,7 +249,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   auto H = MagneticField();
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
 
-  double ***exi, ***eyi;
   double ***surface_EHr, ***surface_EHi;
   double rho;
   double alpha_l, beta_l, gamma_l;
@@ -263,14 +262,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
   double maxfield = 0, tempfield;
-  int intmatprops = 1;//means the material properties will be interpolated
-  int intmethod;      //method of interpolating surface field quantities
 
   double *fieldsample_i, *fieldsample_j, *fieldsample_k, *fieldsample_n;
   int N_fieldsample_i, N_fieldsample_j, N_fieldsample_k, N_fieldsample_n;
 
-  double air_interface;
-  bool air_interface_present;
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
 
@@ -289,8 +284,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   fftw_complex *Ex_t, *Ey_t;
   complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
-  int k_det_obs_global = 0;
-  double z_obs = 0.;
 
   //end PSTD storage
 
@@ -306,7 +299,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
   
-  int phasorinc[3];
+
   int num_fields = 0;
   int ndims;
   int K, max_IJK;
@@ -452,15 +445,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   input_counter++;
   //fprintf(stderr,"Got   phasorsurface\n");
 
-  /*Get phasorinc*/
-  if (mxIsDouble(prhs[input_counter])) {
-    auto tmpptr = mxGetPr((mxArray *) prhs[input_counter++]);
-    for (i = 0; i < 3; i++) phasorinc[i] = (int) tmpptr[i];
-  } else {
-    throw runtime_error("expected phasorinc to be a double");
-  }
-
-  /*Get dimension*/
+  params.set_phasorinc(mxGetPr(prhs[input_counter++]));
   params.set_dimension(string_in(prhs[input_counter++], "dimension"));
 
   /*Get conductive_aux */
@@ -496,102 +481,38 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     pupil.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
     D_tilde.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
 
-    /*Get k_det_obs*/
     if (!mxIsEmpty(prhs[input_counter])) {
-      if (mxGetNumberOfElements(prhs[input_counter]) != 1) {
-        int n = (int) mxGetNumberOfElements(prhs[input_counter]);
-        throw runtime_error("k_det_obs has " + to_string(n) +
-                            " elements, it should only have 1.\n");
-      }
-
-      k_det_obs_global = (int) *mxGetPr((mxArray *) prhs[input_counter]) - 1;
+      params.k_det_obs = int_cast_from_double_in(prhs[input_counter], "k_det_obs") - 1;
     }
     input_counter++;
-    /*Got k_det_obs*/
-    //now set z_obs
-    z_obs = input_grid_labels.z[k_det_obs_global];
 
-  }//end of if(exdetintegral==1)
-  else
-    //need to advance beyond fields which were not read in as exdetintegral was set to 0
-    input_counter += 4;
+    params.z_obs = input_grid_labels.z[params.k_det_obs];
+  }
+  else {
+    input_counter += 4; // advance beyond fields which were not read in as exdetintegral was false
+  }
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    air_interface_present = true;
-    air_interface = *mxGetPr((mxArray *) prhs[input_counter]);
-    fprintf(stderr, "air_interface: %e\nz_obs: %e\n", air_interface, z_obs);
-  } else {
-    air_interface_present = false;
+    params.air_interface_present = true;
+    params.air_interface = double_in(prhs[input_counter], "air_interface");
+    //fprintf(stderr, "air_interface: %e\nz_obs: %e\n", params.air_interface, params.z_obs);
   }
   input_counter++;
-  /*Got air_interface*/
 
-  /*Get intmatprops*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    intmatprops = (int) *mxGetPr((mxArray *) prhs[input_counter]);
-  } else {
-    intmatprops = 0;
-  }
-  input_counter++;
-  /*Got intmatprops*/
+  params.interp_mat_props = bool_cast_from_double_in(prhs[input_counter++], "intmatprops");
 
   /*Get intmethod*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    intmethod = (int) *mxGetPr((mxArray *) prhs[input_counter]);
-  } else {
-    intmethod = 1;
+    params.interp_method = InterpolationMethod(int_cast_from_double_in(prhs[input_counter], "intmethod"));
   }
-  fprintf(stderr, "intmethod=%d\n", intmethod);
+  fprintf(stderr, "intmethod=%d\n", params.interp_method);
   input_counter++;
-  /*Got intmatprops*/
 
   /*Get tdfield*/
-  bool exi_present, eyi_present;
-
-  if (mxIsStruct(prhs[input_counter])) {
-    fprintf(stderr, "tdfield 01\n");
-    num_fields = mxGetNumberOfFields(prhs[input_counter]);
-
-    //check that all fields are present
-    if (num_fields != 2) {
-      throw runtime_error("tdfield should have 2 members, it has " + to_string(num_fields));
-    }
-    element = mxGetField((mxArray *) prhs[input_counter], 0, "exi");
-    //fprintf(stderr,"isempty ?: (%d)\n", !mxIsEmpty(element));
-    if (!mxIsEmpty(element)) {
-      ndims = mxGetNumberOfDimensions(element);
-      dimptr_out = mxGetDimensions(element);
-      exi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                                 dimptr_out[2]);
-      exi_present = true;
-      fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
-              dimptr_out[1], dimptr_out[2]);
-      fprintf(stderr, "ddfield is empty\n");
-    } else {
-      exi_present = false;
-      fprintf(stderr, "exi not present\n");
-    }
-
-    /*
-    for(int iti=0;iti<(20000-1);iti++)
-      fprintf(stdout,"%e ",exi[iti][0][511]);
-    */
-    element = mxGetField((mxArray *) prhs[input_counter], 0, "eyi");
-    if (!mxIsEmpty(element)) {
-      ndims = mxGetNumberOfDimensions(element);
-      dimptr_out = mxGetDimensions(element);
-      eyi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                                 dimptr_out[2]);
-      eyi_present = true;
-    } else {
-      eyi_present = false;
-      fprintf(stderr, "eyi not present\n");
-    }
-
-    input_counter++;
-  }
-  /*Got tdfield*/
+  auto Ei = IncidentField(prhs[input_counter++]);
+  params.exi_present = Ei.x.has_elements();
+  params.eyi_present = Ei.y.has_elements();
 
   /*Get tdfdir*/
   //fprintf(stderr,"tdfdir: %d (%d)\n", mxIsChar(prhs[input_counter]),input_counter);
@@ -599,9 +520,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   if (mxIsChar(prhs[input_counter])) {
 
-    int n = 1 + (int) mxGetNumberOfElements((mxArray *) prhs[input_counter]);
-    ex_td_field_exporter.folder_name = (char *) malloc(n * sizeof(char));
-    mxGetString((mxArray *) prhs[input_counter], ex_td_field_exporter.folder_name, n);
+    ex_td_field_exporter.folder_name = string_in(prhs[input_counter], "tdfdir").c_str();
 
     for (k = 0; k < K_tot; k++)
       if ((k % skip_tdf) == 0) Nk_tdf++;
@@ -862,7 +781,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   phasorinc[0], phasorinc[1], phasorinc[2], &mx_surface_vertices,
+                                   params.phasorinc, &mx_surface_vertices,
                                    &mx_surface_facets);
     //fprintf(stderr,"Qos 00a:\n");
     //we don't need the facets so destroy the matrix now to save memory
@@ -1356,12 +1275,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int J_tot_p1_bound = J_tot + 1;
   if (J_tot == 0) {
     //TE case
-    if (ksource_nz[2] || ksource_nz[1] || eyi_present) J_tot_bound = 1;
+    if (ksource_nz[2] || ksource_nz[1] || params.eyi_present) J_tot_bound = 1;
     else
       J_tot_bound = 0;
 
     //TM case
-    if (ksource_nz[3] || ksource_nz[0] || exi_present) J_tot_p1_bound = 1;
+    if (ksource_nz[3] || ksource_nz[0] || params.exi_present) J_tot_p1_bound = 1;
     else
       J_tot_p1_bound = 0;
   }
@@ -1441,15 +1360,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (params.intphasorssurface) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, params.dt,
-                                  Nsteps, params.dimension, J_tot, intmethod);
+                                  n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi,
+                                  Nsteps, J_tot, params);
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
-                                                 f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps, params.dimension,
-                                                 J_tot);
+                                                 f_ex_vec[ifx] * 2 * dcpi, Nsteps,
+                                                 J_tot, params);
           dft_counter++;
         }
       }
@@ -1501,13 +1420,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe,
-                                  params.dimension, J_tot, intmethod);
+                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
                     surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot);
+                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
       }
     }
 
@@ -1521,7 +1439,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, vertices,
                                    nvertices, components, ncomponents, tind,
-                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, intmethod);
+                                   f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, params.interp_method);
         }
       }
     }
@@ -1534,10 +1452,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
             Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.xy[k_det_obs_global][j][i] + E_s.xz[k_det_obs_global][j][i];
+                    E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
             Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
             Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.yx[k_det_obs_global][j][i] + E_s.yz[k_det_obs_global][j][i];
+                    E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
             Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
           }
         //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
@@ -1580,19 +1498,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   if ((lambda_an_t * f_vec.x[i] * lambda_an_t * f_vec.x[i] +
                        lambda_an_t * f_vec.y[j] * lambda_an_t * f_vec.y[j]) < 1) {
 
-                    if (!air_interface_present) {
+                    if (!params.air_interface_present) {
                       /*This had to be fixed since we must take into account the refractive index of the medium.
 
            */
-                      kprop = exp(I * z_obs * 2. * dcpi / lambda_an_t * refind *
+                      kprop = exp(I * params.z_obs * 2. * dcpi / lambda_an_t * refind *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
                                        pow(lambda_an_t * f_vec.y[j] / refind, 2.)));
                       //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
                     } else {
-                      kprop = exp(I * (-air_interface + z_obs) * 2. * dcpi / lambda_an_t * refind *
+                      kprop = exp(I * (-params.air_interface + params.z_obs) * 2. * dcpi / lambda_an_t * refind *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
                                        pow(lambda_an_t * f_vec.y[j] / refind, 2.))) *
-                              exp(I * air_interface * 2. * dcpi / lambda_an_t *
+                              exp(I * params.air_interface * 2. * dcpi / lambda_an_t *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i], 2.) -
                                        pow(lambda_an_t * f_vec.y[j], 2.)));
                     }
@@ -1694,7 +1612,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -1817,7 +1735,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -1968,7 +1886,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2084,7 +2002,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.z[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][j][i + 1]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2247,7 +2165,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.x[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2365,7 +2283,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cb = Cmaterial.b.x[materials[k][j][i] - 1];
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2499,7 +2417,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2613,7 +2531,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k][min(J_tot, j + 1)][i]) {
                     Ca = Ca + C.a.z[k_loc];
                     Cb = Cb + C.b.z[k_loc];
@@ -2754,7 +2672,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -2874,7 +2792,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.x[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.x[array_ind];
                     Cb = Cb + C.b.x[array_ind];
@@ -3099,7 +3017,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -3219,7 +3137,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   Cc = Cmaterial.c.y[materials[k][j][i] - 1];
                 }
 
-                if (intmatprops) {
+                if (params.interp_mat_props) {
                   if (!materials[k + 1][j][i]) {
                     Ca = Ca + C.a.y[array_ind];
                     Cb = Cb + C.b.y[array_ind];
@@ -4550,9 +4468,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                           exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
-          if (eyi_present)
+          if (params.eyi_present)
             H_s.xz[(K0.index) - 1][j][i] =
-                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * eyi[tind][j][i];
+                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
         }
         //fprintf(stderr,"Pos 11e\n");
         for (i = 0; i < I_tot; i++) {
@@ -4565,9 +4483,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                           exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
-          if (exi_present)
+          if (params.exi_present)
             H_s.yz[(K0.index) - 1][j][i] =
-                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * exi[tind][j][i];
+                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
           //if(i==511)
           //  fprintf(stdout,"%e\n",D.b.z[((int)K0[0])-1]*exi[tind][j][i]);
         }
@@ -4585,9 +4503,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                  exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                             exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
-            if (eyi_present)
+            if (params.eyi_present)
               H_s.xz[(K0.index) - 1][j][i] =
-                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * eyi[tind][j][i];
+                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
           }
         //fprintf(stderr,"Pos 11h\n");
         for (j = 0; j < (J_tot + 1); j++)
@@ -4601,9 +4519,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                  exp(-I * fmod(params.omega_an * (time_E - params.to_l), 2 * dcpi))) *
                             exp(-1. * dcpi * pow((time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
-            if (exi_present)
+            if (params.exi_present)
               H_s.yz[(K0.index) - 1][j][i] =
-                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * exi[tind][j][i];
+                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
           }
         //fprintf(stderr,"Pos 11i\n");
       }
@@ -4865,7 +4783,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   phasorinc[0], phasorinc[1], phasorinc[2], &dummy_vertex_list,
+                                   params.phasorinc, &dummy_vertex_list,
                                    &mx_surface_facets);
     mxDestroyArray(dummy_vertex_list);
     mxArray *vertex_list;
@@ -4942,8 +4860,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Position 10\n");
     */
   }
-  if (exi_present) free_cast_matlab_3D_array(exi, params.Nt);
-  if (eyi_present) free_cast_matlab_3D_array(eyi, params.Nt);
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {
@@ -5180,15 +5096,14 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
 
 
 void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticSplitField &H,
-                           ElectricSplitField &E, int **surface_vertices, int n_surface_vertices,
-                           int n, double omega, double dt, int Nt, int dimension, int J_tot,
-                           int intmethod) {
+                           ElectricSplitField &E,int **surface_vertices, int n_surface_vertices,
+                           int n, double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
 
-  phaseTermE = fmod(omega * ((double) n) * dt, 2 * dcpi);
-  phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
+  phaseTermE = fmod(omega * ((double) n) * params.dt, 2 * dcpi);
+  phaseTermH = fmod(omega * ((double) n + 0.5) * params.dt, 2 * dcpi);
 
   cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
@@ -5200,12 +5115,12 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
 #pragma omp for
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
       //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      if (dimension == THREE)
+      if (params.dimension == THREE)
         if (J_tot == 0) {
           interpolateTimeDomainFieldCentralE_2Dy(
                   E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        } else if (intmethod == 1)
+        } else if (params.interp_method == cubic)
           interpolateTimeDomainFieldCentralE(
                   E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
@@ -5213,7 +5128,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
           interpolateTimeDomainFieldCentralEBandLimited(
                   E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else if (dimension == TE)
+      else if (params.dimension == TE)
         interpolateTimeDomainFieldCentralE_TE(
                 E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
                 surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
@@ -5222,12 +5137,12 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
                 E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
                 surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
       //    fprintf(stderr,"1st interp donezn");
-      if (dimension == THREE)
+      if (params.dimension == THREE)
         if (J_tot == 0) {
           interpolateTimeDomainFieldCentralH_2Dy(
                   H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        } else if (intmethod == 1)
+        } else if (params.interp_method == cubic)
           interpolateTimeDomainFieldCentralH(
                   H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
@@ -5235,7 +5150,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
           interpolateTimeDomainFieldCentralHBandLimited(
                   H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
                   surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else if (dimension == TE)
+      else if (params.dimension == TE)
         interpolateTimeDomainFieldCentralH_TE(
                 H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
                 surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
@@ -5410,14 +5325,13 @@ void extractPhasorsVertices(double **EHr, double **EHi, MagneticSplitField &H,
 void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi,
                                           MagneticSplitField &H, ElectricSplitField &E,
                                           int **surface_vertices, int n_surface_vertices, int n,
-                                          double omega, double dt, int Nt, int dimension,
-                                          int J_tot) {
+                                          double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
 
-  phaseTermE = fmod(omega * ((double) n) * dt, 2 * dcpi);
-  phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * dcpi);
+  phaseTermE = fmod(omega * ((double) n) * params.dt, 2 * dcpi);
+  phaseTermH = fmod(omega * ((double) n + 0.5) * params.dt, 2 * dcpi);
 
   cphaseTermH = exp(phaseTermH * I) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Nt);
