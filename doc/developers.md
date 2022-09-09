@@ -57,6 +57,18 @@ Don't worry about doxygen for the source files (although obviously please do wri
 
 ### Compiling and debugging
 
+Once you've checked the code out, compile with:
+```{.sh}
+cd tdms
+mkdir build; cd build
+cmake .. \
+# -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
+# -DFFTW_ROOT=/usr/local/fftw3/ \
+# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+make install
+```
+You may need to help CMake find MATLAB/fftw etc.
+
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
