@@ -1,9 +1,9 @@
 #pragma once
 #include <complex>
 #include <string>
+#include <fftw3.h>
 #include <stdexcept>
 #include "matlabio.h"
-#include "numeric.h"
 #include "utils.h"
 
 
@@ -117,6 +117,31 @@ public:
   inline T* operator[] (int value) const { return matrix[value]; }
 
   bool has_elements(){ return matrix != nullptr; };
+
+  /**
+   * Allocate the memory for this matrix. Must be defined in the header
+   * @param n_rows Number of rows
+   * @param n_cols Number of columns
+   */
+  void allocate(int n_rows, int n_cols){
+    this->n_rows = n_rows;
+    this->n_cols = n_cols;
+
+    matrix = (T **) malloc(sizeof(T *) * n_rows);
+    for (int i = 0; i < n_rows; i++){
+      matrix[i] = (T *) malloc(sizeof(T) * n_cols);
+    }
+  };
+
+  /**
+   * Destructor. Must be defined in the header
+   */
+  ~Matrix(){
+    if (has_elements()) {
+      for (int i = 0; i < n_rows; i++) { free(matrix[i]); }
+      free(matrix);
+    }
+  };
 };
 
 class GratingStructure: public Matrix<int>{
@@ -140,12 +165,14 @@ public:
 
   inline T operator[] (int value) const { return vector[value]; };
 
-  inline int size() const{ return n; };
+  inline int size() const { return n; };
 };
 
 class FrequencyExtractVector: public Vector<double>{
 public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
+
+  double max();
 };
 
 class FrequencyVectors{
@@ -185,13 +212,35 @@ public:
 
   bool has_elements(){ return tensor != nullptr; };
 
-  ~Tensor3D(){
-    if (tensor != nullptr){
-      if (is_matlab_initialised){
-        free_cast_matlab_3D_array(tensor, n_layers);
-      } else {
-        destroy_3D_array(&tensor, n_cols, n_layers);
+  void zero();
+
+  void allocate(int nK, int nJ, int nI){
+    n_layers = nK, n_cols = nJ, n_rows = nI;
+    tensor = (T ***)malloc(n_layers * sizeof(T *));
+
+    for(int k=0; k < n_layers; k++){
+      tensor[k] = (T **)malloc(n_cols * sizeof(T *));
+    }
+
+    for(int k=0; k < n_layers; k++){
+      for(int j=0; j < n_cols; j++){
+        tensor[k][j] = (T *)malloc(n_rows * sizeof(T));
       }
+    }
+  };
+
+  ~Tensor3D(){
+    if (tensor == nullptr) return;
+    if (is_matlab_initialised){
+      free_cast_matlab_3D_array(tensor, n_layers);
+    } else {
+      for (int k = 0; k < n_layers; k++) {
+        for (int j = 0; j < n_cols; j++) {
+          free(tensor[k][j]);
+        }
+        free(tensor[k]);
+      }
+      free(tensor);
     }
   };
 };
@@ -277,6 +326,7 @@ public:
     if (has_elements()){
       free_cast_matlab_2D_array(matrix);
     }
+    matrix = nullptr;
   };
 };
 
@@ -292,4 +342,28 @@ public:
   explicit ComplexAmplitudeSample(const mxArray *ptr);
 
   int n_vertices(){ return vertices.n_vertices(); }
+};
+
+class DetectorSensitivityArrays{
+public:
+  fftw_complex* v = nullptr;            // Flat fftw vector
+  fftw_plan plan = nullptr;             // fftw plan for the setup
+  std::complex<double>** cm = nullptr;  // Column major matrix
+
+  void initialise(int n_rows, int n_cols);
+
+  ~DetectorSensitivityArrays();
+};
+
+/**
+ * Matrix of c coefficients. See the pdf documentation for their definition
+ */
+class CCoefficientMatrix: public Matrix<double>{};
+
+/**
+ * Temporary storage 'vector'
+ */
+class EHVec: public Matrix<fftw_complex>{
+public:
+  ~EHVec();
 };

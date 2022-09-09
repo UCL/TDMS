@@ -1,9 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
 #include "field.h"
-#include "numeric.h"
-
-#include "iostream"
 
 using namespace std;
 
@@ -63,18 +60,12 @@ TEST_CASE("Test magnetic field angular norm addition") {
   REQUIRE(is_close(H.angular_norm, expected));
 }
 
-TEST_CASE("Test that a split field can be constructed without allocation"){
-
-  auto field = ElectricSplitField();
-  REQUIRE(field.xy == nullptr);
-}
-
 TEST_CASE("Test that a split field can be allocated and zeroed"){
 
   auto field = ElectricSplitField(2, 1, 0);
   field.allocate_and_zero();
 
-  REQUIRE(field.xy != nullptr);
+  REQUIRE(field.xy.has_elements());
 
   // NOTE: the allocated field is actually [I_tot+1, J_tot+1, K_tot+1] in size
   for (int k = 0; k < 1; k++){
@@ -88,12 +79,22 @@ TEST_CASE("Test that a split field can be allocated and zeroed"){
   }
 }
 
-TEST_CASE("Test setting a component of a vector field"){
+TEST_CASE("Test that a split field can be constructed without allocation"){
 
-  auto arrays = XYZTensor3D();
-  construct_3d_array(&arrays.x, 1, 1, 1);
+  auto field = ElectricSplitField();
+  REQUIRE(!field.xy.has_elements());
+}
 
-  arrays['x'][0][0][0] = 1.0;
+TEST_CASE("Test setting a component of an allocated vector field"){
 
-  REQUIRE(is_close(arrays['x'][0][0][0], 1.0));
+  auto tmp = SplitFieldComponent();    // initialisation != allocation
+  REQUIRE(!tmp.has_elements());
+
+  tmp.allocate(2, 2, 2);  // 2x2x2 tensor
+  tmp.zero();
+
+  REQUIRE(is_close(tmp[0][1][0], 0.0));
+
+  tmp[0][1][0] = 1.0;
+  REQUIRE(is_close(tmp[0][1][0], 1.0));
 }

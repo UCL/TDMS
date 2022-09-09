@@ -2,7 +2,6 @@
 #include <utility>
 #include "arrays.h"
 #include "globals.h"
-#include "numeric.h"
 #include "utils.h"
 
 
@@ -147,9 +146,17 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     }
     cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
 
-    n = max(dims[0], dims[1]);
+    n = std::max(dims[0], dims[1]);
     vector = (double *) mxGetPr(ptr);
   }
+}
+
+double FrequencyExtractVector::max() {
+  double tmp = -DBL_MAX;
+  for (int i = 0; i < n; i++){
+    tmp = std::max(tmp, vector[i]);
+  }
+  return tmp;
 }
 
 void FrequencyVectors::initialise(const mxArray *ptr){
@@ -192,6 +199,15 @@ Tensor3D<T>::Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows){
   this->n_layers = n_layers;
   this->n_cols = n_cols;
   this->n_rows = n_rows;
+}
+
+template<>
+void Tensor3D<double>::zero() {
+  for (int k = 0; k < n_layers; k++)
+    for (int j = 0; j < n_cols; j++)
+      for (int i = 0; i < n_rows; i++) {
+        tensor[k][j][i] = 0.0;
+      }
 }
 
 Tensor3D<complex<double>> DTilde::component_in(const mxArray *ptr, const string &name,
@@ -352,4 +368,29 @@ ComplexAmplitudeSample::ComplexAmplitudeSample(const mxArray *ptr) {
   assert_is_struct_with_n_fields(ptr, 2, "campssample");
   vertices.initialise(ptr);
   components.initialise(ptr);
+}
+
+void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {
+
+  v = (fftw_complex *) fftw_malloc(n_rows * n_cols * sizeof(fftw_complex));
+  plan = fftw_plan_dft_2d(n_cols, n_rows, v, v, FFTW_FORWARD, FFTW_MEASURE);
+
+  cm = (complex<double> **) malloc(sizeof(complex<double> *) * n_rows);
+  for (int j = 0; j < n_rows; j++) {
+    cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * n_cols);
+  }
+  cerr << "Ex_t_cm has size " << n_rows << "x" << n_cols << endl;
+}
+
+DetectorSensitivityArrays::~DetectorSensitivityArrays() {
+  fftw_free(v);
+  fftw_destroy_plan(plan);
+}
+
+EHVec::~EHVec() {
+  if (has_elements()){
+    for (int i = 0; i < n_rows; i++) fftw_free(matrix[i]);
+    free(matrix);
+  }
+  matrix = nullptr;
 }

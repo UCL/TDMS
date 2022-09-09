@@ -10,7 +10,6 @@
 #include <ctime>
 #include <omp.h>
 #include "iterator.h"
-#include "numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
 #include "array_init.h"
@@ -267,38 +266,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double refind;
 
   //PSTD storage
-  double **ca_vec, **cb_vec, **cc_vec;
-  fftw_complex **eh_vec, *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
-  fftw_plan *pb_exy, *pf_exy, *pb_exz, *pf_exz, *pb_eyx, *pf_eyx, *pb_eyz, *pf_eyz, *pb_ezx,
-          *pf_ezx, *pb_ezy, *pf_ezy, *pb_hxy, *pf_hxy, *pb_hxz, *pf_hxz, *pb_hyx, *pf_hyx, *pb_hyz,
-          *pf_hyz, *pb_hzx, *pf_hzx, *pb_hzy, *pf_hzy;
-  fftw_plan pex_t, pey_t;
+  fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-
   double phaseTermE;
   complex<double> cphaseTermE;
-  //these are 2d matrices and must be in row-major order, which diffes from Matlab
-  fftw_complex *Ex_t, *Ey_t;
-  complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
-
   //end PSTD storage
 
   uint8_t ***materials;
-
-  int i, j, k, is_disp, is_cond = 0;
-  int k_loc;
-  int input_counter = 0;
   double ***camplitudesR, ***camplitudesI;
   mxArray *mx_camplitudes;
-  
 
-  int ndims;
-  int K, max_IJK;
+  int i, j, k, n, k_loc, ndims, K;
+  int input_counter = 0;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
-  int Np = 0; //The phasor extraction algorithm will be executed every Np iterations.
-  int Npe = 0;//The number of terms in the algorithm to extract the phasors
   int Ni_tdf = 0, Nk_tdf = 0;
 
 #ifdef FDFLAG
@@ -530,57 +512,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * dx) / eo);
   fprintf(stderr, "refind=%e\n", refind);
+
   /*Setup temporary storage for detector sensitivity evaluation*/
+  auto Ex_t = DetectorSensitivityArrays();
+  auto Ey_t = DetectorSensitivityArrays();
+
   if (params.exdetintegral) {
-    //These are 2D matrices in row-major order
-    Ex_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
-                                        sizeof(fftw_complex));
-    Ey_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
-                                        sizeof(fftw_complex));
-
-    pex_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ex_t, Ex_t, FFTW_FORWARD,
-                             FFTW_MEASURE);
-    pey_t = fftw_plan_dft_2d(I_tot - params.pml.Dxl - params.pml.Dxu, J_tot - params.pml.Dyl - params.pml.Dyu, Ey_t, Ey_t, FFTW_FORWARD,
-                             FFTW_MEASURE);
-
-    fprintf(stderr, "Ex_t_cm has size %dx%d\n", (J_tot - params.pml.Dyl - params.pml.Dyu), (I_tot - params.pml.Dxl - params.pml.Dxu));
-    Ex_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
-    Ey_t_cm = (complex<double> **) malloc(sizeof(complex<double> *) * (J_tot - params.pml.Dyl - params.pml.Dyu));
-    for (int j = 0; j < (J_tot - params.pml.Dyl - params.pml.Dyu); j++) {
-      Ex_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
-      Ey_t_cm[j] = (complex<double> *) malloc(sizeof(complex<double>) * (I_tot - params.pml.Dxl - params.pml.Dxu));
-    }
+    int n0 = I_tot - params.pml.Dxl - params.pml.Dxu;
+    int n1 = J_tot - params.pml.Dyl - params.pml.Dyu;
+    Ex_t.initialise(n1, n0);
+    Ey_t.initialise(n1, n0);
   }
 
-  double f_max = 0.;
-  for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-    if (f_ex_vec[ifx] > f_max) f_max = f_ex_vec[ifx];
-
+  CCoefficientMatrix ca_vec, cb_vec, cc_vec;
+  EHVec eh_vec;
 
 #ifndef FDFLAG// only perform if using the PSTD method
-  //find the largest dimension, i.e., maximum of I_tot, J_tot and K_tot
-  max_IJK = I_tot;
-  if (J_tot > max_IJK) max_IJK = J_tot;
-  if (K_tot > max_IJK) max_IJK = K_tot;
+  int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
+  ca_vec.allocate(n_threads, max_IJK + 1);
+  cb_vec.allocate(n_threads, max_IJK + 1);
+  cc_vec.allocate(n_threads, max_IJK + 1);
+  eh_vec.allocate(n_threads, max_IJK + 1);
 
-  //establish additional memory buffers which are used by the PSTD method
-  ca_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-  cb_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-  cc_vec = (double **) malloc(sizeof(double *) * omp_get_max_threads());
-
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    ca_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-    cb_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-    cc_vec[i] = (double *) malloc(sizeof(double) * (max_IJK + 1));
-  }
-
-  eh_vec = (fftw_complex **) malloc(sizeof(fftw_complex *) * omp_get_max_threads());
-  for (i = 0; i < omp_get_max_threads(); i++)
-    *(eh_vec + i) = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (max_IJK + 1));
-  for (i = 0; i < (max_IJK + 1); i++) {
-    eh_vec[omp_get_thread_num()][i][0] = 0.;
-    eh_vec[omp_get_thread_num()][i][1] = 0.;
-  }
+  E_s.initialise_fftw_plan(n_threads, eh_vec);
+  H_s.initialise_fftw_plan(n_threads, eh_vec);
 
   N_e_x = I_tot - 1 + 1;
   N_e_y = J_tot - 1 + 1;
@@ -588,60 +543,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   N_h_x = I_tot + 1;
   N_h_y = J_tot + 1;
   N_h_z = K_tot + 1;
-
-  pf_exy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_exy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_exz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_exz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_eyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_eyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_eyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_eyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_ezx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_ezx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_ezy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_ezy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-
-  pf_hxy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hxy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hxz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hxz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hyx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hyz = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hzx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hzx = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pf_hzy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-  pb_hzy = (fftw_plan *) malloc(sizeof(fftw_plan *) * omp_get_max_threads());
-
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    pf_exy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_exy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_exz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_exz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_eyx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_eyx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_eyz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_eyz[i] = fftw_plan_dft_1d(N_e_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_ezx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_ezx[i] = fftw_plan_dft_1d(N_e_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_ezy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_ezy[i] = fftw_plan_dft_1d(N_e_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-
-    pf_hxy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hxy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hxz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hxz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hyx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hyx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hyz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hyz[i] = fftw_plan_dft_1d(N_h_z, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hzx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hzx[i] = fftw_plan_dft_1d(N_h_x, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-    pf_hzy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    pb_hzy[i] = fftw_plan_dft_1d(N_h_y, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
-  }
 
   dk_e_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_x));
   dk_e_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_y));
@@ -660,18 +561,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   init_diff_shift_op(0.5, dk_h_z, N_h_z);
 #endif
 
-  /*Now evaluate Np*/
-  //evaluate maximum optical frequency
+  params.set_Np(f_ex_vec);
 
-  Np = (int) floor(1. / (2.5 * params.dt * f_max));
-  //double dtp = ((double)Np)*params.dt;
-  //fprintf(stderr,"Np=%d, dtp=%e\n",Np,dtp);
-
-  //calculate Npe, the temporal DFT will be evaluated whenever tind incriments by Npe
-  for (unsigned int tind = params.start_tind; tind < params.Nt; tind++)
-    if ((tind - params.start_tind) % Np == 0) Npe++;
-  fprintf(stderr, "Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n", Np, params.Nt, Npe, f_max,
-          2.5 * params.dt * f_max);
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
   auto E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
@@ -968,9 +859,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   /*start dispersive*/
 
   //work out if we have any disperive materials
-  is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
+  bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
   //work out if we have conductive background
-  is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
+  bool is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
   //work out if we have a dispersive background
   if (params.is_disp_ml) params.is_disp_ml = is_dispersive_ml(ml, K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, params.is_disp_ml: %d\n",is_disp,is_cond,params.is_disp_ml);
@@ -1248,13 +1139,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
+            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi,
                                   Nsteps, J_tot, params);
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
+            extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
                                                  f_ex_vec[ifx] * 2 * dcpi, Nsteps,
                                                  J_tot, params);
@@ -1265,16 +1156,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
       if (TIME_EXEC) { timer.click(); }
 
-      if ((tind - params.start_tind) % Np == 0) {
-        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, Npe);
-        H.set_phasors(H_s, tind, params.omega_an, params.dt, Npe);
+      if ((tind - params.start_tind) % params.Np == 0) {
+        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
+        H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
     }
     /*extract fieldsample*/
     if (fieldsample.all_vectors_are_non_empty()) {
-      //if( (tind-params.start_tind) % Np == 0){
+      //if( (tind-params.start_tind) % params.Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
 #pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
@@ -1305,29 +1196,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
-      if ((tind - params.start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
+            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
+                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
-                    surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
-                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, Npe, J_tot, params);
+                    surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
+                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.Npe, J_tot, params);
       }
     }
 
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,Np);
-      if ((tind - params.start_tind) % Np == 0) {
+      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
+      if ((tind - params.start_tind) % params.Np == 0) {
         //	fprintf(stderr,"loc 02\n");
         if (campssample.n_vertices() > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, campssample,
-                                   tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension,
+            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], E_s, H_s, campssample,
+                                   tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe, params.dimension,
                                    J_tot, params.interp_method);
           }
         }
@@ -1336,37 +1227,35 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
-      if ((tind - params.start_tind) % Np == 0) {
+      if ((tind - params.start_tind) % params.Np == 0) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
-            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
-            Ex_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
-            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] =
-                    E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
-            Ey_t[j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl)][1] = 0.;
+            int n = j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl);
+            Ex_t.v[n][0] = E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
+            Ex_t.v[n][1] = 0.;
+            Ey_t.v[n][0] = E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
+            Ey_t.v[n][1] = 0.;
           }
         //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
-        fftw_execute(pex_t);
-        fftw_execute(pey_t);
+        fftw_execute(Ex_t.plan);
+        fftw_execute(Ey_t.plan);
         //fprintf(stderr,"Pos 02a [2]:\n");
         //Iterate over each mode
         for (int im = 0; im < D_tilde.num_det_modes(); im++) {
           //Now go back to column-major
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
-                              I * Ex_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
-              Ey_t_cm[j][i] = Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][0] +
-                              I * Ey_t[j + i * (J_tot - params.pml.Dyu - params.pml.Dyl)][1];
+              int n = j + i * (J_tot - params.pml.Dyu - params.pml.Dyl);
+              Ex_t.cm[j][i] = Ex_t.v[n][0] + I * Ex_t.v[n][1];
+              Ey_t.cm[j][i] = Ey_t.v[n][0] + I * Ey_t.v[n][1];
             }
           //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t_cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
-              Ey_t_cm[j][i] = Ey_t_cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
+              Ex_t.cm[j][i] = Ex_t.cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
+              Ey_t.cm[j][i] = Ey_t.cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
             }
             //fprintf(stderr,"Pos 02a [4]:\n");
             //now iterate over each frequency to extract phasors at
@@ -1406,11 +1295,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                   } else
                     kprop = 0.;
 
-                  Idxt += Ex_t_cm[j][i] * kprop;
-                  Idyt += Ey_t_cm[j][i] * kprop;
+                  Idxt += Ex_t.cm[j][i] * kprop;
+                  Idyt += Ey_t.cm[j][i] * kprop;
                 }
               phaseTermE = fmod(f_ex_vec[ifx] * 2. * dcpi * ((double) tind) * params.dt, 2 * dcpi);
-              cphaseTermE = exp(phaseTermE * I) * 1. / ((double) Npe);
+              cphaseTermE = exp(phaseTermE * I) * 1. / ((double) params.Npe);
 
               Idx[ifx][im] += Idxt * cphaseTermE;
               Idy[ifx][im] += Idyt * cphaseTermE;
@@ -1425,9 +1314,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (params.run_mode == RunMode::complete)
       if (params.dimension == THREE) {
         extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
-                            iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s.xz,
-                            E_s.yz, H_s.xz, H_s.yz, E_s.xy, E_s.yx, H_s.xy, H_s.yx, I_tot, J_tot,
-                            K0.index + 1, tind, params.omega_an, params.dt,
+                            iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s, H_s,
+                            I_tot, J_tot, K0.index + 1, tind, params.omega_an, params.dt,
                             params.Nt);//extract the phasors just above the line
       }
     //fprintf(stderr,"Pos 02c:\n");
@@ -1456,10 +1344,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       fprintf(stdout,"%e ",Exy[k][13][13]+Exz[k][13][13]);
       fprintf(stdout,"\n");
     */
-#pragma omp parallel default(shared) private(i, j, k, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,  \
+#pragma omp parallel default(shared) private(i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,\
                                              beta_l, gamma_l, kappa_l, sigma_l, Enp1,              \
                                              Jnp1)//,ca_vec,cb_vec,cc_vec,eh_vec)
     {
+      n = omp_get_thread_num();
       Enp1 = 0.0;
       array_ind = 0;
 
@@ -1707,25 +1596,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
-              ca_vec[omp_get_thread_num()][j - 1] = Ca;
-              cb_vec[omp_get_thread_num()][j - 1] = Cb;
+              eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
+              eh_vec[n][j][1] = 0.;
+              ca_vec[n][j - 1] = Ca;
+              cb_vec[n][j - 1] = Cb;
             }
             if (J_tot > 1) {
               j = 0;
-              eh_vec[omp_get_thread_num()][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
-              first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_y,
-                               N_e_y, pf_exy[omp_get_thread_num()], pb_exy[omp_get_thread_num()]);
+              eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
+              eh_vec[n][j][1] = 0.;
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_y,
+                               N_e_y, E_s.xy.plan_f[n], E_s.xy.plan_b[n]);
 
 
-              //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,omp_get_thread_num(),omp_get_num_threads());
+              //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,n,omp_get_num_threads());
 
               for (j = 1; j < J_tot; j++) {
-                E_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.xy[k][j][i] +
-                                  cb_vec[omp_get_thread_num()][j - 1] *
-                                          eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
+                E_s.xy[k][j][i] = ca_vec[n][j - 1] * E_s.xy[k][j][i] +
+                                  cb_vec[n][j - 1] *
+                                          eh_vec[n][j][0] / ((double) N_e_y);
               }
             }
           }
@@ -1972,14 +1861,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
               if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-              eh_vec[omp_get_thread_num()][k][1] = 0.;
-              ca_vec[omp_get_thread_num()][k - 1] = Ca;
-              cb_vec[omp_get_thread_num()][k - 1] = Cb;
+              eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+              eh_vec[n][k][1] = 0.;
+              ca_vec[n][k - 1] = Ca;
+              cb_vec[n][k - 1] = Cb;
             }
             k = 0;
-            eh_vec[omp_get_thread_num()][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-            eh_vec[omp_get_thread_num()][k][1] = 0.;
+            eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+            eh_vec[n][k][1] = 0.;
             /*
     if (tind==1 & i==25 & j==25){
     for(k=0;k<N_e_z;k++)
@@ -1989,14 +1878,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fprintf(stdout,"%e ",dk_e_z[k][1]);
     fprintf(stdout,"\n\n");
     for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][0]);
+    fprintf(stdout,"%e ",eh_vec[n][k][0]);
     fprintf(stdout,"\n\n");
     for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][k][1]);
+    fprintf(stdout,"%e ",eh_vec[n][k][1]);
     }
         */
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_z,
-                             N_e_z, pf_exz[omp_get_thread_num()], pb_exz[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_e_z,
+                             N_e_z, E_s.xz.plan_f[n], E_s.xz.plan_b[n]);
             /*
     if (tind==1 & i==25 & j==25){
     fprintf(stdout,"\n\n");
@@ -2008,9 +1897,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
         */
             for (k = 1; k < K_tot; k++) {
-              E_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.xz[k][j][i] -
-                                cb_vec[omp_get_thread_num()][k - 1] *
-                                        eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
+              E_s.xz[k][j][i] = ca_vec[n][k - 1] * E_s.xz[k][j][i] -
+                                cb_vec[n][k - 1] *
+                                        eh_vec[n][k][0] / ((double) N_e_z);
             }
           }
           //PSTD, Exz
@@ -2251,22 +2140,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
               if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
-              eh_vec[omp_get_thread_num()][i][1] = 0.;
-              ca_vec[omp_get_thread_num()][i - 1] = Ca;
-              cb_vec[omp_get_thread_num()][i - 1] = Cb;
+              eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
+              eh_vec[n][i][1] = 0.;
+              ca_vec[n][i - 1] = Ca;
+              cb_vec[n][i - 1] = Cb;
             }
             i = 0;
-            eh_vec[omp_get_thread_num()][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
-            eh_vec[omp_get_thread_num()][i][1] = 0.;
+            eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
+            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_x,
-                             N_e_x, pf_eyx[omp_get_thread_num()], pb_eyx[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_e_x,
+                             N_e_x, E_s.yx.plan_f[n], E_s.yx.plan_b[n]);
 
             for (i = 1; i < I_tot; i++) {
-              E_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.yx[k][j][i] -
-                                cb_vec[omp_get_thread_num()][i - 1] *
-                                        eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
+              E_s.yx[k][j][i] = ca_vec[n][i - 1] * E_s.yx[k][j][i] -
+                                cb_vec[n][i - 1] *
+                                        eh_vec[n][i][0] / ((double) N_e_x);
               //Eyx[k][j][i] = Enp1;
             }
           }
@@ -2500,22 +2389,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
               if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-              eh_vec[omp_get_thread_num()][k][1] = 0.;
-              ca_vec[omp_get_thread_num()][k - 1] = Ca;
-              cb_vec[omp_get_thread_num()][k - 1] = Cb;
+              eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+              eh_vec[n][k][1] = 0.;
+              ca_vec[n][k - 1] = Ca;
+              cb_vec[n][k - 1] = Cb;
             }
             k = 0;
-            eh_vec[omp_get_thread_num()][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-            eh_vec[omp_get_thread_num()][k][1] = 0.;
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_z,
-                             N_e_z, pf_eyz[omp_get_thread_num()], pb_eyz[omp_get_thread_num()]);
+            eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+            eh_vec[n][k][1] = 0.;
+            first_derivative(eh_vec[n], eh_vec[n], dk_e_z,
+                             N_e_z, E_s.yz.plan_f[n], E_s.yz.plan_b[n]);
 
 
             for (k = 1; k < K_tot; k++) {
-              E_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k - 1] * E_s.yz[k][j][i] +
-                                cb_vec[omp_get_thread_num()][k - 1] *
-                                        eh_vec[omp_get_thread_num()][k][0] / ((double) N_e_z);
+              E_s.yz[k][j][i] = ca_vec[n][k - 1] * E_s.yz[k][j][i] +
+                                cb_vec[n][k - 1] *
+                                        eh_vec[n][k][0] / ((double) N_e_z);
               //Eyz[k][j][i] = Enp1;
             }
           }
@@ -2762,22 +2651,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
               if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-              eh_vec[omp_get_thread_num()][i][1] = 0.;
-              ca_vec[omp_get_thread_num()][i - 1] = Ca;
-              cb_vec[omp_get_thread_num()][i - 1] = Cb;
+              eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+              eh_vec[n][i][1] = 0.;
+              ca_vec[n][i - 1] = Ca;
+              cb_vec[n][i - 1] = Cb;
             }
             i = 0;
-            eh_vec[omp_get_thread_num()][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-            eh_vec[omp_get_thread_num()][i][1] = 0.;
+            eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_x,
-                             N_e_x, pf_ezx[omp_get_thread_num()], pb_ezx[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_e_x,
+                             N_e_x, E_s.zx.plan_f[n], E_s.zx.plan_b[n]);
 
             for (i = 1; i < I_tot; i++) {
-              E_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i - 1] * E_s.zx[k][j][i] +
-                                cb_vec[omp_get_thread_num()][i - 1] *
-                                        eh_vec[omp_get_thread_num()][i][0] / ((double) N_e_x);
+              E_s.zx[k][j][i] = ca_vec[n][i - 1] * E_s.zx[k][j][i] +
+                                cb_vec[n][i - 1] *
+                                        eh_vec[n][i][0] / ((double) N_e_x);
               //Ezx[k][j][i] = Enp1;
             }
           }
@@ -3107,22 +2996,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
               if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
 
-              eh_vec[omp_get_thread_num()][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
-              ca_vec[omp_get_thread_num()][j - 1] = Ca;
-              cb_vec[omp_get_thread_num()][j - 1] = Cb;
+              eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+              eh_vec[n][j][1] = 0.;
+              ca_vec[n][j - 1] = Ca;
+              cb_vec[n][j - 1] = Cb;
             }
             if (J_tot > 1) {
               j = 0;
-              eh_vec[omp_get_thread_num()][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
-              first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_e_y,
-                               N_e_y, pf_ezy[omp_get_thread_num()], pb_ezy[omp_get_thread_num()]);
+              eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+              eh_vec[n][j][1] = 0.;
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_y,
+                               N_e_y, E_s.zy.plan_f[n], E_s.zy.plan_b[n]);
             }
             for (j = 1; j < J_tot; j++) {
-              E_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j - 1] * E_s.zy[k][j][i] -
-                                cb_vec[omp_get_thread_num()][j - 1] *
-                                        eh_vec[omp_get_thread_num()][j][0] / ((double) N_e_y);
+              E_s.zy[k][j][i] = ca_vec[n][j - 1] * E_s.zy[k][j][i] -
+                                cb_vec[n][j - 1] *
+                                        eh_vec[n][j][0] / ((double) N_e_y);
               //Ezy[k][j][i] = Enp1;
             }
           }
@@ -3618,9 +3507,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     /********************/
     //begin parallel
-#pragma omp parallel default(shared) private(i, j, k, k_loc,                                       \
+#pragma omp parallel default(shared) private(i, j, k, n, k_loc,                                    \
                                              array_ind)//,ca_vec,cb_vec,cc_vec,eh_vec)
     {
+      n = omp_get_thread_num();
+
       if (params.dimension == THREE || params.dimension == TE) {
 #ifdef FDFLAG// Use central difference derivatives
 //FDTD, Hxz
@@ -3669,29 +3560,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 }
 
               if (!materials[k][j][i]) {
-                ca_vec[omp_get_thread_num()][k] = D.a.z[k_loc];
-                cb_vec[omp_get_thread_num()][k] = D.b.z[k_loc];
+                ca_vec[n][k] = D.a.z[k_loc];
+                cb_vec[n][k] = D.b.z[k_loc];
                 //Hxz[k][j][i] = D.a.z[k_loc]*Hxz[k][j][i]+D.b.z[k_loc]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
               } else {
-                ca_vec[omp_get_thread_num()][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
                 //Hxz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*Hxz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(Eyx[k+1][j][i] + Eyz[k+1][j][i] - Eyx[k][j][i] - Eyz[k][j][i]);
               }
 
-              eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-              eh_vec[omp_get_thread_num()][k][1] = 0.;
+              eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+              eh_vec[n][k][1] = 0.;
             }
             k = K_tot;
-            eh_vec[omp_get_thread_num()][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-            eh_vec[omp_get_thread_num()][k][1] = 0.;
+            eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+            eh_vec[n][k][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_z,
-                             N_h_z, pf_hxz[omp_get_thread_num()], pb_hxz[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_z,
+                             N_h_z, H_s.xz.plan_f[n], H_s.xz.plan_b[n]);
 
             for (k = 0; k < K_tot; k++) {
-              H_s.xz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.xz[k][j][i] +
-                                cb_vec[omp_get_thread_num()][k] *
-                                        eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
+              H_s.xz[k][j][i] = ca_vec[n][k] * H_s.xz[k][j][i] +
+                                cb_vec[n][k] *
+                                        eh_vec[n][k][0] / ((double) N_h_z);
             }
           }
 
@@ -3749,29 +3640,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               else
                 array_ind = (J_tot + 1) * k_loc + j;
               if (!materials[k][j][i]) {
-                ca_vec[omp_get_thread_num()][j] = D.a.y[array_ind];
-                cb_vec[omp_get_thread_num()][j] = D.b.y[array_ind];
+                ca_vec[n][j] = D.a.y[array_ind];
+                cb_vec[n][j] = D.b.y[array_ind];
                 //		Hxy[k][j][i] = D.a.y[array_ind]*Hxy[k][j][i]+D.b.y[array_ind]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
               } else {
-                ca_vec[omp_get_thread_num()][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
                 //		Hxy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*Hxy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(Ezy[k][j][i] + Ezx[k][j][i] - Ezy[k][j+1][i] - Ezx[k][j+1][i]);
               }
 
-              eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
+              eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
+              eh_vec[n][j][1] = 0.;
             }
             j = J_tot;
-            eh_vec[omp_get_thread_num()][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
-            eh_vec[omp_get_thread_num()][j][1] = 0.;
+            eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
+            eh_vec[n][j][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_y,
-                             N_h_y, pf_hxy[omp_get_thread_num()], pb_hxy[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_y,
+                             N_h_y, H_s.xy.plan_f[n], H_s.xy.plan_b[n]);
 
             for (j = 0; j < J_tot; j++) {
-              H_s.xy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.xy[k][j][i] -
-                                cb_vec[omp_get_thread_num()][j] *
-                                        eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
+              H_s.xy[k][j][i] = ca_vec[n][j] * H_s.xy[k][j][i] -
+                                cb_vec[n][j] *
+                                        eh_vec[n][j][0] / ((double) N_h_y);
             }
 
             /*
@@ -3779,14 +3670,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fprintf(stdout,"tind: %d\n",tind);
     fprintf(stdout,"Da: ");
     for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",ca_vec[omp_get_thread_num()][j]);
+    fprintf(stdout,"%e ",ca_vec[n][j]);
     fprintf(stdout,"\nDb: ");
     for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",cb_vec[omp_get_thread_num()][j]);
+    fprintf(stdout,"%e ",cb_vec[n][j]);
 
     fprintf(stdout,"\neh_vec: ");
     for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",eh_vec[omp_get_thread_num()][j][0]/((double) N_e_y));
+    fprintf(stdout,"%e ",eh_vec[n][j][0]/((double) N_e_y));
     fprintf(stdout,"\n");
     }
         */
@@ -3846,29 +3737,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               else
                 array_ind = (I_tot + 1) * k_loc + i;
               if (!materials[k][j][i]) {
-                ca_vec[omp_get_thread_num()][i] = D.a.x[array_ind];
-                cb_vec[omp_get_thread_num()][i] = D.b.x[array_ind];
+                ca_vec[n][i] = D.a.x[array_ind];
+                cb_vec[n][i] = D.b.x[array_ind];
                 //		Hyx[k][j][i] = D.a.x[array_ind]*Hyx[k][j][i]+D.b.x[array_ind]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
               } else {
-                ca_vec[omp_get_thread_num()][i] = Dmaterial.a.x[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][i] = Dmaterial.b.x[materials[k][j][i] - 1];
+                ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
+                cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
                 //	Hyx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*Hyx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(Ezx[k][j][i+1] + Ezy[k][j][i+1] - Ezx[k][j][i] - Ezy[k][j][i]);
               }
 
-              eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
-              eh_vec[omp_get_thread_num()][i][1] = 0.;
+              eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
+              eh_vec[n][i][1] = 0.;
             }
             i = I_tot;
-            eh_vec[omp_get_thread_num()][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
-            eh_vec[omp_get_thread_num()][i][1] = 0.;
+            eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
+            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_x,
-                             N_h_x, pf_hyx[omp_get_thread_num()], pb_hyx[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_x,
+                             N_h_x, H_s.yx.plan_f[n], H_s.yx.plan_b[n]);
 
             for (i = 0; i < I_tot; i++) {
-              H_s.yx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.yx[k][j][i] +
-                                cb_vec[omp_get_thread_num()][i] *
-                                        eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
+              H_s.yx[k][j][i] = ca_vec[n][i] * H_s.yx[k][j][i] +
+                                cb_vec[n][i] *
+                                        eh_vec[n][i][0] / ((double) N_h_x);
             }
           }
 //PSTD, Hyx
@@ -3926,41 +3817,41 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                     k_loc = params.pml.Dzl + 1;
                 }
               if (!materials[k][j][i]) {
-                ca_vec[omp_get_thread_num()][k] = D.a.z[k_loc];
-                cb_vec[omp_get_thread_num()][k] = D.b.z[k_loc];
+                ca_vec[n][k] = D.a.z[k_loc];
+                cb_vec[n][k] = D.b.z[k_loc];
                 /*if(tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                 //Hyz[k][j][i] = D.a.z[k_loc]*Hyz[k][j][i]+D.b.z[k_loc]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
               } else {
-                ca_vec[omp_get_thread_num()][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
                 /*if(tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                 //Hyz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*Hyz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(Exy[k][j][i] + Exz[k][j][i] - Exy[k+1][j][i] - Exz[k+1][j][i]);
               }
 
-              eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-              eh_vec[omp_get_thread_num()][k][1] = 0.;
+              eh_vec[n][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+              eh_vec[n][k][1] = 0.;
             }
             k = K_tot;
-            eh_vec[omp_get_thread_num()][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-            eh_vec[omp_get_thread_num()][k][1] = 0.;
+            eh_vec[n][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+            eh_vec[n][k][1] = 0.;
 
             /*
     if( i==12 & j==12 ){
     for(k=0;k<K_tot;k++)
-    fprintf(stdout,"%.10e ",eh_vec[omp_get_thread_num()][k][0]);
+    fprintf(stdout,"%.10e ",eh_vec[n][k][0]);
     fprintf(stdout,"\n");
     }
         */
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_z,
-                             N_h_z, pf_hyz[omp_get_thread_num()], pb_hyz[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_z,
+                             N_h_z, H_s.yz.plan_f[n], H_s.yz.plan_b[n]);
 
             for (k = 0; k < K_tot; k++) {
-              H_s.yz[k][j][i] = ca_vec[omp_get_thread_num()][k] * H_s.yz[k][j][i] -
-                                cb_vec[omp_get_thread_num()][k] *
-                                        eh_vec[omp_get_thread_num()][k][0] / ((double) N_h_z);
+              H_s.yz[k][j][i] = ca_vec[n][k] * H_s.yz[k][j][i] -
+                                cb_vec[n][k] *
+                                        eh_vec[n][k][0] / ((double) N_h_z);
             }
           }
 //PSTD, Hyz
@@ -4096,29 +3987,28 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               else
                 array_ind = (J_tot + 1) * k_loc + j;
               if (!materials[k][j][i]) {
-                ca_vec[omp_get_thread_num()][j] = D.a.y[array_ind];
-                cb_vec[omp_get_thread_num()][j] = D.b.y[array_ind];
+                ca_vec[n][j] = D.a.y[array_ind];
+                cb_vec[n][j] = D.b.y[array_ind];
                 //	      Hzy[k][j][i] = D.a.y[array_ind]*Hzy[k][j][i]+D.b.y[array_ind]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
               } else {
-                ca_vec[omp_get_thread_num()][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
                 //	      Hzy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*Hzy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(Exy[k][j+1][i] + Exz[k][j+1][i] - Exy[k][j][i] - Exz[k][j][i]);
               }
 
-              eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-              eh_vec[omp_get_thread_num()][j][1] = 0.;
+              eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+              eh_vec[n][j][1] = 0.;
             }
             j = J_tot;
-            eh_vec[omp_get_thread_num()][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-            eh_vec[omp_get_thread_num()][j][1] = 0.;
+            eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+            eh_vec[n][j][1] = 0.;
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_y,
-                             N_h_y, pf_hzy[omp_get_thread_num()], pb_hzy[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.zy.plan_f[n], H_s.zy.plan_b[n]);
 
             for (j = 0; j < J_tot; j++) {
-              H_s.zy[k][j][i] = ca_vec[omp_get_thread_num()][j] * H_s.zy[k][j][i] +
-                                cb_vec[omp_get_thread_num()][j] *
-                                        eh_vec[omp_get_thread_num()][j][0] / ((double) N_h_y);
+              H_s.zy[k][j][i] = ca_vec[n][j] * H_s.zy[k][j][i] +
+                                cb_vec[n][j] *
+                                        eh_vec[n][j][0] / ((double) N_h_y);
             }
           }
           //PSTD, Hzy
@@ -4177,29 +4067,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 array_ind = (I_tot + 1) * k_loc + i;
               if (!materials[k][j][i]) {
                 //		Hzx[k][j][i] = D.a.x[array_ind]*Hzx[k][j][i]+D.b.x[array_ind]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-                ca_vec[omp_get_thread_num()][i] = D.a.x[array_ind];
-                cb_vec[omp_get_thread_num()][i] = D.b.x[array_ind];
+                ca_vec[n][i] = D.a.x[array_ind];
+                cb_vec[n][i] = D.b.x[array_ind];
               } else {
                 //		Hzx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*Hzx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(Eyx[k][j][i] + Eyz[k][j][i] - Eyx[k][j][i+1] - Eyz[k][j][i+1]);
-                ca_vec[omp_get_thread_num()][i] = Dmaterial.a.x[materials[k][j][i] - 1];
-                cb_vec[omp_get_thread_num()][i] = Dmaterial.b.x[materials[k][j][i] - 1];
+                ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
+                cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
               }
 
-              eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-              eh_vec[omp_get_thread_num()][i][1] = 0.;
+              eh_vec[n][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+              eh_vec[n][i][1] = 0.;
             }
             i = I_tot;
-            eh_vec[omp_get_thread_num()][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-            eh_vec[omp_get_thread_num()][i][1] = 0.;
+            eh_vec[n][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+            eh_vec[n][i][1] = 0.;
 
 
-            first_derivative(eh_vec[omp_get_thread_num()], eh_vec[omp_get_thread_num()], dk_h_x,
-                             N_h_x, pf_hzx[omp_get_thread_num()], pb_hzx[omp_get_thread_num()]);
+            first_derivative(eh_vec[n], eh_vec[n], dk_h_x,
+                             N_h_x, H_s.zx.plan_f[n], H_s.zx.plan_b[n]);
 
             for (i = 0; i < I_tot; i++) {
-              H_s.zx[k][j][i] = ca_vec[omp_get_thread_num()][i] * H_s.zx[k][j][i] -
-                                cb_vec[omp_get_thread_num()][i] *
-                                        eh_vec[omp_get_thread_num()][i][0] / ((double) N_h_x);
+              H_s.zx[k][j][i] = ca_vec[n][i] * H_s.zx[k][j][i] -
+                                cb_vec[n][i] *
+                                        eh_vec[n][i][0] / ((double) N_h_x);
             }
           }
 //PSTD, Hzx
@@ -4430,14 +4320,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
         }
       } else {
-        if ((tind - params.start_tind) % Np == 0) {
+        if ((tind - params.start_tind) % params.Np == 0) {
 
-          E.add_to_angular_norm(tind, Npe, params);
-          H.add_to_angular_norm(tind, Npe, params);
+          E.add_to_angular_norm(tind, params.Npe, params);
+          H.add_to_angular_norm(tind, params.Npe, params);
 
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
-            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
+            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe);
+            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, params.Npe);
           }
         }
       }
@@ -4482,7 +4372,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fflush(stdout);
     //fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
-    if (params.has_tdfdir && (tind % Np) == 0) {
+    if (params.has_tdfdir && (tind % params.Np) == 0) {
       fprintf(stderr,"Saving field\n");
       ex_td_field_exporter.export_field(E_s, skip_tdf, tind);
     }
@@ -4491,7 +4381,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*
      MATFile *toutfile;
      char toutputfilename[100];
-     if(tind % Np == 0){
+     if(tind % params.Np == 0){
      //if(tind <= 1000){
        sprintf(toutputfilename,"tdata/fdtdgrid_%04d.mat",tind);
        toutfile = matOpen(toutputfilename, "w");
@@ -4733,14 +4623,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     free(Idx);
     free(Idy);
-    fftw_free(Ex_t);
-    fftw_free(Ey_t);
-    fftw_destroy_plan(pey_t);
-    fftw_destroy_plan(pex_t);
-
     /*
       for(int j=0;j<(J_tot-params.pml.Dyl-params.pml.Dyu);j++){
-      free(Ex_t_cm[j]);free(Ey_t_cm[j]);
+      free(Ex_t.cm[j]);free(Ey_t.cm[j]);
       }
       //fprintf(stderr,"Position 9\n");
       free(Ex_t_cm);free(Ey_t_cm);
@@ -4778,72 +4663,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
 #ifndef FDFLAG// Using PS
-  for (i = 0; i < omp_get_max_threads(); i++) {
-    free(ca_vec[i]);
-    free(cb_vec[i]);
-    free(cc_vec[i]);
-  }
-  free(ca_vec);
-  free(cb_vec);
-  free(cc_vec);
-
-  for (i = 0; i < omp_get_max_threads(); i++) fftw_free(*(eh_vec + i));
-  free(eh_vec);
-
-  for (i = 0; i < omp_get_max_threads(); i++) {
-
-    fftw_destroy_plan(pf_exy[i]);
-    fftw_destroy_plan(pb_exy[i]);
-    fftw_destroy_plan(pf_exz[i]);
-    fftw_destroy_plan(pb_exz[i]);
-    fftw_destroy_plan(pf_eyx[i]);
-    fftw_destroy_plan(pb_eyx[i]);
-    fftw_destroy_plan(pf_eyz[i]);
-    fftw_destroy_plan(pb_eyz[i]);
-    fftw_destroy_plan(pf_ezx[i]);
-    fftw_destroy_plan(pb_ezx[i]);
-    fftw_destroy_plan(pf_ezy[i]);
-    fftw_destroy_plan(pb_ezy[i]);
-
-    fftw_destroy_plan(pf_hxy[i]);
-    fftw_destroy_plan(pb_hxy[i]);
-    fftw_destroy_plan(pf_hxz[i]);
-    fftw_destroy_plan(pb_hxz[i]);
-    fftw_destroy_plan(pf_hyx[i]);
-    fftw_destroy_plan(pb_hyx[i]);
-    fftw_destroy_plan(pf_hyz[i]);
-    fftw_destroy_plan(pb_hyz[i]);
-    fftw_destroy_plan(pf_hzx[i]);
-    fftw_destroy_plan(pb_hzx[i]);
-    fftw_destroy_plan(pf_hzy[i]);
-    fftw_destroy_plan(pb_hzy[i]);
-  }
-
-  free(pf_exy);
-  free(pb_exy);
-  free(pf_exz);
-  free(pb_exz);
-  free(pf_eyx);
-  free(pb_eyx);
-  free(pf_eyz);
-  free(pb_eyz);
-  free(pf_ezx);
-  free(pb_ezx);
-  free(pf_ezy);
-  free(pb_ezy);
-
-  free(pf_hxy);
-  free(pb_hxy);
-  free(pf_hxz);
-  free(pb_hxz);
-  free(pf_hyx);
-  free(pb_hyx);
-  free(pf_hyz);
-  free(pb_hyz);
-  free(pf_hzx);
-  free(pb_hzx);
-  free(pf_hzy);
-  free(pb_hzy);
 
   fftw_free(dk_e_x);
   fftw_free(dk_e_y);
@@ -4961,8 +4780,8 @@ void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, 
 }
 
 
-void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticSplitField &H,
-                           ElectricSplitField &E,int **surface_vertices, int n_surface_vertices,
+void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E,
+                           MagneticSplitField &H, int **surface_vertices, int n_surface_vertices,
                            int n, double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
@@ -5063,8 +4882,8 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, MagneticS
   }//end parallel region
 }
 
-void extractPhasorsVertices(double **EHr, double **EHi, const MagneticSplitField &H,
-                            const ElectricSplitField &E, ComplexAmplitudeSample &campssample, int n, double omega,
+void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
+                            ComplexAmplitudeSample &campssample, int n, double omega,
                             double dt, int Nt, int dimension, int J_tot, int intmethod) {
 
   int vindex, i, j, k;
@@ -5144,7 +4963,7 @@ void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> 
 
 
 void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi,
-                                          MagneticSplitField &H, ElectricSplitField &E,
+                                          ElectricSplitField &E, MagneticSplitField &H,
                                           int **surface_vertices, int n_surface_vertices, int n,
                                           double omega, int Nt, int J_tot, SimulationParameters &params) {
   int vindex;
@@ -5229,9 +5048,8 @@ void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface
 
 void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs,
                          double **iwave_lEy_Ibs, double **iwave_lHx_Rbs, double **iwave_lHx_Ibs,
-                         double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, double ***Exz,
-                         double ***Eyz, double ***Hxz, double ***Hyz, double ***Exy, double ***Eyx,
-                         double ***Hxy, double ***Hyx, int I_tot, int J_tot, int K1, int n,
+                         double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
+                         ElectricSplitField &E, MagneticSplitField &H, int I_tot, int J_tot, int K1, int n,
                          double omega, double dt, int Nt) {
 
   complex<double> phaseTerm = 0., subResult = 0.;
@@ -5245,13 +5063,13 @@ void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double 
 
 
       //Eyz
-      subResult = (Eyz[K1][j][i] + Eyx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (E.yz[K1][j][i] + E.yx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lEy_Rbs[j][i] = iwave_lEy_Rbs[j][i] + real(subResult);
       iwave_lEy_Ibs[j][i] = iwave_lEy_Ibs[j][i] + imag(subResult);
 
       //Hxz
-      subResult = (Hxz[K1 - 1][j][i] + Hxy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (H.xz[K1 - 1][j][i] + H.xy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lHx_Rbs[j][i] = iwave_lHx_Rbs[j][i] + real(subResult);
       iwave_lHx_Ibs[j][i] = iwave_lHx_Ibs[j][i] + imag(subResult);
@@ -5262,13 +5080,13 @@ void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double 
 
 
       //Exz
-      subResult = (Exz[K1][j][i] + Exy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (E.xz[K1][j][i] + E.xy[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lEx_Rbs[j][i] = iwave_lEx_Rbs[j][i] + real(subResult);
       iwave_lEx_Ibs[j][i] = iwave_lEx_Ibs[j][i] + imag(subResult);
 
       //Hyz
-      subResult = (Hyz[K1 - 1][j][i] + Hyx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
+      subResult = (H.yz[K1 - 1][j][i] + H.yx[K1][j][i]) * exp(phaseTerm * I) * 1. / ((double) Nt);
 
       iwave_lHy_Rbs[j][i] = iwave_lHy_Rbs[j][i] + real(subResult);
       iwave_lHy_Ibs[j][i] = iwave_lHy_Ibs[j][i] + imag(subResult);
@@ -5335,7 +5153,7 @@ void setGridLabels(GridLabels &input_labels, GridLabels &output_labels, int i_l,
 /* These functions are used by the dispersive component of the code*/
 
 /*Work out if there are any non-zero alpha values*/
-int is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_tot, int J_tot,
+bool is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_tot, int J_tot,
                   int K_tot) {
   int max_mat = 0;
 

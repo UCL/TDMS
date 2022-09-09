@@ -1,8 +1,9 @@
 #pragma once
 #include <complex>
 #include <stdexcept>
-#include "mat_io.h"
 #include "arrays.h"
+#include "dimensions.h"
+#include "mat_io.h"
 #include "simulation_parameters.h"
 #include "utils.h"
 
@@ -26,10 +27,29 @@ public:
     int K_tot = 0;
 
     /**
-     * Is this grid 0 x 0 x 0?
-     * @return True if there are no components
+     * Maximum value out of I_tot, J_tot and K_tot
+     * @return value
      */
-    bool has_no_elements() const {return I_tot == 0 && J_tot == 0 && K_tot == 0;};
+    int max_IJK_tot() const {return max(I_tot, J_tot, K_tot); };
+};
+
+class SplitFieldComponent: public Tensor3D<double>{
+public:
+  int n_threads = 1;             // Number of threads this component was chunked with
+  fftw_plan* plan_f = nullptr;  // Forward fftw plan
+  fftw_plan* plan_b = nullptr;  // Backward fftw plan
+
+  void initialise_from_matlab(double*** tensor, Dimensions &dims);
+
+  /**
+   * Initialise a vector of 1d discrete Fourier transform plans
+   * @param n_threads Number of threads that will be used
+   * @param size Length of the vector
+   * @param eh_vec // TODO: what is this?
+   */
+  void initialise_fftw_plan(int n_threads, int size, EHVec &eh_vec);
+
+  ~SplitFieldComponent();
 };
 
 /**
@@ -38,22 +58,18 @@ public:
  * a phase factor
  */
 class SplitField : public Grid{
+protected:
+  virtual int delta_n() = 0;  // TODO: no idea what this is or why it's needed
 
 public:
     // Pointers (3D arrays) which hold the magnitude of the split field
     // component at each grid point (i, j, k)
-    double ***xy = nullptr;
-    double ***xz = nullptr;
-    double ***yx = nullptr;
-    double ***yz = nullptr;
-    double ***zx = nullptr;
-    double ***zy = nullptr;
-
-    /**
-     * Has this split field been initialised from MATLAB? If it has, then a different destructor
-     * needs to be used
-     */
-    bool is_matlab_allocated = false;
+    SplitFieldComponent xy;
+    SplitFieldComponent xz;
+    SplitFieldComponent yx;
+    SplitFieldComponent yz;
+    SplitFieldComponent zx;
+    SplitFieldComponent zy;
 
     /**
      * Default no arguments constructor
@@ -64,7 +80,7 @@ public:
      * Constructor of the field with a defined size in the x, y, z Cartesian
      * dimensions
      */
-     SplitField(int I_total, int J_total, int K_total);
+    SplitField(int I_total, int J_total, int K_total);
 
     /**
      * Allocate the memory appropriate for all the 3D tensors associated with
@@ -86,12 +102,16 @@ public:
     }
 
     /**
-     * Destructor. Frees all the allocated memory
+     * Initialise the fftw plans for all components
+     * @param n_threads Number of threads to split over
+     * @param eh_vec // TODO
      */
-    ~SplitField();
+    void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
 };
 
 class ElectricSplitField: public SplitField{
+protected:
+  int delta_n() override { return -1; };  // TODO: no idea what this is or why it's needed
 
 public:
     ElectricSplitField() = default;
@@ -105,6 +125,8 @@ public:
 };
 
 class MagneticSplitField: public SplitField{
+protected:
+  int delta_n() override { return 0; };  // TODO: no idea what this is or why it's needed
 
 public:
     MagneticSplitField() = default;
@@ -118,6 +140,8 @@ public:
 };
 
 class CurrentDensitySplitField: public SplitField{
+protected:
+  int delta_n() override { return 0; }
 
 public:
     CurrentDensitySplitField() = default;

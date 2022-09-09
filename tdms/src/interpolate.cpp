@@ -975,7 +975,7 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
  *
  *[out]Hx to Hz are the field components interpolated to the origin of the Yee cell
  */
-void interpolateTimeDomainFieldCentralH( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
+void interpolateTimeDomainFieldCentralH( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					int i, int j, int k,
 					double *Hx, double *Hy, double *Hz){
   
@@ -1008,7 +1008,7 @@ void interpolateTimeDomainFieldCentralH( double ***Hxy, double ***Hxz, double **
  *
  *[out]Hx to Hz are the field components interpolated to the origin of the Yee cell
  */
-void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
+void interpolateTimeDomainFieldCentralHBandLimited( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					int i, int j, int k,
 					double *Hx, double *Hy, double *Hz){
 
@@ -1046,7 +1046,7 @@ void interpolateTimeDomainFieldCentralHBandLimited( double ***Hxy, double ***Hxz
  *
  *[out]Hx to Hz are the field components interpolated to the origin of the Yee cell
  */
-void interpolateTimeDomainFieldCentralH_2Dy( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
+void interpolateTimeDomainFieldCentralH_2Dy( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					int i, int j, int k,
 					double *Hx, double *Hy, double *Hz){
   
@@ -1071,7 +1071,7 @@ void interpolateTimeDomainFieldCentralH_2Dy( double ***Hxy, double ***Hxz, doubl
  *
  *[out]Hx to Hz are the field components interpolated to the origin of the Yee cell
  */
-void interpolateTimeDomainFieldCentralH_TE( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
+void interpolateTimeDomainFieldCentralH_TE( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					   int i, int j, int k,
 					   double *Hx, double *Hy, double *Hz){
   
@@ -1095,7 +1095,7 @@ void interpolateTimeDomainFieldCentralH_TE( double ***Hxy, double ***Hxz, double
  *
  *[out]Hx to Hz are the field components interpolated to the origin of the Yee cell
  */
-void interpolateTimeDomainFieldCentralH_TM( double ***Hxy, double ***Hxz, double ***Hyx, double ***Hyz, double ***Hzx, double ***Hzy,
+void interpolateTimeDomainFieldCentralH_TM( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					   int i, int j, int k,
 					   double *Hx, double *Hy, double *Hz){
   
@@ -1113,7 +1113,7 @@ void interpolateTimeDomainFieldCentralH_TM( double ***Hxy, double ***Hxz, double
  *[out]Ex to Ez are the field components interpolated to the origin of the Yee cell
  *
  */
-void interpolateTimeDomainFieldCentralE(  double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void interpolateTimeDomainFieldCentralE(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					 int i, int j, int k,
 					 double *Ex, double *Ey, double *Ez){
  
@@ -1131,7 +1131,7 @@ void interpolateTimeDomainFieldCentralE(  double ***Exy, double ***Exz, double *
  *[out]Ex to Ez are the field components interpolated to the origin of the Yee cell
  *
  */
-void interpolateTimeDomainFieldCentralEBandLimited(  double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void interpolateTimeDomainFieldCentralEBandLimited(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					 int i, int j, int k,
 					 double *Ex, double *Ey, double *Ez){
   
@@ -1167,7 +1167,7 @@ void interpolateTimeDomainFieldCentralEBandLimited(  double ***Exy, double ***Ex
  *[out]Ex to Ez are the field components interpolated to the origin of the Yee cell
  *
  */
-void interpolateTimeDomainFieldCentralE_2Dy(  double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void interpolateTimeDomainFieldCentralE_2Dy(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					 int i, int j, int k,
 					 double *Ex, double *Ey, double *Ez){
   *Ex = interp1(Exy[k][j][i-2]+Exz[k][j][i-2], Exy[k][j][i-1]+Exz[k][j][i-1], Exy[k][j][i]+Exz[k][j][i], Exy[k][j][i+1]+Exz[k][j][i+1]);
@@ -1184,7 +1184,7 @@ void interpolateTimeDomainFieldCentralE_2Dy(  double ***Exy, double ***Exz, doub
  *[out]Ex to Ez are the field components interpolated to the origin of the Yee cell
  *
  */
-void interpolateTimeDomainFieldCentralE_TE(  double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void interpolateTimeDomainFieldCentralE_TE(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					    int i, int j, int k,
 					    double *Ex, double *Ey, double *Ez){
  
@@ -1201,7 +1201,7 @@ void interpolateTimeDomainFieldCentralE_TE(  double ***Exy, double ***Exz, doubl
  *[out]Ex to Ez are the field components interpolated to the origin of the Yee cell
  *
  */
-void interpolateTimeDomainFieldCentralE_TM(  double ***Exy, double ***Exz, double ***Eyx, double ***Eyz, double ***Ezx, double ***Ezy,
+void interpolateTimeDomainFieldCentralE_TM(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					    int i, int j, int k,
 					    double *Ex, double *Ey, double *Ez){
  
