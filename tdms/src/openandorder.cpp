@@ -5,6 +5,7 @@
  *                 the mexFunction and writing the output to the
  *                 specified output file.
  ******************************************************************/
+#include <spdlog/spdlog.h>
 #include "cstdio"
 #include "stdexcept"
 #include "utils.h"
@@ -21,6 +22,13 @@ using namespace std;
 
 
 int main(int nargs, char *argv[]){
+
+  // Set the logging level with a compile-time define for debugging
+  #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+    spdlog::set_level(spdlog::level::debug);
+  #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+    spdlog::set_level(spdlog::level::info);
+  #endif
 
   /*
     There are two cases to consider, when the fdtdgrid matrix is specified in a separate mat file
