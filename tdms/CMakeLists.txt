@@ -93,6 +93,8 @@ set(SOURCES
     src/fields/split.cpp
     src/fields/td_field_exporter_2d.cpp
     src/argument_parser.cpp
+    src/array_init.cpp
+    src/arrays.cpp
     src/dimensions.cpp
     src/fdtd_grid_initialiser.cpp
     src/grid_labels.cpp
@@ -102,15 +104,12 @@ set(SOURCES
     src/interpolation_methods.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
-    src/numeric.cpp
     src/numerical_derivative.cpp
     src/shapes.cpp
     src/simulation_parameters.cpp
     src/source.cpp
-    src/tensor_init.cpp
     src/timer.cpp
     src/utils.cpp
-    src/vector_collection.cpp
     matlabio/matlabio.cpp
     )
 

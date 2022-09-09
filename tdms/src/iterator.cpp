@@ -9,23 +9,17 @@
 #include <cstring>
 #include <ctime>
 #include <omp.h>
-#include "mat_io.h"
 #include "iterator.h"
-#include "interpolate.h"
 #include "numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
+#include "array_init.h"
 #include "globals.h"
-#include "interpolate.h"
-#include "iterator.h"
 #include "interface.h"
+#include "interpolate.h"
 #include "matlabio.h"
-#include "mesh_base.h"
-#include "numeric.h"
-#include "numerical_derivative.h"
 #include "shapes.h"
 #include "source.h"
-#include "tensor_init.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -263,8 +257,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double t0;
 
   double Ca, Cb, Cc;     //used by interpolation scheme
-  double *f_ex_vec;
-  int N_f_ex_vec;
   //the C and D vars for free space and pml
   double Enp1, Jnp1;
   //these are used for boot strapping. There is currently no way of exporting this.
@@ -290,21 +282,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           *pf_hyz, *pb_hzx, *pf_hzx, *pb_hzy, *pf_hzy;
   fftw_plan pex_t, pey_t;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-  int exdetintegral;
-  int Ndetmodes;
 
-  complex<double> ***Dx_tilde, ***Dy_tilde;
   double phaseTermE;
   complex<double> cphaseTermE;
   //these are 2d matrices and must be in row-major order, which diffes from Matlab
   fftw_complex *Ex_t, *Ey_t;
   complex<double> **Ex_t_cm, **Ey_t_cm;
   double lambda_an_t;
-  double ***D_temp_re, ***D_temp_im;
-  double **Pupil;
   int k_det_obs_global = 0;
-  double *fx_vec, *fy_vec;
-  int Nfx_vec, Nfy_vec;
   double z_obs = 0.;
 
   //end PSTD storage
@@ -324,7 +309,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int phasorinc[3];
   int num_fields = 0;
   int ndims;
-  int **structure, is_structure = 0;
   int K, max_IJK;
   int Nsteps = 0, dft_counter = 0;
   int **surface_vertices, n_surface_vertices = 0;
@@ -364,7 +348,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get fdtdgrid */
   assert_is_struct(prhs[input_counter], "fdtdgrid, argument " + to_string(input_counter));
-  init_grid_tensors(prhs[input_counter], E_s, H_s, materials);
+  init_grid_arrays(prhs[input_counter], E_s, H_s, materials);
   int I_tot = E_s.I_tot, J_tot = E_s.J_tot, K_tot = E_s.K_tot;
   input_counter++;
   //fprintf(stderr,"Got fdtdgrid\n");
@@ -491,172 +475,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   auto ml = DispersiveMultiLayer(prhs[input_counter++]);
   
   /*Get structure*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    ndims = mxGetNumberOfDimensions(prhs[input_counter]);
-    dimptr_out = mxGetDimensions((mxArray *) prhs[input_counter]);
-    if (ndims != 2) {
-      //fprintf(stderr,"ndims: %d\n",ndims);
-      throw runtime_error("structure should be a 2D matrix");
-    }
-    if (dimptr_out[0] != 2 || dimptr_out[1] != (I_tot + 1))
-      throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
-    //castMatlab2DArrayInt(int *array, int nrows, int ncols)
-    structure =
-            castMatlab2DArrayInt((int *) mxGetPr((mxArray *) prhs[input_counter]), 2, I_tot + 1);
-    //    fprintf(stderr,"%2d %2d %2d\n%2d %2d %2d\n",structure[0][0],structure[1][0],structure[2][0],structure[0][1],structure[1][1],structure[1][1]);
-
-    is_structure = 1;
-  } else
-    is_structure = 0;
-  input_counter++;
-
-  /*Got structure*/
+  auto structure = GratingStructure(prhs[input_counter++], I_tot);
+  params.is_structure = structure.has_elements();
 
   /*Get f_ex_vec*/
-  if (!mxIsEmpty(prhs[input_counter])) {
-    ndims = mxGetNumberOfDimensions(prhs[input_counter]);
-    dimptr_out = mxGetDimensions((mxArray *) prhs[input_counter]);
-    fprintf(stderr, "f_ex_vec has ndims=%d, N=%d\n", ndims, dimptr_out[0]);
-
-    if (ndims != 2) { throw runtime_error("f_ex_vec should be an array with N>0 elements"); }
-    if (!((dimptr_out[0] == 1) || (dimptr_out[1] == 1)))
-      throw runtime_error("f_ex_vec should be an array with N>0 elements");
-    if (dimptr_out[0] > dimptr_out[1]) N_f_ex_vec = dimptr_out[0];
-    else
-      N_f_ex_vec = dimptr_out[1];
-    f_ex_vec = (double *) mxGetPr((mxArray *) prhs[input_counter]);
-  } else {
-    N_f_ex_vec = 1;
-    f_ex_vec = (double *) malloc(sizeof(double));
-    f_ex_vec[0] = params.omega_an / 2. / dcpi;
-  }
-  input_counter++;
-  /*Got f_ex_vec*/
-
+  auto f_ex_vec = FrequencyExtractVector(prhs[input_counter++], params.omega_an);
+  
   /*Get exdetintegral*/
   if (!mxIsEmpty(prhs[input_counter])) {
-    if (mxGetNumberOfElements(prhs[input_counter]) != 1)
-      fprintf(stderr, "exdetintegral has %d elements, it should only have 1.\n",
-              (int) mxGetNumberOfElements(prhs[input_counter]));
-    exdetintegral = (int) *(mxGetPr((mxArray *) prhs[input_counter]));
-  } else
-    exdetintegral = 0;
+    params.exdetintegral = bool_cast_from_double_in(prhs[input_counter], "exdetintegral");
+  }
   input_counter++;
-  /*Got exdetintegral*/
 
+  auto f_vec = FrequencyVectors();
+  auto pupil = Pupil();
+  auto D_tilde = DTilde();
 
-  if (exdetintegral == 1) {
-    /*Get f_vec*/
-    if (!mxIsEmpty(prhs[input_counter])) {
-      if (mxIsStruct(prhs[input_counter])) {
-        num_fields = mxGetNumberOfFields(prhs[input_counter]);
-        if (num_fields != 2) {
-          throw runtime_error("f_vec should have 2 members, it has " + to_string(num_fields));
-        }
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "fx_vec");
-        fx_vec = mxGetPr(element);
-        Nfx_vec = mxGetNumberOfElements(element);
-
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "fy_vec");
-        fy_vec = mxGetPr(element);
-        Nfy_vec = mxGetNumberOfElements(element);
-      }
-    }
-    input_counter++;
-    /*Got f_vec*/
-
-    /*Get Pupil*/
-    if (!mxIsEmpty(prhs[input_counter])) {
-      ndims = mxGetNumberOfDimensions(prhs[input_counter]);
-      dimptr_out = mxGetDimensions(prhs[input_counter]);
-      if (ndims != 2) fprintf(stderr, "Pupil should be two dimensional\n");
-      if (dimptr_out[0] != Nfx_vec || dimptr_out[1] != Nfy_vec)
-        fprintf(stderr, "Pupil has dimension %dx%d yet it should have dimension %dx%d\n",
-                dimptr_out[0], dimptr_out[1], Nfx_vec, Nfy_vec);
-      Pupil = castMatlab2DArray(mxGetPr(prhs[input_counter]), dimptr_out[0], dimptr_out[1]);
-    }
-    input_counter++;
-    /*Got Pupil*/
-
-    /*Get D_tilde*/
-    if (!mxIsEmpty(prhs[input_counter])) {
-      if (mxIsStruct(prhs[input_counter])) {
-        num_fields = mxGetNumberOfFields(prhs[input_counter]);
-        if (num_fields != 2) {
-          throw runtime_error("D_tilde should have 2 members, it has " + to_string(num_fields));
-        }
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "Dx_tilde");
-        ndims = mxGetNumberOfDimensions(element);
-        dimptr_out = mxGetDimensions(element);
-        if (ndims != 3) fprintf(stderr, "Dx_tilde should be three dimensional\n");
-
-        Ndetmodes = dimptr_out[0];
-
-        if (dimptr_out[1] != Nfx_vec || dimptr_out[2] != Nfy_vec)
-          fprintf(stderr, "Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",
-                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], Nfx_vec, Nfy_vec);
-
-        /*Now create Dx_tilde*/
-        //fprintf(stderr,"Dx_tilde: %d x %d x %d\n",Ndetmodes,Nfx_vec,Nfy_vec);
-        Dx_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * Nfy_vec);
-        for (int j = 0; j < Nfy_vec; j++) {
-          Dx_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * Nfx_vec);
-          for (int i = 0; i < Nfx_vec; i++) {
-            Dx_tilde[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
-          }
-        }
-
-        D_temp_re =
-                castMatlab3DArray(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-        D_temp_im =
-                castMatlab3DArray(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-
-
-        for (int k = 0; k < Ndetmodes; k++)
-          for (int j = 0; j < Nfy_vec; j++)
-            for (int i = 0; i < Nfx_vec; i++) {
-              Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
-            }
-        //fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
-        freeCastMatlab3DArray(D_temp_re, Nfy_vec);
-        freeCastMatlab3DArray(D_temp_im, Nfy_vec);
-
-        element = mxGetField((mxArray *) prhs[input_counter], 0, "Dy_tilde");
-        ndims = mxGetNumberOfDimensions(element);
-        dimptr_out = mxGetDimensions(element);
-        if (ndims != 3) fprintf(stderr, "Dy_tilde should be three dimensional\n");
-
-        if (dimptr_out[1] != Nfx_vec || dimptr_out[2] != Nfy_vec)
-          fprintf(stderr, "Dx_tilde has dimension %dx%dx%d yet it should have dimension %dx%dx%d\n",
-                  dimptr_out[0], dimptr_out[1], dimptr_out[2], dimptr_out[0], Nfx_vec, Nfy_vec);
-
-        /*Now create Dy_tilde*/
-
-        Dy_tilde = (complex<double> ***) malloc(sizeof(complex<double> **) * Nfy_vec);
-        for (int j = 0; j < Nfy_vec; j++) {
-          Dy_tilde[j] = (complex<double> **) malloc(sizeof(complex<double> *) * Nfx_vec);
-          for (int i = 0; i < Nfx_vec; i++) {
-            Dy_tilde[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
-          }
-        }
-
-        D_temp_re =
-                castMatlab3DArray(mxGetPr(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-        D_temp_im =
-                castMatlab3DArray(mxGetPi(element), dimptr_out[0], dimptr_out[1], dimptr_out[2]);
-
-
-        for (int k = 0; k < Ndetmodes; k++)
-          for (int j = 0; j < Nfy_vec; j++)
-            for (int i = 0; i < Nfx_vec; i++) {
-              Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I * D_temp_im[j][i][k];
-            }
-        freeCastMatlab3DArray(D_temp_re, Nfy_vec);
-        freeCastMatlab3DArray(D_temp_im, Nfy_vec);
-      }
-    }
-    input_counter++;
-    /*Got D_tilde*/
+  if (params.exdetintegral) {
+    f_vec.initialise(prhs[input_counter++]);
+    pupil.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
+    D_tilde.initialise(prhs[input_counter++], f_vec.x.size(), f_vec.y.size());
 
     /*Get k_det_obs*/
     if (!mxIsEmpty(prhs[input_counter])) {
@@ -675,8 +513,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   }//end of if(exdetintegral==1)
   else
-    input_counter +=
-            4;//need to advance beyond fields which were not read in as exdetintegral was set to 0
+    //need to advance beyond fields which were not read in as exdetintegral was set to 0
+    input_counter += 4;
 
   /*Get air_interface*/
   if (!mxIsEmpty(prhs[input_counter])) {
@@ -724,8 +562,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!mxIsEmpty(element)) {
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
-      exi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                              dimptr_out[2]);
+      exi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
+                                 dimptr_out[2]);
       exi_present = true;
       fprintf(stderr, "Got tdfield, ndims=%d, dims=(%d,%d,%d)\n", ndims, dimptr_out[0],
               dimptr_out[1], dimptr_out[2]);
@@ -743,8 +581,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (!mxIsEmpty(element)) {
       ndims = mxGetNumberOfDimensions(element);
       dimptr_out = mxGetDimensions(element);
-      eyi = castMatlab3DArray(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
-                              dimptr_out[2]);
+      eyi = cast_matlab_3D_array(mxGetPr((mxArray *) element), dimptr_out[0], dimptr_out[1],
+                                 dimptr_out[2]);
       eyi_present = true;
     } else {
       eyi_present = false;
@@ -828,7 +666,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (!mxIsEmpty(element)) {
           dimptr_out = mxGetDimensions(element);
           fprintf(stderr, "found vertices (%d x %d)\n", dimptr_out[0], dimptr_out[1]);
-          vertices = castMatlab2DArrayInt((int *) mxGetPr((mxArray *) element), dimptr_out[0],
+          vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) element), dimptr_out[0],
                                           dimptr_out[1]);
           //fprintf(stderr,"vertices[1000] = %d %d %d\n",vertices[0][10],vertices[1][10],vertices[2][10]);
           nvertices = dimptr_out[0];
@@ -863,7 +701,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * dx) / eo);
   fprintf(stderr, "refind=%e\n", refind);
   /*Setup temporary storage for detector sensitivity evaluation*/
-  if (exdetintegral) {
+  if (params.exdetintegral) {
     //These are 2D matrices in row-major order
     Ex_t = (fftw_complex *) fftw_malloc((J_tot - params.pml.Dyl - params.pml.Dyu) * (I_tot - params.pml.Dxl - params.pml.Dxu) *
                                         sizeof(fftw_complex));
@@ -885,7 +723,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   double f_max = 0.;
-  for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+  for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
     if (f_ex_vec[ifx] > f_max) f_max = f_ex_vec[ifx];
 
 
@@ -1006,9 +844,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           2.5 * params.dt * f_max);
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
-  auto E_norm = (complex<double> *) malloc(N_f_ex_vec * sizeof(complex<double>));
-  auto H_norm = (complex<double> *) malloc(N_f_ex_vec * sizeof(complex<double>));
-  for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+  auto E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
+  auto H_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
+  for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
     E_norm[ifx] = 0.;
     H_norm[ifx] = 0.;
   }
@@ -1032,7 +870,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dimptr_out = mxGetDimensions(mx_surface_vertices);
     n_surface_vertices = dimptr_out[0];
     //cast the vertex array as a 2-d integer array
-    surface_vertices = castMatlab2DArrayInt((int *) mxGetPr((mxArray *) mx_surface_vertices),
+    surface_vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) mx_surface_vertices),
                                             dimptr_out[0], dimptr_out[1]);
     //create space for the complex amplitudes E and H around the surface. These will be in a large complex
     //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
@@ -1041,14 +879,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     dims[0] = n_surface_vertices;
     dims[1] = 6;//one for each component of field
-    dims[2] = N_f_ex_vec;
+    dims[2] = f_ex_vec.size();
 
     mx_surface_amplitudes =
             mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    surface_EHr = castMatlab3DArray(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                    dims[2]);
-    surface_EHi = castMatlab3DArray(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                    dims[2]);
+    surface_EHr = cast_matlab_3D_array(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                       dims[2]);
+    surface_EHi = cast_matlab_3D_array(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                       dims[2]);
     //now need to add a command to update the complex amplitudes
   }
 
@@ -1096,23 +934,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[4] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hy
     plhs[5] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hz
 
-    E.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
 
-    H.real.x = castMatlab3DArray(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.x = castMatlab3DArray(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.y = castMatlab3DArray(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.y = castMatlab3DArray(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.z = castMatlab3DArray(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.z = castMatlab3DArray(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
     //fprintf(stderr,"Pre 05\n");
     //fprintf(stderr,"Qos 02:\n");
     //these will ultimately be copies of the phasors used to test convergence
@@ -1128,19 +966,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     //fprintf(stderr,"Qos 03:\n");
     if (params.source_mode == SourceMode::steadystate) {
       E_copy.real.x =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
       E_copy.imag.x =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
 
       E_copy.real.y =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
       E_copy.imag.y =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
 
       E_copy.real.z =
-              castMatlab3DArray(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
       E_copy.imag.z =
-              castMatlab3DArray(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
     }
     //fprintf(stderr,"Pre 07\n");
     //this will be a copy of the phasors which are extracted from the previous cycle
@@ -1198,7 +1036,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     H.zero();
   }
   //fprintf(stderr,"Pre 11\n");
-  if (exdetintegral && params.run_mode == RunMode::complete) {
+  if (params.exdetintegral && params.run_mode == RunMode::complete) {
     ndims = 2;
     dims[0] = 1;
     dims[1] = 1;
@@ -1206,31 +1044,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[26] = mxCreateStructArray(ndims, (const mwSize *) dims, 2, fieldnames);
 
     ndims = 2;
-    dims[0] = Ndetmodes;
-    dims[1] = N_f_ex_vec;
+    dims[0] = D_tilde.num_det_modes();
+    dims[1] = f_ex_vec.size();
 
     mx_Idx = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idx_re = castMatlab2DArray(mxGetPr(mx_Idx), dims[0], dims[1]);
-    Idx_im = castMatlab2DArray(mxGetPi(mx_Idx), dims[0], dims[1]);
+    Idx_re = cast_matlab_2D_array(mxGetPr(mx_Idx), dims[0], dims[1]);
+    Idx_im = cast_matlab_2D_array(mxGetPi(mx_Idx), dims[0], dims[1]);
 
     mx_Idy = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idy_re = castMatlab2DArray(mxGetPr(mx_Idy), dims[0], dims[1]);
-    Idy_im = castMatlab2DArray(mxGetPi(mx_Idy), dims[0], dims[1]);
+    Idy_re = cast_matlab_2D_array(mxGetPr(mx_Idy), dims[0], dims[1]);
+    Idy_im = cast_matlab_2D_array(mxGetPi(mx_Idy), dims[0], dims[1]);
 
-    Idx = (complex<double> **) malloc(sizeof(complex<double> *) * N_f_ex_vec);
-    Idy = (complex<double> **) malloc(sizeof(complex<double> *) * N_f_ex_vec);
+    Idx = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
+    Idy = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
 
-    for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
-      Idx[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
-      Idy[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * Ndetmodes);
-      for (int im = 0; im < Ndetmodes; im++) {
+    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+      Idx[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * dims[0]);
+      Idy[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * dims[0]);
+      for (int im = 0; im < dims[0]; im++) {
         Idx[ifx][im] = 0.;
         Idy[ifx][im] = 0.;
       }
     }
 
-    for (int im = 0; im < Ndetmodes; im++) {
-      for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+    for (int im = 0; im < dims[0]; im++) {
+      for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
         Idx_re[ifx][im] = 0.;
         Idx_im[ifx][im] = 0.;
         Idy_re[ifx][im] = 0.;
@@ -1264,8 +1102,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot + 1;
   plhs[6] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x electric field source phasor - boot strapping
-  iwave_lEx_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
-  iwave_lEx_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
+  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
+  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Ibs, dims[0], dims[1]);
 
@@ -1273,8 +1111,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot;
   plhs[7] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y electric field source phasor - boot strapping
-  iwave_lEy_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
-  iwave_lEy_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
+  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
+  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Ibs, dims[0], dims[1]);
 
@@ -1283,8 +1121,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[8] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x magnetic field source phasor - boot strapping
 
-  iwave_lHx_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
-  iwave_lHx_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
+  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
+  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Ibs, dims[0], dims[1]);
 
@@ -1292,8 +1130,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   dims[1] = J_tot + 1;
   plhs[9] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y magnetic field source phasor - boot strapping
-  iwave_lHy_Rbs = castMatlab2DArray(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
-  iwave_lHy_Ibs = castMatlab2DArray(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
+  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
+  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Ibs, dims[0], dims[1]);
 
@@ -1330,8 +1168,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[3] = N_fieldsample_n;
 
     mx_fieldsample = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    fieldsample = castMatlab4DArray(mxGetPr(mx_fieldsample), N_fieldsample_i, N_fieldsample_j,
-                                    N_fieldsample_k, N_fieldsample_n);
+    fieldsample = cast_matlab_4D_array(mxGetPr(mx_fieldsample), N_fieldsample_i, N_fieldsample_j,
+                                       N_fieldsample_k, N_fieldsample_n);
     //these variables are temporary storage to reduce the need for interpolation during the algorithm
   } else {
     ndims = 4;
@@ -1348,10 +1186,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     ndims = 3;
     dims[0] = nvertices;
     dims[1] = ncomponents;
-    dims[2] = N_f_ex_vec;
+    dims[2] = f_ex_vec.size();
     mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    camplitudesR = castMatlab3DArray(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
-    camplitudesI = castMatlab3DArray(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
+    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
+    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
 
   } else {
     ndims = 3;
@@ -1587,8 +1425,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       H.zero();
 
       if (params.exphasorssurface) {
-        initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, N_f_ex_vec);
-        initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, N_f_ex_vec);
+        initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, f_ex_vec.size());
+        initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, f_ex_vec.size());
       }
       //cleanphasors
     }
@@ -1601,13 +1439,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * dcpi, params.dt,
                                   Nsteps, params.dimension, J_tot, intmethod);
           dft_counter++;
         } else {
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
                                                  f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps, params.dimension,
@@ -1661,12 +1499,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % Np == 0) {
         if (params.intphasorssurface)
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe,
                                   params.dimension, J_tot, intmethod);
         else
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
                     surface_EHr[ifx], surface_EHi[ifx], H_s, E_s, surface_vertices,
                     n_surface_vertices, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot);
@@ -1680,7 +1518,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         if (nvertices > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], H_s, E_s, vertices,
                                    nvertices, components, ncomponents, tind,
                                    f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe, params.dimension, J_tot, intmethod);
@@ -1690,7 +1528,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 
     //fprintf(stderr,"Pos 02a:\n");
-    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && exdetintegral) {
+    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % Np == 0) {
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
@@ -1707,7 +1545,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         fftw_execute(pey_t);
         //fprintf(stderr,"Pos 02a [2]:\n");
         //Iterate over each mode
-        for (int im = 0; im < Ndetmodes; im++) {
+        for (int im = 0; im < D_tilde.num_det_modes(); im++) {
           //Now go back to column-major
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
@@ -1720,8 +1558,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t_cm[j][i] = Ex_t_cm[j][i] * Pupil[j][i] * Dx_tilde[j][i][im];
-              Ey_t_cm[j][i] = Ey_t_cm[j][i] * Pupil[j][i] * Dy_tilde[j][i][im];
+              Ex_t_cm[j][i] = Ex_t_cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
+              Ey_t_cm[j][i] = Ey_t_cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
             }
             //fprintf(stderr,"Pos 02a [4]:\n");
             //now iterate over each frequency to extract phasors at
@@ -1729,7 +1567,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                              cphaseTermE)
           {
 #pragma omp for
-            for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+            for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
               //wavelength in air
               lambda_an_t = light_v / f_ex_vec[ifx];
               //fprintf(stdout,"lambda_an_t = %e, light_v = %e, z_obs = %e\n",lambda_an_t,light_v,z_obs);
@@ -1739,24 +1577,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               //now loop over all angular frequencies
               for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
                 for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-                  if ((lambda_an_t * fx_vec[i] * lambda_an_t * fx_vec[i] +
-                       lambda_an_t * fy_vec[j] * lambda_an_t * fy_vec[j]) < 1) {
+                  if ((lambda_an_t * f_vec.x[i] * lambda_an_t * f_vec.x[i] +
+                       lambda_an_t * f_vec.y[j] * lambda_an_t * f_vec.y[j]) < 1) {
 
                     if (!air_interface_present) {
                       /*This had to be fixed since we must take into account the refractive index of the medium.
 
            */
                       kprop = exp(I * z_obs * 2. * dcpi / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i] / refind, 2.) -
-                                       pow(lambda_an_t * fy_vec[j] / refind, 2.)));
-                      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,fx_vec[i],fy_vec[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
+                                       pow(lambda_an_t * f_vec.y[j] / refind, 2.)));
+                      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
                     } else {
                       kprop = exp(I * (-air_interface + z_obs) * 2. * dcpi / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i] / refind, 2.) -
-                                       pow(lambda_an_t * fy_vec[j] / refind, 2.))) *
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
+                                       pow(lambda_an_t * f_vec.y[j] / refind, 2.))) *
                               exp(I * air_interface * 2. * dcpi / lambda_an_t *
-                                  sqrt(1. - pow(lambda_an_t * fx_vec[i], 2.) -
-                                       pow(lambda_an_t * fy_vec[j], 2.)));
+                                  sqrt(1. - pow(lambda_an_t * f_vec.x[i], 2.) -
+                                       pow(lambda_an_t * f_vec.y[j], 2.)));
                     }
                   } else
                     kprop = 0.;
@@ -1827,7 +1665,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -1950,7 +1788,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (j = 1; j < J_tot; j++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2106,7 +1944,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2223,7 +2061,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (k = 1; k < K_tot; k++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2381,7 +2219,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 1; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure) {
+              if (params.is_structure) {
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2499,7 +2337,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 1; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure) {
+              if (params.is_structure) {
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2638,7 +2476,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2752,7 +2590,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (k = 1; k < K_tot; k++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -2888,7 +2726,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 1; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3008,7 +2846,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 1; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3147,7 +2985,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 1; i < I_tot; i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3233,7 +3071,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3353,7 +3191,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (j = 1; j < J_tot; j++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3491,7 +3329,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for (i = 0; i < (I_tot + 1); i++) {
               rho = 0.;
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -3985,7 +3823,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_bound; j++)
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4013,7 +3851,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (i = 0; i < (I_tot + 1); i++) {
             for (k = 0; k < K_tot; k++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4061,7 +3899,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot; j++)
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4091,7 +3929,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (i = 0; i < (I_tot + 1); i++) {
             for (j = 0; j < J_tot; j++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4157,7 +3995,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_p1_bound; j++)
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4188,7 +4026,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_p1_bound; j++) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4237,7 +4075,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_p1_bound; j++)
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4271,7 +4109,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (i = 0; i < I_tot; i++) {
             for (k = 0; k < K_tot; k++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4337,7 +4175,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot; j++)
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4366,7 +4204,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < (J_tot + 1); j++)
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4408,7 +4246,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot; j++)
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4438,7 +4276,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (i = 0; i < I_tot; i++) {
             for (j = 0; j < J_tot; j++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4488,7 +4326,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_bound; j++)
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4518,7 +4356,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (j = 0; j < J_tot_bound; j++) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
-              if (is_structure)
+              if (params.is_structure)
                 if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
                   if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
                     k_loc = k - structure[i][1];
@@ -4775,12 +4613,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     if (TIME_EXEC) { timer.click(); }
 
-    if (params.exphasorssurface || params.exphasorsvolume || exdetintegral || (nvertices > 0)) {
+    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || (nvertices > 0)) {
       if (params.source_mode == SourceMode::steadystate) {
         E.add_to_angular_norm(tind, Nsteps, params);
         H.add_to_angular_norm(tind, Nsteps, params);
 
-        for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+        for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
           extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
           extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
         }
@@ -4790,7 +4628,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           E.add_to_angular_norm(tind, Npe, params);
           H.add_to_angular_norm(tind, Npe, params);
 
-          for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
             extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Npe);
           }
@@ -4874,14 +4712,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   //fprintf(stderr,"Pos 13\n");
   if (params.run_mode == RunMode::complete && params.exphasorssurface)
-    for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       normaliseSurface(surface_EHr[ifx], surface_EHi[ifx], surface_vertices, n_surface_vertices,
                        E_norm[ifx], H_norm[ifx]);
       //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
   if (params.run_mode == RunMode::complete && (nvertices > 0))
-    for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       normaliseVertices(camplitudesR[ifx], camplitudesI[ifx], vertices, nvertices, components,
                         ncomponents, E_norm[ifx], H_norm[ifx]);
       fprintf(stderr, "E_norm[%d]: %e %e\n", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
@@ -4889,9 +4727,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
 
   //fprintf(stderr,"Pos 14\n");
-  if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && exdetintegral) {
-    for (int im = 0; im < Ndetmodes; im++)
-      for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+  if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
+    for (int im = 0; im < D_tilde.num_det_modes(); im++)
+      for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
         Idx[ifx][im] = Idx[ifx][im] / E_norm[ifx];
         Idy[ifx][im] = Idy[ifx][im] / E_norm[ifx];
 
@@ -5036,7 +4874,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     dims[0] = n_surface_vertices;
     dims[1] = 3;
     vertex_list = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    vertex_list_ptr = castMatlab2DArray(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
+    vertex_list_ptr = cast_matlab_2D_array(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
 
     //now populate the vertex list
     for (i = 0; i < n_surface_vertices; i++) {
@@ -5050,7 +4888,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     plhs[23] = mx_surface_amplitudes;
     plhs[24] = mx_surface_facets;
 
-    freeCastMatlab2DArray(vertex_list_ptr);
+    free_cast_matlab_2D_array(vertex_list_ptr);
   } else {//still set outputs
     ndims = 2;
     dims[0] = 0;
@@ -5066,42 +4904,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   //fprintf(stderr,"Pos 17\n");
   /*Free the additional data structures used to cast the matlab arrays*/
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    freeCastMatlab2DArrayInt(surface_vertices);
-    freeCastMatlab3DArray(surface_EHr, N_f_ex_vec);
-    freeCastMatlab3DArray(surface_EHi, N_f_ex_vec);
+    free_cast_matlab_2D_array(surface_vertices);
+    free_cast_matlab_3D_array(surface_EHr, f_ex_vec.size());
+    free_cast_matlab_3D_array(surface_EHi, f_ex_vec.size());
 
     mxDestroyArray(mx_surface_vertices);
   }
 
   if (nvertices > 0) {
-    freeCastMatlab2DArrayInt(vertices);
-    freeCastMatlab3DArray(camplitudesR, N_f_ex_vec);
-    freeCastMatlab3DArray(camplitudesI, N_f_ex_vec);
+    free_cast_matlab_2D_array(vertices);
+    free_cast_matlab_3D_array(camplitudesR, f_ex_vec.size());
+    free_cast_matlab_3D_array(camplitudesI, f_ex_vec.size());
   }
 
-  if (exdetintegral == 1) {
-    freeCastMatlab2DArray(Pupil);
-    freeCastMatlab2DArray(Idx_re);
-    freeCastMatlab2DArray(Idx_im);
-    freeCastMatlab2DArray(Idy_re);
-    freeCastMatlab2DArray(Idy_im);
-    for (int ifx = 0; ifx < N_f_ex_vec; ifx++) {
+  if (params.exdetintegral) {
+    free_cast_matlab_2D_array(Idx_re);
+    free_cast_matlab_2D_array(Idx_im);
+    free_cast_matlab_2D_array(Idy_re);
+    free_cast_matlab_2D_array(Idy_im);
+    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       free(Idx[ifx]);
       free(Idy[ifx]);
     }
     free(Idx);
     free(Idy);
-    for (int j = 0; j < Nfy_vec; j++) {
-      for (int i = 0; i < Nfx_vec; i++) {
-        free(Dx_tilde[j][i]);
-        free(Dy_tilde[j][i]);
-      }
-      free(Dx_tilde[j]);
-      free(Dy_tilde[j]);
-    }
-    free(Dx_tilde);
-    free(Dy_tilde);
-
     fftw_free(Ex_t);
     fftw_free(Ey_t);
     fftw_destroy_plan(pey_t);
@@ -5116,44 +4942,41 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Position 10\n");
     */
   }
-  if (exi_present) freeCastMatlab3DArray(exi, params.Nt);
-  if (eyi_present) freeCastMatlab3DArray(eyi, params.Nt);
+  if (exi_present) free_cast_matlab_3D_array(exi, params.Nt);
+  if (eyi_present) free_cast_matlab_3D_array(eyi, params.Nt);
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {
-    freeCastMatlab3DArray(Isource.imag, (K1.index - K0.index + 1));
-    freeCastMatlab3DArray(Isource.real, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
   }
   if (J0.apply || J1.apply) {
-    freeCastMatlab3DArray(Jsource.imag, (K1.index - K0.index + 1));
-    freeCastMatlab3DArray(Jsource.real, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Jsource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Jsource.real, (K1.index - K0.index + 1));
   }
   if (K0.apply || K1.apply) {
-    freeCastMatlab3DArray(Ksource.imag, (J1.index - J0.index + 1));
-    freeCastMatlab3DArray(Ksource.real, (J1.index - J0.index + 1));
+    free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
+    free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
   }
 
   if (!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) ||
         (N_fieldsample_n == 0))) {
-    freeCastMatlab4DArray(fieldsample, N_fieldsample_k, N_fieldsample_n);
+    free_cast_matlab_4D_array(fieldsample, N_fieldsample_k, N_fieldsample_n);
   }
 
-  freeCastMatlab2DArray(iwave_lEx_Rbs);
-  freeCastMatlab2DArray(iwave_lEx_Ibs);
-  freeCastMatlab2DArray(iwave_lEy_Rbs);
-  freeCastMatlab2DArray(iwave_lEy_Ibs);
+  free_cast_matlab_2D_array(iwave_lEx_Rbs);
+  free_cast_matlab_2D_array(iwave_lEx_Ibs);
+  free_cast_matlab_2D_array(iwave_lEy_Rbs);
+  free_cast_matlab_2D_array(iwave_lEy_Ibs);
 
-  freeCastMatlab2DArray(iwave_lHx_Rbs);
-  freeCastMatlab2DArray(iwave_lHx_Ibs);
-  freeCastMatlab2DArray(iwave_lHy_Rbs);
-  freeCastMatlab2DArray(iwave_lHy_Ibs);
+  free_cast_matlab_2D_array(iwave_lHx_Rbs);
+  free_cast_matlab_2D_array(iwave_lHx_Ibs);
+  free_cast_matlab_2D_array(iwave_lHy_Rbs);
+  free_cast_matlab_2D_array(iwave_lHy_Ibs);
 
-  //fprintf(stderr,"Pos 21\n");
-  if (is_structure) freeCastMatlab2DArrayInt(structure);
-
-  if (params.dimension == THREE) freeCastMatlab3DArrayUint8(materials, E_s.K_tot + 1);
+  if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
   else
-    freeCastMatlab3DArrayUint8(materials, 0);
+    free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
 #ifndef FDFLAG// Using PS

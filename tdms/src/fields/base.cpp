@@ -45,8 +45,7 @@ complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int
 Field::~Field() {
 
   for (auto &arr : {real, imag})
-    for (char c : {'x', 'y', 'z'})
-      freeCastMatlab3DArray(arr[c], K_tot);
+    for (char c : {'x', 'y', 'z'}) free_cast_matlab_3D_array(arr[c], K_tot);
 }
 
 void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {

@@ -8,7 +8,7 @@ using namespace std;
 void SplitField::allocate() {
 
   for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}){
-    construct3dArray(component, I_tot + 1, J_tot + 1, K_tot + 1);
+    construct_3d_array(component, I_tot + 1, J_tot + 1, K_tot + 1);
   }
 }
 
@@ -37,9 +37,9 @@ SplitField::~SplitField() {
     if (component == nullptr || has_no_elements()) continue;
 
     if (is_matlab_allocated) {
-      freeCastMatlab3DArray(component, K_tot+1);
+      free_cast_matlab_3D_array(component, K_tot + 1);
     } else {
-      destroy3DArray(&component, J_tot+1, K_tot+1);
+      destroy_3D_array(&component, J_tot + 1, K_tot + 1);
     }
   }
 }
