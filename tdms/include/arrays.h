@@ -220,3 +220,76 @@ public:
 
   explicit IncidentField(const mxArray *ptr);
 };
+
+class FieldSample{
+
+private:
+  double**** tensor = nullptr;
+
+public:
+  mxArray* mx;       // Matlab array
+
+  Vector<int> i;     // Indices along the x-direction of locations at which to sample the field
+  Vector<int> j;     // Indices along the y-direction of locations at which to sample the field
+  Vector<int> k;     // Indices along the z-direction of locations at which to sample the field
+  Vector<double> n;  // Vector of the moments of the field to sample
+
+  explicit FieldSample(const mxArray *ptr);
+
+  bool all_vectors_are_non_empty() const{
+          return i.size() > 0 && j.size() > 0 && k.size() > 0 && n.size() > 0;
+  };
+
+  inline double*** operator[] (int value) const { return tensor[value]; };
+
+  ~FieldSample();
+};
+
+/**
+ * List of field components as integers
+ */
+class FieldComponentsVector: public Vector<int>{
+public:
+
+  FieldComponentsVector() = default;
+
+  void initialise(const mxArray *ptr);
+
+  /**
+   * Get the index of a particular integer in this vector. If it does not exist
+   * then return -1. Returns the first occurrence.
+   * @param value value to find in the vector
+   * @return index or -1
+   */
+  int index(int value);
+};
+
+class Vertices: public Matrix<int>{
+public:
+
+  Vertices() = default;
+
+  void initialise(const mxArray *ptr);
+
+  int n_vertices(){ return n_rows; }
+
+  ~Vertices(){
+    if (has_elements()){
+      free_cast_matlab_2D_array(matrix);
+    }
+  };
+};
+
+/**
+ * Complex amplitude samples. Abbreviated to CAmpSample in MATLAB code
+ */
+class ComplexAmplitudeSample {
+
+public:
+  Vertices vertices;                 // N x 3 matrix of indices to sample
+  FieldComponentsVector components;  //
+
+  explicit ComplexAmplitudeSample(const mxArray *ptr);
+
+  int n_vertices(){ return vertices.n_vertices(); }
+};

@@ -122,8 +122,13 @@ GratingStructure::~GratingStructure() {
 
 template <typename T>
 Vector<T>::Vector(const mxArray *ptr) {
-  vector = mxGetPr(ptr);
   n = (int)mxGetNumberOfElements(ptr);
+  vector = (T*) malloc((unsigned) (n * sizeof(T)));
+
+  auto matlab_ptr = mxGetPr(ptr);
+  for (int i = 0; i < n; i++){
+    vector[i] = (T) matlab_ptr[i];
+  }
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
@@ -165,7 +170,7 @@ void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   }
 
   auto dims = (int *)mxGetDimensions(ptr);
-  
+
   if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols){
     throw runtime_error("Pupil has dimension "+ to_string(dims[0]) + "x"
                         + to_string(dims[1]) + " but it needed to be " +
@@ -261,4 +266,90 @@ IncidentField::IncidentField(const mxArray *ptr){
   assert_is_struct_with_n_fields(ptr, 2, "tdfield");
   x = component_in(ptr, "exi");
   y = component_in(ptr, "eyi");
+}
+
+FieldSample::FieldSample(const mxArray *ptr){
+
+  if (mxIsEmpty(ptr)){
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 4, "fieldsample");
+  i = Vector<int>(ptr_to_vector_or_empty_in(ptr, "i", "fieldsample"));
+  j = Vector<int>(ptr_to_vector_or_empty_in(ptr, "j", "fieldsample"));
+  k = Vector<int>(ptr_to_vector_or_empty_in(ptr, "k", "fieldsample"));
+  n = Vector<double>(ptr_to_vector_or_empty_in(ptr, "n", "fieldsample"));
+
+  int n_dims = 4;
+  if (all_vectors_are_non_empty()){
+    int dims[4] = {i.size(), j.size(), k.size(), n.size()};
+    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+    tensor = cast_matlab_4D_array(mxGetPr(mx), i.size(), j.size(), k.size(), n.size());
+  } else {
+    int dims[4] = {0, 0, 0, 0};
+    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+  }
+}
+
+FieldSample::~FieldSample() {
+  if (all_vectors_are_non_empty()) {
+    free_cast_matlab_4D_array(tensor, k.size(), n.size());
+  }
+}
+
+void FieldComponentsVector::initialise(const mxArray *ptr) {
+
+  auto element = ptr_to_matrix_in(ptr, "components", "campssample");
+  if (mxIsEmpty(element)){
+    return;
+  }
+
+  auto dims = mxGetDimensions(element);
+  vector = (int *) mxGetPr((mxArray *) element);
+  n = max(dims[0], dims[1]);
+}
+
+int FieldComponentsVector::index(int value) {
+
+  for (int i = 0; i < n; i++){
+    if (vector[i] == value) return i;
+  }
+
+  return -1;
+}
+
+void Vertices::initialise(const mxArray *ptr) {
+
+  auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
+  if (mxIsEmpty(element)){
+    return;
+  }
+
+  auto dims = mxGetDimensions(element);
+  int n_vertices = n_rows = dims[0];
+  n_cols = dims[1];
+
+  if (n_cols != 3){
+    throw runtime_error("Second dimension in campssample.vertices must be 3");
+  }
+
+  cerr << "found vertices (" << n_vertices << " x 3)\n";
+  matrix = cast_matlab_2D_array((int *)mxGetPr(element), n_vertices, n_cols);
+
+  for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
+    for (int k = 0; k < n_cols; k++) {
+      matrix[k][j] -= 1;
+    }
+}
+
+ComplexAmplitudeSample::ComplexAmplitudeSample(const mxArray *ptr) {
+
+  if (mxIsEmpty(ptr)){
+    cerr << "campssample is empty" << endl;
+    return;
+  }
+
+  assert_is_struct_with_n_fields(ptr, 2, "campssample");
+  vertices.initialise(ptr);
+  components.initialise(ptr);
 }

@@ -68,13 +68,14 @@ class HDF5File(dict):
         """
 
         for key, value in self.items():
-
             if key not in other:
                 return False  # Key did not match
 
             other_value = other[key]
 
             if value.shape != other_value.shape:
+                print(f"Array shape in {key} was not the same. "
+                      f"{value.shape} ≠ {other_value.shape}")
                 return False  # Shapes did not match
 
             r_ms_diff = relative_mean_squared_difference(value, other_value)
