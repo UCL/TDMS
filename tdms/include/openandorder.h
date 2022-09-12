@@ -44,8 +44,8 @@ void check_files_can_be_accessed(ArgumentNamespace &args);
  * @brief Iterate through the matrix names and assign the pointer to each matrix
  * into the appropriate entry of pointers
  * 
- * @param expected 
- * @param actual 
- * @param pointers 
+ * @param expected The names of the matrices in the MATLAB file.
+ * @param actual The actual matrices in the MATLAB file.
+ * @param pointers Pointers to the matrices.
  */
 void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual, const mxArray **pointers);
