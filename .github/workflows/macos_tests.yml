@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw llvm libomp python3
+          brew install fftw libomp python3
 
       - name: Install Python dependencies
         shell: bash
