@@ -15,7 +15,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-11
           - macos-12
           # TODO: can change to macos-latest (but it's currently aliased to macos-11)
         build_type:
@@ -75,6 +74,8 @@ jobs:
           ctest -C ${{ matrix.build_type }} --extra-verbos
 
       - name: Run TDMS system tests
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        # run system tests in mac only on pushes to main (they are a bit slow)
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
