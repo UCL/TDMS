@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fdtdgridinitialiser_4',['fdtdGridInitialiser',['../classfdtdGridInitialiser.html',1,'']]]
+  ['developer_20documentation_7',['Developer documentation',['../index.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['planarinterface_12',['PlanarInterface',['../structPlanarInterface.html',1,'']]]
+  ['num_5fnonzero_5fcoeffs_15',['num_nonzero_coeffs',['../classinterpScheme.html#afadf7afe490a6c936e74ef76df623066',1,'interpScheme']]]
 ];
