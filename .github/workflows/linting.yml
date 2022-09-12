@@ -1,4 +1,4 @@
-name: Run code linting
+name: Run python code linting
 
 on:
   push:
