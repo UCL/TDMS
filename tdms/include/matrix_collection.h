@@ -9,6 +9,9 @@ public:
     int n_matrices = 0;            //< The number of matrices in the collection
     char** matrix_names = nullptr; //< The names of the matrices
 
+    /** @brief Construct a new Matrix Collection object */
+    MatrixCollection() = default;
+
     /**
      * @brief Construct a new Matrix Collection object
      * 
