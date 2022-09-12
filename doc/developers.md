@@ -42,7 +42,7 @@ And please document the header itself with at least:
 ```{.cpp}
 /**
  * @file filename.h
- * 
+ *
  * Describe the functions/classes in here.
  */
  #pragma once
@@ -54,6 +54,9 @@ firefox html/index.html # or your web browser of choice
 ```
 You should be able to find and read what you've changed.
 Don't worry about doxygen for the source files (although obviously please do write helpful comments there).
+
+For Python code (e.g. in the tests) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
+To apply automatic code styling to staged changes in git use [`pre-commit`](https://pre-commit.com/).
 
 ### Compiling and debugging
 
@@ -81,5 +84,5 @@ spdlog::debug("Send help");
 
 ## Where's the main ?
 
-The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup. 
+The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
 The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
