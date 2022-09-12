@@ -118,13 +118,14 @@ Code style and other admin</h2>
 <div class="line"><span class="keywordtype">double</span> add(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b);</div>
 </div><!-- fragment --><p>And please document the header itself with at least: </p><div class="fragment"><div class="line"><span class="comment">/**</span></div>
 <div class="line"><span class="comment"> * @file filename.h</span></div>
-<div class="line"><span class="comment"> * </span></div>
+<div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> * Describe the functions/classes in here.</span></div>
 <div class="line"><span class="comment"> */</span></div>
 <div class="line"><span class="preprocessor"> #pragma once</span></div>
 </div><!-- fragment --><p>You can quickly check the documentation for your changes look correct with: </p><div class="fragment"><div class="line">doxygen doc/Doxygen</div>
 <div class="line">firefox html/index.html # or your web browser of choice</div>
 </div><!-- fragment --><p>You should be able to find and read what you've changed. Don't worry about doxygen for the source files (although obviously please do write helpful comments there).</p>
+<p>For Python code (e.g. in the tests) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git use <a href="https://pre-commit.com/"><code>pre-commit</code></a>.</p>
 <h2><a class="anchor" id="autotoc_md4"></a>
 Compiling and debugging</h2>
 <p>Once you've checked the code out, compile with: </p><div class="fragment"><div class="line">cd tdms</div>
