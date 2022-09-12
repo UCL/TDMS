@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'doc/**'
+      - 'doc/latex/**'
 jobs:
   build_latex:
     runs-on: ubuntu-latest

@@ -33,4 +33,4 @@ must pass locally and on CI for a change to be merged.
 
 ### Developer documentation
 
-We have some more detailed developer documentation (C++ class structure, code style, etc) over [here](https://github-pages.ucl.ac.uk/TDMS) on our `gh-pages` site.
+We have some more detailed [developer documentation](https://github-pages.ucl.ac.uk/TDMS) (C++ class structure, code style, etc) on our `gh-pages` site.
