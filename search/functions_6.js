@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['value_5fof_5fattribute_43',['value_of_attribute',['../classfdtdGridInitialiser.html#a8946454aeb6c0adcd12dca9e4515477d',1,'fdtdGridInitialiser']]]
+  ['has_5fgrid_5ffilename_91',['has_grid_filename',['../classArgumentNamespace.html#a9e06546d075820aa48683294e4ff62ed',1,'ArgumentNamespace']]],
+  ['have_5fcorrect_5fnumber_5fof_5ffilenames_92',['have_correct_number_of_filenames',['../classArgumentNamespace.html#a15954bd490626afc032eef379e16949b',1,'ArgumentNamespace']]],
+  ['have_5fflag_93',['have_flag',['../classArgumentNamespace.html#aa79217b5762396d116854b9d8935af99',1,'ArgumentNamespace']]]
 ];

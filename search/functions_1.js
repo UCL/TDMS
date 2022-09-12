@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['get_5fpriority_36',['get_priority',['../classinterpScheme.html#a20e5794e3467c307b49dabe787414d2d',1,'interpScheme']]]
+  ['best_5finterp_5fscheme_81',['best_interp_scheme',['../interpolation__methods_8h.html#af985407a8156f345904eecf2b785c49b',1,'interpolation_methods.cpp']]]
 ];

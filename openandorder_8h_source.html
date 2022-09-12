@@ -87,30 +87,72 @@ $(document).ready(function(){initNavTree('openandorder_8h_source.html',''); init
 <div class="title">openandorder.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;mat_io.h&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;argument_parser.h&quot;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;matrix_collection.h&quot;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8cpp.html#ad88c648b60cb6276f260a53934cd27d0">openandorder</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *mat_filename, <span class="keywordtype">char</span> **matrix_names, <span class="keyword">const</span> mxArray **matrix_ptrs, <span class="keywordtype">int</span> n_matrices);</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8cpp.html#ad746947a84d8389f4254306e2a635283">saveoutput</a>(mxArray **plhs, <span class="keyword">const</span> <span class="keywordtype">int</span> *matricestosave, <span class="keywordtype">char</span> *matrixnames[], <span class="keywordtype">int</span> nmatrices, <span class="keyword">const</span> <span class="keywordtype">char</span> *outputfilename);</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> check_files_can_be_accessed(<a class="code" href="classArgumentNamespace.html">ArgumentNamespace</a> &amp;args);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8cpp.html#aea58649d1a7e45683251385357bfd2c0">assign_matrix_pointers</a>(<a class="code" href="classMatrixCollection.html">MatrixCollection</a> &amp;expected, <a class="code" href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a> &amp;actual, <span class="keyword">const</span> mxArray **pointers);</div>
+<a href="openandorder_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @file openandorder.h</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief Launch TDMS and file IO </span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * Code for processing command line arguments, opening input files,  passing</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * matrices to the mexFunction and writing the output to the specified output</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * file.</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mat__io_8h.html">mat_io.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="argument__parser_8h.html">argument_parser.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;matrix_collection.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> * @brief Open the input mat file and check they are as expected</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> * @param mat_filename The MATLAB filename</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> * @param matrix_names names of the matrices in the MATLAB file</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> * @param matrix_ptrs pointers to arrays in C++ that will be populated by the MATLAB matrices</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * @param n_matrices the number of matrices in the MATLAB file</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0">openandorder</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *mat_filename, <span class="keywordtype">char</span> **matrix_names, <span class="keyword">const</span> mxArray **matrix_ptrs, <span class="keywordtype">int</span> n_matrices);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * @brief Save the resultant matrices into a file with name outputfilename</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> * Throws a runtime error if the output file name cannot be opened.</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> * @param plhs the matrices themselves</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> * @param matricestosave the indexes of the matrices to save</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> * @param matrixnames names of the matrices to save</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> * @param nmatrices the number of matrices to save</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * @param outputfilename name of the output file</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8h.html#ad746947a84d8389f4254306e2a635283">saveoutput</a>(mxArray **plhs, <span class="keyword">const</span> <span class="keywordtype">int</span> *matricestosave, <span class="keywordtype">char</span> *matrixnames[], <span class="keywordtype">int</span> nmatrices, <span class="keyword">const</span> <span class="keywordtype">char</span> *outputfilename);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"> * @brief Check that all input and output files can be accessed</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"> * @param args the ArgumentNamespace</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8h.html#a295bc76eea60fd4b94444926f34e2203">check_files_can_be_accessed</a>(<a class="code" href="classArgumentNamespace.html">ArgumentNamespace</a> &amp;args);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment"> * @brief Iterate through the matrix names and assign the pointer to each matrix</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"> * into the appropriate entry of pointers</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"> * @param expected The names of the matrices in the MATLAB file.</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"> * @param actual The actual matrices in the MATLAB file.</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"> * @param pointers Pointers to the matrices.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">void</span> <a class="code" href="openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0">assign_matrix_pointers</a>(<a class="code" href="classMatrixCollection.html">MatrixCollection</a> &amp;expected, <a class="code" href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a> &amp;actual, <span class="keyword">const</span> mxArray **pointers);</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aopenandorder_8cpp_html_ad88c648b60cb6276f260a53934cd27d0"><div class="ttname"><a href="openandorder_8cpp.html#ad88c648b60cb6276f260a53934cd27d0">openandorder</a></div><div class="ttdeci">void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices)</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:77</div></div>
-<div class="ttc" id="aclassMatFileMatrixCollection_html"><div class="ttname"><a href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a></div><div class="ttdef"><b>Definition:</b> matrix_collection.h:22</div></div>
-<div class="ttc" id="aopenandorder_8cpp_html_ad746947a84d8389f4254306e2a635283"><div class="ttname"><a href="openandorder_8cpp.html#ad746947a84d8389f4254306e2a635283">saveoutput</a></div><div class="ttdeci">void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename)</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:108</div></div>
+<div class="ttc" id="aopenandorder_8h_html_aea58649d1a7e45683251385357bfd2c0"><div class="ttname"><a href="openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0">assign_matrix_pointers</a></div><div class="ttdeci">void assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers)</div><div class="ttdoc">Iterate through the matrix names and assign the pointer to each matrix into the appropriate entry of ...</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:132</div></div>
+<div class="ttc" id="aclassMatFileMatrixCollection_html"><div class="ttname"><a href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a></div><div class="ttdef"><b>Definition:</b> matrix_collection.h:39</div></div>
 <div class="ttc" id="aclassMatrixCollection_html"><div class="ttname"><a href="classMatrixCollection.html">MatrixCollection</a></div><div class="ttdef"><b>Definition:</b> matrix_collection.h:6</div></div>
-<div class="ttc" id="aclassArgumentNamespace_html"><div class="ttname"><a href="classArgumentNamespace.html">ArgumentNamespace</a></div><div class="ttdef"><b>Definition:</b> argument_parser.h:5</div></div>
-<div class="ttc" id="aopenandorder_8cpp_html_aea58649d1a7e45683251385357bfd2c0"><div class="ttname"><a href="openandorder_8cpp.html#aea58649d1a7e45683251385357bfd2c0">assign_matrix_pointers</a></div><div class="ttdeci">void assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers)</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:142</div></div>
+<div class="ttc" id="aclassArgumentNamespace_html"><div class="ttname"><a href="classArgumentNamespace.html">ArgumentNamespace</a></div><div class="ttdoc">Wraps a vector of string CL arguments with some helpful functionality.</div><div class="ttdef"><b>Definition:</b> argument_parser.h:12</div></div>
+<div class="ttc" id="aopenandorder_8h_html_ad746947a84d8389f4254306e2a635283"><div class="ttname"><a href="openandorder_8h.html#ad746947a84d8389f4254306e2a635283">saveoutput</a></div><div class="ttdeci">void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename)</div><div class="ttdoc">Save the resultant matrices into a file with name outputfilename Throws a runtime error if the output...</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:102</div></div>
+<div class="ttc" id="amat__io_8h_html"><div class="ttname"><a href="mat__io_8h.html">mat_io.h</a></div><div class="ttdoc">Includes MATLAB headers for I/O.</div></div>
+<div class="ttc" id="aopenandorder_8h_html_a295bc76eea60fd4b94444926f34e2203"><div class="ttname"><a href="openandorder_8h.html#a295bc76eea60fd4b94444926f34e2203">check_files_can_be_accessed</a></div><div class="ttdeci">void check_files_can_be_accessed(ArgumentNamespace &amp;args)</div><div class="ttdoc">Check that all input and output files can be accessed.</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:123</div></div>
+<div class="ttc" id="aopenandorder_8h_html_ad88c648b60cb6276f260a53934cd27d0"><div class="ttname"><a href="openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0">openandorder</a></div><div class="ttdeci">void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices)</div><div class="ttdoc">Open the input mat file and check they are as expected.</div><div class="ttdef"><b>Definition:</b> openandorder.cpp:74</div></div>
+<div class="ttc" id="aargument__parser_8h_html"><div class="ttname"><a href="argument__parser_8h.html">argument_parser.h</a></div><div class="ttdoc">Parse the command line options.</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_dfaedd75726dc0f14b5d7f96fe9da9ad.html">tdms</a></li><li class="navelem"><a class="el" href="dir_31151eb6fe72a8c6f09675be35b4e99c.html">include</a></li><li class="navelem"><b>openandorder.h</b></li>
+    <li class="navelem"><a class="el" href="dir_dfaedd75726dc0f14b5d7f96fe9da9ad.html">tdms</a></li><li class="navelem"><a class="el" href="dir_31151eb6fe72a8c6f09675be35b4e99c.html">include</a></li><li class="navelem"><a class="el" href="openandorder_8h.html">openandorder.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>

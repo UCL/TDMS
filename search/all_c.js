@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value_5fof_5fattribute_21',['value_of_attribute',['../classfdtdGridInitialiser.html#a8946454aeb6c0adcd12dca9e4515477d',1,'fdtdGridInitialiser']]]
+  ['saveoutput_51',['saveoutput',['../openandorder_8h.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp'],['../openandorder_8cpp.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp']]],
+  ['scheme_5fvalue_52',['scheme_value',['../interpolation__methods_8h.html#a0c71c7b51a760b8fcecc30d8196aee23',1,'interpolation_methods.h']]]
 ];

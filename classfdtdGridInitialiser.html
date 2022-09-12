@@ -92,18 +92,25 @@ $(document).ready(function(){initNavTree('classfdtdGridInitialiser.html',''); in
 <div class="title">fdtdGridInitialiser Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class to initialise an FDTD grid from a MATLAB file.  
+ <a href="classfdtdGridInitialiser.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="fdtd__grid__initialiser_8h_source.html">fdtd_grid_initialiser.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a68572b27a73480baa213baf93360f7cf"><td class="memItemLeft" align="right" valign="top"><a id="a68572b27a73480baa213baf93360f7cf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>fdtdGridInitialiser</b> (const mxArray *fdtd_pointer, const char *mat_filename)</td></tr>
+<tr class="memitem:a68572b27a73480baa213baf93360f7cf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser</a> (const mxArray *fdtd_pointer, const char *mat_filename)</td></tr>
+<tr class="memdesc:a68572b27a73480baa213baf93360f7cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new fdtd Grid Initialiser object.  <a href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">More...</a><br /></td></tr>
 <tr class="separator:a68572b27a73480baa213baf93360f7cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a062454c2a78cc33365598cd3b615835e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">add_tensor</a> (const std::string &amp;name)</td></tr>
+<tr class="memdesc:a062454c2a78cc33365598cd3b615835e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an FDTD grid attribute to a tensor full of zeros.  <a href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">More...</a><br /></td></tr>
 <tr class="separator:a062454c2a78cc33365598cd3b615835e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a8946454aeb6c0adcd12dca9e4515477d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classfdtdGridInitialiser.html#a8946454aeb6c0adcd12dca9e4515477d">value_of_attribute</a> (const std::string &amp;key)</td></tr>
+<tr class="memdesc:a8946454aeb6c0adcd12dca9e4515477d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a value from a integer attribute of the FDTD grid defined in a .mat file.  <a href="classfdtdGridInitialiser.html#a8946454aeb6c0adcd12dca9e4515477d">More...</a><br /></td></tr>
 <tr class="separator:a8946454aeb6c0adcd12dca9e4515477d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -118,6 +125,46 @@ const char *&#160;</td><td class="memItemRight" valign="bottom"><b>mat_filename<
 std::vector&lt; mwSize &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dimensions</b></td></tr>
 <tr class="separator:a0fd0f23a4e79b039d4d2d906d0e4a2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A class to initialise an FDTD grid from a MATLAB file. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a68572b27a73480baa213baf93360f7cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68572b27a73480baa213baf93360f7cf">&#9670;&nbsp;</a></span>fdtdGridInitialiser()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">fdtdGridInitialiser::fdtdGridInitialiser </td>
+          <td>(</td>
+          <td class="paramtype">const mxArray *&#160;</td>
+          <td class="paramname"><em>fdtd_pointer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>mat_filename</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a new fdtd Grid Initialiser object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fdtd_pointer</td><td>pointer to the FDTD grid </td></tr>
+    <tr><td class="paramname">mat_filename</td><td>the filename of the MATLAB file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a062454c2a78cc33365598cd3b615835e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a062454c2a78cc33365598cd3b615835e">&#9670;&nbsp;</a></span>add_tensor()</h2>
@@ -134,7 +181,14 @@ std::vector&lt; mwSize &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set a fdtdgrid attribute to a tensor full of zeros </p>
+
+<p>Set an FDTD grid attribute to a tensor full of zeros. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>of the attribute </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -161,7 +215,15 @@ std::vector&lt; mwSize &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get a value from a integer attribute of fdtdgrid defined in a .mat file </p>
+
+<p>Get a value from a integer attribute of the FDTD grid defined in a .mat file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>the name of the attribute </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int the value of the attribute </dd></dl>
 
 </div>
 </div>

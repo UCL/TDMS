@@ -93,38 +93,43 @@ $(document).ready(function(){initNavTree('classArgumentNamespace.html',''); init
 <div class="title">ArgumentNamespace Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Wraps a vector of string CL arguments with some helpful functionality.  
+ <a href="classArgumentNamespace.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="argument__parser_8h_source.html">argument_parser.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="memItemLeft" align="right" valign="top"><a id="ab932c669a76e2bc2c0e2c36e1b8fd5d6"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ArgumentNamespace</b> (int n_args, char *argv[])</td></tr>
+<tr class="memitem:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6">ArgumentNamespace</a> (int n_args, char *argv[])</td></tr>
+<tr class="memdesc:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Argument Namespace object.  <a href="classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6">More...</a><br /></td></tr>
 <tr class="separator:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79217b5762396d116854b9d8935af99"><td class="memItemLeft" align="right" valign="top"><a id="aa79217b5762396d116854b9d8935af99"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>have_flag</b> (std::string const &amp;flag)</td></tr>
+<tr class="memitem:aa79217b5762396d116854b9d8935af99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#aa79217b5762396d116854b9d8935af99">have_flag</a> (std::string const &amp;flag)</td></tr>
+<tr class="memdesc:aa79217b5762396d116854b9d8935af99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the arguments for the flag provided.  <a href="classArgumentNamespace.html#aa79217b5762396d116854b9d8935af99">More...</a><br /></td></tr>
 <tr class="separator:aa79217b5762396d116854b9d8935af99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e06546d075820aa48683294e4ff62ed"><td class="memItemLeft" align="right" valign="top"><a id="a9e06546d075820aa48683294e4ff62ed"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_grid_filename</b> () const</td></tr>
+<tr class="memitem:a9e06546d075820aa48683294e4ff62ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a9e06546d075820aa48683294e4ff62ed">has_grid_filename</a> () const</td></tr>
+<tr class="memdesc:a9e06546d075820aa48683294e4ff62ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Have we been provided with a grid filename?  <a href="classArgumentNamespace.html#a9e06546d075820aa48683294e4ff62ed">More...</a><br /></td></tr>
 <tr class="separator:a9e06546d075820aa48683294e4ff62ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15954bd490626afc032eef379e16949b"><td class="memItemLeft" align="right" valign="top"><a id="a15954bd490626afc032eef379e16949b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>have_correct_number_of_filenames</b> () const</td></tr>
+<tr class="memitem:a15954bd490626afc032eef379e16949b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a15954bd490626afc032eef379e16949b">have_correct_number_of_filenames</a> () const</td></tr>
+<tr class="memdesc:a15954bd490626afc032eef379e16949b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that the correct number of filename arguments are provided (either 2 or 3 non-flag arguments)  <a href="classArgumentNamespace.html#a15954bd490626afc032eef379e16949b">More...</a><br /></td></tr>
 <tr class="separator:a15954bd490626afc032eef379e16949b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bddfb193da659b05938b577db646ff4"><td class="memItemLeft" align="right" valign="top"><a id="a1bddfb193da659b05938b577db646ff4"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><b>input_filename</b> ()</td></tr>
+<tr class="memitem:a1bddfb193da659b05938b577db646ff4"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a1bddfb193da659b05938b577db646ff4">input_filename</a> ()</td></tr>
+<tr class="memdesc:a1bddfb193da659b05938b577db646ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the input filename.  <a href="classArgumentNamespace.html#a1bddfb193da659b05938b577db646ff4">More...</a><br /></td></tr>
 <tr class="separator:a1bddfb193da659b05938b577db646ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a818341ac39c53db017b552800c51f771"><td class="memItemLeft" align="right" valign="top"><a id="a818341ac39c53db017b552800c51f771"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><b>output_filename</b> ()</td></tr>
+<tr class="memitem:a818341ac39c53db017b552800c51f771"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a818341ac39c53db017b552800c51f771">output_filename</a> ()</td></tr>
+<tr class="memdesc:a818341ac39c53db017b552800c51f771"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the output filename.  <a href="classArgumentNamespace.html#a818341ac39c53db017b552800c51f771">More...</a><br /></td></tr>
 <tr class="separator:a818341ac39c53db017b552800c51f771"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75b3ea55ae247796f2e6be7f9654dfc6"><td class="memItemLeft" align="right" valign="top"><a id="a75b3ea55ae247796f2e6be7f9654dfc6"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><b>grid_filename</b> ()</td></tr>
+<tr class="memitem:a75b3ea55ae247796f2e6be7f9654dfc6"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a75b3ea55ae247796f2e6be7f9654dfc6">grid_filename</a> ()</td></tr>
+<tr class="memdesc:a75b3ea55ae247796f2e6be7f9654dfc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the grid filename.  <a href="classArgumentNamespace.html#a75b3ea55ae247796f2e6be7f9654dfc6">More...</a><br /></td></tr>
 <tr class="separator:a75b3ea55ae247796f2e6be7f9654dfc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6823ff8c993686da1770722aac6879ff"><td class="memItemLeft" align="right" valign="top"><a id="a6823ff8c993686da1770722aac6879ff"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>input_filenames</b> ()</td></tr>
+<tr class="memitem:a6823ff8c993686da1770722aac6879ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a6823ff8c993686da1770722aac6879ff">input_filenames</a> ()</td></tr>
+<tr class="memdesc:a6823ff8c993686da1770722aac6879ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all input filenames.  <a href="classArgumentNamespace.html#a6823ff8c993686da1770722aac6879ff">More...</a><br /></td></tr>
 <tr class="separator:a6823ff8c993686da1770722aac6879ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a49fb5859ce9ff5e3088ca235e7b24c62"><td class="memItemLeft" align="right" valign="top"><a id="a49fb5859ce9ff5e3088ca235e7b24c62"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_a_flag_argument</b> (std::string arg)</td></tr>
+<tr class="memitem:a49fb5859ce9ff5e3088ca235e7b24c62"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a49fb5859ce9ff5e3088ca235e7b24c62">is_a_flag_argument</a> (std::string arg)</td></tr>
+<tr class="memdesc:a49fb5859ce9ff5e3088ca235e7b24c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether an argument is a flag (starts '-')  <a href="classArgumentNamespace.html#a49fb5859ce9ff5e3088ca235e7b24c62">More...</a><br /></td></tr>
 <tr class="separator:a49fb5859ce9ff5e3088ca235e7b24c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -142,6 +147,247 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>non_flag_arguments</b></td></tr>
 <tr class="separator:a913711fc2ff1d67406330bfd04da7a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Wraps a vector of string CL arguments with some helpful functionality. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab932c669a76e2bc2c0e2c36e1b8fd5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab932c669a76e2bc2c0e2c36e1b8fd5d6">&#9670;&nbsp;</a></span>ArgumentNamespace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ArgumentNamespace::ArgumentNamespace </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>argv</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new Argument Namespace object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n_args</td><td>the number of arguments (argc) </td></tr>
+    <tr><td class="paramname">argv</td><td>pointers to the arguments (argv) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a75b3ea55ae247796f2e6be7f9654dfc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75b3ea55ae247796f2e6be7f9654dfc6">&#9670;&nbsp;</a></span>grid_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * ArgumentNamespace::grid_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the grid filename. </p>
+<dl class="section return"><dt>Returns</dt><dd>const char* the grid filename </dd></dl>
+
+</div>
+</div>
+<a id="a9e06546d075820aa48683294e4ff62ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e06546d075820aa48683294e4ff62ed">&#9670;&nbsp;</a></span>has_grid_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::has_grid_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Have we been provided with a grid filename? </p>
+<dl class="section return"><dt>Returns</dt><dd>true if there are 3 non-flag arguments (therefore a grid filename) </dd>
+<dd>
+false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a15954bd490626afc032eef379e16949b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15954bd490626afc032eef379e16949b">&#9670;&nbsp;</a></span>have_correct_number_of_filenames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::have_correct_number_of_filenames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check that the correct number of filename arguments are provided (either 2 or 3 non-flag arguments) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if correct </dd>
+<dd>
+false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="aa79217b5762396d116854b9d8935af99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79217b5762396d116854b9d8935af99">&#9670;&nbsp;</a></span>have_flag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::have_flag </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Searches the arguments for the flag provided. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">flag</td><td>to search for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the flag is present </dd>
+<dd>
+false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a1bddfb193da659b05938b577db646ff4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bddfb193da659b05938b577db646ff4">&#9670;&nbsp;</a></span>input_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * ArgumentNamespace::input_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the input filename. </p>
+<dl class="section return"><dt>Returns</dt><dd>const char* the input filename </dd></dl>
+
+</div>
+</div>
+<a id="a6823ff8c993686da1770722aac6879ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6823ff8c993686da1770722aac6879ff">&#9670;&nbsp;</a></span>input_filenames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt; string &gt; ArgumentNamespace::input_filenames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get all input filenames. </p>
+<p>A vector containing the input filename and the grid filename (if provided)</p>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::string&gt; the input filenames </dd></dl>
+
+</div>
+</div>
+<a id="a49fb5859ce9ff5e3088ca235e7b24c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49fb5859ce9ff5e3088ca235e7b24c62">&#9670;&nbsp;</a></span>is_a_flag_argument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::is_a_flag_argument </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>arg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether an argument is a flag (starts '-') </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arg</td><td>the argument </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if arg is a flag </dd>
+<dd>
+false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a818341ac39c53db017b552800c51f771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a818341ac39c53db017b552800c51f771">&#9670;&nbsp;</a></span>output_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * ArgumentNamespace::output_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the output filename. </p>
+<p>The output filename is either the second or third positional argument depending on whether a grid filename is provided or not.</p>
+<dl class="section return"><dt>Returns</dt><dd>const char* the output filename </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="argument__parser_8h_source.html">argument_parser.h</a></li>
 <li>tdms/src/argument_parser.cpp</li>
