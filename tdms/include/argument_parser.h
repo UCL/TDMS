@@ -72,7 +72,7 @@ public:
      * @brief Gets the output filename
      * 
      * The output filename is either the second or third positional argument
-     * depending if a grid filename is provided.
+     * depending on whether a grid filename is provided or not.
      * 
      * @return const char*  the output filename
      */

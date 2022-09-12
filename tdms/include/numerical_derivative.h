@@ -10,9 +10,10 @@
 /**
  * @brief Multiply two arrays of complex numbers element-wise.
  *
- * Performs the complex multiplication of every element of a with every element
- * of b. Stores the result in c. All arrays must be of equal length.  Used
- * internally by first_derivative.
+ * Performs element-wise complex multiplication of the array a with the array b.
+ * a and b must be must be of equal length.
+ * Stores the result in c.
+ * Internally used by first_derivative.
  *
  * @param[in] a Array of complex numbers to multiply with those in b.
  * @param[in] b Array of complex numbers to multiply with those in a.
@@ -27,9 +28,9 @@ void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c,
  * differentiation and shifting by amount delta, using a forward and backward
  * FFT.
  *
- * @param delta The fraction of the spatial step.
- * @param Dk The coefficients.
- * @param N The number of elements in Dk.
+ * @param[in] delta The fraction of the spatial step.
+ * @param[out] Dk Buffer to write the coefficients to.
+ * @param[in] N The number of elements in Dk.
  */
 void init_diff_shift_op(double delta, fftw_complex *Dk, int N);
 
@@ -41,10 +42,10 @@ void init_diff_shift_op(double delta, fftw_complex *Dk, int N);
  * @param[in] in_pb_pf The buffer containing the data to be differentiated.
  * 	    @warning This buffer will be overwritten as part of the computation.
  * @param[out] out_pb_pf The buffer which will contain the computed derivative.
- * @param Dk The coefficients.
- * @param N Number of elements in buffers.
- * @param pf The plan for forward FFT.
- * @param pb The plan for backward FFT.
+ * @param[inout] Dk Buffer to write the coefficients for performing differentiation and shifting in Fourier space.
+ * @param[in] N Number of elements in buffers.
+ * @param[in] pf The plan for forward FFT.
+ * @param[in] pb The plan for backward FFT.
  */
 void first_derivative(fftw_complex *in_pb_pf, fftw_complex *out_pb_pf,
                       fftw_complex *Dk, int N, fftw_plan pf, fftw_plan pb);
