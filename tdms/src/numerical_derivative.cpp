@@ -68,7 +68,7 @@ void first_derivative( fftw_complex *in_pb_pf, fftw_complex *out_pb_pf,
   
   /*
    *  1. Fourier transform the data in in_pb_pf, placing the result into out_pb_pf
-   *  2. Multiply the result of the FT (out_pb_pf) by the Dk coefficients place
+   *  2. Multiply the result of the FT (out_pb_pf) by the Dk coefficients, placing
    *     the result into in_pb_pf.
    *  3. Fourier transform back.
    * 
