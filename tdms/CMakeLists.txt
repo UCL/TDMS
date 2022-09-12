@@ -11,6 +11,9 @@ include(CTest)
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
 
+# Add -fPIC flag
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
@@ -59,6 +62,26 @@ if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
     find_package(Lib_CXX_Mac)
 else()
     find_package(OpenMP REQUIRED)
+endif()
+
+
+# spdlog ----------------------------------------------------------------------
+find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
+if(NOT spdlog_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(spdlog
+            GIT_REPOSITORY https://github.com/gabime/spdlog.git
+            GIT_TAG v1.10.0
+            )
+    FetchContent_MakeAvailable(spdlog)
+endif()
+
+# Set the active logging level to debug if required
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
+        OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+else()
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
 
