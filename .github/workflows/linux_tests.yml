@@ -9,7 +9,7 @@ on:
 
 jobs:
   tests:
-    name: Test - ${{ matrix.os }} - ${{ matrix.build_type }}
+    name: Test - ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -17,8 +17,10 @@ jobs:
         os:
           - ubuntu-latest
         build_type:
-          - Test
           - Release
+        build_testing:
+          - ON
+          - OFF
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -53,7 +55,7 @@ jobs:
         env:
           CXXFLAGS: -Werror
         run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTING=${{ matrix.build_testing }}
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
@@ -62,7 +64,7 @@ jobs:
           cmake --build . --config ${{ matrix.build_type }}
 
       - name: Run TDMS unit tests
-        if: matrix.build_type == 'Test'
+        if: matrix.build_testing == 'ON'
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
