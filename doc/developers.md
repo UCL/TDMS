@@ -107,7 +107,7 @@ module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.1
 cd tdms
 mkdir build; cd build
 cmake .. 
-```
+make install
 </details>
 
 
