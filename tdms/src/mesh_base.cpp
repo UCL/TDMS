@@ -31,7 +31,7 @@ using namespace std;
 
   k j1 i1 k j2 i2 k j3 i3
 
-  This should be interpreted as original i colums moves to column k. original k column moves to column i.
+  This should be interpreted as original i columns moves to column k. original k column moves to column i.
   
 
     i

@@ -12,7 +12,7 @@ using namespace std;
  *
  * (d0,d1) represents any combination of (x,y), (x,z), or (z,y) dimensions.
  *
- * @param n_cells_d0,n_cells_d1 The maxmium number of Yee cells in dimensions d0 and d1
+ * @param n_cells_d0,n_cells_d1 The maximum number of Yee cells in dimensions d0 and d1
  * @param cid0,cid1 The component of the Yee cell index in dimensions d0 and d1
  * @return true Dimension d0 should be used.
  * @return false Dimension d1 should be used. In the event of a tie, prefer this dimension.

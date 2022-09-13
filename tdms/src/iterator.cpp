@@ -85,7 +85,7 @@ using namespace std;
   structure
   tdfield
 
-  fdtdgrid - A structre with the following members, each of which is a 3 dimensional
+  fdtdgrid - A structure with the following members, each of which is a 3 dimensional
   array:
 	   
   fdtdgrid.Exy       (double)
@@ -226,11 +226,11 @@ using namespace std;
 
   dimension - A string of value "3", "TE" or "TM"
 
-  conductive_aux - auxilliary parameters required to model conductive multilayer
+  conductive_aux - auxiliary parameters required to model conductive multilayer
 
-  dispersive_aux - auxilliary parameters required to model dispersive multilayer
+  dispersive_aux - auxiliary parameters required to model dispersive multilayer
 
-  structure - 2 x (I_tot+1) integer array describing the grating stucture, if one is present
+  structure - 2 x (I_tot+1) integer array describing the grating structure, if one is present
 
   f_ex_vec - 1xN or Nx1 vector of frequencies at which to perform the extraction of complex amplitudes
 
@@ -2983,7 +2983,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
    
     //Update equations for the E field
 
-    /*There are two options for determing the update coefficients for the FDTD cell:
+    /*There are two options for determining the update coefficients for the FDTD cell:
 
       1) If cell (i,j,k) is either free space or PML:
          
@@ -7127,7 +7127,7 @@ int is_dispersive_ml(double *ml_gamma, int K_tot){
   return 0;
 }
 
-/*Allocate auxilliary memory for En-1 and J*/
+/*Allocate auxiliary memory for En-1 and J*/
 void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
 			     double ****Exy, double ****Exz, 
 			     double ****Eyx, double ****Eyz,  
@@ -7190,7 +7190,7 @@ void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
     
 }
 
-/*Allocate auxilliary memory for J in case of dispersive background*/
+/*Allocate auxiliary memory for J in case of dispersive background*/
 void allocate_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,
 					double ****Jxy, double ****Jxz, 
 					double ****Jyx, double ****Jyz,  

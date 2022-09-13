@@ -115,9 +115,9 @@ TEST_CASE("interp: cubic interpolation is exact") {
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
     
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4) <= tol));
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4) <= tol));
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4) <= tol));
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
 
     // linear
     double c1 = -2.7182818;

@@ -2,18 +2,18 @@
 Common utilities for running TDMS system tests
 """
 import os
-import h5py
 import shutil
-import numpy as np
-
 from dataclasses import dataclass
-from urllib import request
-from platform import system
-from typing import Union
-from pathlib import Path
-from zipfile import ZipFile
 from functools import wraps
-from subprocess import Popen, PIPE
+from pathlib import Path
+from platform import system
+from subprocess import PIPE, Popen
+from typing import Union
+from urllib import request
+from zipfile import ZipFile
+
+import h5py
+import numpy as np
 
 executable_name = "tdms.exe" if system() == "Windows" else "tdms"
 executable_path = shutil.which(executable_name)
@@ -79,8 +79,10 @@ class HDF5File(dict):
 
             r_ms_diff = relative_mean_squared_difference(value, other_value)
             if r_ms_diff > rtol:
-                print(f"{key} was not within {rtol} to the reference. "
-                      f"relative MSD = {r_ms_diff:.8f})")
+                print(
+                    f"{key} was not within {rtol} to the reference. "
+                    f"relative MSD = {r_ms_diff:.8f})"
+                )
                 return False
 
         return True
@@ -148,8 +150,10 @@ def run_tdms(*args) -> Result:
     """
 
     if executable_path is None:
-        raise AssertionError("Failed to run tdms. Not found in either current "
-                             "working directory or $PATH")
+        raise AssertionError(
+            "Failed to run tdms. Not found in either current "
+            "working directory or $PATH"
+        )
 
     p = Popen([executable_path, *args], stdout=PIPE)
     stdout, _ = p.communicate()
