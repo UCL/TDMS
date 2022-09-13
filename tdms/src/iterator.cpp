@@ -1,34 +1,33 @@
-/*iterater_OMP_reduced.cpp iterater_OMP.cpp are the same
- *iterater_OMP_full.cpp predates iterater_OMP.cpp and doesn't skip any steps in phasor extraction.
- *
- */
-
-/*---------------------------------------------------------------*/
-//                        INCLUDE section
-/*---------------------------------------------------------------*/
+/*****************************************************************
+ *  Application.:  main time propogation algorithm
+ *  Description.:  Contains the main FDTD loop as well as other functions
+ *                 such as phasor extraction etc. Works in both pulsed 
+ *                 and steady state mode.
+ ******************************************************************/
+#include <complex>
+#include <algorithm>
+#include <cstring>
+#include <ctime>
 #include <omp.h>
 #include "mat_io.h"
-#include <complex>
 #include "iterator.h"
-#include <string.h>
 #include "interpolate.h"
 #include "numeric.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
-#include <time.h>
-
-using namespace std;
 #include "globals.h"
 #include "matlabio.h"
 #include "mesh_base.h"
+#include "timer.h"
+#include "field.h"
 
-/*---------------------------------------------------------------*/
-//                        DEFINE section
-/*---------------------------------------------------------------*/
+
+using namespace std;
+
 //whether of not to time execution
-#define TIME_EXEC 0
+#define TIME_EXEC false
 //time main loop
-#define TIME_MAIN_LOOP 1
+#define TIME_MAIN_LOOP true
 //threshold used to terminate the steady state iterations
 #define TOL 1e-6
 //parameter to control the with of the ramp when introducing the waveform in steady state mode
@@ -39,16 +38,14 @@ using namespace std;
 //different source modes
 #define sm_steadystate 0
 #define sm_pulsed      1
-//dimensionallity of simulation
-#define THREE 0
-#define TE 1
-#define TM 2
+//'dimensionality' of simulation; controls which field modes to compute
+#define THREE 0    // Full dimensionality - compute all H and E components
+#define TE 1       // Transverse electric - only compute Ex, Ey, and Hz components
+#define TM 2       // Transverse magnetic - only compute Hx, Hy, and Ez components
 
-//Used for the 2D case when J_tot=0
-inline int max ( int a, int b ) { return a > b ? a : b; }
-inline int min ( int a, int b ) { return a < b ? a : b; }
 
-/*This mex function will take in the following arguments
+/*This mex function will take in the following arguments and perform the
+ entire simulation
   
   fdtdgrid
   Cmaterial
@@ -247,39 +244,20 @@ inline int min ( int a, int b ) { return a < b ? a : b; }
   campssample.vertices - N x 3 matrix of indices where the complex amplitudes will be sampled 
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
-
-  
 */
-
-/*void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[])
-
-  The principle of structuring the program in this way is to be able to compile both a mex-file
-  and an executable. This is a monolithic function which performs the entire FDTD simulation. It
-  does farm out tasks to other functions however much of the core functionality is found here. This
-  is certainly not an example of good programming style however it reduces the amount of argument 
-  passing.
-
-*/
-
-
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
-{
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
   
   /*Local variables*/
   #ifdef FDFLAG
-  int useCD = 1; //determines whether FDTD or PSTD is used
+  bool useCD = true;  // Use central difference derivatives
   #else
-  int useCD = 0;
+  bool useCD = false; // Use pseudo-spectral derivatives
   #endif
 
-  double time_0, time_1, time_ml_1, time_ml_0;
-  double secs;
-  complex<double> commonPhase;
-  complex<double> *E_norm;
-  complex<double> *H_norm;
+  auto params = SimulationParameters();
 
-  complex<double>  E_norm_an=0.;
-  complex<double>  H_norm_an=0.;
+  auto E = ElectricField();
+  auto H = MagneticField();
 
   double fte = 0., fth = 0.;
   double commonAmplitude;
@@ -1237,7 +1215,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   /*Get omega_an*/
 
   if(mxIsDouble(prhs[input_counter])){
-    omega_an = mxGetPr( (mxArray *)prhs[input_counter]);  
+    omega_an = mxGetPr( (mxArray *)prhs[input_counter]);
+    params.omega_an = *omega_an;
     input_counter++;
   }
   else{
@@ -1383,7 +1362,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   /*Get dt*/
   
   if(mxIsDouble(prhs[input_counter])){
-    dt = mxGetPr( (mxArray *)prhs[input_counter]);  
+    dt = mxGetPr( (mxArray *)prhs[input_counter]);
+    params.dt = *dt;
     input_counter++;
   }
   else{
@@ -1438,7 +1418,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     input_counter++;
   }
   else{
-    throw runtime_error("Expected sourcemode to be a string");
+    throw runtime_error("Expected runmode to be a string");
   }
   /*Got runmode*/
 
@@ -2127,8 +2107,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   fprintf(stderr,"Np=%d, Nt=%d, Npe=%d, f_max=%e,Npraw=%e \n",Np,*Nt,Npe,f_max,2.5*dt[0]*f_max);
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
-  E_norm=(complex<double> *)malloc(N_f_ex_vec*sizeof(complex<double>));
-  H_norm=(complex<double> *)malloc(N_f_ex_vec*sizeof(complex<double>));
+  auto E_norm=(complex<double> *)malloc(N_f_ex_vec*sizeof(complex<double>));
+  auto H_norm=(complex<double> *)malloc(N_f_ex_vec*sizeof(complex<double>));
   for(int ifx=0;ifx<N_f_ex_vec;ifx++){
     E_norm[ifx]=0.;
     H_norm[ifx]=0.;
@@ -2533,7 +2513,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   //fprintf(stderr,"Pre 16\n");
   if(sourcemode==sm_steadystate && runmode == rm_complete)
     fprintf(stderr,"Changing dt from %.10e to %.10e\n",dt_old,dt[0]);
-  Nsteps = (int)round(Nsteps_tmp);
+  Nsteps = (int)lround(Nsteps_tmp);
   //fprintf(stderr,"Pre 17\n");
   //Nsteps = (int)(floor(3*2.*dcpi/(omega_an[0]*dt[0])) + 1.);//the number of time steps in a sinusoidal period
   dft_counter = 0;
@@ -2726,15 +2706,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   t0 = (double)time(NULL);
   //    fprintf(stderr,"start_tind: %d\n",start_tind);
   //  fprintf(stdout,"dz: %e, c: %e, dz/c: %e\n",dz,light_v,dz/light_v);
-  //Begin of main iteration loop 
-  if(TIME_MAIN_LOOP)
-    time_ml_0 = omp_get_wtime();
+  //Begin of main iteration loop
+  auto main_loop_timer = Timer();
+
+  if(TIME_MAIN_LOOP){
+    main_loop_timer.start();
+  }
+
   for(tind = start_tind; tind < *Nt; tind++){
     //fprintf(stderr,"Pos 00:\n");
     time_E = ( (double)(tind + 1) )*dt[0];
     time_H = time_E - *dt/2.;
     //Extract phasors
-    time_0=omp_get_wtime();
+    auto timer = Timer();
     if((dft_counter == Nsteps)&&(runmode==rm_complete)&&(sourcemode==sm_steadystate) && exphasorsvolume){//runmode=complete,sourcemode=steadystate
       dft_counter = 0;
       double tol = checkPhasorConvergence(ExR,ExI,EyR,EyI,EzR,EzI,
@@ -2826,20 +2810,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     else if((sourcemode==sm_pulsed)&&(runmode==rm_complete) && exphasorsvolume){
       if(TIME_EXEC){
-	time_1=omp_get_wtime();
-	secs= time_1-time_0;
-	fprintf(stdout,"%.03e ",secs);
-	time_0=time_1;
+        timer.click();
       }
-      /*
-	for(k=0;k<(K_tot+1);k++){
-	fprintf(stdout,"%e %e %e %e %e %e %e %e %e %e %e %e ",Exy[k][13][13],Exz[k][13][13],Eyx[k][13][13],Eyz[k][13][13],Ezx[k][13][13],Ezy[k][13][13],Hxy[k][13][13],Hxz[k][13][13],Hyx[k][13][13],Hyz[k][13][13],Hzx[k][13][13],Hzy[k][13][13]);
-	}
-	fprintf(stdout,"\n");
-      */
-      /*for(k=0;k<(K_tot+1);k++)
-	fprintf(stdout,"%e ",Exy[k][13][13]+Exz[k][13][13]);
-	fprintf(stdout,"\n");*/
 
       if( (tind-start_tind) % Np == 0){
 	extractPhasorsVolume(ExR,ExI,EyR,EyI,EzR,EzI,
@@ -2857,10 +2829,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			      tind,*omega_an, *dt, Npe);
       }
       if(TIME_EXEC){
-	time_1=omp_get_wtime();
-	secs= time_1-time_0;
-	fprintf(stdout,"%.03e ",secs);
-	time_0=time_1;
+	      timer.click();
       }
       //fprintf(stderr,"Pos 01b:\n");
     }
@@ -2868,7 +2837,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(!((N_fieldsample_i == 0) || (N_fieldsample_j == 0) || (N_fieldsample_k == 0) || (N_fieldsample_n == 0))){
       //if( (tind-start_tind) % Np == 0){
       if(1){
-#pragma omp parallel default(shared)  private(Ex_temp,Ey_temp,Ez_temp)
+#pragma omp parallel default(shared) private(Ex_temp,Ey_temp,Ez_temp)
 	{
 
 #pragma omp for
@@ -3030,10 +2999,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int array_ind = 0;
     //fprintf(stderr,"I_tot=%d, J_tot=%d, K_tot=%d\n",I_tot,J_tot,K_tot);
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e ",secs);
-      time_0=time_1;
+      timer.click();
     }
     //fprintf(stderr,"Dimension = %d\n",dimension);
     /*
@@ -4915,16 +4881,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }//end of parallel section
     //fprintf(stderr,"Pos 09:\n");
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e ",secs);
-      time_0=time_1;
+      timer.click();
     }
     /********************/
   
     //update terms for self consistency across scattered/total interface - E updates##
     if(sourcemode == sm_steadystate){//steadystate
-      commonPhase = exp(-I*fmod(omega_an[0]*time_H,2.*dcpi));
+      auto commonPhase = exp(-I*fmod(omega_an[0]*time_H,2.*dcpi));
       commonAmplitude = linearRamp(time_H, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
@@ -5122,10 +5085,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     //end of source terms
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e ",secs);
-      time_0=time_1;
+      timer.click();
     }
   
     /********************/
@@ -5668,16 +5628,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       }//(dimension==THREE || dimension==TE)
     }//end parallel
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e ",secs);
-      time_0=time_1;
+      timer.click();
     }
   
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
     if(sourcemode == sm_steadystate){//steadystate
-      commonPhase = exp(-I*fmod(omega_an[0]*time_E,2.*dcpi));
+      auto commonPhase = exp(-I*fmod(omega_an[0]*time_E,2.*dcpi));
       commonAmplitude = linearRamp(time_E, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
@@ -5799,40 +5756,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       //fprintf(stderr,"Pos 11j\n");
     }
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e ",secs);
-      time_0=time_1;
+      timer.click();
     }
-  
+
     if( exphasorssurface || exphasorsvolume || exdetintegral || (nvertices > 0) ){
       if(sourcemode==sm_steadystate){
-	extractPhasorENorm(&E_norm_an, fte, tind, *omega_an, *dt, Nsteps);
-	extractPhasorHNorm(&H_norm_an, fth, tind, *omega_an, *dt, Nsteps);
-	for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	  extractPhasorENorm(&E_norm[ifx], fte, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
-	  extractPhasorHNorm(&H_norm[ifx], fth, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
-	}
+        E.add_to_angular_norm(fte, tind, Nsteps, params);
+        H.add_to_angular_norm(fth, tind, Nsteps, params);
+
+        for(int ifx=0;ifx<N_f_ex_vec;ifx++){
+          extractPhasorENorm(&E_norm[ifx], fte, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
+          extractPhasorHNorm(&H_norm[ifx], fth, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
+        }
       }
       else{
-	if( (tind-start_tind) % Np == 0){
-	  extractPhasorENorm(&E_norm_an, fte, tind, *omega_an, *dt, Npe);
-	  extractPhasorHNorm(&H_norm_an, fth, tind, *omega_an, *dt, Npe);
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	    extractPhasorENorm(&E_norm[ifx], fte, tind, f_ex_vec[ifx]*2*dcpi, *dt, Npe);
-	    extractPhasorHNorm(&H_norm[ifx], fth, tind, f_ex_vec[ifx]*2*dcpi, *dt, Npe);
-	  }
-	}
-	
-	
+        if( (tind-start_tind) % Np == 0){
+
+          E.add_to_angular_norm(fte, tind, Npe, params);
+          H.add_to_angular_norm(fth, tind, Npe, params);
+
+          for(int ifx=0;ifx<N_f_ex_vec;ifx++){
+            extractPhasorENorm(&E_norm[ifx], fte, tind, f_ex_vec[ifx]*2*dcpi, *dt, Npe);
+            extractPhasorHNorm(&H_norm[ifx], fth, tind, f_ex_vec[ifx]*2*dcpi, *dt, Npe);
+          }
+        }
       }
-      
     }
     if(TIME_EXEC){
-      time_1=omp_get_wtime();
-      secs= time_1-time_0;
-      fprintf(stdout,"%.03e\n",secs);
-      time_0=time_1;
+      timer.click();
     }
     
     if(  (((double)time(NULL)) - t0)>1 ){
@@ -5937,9 +5888,10 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
   }//end of main iteration loop
   if(TIME_MAIN_LOOP){
     //fprintf(stderr,"Post-iter 7\n");
-    time_ml_1 = omp_get_wtime();
+    main_loop_timer.end();
     //fprintf(stderr,"Post-iter 8\n");
-    fprintf(stdout,"# Time elapsed in main loop: %e\n",time_ml_1-time_ml_0);
+    fprintf(stdout,"# Time elasped in main loop: %e\n",
+            main_loop_timer.delta_seconds());
     //fprintf(stderr,"Post-iter 9\n");
   }
   //save state of fdtdgrid
@@ -5950,13 +5902,13 @@ fprintf(stdout,"Iterating: %d %e\n",tind,maxfield);
 		    pind_il,pind_iu,
 		    pind_jl,pind_ju,
 		    pind_kl,pind_ku,
-		    E_norm_an);
+		    E.angular_norm);
 
     normaliseVolume(HxR,HxI,HyR,HyI,HzR,HzI,
 		    pind_il,pind_iu,
 		    pind_jl,pind_ju,
 		    pind_kl,pind_ku,
-		    H_norm_an);
+		    H.angular_norm);
   }
  
   //fprintf(stderr,"Pos 13\n");
@@ -7186,28 +7138,28 @@ void allocate_auxilliary_mem(int I_tot, int J_tot, int K_tot,
 			     double ****Jxy2, double ****Jxz2, 
 			     double ****Jyx2, double ****Jyz2,  
 			     double ****Jzx2, double ****Jzy2){
-  
-  
-  cons3dArray(Exy, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Exz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Eyx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Eyz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Ezx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Ezy, I_tot+1, J_tot+1, K_tot+1);
-  
-  cons3dArray(Jxy, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jxz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzy, I_tot+1, J_tot+1, K_tot+1);
 
-  cons3dArray(Jxy2, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jxz2, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyx2, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyz2, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzx2, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzy2, I_tot+1, J_tot+1, K_tot+1);
+
+  construct3dArray(Exy, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Exz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Eyx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Eyz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Ezx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Ezy, I_tot + 1, J_tot + 1, K_tot + 1);
+
+  construct3dArray(Jxy, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jxz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzy, I_tot + 1, J_tot + 1, K_tot + 1);
+
+  construct3dArray(Jxy2, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jxz2, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyx2, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyz2, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzx2, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzy2, I_tot + 1, J_tot + 1, K_tot + 1);
 
 
   for(int k=0;k<(K_tot+1);k++)
@@ -7244,12 +7196,12 @@ void allocate_auxilliary_mem_conductive(int I_tot, int J_tot, int K_tot,
 					double ****Jyx, double ****Jyz,  
 					double ****Jzx, double ****Jzy){
 
-  cons3dArray(Jxy, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jxz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jyz, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzx, I_tot+1, J_tot+1, K_tot+1);
-  cons3dArray(Jzy, I_tot+1, J_tot+1, K_tot+1);
+  construct3dArray(Jxy, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jxz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jyz, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzx, I_tot + 1, J_tot + 1, K_tot + 1);
+  construct3dArray(Jzy, I_tot + 1, J_tot + 1, K_tot + 1);
 
   for(int k=0;k<(K_tot+1);k++)
     for(int j=0;j<(J_tot+1);j++)

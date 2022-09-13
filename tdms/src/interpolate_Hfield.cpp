@@ -1,6 +1,6 @@
+#include <cstdlib>
 #include "interpolate_Hfield.h"
 #include "interpolation_methods.h"
-#include <stdlib.h>
 
 using namespace std;
 
