@@ -93,21 +93,24 @@ spdlog::set_level(spdlog::level::debug);
 spdlog::debug("Send help");
 ```
 
+### Compiling on UCL's myriad cluster
 <details>
-### Compiling on UCL's `myriad` nodes
 
-**Warning**
-These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
+  > **Warning**
+  > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
-If you want to test changes on UCL's [myriad](https://www.rc.ucl.ac.uk/docs/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions...
-```{.sh}
-module purge
-module load beta-modules
-module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
-cd tdms
-mkdir build; cd build
-cmake .. 
-make install
+
+  
+  If you want to test changes on UCL's [myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions...
+  ```{.sh}
+  module purge
+  module load beta-modules
+  module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
+  cd tdms
+  mkdir build; cd build
+  cmake .. 
+  make install
+  ```
 </details>
 
 
