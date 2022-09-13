@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['num_5fnonzero_5fcoeffs_42',['num_nonzero_coeffs',['../classinterpScheme.html#afadf7afe490a6c936e74ef76df623066',1,'interpScheme']]],
-  ['numerical_5fderivative_2eh_43',['numerical_derivative.h',['../numerical__derivative_8h.html',1,'']]]
+  ['magneticfield_41',['MagneticField',['../classMagneticField.html',1,'']]],
+  ['mat_5fio_2eh_42',['mat_io.h',['../mat__io_8h.html',1,'']]],
+  ['matfilematrixcollection_43',['MatFileMatrixCollection',['../classMatFileMatrixCollection.html',1,'']]],
+  ['matrixcollection_44',['MatrixCollection',['../classMatrixCollection.html',1,'MatrixCollection'],['../classMatrixCollection.html#a360ed9543774d09c45cd8a6fe3cbac39',1,'MatrixCollection::MatrixCollection()=default'],['../classMatrixCollection.html#afc5ace59f1a484e35cc6b3fb33da0f08',1,'MatrixCollection::MatrixCollection(char **names, int number)']]],
+  ['mesh_5fbase_2eh_45',['mesh_base.h',['../mesh__base_8h.html',1,'']]]
 ];

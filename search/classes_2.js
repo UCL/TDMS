@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fdtdgridinitialiser_60',['fdtdGridInitialiser',['../classfdtdGridInitialiser.html',1,'']]]
+  ['electricfield_66',['ElectricField',['../classElectricField.html',1,'']]]
 ];

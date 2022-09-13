@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['saveoutput_51',['saveoutput',['../openandorder_8h.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp'],['../openandorder_8cpp.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp']]],
-  ['scheme_5fvalue_52',['scheme_value',['../interpolation__methods_8h.html#a0c71c7b51a760b8fcecc30d8196aee23',1,'interpolation_methods.h']]]
+  ['parse_5fargs_52',['parse_args',['../classArgumentParser.html#a206004e16b6841b14fb1483bcc816a2e',1,'ArgumentParser']]],
+  ['planarinterface_53',['PlanarInterface',['../structPlanarInterface.html',1,'']]],
+  ['print_5fhelp_5fmessage_54',['print_help_message',['../classArgumentParser.html#a2fda5f34d8aa3d6394877c96ddf84347',1,'ArgumentParser']]]
 ];
