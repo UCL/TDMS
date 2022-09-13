@@ -46,7 +46,7 @@ using namespace std;
 
   k j1 i1 k j2 i2 k j3 i3
 
-  This should be interpreted as original i colums moves to column k. original k column moves to column i.
+  This should be interpreted as original i columns moves to column k. original k column moves to column i.
   
 
     i
@@ -765,7 +765,7 @@ void crossProduct(int v1[], int v2[], int *v1crossv2){
 }
 
 
-//mex -v mesh_base.cpp ../matlabio3/matlabio.cpp -DMIOFLAG=matlab  -I../iterater -I../matlabio3 -I../matlabio
+//mex -v mesh_base.cpp ../matlabio3/matlabio.cpp -DMIOFLAG=matlab  -I../iterator -I../matlabio3 -I../matlabio
 //[v1,f1,v2,f2]=mesh_base(1,2,1,2,1,2,1,1,1) ;
 /*
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs,const mxArray *prhs[]){

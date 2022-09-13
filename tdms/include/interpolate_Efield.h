@@ -1,4 +1,10 @@
 /**
+ * @file interpolate_Efield.h
+ * @brief Functions for interpolating the Electric field.
+ */
+#pragma once
+
+/**
  * @brief Interpolate the Ex field component to the centre of a Yee cell
  *
  * @param[in] Exy,Exz split components of the Yee cell

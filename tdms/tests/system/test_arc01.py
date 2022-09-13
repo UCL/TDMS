@@ -1,14 +1,12 @@
 import os
-
 from pathlib import Path
-from utils import work_in_zipped_dir, HDF5File, run_tdms, download_data
 
+from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 
 ZIP_PATH = Path(os.path.dirname(os.path.abspath(__file__)), "data", "arc_01.zip")
 
 if not ZIP_PATH.exists():
-    download_data("https://zenodo.org/record/6838866/files/arc_01.zip",
-                  to=ZIP_PATH)
+    download_data("https://zenodo.org/record/6838866/files/arc_01.zip", to=ZIP_PATH)
 
 
 @work_in_zipped_dir(ZIP_PATH)
