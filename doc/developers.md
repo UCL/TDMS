@@ -93,7 +93,25 @@ spdlog::set_level(spdlog::level::debug);
 spdlog::debug("Send help");
 ```
 
-## Where's the main ?
+<details>
+### Compiling on UCL's `myriad` nodes
+
+**Warning**
+These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
+
+If you want to test changes on UCL's [myriad](https://www.rc.ucl.ac.uk/docs/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions...
+```{.sh}
+module purge
+module load beta-modules
+module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
+cd tdms
+mkdir build; cd build
+cmake .. 
+```
+</details>
+
+
+## Where's the main?
 
 The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
 The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
