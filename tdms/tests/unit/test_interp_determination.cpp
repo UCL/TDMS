@@ -110,3 +110,56 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen")
     for(int i=2; i<=N-2; i++) {CHECK(best_interp_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
     CHECK(best_interp_scheme(N, N-1).get_priority() == CUBIC_INTERP_LAST);
 }
+
+/**
+ * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ * 
+ */
+TEST_CASE("interp: cubic interpolation is exact") {
+
+    // equidistant points
+    double x[] = {0.,1.,2.,3.};
+    // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
+    // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
+    double tol = 4e1 * __DBL_EPSILON__;
+
+    // constant field
+    double c0 = 3.1415;
+    double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
+    double v12 = c0, v23 = c0, v34 = c0;
+    
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // linear
+    double c1 = -2.7182818;
+    v1 += c1*x[0]; v2 += c1*x[1]; v3 += c1*x[2]; v4 += c1*x[3];
+    v12 += c1*(x[1]+x[0])/2.; v23 += c1*(x[2]+x[1])/2.; v34 += c1*(x[3]+x[2])/2.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // quadratic
+    double c2 = 9.81;
+    v1 += c2*x[0]*x[0]; v2 += c2*x[1]*x[1]; v3 += c2*x[2]*x[2]; v4 += c2*x[3]*x[3];
+    v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
+    v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
+    v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+
+    // cubic
+    double c3 = 4.2;
+    v1 += c3*x[0]*x[0]*x[0]; v2 += c3*x[1]*x[1]*x[1]; v3 += c3*x[2]*x[2]*x[2]; v4 += c3*x[3]*x[3]*x[3];
+    v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
+    v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
+    v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
+
+    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
+    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+}

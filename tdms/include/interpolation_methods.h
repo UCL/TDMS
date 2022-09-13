@@ -1,4 +1,10 @@
-// CUBIC INTERPOLATION FUNCTIONS - LEAVE HERE TO PRESERVE interpolate.cpp current functionality prior to testing!
+/**
+ * @file interpolation_methods.h
+ * @brief Cubic interpolation functions
+ * 
+ * Needed to  preserve interpolate.cpp current functionality prior to testing!
+ */
+#pragma once
 
 /*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
@@ -65,7 +71,7 @@ enum scheme_value
     BAND_LIMITED_5 = 5,             // use bandlimited interpolation w/ interp position = 5
     BAND_LIMITED_6 = 3,             // use bandlimited interpolation w/ interp position = 6
     BAND_LIMITED_7 = -1,            // use bandlimited interpolation w/ interp position = 7 [Only applicable if we want to extend beyond the final Yee cell, current code functionality is to throw an error in the case where this would be used.]
-    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell 0 [implimented, but current code functionality is to throw an error here]
+    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell 0 [implemented, but current code functionality is to throw an error here]
     CUBIC_INTERP_MIDDLE = 2,        // cubic interpolation to middle 2 of 4 points (interp1)
     CUBIC_INTERP_FIRST = 1,         // cubic interpolation to first 2 of 4 points (interp2)
     CUBIC_INTERP_LAST = 0           // cubic interpolation to last 2 of 4 points (interp3)

@@ -1,6 +1,7 @@
 [![Linux tests](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml)
 [![Windows tests](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml)
 [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml)
+[![MacOS tests](https://github.com/UCL/TDMS/actions/workflows/macos_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/macos_tests.yml)
 [![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
 # TDMS
 
@@ -30,6 +31,7 @@ cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+# -DBUILD_TESTING=ON
 make install
 ```
 where lines need to be commented in and the paths modified if cmake cannot 
@@ -84,4 +86,4 @@ export OMP_NUM_THREADS=4
 
 ## Contributing
 
-You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file.
+You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file and we have developer documentation on our [`gh-pages` site](https://github-pages.ucl.ac.uk/TDMS).
