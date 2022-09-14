@@ -93,7 +93,7 @@ spdlog::set_level(spdlog::level::debug);
 spdlog::debug("Send help");
 ```
 
-### Compiling on UCL's myriad cluster
+### Compiling on UCL's Myriad cluster
 <details>
 
   > **Warning**
@@ -101,7 +101,7 @@ spdlog::debug("Send help");
 
 
   
-  If you want to test changes on UCL's [myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions...
+  If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions
   ```{.sh}
   module purge
   module load beta-modules
