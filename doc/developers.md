@@ -99,14 +99,25 @@ spdlog::debug("Send help");
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
-
   
-  If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions
+  If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions.
+  Firstly, you will probably want to [forward your ssh agent](https://stackoverflow.com/questions/12257968/) for your github ssh key.
+  To do this, you first need to run the following your **_local_** machine:
   ```{.sh}
+  ssh-add -L # check your ssh agent is running
+  ssh-add /path/to/your/github/key/id_rsa
+  ssh -o ForwardAgent=yes your_user@myriad.rc.ucl.ac.uk
+  ```
+  
+  And once you're on Myriad:
+  
+  ```{.sh}
+  git clone git@github.com:UCL/TDMS.git
+
   module purge
   module load beta-modules
   module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
-  cd tdms
+  cd TDMS/tdms
   mkdir build; cd build
   cmake .. 
   make install
