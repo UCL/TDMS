@@ -2508,6 +2508,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     dt_old = dt[0];
     Nsteps_tmp = ceil(2.*dcpi/omega_an[0]/dt[0]*3);
     dt[0] = 2.*dcpi/omega_an[0]*3/Nsteps_tmp;
+    params.dt = dt[0];
   }
   
   //fprintf(stderr,"Pre 16\n");
@@ -5761,12 +5762,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
     if( exphasorssurface || exphasorsvolume || exdetintegral || (nvertices > 0) ){
       if(sourcemode==sm_steadystate){
-        E.add_to_angular_norm(fte, tind, Nsteps, params);
-        H.add_to_angular_norm(fth, tind, Nsteps, params);
+	if( (tind % Nsteps)==0 ){
+	  E.angular_norm = 0.0;
+	  H.angular_norm = 0.0;
+	}
+	
+        E.add_to_angular_norm(fte, tind % Nsteps, Nsteps, params);
+        H.add_to_angular_norm(fth, tind % Nsteps, Nsteps, params);
 
         for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-          extractPhasorENorm(&E_norm[ifx], fte, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
-          extractPhasorHNorm(&H_norm[ifx], fth, tind, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
+          extractPhasorENorm(&E_norm[ifx], fte, tind % Nsteps, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
+          extractPhasorHNorm(&H_norm[ifx], fth, tind % Nsteps, f_ex_vec[ifx]*2*dcpi, *dt, Nsteps);
         }
       }
       else{
@@ -5978,7 +5984,6 @@ if(runmode == rm_complete && (nvertices>0) )
       }
     }
   }
-  
   //fprintf(stderr,"Pos 15\n");
   //noe set the output
   ndims   = 2;

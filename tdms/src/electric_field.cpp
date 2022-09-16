@@ -10,7 +10,9 @@ void ElectricField::add_to_angular_norm(double f, int n, int Nt, SimulationParam
 }
 
 complex<double> ElectricField::phasor_norm(double f, int n, double omega, double dt, int Nt){
+  //fprintf(stderr,"omega=%e, dt=%e, n=%d\n", omega,dt,n); 
   return f
          * exp( fmod(omega*((double) (n+1))*dt, 2*dcpi) * I)
          * 1./((double) Nt);
+  
 }
