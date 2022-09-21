@@ -8,7 +8,7 @@ from functools import wraps
 from pathlib import Path
 from platform import system
 from subprocess import PIPE, Popen
-from typing import Union
+from typing import Generator, Union
 from urllib import request
 from zipfile import ZipFile
 
@@ -38,7 +38,9 @@ class HDF5File(dict):
         with h5py.File(filepath, "r") as file:
             self.update({k: self.to_numpy_array(v) for k, v in self.traverse(file)})
 
-    def traverse(self, file_or_group, prefix=""):
+    def traverse(
+        self, file_or_group: Union[h5py.File, h5py.Group], prefix: str = ""
+    ) -> Generator[tuple[str, h5py.Dataset], None, None]:
         """
         Traverse the hdf5 file, when a group is encountered also traverse the
         group (get all datasets).
