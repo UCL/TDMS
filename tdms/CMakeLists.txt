@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 14)
 option(BUILD_TESTING "" OFF)
 include(CTest)
 
+# Allow user to specify git access protocol (default to https)
+option(GIT_SSH "" OFF)
+
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
 
@@ -66,11 +69,17 @@ endif()
 
 
 # spdlog ----------------------------------------------------------------------
+if(GIT_SSH)
+    set(GITHUB_PREFIX git@github.com:)
+else()
+    set(GITHUB_PREFIX https://github.com/)
+endif()
+
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
 if(NOT spdlog_FOUND)
     include(FetchContent)
     FetchContent_Declare(spdlog
-            GIT_REPOSITORY https://github.com/gabime/spdlog.git
+	    GIT_REPOSITORY ${GITHUB_PREFIX}gabime/spdlog
             GIT_TAG v1.10.0
             )
     FetchContent_MakeAvailable(spdlog)
