@@ -80,6 +80,10 @@ endif()
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
         OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Test")
+    message(FATAL_ERROR "CMAKE_BUILT_TYPE \"Test\" is not recognised.
+    Did you mean -DBUILD_TESTING=ON ?")
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
