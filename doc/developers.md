@@ -93,7 +93,49 @@ spdlog::set_level(spdlog::level::debug);
 spdlog::debug("Send help");
 ```
 
-## Where's the main ?
+### Compiling on UCL's Myriad cluster
+<details>
+
+  > **Warning**
+  > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
+
+  
+  If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions.
+  Firstly, you will probably want to [forward your ssh agent](https://stackoverflow.com/questions/12257968/) for your github ssh key.
+  To do this, you first need to run the following your _local_ machine:
+  ```{.sh}
+  ssh-add -L # check your ssh agent is running
+  ssh-add /path/to/your/github/key/id_rsa
+  ssh -o ForwardAgent=yes your_user@myriad.rc.ucl.ac.uk
+  ```
+  
+  And once you're on Myriad:
+  
+  ```{.sh}
+  git clone git@github.com:UCL/TDMS.git
+
+  module purge
+  module load beta-modules
+  module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
+  cd TDMS/tdms
+  mkdir build; cd build
+  cmake .. \
+  # -DGIT_SSH=ON
+  make install
+  ```
+
+  If you get the following error (or similar)
+  ```
+  fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
+  CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: none
+  ```
+  it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
+
+</details>
+
+
+## Where's the main?
 
 The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
 The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
