@@ -4,15 +4,28 @@ import pytest
 from utils import compare_output, download_data, work_in_zipped_dir
 
 ZENODO_URL = "https://zenodo.org/record/"
+"""
+To add a new test, upload the test files to Zenodo and add a new
+entry to this dictionary. The number on the LHS must be the same
+as the number in the zip filename.
+
+The zip file must contain:
+- an input file named `pstd_input_file.m`
+- one or more input data files named `pstd_{run_type}_input.mat`,
+- corresponding reference output data files named `pstd_{run_type}_reference_output.mat`.
+
+run_type is one of ["fs", "cyl", "sph"].
+"""
 TEST_URLS = {
     "01": ZENODO_URL + "6838866/files/arc_01.zip",
     "02": ZENODO_URL + "6838977/files/arc_02.zip",
     "03": ZENODO_URL + "6839280/files/arc_03.zip",
 }
+RUN_TYPES = ["fs", "cyl", "sph"]
 
 
 @pytest.mark.parametrize("number", TEST_URLS.keys())
-@pytest.mark.parametrize("run_type", ["fs", "cyl", "sph"])
+@pytest.mark.parametrize("run_type", RUN_TYPES)
 def test_system(number: str, run_type: str):
     """
     Run the system tests. For each of the test data URLs defined above this:

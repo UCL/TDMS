@@ -203,7 +203,7 @@ def compare_output(input_filename, reference_output_filename):
     Checks that the output .mat file (with a HDF5 format) contains tensors with
     relative mean square values within numerical precision of the reference.
     """
-    output_filename = "pstd_fs_output.mat"
+    output_filename = "pstd_output.mat"
     run_tdms(input_filename, output_filename)
 
     reference = HDF5File(reference_output_filename)
