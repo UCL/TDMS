@@ -125,7 +125,7 @@ Code style and other admin</h2>
 </div><!-- fragment --><p>You can quickly check the documentation for your changes look correct with: </p><div class="fragment"><div class="line">doxygen doc/Doxygen</div>
 <div class="line">firefox html/index.html # or your web browser of choice</div>
 </div><!-- fragment --><p>You should be able to find and read what you've changed. Don't worry about doxygen for the source files (although obviously please do write helpful comments there).</p>
-<p>For Python code (e.g. in the <a href="#system-tests">tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">pip3 install pre-commit</div>
+<p>For Python code (e.g. in the <a href="#system-tests">tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">python -m pip install pre-commit</div>
 </div><!-- fragment --><p>Then from the root repository directory you can add the pre-commit hooks with </p><div class="fragment"><div class="line">ls .git/hooks</div>
 <div class="line">pre-commit install</div>
 <div class="line">ls .git/hooks</div>
@@ -181,7 +181,8 @@ Testing</h1>
 <p>We have two <a href="https://en.wikipedia.org/wiki/Software_testing#Testing_levels">levels of tests</a>: unit tests, and full system tests.</p>
 <h2><a class="anchor" id="autotoc_md7"></a>
 Unit</h2>
-<p>The unit tests use <a href="https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top">catch2</a> macros. See <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/unit">tests/unit</a> for good examples in the actual test code, but as a rough sketch you need:</p>
+<p>The unit tests use <a href="https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top">catch2</a> macros. See <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/unit">tests/unit</a> for good examples in the actual test code.</p>
+<p>To write a new test, as a rough sketch you need:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;catch2/catch_test_macros.hpp&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;things_to_be_tested.h&quot;</span></div>
 <div class="line"> </div>
@@ -190,17 +191,17 @@ Unit</h2>
 <div class="line">    REQUIRE_THROW(&lt;something&gt;)</div>
 <div class="line">    CHECK(&lt;something&gt;)</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>To run the unit tests, <a href="#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code> and then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
+</div><!-- fragment --><p>To run the unit tests, <a href="#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.</p>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
 <p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/">zenodo</a>.</p>
-<p>There are a few <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt">python packages you will need</a> before running the tests so run: </p><div class="fragment"><div class="line">pip3 install -r tdms/tests/requirements.txt</div>
+<p>There are a few <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt">python packages you will need</a> before running the tests so run: </p><div class="fragment"><div class="line">python -m pip install -r tdms/tests/requirements.txt</div>
 </div><!-- fragment --><p>if you don't already have them.</p>
-<p>When you run the tests for the first time, the example data will be downloaded to <code>tdms/tests/system/data</code> (which is <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). Subsequent runs of the test will not redownload unless you manually delete the zip file.</p>
+<p>When you run the tests for the first time, the example data will be downloaded to <code>tdms/tests/system/data</code> (which is <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). Subsequent runs of the test will not re-download unless you manually delete the zip file.</p>
 <p>A good example of running the <code>tdms</code> executable for a given input and expected output is <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_arc01.py">test_arc01.py</a></p>
 <p>You need to <a href="#compiling">compile</a> <code>tdms</code>, then the system tests can be run, e.g. from the build directory:</p>
-<div class="fragment"><div class="line">py.test ../tests/system/</div>
+<div class="fragment"><div class="line">pytest ../tests/system/</div>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
