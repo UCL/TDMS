@@ -59,7 +59,7 @@ For Python code (e.g. in the [tests](#system-tests)) we use [black](https://blac
 To apply automatic code styling to staged changes in git we recommend [`pre-commit`](https://pre-commit.com/).
 If you don't have it already:
 ```{.sh}
-pip3 install pre-commit
+python -m pip install pre-commit
 ```
 
 Then from the root repository directory you can add the pre-commit hooks with
@@ -145,7 +145,9 @@ The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undoc
 We have two [levels of tests](https://en.wikipedia.org/wiki/Software_testing#Testing_levels): unit tests, and full system tests.
 
 ### Unit 
-The unit tests use [catch2](https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top) macros. See [tests/unit](https://github.com/UCL/TDMS/blob/main/tdms/tests/unit) for good examples in the actual test code, but as a rough sketch you need:
+The unit tests use [catch2](https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top) macros. See [tests/unit](https://github.com/UCL/TDMS/blob/main/tdms/tests/unit) for good examples in the actual test code.
+
+To write a new test, as a rough sketch you need:
 
 ```{.cpp}
 #include <catch2/catch_test_macros.hpp>
@@ -157,7 +159,7 @@ TEST_CASE("Write a meaningful test case name") {
     CHECK(<something>)
 }
 ```
-To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON` and then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
+To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
 It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.
 
@@ -168,17 +170,17 @@ We use [pytest](https://docs.pytest.org) and our example data is provided as zip
 
 There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before running the tests so run:
 ```{.sh}
-pip3 install -r tdms/tests/requirements.txt
+python -m pip install -r tdms/tests/requirements.txt
 ```
 if you don't already have them.
 
 When you run the tests for the first time, the example data will be downloaded to `tdms/tests/system/data` (which is [ignored by git](https://github.com/UCL/TDMS/blob/main/.gitignore)).
-Subsequent runs of the test will not redownload unless you manually delete the zip file.
+Subsequent runs of the test will not re-download unless you manually delete the zip file.
 
 A good example of running the `tdms` executable for a given input and expected output is [test_arc01.py](https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_arc01.py)
 
 You need to [compile](#compiling) `tdms`, then the system tests can be run, e.g. from the build directory:
 
 ```{.sh}
-py.test ../tests/system/
+pytest ../tests/system/
 ```
