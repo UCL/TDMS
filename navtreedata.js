@@ -27,11 +27,12 @@ var NAVTREE =
       [ "What?", "index.html#autotoc_md1", [
         [ "Dependencies", "index.html#autotoc_md2", null ],
         [ "Code style and other admin", "index.html#autotoc_md3", null ],
-        [ "Compiling and debugging", "index.html#compiling", null ]
+        [ "Compiling and debugging", "index.html#compiling", null ],
+        [ "Compiling on UCL's Myriad cluster", "index.html#autotoc_md4", null ]
       ] ],
-      [ "Where's the main ?", "index.html#autotoc_md4", null ],
-      [ "Testing", "index.html#autotoc_md5", [
-        [ "Unit", "index.html#autotoc_md6", null ],
+      [ "Where's the main?", "index.html#autotoc_md5", null ],
+      [ "Testing", "index.html#autotoc_md6", [
+        [ "Unit", "index.html#autotoc_md7", null ],
         [ "System", "index.html#system-tests", null ]
       ] ]
     ] ],
