@@ -193,3 +193,22 @@ def download_data(url: str, to: Path) -> None:
     os.chdir(cwd)
 
     return None
+
+
+def compare_output(input_filename, reference_output_filename):
+    """
+    Run TDMS using `input_filename`, then compare the output to the data
+    saved in `reference_output_filename`.
+
+    Checks that the output .mat file (with a HDF5 format) contains tensors with
+    relative mean square values within numerical precision of the reference.
+    """
+    output_filename = "pstd_fs_output.mat"
+    run_tdms(input_filename, output_filename)
+
+    reference = HDF5File(reference_output_filename)
+    output = HDF5File(output_filename)
+    try:
+        assert output.matches(reference)
+    finally:
+        os.remove(output_filename)
