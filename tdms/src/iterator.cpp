@@ -1,9 +1,3 @@
-/*****************************************************************
- *  Application.:  main time propogation algorithm
- *  Description.:  Contains the main FDTD loop as well as other functions
- *                 such as phasor extraction etc. Works in both pulsed 
- *                 and steady state mode.
- ******************************************************************/
 #include <complex>
 #include <algorithm>
 #include <cstring>
