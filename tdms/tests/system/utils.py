@@ -8,7 +8,7 @@ from functools import wraps
 from pathlib import Path
 from platform import system
 from subprocess import PIPE, Popen
-from typing import Union
+from typing import Generator, Tuple, Union
 from urllib import request
 from zipfile import ZipFile
 
@@ -36,7 +36,22 @@ class HDF5File(dict):
         super().__init__()
 
         with h5py.File(filepath, "r") as file:
-            self.update({k: self.to_numpy_array(v) for k, v in file.items()})
+            self.update({k: self.to_numpy_array(v) for k, v in self.traverse(file)})
+
+    def traverse(
+        self, file_or_group: Union[h5py.File, h5py.Group], prefix: str = ""
+    ) -> Generator[Tuple[str, h5py.Dataset], None, None]:
+        """
+        Traverse the hdf5 file, when a group is encountered also traverse the
+        group (get all datasets).
+        """
+        for key in file_or_group.keys():
+            item = file_or_group[key]
+            path = f"{prefix}/{key}" if prefix else key
+            if isinstance(item, h5py.Dataset):
+                yield (path, item)
+            elif isinstance(item, h5py.Group):
+                yield from self.traverse(item, path)
 
     def to_numpy_array(self, dataset: h5py.Dataset) -> np.ndarray:
         """Convert a hdf5 dataset into a numpy array"""
@@ -67,7 +82,7 @@ class HDF5File(dict):
         arrays
         """
 
-        for key, value in self.items():
+        for key, value in self.traverse(self):
 
             if key not in other:
                 return False  # Key did not match
