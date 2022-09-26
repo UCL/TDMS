@@ -2508,6 +2508,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     dt_old = dt[0];
     Nsteps_tmp = ceil(2.*dcpi/omega_an[0]/dt[0]*3);
     dt[0] = 2.*dcpi/omega_an[0]*3/Nsteps_tmp;
+    params.dt = dt[0];
   }
   
   //fprintf(stderr,"Pre 16\n");
@@ -5761,6 +5762,59 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
     if( exphasorssurface || exphasorsvolume || exdetintegral || (nvertices > 0) ){
       if(sourcemode==sm_steadystate){
+	/*
+	  Each time a new acquisition period of harmonic illumination begins, all complex amplitudes (volume, surface etc.) are set back to 0 since the discrete Fourier transforms used to acquire these complex amplitudes starts again. In particular, the returned complex amplitudes will have been acquired during a single acquisition period of harmonic illumination. Note that, as explained above, the acquisition period is actually three periods of the harmonic waves fundamental period. The complex amplitudes are reset to 0 using calls such as: 
+
+initialiseDouble3DArray(ExR, dims[0], dims[1], dims[2]);
+
+However, the normalisation factors are reset to 0 here.
+	 */
+	
+	if( (tind % Nsteps)==0 ){
+	  E.angular_norm = 0.0;
+	  H.angular_norm = 0.0;
+
+	  for(int ifx=0;ifx<N_f_ex_vec;ifx++){
+	    E_norm[ifx] = 0.;
+	    H_norm[ifx] = 0.;
+	  }
+	}
+
+	/*In the calls below, the following two lines of code are equivalent up to numerical precision:
+
+	  E.add_to_angular_norm(fte, tind, Nsteps, params);
+	  E.add_to_angular_norm(fte, tind % Nsteps, Nsteps, params);
+
+	  To understand why, first consult the lines of code above:
+
+	  Nsteps_tmp = ceil(2.*dcpi/omega_an[0]/dt[0]*3);
+	  dt[0] = 2.*dcpi/omega_an[0]*3/Nsteps_tmp;
+	  Nsteps = (int)lround(Nsteps_tmp);
+
+	  Where dt and Nsteps are set. The reason for the factor of 3 is that we will perform complex amplitude extraction over 3 fundamental periods of the monochromatic source. We can then make the following statement:
+
+	  T/dt*3=1/(f*dt)*3=Nsteps
+
+	  where T and f (omega=2*pi*f) are the period and frequency of the monochromatic source, respectively.
+
+	  Then consider the argument of the exponentional function on phasor_norm, called by add_to_angular_norm, where tind=n is used:
+
+	  i*omega*((double) (n+1))*dt (where fmod(.,2*dcpi) is ignored since this will not affect the result)
+
+	  The argument of this function simplifies to:
+
+	  i*omega*(tind+1)*dt=i*2*pi*f*(tind+1)*dt=i*2*pi*(tind+1)*3/Nsteps (using f*dt=3/Nsteps)
+
+	  Then, without loss of generallity, let tind = p*Nsteps + q, substituting into the above
+
+	  i*2*pi*(tind+1)*3/Nsteps = i*2*pi*(p*Nsteps + q)*3/Nsteps = i*2*pi*3*p + i*2*pi*q*3/Nsteps
+
+	  In which case exp(i*2*pi*3*p + i*2*pi*q*3/Nsteps) = exp(i*2*pi*q*3/Nsteps)
+
+	  If instead we use tind % Nsteps=n, we see that n=q, leading to the same exponential function as above. So the two cases are equivalent.
+	  
+	 */
+	
         E.add_to_angular_norm(fte, tind, Nsteps, params);
         H.add_to_angular_norm(fth, tind, Nsteps, params);
 
@@ -5978,7 +6032,6 @@ if(runmode == rm_complete && (nvertices>0) )
       }
     }
   }
-  
   //fprintf(stderr,"Pos 15\n");
   //noe set the output
   ndims   = 2;
