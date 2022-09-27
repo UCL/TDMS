@@ -110,3 +110,4 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen")
     for(int i=2; i<=N-2; i++) {CHECK(best_interp_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
     CHECK(best_interp_scheme(N, N-1).get_priority() == CUBIC_INTERP_LAST);
 }
+
