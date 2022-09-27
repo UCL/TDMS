@@ -193,7 +193,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = -5. / 16.;
             scheme_coeffs[3] = 1. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
+            last_nonzero_coeff = 3;
             index = 0;
             break;
         }
@@ -204,7 +204,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = 9. / 16.;
             scheme_coeffs[3] = -1. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
+            last_nonzero_coeff = 3;
             index = 1;
             break;
         }
@@ -215,7 +215,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = 15. / 16.;
             scheme_coeffs[3] = 5. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
+            last_nonzero_coeff = 3;
             index = 2;
             break;
         }

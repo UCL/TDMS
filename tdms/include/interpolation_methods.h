@@ -56,14 +56,20 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
- * 
+ *
  * There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.
- * 
+ *
  * MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!
+ *
+ * For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a point spacing" to the right of the final data point.
+ * These "interpolation positions" (interp positions) are marked with "o" below:
+ * v0   v1   v2   v3   v4   v5   v6   v7
+ *    o    o    o    o    o    o    o    o
+ * We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example.
  */
 enum scheme_value
 {
-    BAND_LIMITED_0 = 4,             // use bandlimited interpolation w/ interp position = 0.
+    BAND_LIMITED_0 = 4,             // use bandlimited interpolation w/ interp position = 0
     BAND_LIMITED_1 = 6,             // use bandlimited interpolation w/ interp position = 1
     BAND_LIMITED_2 = 8,             // use bandlimited interpolation w/ interp position = 2
     BAND_LIMITED_3 = 9,             // use bandlimited interpolation w/ interp position = 3 [Preferred method if available]
@@ -105,7 +111,7 @@ class interpScheme {
         
         /* Stores the index-offset that we require when extracting data from the field component arrays
         Let F be the (split field) Yee cell components of some field component, and suppose we are interested in interpolating this field to the centre of the cell with index u.
-        Then the data point F[u - (index+1)] is plays the role of v[0] in the interpolation scheme.
+        Then the data point F[u - (index+1)] is plays the role of v0 in the interpolation scheme.
         NOTE: index+1 appears due to Yee cells being associated with values "to the right" of their centre.
         */
         int index;
