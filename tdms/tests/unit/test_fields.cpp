@@ -1,3 +1,7 @@
+/**
+ * @file test_fields.cpp
+ * @brief Test of the Field class and subclasses.
+ */
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
 #include "field.h"
@@ -10,6 +14,9 @@ inline bool is_close(T a, T b){
   return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
 }
 
+/**
+ * @brief Test that the electric field's angular normalisation is as expected.
+ */
 TEST_CASE("Test electric field angular norm addition") {
 
   double OMEGA = 0.7;
@@ -30,6 +37,9 @@ TEST_CASE("Test electric field angular norm addition") {
   REQUIRE(is_close(E.angular_norm, expected));
 }
 
+/**
+ * @brief Test that the magnetic field's angular normalisation is as expected.
+ */
 TEST_CASE("Test magnetic field angular norm addition") {
 
   double OMEGA = 0.3;

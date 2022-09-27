@@ -19,8 +19,9 @@ void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c, int len
   }
 }
 
-void init_diff_shift_op( double delta, fftw_complex *Dk, int N){
-  //fprintf(stdout,"init_diff_shift_op, delta=%e\n",delta);
+void init_diff_shift_op(double delta, fftw_complex *Dk, int N){
+  spdlog::debug("init_diff_shift_op, delta={}\n",delta);
+
   //define an
   auto *an = (double *)malloc(sizeof(double) * N);
   if( (N % 2) == 0){//even case

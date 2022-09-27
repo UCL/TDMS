@@ -19,7 +19,7 @@ PROJECT_BRIEF          = "Time Domain Maxwell Solver"
 PROJECT_LOGO           =
 # Blank == Write output to current dir.
 OUTPUT_DIRECTORY       =
-INPUT                  = tdms/include tdms/src
+INPUT                  = tdms/include tdms/src tdms/tests/unit
 FILE_PATTERNS          = *.cpp \
                          *.h \
                          *.py

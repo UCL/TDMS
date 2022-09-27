@@ -54,8 +54,9 @@ firefox html/index.html # or your web browser of choice
 ```
 You should be able to find and read what you've changed.
 Don't worry about doxygen for the source files (although obviously please do write helpful comments there).
+We _have_ been putting doxygen comments in the [unit-test](#unit-testing) source files wherever sensible.
 
-For Python code (e.g. in the [tests](#system-tests)) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
+For Python code (e.g. in the [system tests](#system-tests)) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
 To apply automatic code styling to staged changes in git we recommend [`pre-commit`](https://pre-commit.com/).
 If you don't have it already:
 ```{.sh}
@@ -144,21 +145,33 @@ The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undoc
 
 We have two [levels of tests](https://en.wikipedia.org/wiki/Software_testing#Testing_levels): unit tests, and full system tests.
 
-### Unit 
+### Unit {#unit-testing}
+
 The unit tests use [catch2](https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top) macros. See [tests/unit](https://github.com/UCL/TDMS/blob/main/tdms/tests/unit) for good examples in the actual test code.
 
 To write a new test, as a rough sketch you need:
 
 ```{.cpp}
+/**
+ * @file test_file.cpp
+ * @brief Short description of the tests.
+ */
 #include <catch2/catch_test_macros.hpp>
 #include "things_to_be_tested.h"
 
+/**
+ * @brief Detailed description of the testing.
+ * 
+ * Maybe go into details about the test setup.
+ */
 TEST_CASE("Write a meaningful test case name") {
     // set up function calls or whatever
     REQUIRE_THROW(<something>)
     CHECK(<something>)
 }
 ```
+The doxygen-style comments will be included in this developer documentation.
+
 To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
 It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.

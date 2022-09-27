@@ -1,5 +1,9 @@
-# include <catch2/catch_test_macros.hpp>
-# include <interpolation_methods.h>
+/**
+ * @file test_interpolate.cpp
+ * @brief Tests of the interpolation functions.
+ */
+#include <catch2/catch_test_macros.hpp>
+#include <interpolation_methods.h>
 
 using namespace std;
 
@@ -17,7 +21,7 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     // checkInterpolationPoints should not throw an exception if we provide j_l = 2 > j_u = -2, as is done for a 2D simulation (J=0), and request interpolation over the maximum i,k range
     CHECK_NOTHROW(checkInterpolationPoints(2, I - 2, 2, -2, 2, K - 2, I, 0, K));
 
-    // conversely, it should throw an error if we try to provide j_l = 0 = j_u, which one may percieve are sensible choices, in this case
+    // conversely, it should throw an error if we try to provide j_l = 0 = j_u, which one may perceive are sensible choices, in this case
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, 0, 0, K - 2, I, 0, K), runtime_error);
 
     /* 3D simulation checks
@@ -36,6 +40,9 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 1, 2, J - 2, 2, K + 1, I, J, K), runtime_error);
 }
 
+/**
+ * @brief Test that valid input is accepted.
+ */
 TEST_CASE("checkInterpolationPoints: check valid inputs") {
 
     // setup some fake field dimensions
@@ -60,7 +67,6 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
 
 /**
  * @brief Test whether determineInterpScheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
- * 
  */
 TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
@@ -100,13 +106,12 @@ TEST_CASE("determineInterpScheme: correct interpolation chosen") {
 
 /**
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
- * 
  */
 TEST_CASE("interp: cubic interpolation is exact") {
 
     // equidistant points
     double x[] = {0.,1.,2.,3.};
-    // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
+    // test acceptance tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
 
