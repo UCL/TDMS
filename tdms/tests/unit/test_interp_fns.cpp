@@ -11,7 +11,7 @@ using namespace std;
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
  *
  */
-TEST_CASE("interp: cubic interpolation is exact")
+TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact")
 {
 
     // equidistant points
