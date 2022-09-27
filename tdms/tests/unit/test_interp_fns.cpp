@@ -77,7 +77,7 @@ TEST_CASE("interp: cubic interpolation is exact")
  *
  * Note - the coefficients are not required to sum to unity!
  */
-TEST_CASE("bandlimited_interpolation: coefficient sum")
+TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value")
 {
 
     /* Tolerance to accept imprecision to
