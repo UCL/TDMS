@@ -52,3 +52,4 @@ void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
                                  int i, int j, int k, int nI, int nJ, int nK,
                                  double *Hx, double *Hy, double *Hz);
+
