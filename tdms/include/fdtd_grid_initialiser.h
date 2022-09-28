@@ -24,7 +24,7 @@ private:
      * @param key the name of the attribute
      * @return int the value of the attribute
      */
-    int value_of_attribute(const std::string& key);
+    mwSize value_of_attribute(const std::string& key);
 
 public:
     /**
