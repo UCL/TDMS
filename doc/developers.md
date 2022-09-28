@@ -55,10 +55,21 @@ firefox html/index.html # or your web browser of choice
 You should be able to find and read what you've changed.
 Don't worry about doxygen for the source files (although obviously please do write helpful comments there).
 
-For Python code (e.g. in the tests) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
-To apply automatic code styling to staged changes in git use [`pre-commit`](https://pre-commit.com/).
+For Python code (e.g. in the [tests](#system-tests)) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
+To apply automatic code styling to staged changes in git we recommend [`pre-commit`](https://pre-commit.com/).
+If you don't have it already:
+```{.sh}
+python -m pip install pre-commit
+```
 
-### Compiling and debugging
+Then from the root repository directory you can add the pre-commit hooks with
+```{.sh}
+ls .git/hooks
+pre-commit install
+ls .git/hooks
+```
+
+### Compiling and debugging {#compiling}
 
 Once you've checked the code out, compile with:
 ```{.sh}
@@ -82,7 +93,94 @@ spdlog::set_level(spdlog::level::debug);
 spdlog::debug("Send help");
 ```
 
-## Where's the main ?
+### Compiling on UCL's Myriad cluster
+<details>
+
+  > **Warning**
+  > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
+
+  
+  If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions.
+  Firstly, you will probably want to [forward your ssh agent](https://stackoverflow.com/questions/12257968/) for your github ssh key.
+  To do this, you first need to run the following your _local_ machine:
+  ```{.sh}
+  ssh-add -L # check your ssh agent is running
+  ssh-add /path/to/your/github/key/id_rsa
+  ssh -o ForwardAgent=yes your_user@myriad.rc.ucl.ac.uk
+  ```
+  
+  And once you're on Myriad:
+  
+  ```{.sh}
+  git clone git@github.com:UCL/TDMS.git
+
+  module purge
+  module load beta-modules
+  module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
+  cd TDMS/tdms
+  mkdir build; cd build
+  cmake .. \
+  # -DGIT_SSH=ON
+  make install
+  ```
+
+  If you get the following error (or similar)
+  ```
+  fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
+  CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: none
+  ```
+  it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
+
+</details>
+
+
+## Where's the main?
 
 The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
 The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
+
+## Testing
+
+We have two [levels of tests](https://en.wikipedia.org/wiki/Software_testing#Testing_levels): unit tests, and full system tests.
+
+### Unit 
+The unit tests use [catch2](https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top) macros. See [tests/unit](https://github.com/UCL/TDMS/blob/main/tdms/tests/unit) for good examples in the actual test code.
+
+To write a new test, as a rough sketch you need:
+
+```{.cpp}
+#include <catch2/catch_test_macros.hpp>
+#include "things_to_be_tested.h"
+
+TEST_CASE("Write a meaningful test case name") {
+    // set up function calls or whatever
+    REQUIRE_THROW(<something>)
+    CHECK(<something>)
+}
+```
+To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
+
+It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.
+
+### System {#system-tests}
+
+The full system tests are written in Python 3, and call the `tdms` executable for known inputs and compare to expected outputs.
+We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/). 
+
+There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before running the tests so run:
+```{.sh}
+python -m pip install -r tdms/tests/requirements.txt
+```
+if you don't already have them.
+
+When you run the tests for the first time, the example data will be downloaded to `tdms/tests/system/data` (which is [ignored by git](https://github.com/UCL/TDMS/blob/main/.gitignore)).
+Subsequent runs of the test will not re-download unless you manually delete the zip file.
+
+A good example of running the `tdms` executable for a given input and expected output is [test_arc01.py](https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_arc01.py)
+
+You need to [compile](#compiling) `tdms`, then the system tests can be run, e.g. from the build directory:
+
+```{.sh}
+pytest ../tests/system/
+```
