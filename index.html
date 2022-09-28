@@ -124,8 +124,8 @@ Code style and other admin</h2>
 <div class="line"><span class="preprocessor"> #pragma once</span></div>
 </div><!-- fragment --><p>You can quickly check the documentation for your changes look correct with: </p><div class="fragment"><div class="line">doxygen doc/Doxygen</div>
 <div class="line">firefox html/index.html # or your web browser of choice</div>
-</div><!-- fragment --><p>You should be able to find and read what you've changed. Don't worry about doxygen for the source files (although obviously please do write helpful comments there).</p>
-<p>For Python code (e.g. in the <a href="#system-tests">tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">python -m pip install pre-commit</div>
+</div><!-- fragment --><p>You should be able to find and read what you've changed. Don't worry about doxygen for the source files (although obviously please do write helpful comments there). We <em>have</em> been putting doxygen comments in the <a href="#unit-testing">unit-test</a> source files wherever sensible.</p>
+<p>For Python code (e.g. in the <a href="#system-tests">system tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">python -m pip install pre-commit</div>
 </div><!-- fragment --><p>Then from the root repository directory you can add the pre-commit hooks with </p><div class="fragment"><div class="line">ls .git/hooks</div>
 <div class="line">pre-commit install</div>
 <div class="line">ls .git/hooks</div>
@@ -179,19 +179,29 @@ Where's the main?</h1>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Testing</h1>
 <p>We have two <a href="https://en.wikipedia.org/wiki/Software_testing#Testing_levels">levels of tests</a>: unit tests, and full system tests.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="unit-testing"></a>
 Unit</h2>
 <p>The unit tests use <a href="https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top">catch2</a> macros. See <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/unit">tests/unit</a> for good examples in the actual test code.</p>
 <p>To write a new test, as a rough sketch you need:</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;catch2/catch_test_macros.hpp&gt;</span></div>
+<div class="fragment"><div class="line"><span class="comment">/**</span></div>
+<div class="line"><span class="comment"> * @file test_file.cpp</span></div>
+<div class="line"><span class="comment"> * @brief Short description of the tests.</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"><span class="preprocessor">#include &lt;catch2/catch_test_macros.hpp&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;things_to_be_tested.h&quot;</span></div>
-<div class="line"> </div>
-<div class="line">TEST_CASE(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
+<div class="line"><span class="comment"></span> </div>
+<div class="line"><span class="comment">/**</span></div>
+<div class="line"><span class="comment"> * @brief Detailed description of the testing.</span></div>
+<div class="line"><span class="comment"> * </span></div>
+<div class="line"><span class="comment"> * Maybe go into details about the test setup.</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"><a class="code" href="test__fields_8cpp.html#ac26f0f4da2efa81c76843d4a645aff38">TEST_CASE</a>(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
 <div class="line">    <span class="comment">// set up function calls or whatever</span></div>
 <div class="line">    REQUIRE_THROW(&lt;something&gt;)</div>
 <div class="line">    CHECK(&lt;something&gt;)</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>To run the unit tests, <a href="#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
+</div><!-- fragment --><p>The doxygen-style comments will be included in this developer documentation.</p>
+<p>To run the unit tests, <a href="#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.</p>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
@@ -205,6 +215,7 @@ System</h2>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="atest__fields_8cpp_html_ac26f0f4da2efa81c76843d4a645aff38"><div class="ttname"><a href="test__fields_8cpp.html#ac26f0f4da2efa81c76843d4a645aff38">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;Test electric field angular norm addition&quot;)</div><div class="ttdoc">Test that the electric field's angular normalisation is as expected.</div><div class="ttdef"><b>Definition:</b> test_fields.cpp:20</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

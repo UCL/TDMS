@@ -32,7 +32,7 @@ var NAVTREE =
       ] ],
       [ "Where's the main?", "index.html#autotoc_md5", null ],
       [ "Testing", "index.html#autotoc_md6", [
-        [ "Unit", "index.html#autotoc_md7", null ],
+        [ "Unit", "index.html#unit-testing", null ],
         [ "System", "index.html#system-tests", null ]
       ] ]
     ] ],
