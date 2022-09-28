@@ -61,13 +61,12 @@ TEST_CASE("Numerical derivative") {
     const int NSAMPLES=64;
 
     // setup buffers and fft plans
-    fftw_complex sampled_cosine[NSAMPLES], output[NSAMPLES], dk[NSAMPLES];
+    fftw_complex sampled_cosine[NSAMPLES], output[NSAMPLES], dk[NSAMPLES] = { 0. };
     double minus_sine[NSAMPLES];
-    init_diff_shift_op(0.0, dk, NSAMPLES);
     fftw_plan pf = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_plan pb = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output, FFTW_BACKWARD, FFTW_ESTIMATE);
 
-    // sample cosθ and it's derivative (-sinθ)
+    // sample cosθ and its derivative (-sinθ)
     for (int i=0; i<NSAMPLES; i++) {
         double theta = 100.*i / (double)NSAMPLES * M_PI;
         sampled_cosine[i][REAL] = std::cos(theta);
@@ -77,7 +76,7 @@ TEST_CASE("Numerical derivative") {
     // call
     first_derivative(sampled_cosine, output, dk, NSAMPLES, pf, pb);
 
-    // output has arbitrary normalisation so take the ratio
+    // output has arbitrary normalisation so take the ratio at each sample
     double ratio[NSAMPLES], total = 0;
     int zeroes = 0;
     for (int i = 0; i < NSAMPLES; i++) {
