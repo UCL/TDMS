@@ -27,11 +27,11 @@ For optimal accuracy we must determine the best interpolation scheme we can use 
 
 Let us assume WLOG that the b-direction interpolation scheme (b_scheme) is inferior to that of the c-direction (c_scheme).
 We now need to interpolate Ha in the c-direction to obtain the value of Ha at the spatial positions (a_i, cell_b + Db, c_k) where
-b_j - b_scheme.index-1 + b_scheme.first_nonzero_coeff <= cell_b <= b_j - b_scheme.index-1 + b_scheme.last_nonzero_coeff.
+b_j - b_scheme.number_of_datapoints_to_left + b_scheme.first_nonzero_coeff <= cell_b <= b_j - b_scheme.number_of_datapoints_to_left + b_scheme.last_nonzero_coeff.
 
     Let cell_b be one particular index in this range.
     To apply c_scheme to obtain the value of Ha at (a_i, cell_b + Db, c_k), we require the values Ha[a_i, cell_b, cell_c] where
-    c_k - c_scheme-1 + c_scheme.first_nonzero_coeff <= cell_c <= c_k - c_scheme.index-1 + c_scheme.last_nonzero_coeff.
+    c_k - c_scheme.number_of_datapoints_to_left + c_scheme.first_nonzero_coeff <= cell_c <= c_k - c_scheme.number_of_datapoints_to_left + c_scheme.last_nonzero_coeff.
     These values are fed to c_scheme.interpolate, which provides us with Ha at the spatial position (a_i, cell_b + Db, c_k).
 
 Now with approximations of Ha at each (a_i, cell_b + Db, c_k), we can pass this information to b_scheme.interpolate to recover the value of Ha at the centre of Yee cell (a_i, b_j, c_k).
@@ -58,12 +58,12 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
         {
             // this is the j-index of the cell we are looking at
-            int cell_j = j - (y_scheme.index + 1) + jj;
+            int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
             // determine the Hx values of cells (i, cell_j, k-z_scheme.index-1) through (i, cell_j, k-z_scheme.index-1+7), and interpolate them via z_scheme
             for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
             {
                 // the k-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_k = k - (z_scheme.index + 1) + kk;
+                int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
                 // gather the data for interpolating in the z dimension
                 data_for_first_scheme[kk] = Hxy[cell_k][cell_j][i] + Hxz[cell_k][cell_j][i];
             }
@@ -80,12 +80,12 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
         for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
         {
             // this is the k-index of the cell we are looking at
-            int cell_k = k - (z_scheme.index + 1) + kk;
+            int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
             // determine the Hx values of cells (i, j - y_scheme.index-1, cell_k) through (i, j - y_scheme.index-1+7, cell_k), and interpolate them via y_scheme
             for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
             {
                 // the j-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_j = j - (y_scheme.index + 1) + jj;
+                int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
                 // gather the data for interpolating in the y dimension
                 data_for_first_scheme[jj] = Hxy[cell_k][cell_j][i] + Hxz[cell_k][cell_j][i];
             }
@@ -119,12 +119,12 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
         for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
             // this is the i-index of the cell we are looking at
-            int cell_i = i - (x_scheme.index + 1) + ii;
+            int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
             // determine the Hy values of cells (cell_i, j, k-z_scheme.index-1) through (cell_i, j, k-z_scheme.index-1+7), and interpolate them via z_scheme
             for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
             {
                 // the k-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_k = k - (z_scheme.index + 1) + kk;
+                int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
                 // gather the data for interpolating in the z dimension
                 data_for_first_scheme[kk] = Hyx[cell_k][j][cell_i] + Hyz[cell_k][j][cell_i];
             }
@@ -141,12 +141,12 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
         for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
         {
             // this is the k-index of the cell we are looking at
-            int cell_k = k - (z_scheme.index + 1) + kk;
+            int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
             // determine the Hy values of cells (i - x_scheme.index-1, j, cell_k) through (i- x_scheme.index-1+7, j, cell_k), and interpolate them via x_scheme
             for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
             {
                 // the i-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_i = i - (x_scheme.index + 1) + ii;
+                int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
                 // gather the data for interpolating in the x dimension
                 data_for_first_scheme[ii] = Hyx[cell_k][j][cell_i] + Hyz[cell_k][j][cell_i];
             }
@@ -180,12 +180,12 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
         for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
             // this is the i-index of the cell we are looking at
-            int cell_i = i - (x_scheme.index + 1) + ii;
+            int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
             // determine the Hz values of cells (cell_i, j-y_scheme.index-1, k) through (cell_i, j-y_scheme.index-1+7, k), and interpolate them via y_scheme
             for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
             {
                 // the j-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_j = j - (y_scheme.index + 1) + jj;
+                int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
                 // gather the data for interpolating in the y dimension
                 data_for_first_scheme[jj] = Hzx[k][cell_j][cell_i] + Hzy[k][cell_j][cell_i];
             }
@@ -202,12 +202,12 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
         for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
         {
             // this is the j-index of the cell we are looking at
-            int cell_j = j - (y_scheme.index + 1) + jj;
+            int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
             // determine the Hz values of cells (i - x_scheme.index-1, cell_j, k) through (i- x_scheme.index-1+7, cell_j, k), and interpolate them via x_scheme
             for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
             {
                 // the i-index of the current cell we are looking at (readability, don't need to define this here)
-                int cell_i = i - (x_scheme.index + 1) + ii;
+                int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
                 // gather the data for interpolating in the x dimension
                 data_for_first_scheme[ii] = Hzx[k][cell_j][cell_i] + Hzy[k][cell_j][cell_i];
             }

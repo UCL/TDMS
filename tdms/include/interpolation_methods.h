@@ -109,12 +109,10 @@ class interpScheme {
 
         /* END FETCH METHODS */
         
-        /* Stores the index-offset that we require when extracting data from the field component arrays
-        Let F be the (split field) Yee cell components of some field component, and suppose we are interested in interpolating this field to the centre of the cell with index u.
-        Then the data point F[u - (index+1)] is plays the role of v0 in the interpolation scheme.
-        NOTE: index+1 appears due to Yee cells being associated with values "to the right" of their centre.
+        /* The number of datapoints "to the left" of where we are planning to interpolate to.
+        For example, interpolating to interpolation position 0 requires 1 datapoint at a position before the location of the interpolation, whilst interpolation position 6 requires there to be 7.
         */
-        int index;
+        int number_of_datapoints_to_left;
 
         // cubic and BLi schemes use different numbers of coefficients. To avoid switches, we store these variables.
         int first_nonzero_coeff, last_nonzero_coeff;
