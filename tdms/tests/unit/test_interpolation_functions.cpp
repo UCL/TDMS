@@ -11,7 +11,7 @@ using namespace std;
  *
  * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
-TEST_CASE("cubic_interpolation: cubic interpolation is exact")
+TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact")
 {
 
     // equidistant points
@@ -102,7 +102,7 @@ TEST_CASE("cubic_interpolation: cubic interpolation is exact")
  *
  * Note - the coefficients are not required to sum to unity!
  */
-TEST_CASE("bandlimited_interpolation: coefficient sum")
+TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value")
 {
 
     /* Tolerance to accept imprecision to

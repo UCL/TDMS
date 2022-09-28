@@ -1,4 +1,10 @@
 /**
+ * @file interpolate_Hfield.h
+ * @brief Functions for interpolating the Electric field.
+ */
+#pragma once
+
+/**
  * @brief Interpolate the x-component of the magnetic field to the centre of Yee cell i,j,k
  *
  * Interpolation for the magnetic field must be done across two dimensions.
@@ -52,3 +58,4 @@ void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
                                  int i, int j, int k, int nI, int nJ, int nK,
                                  double *Hx, double *Hy, double *Hz);
+

@@ -91,8 +91,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen")
     CHECK(best_interp_scheme(N, 1).get_priority() == BAND_LIMITED_0);
     CHECK(best_interp_scheme(N, 2).get_priority() == BAND_LIMITED_1);
     CHECK(best_interp_scheme(N, 3).get_priority() == BAND_LIMITED_2);
-    for (int i = 4; i <= N - 4; i++)
-    {
+    for (int i = 4; i <= N - 4; i++) {
         CHECK(best_interp_scheme(N, i).get_priority() == BAND_LIMITED_3);
     }
     CHECK(best_interp_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
@@ -110,3 +109,4 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen")
     for(int i=2; i<=N-2; i++) {CHECK(best_interp_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
     CHECK(best_interp_scheme(N, N-1).get_priority() == CUBIC_INTERP_LAST);
 }
+

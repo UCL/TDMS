@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 14)
 option(BUILD_TESTING "" OFF)
 include(CTest)
 
+# Allow user to specify git access protocol (default to https)
+option(GIT_SSH "" OFF)
+
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
 
@@ -57,7 +60,7 @@ include_directories(${FFTW_INCLUDE_DIRS})
 
 
 # OpenMP + libc++ -------------------------------------------------------------
-if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_package(OpenMP_Mac REQUIRED)
     find_package(Lib_CXX_Mac)
 else()
@@ -66,11 +69,17 @@ endif()
 
 
 # spdlog ----------------------------------------------------------------------
+if(GIT_SSH)
+    set(GITHUB_PREFIX git@github.com:)
+else()
+    set(GITHUB_PREFIX https://github.com/)
+endif()
+
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
 if(NOT spdlog_FOUND)
     include(FetchContent)
     FetchContent_Declare(spdlog
-            GIT_REPOSITORY https://github.com/gabime/spdlog.git
+	    GIT_REPOSITORY ${GITHUB_PREFIX}gabime/spdlog
             GIT_TAG v1.10.0
             )
     FetchContent_MakeAvailable(spdlog)
@@ -80,6 +89,10 @@ endif()
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
         OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Test")
+    message(FATAL_ERROR "CMAKE_BUILT_TYPE \"Test\" is not recognised.
+    Did you mean -DBUILD_TESTING=ON ?")
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
@@ -88,16 +101,23 @@ endif()
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
     src/argument_parser.cpp
+    src/electric_field.cpp
     src/fdtd_grid_initialiser.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
+<<<<<<< HEAD
     src/interpolate_Efield.cpp
     src/interpolate_Hfield.cpp
+=======
+    src/magnetic_field.cpp
+>>>>>>> wgraham-interpolate_H
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
     src/numerical_derivative.cpp
+    src/simulation_parameters.cpp
+    src/timer.cpp
     src/utils.cpp
     matlabio/matlabio.cpp
     )
@@ -129,11 +149,12 @@ if (BUILD_TESTING)
     enable_testing()
 
     add_executable(tdms_tests
+            tests/unit/test_fields.cpp
             tests/unit/test_openandorder.cpp
-            tests/unit/test_interp_determination.cpp
-            tests/unit/test_interp_fns.cpp
             tests/unit/test_BLi_vs_cubic_interpolation.cpp
-            tests/unit/test_field_interpolation.cpp)
+            tests/unit/test_field_interpolation.cpp
+            tests/unit/test_interpolation_determination.cpp
+            tests/unit/test_interpolation_functions.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain

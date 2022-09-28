@@ -79,6 +79,6 @@ jobs:
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
-          export PATH=/c/Program\ Files/MATLAB/R2022a/bin/win64/:$PATH
+          export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
           export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
-          py.test ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x
