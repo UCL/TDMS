@@ -1,4 +1,3 @@
-#include "globals.h"
 #include "field.h"
 
 using namespace std;
