@@ -87,6 +87,10 @@ You may need to help CMake find MATLAB/fftw etc.
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
+#include <spdlog/spdlog.h>
+
+// ...
+
 spdlog::set_level(spdlog::level::debug);
 
 // ...
@@ -96,11 +100,10 @@ spdlog::debug("Send help");
 
 ### Compiling on UCL's Myriad cluster
 <details>
-
+  
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
-  
   If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions.
   Firstly, you will probably want to [forward your ssh agent](https://stackoverflow.com/questions/12257968/) for your github ssh key.
   To do this, you first need to run the following your _local_ machine:
@@ -114,7 +117,7 @@ spdlog::debug("Send help");
   
   ```{.sh}
   git clone git@github.com:UCL/TDMS.git
-
+  
   module purge
   module load beta-modules
   module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
@@ -124,7 +127,7 @@ spdlog::debug("Send help");
   # -DGIT_SSH=ON
   make install
   ```
-
+  
   If you get the following error (or similar)
   ```
   fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
@@ -132,7 +135,7 @@ spdlog::debug("Send help");
   CApath: none
   ```
   it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
-
+  
 </details>
 
 

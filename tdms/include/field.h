@@ -1,3 +1,8 @@
+/**
+ * @file field.h
+ * @brief Classes for the electric and magnetic (split) fields on a grid.
+ */
+#pragma once
 #include <complex>
 #include "simulation_parameters.h"
 
