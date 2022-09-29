@@ -5,8 +5,6 @@
 using namespace std;
 
 
-ArgumentParser::ArgumentParser() = default;
-
 ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
   spdlog::debug("Parsing {} command line arguments", n_args);
 

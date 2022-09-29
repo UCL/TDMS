@@ -7,8 +7,6 @@
 using namespace std;
 
 
-MatrixCollection::MatrixCollection() = default;
-
 MatFileMatrixCollection::MatFileMatrixCollection(const char *filename){
 
   mat_file = matOpen(filename, "r");

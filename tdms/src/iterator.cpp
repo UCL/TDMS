@@ -1,9 +1,3 @@
-/*****************************************************************
- *  Application.:  main time propogation algorithm
- *  Description.:  Contains the main FDTD loop as well as other functions
- *                 such as phasor extraction etc. Works in both pulsed 
- *                 and steady state mode.
- ******************************************************************/
 #include <complex>
 #include <algorithm>
 #include <cstring>
@@ -76,7 +70,7 @@ using namespace std;
   structure
   tdfield
 
-  fdtdgrid - A structre with the following members, each of which is a 3 dimensional
+  fdtdgrid - A structure with the following members, each of which is a 3 dimensional
   array:
 
   fdtdgrid.Exy       (double)
@@ -217,11 +211,11 @@ using namespace std;
 
   dimension - A string of value "3", "TE" or "TM"
 
-  conductive_aux - auxilliary parameters required to model conductive multilayer
+  conductive_aux - auxiliary parameters required to model conductive multilayer
 
-  dispersive_aux - auxilliary parameters required to model dispersive multilayer
+  dispersive_aux - auxiliary parameters required to model dispersive multilayer
 
-  structure - 2 x (I_tot+1) integer array describing the grating stucture, if one is present
+  structure - 2 x (I_tot+1) integer array describing the grating structure, if one is present
 
   f_ex_vec - 1xN or Nx1 vector of frequencies at which to perform the extraction of complex amplitudes
 
@@ -1322,7 +1316,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
     //Update equations for the E field
 
-    /*There are two options for determing the update coefficients for the FDTD cell:
+    /*There are two options for determining the update coefficients for the FDTD cell:
 
       1) If cell (i,j,k) is either free space or PML:
 

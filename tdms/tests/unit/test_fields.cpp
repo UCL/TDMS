@@ -1,3 +1,7 @@
+/**
+ * @file test_fields.cpp
+ * @brief Test of the Field class and subclasses.
+ */
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
 #include "field.h"

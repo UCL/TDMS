@@ -1,5 +1,13 @@
+/**
+ * @file iterator.h
+ * @brief The main time propogation algorithm.
+ * 
+ * Contains the main FDTD loop as well as other functions such as phasor
+ * extraction etc. Works in both pulsed and steady state mode.
+ */
+#pragma once
+#include <complex>
 #include "arrays.h"
-#include "complex"
 #include "field.h"
 #include "grid_labels.h"
 
