@@ -34,6 +34,6 @@ digraph "tdms/src/openandorder.cpp"
   Node14 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node14 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node13 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node15 [label="matrix_collection.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$matrix__collection_8h_source.html",tooltip=" "];
+  Node15 [label="matrix_collection.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$matrix__collection_8h.html",tooltip="A collection of named MATLAB matrices."];
   Node15 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

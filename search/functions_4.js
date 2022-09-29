@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['fdtdgridinitialiser_106',['fdtdGridInitialiser',['../classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf',1,'fdtdGridInitialiser']]],
-  ['first_5fderivative_107',['first_derivative',['../numerical__derivative_8h.html#afe9a657c7bc11de6dc694550f01d2e23',1,'numerical_derivative.cpp']]]
+  ['end_138',['end',['../classTimer.html#accef2f2b25869fbca2947a56b494d2a0',1,'Timer']]]
 ];

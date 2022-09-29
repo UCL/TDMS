@@ -87,48 +87,54 @@ $(document).ready(function(){initNavTree('field_8h_source.html',''); initResizab
 <div class="title">field.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &lt;complex&gt;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;simulation_parameters.h&quot;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="classField.html">    5</a></span>&#160;<span class="keyword">class </span><a class="code" href="classField.html">Field</a>{</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    std::complex&lt;double&gt; angular_norm = 0.;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;};</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<a href="field_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @file field.h</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief Classes for the electric and magnetic (split) fields on a grid.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;complex&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="simulation__parameters_8h.html">simulation_parameters.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classField.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classField.html">Field</a>{</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classElectricField.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classElectricField.html">ElectricField</a>: <span class="keyword">public</span> <a class="code" href="classField.html">Field</a>{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">static</span> std::complex&lt;double&gt; phasor_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">double</span> omega, <span class="keywordtype">double</span> dt, <span class="keywordtype">int</span> Nt);</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    std::complex&lt;double&gt; angular_norm = 0.;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;};</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">void</span> add_to_angular_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> Nt, <a class="code" href="classSimulationParameters.html">SimulationParameters</a> &amp;params);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classElectricField.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classElectricField.html">ElectricField</a>: <span class="keyword">public</span> <a class="code" href="classField.html">Field</a>{</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">static</span> std::complex&lt;double&gt; phasor_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">double</span> omega, <span class="keywordtype">double</span> dt, <span class="keywordtype">int</span> Nt);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classMagneticField.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMagneticField.html">MagneticField</a>: <span class="keyword">public</span> <a class="code" href="classField.html">Field</a>{</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordtype">void</span> add_to_angular_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> Nt, <a class="code" href="classSimulationParameters.html">SimulationParameters</a> &amp;params);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">static</span> std::complex&lt;double&gt; phasor_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">double</span> omega, <span class="keywordtype">double</span> dt, <span class="keywordtype">int</span> Nt);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;};</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> add_to_angular_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> Nt, <a class="code" href="classSimulationParameters.html">SimulationParameters</a> &amp;params);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classMagneticField.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMagneticField.html">MagneticField</a>: <span class="keyword">public</span> <a class="code" href="classField.html">Field</a>{</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">static</span> std::complex&lt;double&gt; phasor_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">double</span> omega, <span class="keywordtype">double</span> dt, <span class="keywordtype">int</span> Nt);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">void</span> add_to_angular_norm(<span class="keywordtype">double</span> f, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> Nt, <a class="code" href="classSimulationParameters.html">SimulationParameters</a> &amp;params);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aclassElectricField_html"><div class="ttname"><a href="classElectricField.html">ElectricField</a></div><div class="ttdef"><b>Definition:</b> field.h:12</div></div>
-<div class="ttc" id="aclassSimulationParameters_html"><div class="ttname"><a href="classSimulationParameters.html">SimulationParameters</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:2</div></div>
-<div class="ttc" id="aclassField_html"><div class="ttname"><a href="classField.html">Field</a></div><div class="ttdef"><b>Definition:</b> field.h:5</div></div>
-<div class="ttc" id="aclassMagneticField_html"><div class="ttname"><a href="classMagneticField.html">MagneticField</a></div><div class="ttdef"><b>Definition:</b> field.h:23</div></div>
+<div class="ttc" id="asimulation__parameters_8h_html"><div class="ttname"><a href="simulation__parameters_8h.html">simulation_parameters.h</a></div><div class="ttdoc">Classes collecting parameters for the simulation.</div></div>
+<div class="ttc" id="aclassElectricField_html"><div class="ttname"><a href="classElectricField.html">ElectricField</a></div><div class="ttdef"><b>Definition:</b> field.h:17</div></div>
+<div class="ttc" id="aclassSimulationParameters_html"><div class="ttname"><a href="classSimulationParameters.html">SimulationParameters</a></div><div class="ttdoc">The full collection of simulation parameters.</div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:10</div></div>
+<div class="ttc" id="aclassField_html"><div class="ttname"><a href="classField.html">Field</a></div><div class="ttdef"><b>Definition:</b> field.h:10</div></div>
+<div class="ttc" id="aclassMagneticField_html"><div class="ttname"><a href="classMagneticField.html">MagneticField</a></div><div class="ttdef"><b>Definition:</b> field.h:28</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_dfaedd75726dc0f14b5d7f96fe9da9ad.html">tdms</a></li><li class="navelem"><a class="el" href="dir_31151eb6fe72a8c6f09675be35b4e99c.html">include</a></li><li class="navelem"><b>field.h</b></li>
+    <li class="navelem"><a class="el" href="dir_dfaedd75726dc0f14b5d7f96fe9da9ad.html">tdms</a></li><li class="navelem"><a class="el" href="dir_31151eb6fe72a8c6f09675be35b4e99c.html">include</a></li><li class="navelem"><a class="el" href="field_8h.html">field.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>

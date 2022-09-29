@@ -19,6 +19,6 @@ digraph "tdms/include/openandorder.h"
   Node6 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 [label="vector",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node1 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node9 [label="matrix_collection.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$matrix__collection_8h_source.html",tooltip=" "];
+  Node9 [label="matrix_collection.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$matrix__collection_8h.html",tooltip="A collection of named MATLAB matrices."];
   Node9 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

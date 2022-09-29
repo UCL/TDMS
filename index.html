@@ -141,7 +141,11 @@ Compiling and debugging</h2>
 </div><!-- fragment --><p>You may need to help CMake find MATLAB/fftw etc.</p>
 <ul>
 <li>By default, build testing is turned off. You can turn it on with <code>-DBUILD_TESTING=ON</code>.</li>
-<li>Also by default, debug printout is off. Turn on with <code>-DCMAKE_BUILD_TYPE=Debug</code> or manually at some specific place in the code with: <div class="fragment"><div class="line">spdlog::set_level(spdlog::level::debug);</div>
+<li>Also by default, debug printout is off. Turn on with <code>-DCMAKE_BUILD_TYPE=Debug</code> or manually at some specific place in the code with: <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;spdlog/spdlog.h&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// ...</span></div>
+<div class="line"> </div>
+<div class="line">spdlog::set_level(spdlog::level::debug);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// ...</span></div>
 <div class="line"> </div>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['saveoutput_131',['saveoutput',['../openandorder_8h.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp'],['../openandorder_8cpp.html#ad746947a84d8389f4254306e2a635283',1,'saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename):&#160;openandorder.cpp']]]
+  ['parse_5fargs_174',['parse_args',['../classArgumentParser.html#a206004e16b6841b14fb1483bcc816a2e',1,'ArgumentParser']]],
+  ['print_5fhelp_5fmessage_175',['print_help_message',['../classArgumentParser.html#a2fda5f34d8aa3d6394877c96ddf84347',1,'ArgumentParser']]]
 ];
