@@ -25,7 +25,7 @@ function(test_target)
 
     FetchContent_Declare(
             Catch2
-            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+	    GIT_REPOSITORY ${GITHUB_PREFIX}catchorg/Catch2.git
             GIT_TAG        v3.0.1
     )
 

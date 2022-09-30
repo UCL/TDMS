@@ -10,6 +10,12 @@ include(CTest)
 
 # Allow user to specify git access protocol (default to https)
 option(GIT_SSH "" OFF)
+if(GIT_SSH)
+    set(GITHUB_PREFIX git@github.com:)
+else()
+    set(GITHUB_PREFIX https://github.com/)
+endif()
+
 
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
@@ -69,12 +75,6 @@ endif()
 
 
 # spdlog ----------------------------------------------------------------------
-if(GIT_SSH)
-    set(GITHUB_PREFIX git@github.com:)
-else()
-    set(GITHUB_PREFIX https://github.com/)
-endif()
-
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
 if(NOT spdlog_FOUND)
     include(FetchContent)
