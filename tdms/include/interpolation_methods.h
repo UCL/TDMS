@@ -48,24 +48,28 @@ double interp3(double *v);
  * @param j_u Greatest j index into the FDTD grid to evaluate the field at
  * @param k_l Least k index into the FDTD grid to evaluate the field at
  * @param k_u Greatest k index into the FDTD grid to evaluate the field at
- * @param I Number of elements in the i direction of the FDTD grid
- * @param J Number of elements in the j direction of the FDTD grid
- * @param K Number of elements in the k direction of the FDTD grid
+ * @param nI,nJ,nK Number of elements in the i,j,k (respectively) direction of the FDTD grid
  *
  * @throws runtime_error In the event that the limits of field extraction are outside the FDTD grid
  */
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K);
+void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK);
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
- * 
+ *
  * There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.
- * 
+ *
  * MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!
+ *
+ * For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a point spacing" to the right of the final data point.
+ * These "interpolation positions" (interp positions) are marked with "o" below:
+ * v0   v1   v2   v3   v4   v5   v6   v7
+ *    o    o    o    o    o    o    o    o
+ * We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example.
  */
 enum scheme_value
 {
-    BAND_LIMITED_0 = 4,             // use bandlimited interpolation w/ interp position = 0.
+    BAND_LIMITED_0 = 4,             // use bandlimited interpolation w/ interp position = 0
     BAND_LIMITED_1 = 6,             // use bandlimited interpolation w/ interp position = 1
     BAND_LIMITED_2 = 8,             // use bandlimited interpolation w/ interp position = 2
     BAND_LIMITED_3 = 9,             // use bandlimited interpolation w/ interp position = 3 [Preferred method if available]
@@ -105,8 +109,10 @@ class interpScheme {
 
         /* END FETCH METHODS */
         
-        // stores the index-offset that we require when extracting data from the field component arrays
-        int index;
+        /* The number of datapoints "to the left" of where we are planning to interpolate to.
+        For example, interpolating to interpolation position 0 requires 1 datapoint at a position before the location of the interpolation, whilst interpolation position 6 requires there to be 7.
+        */
+        int number_of_datapoints_to_left;
 
         // cubic and BLi schemes use different numbers of coefficients. To avoid switches, we store these variables.
         int first_nonzero_coeff, last_nonzero_coeff;

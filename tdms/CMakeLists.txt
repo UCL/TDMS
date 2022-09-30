@@ -145,7 +145,8 @@ if (BUILD_TESTING)
 
     add_executable(tdms_tests
             tests/unit/test_fields.cpp
-            tests/unit/test_interpolate.cpp
+            tests/unit/test_interpolation_determination.cpp
+            tests/unit/test_interpolation_functions.cpp
             tests/unit/test_numerical_derivative.cpp
             tests/unit/test_openandorder.cpp)
 
