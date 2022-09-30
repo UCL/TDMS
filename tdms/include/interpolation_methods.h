@@ -1,6 +1,6 @@
 /**
  * @file interpolation_methods.h
- * @brief Cubic interpolation functions
+ * @brief Cubic interpolation functions.
  * 
  * Needed to  preserve interpolate.cpp current functionality prior to testing!
  */

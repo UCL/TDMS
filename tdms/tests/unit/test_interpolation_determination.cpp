@@ -1,5 +1,9 @@
-# include <catch2/catch_test_macros.hpp>
-# include "interpolation_methods.h"
+/**
+ * @file test_interpolation_determination.cpp
+ * @brief Tests of the interpolation functions.
+ */
+#include <catch2/catch_test_macros.hpp>
+#include <interpolation_methods.h>
 
 using namespace std;
 
@@ -20,7 +24,7 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown")
     // checkInterpolationPoints should not throw an exception if we provide j_l = 2 > j_u = -2, as is done for a 2D simulation (J=0), and request interpolation over the maximum i,k range
     CHECK_NOTHROW(checkInterpolationPoints(2, I - 2, 2, -2, 2, K - 2, I, 0, K));
 
-    // conversely, it should throw an error if we try to provide j_l = 0 = j_u, which one may percieve are sensible choices, in this case
+    // conversely, it should throw an error if we try to provide j_l = 0 = j_u, which one may perceive are sensible choices, in this case
     CHECK_THROWS_AS(checkInterpolationPoints(2, I - 2, 2, 0, 0, K - 2, I, 0, K), runtime_error);
 
     /* 3D simulation checks

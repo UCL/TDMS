@@ -145,9 +145,10 @@ if (BUILD_TESTING)
 
     add_executable(tdms_tests
             tests/unit/test_fields.cpp
-            tests/unit/test_openandorder.cpp
             tests/unit/test_interpolation_determination.cpp
-            tests/unit/test_interpolation_functions.cpp)
+            tests/unit/test_interpolation_functions.cpp
+            tests/unit/test_numerical_derivative.cpp
+            tests/unit/test_openandorder.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
