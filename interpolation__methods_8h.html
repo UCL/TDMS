@@ -150,9 +150,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>interp3</b> (double
 <tr class="memitem:ab7f783ba816512e71751e067df933d4f"><td class="memItemLeft" align="right" valign="top"><a id="ab7f783ba816512e71751e067df933d4f"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>interp3</b> (double *v)</td></tr>
 <tr class="separator:ab7f783ba816512e71751e067df933d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43019a1131ff44db22c8c54a73d27043"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8h.html#a43019a1131ff44db22c8c54a73d27043">checkInterpolationPoints</a> (int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K)</td></tr>
-<tr class="memdesc:a43019a1131ff44db22c8c54a73d27043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the limits of field extraction are within range of the FDTD grid.  <a href="interpolation__methods_8h.html#a43019a1131ff44db22c8c54a73d27043">More...</a><br /></td></tr>
-<tr class="separator:a43019a1131ff44db22c8c54a73d27043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae729ae820cc0e2c163de6c9e233f57b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8h.html#ae729ae820cc0e2c163de6c9e233f57b2">checkInterpolationPoints</a> (int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK)</td></tr>
+<tr class="memdesc:ae729ae820cc0e2c163de6c9e233f57b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the limits of field extraction are within range of the FDTD grid.  <a href="interpolation__methods_8h.html#ae729ae820cc0e2c163de6c9e233f57b2">More...</a><br /></td></tr>
+<tr class="separator:ae729ae820cc0e2c163de6c9e233f57b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af985407a8156f345904eecf2b785c49b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classinterpScheme.html">interpScheme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8h.html#af985407a8156f345904eecf2b785c49b">best_interp_scheme</a> (int cells_in_direction, int cell_id)</td></tr>
 <tr class="memdesc:af985407a8156f345904eecf2b785c49b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.  <a href="interpolation__methods_8h.html#af985407a8156f345904eecf2b785c49b">More...</a><br /></td></tr>
 <tr class="separator:af985407a8156f345904eecf2b785c49b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -214,7 +214,8 @@ const <a class="el" href="classinterpScheme.html">interpScheme</a>&#160;</td><td
 
 <p>Defines our order of preference for the use of the various schemes. </p>
 <p>There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.</p>
-<p>MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE! </p>
+<p>MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!</p>
+<p>For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a point spacing" to the right of the final data point. These "interpolation positions" (interp positions) are marked with "o" below: v0 v1 v2 v3 v4 v5 v6 v7 o o o o o o o o We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example. </p>
 
 </div>
 </div>
@@ -257,8 +258,8 @@ const <a class="el" href="classinterpScheme.html">interpScheme</a>&#160;</td><td
 
 </div>
 </div>
-<a id="a43019a1131ff44db22c8c54a73d27043"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43019a1131ff44db22c8c54a73d27043">&#9670;&nbsp;</a></span>checkInterpolationPoints()</h2>
+<a id="ae729ae820cc0e2c163de6c9e233f57b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae729ae820cc0e2c163de6c9e233f57b2">&#9670;&nbsp;</a></span>checkInterpolationPoints()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -303,19 +304,19 @@ const <a class="el" href="classinterpScheme.html">interpScheme</a>&#160;</td><td
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>I</em>, </td>
+          <td class="paramname"><em>nI</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>J</em>, </td>
+          <td class="paramname"><em>nJ</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>K</em>&#160;</td>
+          <td class="paramname"><em>nK</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -335,9 +336,7 @@ const <a class="el" href="classinterpScheme.html">interpScheme</a>&#160;</td><td
     <tr><td class="paramname">j_u</td><td>Greatest j index into the FDTD grid to evaluate the field at </td></tr>
     <tr><td class="paramname">k_l</td><td>Least k index into the FDTD grid to evaluate the field at </td></tr>
     <tr><td class="paramname">k_u</td><td>Greatest k index into the FDTD grid to evaluate the field at </td></tr>
-    <tr><td class="paramname">I</td><td>Number of elements in the i direction of the FDTD grid </td></tr>
-    <tr><td class="paramname">J</td><td>Number of elements in the j direction of the FDTD grid </td></tr>
-    <tr><td class="paramname">K</td><td>Number of elements in the k direction of the FDTD grid</td></tr>
+    <tr><td class="paramname">nI,nJ,nK</td><td>Number of elements in the i,j,k (respectively) direction of the FDTD grid</td></tr>
   </table>
   </dd>
 </dl>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['argumentnamespace_90',['ArgumentNamespace',['../classArgumentNamespace.html',1,'']]],
-  ['argumentparser_91',['ArgumentParser',['../classArgumentParser.html',1,'']]]
+  ['argumentnamespace_92',['ArgumentNamespace',['../classArgumentNamespace.html',1,'']]],
+  ['argumentparser_93',['ArgumentParser',['../classArgumentParser.html',1,'']]]
 ];

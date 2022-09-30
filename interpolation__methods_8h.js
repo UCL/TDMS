@@ -16,7 +16,7 @@ var interpolation__methods_8h =
       [ "CUBIC_INTERP_LAST", "interpolation__methods_8h.html#a0c71c7b51a760b8fcecc30d8196aee23a9b611b4fd577508817799906e6ea69b6", null ]
     ] ],
     [ "best_interp_scheme", "interpolation__methods_8h.html#af985407a8156f345904eecf2b785c49b", null ],
-    [ "checkInterpolationPoints", "interpolation__methods_8h.html#a43019a1131ff44db22c8c54a73d27043", null ],
+    [ "checkInterpolationPoints", "interpolation__methods_8h.html#ae729ae820cc0e2c163de6c9e233f57b2", null ],
     [ "interp1", "interpolation__methods_8h.html#a11abdeb43459bf497cadb0937092e81a", null ],
     [ "interp1", "interpolation__methods_8h.html#a0465507f7b837832694583efed5e227d", null ],
     [ "interp2", "interpolation__methods_8h.html#a70dbc4b247ccedc7ade0a5dcec96dde6", null ],
