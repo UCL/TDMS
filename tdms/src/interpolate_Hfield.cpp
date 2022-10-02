@@ -2,160 +2,231 @@
 #include "interpolate_Hfield.h"
 #include "interpolation_methods.h"
 
-using namespace std;
+/* INTERPOLATION SCHEMES FOR THE MAGNETIC FIELD
 
-/**
- * @brief Determines which of two dimensions is optimal to perform interpolation in.
- *
- * Interpolating the magnetic field requires us to first interpolate to obtain points parallel to the centre of the Yee cell, then again in the direction corresponding to the field component we are interested in.
- * This function determines which of the remaining two dimensions, labelled d0 and d1, is optimal for the first set of interpolations.
- *
- * (d0,d1) represents any combination of (x,y), (x,z), or (z,y) dimensions.
- *
- * @param n_cells_d0,n_cells_d1 The maximum number of Yee cells in dimensions d0 and d1
- * @param cid0,cid1 The component of the Yee cell index in dimensions d0 and d1
- * @return true Dimension d0 should be used.
- * @return false Dimension d1 should be used. In the event of a tie, prefer this dimension.
- */
-bool determine_second_dim(int n_cells_d0, int n_cells_d1, int cid0, int cid1) {
-    // if we are doing a 2D simulation, one of the dimensions might be zero
-    // in which case, return the other
-    if (n_cells_d0 == 0) return false;
-    else if (n_cells_d1 == 0) return true;
-    else {
-        // so we have a 3D simulation
-        interp_scheme d0_scheme = determineInterpScheme(n_cells_d0, cid0);
-        interp_scheme d1_scheme = determineInterpScheme(n_cells_d1, cid1);
-        // we now need to determine which scheme is the better scheme
-        return better_scheme(d0_scheme, d1_scheme);
+Unlike the E-field, the H-field components associated with Yee cell i,j,k are _not_ aligned with the centre of the Yee cells.
+Instead, the position of the field components (relative to the Yee cell centre is):
+
+Hx  | (0.0, 0.5, 0.5) .* (Dx, Dy, Dx)
+Hy  | (0.5, 0.0, 0.5) .* (Dx, Dy, Dz)
+Hz  | (0.5, 0.5, 0.0) .* (Dx, Dy, Dz)
+
+where Dx, Dy, Dz are the dimensions of the Yee cell.
+This requires us to interpolate twice to recover (any of the) field components at the centre of Yee cell i,j,k.
+
+Henceforth, let {a,b,c} = {x,y,z} be some 1-to-1 assignment of the co-ordinate axes to the labels a,b,c.
+The values Da, Db, Dc are the corresponding permutation of Dx, Dy, Dz.
+Suppose that we wish to interpolate the Ha field component to the centre a particular Yee cell.
+
+We will use the notation (a_i,b_j,c_k) for the Yee cell indices, although bear in mind that this does not reflect the order the indices appear in the code.
+For example; if a = y, b = x, c = z, then the value of Ha at cell (a_i,b_j,c_k) is accessed via Ha[c_k][a_i][b_j], due to the interchanging of the x and y directions.
+Similarly; we will write Ha[a_i, b_j, c_k] to refer to the value of Ha associated to cell (a_i,b_j,c_k).
+
+Suppose now that we have selected cell a_i,b_j,c_k to interpolate to the centre of.
+We must interpolate in the b-direction, then c-direction, or vice-versa.
+For optimal accuracy we must determine the best interpolation scheme we can use in each direction at cell (a_i,b_j,c_k), and use the WORSE scheme second.
+
+Let us assume WLOG that the b-direction interpolation scheme (b_scheme) is inferior to that of the c-direction (c_scheme).
+We now need to interpolate Ha in the c-direction to obtain the value of Ha at the spatial positions (a_i, cell_b + Db, c_k) where
+b_j - b_scheme.number_of_datapoints_to_left + b_scheme.first_nonzero_coeff <= cell_b <= b_j - b_scheme.number_of_datapoints_to_left + b_scheme.last_nonzero_coeff.
+
+    Let cell_b be one particular index in this range.
+    To apply c_scheme to obtain the value of Ha at (a_i, cell_b + Db, c_k), we require the values Ha[a_i, cell_b, cell_c] where
+    c_k - c_scheme.number_of_datapoints_to_left + c_scheme.first_nonzero_coeff <= cell_c <= c_k - c_scheme.number_of_datapoints_to_left + c_scheme.last_nonzero_coeff.
+    These values are fed to c_scheme.interpolate, which provides us with Ha at the spatial position (a_i, cell_b + Db, c_k).
+
+Now with approximations of Ha at each (a_i, cell_b + Db, c_k), we can pass this information to b_scheme.interpolate to recover the value of Ha at the centre of Yee cell (a_i, b_j, c_k).
+*/
+
+void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int nJ, int nK, double *Hx)
+{
+    // Associations: a = x, b = y, c = z
+
+    // determine the z-direction scheme
+    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    // determine the y-direction scheme
+    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+
+    // this data will be passed to the second interpolation scheme
+    double data_for_second_scheme[8];
+    // this data will hold values for the interpolation in the first interpolation scheme
+    double data_for_first_scheme[8];
+
+    // which of z_scheme and y_scheme is WORSE? We will interpolate in this direction SECOND
+    if (z_scheme.is_better_than(y_scheme))
+    {
+        // we will be interpolating in the z-direction first, then in y
+        for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
+        {
+            // this is the j-index of the cell we are looking at
+            int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+            // determine the Hx values of cells (i, cell_j, k-z_scheme.index-1) through (i, cell_j, k-z_scheme.index-1+7), and interpolate them via z_scheme
+            for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
+            {
+                // the k-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+                // gather the data for interpolating in the z dimension
+                data_for_first_scheme[kk] = Hxy[cell_k][cell_j][i] + Hxz[cell_k][cell_j][i];
+            }
+            // interpolate in z to obtain a value for the Hx field at position (i, cell_j+Dy, k)
+            // place this into the appropriate index in the data being passed to the y_scheme
+            data_for_second_scheme[jj] = z_scheme.interpolate(data_for_first_scheme);
+        }
+        // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
+        *Hx = y_scheme.interpolate(data_for_second_scheme);
+    }
+    else
+    {
+        // we will be interpolating in the y-direction first, then in z
+        for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
+        {
+            // this is the k-index of the cell we are looking at
+            int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+            // determine the Hx values of cells (i, j - y_scheme.index-1, cell_k) through (i, j - y_scheme.index-1+7, cell_k), and interpolate them via y_scheme
+            for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
+            {
+                // the j-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+                // gather the data for interpolating in the y dimension
+                data_for_first_scheme[jj] = Hxy[cell_k][cell_j][i] + Hxz[cell_k][cell_j][i];
+            }
+            // interpolate in y to obtain a value for the Hx field at position (i, j, cell_k+Dz)
+            // place this into the appropriate index in the data being passed to the y_scheme
+            data_for_second_scheme[kk] = y_scheme.interpolate(data_for_first_scheme);
+        }
+        // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
+        *Hx = z_scheme.interpolate(data_for_second_scheme);
     }
 }
 
-/**
- * @brief Interpolate the x-component of the magnetic field to the centre of Yee cell i,j,k
- *
- * Interpolation for the magnetic field must be done across two dimensions - first we must interpolate to obtain nearby field values parallel to the centre of the Yee cell, then we must interpolate again in another dimension to the centre of the Yee cell itself.
- *
- * @param[in] Hxy,Hxz Split components of the Yee cell
- * @param[in] i,j,k Yee cell index
- * @param[in] I,J,K Number of Yee cells in the i,j,k directions respectively
- * @param[out] Hx Interpolated value of the Hx field at centre of Yee cell i,j,k
- */
-void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, int K, double *Hx) {
-    // which interpolation scheme do we want to use in the x-direction?
-    interp_scheme x_scheme = determineInterpScheme(I, i);
+void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, int nI, int nK, double *Hy)
+{
+    // Associations: a = y, b = z, c = x
 
-    // this interpolation scheme will determine how many times we need to interpolate in the other dimension, and the range of x-Yee cells to consider
-    int i_low, i_high, d_low, d_high;
-    // we will also need to store the result of the interpolation in the first dimension
-    double *first_interp_vals;
-    double *other_dim_cell_data;
+    // determine the x-direction scheme
+    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    // determine the z-direction scheme
+    const interpScheme &z_scheme = best_interp_scheme(nK, k);
 
-    if (better_scheme(x_scheme, CUBIC_INTERP_MIDDLE)) {
-        // if using a BLi scheme in x,
-        // we need interpolated data for cells i - (scheme+1) through i - (scheme+1) + 7, inclusive
-        i_low = i - (x_scheme+1); i_high = i - (x_scheme+1)+7;
-        // assign memory that we need to store these values
-        first_interp_vals = (double *)malloc(8*sizeof(double));
-    }
-    else {
-        // we're using a cubic scheme in x
-        // we need interpolated data for cells i - (scheme-7+1) through i - (scheme-7+1) + 3, inclusive
-        i_low = i - (x_scheme-6); i_high = i - (x_scheme-6) + 3;
-        // assign memory that we need to store these values
-        first_interp_vals = (double *)malloc(4*sizeof(double));
-    }
+    // this data will be passed to the second interpolation scheme
+    double data_for_second_scheme[8];
+    // this data will hold values for the interpolation in the first interpolation scheme
+    double data_for_first_scheme[8];
 
-    // now we need to determine which of the y- and z-directions is optimal to perform the first interpolation in
-    // note: preference for avoiding the y-dimension because of possible 2D simulations
-    if (determine_second_dim(J, K, j, k)) {
-        // prefer y-dimension over z-dimension
-        interp_scheme y_scheme = determineInterpScheme(J, j);
-        if (better_scheme(y_scheme, CUBIC_INTERP_MIDDLE))
+    // which of x_scheme and z_scheme is WORSE? We will interpolate in this direction SECOND
+    if (z_scheme.is_better_than(x_scheme))
+    {
+        // we will be interpolating in the z-direction first, then in x
+        for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
-            // using a BLi scheme in y, assign memory we need
-            other_dim_cell_data = (double *)malloc(8*sizeof(double));
-
-            // Each time we interpolate in y, we need data for cells j - (scheme+1) through j - (scheme+1) + 7, inclusive
-            d_low = j - (y_scheme + 1);
-            d_high = j - (y_scheme + 1) + 7;
-            for (int ii=i_low; ii<=i_high; ii++) {
-                // populate other_dim_cell_data with the data we need from the y-cells
-                for(int jj=d_low; jj<=d_high; jj++) {
-                    other_dim_cell_data[jj-d_low] = Hxy[k][jj][ii] + Hxz[k][jj][ii];
-                }
-                first_interp_vals[ii-i_low] = bandlimited_interpolation(y_scheme, other_dim_cell_data);
-            }
-        }
-        else
-        {
-            // we're using a cubic scheme in y, assign memory we need
-            other_dim_cell_data = (double *)malloc(4*sizeof(double));
-
-            // Each time we interpolate in y, we need interpolated data for cells j - (scheme-7+1) through j - (scheme-7+1) + 3, inclusive
-            d_low = j - (y_scheme - 6);
-            d_high = j - (y_scheme - 6) + 3;
-            for (int ii = i_low; ii <= i_high; ii++)
+            // this is the i-index of the cell we are looking at
+            int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+            // determine the Hy values of cells (cell_i, j, k-z_scheme.index-1) through (cell_i, j, k-z_scheme.index-1+7), and interpolate them via z_scheme
+            for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
             {
-                // populate other_dim_cell_data with the data we need from the y-cells
-                for (int jj = d_low; jj <= d_high; jj++)
-                {
-                    other_dim_cell_data[jj - d_low] = Hxy[k][jj][ii] + Hxz[k][jj][ii];
-                }
-                first_interp_vals[ii - i_low] = cubic_interpolation(y_scheme-7, other_dim_cell_data);
+                // the k-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+                // gather the data for interpolating in the z dimension
+                data_for_first_scheme[kk] = Hyx[cell_k][j][cell_i] + Hyz[cell_k][j][cell_i];
             }
+            // interpolate in z to obtain a value for the Hy field at position (cell_i+Dx, j, k)
+            // place this into the appropriate index in the data being passed to the x_scheme
+            data_for_second_scheme[ii] = z_scheme.interpolate(data_for_first_scheme);
         }
+        // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
+        *Hy = x_scheme.interpolate(data_for_second_scheme);
     }
-    else {
-        // prefer z-dimension over y-dimension
-        interp_scheme z_scheme = determineInterpScheme(K, k);
-        if (better_scheme(z_scheme, CUBIC_INTERP_MIDDLE))
+    else
+    {
+        // we will be interpolating in the x-direction first, then in z
+        for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++)
         {
-            // using a BLi scheme in z, assign memory we need
-            other_dim_cell_data = (double *)malloc(8 * sizeof(double));
-
-            // Each time we interpolate in y, we need data for cells j - (scheme+1) through j - (scheme+1) + 7, inclusive
-            d_low = j - (z_scheme + 1);
-            d_high = j - (z_scheme + 1) + 7;
-            for (int ii = i_low; ii <= i_high; ii++)
+            // this is the k-index of the cell we are looking at
+            int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+            // determine the Hy values of cells (i - x_scheme.index-1, j, cell_k) through (i- x_scheme.index-1+7, j, cell_k), and interpolate them via x_scheme
+            for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
             {
-                // populate other_dim_cell_data with the data we need from the y-cells
-                for (int kk = d_low; kk <= d_high; kk++)
-                {
-                    other_dim_cell_data[kk - d_low] = Hxy[kk][j][ii] + Hxz[kk][j][ii];
-                }
-                first_interp_vals[ii - i_low] = bandlimited_interpolation(z_scheme, other_dim_cell_data);
+                // the i-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+                // gather the data for interpolating in the x dimension
+                data_for_first_scheme[ii] = Hyx[cell_k][j][cell_i] + Hyz[cell_k][j][cell_i];
             }
+            // interpolate in x to obtain a value for the Hy field at position (i, j, cell_k+Dz)
+            // place this into the appropriate index in the data being passed to the y_scheme
+            data_for_second_scheme[kk] = x_scheme.interpolate(data_for_first_scheme);
         }
-        else
+        // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
+        *Hy = z_scheme.interpolate(data_for_second_scheme);
+    }
+}
+
+void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, int nI, int nJ, double *Hz)
+{
+    // Associations: a = z, b = x, c = y
+
+    // determine the x-direction scheme
+    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    // determine the y-direction scheme
+    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+
+    // this data will be passed to the second interpolation scheme
+    double data_for_second_scheme[8];
+    // this data will hold values for the interpolation in the first interpolation scheme
+    double data_for_first_scheme[8];
+
+    // which of x_scheme and y_scheme is WORSE? We will interpolate in this direction SECOND
+    if (y_scheme.is_better_than(x_scheme))
+    {
+        // we will be interpolating in the y-direction first, then in x
+        for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
         {
-            // we're using a cubic scheme in y, assign memory we need
-            other_dim_cell_data = (double *)malloc(4 * sizeof(double));
-
-            // Each time we interpolate in y, we need interpolated data for cells j - (scheme-7+1) through j - (scheme-7+1) + 3, inclusive
-            d_low = j - (z_scheme - 6);
-            d_high = j - (z_scheme - 6) + 3;
-            for (int ii = i_low; ii <= i_high; ii++)
+            // this is the i-index of the cell we are looking at
+            int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+            // determine the Hz values of cells (cell_i, j-y_scheme.index-1, k) through (cell_i, j-y_scheme.index-1+7, k), and interpolate them via y_scheme
+            for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
             {
-                // populate other_dim_cell_data with the data we need from the y-cells
-                for (int kk = d_low; kk <= d_high; kk++)
-                {
-                    other_dim_cell_data[kk - d_low] = Hxy[kk][j][ii] + Hxz[kk][j][ii];
-                }
-                first_interp_vals[ii - i_low] = cubic_interpolation(z_scheme - 7, other_dim_cell_data);
+                // the j-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+                // gather the data for interpolating in the y dimension
+                data_for_first_scheme[jj] = Hzx[k][cell_j][cell_i] + Hzy[k][cell_j][cell_i];
             }
+            // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
+            // place this into the appropriate index in the data being passed to the x_scheme
+            data_for_second_scheme[ii] = y_scheme.interpolate(data_for_first_scheme);
         }
+        // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
+        *Hz = x_scheme.interpolate(data_for_second_scheme);
     }
+    else
+    {
+        // we will be interpolating in the x-direction first, then in y
+        for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++)
+        {
+            // this is the j-index of the cell we are looking at
+            int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+            // determine the Hz values of cells (i - x_scheme.index-1, cell_j, k) through (i- x_scheme.index-1+7, cell_j, k), and interpolate them via x_scheme
+            for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++)
+            {
+                // the i-index of the current cell we are looking at (readability, don't need to define this here)
+                int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+                // gather the data for interpolating in the x dimension
+                data_for_first_scheme[ii] = Hzx[k][cell_j][cell_i] + Hzy[k][cell_j][cell_i];
+            }
+            // interpolate in x to obtain a value for the Hz field at position (i, j, cell_k+Dz)
+            // place this into the appropriate index in the data being passed to the y_scheme
+            data_for_second_scheme[jj] = x_scheme.interpolate(data_for_first_scheme);
+        }
+        // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
+        *Hz = y_scheme.interpolate(data_for_second_scheme);
+    }
+}
 
-    // now interpolate to the centre of the Yee cell we are about.
-    // NOTE: we could do without this if statement by nesting the previous code block in the first
-    // if (better_scheme(x_scheme, CUBIC_INTERP_MIDDLE)) - statement of this kind, but that makes for a hideous looking function, and this is already disgusting as it is
-    if (better_scheme(x_scheme, CUBIC_INTERP_MIDDLE)) {
-        // using BLi in x
-        *Hx = bandlimited_interpolation(x_scheme, first_interp_vals);
-    }
-    else {
-        // using cubic interpolation in x
-        *Hx = cubic_interpolation(x_scheme-7, first_interp_vals);
-    }
+void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
+                                 double ***Hyz, double ***Hzx, double ***Hzy,
+                                 int i, int j, int k, int nI, int nJ, int nK,
+                                 double *Hx, double *Hy, double *Hz)
+{
+    interpolateTimeDomainHx(Hxy, Hxz, i, j, k, nJ, nK, Hx);
+    interpolateTimeDomainHy(Hyx, Hyz, i, j, k, nI, nK, Hy);
+    interpolateTimeDomainHz(Hzx, Hzy, i, j, k, nI, nJ, Hz);
 }

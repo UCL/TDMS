@@ -31,13 +31,13 @@ double interp3(double *v)
     return 1. / 16. * v[0] - 5. / 16. * v[1] + 15. / 16. * v[2] + 5. / 16. * v[3];
 }
 
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int I, int J, int K)
+void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK)
 {
     if (i_l < 2)
     {
         throw runtime_error("Interpolation error: i_l too small");
     }
-    else if (i_u > I - 2)
+    else if (i_u > nI - 2)
     {
         throw runtime_error("Interpolation error: i_u too large");
     }
@@ -45,7 +45,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
     {
         throw runtime_error("Interpolation error: j_l too small");
     }
-    else if (j_u > J - 2)
+    else if (j_u > nJ - 2)
     {
         throw runtime_error("Interpolation error: j_u too large");
     }
@@ -53,7 +53,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
     {
         throw runtime_error("Interpolation error: k_l too small");
     }
-    else if (k_u > K - 2)
+    else if (k_u > nK - 2)
     {
         throw runtime_error("Interpolation error: k_u too large");
     }
@@ -78,7 +78,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[4] = -0.006777513830539;
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 4;
-            index = 0;
+            number_of_datapoints_to_left = 1;
             break; 
         }
         case BAND_LIMITED_1:
@@ -91,7 +91,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[5] = -0.006777513830539;
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 5;
-            index = 1;
+            number_of_datapoints_to_left = 2;
             break;
         }
         case BAND_LIMITED_2:
@@ -105,7 +105,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[6] = -0.006777513830539;
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 6;
-            index = 2;
+            number_of_datapoints_to_left = 3;
             break;
         }
         case BAND_LIMITED_3:
@@ -120,7 +120,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[7] =  -0.006777513830539;
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 7;
-            index = 3;
+            number_of_datapoints_to_left = 4;
             break;
         }
         case BAND_LIMITED_4: 
@@ -134,7 +134,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[7] = 0.025902746569881;
             first_nonzero_coeff = 1;
             last_nonzero_coeff = 7;
-            index = 4;
+            number_of_datapoints_to_left = 5;
             break;
         }
         case BAND_LIMITED_5:
@@ -147,7 +147,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[7] = -0.077297572626688;
             first_nonzero_coeff = 2;
             last_nonzero_coeff = 7;
-            index = 5;
+            number_of_datapoints_to_left = 6;
             break;
         }
         case BAND_LIMITED_6:
@@ -159,7 +159,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[7] = 0.389880694606603;
             first_nonzero_coeff = 3;
             last_nonzero_coeff = 7;
-            index = 6;
+            number_of_datapoints_to_left = 7;
             break;
         }
         case BAND_LIMITED_7:
@@ -171,7 +171,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[7] = 1.609553415928240;
             first_nonzero_coeff = 3;
             last_nonzero_coeff = 7;
-            index = 7;
+            number_of_datapoints_to_left = 8;
             break;
         }
         case BAND_LIMITED_CELL_ZERO:
@@ -184,7 +184,7 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[4] = 0.006777513830539;
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 4;
-            index = 1; // so that scheme.index-1 gives v[0] as the first data point
+            number_of_datapoints_to_left = 0;
             break;
         }
         case CUBIC_INTERP_FIRST:
@@ -194,8 +194,8 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = -5. / 16.;
             scheme_coeffs[3] = 1. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
-            index = 0;
+            last_nonzero_coeff = 3;
+            number_of_datapoints_to_left = 1;
             break;
         }
         case CUBIC_INTERP_MIDDLE:
@@ -205,8 +205,8 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = 9. / 16.;
             scheme_coeffs[3] = -1. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
-            index = 1;
+            last_nonzero_coeff = 3;
+            number_of_datapoints_to_left = 2;
             break;
         }
         case CUBIC_INTERP_LAST:
@@ -216,8 +216,8 @@ interpScheme::interpScheme(scheme_value val) {
             scheme_coeffs[2] = 15. / 16.;
             scheme_coeffs[3] = 5. / 16.;
             first_nonzero_coeff = 0;
-            last_nonzero_coeff = 4;
-            index = 2;
+            last_nonzero_coeff = 3;
+            number_of_datapoints_to_left = 3;
             break;
         }
         default:
