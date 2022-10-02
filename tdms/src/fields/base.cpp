@@ -88,3 +88,23 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
         }
   }
 }
+
+void Field::set_values_from(Field &other) {
+
+  if (other.I_tot != I_tot || other.J_tot != J_tot || other.K_tot != K_tot){
+    throw runtime_error("Cannot set the values of a field with a different size");
+  }
+
+  for (auto &component : {"real", "imag"}) {
+
+    auto this_component = are_equal(component, "real") ? real : imag;
+    auto other_component = are_equal(component, "real") ? other.real : other.imag;
+
+    for (char c : {'x', 'y', 'z'})
+      for (int k = 0; k < K_tot; k++)
+        for (int j = 0; j < J_tot; j++)
+          for (int i = 0; i < I_tot; i++) {
+            this_component[c][k][j][i] = other_component[c][k][j][i];
+          }
+  }
+}

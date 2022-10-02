@@ -207,6 +207,11 @@ public:
 
   virtual double phase(int n, double omega, double dt) = 0;
 
+  /**
+   * Set the values of all components in this field from another, equally sized field
+   */
+   void set_values_from(Field &other);
+
   ~Field();
 };
 

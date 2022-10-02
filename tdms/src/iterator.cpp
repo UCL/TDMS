@@ -1,8 +1,8 @@
 #include <complex>
 #include <algorithm>
-#include <cstring>
 #include <ctime>
 #include <omp.h>
+#include <spdlog/spdlog.h>
 #include "iterator.h"
 #include "mesh_base.h"
 #include "numerical_derivative.h"
@@ -676,10 +676,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
       dummy_array[2] =
               mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
-    }
-    //fprintf(stderr,"Pre 06\n");
-    //fprintf(stderr,"Qos 03:\n");
-    if (params.source_mode == SourceMode::steadystate) {
+
       E_copy.real.x =
               cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
       E_copy.imag.x =
@@ -694,6 +691,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
       E_copy.imag.z =
               cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+
+      E_copy.I_tot = E.I_tot;
+      E_copy.J_tot = E.J_tot;
+      E_copy.K_tot = E.K_tot;
     }
     //fprintf(stderr,"Pre 07\n");
     //this will be a copy of the phasors which are extracted from the previous cycle
@@ -1101,29 +1102,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     time_H = time_E - params.dt / 2.;
     //Extract phasors
     auto timer = Timer();
-    if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate) &&
-        params.exphasorsvolume) {//params.run_mode=complete,sourcemode=steadystate
+    if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete)
+        && (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
+
       dft_counter = 0;
+
       double tol = checkPhasorConvergence(E, E_copy);
+      if (tol < TOL) break; //required accuracy obtained
 
-      //      mexPrintf("tol: %.5e \n",tol);
-      fprintf(stderr, "tol: %.5e \n", tol);
+      spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
+      E_copy.set_values_from(E);
 
-      if (tol < TOL) break;//required accuracy obtained
-
-      copyPhasors(E, E_copy, (int) mxGetNumberOfElements((mxArray *) plhs[0]));
-
-      //clean the phasors
       E.zero();
       H.zero();
+      spdlog::debug("Zeroed the phasors");
 
       if (params.exphasorssurface) {
         initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, f_ex_vec.size());
         initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, f_ex_vec.size());
+        spdlog::debug("Zeroed the surface components");
       }
-      //cleanphasors
     }
-    //fprintf(stderr,"Pos 01:\n");
 
     if ((params.source_mode == SourceMode::steadystate) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
 
@@ -4307,22 +4306,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || (campssample.n_vertices() > 0)) {
       if (params.source_mode == SourceMode::steadystate) {
 	/*
-	  Each time a new acquisition period of harmonic illumination begins, all complex amplitudes (volume, surface etc.) are set back to 0 since the discrete Fourier transforms used to acquire these complex amplitudes starts again. In particular, the returned complex amplitudes will have been acquired during a single acquisition period of harmonic illumination. Note that, as explained above, the acquisition period is actually three periods of the harmonic waves fundamental period. The complex amplitudes are reset to 0 using calls such as: 
+	  Each time a new acquisition period of harmonic illumination begins, all complex amplitudes
+	  (volume, surface etc.) are set back to 0 since the discrete Fourier transforms used to acquire
+	  these complex amplitudes starts again. In particular, the returned complex amplitudes will have
+	  been acquired during a single acquisition period of harmonic illumination. Note that, as
+	  explained above, the acquisition period is actually three periods of the harmonic waves
+	  fundamental period. The complex amplitudes are reset to 0 using calls such as:
 
-initialiseDouble3DArray(ExR, dims[0], dims[1], dims[2]);
+      initialiseDouble3DArray(ExR, dims[0], dims[1], dims[2]);
 
-However, the normalisation factors are reset to 0 here.
+    However, the normalisation factors are reset to 0 here.
 	 */
-	
-	if( (tind % Nsteps)==0 ){
-	  E.angular_norm = 0.0;
-	  H.angular_norm = 0.0;
 
-	  for(int ifx=0;ifx<N_f_ex_vec;ifx++){
-	    E_norm[ifx] = 0.;
-	    H_norm[ifx] = 0.;
-	  }
-	}
+      if( (tind % Nsteps) == 0 ){
+        E.angular_norm = 0.0;
+        H.angular_norm = 0.0;
+
+        for(int ifx=0; ifx<f_ex_vec.size(); ifx++){
+          E_norm[ifx] = 0.;
+          H_norm[ifx] = 0.;
+        }
+      }
 
 	/*In the calls below, the following two lines of code are equivalent up to numerical precision:
 
@@ -4335,7 +4339,9 @@ However, the normalisation factors are reset to 0 here.
 	  dt[0] = 2.*dcpi/omega_an[0]*3/Nsteps_tmp;
 	  Nsteps = (int)lround(Nsteps_tmp);
 
-	  Where dt and Nsteps are set. The reason for the factor of 3 is that we will perform complex amplitude extraction over 3 fundamental periods of the monochromatic source. We can then make the following statement:
+	  Where dt and Nsteps are set. The reason for the factor of 3 is that we will perform complex
+	  amplitude extraction over 3 fundamental periods of the monochromatic source. We can then make
+	  the following statement:
 
 	  T/dt*3=1/(f*dt)*3=Nsteps
 
@@ -4355,12 +4361,12 @@ However, the normalisation factors are reset to 0 here.
 
 	  In which case exp(i*2*pi*3*p + i*2*pi*q*3/Nsteps) = exp(i*2*pi*q*3/Nsteps)
 
-	  If instead we use tind % Nsteps=n, we see that n=q, leading to the same exponential function as above. So the two cases are equivalent.
-	  
+	  If instead we use tind % Nsteps=n, we see that n=q, leading to the same exponential function as
+	  above. So the two cases are equivalent.
 	 */
 	
-        E.add_to_angular_norm(fte, tind, Nsteps, params);
-        H.add_to_angular_norm(fth, tind, Nsteps, params);
+        E.add_to_angular_norm(tind, Nsteps, params);
+        H.add_to_angular_norm(tind, Nsteps, params);
 
         for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
           extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * dcpi, params.dt, Nsteps);
@@ -4413,7 +4419,7 @@ However, the normalisation factors are reset to 0 here.
     if ((params.source_mode == SourceMode::steadystate) && (tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&
         params.exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
-      copyPhasors(E_copy, E, (int) mxGetNumberOfElements((mxArray *) plhs[0]));
+      E.set_values_from(E_copy);
     }
     //fprintf(stderr,"Post-iter 4\n");
     fflush(stdout);
@@ -5174,15 +5180,6 @@ double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
           }
 
   return max_abs_diff / max_abs;
-}
-
-/*Copy the phasors from E to E_copy */
-void copyPhasors(ElectricField &from, ElectricField &to, int nelements) {
-
-  for (char c : {'x', 'y', 'z'}){
-    memcpy(to.real[c], from.real[c], nelements * sizeof(double));
-    memcpy(to.imag[c], from.imag[c], nelements * sizeof(double));
-  }
 }
 
 /*Load up the output grid labels*/

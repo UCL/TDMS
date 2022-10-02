@@ -25,8 +25,6 @@ double linearRamp(double t, double period, double rampwidth);
 
 double checkPhasorConvergence(ElectricField &A, ElectricField &B);
 
-void copyPhasors(ElectricField &from, ElectricField &to, int nelements);
-
 void setGridLabels(GridLabels &input_labels, GridLabels &output_labels,
                    int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
 
