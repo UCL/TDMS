@@ -208,6 +208,8 @@ public:
 
   Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows);
 
+  void initialise(T*** tensor, int n_layers, int n_cols, int n_rows);
+
   inline T** operator[] (int value) const { return tensor[value]; };
 
   bool has_elements(){ return tensor != nullptr; };
@@ -248,8 +250,8 @@ public:
 class DTilde{
 protected:
   int n_det_modes = 0;
-  static Tensor3D<std::complex<double>> component_in(const mxArray *ptr, const std::string &name,
-                                                     int n_rows, int n_cols);
+  static void set_component(Tensor3D<std::complex<double>> &tensor, const mxArray *ptr,
+                     const std::string &name, int n_rows, int n_cols);
 public:
   inline int num_det_modes() const { return n_det_modes; };
 
@@ -261,7 +263,7 @@ public:
 
 class IncidentField{
 protected:
-  static Tensor3D<double> component_in(const mxArray *ptr, const std::string &name);
+  void set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name);
 
 public:
   Tensor3D<double> x;

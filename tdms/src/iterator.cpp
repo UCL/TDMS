@@ -399,7 +399,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   params.intphasorssurface = bool_cast_from_double_in(prhs[input_counter++], "intphasorssurface");
 
   /*Get phasorsurface*/
-  /*Only do if exphasorssurface is true*/
   auto cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     cuboid.initialise(prhs[input_counter], J_tot);
@@ -1091,7 +1090,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   t0 = (double) time(NULL);
   //    fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"dz: %e, c: %e, dz/c: %e\n",dz,light_v,dz/light_v);
-  //Begin of main iteration loop
+
+  spdlog::debug("Starting main loop");
   auto main_loop_timer = Timer();
 
   if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
@@ -1221,36 +1221,41 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % params.Np == 0) {
-        //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and Ey_t are in row-major format whilst Exy etc. are in column major format
+        spdlog::debug("Setting Ex_t, Ey_t");
+
+        //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and
+        // Ey_t are in row-major format whilst Exy etc. are in column major format
         for (j = params.pml.Dyl; j < (J_tot - params.pml.Dyu); j++)
           for (i = params.pml.Dxl; i < (I_tot - params.pml.Dxu); i++) {
-            int n = j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl);
-            Ex_t.v[n][0] = E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
-            Ex_t.v[n][1] = 0.;
-            Ey_t.v[n][0] = E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
-            Ey_t.v[n][1] = 0.;
+            int m = j - params.pml.Dyl + (i - params.pml.Dxl) * (J_tot - params.pml.Dyu - params.pml.Dyl);
+            Ex_t.v[m][0] = E_s.xy[params.k_det_obs][j][i] + E_s.xz[params.k_det_obs][j][i];
+            Ex_t.v[m][1] = 0.;
+            Ey_t.v[m][0] = E_s.yx[params.k_det_obs][j][i] + E_s.yz[params.k_det_obs][j][i];
+            Ey_t.v[m][1] = 0.;
           }
-        //fprintf(stderr,"Pos 02a [1] (%d,%d,%d,%d):\n",params.pml.Dyl,J_tot-params.pml.Dyu,params.pml.Dxl,I_tot-params.pml.Dxu);
+
         fftw_execute(Ex_t.plan);
         fftw_execute(Ey_t.plan);
-        //fprintf(stderr,"Pos 02a [2]:\n");
+
         //Iterate over each mode
         for (int im = 0; im < D_tilde.num_det_modes(); im++) {
+
           //Now go back to column-major
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              int n = j + i * (J_tot - params.pml.Dyu - params.pml.Dyl);
-              Ex_t.cm[j][i] = Ex_t.v[n][0] + I * Ex_t.v[n][1];
-              Ey_t.cm[j][i] = Ey_t.v[n][0] + I * Ey_t.v[n][1];
+              int m = j + i * (J_tot - params.pml.Dyu - params.pml.Dyl);
+              Ex_t.cm[j][i] = Ex_t.v[m][0] + I * Ex_t.v[m][1];
+              Ey_t.cm[j][i] = Ey_t.v[m][0] + I * Ey_t.v[m][1];
             }
+
           //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - params.pml.Dyu - params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - params.pml.Dxu - params.pml.Dxl); i++) {
-              Ex_t.cm[j][i] = Ex_t.cm[j][i] * pupil[j][i] * D_tilde.x[j][i][im];
-              Ey_t.cm[j][i] = Ey_t.cm[j][i] * pupil[j][i] * D_tilde.y[j][i][im];
+              Ex_t.cm[j][i] *= pupil[j][i] * D_tilde.x[j][i][im];
+              Ey_t.cm[j][i] *= pupil[j][i] * D_tilde.y[j][i][im];
             }
-            //fprintf(stderr,"Pos 02a [4]:\n");
+
             //now iterate over each frequency to extract phasors at
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, i, j, kprop, phaseTermE,     \
                                              cphaseTermE)
@@ -1270,9 +1275,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                        lambda_an_t * f_vec.y[j] * lambda_an_t * f_vec.y[j]) < 1) {
 
                     if (!params.air_interface_present) {
-                      /*This had to be fixed since we must take into account the refractive index of the medium.
-
-           */
+                      //This had to be fixed since we must take into account the refractive index of the medium.
                       kprop = exp(I * params.z_obs * 2. * dcpi / lambda_an_t * refind *
                                   sqrt(1. - pow(lambda_an_t * f_vec.x[i] / refind, 2.) -
                                        pow(lambda_an_t * f_vec.y[j] / refind, 2.)));

@@ -191,14 +191,20 @@ void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
 Pupil::~Pupil() {
   free_cast_matlab_2D_array(matrix);
+  matrix = nullptr;
 }
 
 template<typename T>
 Tensor3D<T>::Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows){
-  this->tensor = tensor;
-  this->n_layers = n_layers;
-  this->n_cols = n_cols;
-  this->n_rows = n_rows;
+  initialise(tensor, n_layers, n_cols, n_rows);
+}
+
+template<typename T>
+void Tensor3D<T>::initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows){
+  tensor = _tensor;
+  n_layers = _n_layers;
+  n_cols = _n_cols;
+  n_rows = _n_rows;
 }
 
 template<>
@@ -210,8 +216,8 @@ void Tensor3D<double>::zero() {
       }
 }
 
-Tensor3D<complex<double>> DTilde::component_in(const mxArray *ptr, const string &name,
-                                               int n_rows, int n_cols){
+void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,
+                           int n_rows, int n_cols){
 
   auto element = ptr_to_nd_array_in(ptr, 3, name, "D_tilde");
 
@@ -243,8 +249,7 @@ Tensor3D<complex<double>> DTilde::component_in(const mxArray *ptr, const string 
 
   free_cast_matlab_3D_array(temp_re, n_cols);
   free_cast_matlab_3D_array(temp_im, n_cols);
-
-  return {p, n_cols, n_rows, n_det_modes};
+  tensor.initialise(p, n_cols, n_rows, n_det_modes);
 }
 
 void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
@@ -254,34 +259,32 @@ void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   }
 
   assert_is_struct_with_n_fields(ptr, 2, "D_tilde");
-  x = component_in(ptr, "Dx_tilde", n_rows, n_cols);
-  y = component_in(ptr, "Dy_tilde", n_rows, n_cols);
+  set_component(x, ptr, "Dx_tilde", n_rows, n_cols);
+  set_component(y, ptr, "Dy_tilde", n_rows, n_cols);
   n_det_modes = mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
 }
 
-Tensor3D<double> IncidentField::component_in(const mxArray *ptr, const std::string &name){
+void IncidentField::set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name){
 
   if (mxIsEmpty(mxGetField(ptr, 0, name.c_str()))) {
     cerr << name+" not present" << endl;
-    return {};
+    return;
   }
 
   auto element = ptr_to_nd_array_in(ptr, 3, name, "tdfield");
   auto dims = mxGetDimensions(element);
   int N = dims[0], M = dims[1], O = dims[2];
-  auto field = Tensor3D<double>(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N);
-  field.is_matlab_initialised = true;
+  component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N);
+  component.is_matlab_initialised = true;
 
   cerr << "Got tdfield, dims=("+to_string(N)+","+to_string(M)+","+to_string(O)+")" << endl;
-
-  return field;
 }
 
 IncidentField::IncidentField(const mxArray *ptr){
 
   assert_is_struct_with_n_fields(ptr, 2, "tdfield");
-  x = component_in(ptr, "exi");
-  y = component_in(ptr, "eyi");
+  set_component(x, ptr, "exi");
+  set_component(y, ptr, "eyi");
 }
 
 FieldSample::FieldSample(const mxArray *ptr){
