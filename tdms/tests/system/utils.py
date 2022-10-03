@@ -88,7 +88,7 @@ class HDF5File(dict):
                 raise AssertionError(f"{key} not found in {other}")
 
             other_value = other[key]
-            np.testing.assert_equal(value, other_value)
+            np.testing.assert_equal(value, other_value, rtol=rtol)
 
 
 def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
