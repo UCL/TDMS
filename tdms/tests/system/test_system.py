@@ -1,7 +1,9 @@
+import glob
+import os
 from pathlib import Path
 
 import pytest
-from utils import compare_output, download_data, work_in_zipped_dir
+from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 
 ZENODO_URL = "https://zenodo.org/record/"
 """
@@ -10,9 +12,11 @@ entry to this dictionary. The number on the LHS must be the same
 as the number in the zip filename.
 
 The zip file must contain:
-- an input file named `pstd_input_file.m`
-- one or more input data files named `pstd_{run_type}_input.mat`,
+- a single input file named `pstd_input_file.m`
+- one or more input data files named `pstd_{run_type}_input.mat`.
+  run_type can be any string.
 - corresponding reference output data files named `pstd_{run_type}_reference_output.mat`.
+  For every input file there must be a corresponding output file with the same run_type in the filename.
 
 run_type is one of ["fs", "cyl", "sph"].
 """
@@ -21,12 +25,10 @@ TEST_URLS = {
     "02": ZENODO_URL + "6838977/files/arc_02.zip",
     "03": ZENODO_URL + "6839280/files/arc_03.zip",
 }
-RUN_TYPES = ["fs", "cyl", "sph"]
 
 
 @pytest.mark.parametrize("number", TEST_URLS.keys())
-@pytest.mark.parametrize("run_type", RUN_TYPES)
-def test_system(number: str, run_type: str):
+def test_system(number: str):
     """
     Run the system tests. For each of the test data URLs defined above this:
     - downloads the test data
@@ -41,15 +43,30 @@ def test_system(number: str, run_type: str):
     # Need to define a new compare function to make sure we do the comparison
     # in the zipped directory
     @work_in_zipped_dir(ZIP_PATH)
-    def compare(number, run_type):
-        input_fname = f"arc_{number}/pstd_{run_type}_input.mat"
-        output_fname = f"arc_{number}/pstd_{run_type}_reference_output.mat"
+    def compare(number):
+        input_fnames = glob.glob("*")
+        assert len(input_fnames) > 0, f"No input files found in {os.getcwd()}"
+        for input_fname in input_fnames:
+            output_fname = input_fname.replace("input", "reference_output")
+            compare_output(input_fname, output_fname)
 
-        if not Path(input_fname).exists():
-            pytest.skip(
-                f"No input file for run type '{run_type}' in test number {number}"
-            )
+    compare(number)
 
-        compare_output(input_fname, output_fname)
 
-    compare(number, run_type)
+def compare_output(input_filename: os.PathLike, reference_output_filename: os.PathLike):
+    """
+    Run TDMS using `input_filename`, then compare the output to the data
+    saved in `reference_output_filename`.
+
+    Checks that the output .mat file (with a HDF5 format) contains tensors with
+    relative mean square values within numerical precision of the reference.
+    """
+    output_filename = "pstd_output.mat"
+    run_tdms(input_filename, output_filename)
+
+    reference = HDF5File(reference_output_filename)
+    output = HDF5File(output_filename)
+    try:
+        output.assert_matches(reference)
+    finally:
+        os.remove(output_filename)

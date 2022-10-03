@@ -75,7 +75,7 @@ class HDF5File(dict):
 
         return array.reshape(shape)
 
-    def matches(self, other: "HDF5File", rtol=1e-10) -> bool:
+    def assert_matches(self, other: "HDF5File", rtol=1e-10) -> bool:
         """
         Does this file match another. All arrays must be within a rtol
         to the other, where rtol is the relative difference between the two
@@ -85,22 +85,10 @@ class HDF5File(dict):
         for key, value in self.traverse(self):
 
             if key not in other:
-                return False  # Key did not match
+                raise AssertionError(f"{key} not found in {other}")
 
             other_value = other[key]
-
-            if value.shape != other_value.shape:
-                return False  # Shapes did not match
-
-            r_ms_diff = relative_mean_squared_difference(value, other_value)
-            if r_ms_diff > rtol:
-                print(
-                    f"{key} was not within {rtol} to the reference. "
-                    f"relative MSD = {r_ms_diff:.8f})"
-                )
-                return False
-
-        return True
+            np.testing.assert_equal(value, other_value)
 
 
 def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
@@ -130,12 +118,13 @@ def work_in_zipped_dir(zip_path: Path):
         def wrapped_function(*args, **kwargs):
 
             cwd = os.getcwd()
-            dir_path = Path(cwd, zip_path.stem)
 
             with ZipFile(zip_path, "r") as zip_folder:
-                zip_folder.extractall(dir_path)
+                zip_folder.extractall(cwd)
 
+            dir_path = Path(cwd, zip_path.stem)
             os.chdir(dir_path)
+            print(dir_path)
 
             try:
                 result = func(*args, **kwargs)
@@ -193,22 +182,3 @@ def download_data(url: str, to: Path) -> None:
     os.chdir(cwd)
 
     return None
-
-
-def compare_output(input_filename, reference_output_filename):
-    """
-    Run TDMS using `input_filename`, then compare the output to the data
-    saved in `reference_output_filename`.
-
-    Checks that the output .mat file (with a HDF5 format) contains tensors with
-    relative mean square values within numerical precision of the reference.
-    """
-    output_filename = "pstd_output.mat"
-    run_tdms(input_filename, output_filename)
-
-    reference = HDF5File(reference_output_filename)
-    output = HDF5File(output_filename)
-    try:
-        assert output.matches(reference)
-    finally:
-        os.remove(output_filename)
