@@ -107,12 +107,12 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
 
         // have to manually do cubic interpolation since best_interp_scheme will always want to do BLi
         // cubic interpolation only changes at the first and last cells
-        cub_interp[1] = CBFst.interpolate(field_samples, 1 - (CBFst.index + 1));
+        cub_interp[1] = CBFst.interpolate(field_samples, 1 - CBFst.number_of_datapoints_to_left);
         for (int i = 2; i <= n_YCs - 2; i++)
         {
-            cub_interp[i] = CBMid.interpolate(field_samples, i - (CBMid.index + 1));
+            cub_interp[i] = CBMid.interpolate(field_samples, i - CBMid.number_of_datapoints_to_left);
         }
-        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - (CBLst.index + 1));
+        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - CBLst.number_of_datapoints_to_left);
 
         // BLi interpolation
         for (int i = 1; i < n_YCs; i++)
@@ -121,7 +121,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation")
             interpScheme use_scheme = best_interp_scheme(n_YCs, i);
             // interpolate using the cell data we have provided
             // i - (use_scheme.index + 1) is the index of field_samples to read as the point v[0] in the scheme
-            BLi_interp[i] = use_scheme.interpolate(field_samples, i - (use_scheme.index + 1));
+            BLi_interp[i] = use_scheme.interpolate(field_samples, i - use_scheme.number_of_datapoints_to_left);
         }
 
         // compare to exact values - again ignore cell 0 for the time being

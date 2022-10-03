@@ -291,9 +291,9 @@ TEST_CASE("H-field interpolation check")
 {
     cout << "Beginning H-field BLi test..." <<endl;
     // error tolerance, based on MATLAB performance
-    double Hx_fro_tol = 1.8564584213212786e-02;
-    double Hy_fro_tol = 8.0005513762062608e-02;
-    double Hz_fro_tol = 8.0012805533365733e-02;
+    double Hx_fro_tol = 1.8946211079489815e-02;
+    double Hy_fro_tol = 7.9076626528757438e-02;
+    double Hz_fro_tol = 8.0012805533367606e-02;
 
     // additional tolerance to allow for floating-point rounding imprecisions, etc
     double acc_tol = 1e-8;
