@@ -52,10 +52,10 @@ enum RCSType   { parallel , perpendicular };
 
 namespace TDMS_MATH_CONSTANTS
 {
-const double dcpi = 3.14159265358979323846;                     // Pi
-const std::complex<double> I = std::complex<double>(0.0, 1.0);  // Imaginary unit
-const double zero = 1.0e-12;                                    // zero level for numerical comparisons
-const double convergence_level = 1.0e-10;                       // zero level for convergence
+const double dcpi = 3.14159265358979323846;                                  // Pi
+const std::complex<double> IMAGINARY_UNIT = std::complex<double>(0.0, 1.0);  // Imaginary unit
+const double zero = 1.0e-12;                                                 // zero level for numerical comparisons
+const double convergence_level = 1.0e-10;                                    // zero level for convergence
 }
 
 // **************************************
