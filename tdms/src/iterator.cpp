@@ -2680,7 +2680,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     update the E field will have advanced one time step.
 
     The interpretation of time is slightly complicated in the following. In what follows 
-    IMAGINARY_UNIT write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
+    I write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
     electric (tind*dt) and magnetic ( (tind+1/2)*dt ) fields.
 
     Times before                Operation         Times after
