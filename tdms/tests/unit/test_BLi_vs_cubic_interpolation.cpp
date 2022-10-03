@@ -43,7 +43,7 @@ inline double f_BLi_vs_Cubic(double x)
 TEST_CASE("Benchmark: BLi is better than cubic interpolation")
 {
     // number of cell sizes to test at
-    int n_trials = 4;
+    const int n_trials = 4;
     // Yee cell sizes to test across
     double cell_sizes[n_trials] = {0.25, 0.1, 0.05, 0.01};
     // Flags for whether or not we expect BLi to perform better
