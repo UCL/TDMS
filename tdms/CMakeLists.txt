@@ -106,12 +106,9 @@ set(SOURCES
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
-<<<<<<< HEAD
     src/interpolate_Efield.cpp
     src/interpolate_Hfield.cpp
-=======
     src/magnetic_field.cpp
->>>>>>> wgraham-interpolate_H
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numeric.cpp
