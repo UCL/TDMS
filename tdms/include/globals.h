@@ -50,19 +50,23 @@ enum RCSType   { parallel , perpendicular };
 //			Mathematical Constants
 // **************************************
 
-const double dcpi  = 3.14159265358979323846;
-
+namespace TDMS_MATH_CONSTANTS
+{
+const double dcpi = 3.14159265358979323846;                     // Pi
+const std::complex<double> I = std::complex<double>(0.0, 1.0);  // Imaginary unit
+const double zero = 1.0e-12;                                    // zero level for numerical comparisons
+const double convergence_level = 1.0e-10;                       // zero level for convergence
+}
 
 // **************************************
 //			Physical Constants
 // **************************************
 
-const double eo	     =   8.85400e-12;				// free space electric permitivity
-const double mo	     =   4.0 * dcpi * 1.0e-7;		// free space magnetic permeability
-const double light_v =   1.0 / sqrt(mo*eo);			// free space light velocity
-const double Zo		 = 376.734;						// free space inpedance
+namespace TDMS_PHYS_CONSTANTS
+{
+const double eo = 8.85400e-12;                               // free space electric permitivity
+const double mo = 4.0 * TDMS_MATH_CONSTANTS::dcpi * 1.0e-7;  // free space magnetic permeability
+const double light_v = 1.0 / sqrt(mo * eo);                  // free space light velocity
+const double Zo = 376.734;                                   // free space inpedance
+}
 
-const double zero			   = 1.0e-12;			// zero level for numerical comparisons
-const double convergence_level = 1.0e-10;			// zero level for convergence
-
-const auto I = std::complex<double>( 0.0 , 1.0 );
