@@ -54,8 +54,9 @@ firefox html/index.html # or your web browser of choice
 ```
 You should be able to find and read what you've changed.
 Don't worry about doxygen for the source files (although obviously please do write helpful comments there).
+We _have_ been putting doxygen comments in the [unit-test](#unit-testing) source files wherever sensible.
 
-For Python code (e.g. in the [tests](#system-tests)) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
+For Python code (e.g. in the [system tests](#system-tests)) we use [black](https://black.readthedocs.io/en/stable/) to enforce the code style.
 To apply automatic code styling to staged changes in git we recommend [`pre-commit`](https://pre-commit.com/).
 If you don't have it already:
 ```{.sh}
@@ -86,6 +87,10 @@ You may need to help CMake find MATLAB/fftw etc.
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
+#include <spdlog/spdlog.h>
+
+// ...
+
 spdlog::set_level(spdlog::level::debug);
 
 // ...
@@ -95,11 +100,10 @@ spdlog::debug("Send help");
 
 ### Compiling on UCL's Myriad cluster
 <details>
-
+  
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
-  
   If you want to test changes on UCL's [Myriad](https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/) (and/or don't have MATLAB on your pesonal machine) you can try these instructions.
   Firstly, you will probably want to [forward your ssh agent](https://stackoverflow.com/questions/12257968/) for your github ssh key.
   To do this, you first need to run the following your _local_ machine:
@@ -113,7 +117,7 @@ spdlog::debug("Send help");
   
   ```{.sh}
   git clone git@github.com:UCL/TDMS.git
-
+  
   module purge
   module load beta-modules
   module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
@@ -123,7 +127,7 @@ spdlog::debug("Send help");
   # -DGIT_SSH=ON
   make install
   ```
-
+  
   If you get the following error (or similar)
   ```
   fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
@@ -131,7 +135,7 @@ spdlog::debug("Send help");
   CApath: none
   ```
   it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
-
+  
 </details>
 
 
@@ -144,21 +148,33 @@ The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undoc
 
 We have two [levels of tests](https://en.wikipedia.org/wiki/Software_testing#Testing_levels): unit tests, and full system tests.
 
-### Unit 
+### Unit {#unit-testing}
+
 The unit tests use [catch2](https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md#top) macros. See [tests/unit](https://github.com/UCL/TDMS/blob/main/tdms/tests/unit) for good examples in the actual test code.
 
 To write a new test, as a rough sketch you need:
 
 ```{.cpp}
+/**
+ * @file test_file.cpp
+ * @brief Short description of the tests.
+ */
 #include <catch2/catch_test_macros.hpp>
 #include "things_to_be_tested.h"
 
+/**
+ * @brief Detailed description of the testing.
+ * 
+ * Maybe go into details about the test setup.
+ */
 TEST_CASE("Write a meaningful test case name") {
     // set up function calls or whatever
     REQUIRE_THROW(<something>)
     CHECK(<something>)
 }
 ```
+The doxygen-style comments will be included in this developer documentation.
+
 To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
 It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.

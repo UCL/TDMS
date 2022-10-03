@@ -10,6 +10,12 @@ include(CTest)
 
 # Allow user to specify git access protocol (default to https)
 option(GIT_SSH "" OFF)
+if(GIT_SSH)
+    set(GITHUB_PREFIX git@github.com:)
+else()
+    set(GITHUB_PREFIX https://github.com/)
+endif()
+
 
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
@@ -69,12 +75,6 @@ endif()
 
 
 # spdlog ----------------------------------------------------------------------
-if(GIT_SSH)
-    set(GITHUB_PREFIX git@github.com:)
-else()
-    set(GITHUB_PREFIX https://github.com/)
-endif()
-
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
 if(NOT spdlog_FOUND)
     include(FetchContent)
@@ -150,11 +150,12 @@ if (BUILD_TESTING)
 
     add_executable(tdms_tests
             tests/unit/test_fields.cpp
-            tests/unit/test_openandorder.cpp
             tests/unit/test_BLi_vs_cubic_interpolation.cpp
             tests/unit/test_field_interpolation.cpp
             tests/unit/test_interpolation_determination.cpp
-            tests/unit/test_interpolation_functions.cpp)
+            tests/unit/test_interpolation_functions.cpp
+            tests/unit/test_numerical_derivative.cpp
+            tests/unit/test_openandorder.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain

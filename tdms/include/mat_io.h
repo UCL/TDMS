@@ -1,6 +1,6 @@
 /**
  * @file mat_io.h
- * @brief Includes MATLAB headers for I/O
+ * @brief Includes MATLAB headers for I/O.
  */
 #pragma once
 #include <mat.h>

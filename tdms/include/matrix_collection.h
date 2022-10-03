@@ -1,3 +1,8 @@
+/**
+ * @file matrix_collection.h
+ * @brief A collection of named MATLAB matrices.
+ */
+#pragma once
 #include <string>
 
 /**
