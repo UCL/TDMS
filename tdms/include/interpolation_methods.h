@@ -5,6 +5,7 @@
  * Needed to  preserve interpolate.cpp current functionality prior to testing!
  */
 #pragma once
+#include <complex.h>
 
 /*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
@@ -139,6 +140,7 @@ class interpScheme {
          * @return double Interpolated value
          */
         double interpolate(const double *v, const int offset = 0) const;
+        std::complex<double> interpolate(const std::complex<double> *v, const int offset = 0) const;
 
         /**
          * @brief Determines whether another interpScheme has greater value than this one
