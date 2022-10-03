@@ -25,7 +25,7 @@ TEST_CASE("Element-by-element multiplication of array of complex numbers") {
     fftw_complex expected[3] = {
         {-1, 0}, // i² = -1
         {0, 2},  // (1+i)² = 2i
-        {0, 1}   // i(1-i) = 1+i
+        {1, 1}   // i(1-i) = 1+i
     };
 
     // call
