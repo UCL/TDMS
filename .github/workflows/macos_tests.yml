@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw libomp python3
+          brew install fftw llvm python3
 
       - name: Install Python dependencies
         shell: bash
@@ -58,7 +58,7 @@ jobs:
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON\
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}\
            -DBUILD_TESTING=${{ matrix.build_testing }}\
-           -DOMP_ROOT=/usr/local/opt/llvm/ -DCXX_ROOT=/usr/local/opt/llvm
+           -DOMP_ROOT=/usr/local/opt/llvm/ \
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
