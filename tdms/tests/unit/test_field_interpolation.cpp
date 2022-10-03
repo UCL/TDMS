@@ -202,7 +202,9 @@ TEST_CASE("E-field interpolation check")
     }
 
     // can now deallocate our sample field arrays
-    delete Exy, Exz, Eyx, Eyz, Ezx, Ezy;
+    delete Exy; delete Exz;
+    delete Eyx; delete Eyz;
+    delete Ezx; delete Ezy;
 
     // compute Frobenius norms
     double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1);
@@ -274,9 +276,6 @@ TEST_CASE("E-field interpolation check")
     cout << ") | " << Ey_ms_err << " : (" << abs(Ey_ms_err - Ey_ms_tol) << ")" << endl;
     cout << "    z      | " << Ez_fro_err << " : (" << abs(Ez_fro_err - Ez_fro_tol);
     cout << ") | " << Ez_ms_err << " : (" << abs(Ez_ms_err - Ez_ms_tol) << ")" << endl;
-
-    // memory cleanup
-    delete Ex_error, Ey_error, Ez_error;
 }
 
 /**
@@ -430,7 +429,9 @@ TEST_CASE("H-field interpolation check")
     }
 
     // can now deallocate our sample field arrays
-    delete Hxy, Hxz, Hyx, Hyz, Hzx, Hzy;
+    delete Hxy; delete Hxz;
+    delete Hyx; delete Hyz;
+    delete Hzx; delete Hzy;
     
     // compute Frobenius norms
     double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx);
@@ -448,7 +449,4 @@ TEST_CASE("H-field interpolation check")
     cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << endl;
     cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << endl;
     cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << endl;
-
-    // memory cleanup
-    delete Hx_error, Hy_error, Hz_error;
 }
