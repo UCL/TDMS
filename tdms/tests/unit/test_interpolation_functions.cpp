@@ -1,6 +1,7 @@
 # include "catch2/catch_test_macros.hpp"
 # include "interpolation_methods.h"
-
+# include <complex>
+# include "globals.h"
 # include <algorithm>
 # include <cmath>
 
@@ -132,7 +133,7 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
 }
 
 /**
- * @brief We will check that BLi interpolation gives comparible error to the equivalent functions in MATLAB
+ * @brief We will check that BLi interpolation over real-valued data gives comparible error to the equivalent functions in MATLAB
  *
  * For 100 sample points, we will use BLi to interpolate the following functions with 100 sample points:
  * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
@@ -146,7 +147,7 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
  */
 
 // BLi: constant function f(x)=1, interpolation over [0,1]
-TEST_CASE("bandlimited_interpolation: order of error, constant function")
+TEST_CASE("(real-valued) bandlimited_interpolation: order of error, constant function")
 {
 
     int nSamples = 100;                         // number of "Yee cells" in this dimension
@@ -329,4 +330,65 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
     REQUIRE(floor(log10(max_error)) <= floor(log10(pulse_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < pulse_MATLAB_error);
+}
+
+/**
+ * @brief We will check that BLi interpolation over complex-valued data gives comparible error to the equivalent functions in MATLAB
+ *
+ * For 100 sample points, we will use BLi to interpolate the following complex-valued function with 100 sample points:
+ * real part of sin(2\pi x)
+ * imag part of pulse function.
+ *
+ * Interoplation will then be tested against over the range [0,1], the max element-wise error (by absolute value) will be determined. We will then check that this is of the same order of magnitude as the error produced by MATLAB, 5.35317432e-04.
+ */
+TEST_CASE("(complex-valued) band limited interpolation: order of error") {
+    int nSamples = 100;                            // number of "Yee cells" in this dimension
+    double spacing = 1. / (double)(nSamples - 1);  // spacing between Yee cell centres
+    double xi[nSamples];                           // positions of the "field components"
+    double xi5[nSamples];                          // positions of the "Yee cell" centres, xi5[i] = centre of cell i
+    
+    complex<double> f_data[nSamples];                       // constant function data at xi
+    complex<double> f_exact[nSamples];                      // constant function exact values at xi5
+    complex<double> f_interp[nSamples];                     // interpolated values at xi5
+    double f_abs_errors[nSamples];                          // error at xi5
+
+    double max_error;                              // maximum error across xi5 points
+    double MATLAB_error = 5.35317432e-04;          // the MATLAB error
+
+    // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
+    for (int i = 0; i < nSamples; i++) {
+        xi[i] = ((double)i) / ((double)(nSamples - 1));
+        xi5[i] = xi[i] - spacing / 2.;
+
+        f_data[i] = s2pi(xi[i]) + (pulse(xi[i]) * I);
+        f_exact[i] = s2pi(xi5[i]) + (pulse(xi5[i]) * I);
+    }
+
+    // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
+    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
+
+    // pulse function interpolation
+    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
+    for (int i = 4; i < nSamples - 4; i++) {
+        // need to offset now so that the correct sample points are provided
+        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
+    }
+    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
+
+    // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
+    for (int i = 0; i < nSamples - 1; i++) {
+        f_abs_errors[i] = abs(f_exact[i + 1] - f_interp[i + 1]);
+    }
+
+    // get maximum error
+    max_error = *max_element(f_abs_errors, f_abs_errors + nSamples - 1);
+    // compare O.o.Mag of error - fail if we are orders of magnitude out
+    REQUIRE(floor(log10(max_error)) <= floor(log10(MATLAB_error)));
+    // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
+    CHECK(max_error < MATLAB_error);
 }
