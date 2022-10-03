@@ -24,6 +24,8 @@ TEST_URLS = {
     "01": ZENODO_URL + "6838866/files/arc_01.zip",
     "02": ZENODO_URL + "6838977/files/arc_02.zip",
     "03": ZENODO_URL + "6839280/files/arc_03.zip",
+    # 08 is currently failing for known reasons
+    # "08": ZENODO_URL + "7086087/files/arc_08.zip",
 }
 
 
