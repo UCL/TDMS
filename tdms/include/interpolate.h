@@ -1,5 +1,33 @@
-# include "matrix.h"
+/**
+ * @file interpolate.h
+ * @brief Interpolation of field values within FDTD grid.
+ * 
+ * The Yee cell specifies the 6 field components at different points in space.
+ * Interpolation is required to calculate the 6 field components at the same
+ * spatial position.
+ */
+#pragma once
+#include "matrix.h"
 
+/**
+ * @brief Interpolate the electric field to the origin of the Yee cell
+ *
+ * @param[in] Ex_yee Steady state x component of electric field calculated at points in the Yee cell
+ * @param[in] Ey_yee Steady state y component of electric field calculated at points in the Yee cell
+ * @param[in] Ez_yee Steady state z component of electric field calculated at points in the Yee cell
+ * @param[out] Ex Steady state x component of electric field interpolated to Yee cell origin
+ * @param[out] Ey Steady state y component of electric field interpolated to Yee cell origin
+ * @param[out] Ez Steady state z component of electric field interpolated to Yee cell origin
+ * @param[in] I Number of elements in the i direction of the FDTD grid
+ * @param[in] J Number of elements in the j direction of the FDTD grid
+ * @param[in] K Number of elements in the k direction of the FDTD grid
+ * @param[in] i_l Least i index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] i_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= I-2
+ * @param[in] j_l Least j index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] j_u Greatest j index into the FDTD grid to evaluate the field at. Should be <= J-2
+ * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
+ * @param[in] k_u Greatest k index into the FDTD grid to evaluate the field at. Should be <= K-2
+ */
 void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_yee,
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
                               int       I     , int       J     , int       K     ,

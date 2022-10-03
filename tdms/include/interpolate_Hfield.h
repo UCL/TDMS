@@ -1,28 +1,61 @@
 /**
  * @file interpolate_Hfield.h
- * @brief Interpolation functions for each of the H-field components.
- * 
- * Decided to do with 3 separate functions for readability; as this avoids
- * switches with a lot of cases within functions, and the interpolation scheme
- * might be different in each direction anyway, so there is no point having a
- * centralised function for all of them.
- * 
- * Additionally, generalised functions for performing the 2D interpolation is
- * not pretty code to look at (although is theoretically possible if we wanted a
- * slight speedup).  This forces us to pass in I,J,K to _every_ component
- * function, rather than only the number of cells in the appropriate direction.
- * 
- * If we want to interpolate all the H-field components, there are functions for
- * this which call the individual component functions separately.
+ * @brief Functions for interpolating the Electric field.
  */
 #pragma once
 
-void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, int K, double *Hx);
-void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, int K, double *Hx);
-void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int I, int J, int K, double *Hx);
+/**
+ * @brief Interpolate the x-component of the magnetic field to the centre of Yee cell i,j,k
+ *
+ * Interpolation for the magnetic field must be done across two dimensions.
+ * The stored Hx-component at position (i, j+Dy, k+Dz) is associated to the Yee cell (i,j,k).
+ * To interpolate Hx to the centre of cell (i,j,k), we must therefore interpolate in the y-direction, then the z-direction, or vice-versa.
+ *
+ * @param[in] Hxy,Hxz Split components of the Yee cell
+ * @param[in] i,j,k Yee cell index
+ * @param[in] nJ,nK Number of Yee cells in the j,k directions respectively
+ * @param[out] Hx Interpolated value of the Hx field at centre of Yee cell i,j,k
+ */
+void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, int nJ, int nK, double *Hx);
+
+/**
+ * @brief Interpolate the y-component of the magnetic field to the centre of Yee cell i,j,k
+ *
+ * Interpolation for the magnetic field must be done across two dimensions.
+ * The stored Hy-component at position (i+Dx, j, k+Dz) is associated to the Yee cell (i,j,k).
+ * To interpolate Hy to the centre of cell (i,j,k), we must therefore interpolate in the x-direction, then the z-direction, or vice-versa.
+ *
+ * @param[in] Hyx,Hyz Split components of the Yee cell
+ * @param[in] i,j,k Yee cell index
+ * @param[in] nI,nK Number of Yee cells in the i,k directions respectively
+ * @param[out] Hy Interpolated value of the Hy field at centre of Yee cell i,j,k
+ */
+void interpolateTimeDomainHy(double ***Hxy, double ***Hxz, int i, int j, int k, int nI, int nK, double *Hy);
+
+/**
+ * @brief Interpolate the z-component of the magnetic field to the centre of Yee cell i,j,k
+ *
+ * Interpolation for the magnetic field must be done across two dimensions.
+ * The stored Hz-component at position (i+Dx, j+Dy, k) is associated to the Yee cell (i,j,k).
+ * To interpolate Hz to the centre of cell (i,j,k), we must therefore interpolate in the x-direction, then the y-direction, or vice-versa.
+ *
+ * @param[in] Hzx,Hzy Split components of the Yee cell
+ * @param[in] i,j,k Yee cell index
+ * @param[in] nI,nJ Number of Yee cells in the i,j directions respectively
+ * @param[out] Hz Interpolated value of the Hz field at centre of Yee cell i,j,k
+ */
+void interpolateTimeDomainHz(double ***Hxy, double ***Hxz, int i, int j, int k, int nI, int nJ, double *Hz);
+
+/**
+ * @brief Interpolate the H-field to the centre of Yee cell i,j,k
+ *
+ * @param[in] Hxy,Hxz,Hyx,Hyz,Hzx,Hzy Split components of the Yee cell
+ * @param[in] i,j.k Index of the Yee cell to interpolate to the centre of
+ * @param[in] nI,nJ,nK Number of Yee cells in the i,j,k directions (respectively)
+ * @param[out] Hx,Hy,Hz Interpolated values of the x,y,z (respectively) field component
+ */
 void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
-                                 int i, int j, int k, int I, int J, int K,
+                                 int i, int j, int k, int nI, int nJ, int nK,
                                  double *Hx, double *Hy, double *Hz);
 
-bool determine_second_dim(int n_cells_d0, int n_cells_d1, int cid0, int cid1);
