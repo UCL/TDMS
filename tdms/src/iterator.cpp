@@ -17,6 +17,8 @@
 
 
 using namespace std;
+using namespace TDMS_MATH_CONSTANTS;
+using namespace TDMS_PHYS_CONSTANTS;
 
 //whether of not to time execution
 #define TIME_EXEC false
@@ -1713,7 +1715,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	for(int k=0;k<Ndetmodes;k++)
 	  for(int j=0;j<Nfy_vec;j++)
 	    for(int i=0;i<Nfx_vec;i++){
-	      Dx_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
+	      Dx_tilde[j][i][k] = D_temp_re[j][i][k] + IMAGINARY_UNIT*D_temp_im[j][i][k];
 	    }
 	//fprintf(stderr,"Dx_tilde[2][3][5]: %e + i%e\n",real(Dx_tilde[4][2][1]),imag(Dx_tilde[4][2][1]));
 	freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
@@ -1744,7 +1746,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	for(int k=0;k<Ndetmodes;k++)
 	  for(int j=0;j<Nfy_vec;j++)
 	    for(int i=0;i<Nfx_vec;i++){
-	      Dy_tilde[j][i][k] = D_temp_re[j][i][k] + I*D_temp_im[j][i][k];
+	      Dy_tilde[j][i][k] = D_temp_re[j][i][k] + IMAGINARY_UNIT*D_temp_im[j][i][k];
 	    }
 	freeCastMatlab3DArray(D_temp_re,Nfy_vec);freeCastMatlab3DArray(D_temp_im,Nfy_vec);
       }
@@ -2678,7 +2680,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     update the E field will have advanced one time step.
 
     The interpretation of time is slightly complicated in the following. In what follows 
-    I write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
+    IMAGINARY_UNIT write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
     electric (tind*dt) and magnetic ( (tind+1/2)*dt ) fields.
 
     Times before                Operation         Times after
@@ -2908,8 +2910,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	  //Now go back to column-major
 	  for(j=0;j<(J_tot-*Dyu-*Dyl);j++)
 	    for(i=0;i<(I_tot-*Dxu-*Dxl);i++){
-	      Ex_t_cm[j][i] = Ex_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ex_t[j+i*(J_tot-*Dyu-*Dyl)][1];
-	      Ey_t_cm[j][i] = Ey_t[j+i*(J_tot-*Dyu-*Dyl)][0] + I*Ey_t[j+i*(J_tot-*Dyu-*Dyl)][1];
+	      Ex_t_cm[j][i] = Ex_t[j+i*(J_tot-*Dyu-*Dyl)][0] + IMAGINARY_UNIT*Ex_t[j+i*(J_tot-*Dyu-*Dyl)][1];
+	      Ey_t_cm[j][i] = Ey_t[j+i*(J_tot-*Dyu-*Dyl)][0] + IMAGINARY_UNIT*Ey_t[j+i*(J_tot-*Dyu-*Dyl)][1];
 	    }
 	  //fprintf(stderr,"Pos 02a [3]:\n");
 	  //Now multiply the pupil, mostly the pupil is non-zero in only a elements
@@ -2938,11 +2940,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		      /*This had to be fixed since we must take into account the refractive index of the medium.
 
 		       */
-		      kprop = exp(I*z_obs*2.*dcpi/lambda_an_t*refind*sqrt(1. - pow(lambda_an_t*fx_vec[i]/refind,2.) - pow(lambda_an_t*fy_vec[j]/refind,2.) ));
+		      kprop = exp(IMAGINARY_UNIT*z_obs*2.*dcpi/lambda_an_t*refind*sqrt(1. - pow(lambda_an_t*fx_vec[i]/refind,2.) - pow(lambda_an_t*fy_vec[j]/refind,2.) ));
 		      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,fx_vec[i],fy_vec[j],real(kprop),imag(kprop),z_obs,dcpi,lambda_an_t);
 		    }
 		    else{
-		      kprop = exp(I*(-air_interface+z_obs)*2.*dcpi/lambda_an_t*refind*sqrt(1.-pow(lambda_an_t*fx_vec[i]/refind,2.)-pow(lambda_an_t*fy_vec[j]/refind,2.)))*exp(I*air_interface*2.*dcpi/lambda_an_t*sqrt(1.-pow(lambda_an_t*fx_vec[i],2.) - pow(lambda_an_t*fy_vec[j],2.)));
+		      kprop = exp(IMAGINARY_UNIT*(-air_interface+z_obs)*2.*dcpi/lambda_an_t*refind*sqrt(1.-pow(lambda_an_t*fx_vec[i]/refind,2.)-pow(lambda_an_t*fy_vec[j]/refind,2.)))*exp(IMAGINARY_UNIT*air_interface*2.*dcpi/lambda_an_t*sqrt(1.-pow(lambda_an_t*fx_vec[i],2.) - pow(lambda_an_t*fy_vec[j],2.)));
 		    }
 		  }
 		  else
@@ -2952,7 +2954,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		  Idyt+=Ey_t_cm[j][i]*kprop;
 		}
 	      phaseTermE = fmod(f_ex_vec[ifx]*2.*dcpi*((double) tind)*params.dt, 2*dcpi);
-	      cphaseTermE = exp(phaseTermE * I) * 1./((double) Npe);
+	      cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Npe);
 
 	      Idx[ifx][im]+=Idxt*cphaseTermE;
 	      Idy[ifx][im]+=Idyt*cphaseTermE;
@@ -4880,7 +4882,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
     //update terms for self consistency across scattered/total interface - E updates##
     if(sourcemode == sm_steadystate){//steadystate
-      auto commonPhase = exp(-I*fmod(omega_an[0]*time_H,2.*dcpi));
+      auto commonPhase = exp(-IMAGINARY_UNIT*fmod(omega_an[0]*time_H,2.*dcpi));
       commonAmplitude = linearRamp(time_H, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
@@ -4892,18 +4894,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (I_tot+1)*k+(int)I0[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-	      Ezx[k][j][(int)I0[0]] = Ezx[k][j][(int)I0[0]] - Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
+	      Ezx[k][j][(int)I0[0]] = Ezx[k][j][(int)I0[0]] - Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
 	      if(is_cond)
-		Jczx[k][j][(int)I0[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
+		Jczx[k][j][(int)I0[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
 	      if(is_disp_ml)
-		Jzx[k][j][(int)I0[0]] += ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
+		Jzx[k][j][(int)I0[0]] += ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][2] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][2]));
 	    }
 	    if( j < ((int)J1[0]) ){
-	      Eyx[k][j][(int)I0[0]] = Eyx[k][j][(int)I0[0]] + Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
+	      Eyx[k][j][(int)I0[0]] = Eyx[k][j][(int)I0[0]] + Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
 	      if(is_cond)
-		Jcyx[k][j][(int)I0[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
+		Jcyx[k][j][(int)I0[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
 	      if(is_disp_ml)
-		Jyx[k][j][(int)I0[0]] -= ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
+		Jyx[k][j][(int)I0[0]] -= ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][3] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][3]));
 	    }
 	  }
 	  if( (int)I1[1] ){//Perform across I1
@@ -4914,18 +4916,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (I_tot+1)*k+(int)I1[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-	      Ezx[k][j][(int)I1[0]] = Ezx[k][j][(int)I1[0]] + Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
+	      Ezx[k][j][(int)I1[0]] = Ezx[k][j][(int)I1[0]] + Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
 	      if(is_cond)
-		Jczx[k][j][(int)I1[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
+		Jczx[k][j][(int)I1[0]] -= rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
 	      if(is_disp_ml)
-		Jzx[k][j][(int)I1[0]] -= ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
+		Jzx[k][j][(int)I1[0]] -= ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][6] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][6]));
 	    }
 	    if( j < ((int)J1[0]) ){
-	      Eyx[k][j][(int)I1[0]] = Eyx[k][j][(int)I1[0]] - Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
+	      Eyx[k][j][(int)I1[0]] = Eyx[k][j][(int)I1[0]] - Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
 	      if(is_cond)
-		Jcyx[k][j][(int)I1[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
+		Jcyx[k][j][(int)I1[0]] += rho_x[array_ind]*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
 	      if(is_disp_ml)
-		Jyx[k][j][(int)I1[0]] += ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
+		Jyx[k][j][(int)I1[0]] += ml_kappa_x[array_ind]*ml_gamma[k]/(2.*params.dt)*Cbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][7] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][7]));
 	    }
 	  }
 	}
@@ -4940,18 +4942,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      else
 		array_ind = (J_tot+1)*k+(int)J0[0];
 
-	      Ezy[k][((int)J0[0])][i] = Ezy[k][((int)J0[0])][i] + Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
+	      Ezy[k][((int)J0[0])][i] = Ezy[k][((int)J0[0])][i] + Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
 	      if(is_cond)
-		Jczy[k][((int)J0[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
+		Jczy[k][((int)J0[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
 	      if(is_disp_ml)
-		Jzy[k][((int)J0[0])][i] -= ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
+		Jzy[k][((int)J0[0])][i] -= ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][2]));
 	    }
 	    if( i < ((int)I1[0]) ){
-	      Exy[k][((int)J0[0])][i] = Exy[k][((int)J0[0])][i] - Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
+	      Exy[k][((int)J0[0])][i] = Exy[k][((int)J0[0])][i] - Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
 	      if(is_cond)
-		Jcxy[k][((int)J0[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
+		Jcxy[k][((int)J0[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
 	      if(is_disp_ml)
-		Jxy[k][((int)J0[0])][i] += ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
+		Jxy[k][((int)J0[0])][i] += ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][3]));
 	    }
 	  }
 	  if( (int)J1[1] ){//Perform across J1
@@ -4962,18 +4964,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (J_tot+1)*k+(int)J1[0];
 
 	    if( k < ((int)K1[0]) || dimension==TM ){
-	      Ezy[k][((int)J1[0])][i] = Ezy[k][((int)J1[0])][i] - Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
+	      Ezy[k][((int)J1[0])][i] = Ezy[k][((int)J1[0])][i] - Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
 	      if(is_cond)
-		Jczy[k][((int)J1[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
+		Jczy[k][((int)J1[0])][i] += rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
 	      if(is_disp_ml)
-		Jzy[k][((int)J1[0])][i] -= ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
+		Jzy[k][((int)J1[0])][i] -= ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][6]));
 	    }
 	    if( i < ((int)I1[0]) ){
-	      Exy[k][((int)J1[0])][i] = Exy[k][((int)J1[0])][i] + Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
+	      Exy[k][((int)J1[0])][i] = Exy[k][((int)J1[0])][i] + Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
 	      if(is_cond)
-		Jcxy[k][((int)J1[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
+		Jcxy[k][((int)J1[0])][i] -= rho_y[array_ind]*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
 	      if(is_disp_ml)
-		Jxy[k][((int)J1[0])][i] += ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
+		Jxy[k][((int)J1[0])][i] += ml_kappa_y[array_ind]*ml_gamma[k]/(2.*params.dt)*Cby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][7]));
 	    }
 	  }
 	}
@@ -4982,34 +4984,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
 	  if( (int)K0[1] ){//Perform across K0
 	    if( j < ((int)J1[0]) ){
-	      Eyz[((int)K0[0])][j][i] = Eyz[((int)K0[0])][j][i] - Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
+	      Eyz[((int)K0[0])][j][i] = Eyz[((int)K0[0])][j][i] - Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
 	      if(is_cond)
-		Jcyz[((int)K0[0])][j][i] += rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
+		Jcyz[((int)K0[0])][j][i] += rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
 	      if(is_disp_ml)
-		Jyz[((int)K0[0])][j][i] -= ml_kappa_z[((int)K0[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
+		Jyz[((int)K0[0])][j][i] -= ml_kappa_z[((int)K0[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2]));
 	    }
 	    if( i < ((int)I1[0]) ){
-	      Exz[((int)K0[0])][j][i] = Exz[((int)K0[0])][j][i] + Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
+	      Exz[((int)K0[0])][j][i] = Exz[((int)K0[0])][j][i] + Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
 	      if(is_cond)
-		Jcxz[((int)K0[0])][j][i]  -= rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
+		Jcxz[((int)K0[0])][j][i]  -= rho_z[((int)K0[0])]*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
 	      if(is_disp_ml)
-		Jxz[((int)K0[0])][j][i] += ml_kappa_z[((int)K0[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
+		Jxz[((int)K0[0])][j][i] += ml_kappa_z[((int)K0[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K0[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3]));
 	    }
 	  }
 	  if( (int)K1[1] ){//Perform across K1
 	    if( j < ((int)J1[0]) ){
-	      Eyz[((int)K1[0])][j][i] = Eyz[((int)K1[0])][j][i] + Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
+	      Eyz[((int)K1[0])][j][i] = Eyz[((int)K1[0])][j][i] + Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
 	      if(is_cond)
-		Jcyz[((int)K1[0])][j][i] -= rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
+		Jcyz[((int)K1[0])][j][i] -= rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
 	      if(is_disp_ml)
-		Jyz[((int)K1[0])][j][i] += ml_kappa_z[((int)K1[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
+		Jyz[((int)K1[0])][j][i] += ml_kappa_z[((int)K1[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][6] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][6]));
 	    }
 	    if( i < ((int)I1[0]) ){
-	      Exz[((int)K1[0])][j][i] = Exz[((int)K1[0])][j][i] - Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
+	      Exz[((int)K1[0])][j][i] = Exz[((int)K1[0])][j][i] - Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
 	      if(is_cond)
-		Jcxz[((int)K1[0])][j][i] += rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
+		Jcxz[((int)K1[0])][j][i] += rho_z[((int)K1[0])]*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
 	      if(is_disp_ml)
-		Jxz[((int)K1[0])][j][i] -= ml_kappa_z[((int)K1[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
+		Jxz[((int)K1[0])][j][i] -= ml_kappa_z[((int)K1[0])]*ml_gamma[k]/(2.*params.dt)*Cbz[(int)K1[0]]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][7] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][7]));
 	    }
 	  }
 	}
@@ -5020,14 +5022,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
       if(J_tot==0){
 	j=0;
 	for(i=0;i<(I_tot+1);i++){
-	  Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	  //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	  Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	  //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	  if(is_cond)
-	    Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	  //Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	    Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	  //Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	  if(is_disp_ml){
-	    Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	    //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + I*KsourceI[0][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	    Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	    //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 
 	  }
 	}
@@ -5037,33 +5039,33 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	  for(i=0;i<(I_tot+1);i++){
 	    /*
 	      if(i==41 & j==41)
-	      fprintf(stderr,"Cbz = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",Cbz[(int)K0[0]],KsourceR[j-((int)J0[0])][i-((int)I0[0])][2],KsourceI[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
+	      fprintf(stderr,"Cbz = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, to_l[0]=%.10e, dz/light_v/2=%.10e, hwhm = %.10e, dE=%.10e\n",Cbz[(int)K0[0]],KsourceR[j-((int)J0[0])][i-((int)I0[0])][2],KsourceI[j-((int)J0[0])][i-((int)I0[0])][2],time_H,to_l[0],dz/light_v/2,hwhm[0],Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2)));
 	    */
-	    Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	    //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	    Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	    //Eyz[(int)K0[0]][j][i] = Eyz[(int)K0[0]][j][i] - Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	    if(is_cond)
-	      Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	    //Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	      Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	    //Jcyz[(int)K0[0]][j][i] += rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 	    if(is_disp_ml){
-	      Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-	      //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+	      Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+	      //Jyz[(int)K0[0]][j][i] -= ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 
 	    }
 	  }
       for(j=0;j<(J_tot+1);j++)
 	for(i=0;i<I_tot;i++){
-	  Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
-	  //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+	  Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
+	  //Exz[(int)K0[0]][j][i] = Exz[(int)K0[0]][j][i] + Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	  if(is_cond)
-	    Jcxz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
-	  //Jcxz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+	    Jcxz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
+	  //Jcxz[(int)K0[0]][j][i] -= rho_z[(int)K0[0]]*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	  if(is_disp_ml)
-	    Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
-	  //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
+	    Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2 ));
+	  //Jxz[(int)K0[0]][j][i] += ml_kappa_z[(int)K0[0]]*ml_gamma[(int)K0[0]]/(2.*params.dt)*Cbz[(int)K0[0]]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2 ));
 	}
-      //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
-      fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
-      //fth = real((-1.0*I)*exp(-I*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
+      fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0] + dz/light_v/2.)/(hwhm[0]),2));
+      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_H - to_l[0]),2.*dcpi)))*exp( -1.0*dcpi*pow((time_H - to_l[0])/(hwhm[0]),2));
 
     }
     //fprintf(stderr,"Pos 10:\n");
@@ -5627,7 +5629,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
     if(sourcemode == sm_steadystate){//steadystate
-      auto commonPhase = exp(-I*fmod(omega_an[0]*time_E,2.*dcpi));
+      auto commonPhase = exp(-IMAGINARY_UNIT*fmod(omega_an[0]*time_E,2.*dcpi));
       commonAmplitude = linearRamp(time_E, 1./(*omega_an/(2*dcpi)), ramp_width);
       for(k=((int)K0[0]);k<=((int)K1[0]);k++)
 	for(j=((int)J0[0]);j<=((int)J1[0]);j++){
@@ -5639,9 +5641,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (I_tot+1)*k+(int)I0[0] - 1;
 
 	    if( j < ((int)J1[0]) )
-	      Hzx[k][j][((int)I0[0])-1] = Hzx[k][j][((int)I0[0])-1] + Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][0] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][0]));
+	      Hzx[k][j][((int)I0[0])-1] = Hzx[k][j][((int)I0[0])-1] + Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][0] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][0]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-	      Hyx[k][j][((int)I0[0])-1] = Hyx[k][j][((int)I0[0])-1] - Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][1] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][1]));
+	      Hyx[k][j][((int)I0[0])-1] = Hyx[k][j][((int)I0[0])-1] - Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][1] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][1]));
 
 	  }
 	  if( (int)I1[1] ){//Perform across I1
@@ -5652,9 +5654,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (I_tot+1)*k+(int)I1[0];
 
 	    if( j < ((int)J1[0]) )
-	      Hzx[k][j][((int)I1[0])] = Hzx[k][j][((int)I1[0])] - Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][4] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][4]));
+	      Hzx[k][j][((int)I1[0])] = Hzx[k][j][((int)I1[0])] - Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][4] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][4]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-	      Hyx[k][j][((int)I1[0])] = Hyx[k][j][((int)I1[0])] + Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][5] + I*IsourceI[k-((int)K0[0])][j-((int)J0[0])][5]));
+	      Hyx[k][j][((int)I1[0])] = Hyx[k][j][((int)I1[0])] + Dbx[array_ind]*real(commonAmplitude*commonPhase*(IsourceR[k-((int)K0[0])][j-((int)J0[0])][5] + IMAGINARY_UNIT*IsourceI[k-((int)K0[0])][j-((int)J0[0])][5]));
 	  }
 	}
 
@@ -5668,10 +5670,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (J_tot+1)*k+(int)J0[0];
 
 	    if( i < ((int)I1[0]) )
-	      Hzy[k][((int)J0[0])-1][i] = Hzy[k][((int)J0[0])-1][i] - Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][0] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][0]));
+	      Hzy[k][((int)J0[0])-1][i] = Hzy[k][((int)J0[0])-1][i] - Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][0] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][0]));
 
 	    if( k < ((int)K1[0]) || dimension==TM )
-	      Hxy[k][((int)J0[0])-1][i] = Hxy[k][((int)J0[0])-1][i] + Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][1] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][1]));
+	      Hxy[k][((int)J0[0])-1][i] = Hxy[k][((int)J0[0])-1][i] + Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][1] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][1]));
 	  }
 	  if( (int)J1[1] ){//Perform across J1
 
@@ -5681,9 +5683,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	      array_ind = (J_tot+1)*k+(int)J1[0];
 
 	    if( i < ((int)I1[0]) )
-	      Hzy[k][((int)J1[0])][i] = Hzy[k][((int)J1[0])][i] + Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][4] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][4]));
+	      Hzy[k][((int)J1[0])][i] = Hzy[k][((int)J1[0])][i] + Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][4] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][4]));
 	    if( k < ((int)K1[0]) || dimension==TM )
-	      Hxy[k][((int)J1[0])][i] = Hxy[k][((int)J1[0])][i] - Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][5] + I*JsourceI[k-((int)K0[0])][i-((int)I0[0])][5]));
+	      Hxy[k][((int)J1[0])][i] = Hxy[k][((int)J1[0])][i] - Dby[array_ind]*real(commonAmplitude*commonPhase*(JsourceR[k-((int)K0[0])][i-((int)I0[0])][5] + IMAGINARY_UNIT*JsourceI[k-((int)K0[0])][i-((int)I0[0])][5]));
 	  }
 	}
 
@@ -5691,15 +5693,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	for(i=((int)I0[0]);i<=((int)I1[0]);i++){
 	  if( (int)K0[1] ){//Perform across K0
 	    if( i < ((int)I1[0]) )
-	      Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][0] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][0]));
+	      Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][0] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][0]));
 	    if( j < ((int)J1[0]) )
-	      Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][1] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][1]));
+	      Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][1] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][1]));
 	  }
 	  if( (int)K1[1] ){//Perform across K1
 	    if( i < ((int)I1[0]) )
-	      Hyz[((int)K1[0])][j][i] = Hyz[((int)K1[0])][j][i] - Dbz[((int)K1[0])]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][4] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][4]));
+	      Hyz[((int)K1[0])][j][i] = Hyz[((int)K1[0])][j][i] - Dbz[((int)K1[0])]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][4] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][4]));
 	    if( j < ((int)J1[0]) )
-	      Hxz[((int)K1[0])][j][i] = Hxz[((int)K1[0])][j][i] + Dbz[((int)K1[0])]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][5] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][5]));
+	      Hxz[((int)K1[0])][j][i] = Hxz[((int)K1[0])][j][i] + Dbz[((int)K1[0])]*real(commonAmplitude*commonPhase*(KsourceR[j-((int)J0[0])][i-((int)I0[0])][5] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][5]));
 	  }
 	}
       fte = real(commonAmplitude*commonPhase);
@@ -5710,14 +5712,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	//fprintf(stderr,"Pos 11d\n");
 	j=0;
 	for(i=0;i<(I_tot+1);i++){
-	  Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real((KsourceR[0][i-((int)I0[0])][1] + I*KsourceI[0][i-((int)I0[0])][1])*(-1.*I)*exp(-I*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]),2. ));
+	  Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real((KsourceR[0][i-((int)I0[0])][1] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][1])*(-1.*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]),2. ));
 	  //broadband source term
 	  if(eyi_present)
 	    Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*eyi[tind][j][i];
 	}
 	//fprintf(stderr,"Pos 11e\n");
 	for(i=0;i<I_tot;i++){
-	  Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real((KsourceR[0][i-((int)I0[0])][0] + I*KsourceI[0][i-((int)I0[0])][0])*(-1.*I)*exp(-I*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
+	  Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real((KsourceR[0][i-((int)I0[0])][0] + IMAGINARY_UNIT*KsourceI[0][i-((int)I0[0])][0])*(-1.*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
 	  //broadband source term
 	  if(exi_present)
 	    Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*exi[tind][j][i];
@@ -5730,7 +5732,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	//fprintf(stderr,"Pos 11g\n");
 	for(j=0;j<J_tot;j++)
 	  for(i=0;i<(I_tot+1);i++){
-	    Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][1] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][1])*(-1.*I)*exp(-I*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]),2. ));
+	    Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][1] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][1])*(-1.*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]),2. ));
 	    //broadband source term
 	    if(eyi_present)
 	      Hxz[((int)K0[0])-1][j][i] = Hxz[((int)K0[0])-1][j][i] - Dbz[((int)K0[0])-1]*eyi[tind][j][i];
@@ -5738,14 +5740,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	//fprintf(stderr,"Pos 11h\n");
 	for(j=0;j<(J_tot+1);j++)
 	  for(i=0;i<I_tot;i++){
-	    Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][0] + I*KsourceI[j-((int)J0[0])][i-((int)I0[0])][0])*(-1.*I)*exp(-I*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
+	    Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*real((KsourceR[j-((int)J0[0])][i-((int)I0[0])][0] + IMAGINARY_UNIT*KsourceI[j-((int)J0[0])][i-((int)I0[0])][0])*(-1.*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
 	    //broadband source term
 	    if(exi_present)
 	      Hyz[((int)K0[0])-1][j][i] = Hyz[((int)K0[0])-1][j][i] + Dbz[((int)K0[0])-1]*exi[tind][j][i];
 	  }
 	//fprintf(stderr,"Pos 11i\n");
       }
-      fte = real((-1.*I)*exp(-I*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
+      fte = real((-1.*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(omega_an[0]*(time_E - to_l[0]),2*dcpi)))*exp(-1.*dcpi*pow((time_E - to_l[0])/(hwhm[0]) ,2.));
       //fprintf(stderr,"Pos 11j\n");
     }
     if(TIME_EXEC){
@@ -6499,17 +6501,17 @@ void extractPhasorsVolume(double ***ExR, double ***ExI, double ***EyR, double **
 	  ey_m = Eyx[k][j][i] + Eyz[k][j][i];
 	  ez_m = Ezx[k][j][i] + Ezy[k][j][i];
 
-	  subResult = ex_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = ex_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  ExR[k-k_l][j-j_l][i-i_l] = ExR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  ExI[k-k_l][j-j_l][i-i_l] = ExI[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = ey_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = ey_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  EyR[k-k_l][j-j_l][i-i_l] = EyR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  EyI[k-k_l][j-j_l][i-i_l] = EyI[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = ez_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = ez_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  EzR[k-k_l][j-j_l][i-i_l] = EzR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  EzI[k-k_l][j-j_l][i-i_l] = EzI[k-k_l][j-j_l][i-i_l] + imag(subResult);
@@ -6625,11 +6627,11 @@ void normaliseVolume(double ***ExR, double ***ExI, double ***EyR, double ***EyI,
 }
 
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt){
-  *Enorm += ft*exp( fmod(omega*((double) (n+1))*dt, 2*dcpi) * I) * 1./((double) Nt);
+  *Enorm += ft*exp( fmod(omega*((double) (n+1))*dt, 2*dcpi) * IMAGINARY_UNIT) * 1./((double) Nt);
 }
 
 void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt){
-  *Hnorm += ft*exp( fmod(omega*((double) n + 0.5)*dt, 2*dcpi) * I) * 1./((double) Nt);
+  *Hnorm += ft*exp( fmod(omega*((double) n + 0.5)*dt, 2*dcpi) * IMAGINARY_UNIT) * 1./((double) Nt);
 }
 
 //these indices are set according to the electric part of the pml - since the index of the
@@ -6660,17 +6662,17 @@ void extractPhasorsVolumeH(double ***HxR, double ***HxI, double ***HyR, double *
 	  hy_m = Hyx[k][j][i] + Hyz[k][j][i];
 	  hz_m = Hzx[k][j][i] + Hzy[k][j][i];
 
-	  subResult = hx_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = hx_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  HxR[k-k_l][j-j_l][i-i_l] = HxR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  HxI[k-k_l][j-j_l][i-i_l] = HxI[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = hy_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = hy_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  HyR[k-k_l][j-j_l][i-i_l] = HyR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  HyI[k-k_l][j-j_l][i-i_l] = HyI[k-k_l][j-j_l][i-i_l] + imag(subResult);
 
-	  subResult = hz_m * exp(phaseTerm * I) * 1./((double) Nt);
+	  subResult = hz_m * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
 	  HzR[k-k_l][j-j_l][i-i_l] = HzR[k-k_l][j-j_l][i-i_l] + real(subResult);
 	  HzI[k-k_l][j-j_l][i-i_l] = HzI[k-k_l][j-j_l][i-i_l] + imag(subResult);
@@ -6690,8 +6692,8 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
   phaseTermE = fmod(omega*((double) n)*dt, 2*dcpi);
   phaseTermH  = fmod(omega*((double) n + 0.5)*dt, 2*dcpi);
 
-  cphaseTermH = exp(phaseTermH * I) * 1./((double) Nt);
-  cphaseTermE = exp(phaseTermE * I) * 1./((double) Nt);
+  cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+  cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
   //loop over every vertex in the list
 #pragma omp parallel default(shared)  private(Ex, Ey, Ez, Hx, Hy, Hz,phaseTermE, phaseTermH, subResultE, subResultH,vindex)
@@ -6749,8 +6751,8 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
@@ -6760,8 +6762,8 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
       surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
 
       /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
@@ -6772,8 +6774,8 @@ void extractPhasorsSurface( double **surface_EHr, double **surface_EHi,
 
 
       /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
@@ -6799,8 +6801,8 @@ void extractPhasorsVertices( double **EHr, double **EHi,
   phaseTermE = fmod(omega*((double) n)*dt, 2*dcpi);
   phaseTermH  = fmod(omega*((double) n + 0.5)*dt, 2*dcpi);
 
-  cphaseTermH = exp(phaseTermH * I) * 1./((double) Nt);
-  cphaseTermE = exp(phaseTermE * I) * 1./((double) Nt);
+  cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+  cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
   //loop over every vertex in the list
 #pragma omp parallel default(shared)  private(Ex, Ey, Ez, Hx, Hy, Hz,phaseTermE, phaseTermH, subResultE, subResultH,vindex)
@@ -6858,8 +6860,8 @@ void extractPhasorsVertices( double **EHr, double **EHi,
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       if( find(components, ncomponents, 1) >= 0 ){
@@ -6872,8 +6874,8 @@ void extractPhasorsVertices( double **EHr, double **EHi,
       }
 
       /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       if( find(components, ncomponents, 2) >= 0){
@@ -6887,8 +6889,8 @@ void extractPhasorsVertices( double **EHr, double **EHi,
 
 
       /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       if( find(components, ncomponents, 3) >= 0 ){
@@ -6916,8 +6918,8 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
   phaseTermE = fmod(omega*((double) n)*dt, 2*dcpi);
   phaseTermH  = fmod(omega*((double) n + 0.5)*dt, 2*dcpi);
 
-  cphaseTermH = exp(phaseTermH * I) * 1./((double) Nt);
-  cphaseTermE = exp(phaseTermE * I) * 1./((double) Nt);
+  cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+  cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
   //loop over every vertex in the list
 #pragma omp parallel default(shared)  private(Ex, Ey, Ez, Hx, Hy, Hz,phaseTermE, phaseTermH, subResultE, subResultH,vindex)
@@ -6934,8 +6936,8 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
       Hz = Hzx[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]] + Hzy[surface_vertices[2][vindex]][surface_vertices[1][vindex]][surface_vertices[0][vindex]];
 
       /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
@@ -6945,8 +6947,8 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
       surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
 
       /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
@@ -6957,8 +6959,8 @@ void extractPhasorsSurfaceNoInterpolation( double **surface_EHr, double **surfac
 
 
       /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * I) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * I) * 1./((double) Nt);
+      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
       //now update the master array
       surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
@@ -6987,13 +6989,13 @@ void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double
       
      
       //Eyz
-      subResult = (Eyz[K1][j][i] + Eyx[K1][j][i]) * exp(phaseTerm * I) * 1./((double) Nt);
+      subResult = (Eyz[K1][j][i] + Eyx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
 
       iwave_lEy_Rbs[j][i] = iwave_lEy_Rbs[j][i] + real(subResult);
       iwave_lEy_Ibs[j][i] = iwave_lEy_Ibs[j][i] + imag(subResult);
       
       //Hxz
-      subResult = (Hxz[K1-1][j][i]+Hxy[K1][j][i]) * exp(phaseTerm * I) * 1./((double) Nt);
+      subResult = (Hxz[K1-1][j][i]+Hxy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
       
       iwave_lHx_Rbs[j][i] = iwave_lHx_Rbs[j][i] + real(subResult);
       iwave_lHx_Ibs[j][i] = iwave_lHx_Ibs[j][i] + imag(subResult);
@@ -7004,13 +7006,13 @@ void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double
       
             
       //Exz
-      subResult = (Exz[K1][j][i] + Exy[K1][j][i]) * exp(phaseTerm * I) * 1./((double) Nt);
+      subResult = (Exz[K1][j][i] + Exy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
       
       iwave_lEx_Rbs[j][i] = iwave_lEx_Rbs[j][i] + real(subResult);
       iwave_lEx_Ibs[j][i] = iwave_lEx_Ibs[j][i] + imag(subResult);
       
       //Hyz
-      subResult = (Hyz[K1-1][j][i] + Hyx[K1][j][i]) * exp(phaseTerm * I) * 1./((double) Nt);
+      subResult = (Hyz[K1-1][j][i] + Hyx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1./((double) Nt);
       
       iwave_lHy_Rbs[j][i] = iwave_lHy_Rbs[j][i] + real(subResult);
       iwave_lHy_Ibs[j][i] = iwave_lHy_Ibs[j][i] + imag(subResult);
@@ -7051,15 +7053,15 @@ double checkPhasorConvergence(double ***ExR, double ***ExI, double ***EyR, doubl
     for(int j=j_l; j<= j_u; j++)
       for(int i=i_l; i<= i_u; i++){
 	
-	tmaxabs = complexAbs(ExR[k-k_l][j-j_l][i-i_l] + I*ExI[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(ExR[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*ExI[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxabs)
 	  maxabs = tmaxabs;
 		
-	tmaxabs = complexAbs(EyR[k-k_l][j-j_l][i-i_l] + I*EyI[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(EyR[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*EyI[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxabs)
 	  maxabs = tmaxabs;
 
-	tmaxabs = complexAbs(EzR[k-k_l][j-j_l][i-i_l] + I*EzI[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(EzR[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*EzI[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxabs)
 	  maxabs = tmaxabs;
 	
@@ -7071,15 +7073,15 @@ double checkPhasorConvergence(double ***ExR, double ***ExI, double ***EyR, doubl
 
     
 	
-	tmaxabs = complexAbs(ExR[k-k_l][j-j_l][i-i_l] - ExR2[k-k_l][j-j_l][i-i_l] + I*ExI[k-k_l][j-j_l][i-i_l] - I*ExI2[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(ExR[k-k_l][j-j_l][i-i_l] - ExR2[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*ExI[k-k_l][j-j_l][i-i_l] - IMAGINARY_UNIT*ExI2[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxdiff)
 	  maxdiff = tmaxabs;
 	
-	tmaxabs = complexAbs(EyR[k-k_l][j-j_l][i-i_l] - EyR2[k-k_l][j-j_l][i-i_l] + I*EyI[k-k_l][j-j_l][i-i_l] - I*EyI2[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(EyR[k-k_l][j-j_l][i-i_l] - EyR2[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*EyI[k-k_l][j-j_l][i-i_l] - IMAGINARY_UNIT*EyI2[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxdiff)
 	  maxdiff = tmaxabs;
 	
-	tmaxabs = complexAbs(EzR[k-k_l][j-j_l][i-i_l] - EzR2[k-k_l][j-j_l][i-i_l] + I*EzI[k-k_l][j-j_l][i-i_l] - I*EzI2[k-k_l][j-j_l][i-i_l]);
+	tmaxabs = complexAbs(EzR[k-k_l][j-j_l][i-i_l] - EzR2[k-k_l][j-j_l][i-i_l] + IMAGINARY_UNIT*EzI[k-k_l][j-j_l][i-i_l] - IMAGINARY_UNIT*EzI2[k-k_l][j-j_l][i-i_l]);
 	if(tmaxabs > maxdiff)
 	  maxdiff = tmaxabs;
 	
