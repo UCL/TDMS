@@ -7,6 +7,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 #include <complex>
+#include <iomanip>
+#include <iostream>
 
 #include "globals.h"
 #include "interpolation_methods.h"
@@ -19,21 +21,21 @@ using namespace TDMS_MATH_CONSTANTS;
  *
  * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
-TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact")
-{
-
+TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact") {
     // equidistant points
     double x[] = {0., 1., 2., 3.};
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
-    // array that will be passed to Interp_scheme::interpolate 
+    // array that will be passed to Interp_scheme::interpolate
     double interp_data[4];
 
     // constant field
     double c0 = 3.1415;
-    interp_data[0] = c0; interp_data[1] = c0; 
-    interp_data[2] = c0; interp_data[3] = c0;
+    interp_data[0] = c0;
+    interp_data[1] = c0;
+    interp_data[2] = c0;
+    interp_data[3] = c0;
 
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
@@ -49,10 +51,14 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 
     // linear
     double c1 = -2.7182818;
-    v1 += c1 * x[0]; interp_data[0] += c1 * x[0];
-    v2 += c1 * x[1]; interp_data[1] += c1 * x[1];
-    v3 += c1 * x[2]; interp_data[2] += c1 * x[2];
-    v4 += c1 * x[3]; interp_data[3] += c1 * x[3];
+    v1 += c1 * x[0];
+    interp_data[0] += c1 * x[0];
+    v2 += c1 * x[1];
+    interp_data[1] += c1 * x[1];
+    v3 += c1 * x[2];
+    interp_data[2] += c1 * x[2];
+    v4 += c1 * x[3];
+    interp_data[3] += c1 * x[3];
     v12 += c1 * (x[1] + x[0]) / 2.;
     v23 += c1 * (x[2] + x[1]) / 2.;
     v34 += c1 * (x[3] + x[2]) / 2.;
@@ -68,10 +74,14 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 
     // quadratic
     double c2 = 9.81;
-    v1 += c2 * x[0] * x[0]; interp_data[0] += c2 * x[0] * x[0];
-    v2 += c2 * x[1] * x[1]; interp_data[1] += c2 * x[1] * x[1];
-    v3 += c2 * x[2] * x[2]; interp_data[2] += c2 * x[2] * x[2];
-    v4 += c2 * x[3] * x[3]; interp_data[3] += c2 * x[3] * x[3];
+    v1 += c2 * x[0] * x[0];
+    interp_data[0] += c2 * x[0] * x[0];
+    v2 += c2 * x[1] * x[1];
+    interp_data[1] += c2 * x[1] * x[1];
+    v3 += c2 * x[2] * x[2];
+    interp_data[2] += c2 * x[2] * x[2];
+    v4 += c2 * x[3] * x[3];
+    interp_data[3] += c2 * x[3] * x[3];
     v12 += c2 * (x[1] + x[0]) * (x[1] + x[0]) / 4.;
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
@@ -87,10 +97,14 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 
     // cubic
     double c3 = 4.2;
-    v1 += c3 * x[0] * x[0] * x[0]; interp_data[0] += c3 * x[0] * x[0] * x[0];
-    v2 += c3 * x[1] * x[1] * x[1]; interp_data[1] += c3 * x[1] * x[1] * x[1];
-    v3 += c3 * x[2] * x[2] * x[2]; interp_data[2] += c3 * x[2] * x[2] * x[2];
-    v4 += c3 * x[3] * x[3] * x[3]; interp_data[3] += c3 * x[3] * x[3] * x[3];
+    v1 += c3 * x[0] * x[0] * x[0];
+    interp_data[0] += c3 * x[0] * x[0] * x[0];
+    v2 += c3 * x[1] * x[1] * x[1];
+    interp_data[1] += c3 * x[1] * x[1] * x[1];
+    v3 += c3 * x[2] * x[2] * x[2];
+    interp_data[2] += c3 * x[2] * x[2] * x[2];
+    v4 += c3 * x[3] * x[3] * x[3];
+    interp_data[3] += c3 * x[3] * x[3] * x[3];
     v12 += c3 * (x[1] + x[0]) * (x[1] + x[0]) * (x[1] + x[0]) / 8.;
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
@@ -110,13 +124,11 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
  *
  * Note - the coefficients are not required to sum to unity!
  */
-TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value")
-{
-
+TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value") {
     /* Tolerance to accept imprecision to
     max. 16 FLOPs implies max discrepency of 8*_DBL_EPSILON__ error
     (8 additions, error in each number max __DBL_EPSILON__).
-    tol should be \approx 10 * __DBL_EPSILON__ , 
+    tol should be \approx 10 * __DBL_EPSILON__ ,
     after accounting for funny-business multiplying everything by 1
     */
     double tol = 1e1 * __DBL_EPSILON__;
@@ -134,7 +146,8 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
     coeff_sums[7] = BL7.interpolate(a);
     // now check that the entries of coeff_sums are the same
     int n = 8;
-    while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol);
+    while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol)
+        ;
     // we only reach the end of the while loop, IE get to n==0, when all elements in the array are the same
     REQUIRE(n == 0);
 }
@@ -195,6 +208,10 @@ TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     REQUIRE(floor(log10(const_fn_max_error)) <= floor(log10(const_fn_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(const_fn_max_error <= const_fn_MATLAB_error);
+    // report test results
+    cout << fixed << scientific << setprecision(8);
+    cout << "BLi: constant function interpolation" << endl;
+    cout << "Error: " << const_fn_max_error << " | Benchmark: " << const_fn_MATLAB_error << endl;
 }
 
 inline double s2pi(double x) {
@@ -259,6 +276,10 @@ TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     REQUIRE(floor(log10(max_error)) <= floor(log10(sin_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < sin_MATLAB_error);
+    // report test results
+    cout << fixed << scientific << setprecision(8);
+    cout << "BLi: sine function interpolation" << endl;
+    cout << "Error: " << max_error << " | Benchmark: " << sin_MATLAB_error << endl;
 }
 
 /**
@@ -342,6 +363,10 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     REQUIRE(floor(log10(max_error)) <= floor(log10(pulse_MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < pulse_MATLAB_error);
+    // report test results
+    cout << fixed << scientific << setprecision(8);
+    cout << "BLi: compact pulse function interpolation" << endl;
+    cout << "Error: " << max_error << " | Benchmark: " << pulse_MATLAB_error << endl;
 }
 
 /**
@@ -359,10 +384,10 @@ TEST_CASE("(complex-valued) Band limited interpolation") {
     double xi[nSamples];                           // positions of the "field components"
     double xi5[nSamples];                          // positions of the "Yee cell" centres, xi5[i] = centre of cell i
     
-    complex<double> f_data[nSamples];                       // constant function data at xi
-    complex<double> f_exact[nSamples];                      // constant function exact values at xi5
-    complex<double> f_interp[nSamples];                     // interpolated values at xi5
-    double f_abs_errors[nSamples];                          // error at xi5
+    complex<double> f_data[nSamples];              // constant function data at xi
+    complex<double> f_exact[nSamples];             // constant function exact values at xi5
+    complex<double> f_interp[nSamples];            // interpolated values at xi5
+    double f_abs_errors[nSamples];                 // error at xi5
 
     double max_error;                              // maximum error across xi5 points
     double MATLAB_error = 5.35317432e-04;          // the MATLAB error
@@ -403,4 +428,8 @@ TEST_CASE("(complex-valued) Band limited interpolation") {
     REQUIRE(floor(log10(max_error)) <= floor(log10(MATLAB_error)));
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < MATLAB_error);
+    // report test results
+    cout << fixed << scientific << setprecision(8);
+    cout << "BLi: complex function interpolation" << endl;
+    cout << "Error: " << max_error << " | Benchmark: " << MATLAB_error << endl;
 }

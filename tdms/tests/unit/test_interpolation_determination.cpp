@@ -16,9 +16,7 @@ using namespace std;
  *
  * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
  */
-TEST_CASE("checkInterpolationPoints: exceptions thrown")
-{
-
+TEST_CASE("checkInterpolationPoints: exceptions thrown") {
     // setup some fake field dimensions
     int I = 6, J = 7, K = 8;
 
@@ -50,9 +48,7 @@ TEST_CASE("checkInterpolationPoints: exceptions thrown")
  *
  * THIS FUNCTION WILL BE DEPRECIATED UPON SWITCHING TO THE BLI FRAMEWORK
  */
-TEST_CASE("checkInterpolationPoints: check valid inputs")
-{
-
+TEST_CASE("checkInterpolationPoints: check valid inputs") {
     // setup some fake field dimensions
     int I = 6, J = 7, K = 8;
 
@@ -77,9 +73,7 @@ TEST_CASE("checkInterpolationPoints: check valid inputs")
  * @brief Test whether best_interp_scheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
  *
  */
-TEST_CASE("best_interp_scheme: correct interpolation chosen")
-{
-
+TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
     REQUIRE_THROWS_AS(best_interp_scheme(3, 2), out_of_range);
@@ -112,7 +106,8 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen")
     */
     N = 7;
     CHECK(best_interp_scheme(N, 1).get_priority() == CUBIC_INTERP_FIRST);
-    for(int i=2; i<=N-2; i++) {CHECK(best_interp_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
-    CHECK(best_interp_scheme(N, N-1).get_priority() == CUBIC_INTERP_LAST);
+    for (int i = 2; i <= N - 2; i++) {
+        CHECK(best_interp_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);
+    }
+    CHECK(best_interp_scheme(N, N - 1).get_priority() == CUBIC_INTERP_LAST);
 }
-

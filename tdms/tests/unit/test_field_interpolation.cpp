@@ -20,39 +20,40 @@ The slice error, for a fixed j,k, is the norm-error of the 1D array of interpola
 The maximum of this is then the max-slice error: keeping track of this ensures us that the behaviour of BLi is consistent, and does not dramaically over-compensate in some areas and under-compensate in others.
 
 All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over the range [-2,2].
-
-NOTE: Rather than direct (<=) comparison, should impliment a relative-value check instead?
 */
 
+// computes the Frobenius norm of a 3d-array (or pointer thereto)
 inline double Frobenius(double ***M, int d1, int d2, int d3) {
     double norm_val = 0.;
-    for(int i1=0; i1<d1; i1++) {
-        for(int i2=0; i2<d2; i2++) {
-            for(int i3=0; i3<d3; i3++) {
+    for (int i1 = 0; i1 < d1; i1++) {
+        for (int i2 = 0; i2 < d2; i2++) {
+            for (int i3 = 0; i3 < d3; i3++) {
                 norm_val += M[i1][i2][i3] * M[i1][i2][i3];
             }
         }
     }
     return sqrt(norm_val);
 }
-inline double Euclidean(double *v, int end, int start=0) {
+// computes the Euclidean norm of a 1d-array (or pointer thereto)
+inline double Euclidean(double *v, int end, int start = 0) {
     double norm_val = 0.;
-    for(int i=start; i<=end; i++) {
-        norm_val += v[i]*v[i];
+    for (int i = start; i <= end; i++) {
+        norm_val += v[i] * v[i];
     }
     return sqrt(norm_val);
 }
 
+// functional form for the E-field components
 inline double Ecomponent(double x, double y, double z) {
     return sin(2. * M_PI * z) * exp(-y * y) * (1. / (10 * x * x + 1.));
 }
+// functional form for the H-field components
 inline double Hcomponent(double x, double y, double z) {
     return cos(0.5 * M_PI * z) * exp(-y * y) * (1. / (5 * x * x + 1.));
 }
 
 // for memory allocation of 3D arrays
 inline double ***allocate3dmemory(int nI, int nJ, int nK) {
-
     double ***p = (double ***)malloc(nK * sizeof(double **));
     for (int k = 0; k < nK; k++) {
         p[k] = (double **)malloc(nJ * sizeof(double *));
@@ -68,11 +69,11 @@ inline double ***allocate3dmemory(int nI, int nJ, int nK) {
  *
  * Each component of the E-field will take the form
  * E{x,y,z}(xx,yy,zz) = sin(2\pi zz) * exp(-yy^2) * ( 1./ (10xx^2+1) ).
- * 
+ *
  * We test both the Fro- and slice-norm metrics, since interpolation only happens along one axis
  */
-TEST_CASE("E-field interpolation check") 
-{
+TEST_CASE("E-field interpolation check") {
+    std::cout << std::fixed << std::scientific << std::setprecision(8);
     std::cout << "Beginning E-field BLi test..." << std::endl;
     // error tolerance, based on MATLAB performance
     double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
@@ -86,7 +87,7 @@ TEST_CASE("E-field interpolation check")
     double cellDims[3] = {0.25, 0.1, 0.05};
     double x_lower = -2., y_lower = -2., z_lower = -2.;
     double extent_x = 4., extent_y = 4., extent_z = 4.;
-    int Nx = ceil(extent_x/cellDims[0]), Ny = ceil(extent_y/cellDims[1]), Nz = ceil(extent_z/cellDims[2]);
+    int Nx = ceil(extent_x / cellDims[0]), Ny = ceil(extent_y / cellDims[1]), Nz = ceil(extent_z / cellDims[2]);
 
     // setup the "split" E-field components
     double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
@@ -99,25 +100,25 @@ TEST_CASE("E-field interpolation check")
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
-    for(int ii=0; ii<Nx; ii++) {
-        for(int jj=0; jj<Ny; jj++) {
-            for(int kk=0; kk<Nz; kk++) {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            for (int kk = 0; kk < Nz; kk++) {
                 // these are the coordinates of Yee cell i,j,k's centre
                 double cell_centre[3];
-                cell_centre[0] = x_lower + ((double)ii + 0.5)*cellDims[0];
-                cell_centre[1] = y_lower + ((double)jj + 0.5)*cellDims[1];
-                cell_centre[2] = z_lower + ((double)kk + 0.5)*cellDims[2];
+                cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
+                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
+                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
 
                 // Initialise sample values that we will pass to the interpolation schemes:
                 // in each case, set one component of the split field to be the "whole" field,
                 // and the other to be 0.
 
                 // E{x,y,z} offsets from cell centres are 0.5*D{x,y,z}
-                Exy[kk][jj][ii] = Ecomponent(cell_centre[0] + 0.5*cellDims[0], cell_centre[1], cell_centre[2]);
+                Exy[kk][jj][ii] = Ecomponent(cell_centre[0] + 0.5 * cellDims[0], cell_centre[1], cell_centre[2]);
                 Exz[kk][jj][ii] = 0.;
-                Eyx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1] + 0.5*cellDims[1], cell_centre[2]);
+                Eyx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1] + 0.5 * cellDims[1], cell_centre[2]);
                 Eyz[kk][jj][ii] = 0.;
-                Ezx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5*cellDims[2]);
+                Ezx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5 * cellDims[2]);
                 Ezy[kk][jj][ii] = 0.;
             }
         }
@@ -126,12 +127,9 @@ TEST_CASE("E-field interpolation check")
     // run interpolation functions
 
     // interpolate Ex
-    for (int ii = 0; ii < Nx - 1; ii++)
-    {
-        for (int jj = 0; jj < Ny; jj++)
-        {
-            for (int kk = 0; kk < Nz; kk++)
-            {
+    for (int ii = 0; ii < Nx - 1; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            for (int kk = 0; kk < Nz; kk++) {
                 // we are interpolating to the centre of cell ii+1,jj,kk
                 // these are the coordinates of the Yee cell's centre
                 double cell_centre[3];
@@ -152,12 +150,9 @@ TEST_CASE("E-field interpolation check")
         }
     }
     // interpolate Ey
-    for (int ii = 0; ii < Nx; ii++)
-    {
-        for (int jj = 0; jj < Ny - 1; jj++)
-        {
-            for (int kk = 0; kk < Nz; kk++)
-            {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny - 1; jj++) {
+            for (int kk = 0; kk < Nz; kk++) {
                 // we are interpolating to the centre of cell ii,jj+1,kk
                 // these are the coordinates of the Yee cell's centre
                 double cell_centre[3];
@@ -178,12 +173,9 @@ TEST_CASE("E-field interpolation check")
         }
     }
     // interpolate Ez
-    for (int ii = 0; ii < Nx; ii++)
-    {
-        for (int jj = 0; jj < Ny; jj++)
-        {
-            for (int kk = 0; kk < Nz - 1; kk++)
-            {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            for (int kk = 0; kk < Nz - 1; kk++) {
                 // we are interpolating to the centre of cell ii,jj,kk+1
                 // these are the coordinates of the Yee cell's centre
                 double cell_centre[3];
@@ -205,9 +197,12 @@ TEST_CASE("E-field interpolation check")
     }
 
     // can now deallocate our sample field arrays
-    delete Exy; delete Exz;
-    delete Eyx; delete Eyz;
-    delete Ezx; delete Ezy;
+    delete Exy;
+    delete Exz;
+    delete Eyx;
+    delete Eyz;
+    delete Ezx;
+    delete Ezy;
 
     // compute Frobenius norms
     double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1);
@@ -217,16 +212,16 @@ TEST_CASE("E-field interpolation check")
     // compute max-slice errors
     double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.;
     // Ex-slices
-    for (int jj=0; jj<Ny; jj++) {
-        for (int kk=0; kk<Nz; kk++) {
+    for (int jj = 0; jj < Ny; jj++) {
+        for (int kk = 0; kk < Nz; kk++) {
             // "slices" might not constitute sequential memory
             // as such, make a new array for safety
-            double jk_errors[Nx-1];
-            for (int ii=0; ii<Nx-1; ii++) {
+            double jk_errors[Nx - 1];
+            for (int ii = 0; ii < Nx - 1; ii++) {
                 jk_errors[ii] = Ex_error[kk][jj][ii];
             }
             // compute norm-error of this slice
-            double jk_slice_error = Euclidean(jk_errors, Nx-1);
+            double jk_slice_error = Euclidean(jk_errors, Nx - 1);
             // if this exceeds the current recorded maximum error, record this
             if (jk_slice_error > Ex_ms_err) {
                 Ex_ms_err = jk_slice_error;
@@ -234,26 +229,26 @@ TEST_CASE("E-field interpolation check")
         }
     }
     // Ey-slices
-    for (int ii=0; ii<Nx; ii++) {
-        for (int kk=0; kk<Nz; kk++) {
-            double ik_errors[Ny-1];
-            for (int jj=0; jj<Ny-1; jj++) {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int kk = 0; kk < Nz; kk++) {
+            double ik_errors[Ny - 1];
+            for (int jj = 0; jj < Ny - 1; jj++) {
                 ik_errors[jj] = Ey_error[kk][jj][ii];
             }
-            double ik_slice_error = Euclidean(ik_errors, Ny-1);
+            double ik_slice_error = Euclidean(ik_errors, Ny - 1);
             if (ik_slice_error > Ey_ms_err) {
                 Ey_ms_err = ik_slice_error;
             }
         }
     }
     // Ez-slices
-    for (int ii=0; ii<Nx; ii++) {
-        for (int jj=0; jj<Ny; jj++) {
-            double ij_errors[Nz-1];
-            for (int kk=0; kk<Nz-1; kk++) {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            double ij_errors[Nz - 1];
+            for (int kk = 0; kk < Nz - 1; kk++) {
                 ij_errors[kk] = Ez_error[kk][jj][ii];
             }
-            double ij_slice_error = Euclidean(ij_errors, Nz-1);
+            double ij_slice_error = Euclidean(ij_errors, Nz - 1);
             if (ij_slice_error > Ez_ms_err) {
                 Ez_ms_err = ij_slice_error;
             }
@@ -264,7 +259,7 @@ TEST_CASE("E-field interpolation check")
     CHECK(Ex_fro_err <= Ex_fro_tol + acc_tol);
     CHECK(Ey_fro_err <= Ey_fro_tol + acc_tol);
     CHECK(Ez_fro_err <= Ez_fro_tol + acc_tol);
-    
+
     // check max-slice errors are acceptable
     CHECK(Ex_ms_err <= Ex_ms_tol + acc_tol);
     CHECK(Ey_ms_err <= Ey_ms_tol + acc_tol);
@@ -272,7 +267,6 @@ TEST_CASE("E-field interpolation check")
 
     // print information to the debugger/log
     std::cout << " Component | Frobenius err. : (     diff     ) | Max-slice err. : (     diff     )" << std::endl;
-    std::cout << std::fixed << std::scientific << std::setprecision(8);
     std::cout << "    x      | " << Ex_fro_err << " : (" << abs(Ex_fro_err - Ex_fro_tol);
     std::cout << ") | " << Ex_ms_err << " : (" << abs(Ex_ms_err - Ex_ms_tol) << ")" << std::endl;
     std::cout << "    y      | " << Ey_fro_err << " : (" << abs(Ey_fro_err - Ey_fro_tol);
@@ -289,8 +283,8 @@ TEST_CASE("E-field interpolation check")
  *
  * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
  */
-TEST_CASE("H-field interpolation check")
-{
+TEST_CASE("H-field interpolation check") {
+    std::cout << std::fixed << std::scientific << std::setprecision(8);
     std::cout << "Beginning H-field BLi test..." << std::endl;
     // error tolerance, based on MATLAB performance
     double Hx_fro_tol = 1.8946211079489815e-02;
@@ -317,12 +311,9 @@ TEST_CASE("H-field interpolation check")
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
-    for (int ii = 0; ii < Nx; ii++)
-    {
-        for (int jj = 0; jj < Ny; jj++)
-        {
-            for (int kk = 0; kk < Nz; kk++)
-            {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            for (int kk = 0; kk < Nz; kk++) {
                 // these are the coordinates of Yee cell i,j,k's centre
                 double cell_centre[3];
                 cell_centre[0] = x_lower + ((double)ii + 0.5) * cellDims[0];
@@ -351,14 +342,11 @@ TEST_CASE("H-field interpolation check")
     }
 
     // run interpolation functions
-    
+
     // interpolate Hx
-    for (int ii = 0; ii < Nx; ii++)
-    {
-        for (int jj = 0; jj < Ny - 1; jj++)
-        {
-            for (int kk = 0; kk < Nz - 1; kk++)
-            {
+    for (int ii = 0; ii < Nx; ii++) {
+        for (int jj = 0; jj < Ny - 1; jj++) {
+            for (int kk = 0; kk < Nz - 1; kk++) {
                 // we are interpolating to the centre of cell ii,jj+1,kk+1
                 // these are the coordinates of Yee cell centre
                 double cell_centre[3];
@@ -371,7 +359,7 @@ TEST_CASE("H-field interpolation check")
 
                 // interpolate to the centre of this cell
                 double Hx_interp;
-                interpolateTimeDomainHx(Hxy, Hxz, ii, jj+1, kk+1, Ny, Nz, &Hx_interp);
+                interpolateTimeDomainHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
 
                 // compute the errors
                 Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
@@ -379,12 +367,9 @@ TEST_CASE("H-field interpolation check")
         }
     }
     // interpolate Hy
-    for (int ii = 0; ii < Nx - 1; ii++)
-    {
-        for (int jj = 0; jj < Ny; jj++)
-        {
-            for (int kk = 0; kk < Nz - 1; kk++)
-            {
+    for (int ii = 0; ii < Nx - 1; ii++) {
+        for (int jj = 0; jj < Ny; jj++) {
+            for (int kk = 0; kk < Nz - 1; kk++) {
                 // we are interpolating to the centre of cell ii,jj+1,kk+1
                 // these are the coordinates of Yee cell centre
                 double cell_centre[3];
@@ -405,12 +390,9 @@ TEST_CASE("H-field interpolation check")
         }
     }
     // interpolate Hz
-    for (int ii = 0; ii < Nx - 1; ii++)
-    {
-        for (int jj = 0; jj < Ny - 1; jj++)
-        {
-            for (int kk = 0; kk < Nz; kk++)
-            {
+    for (int ii = 0; ii < Nx - 1; ii++) {
+        for (int jj = 0; jj < Ny - 1; jj++) {
+            for (int kk = 0; kk < Nz; kk++) {
                 // we are interpolating to the centre of cell ii+1,jj+1,kk
                 // these are the coordinates of Yee cell centre
                 double cell_centre[3];
@@ -432,10 +414,13 @@ TEST_CASE("H-field interpolation check")
     }
 
     // can now deallocate our sample field arrays
-    delete Hxy; delete Hxz;
-    delete Hyx; delete Hyz;
-    delete Hzx; delete Hzy;
-    
+    delete Hxy;
+    delete Hxz;
+    delete Hyx;
+    delete Hyz;
+    delete Hzx;
+    delete Hzy;
+
     // compute Frobenius norms
     double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx);
     double Hy_fro_err = Frobenius(Hy_error, Nz - 1, Ny, Nx - 1);
@@ -448,7 +433,6 @@ TEST_CASE("H-field interpolation check")
 
     // print information to the debugger/log
     std::cout << " Component | Frobenius err. : (     diff     )" << std::endl;
-    std::cout << std::fixed << std::scientific << std::setprecision(8);
     std::cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << std::endl;
     std::cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << std::endl;
     std::cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << std::endl;
