@@ -5,7 +5,6 @@
  * Needed to  preserve interpolate.cpp current functionality prior to testing!
  */
 #pragma once
-#include <complex.h>
 
 /*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
