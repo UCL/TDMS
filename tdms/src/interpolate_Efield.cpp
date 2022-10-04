@@ -1,4 +1,5 @@
 #include "interpolate_Efield.h"
+
 #include "interpolation_methods.h"
 
 using namespace std;
@@ -11,7 +12,7 @@ void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, 
 
     // now fill the interpolation data
     // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
-    for(int ind=scheme.first_nonzero_coeff; ind<=scheme.last_nonzero_coeff; ind++) {
+    for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++) {
         interp_data[ind] = Exy[k][j][i - scheme.number_of_datapoints_to_left + ind] + Exz[k][j][i - scheme.number_of_datapoints_to_left + ind];
     }
 
@@ -41,8 +42,7 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
 
     // now fill the interpolation data
     // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
-    for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++)
-    {
+    for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++) {
         interp_data[ind] = Eyx[k][j - scheme.number_of_datapoints_to_left + ind][i] + Eyz[k][j - scheme.number_of_datapoints_to_left + ind][j];
     }
 
@@ -73,8 +73,7 @@ void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, 
 
     // now fill the interpolation data
     // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
-    for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++)
-    {
+    for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++) {
         interp_data[ind] = Ezx[k - scheme.number_of_datapoints_to_left + ind][j][i] + Ezy[k - scheme.number_of_datapoints_to_left + ind][j][i];
     }
 
@@ -100,16 +99,14 @@ void interpolateTimeDomainEz(complex<double> ***Ez, int i, int j, int k, int nK,
 void interpolateTimeDomainEField(double ***Exy, double ***Exz, double ***Eyx,
                                  double ***Eyz, double ***Ezx, double ***Ezy,
                                  int i, int j, int k, int nI, int nJ, int nK,
-                                 double *Ex, double *Ey, double *Ez) 
-{
+                                 double *Ex, double *Ey, double *Ez) {
     interpolateTimeDomainEx(Exy, Exz, i, j, k, nI, Ex);
     interpolateTimeDomainEy(Eyx, Eyz, i, j, k, nJ, Ey);
     interpolateTimeDomainEz(Ezx, Ezy, i, j, k, nK, Ez);
 }
 void interpolateFreqDomainEField(complex<double> ***Ex, complex<double> ***Ey, complex<double> ***Ez,
                                  int i, int j, int k, int nI, int nJ, int nK,
-                                 complex<double> *Ex_interp, complex<double> *Ey_interp, complex<double> *Ez_interp) 
-{
+                                 complex<double> *Ex_interp, complex<double> *Ey_interp, complex<double> *Ez_interp) {
     interpolateFreqDomainEx(Ex, i, j, k, nI, Ex_interp);
     interpolateFreqDomainEy(Ey, i, j, k, nJ, Ey_interp);
     interpolateTimeDomainEz(Ez, i, j, k, nK, Ez_interp);

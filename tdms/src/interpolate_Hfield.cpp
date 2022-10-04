@@ -1,4 +1,5 @@
 #include "interpolate_Hfield.h"
+
 #include "interpolation_methods.h"
 
 using namespace std;
@@ -357,16 +358,14 @@ void interpolateFreqDomainHz(complex<double> ***Hz, int i, int j, int k, int nI,
 void interpolateTimeDomainHField(double ***Hxy, double ***Hxz, double ***Hyx,
                                  double ***Hyz, double ***Hzx, double ***Hzy,
                                  int i, int j, int k, int nI, int nJ, int nK,
-                                 double *Hx, double *Hy, double *Hz)
-{
+                                 double *Hx, double *Hy, double *Hz) {
     interpolateTimeDomainHx(Hxy, Hxz, i, j, k, nJ, nK, Hx);
     interpolateTimeDomainHy(Hyx, Hyz, i, j, k, nI, nK, Hy);
     interpolateTimeDomainHz(Hzx, Hzy, i, j, k, nI, nJ, Hz);
 }
 void interpolateFreqDomainHField(std::complex<double> ***Hx, std::complex<double> ***Hy, std::complex<double> ***Hz,
                                  int i, int j, int k, int nI, int nJ, int nK,
-                                 std::complex<double> *Hx_interp, std::complex<double> *Hy_interp, std::complex<double> *Hz_interp)
-{
+                                 std::complex<double> *Hx_interp, std::complex<double> *Hy_interp, std::complex<double> *Hz_interp) {
     interpolateFreqDomainHx(Hx, i, j, k, nJ, nK, Hx_interp);
     interpolateFreqDomainHy(Hy, i, j, k, nI, nK, Hy_interp);
     interpolateFreqDomainHz(Hz, i, j, k, nI, nJ, Hz_interp);
