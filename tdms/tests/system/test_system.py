@@ -48,10 +48,17 @@ def test_system(number: str):
     # in the zipped directory
     @work_in_zipped_dir(ZIP_PATH)
     def compare(number):
-        input_fnames = glob.glob("*")
-        assert len(input_fnames) > 0, f"No input files found in {os.getcwd()}"
+        pattern = "pstd_*_input.mat"
+        input_fnames = glob.glob(pattern)
+        assert (
+            len(input_fnames) > 0
+        ), f"No input files found in {os.getcwd()}. Make sure input files match pattern {pattern}."
         for input_fname in input_fnames:
             output_fname = input_fname.replace("input", "reference_output")
+            if not Path(output_fname).exists():
+                raise RuntimeError(
+                    f"Could not find expected reference file: {output_fname}"
+                )
             compare_output(input_fname, output_fname)
 
     compare(number)
