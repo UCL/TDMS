@@ -1,11 +1,18 @@
-# include "catch2/catch_test_macros.hpp"
-# include "interpolation_methods.h"
-# include <complex>
-# include "globals.h"
-# include <algorithm>
-# include <cmath>
+/**
+ * @file test_interpolation_functions.cpp
+ * @author William Graham (william.graham@ucl.ac.uk)
+ * @brief Tests the result of the interpolation functions.
+ */
+#include <algorithm>
+#include <catch2/catch_test_macros.hpp>
+#include <cmath>
+#include <complex>
+
+#include "globals.h"
+#include "interpolation_methods.h"
 
 using namespace std;
+using namespace TDMS_MATH_CONSTANTS;
 
 /**
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
@@ -146,10 +153,11 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
  *
  */
 
-// BLi: constant function f(x)=1, interpolation over [0,1]
-TEST_CASE("(real-valued) bandlimited_interpolation: order of error, constant function")
-{
-
+/**
+ * @brief Test BLi performance on the constant function.
+ * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
+ */
+TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     int nSamples = 100;                         // number of "Yee cells" in this dimension
     double const_fn_data[nSamples];             // function data (only need 8 data points, but simulate 100 cells)
     fill_n(const_fn_data, nSamples, 1);         // initalise to f(x)=1
@@ -192,10 +200,12 @@ TEST_CASE("(real-valued) bandlimited_interpolation: order of error, constant fun
 inline double s2pi(double x) {
     return sin(2. * M_PI * x);
 }
-// BLi: sine function interpolation
-TEST_CASE("bandlimited_interpolation: order of error, sine function")
-{
 
+/**
+ * @brief Test BLi performance on the sine function.
+ * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
+ */
+TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     int nSamples = 100;                             // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);   // spacing between Yee cell centres
     double xi[nSamples];                            // positions of the "field components"
@@ -275,10 +285,12 @@ inline double pulse(double x) {
         return exp( -1. / (1 - absxhat*absxhat) );
     }
 }
-// BLi: pulse function interpolation
-TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
-{
 
+/**
+ * @brief Test BLi performance on the compact pulse.
+ * - pulse function             : range 0,1         : max. element-wise error (MATLAB) 4.87599933e-04
+ */
+TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     int nSamples = 100;                           // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1); // spacing between Yee cell centres
     double xi[nSamples];                          // positions of the "field components"
@@ -341,7 +353,7 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
  *
  * Interoplation will then be tested against over the range [0,1], the max element-wise error (by absolute value) will be determined. We will then check that this is of the same order of magnitude as the error produced by MATLAB, 5.35317432e-04.
  */
-TEST_CASE("(complex-valued) band limited interpolation: order of error") {
+TEST_CASE("(complex-valued) Band limited interpolation") {
     int nSamples = 100;                            // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);  // spacing between Yee cell centres
     double xi[nSamples];                           // positions of the "field components"
@@ -360,8 +372,8 @@ TEST_CASE("(complex-valued) band limited interpolation: order of error") {
         xi[i] = ((double)i) / ((double)(nSamples - 1));
         xi5[i] = xi[i] - spacing / 2.;
 
-        f_data[i] = s2pi(xi[i]) + (pulse(xi[i]) * I);
-        f_exact[i] = s2pi(xi5[i]) + (pulse(xi5[i]) * I);
+        f_data[i] = s2pi(xi[i]) + (pulse(xi[i]) * IMAGINARY_UNIT);
+        f_exact[i] = s2pi(xi5[i]) + (pulse(xi5[i]) * IMAGINARY_UNIT);
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.

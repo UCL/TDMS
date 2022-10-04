@@ -1,9 +1,10 @@
 /**
  * @file interpolate_Hfield.h
+ * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Functions for interpolating the Electric field.
  */
 #pragma once
-#include <complex.h>
+#include <complex>
 
 /**
  * @brief Interpolate the x-component of the magnetic field to the centre of Yee cell i,j,k.

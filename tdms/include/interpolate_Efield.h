@@ -1,10 +1,11 @@
 /**
  * @file interpolate_Efield.h
+ * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Functions for interpolating the Electric field.
  */
 #pragma once
 
-#include <complex.h>
+#include <complex>
 
 /**
  * @brief Interpolate the Ex field component to the centre of a Yee cell.

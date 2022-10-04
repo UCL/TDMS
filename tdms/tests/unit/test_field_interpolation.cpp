@@ -1,12 +1,15 @@
-# include <catch2/catch_test_macros.hpp>
-# include "interpolate_Efield.h"
-# include "interpolate_Hfield.h"
+/**
+ * @file test_field_interpolation.cpp
+ * @author William Graham (ccaegra@ucl.ac.uk)
+ * @brief Tests interpolation of E- and H-fields and compares the errors against MATLAB benchmarks
+ */
+#include <catch2/catch_test_macros.hpp>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
 
-# include <cmath>
-# include <iostream>
-# include <iomanip>
-
-using namespace std;
+#include "interpolate_Efield.h"
+#include "interpolate_Hfield.h"
 
 /* Overview of Tests
 
@@ -48,13 +51,13 @@ inline double Hcomponent(double x, double y, double z) {
 }
 
 // for memory allocation of 3D arrays
-inline double ***allocate3dmemory(int I, int J, int K) {
+inline double ***allocate3dmemory(int nI, int nJ, int nK) {
 
-    double ***p = (double ***)malloc(K * sizeof(double **));
-    for (int k = 0; k < K; k++) {
-        p[k] = (double **)malloc(J * sizeof(double *));
-        for (int j = 0; j < J; j++) {
-            p[k][j] = (double *)malloc(I * sizeof(double));
+    double ***p = (double ***)malloc(nK * sizeof(double **));
+    for (int k = 0; k < nK; k++) {
+        p[k] = (double **)malloc(nJ * sizeof(double *));
+        for (int j = 0; j < nJ; j++) {
+            p[k][j] = (double *)malloc(nI * sizeof(double));
         }
     }
     return p;
@@ -70,7 +73,7 @@ inline double ***allocate3dmemory(int I, int J, int K) {
  */
 TEST_CASE("E-field interpolation check") 
 {
-    cout << "Beginning E-field BLi test..." << endl;
+    std::cout << "Beginning E-field BLi test..." << std::endl;
     // error tolerance, based on MATLAB performance
     double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
     double Ey_fro_tol = 7.8295329699969822e-03, Ey_ms_tol = 7.5320765734192925e-04;
@@ -268,14 +271,14 @@ TEST_CASE("E-field interpolation check")
     CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
 
     // print information to the debugger/log
-    cout << " Component | Frobenius err. : (     diff     ) | Max-slice err. : (     diff     )" << endl;
-    cout << fixed << scientific << setprecision(8);
-    cout << "    x      | " << Ex_fro_err << " : (" << abs(Ex_fro_err - Ex_fro_tol);
-    cout << ") | " << Ex_ms_err << " : (" << abs(Ex_ms_err - Ex_ms_tol) << ")" << endl;
-    cout << "    y      | " << Ey_fro_err << " : (" << abs(Ey_fro_err - Ey_fro_tol);
-    cout << ") | " << Ey_ms_err << " : (" << abs(Ey_ms_err - Ey_ms_tol) << ")" << endl;
-    cout << "    z      | " << Ez_fro_err << " : (" << abs(Ez_fro_err - Ez_fro_tol);
-    cout << ") | " << Ez_ms_err << " : (" << abs(Ez_ms_err - Ez_ms_tol) << ")" << endl;
+    std::cout << " Component | Frobenius err. : (     diff     ) | Max-slice err. : (     diff     )" << std::endl;
+    std::cout << std::fixed << std::scientific << std::setprecision(8);
+    std::cout << "    x      | " << Ex_fro_err << " : (" << abs(Ex_fro_err - Ex_fro_tol);
+    std::cout << ") | " << Ex_ms_err << " : (" << abs(Ex_ms_err - Ex_ms_tol) << ")" << std::endl;
+    std::cout << "    y      | " << Ey_fro_err << " : (" << abs(Ey_fro_err - Ey_fro_tol);
+    std::cout << ") | " << Ey_ms_err << " : (" << abs(Ey_ms_err - Ey_ms_tol) << ")" << std::endl;
+    std::cout << "    z      | " << Ez_fro_err << " : (" << abs(Ez_fro_err - Ez_fro_tol);
+    std::cout << ") | " << Ez_ms_err << " : (" << abs(Ez_ms_err - Ez_ms_tol) << ")" << std::endl;
 }
 
 /**
@@ -288,7 +291,7 @@ TEST_CASE("E-field interpolation check")
  */
 TEST_CASE("H-field interpolation check")
 {
-    cout << "Beginning H-field BLi test..." <<endl;
+    std::cout << "Beginning H-field BLi test..." << std::endl;
     // error tolerance, based on MATLAB performance
     double Hx_fro_tol = 1.8946211079489815e-02;
     double Hy_fro_tol = 7.9076626528757438e-02;
@@ -444,9 +447,9 @@ TEST_CASE("H-field interpolation check")
     CHECK(Hz_fro_err <= Hz_fro_tol + acc_tol);
 
     // print information to the debugger/log
-    cout << " Component | Frobenius err. : (     diff     )" << endl;
-    cout << fixed << scientific << setprecision(8);
-    cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << endl;
-    cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << endl;
-    cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << endl;
+    std::cout << " Component | Frobenius err. : (     diff     )" << std::endl;
+    std::cout << std::fixed << std::scientific << std::setprecision(8);
+    std::cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << std::endl;
+    std::cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << std::endl;
+    std::cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << std::endl;
 }

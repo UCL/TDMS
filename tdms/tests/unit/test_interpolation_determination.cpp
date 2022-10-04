@@ -1,9 +1,11 @@
 /**
  * @file test_interpolation_determination.cpp
- * @brief Tests of the interpolation functions.
+ * @author William Graham (ccaegra@ucl.ac.uk)
+ * @brief Tests the logic that determines which interpolation schemes are appropriate.
  */
 #include <catch2/catch_test_macros.hpp>
-#include <interpolation_methods.h>
+
+#include "interpolation_methods.h"
 
 using namespace std;
 

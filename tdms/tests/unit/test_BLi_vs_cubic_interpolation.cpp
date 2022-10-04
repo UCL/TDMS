@@ -1,10 +1,15 @@
-#include "catch2/catch_test_macros.hpp"
+/**
+ * @file test_BLi_vs_cubic_interpolation.cpp
+ * @author William Graham (ccaegra@ucl.ac.uk)
+ * @brief Tests the performance of band-limited interpolation against cubic interpolation
+ */
+#include <algorithm>
+#include <catch2/catch_test_macros.hpp>
+#include <cmath>
+#include <iostream>
+
 #include "interpolation_methods.h"
 
-#include <algorithm>
-#include <cmath>
-
-#include <iostream>
 using namespace std;
 
 // Computes the 2-norm of the vector v from buffer start to buffer end
