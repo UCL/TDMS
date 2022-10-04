@@ -7,6 +7,7 @@
 #include "matlabio.h"
 
 using namespace std;
+using namespace TDMS_MATH_CONSTANTS;
 
 // fftw_complex is typdef to a double[2] - first element is Re, second Im.
 const int REAL=0, IMAG=1;

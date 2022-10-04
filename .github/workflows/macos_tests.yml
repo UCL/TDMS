@@ -71,7 +71,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
-          ctest -C ${{ matrix.build_type }} --extra-verbos
+          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
       - name: Run TDMS system tests
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
