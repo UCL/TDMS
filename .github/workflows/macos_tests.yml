@@ -7,6 +7,12 @@ on:
   release:
   workflow_dispatch:
 
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: always.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Test - ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
