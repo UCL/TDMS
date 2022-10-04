@@ -138,8 +138,8 @@ class interpScheme {
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
          */
-        template <typename T>
-        T interpolate(const T *v, const int offset = 0) const;
+        double interpolate(const double *v, const int offset = 0) const;
+        std::complex<double> interpolate(const std::complex<double> *v, const int offset = 0) const;
 
         /**
          * @brief Determines whether another interpScheme has greater value than this one
