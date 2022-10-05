@@ -23,7 +23,7 @@ TEST_CASE("Test electric field angular norm addition") {
   double DT = 0.1;
   int N = 3;
   int N_T = 5;
-  auto I = TDMS_MATH_CONSTANTS::IMAGINARY_UNIT;
+  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto E = ElectricField();
   auto params = SimulationParameters();
@@ -46,7 +46,7 @@ TEST_CASE("Test magnetic field angular norm addition") {
   double DT = 0.2;
   int N = 7;
   int N_T = 5;
-  auto I = TDMS_MATH_CONSTANTS::IMAGINARY_UNIT;
+  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto H = MagneticField();
   auto params = SimulationParameters();
