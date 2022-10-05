@@ -51,11 +51,11 @@ inline double Euclidean(double *v, int end, int start = 0) {
 
 // functional form for the E-field components
 inline double Ecomponent(double x, double y, double z) {
-    return sin(2. * M_PI * z) * exp(-y * y) * (1. / (10 * x * x + 1.));
+    return sin(2. * M_PI * z) * exp(-y * y) * (1. / (10. * x * x + 1.));
 }
 // functional form for the H-field components
 inline double Hcomponent(double x, double y, double z) {
-    return cos(0.5 * M_PI * z) * exp(-y * y) * (1. / (5 * x * x + 1.));
+    return cos(.5 * M_PI * z) * exp(-y * y) * (1. / (5. * x * x + 1.));
 }
 
 // for memory allocation of 3D arrays
@@ -272,7 +272,7 @@ TEST_CASE("E-field interpolation check") {
     CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
 
     // print information to the debugger/log
-    cout << " Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << std::endl;
+    cout << " Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << endl;
     cout << "    x      | " << Ex_fro_err << " : (" << Ex_fro_tol;
     cout << ") | " << Ex_ms_err << " : (" << Ex_ms_tol << ")" << endl;
     cout << "    y      | " << Ey_fro_err << " : (" << Ey_fro_tol;
