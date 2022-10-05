@@ -15,11 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-<<<<<<< HEAD
-          - macos-latest
-=======
           - macos-12
->>>>>>> 53817a868cb657778c68a8a3079d39fd2d427cc5
         build_type:
           - Release
         build_testing:
