@@ -3,7 +3,7 @@
 #include "field.h"
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
+using namespace tdms_math_constants;
 
 
 void ElectricField::add_to_angular_norm(double f, int n, int Nt, SimulationParameters &params) {

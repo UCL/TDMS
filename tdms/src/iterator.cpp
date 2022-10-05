@@ -1,24 +1,25 @@
-#include <complex>
+#include "iterator.h"
+
+#include <omp.h>
+
 #include <algorithm>
+#include <complex>
 #include <cstring>
 #include <ctime>
-#include <omp.h>
-#include "mat_io.h"
-#include "iterator.h"
-#include "interpolate.h"
-#include "numeric.h"
-#include "mesh_base.h"
-#include "numerical_derivative.h"
+
+#include "field.h"
 #include "globals.h"
+#include "interpolate.h"
+#include "mat_io.h"
 #include "matlabio.h"
 #include "mesh_base.h"
+#include "numeric.h"
+#include "numerical_derivative.h"
 #include "timer.h"
-#include "field.h"
-
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
-using namespace TDMS_PHYS_CONSTANTS;
+using namespace tdms_math_constants;
+using namespace tdms_phys_constants;
 
 //whether of not to time execution
 #define TIME_EXEC false
