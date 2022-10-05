@@ -9,7 +9,7 @@
 #include "globals.h"
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
+using namespace tdms_math_constants;
 
 template<typename T>
 inline bool is_close(T a, T b){

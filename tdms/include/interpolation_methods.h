@@ -1,9 +1,9 @@
 /**
  * @file interpolation_methods.h
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Cubic interpolation functions.
- *
- * Needed to  preserve interpolate.cpp current functionality prior to testing!
+ * @brief InterpScheme class methods and supporting functions
+ * 
+ * Non InterpScheme methods are required to preserve functionality whilst testing new schemes
  */
 #pragma once
 

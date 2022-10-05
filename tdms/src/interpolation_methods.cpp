@@ -1,6 +1,7 @@
-# include <stdexcept>
-# include "interpolation_methods.h"
-# include <complex.h>
+#include "interpolation_methods.h"
+
+#include <stdexcept>
+#include <string>
 
 using namespace std;
 

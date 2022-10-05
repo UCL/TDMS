@@ -1,7 +1,7 @@
 /**
  * @file test_interpolation_functions.cpp
- * @author William Graham (william.graham@ucl.ac.uk)
- * @brief Tests the result of the interpolation functions.
+ * @author William Graham (ccaegra@ucl.ac.uk)
+ * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
  */
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>
@@ -14,7 +14,7 @@
 #include "interpolation_methods.h"
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
+using namespace tdms_math_constants;
 
 /**
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).

@@ -1,13 +1,16 @@
+#include "numerical_derivative.h"
+
+#include <fftw3.h>
+#include <spdlog/spdlog.h>
+
 #include <cmath>
 #include <cstdlib>
-#include <spdlog/spdlog.h>
-#include <fftw3.h>
+
 #include "globals.h"
-#include "numerical_derivative.h"
 #include "matlabio.h"
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
+using namespace tdms_math_constants;
 
 // fftw_complex is typdef to a double[2] - first element is Re, second Im.
 const int REAL=0, IMAG=1;

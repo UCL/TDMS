@@ -3,6 +3,7 @@
 #include <cstring>
 #include <ctime>
 #include <omp.h>
+
 #include "mat_io.h"
 #include "iterator.h"
 #include "interpolate.h"
@@ -15,10 +16,9 @@
 #include "timer.h"
 #include "field.h"
 
-
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
-using namespace TDMS_PHYS_CONSTANTS;
+using namespace tdms_math_constants;
+using namespace tdms_phys_constants;
 
 //whether of not to time execution
 #define TIME_EXEC false

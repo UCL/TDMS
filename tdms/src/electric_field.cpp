@@ -1,10 +1,10 @@
 #include <complex>
-#include "globals.h"
+
 #include "field.h"
+#include "globals.h"
 
 using namespace std;
-using namespace TDMS_MATH_CONSTANTS;
-
+using namespace tdms_math_constants;
 
 void ElectricField::add_to_angular_norm(double f, int n, int Nt, SimulationParameters &params) {
   angular_norm += phasor_norm(f, n, params.omega_an, params.dt, Nt);
