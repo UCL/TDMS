@@ -20,6 +20,10 @@ jobs:
           - Release
         build_testing:
           - OFF
+        # TODO: remove this once MATLAB dependency is removed and mexFunction is replaced
+        derivative_type:
+          - PS
+          - FD
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -59,7 +63,10 @@ jobs:
         shell: bash
         working-directory: ${{runner.workspace}}/build
         run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTING=${{ matrix.build_testing }}
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+           -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
@@ -74,11 +81,23 @@ jobs:
         run: |
           cp Release/* .
 
-      - name: Run TDMS system tests
+      # TODO: simplify this once MATLAB dependency is removed and mexFunction is replaced
+      - name: Run PSTD TDMS system tests
+        if: matrix.derivative_type == 'PS'
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
           export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
           export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x -m "not fdtd_build_only"
+
+      - name: Run PSTD TDMS system tests
+        if: matrix.derivative_type == 'FD'
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          export OMP_NUM_THREADS=1
+          export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
+          export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x -m fdtd_build_only

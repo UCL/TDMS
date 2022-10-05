@@ -82,7 +82,7 @@ class HDF5File(dict):
         arrays
         """
 
-        for key, value in self.traverse(self):
+        for key, value in self.items():
 
             if key not in other:
                 return False  # Key did not match
