@@ -43,7 +43,7 @@ inline double Frobenius(double ***M, int d1, int d2, int d3) {
 // computes the Euclidean norm of a 1d-array (or pointer thereto)
 inline double Euclidean(double *v, int end, int start = 0) {
     double norm_val = 0.;
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i < end; i++) {
         norm_val += v[i] * v[i];
     }
     return sqrt(norm_val);
