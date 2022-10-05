@@ -90,10 +90,13 @@ TEST_CASE("E-field interpolation check") {
     double acc_tol = 1e-12;
 
     // fake domain setup
-    double cellDims[3] = {0.25, 0.1, 0.05};
     double x_lower = -2., y_lower = -2., z_lower = -2.;
     double extent_x = 4., extent_y = 4., extent_z = 4.;
-    int Nx = ceil(extent_x / cellDims[0]), Ny = ceil(extent_y / cellDims[1]), Nz = ceil(extent_z / cellDims[2]);
+    double cellDims[3] = {0.25, 0.1, 0.05};
+    // The number of cells in each direction is then 16 = 4/0.25, 40 = 4/0.1, 80 = 4/0.05.
+    // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
+    int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]), Nz = round(extent_z / cellDims[2]);
+    cout << "(Nx, Ny, Nz) = (" << Nx << "," << Ny << "," << Nz << ")" << endl;
 
     // setup the "split" E-field components
     double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
@@ -301,10 +304,13 @@ TEST_CASE("H-field interpolation check") {
     double acc_tol = 1e-12;
 
     // fake domain setup
-    double cellDims[3] = {0.25, 0.1, 0.05};
     double x_lower = -2., y_lower = -2., z_lower = -2.;
     double extent_x = 4., extent_y = 4., extent_z = 4.;
-    int Nx = ceil(extent_x / cellDims[0]), Ny = ceil(extent_y / cellDims[1]), Nz = ceil(extent_z / cellDims[2]);
+    double cellDims[3] = {0.25, 0.1, 0.05};
+    // The number of cells in each direction is then 16 = 4/0.25, 40 = 4/0.1, 80 = 4/0.05.
+    // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
+    int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]), Nz = round(extent_z / cellDims[2]);
+    cout << "(Nx, Ny, Nz) = (" << Nx << "," << Ny << "," << Nz << ")" << endl;
 
     // setup the "split" E-field components
     double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
