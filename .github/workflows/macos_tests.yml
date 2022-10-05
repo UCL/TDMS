@@ -44,7 +44,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw llvm python3
+          brew install fftw llvm
+          # Not striclty necessary to install llvm, because it comes in the
+          # MacOS runner images, but adding here means the brew --prefix
+          # command is guaranteed to work (even if the image is updated).
 
       - name: Install Python dependencies
         shell: bash
@@ -61,11 +64,11 @@ jobs:
         env:
           CXXFLAGS: -Werror
         run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON\
-           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}\
-           -DBUILD_TESTING=${{ matrix.build_testing }}\
-           -DOMP_ROOT=/usr/local/opt/llvm/
-
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+           -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DOMP_ROOT=$(brew --prefix llvm)
+           
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
