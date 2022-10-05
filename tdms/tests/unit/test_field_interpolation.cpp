@@ -11,6 +11,12 @@
 #include "interpolate_Efield.h"
 #include "interpolate_Hfield.h"
 
+using std::cout;
+using std::fixed;
+using std::scientific;
+using std::setprecision;
+using std::endl;
+
 /* Overview of Tests
 
 We will test the performance of BLi at interpolating a known field to the centre of each Yee cell, for both the E- and H- fields.
@@ -73,8 +79,8 @@ inline double ***allocate3dmemory(int nI, int nJ, int nK) {
  * We test both the Fro- and slice-norm metrics, since interpolation only happens along one axis
  */
 TEST_CASE("E-field interpolation check") {
-    std::cout << std::fixed << std::scientific << std::setprecision(8);
-    std::cout << "Beginning E-field BLi test..." << std::endl;
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== Testing E-field BLi =====" << endl;
     // error tolerance, based on MATLAB performance
     double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
     double Ey_fro_tol = 7.8295329699969822e-03, Ey_ms_tol = 7.5320765734192925e-04;
@@ -266,13 +272,13 @@ TEST_CASE("E-field interpolation check") {
     CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
 
     // print information to the debugger/log
-    std::cout << " Component | Frobenius err. : (     diff     ) | Max-slice err. : (     diff     )" << std::endl;
-    std::cout << "    x      | " << Ex_fro_err << " : (" << abs(Ex_fro_err - Ex_fro_tol);
-    std::cout << ") | " << Ex_ms_err << " : (" << abs(Ex_ms_err - Ex_ms_tol) << ")" << std::endl;
-    std::cout << "    y      | " << Ey_fro_err << " : (" << abs(Ey_fro_err - Ey_fro_tol);
-    std::cout << ") | " << Ey_ms_err << " : (" << abs(Ey_ms_err - Ey_ms_tol) << ")" << std::endl;
-    std::cout << "    z      | " << Ez_fro_err << " : (" << abs(Ez_fro_err - Ez_fro_tol);
-    std::cout << ") | " << Ez_ms_err << " : (" << abs(Ez_ms_err - Ez_ms_tol) << ")" << std::endl;
+    cout << " Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << std::endl;
+    cout << "    x      | " << Ex_fro_err << " : (" << Ex_fro_tol;
+    cout << ") | " << Ex_ms_err << " : (" << Ex_ms_tol << ")" << endl;
+    cout << "    y      | " << Ey_fro_err << " : (" << Ey_fro_tol;
+    cout << ") | " << Ey_ms_err << " : (" << Ey_ms_tol << ")" << endl;
+    cout << "    z      | " << Ez_fro_err << " : (" << Ez_fro_tol;
+    cout << ") | " << Ez_ms_err << " : (" << Ez_ms_tol << ")" << endl;
 }
 
 /**
@@ -284,15 +290,15 @@ TEST_CASE("E-field interpolation check") {
  * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
  */
 TEST_CASE("H-field interpolation check") {
-    std::cout << std::fixed << std::scientific << std::setprecision(8);
-    std::cout << "Beginning H-field BLi test..." << std::endl;
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== Testing H-field BLi =====" << endl;
     // error tolerance, based on MATLAB performance
     double Hx_fro_tol = 1.8946211079489815e-02;
     double Hy_fro_tol = 7.9076626528757438e-02;
     double Hz_fro_tol = 8.0012805533367606e-02;
 
     // additional tolerance to allow for floating-point rounding imprecisions, etc
-    double acc_tol = 1e-8;
+    double acc_tol = 1e-12;
 
     // fake domain setup
     double cellDims[3] = {0.25, 0.1, 0.05};
@@ -432,8 +438,8 @@ TEST_CASE("H-field interpolation check") {
     CHECK(Hz_fro_err <= Hz_fro_tol + acc_tol);
 
     // print information to the debugger/log
-    std::cout << " Component | Frobenius err. : (     diff     )" << std::endl;
-    std::cout << "    x      | " << Hx_fro_err << " : (" << abs(Hx_fro_err - Hx_fro_tol) << ")" << std::endl;
-    std::cout << "    y      | " << Hy_fro_err << " : (" << abs(Hy_fro_err - Hy_fro_tol) << ")" << std::endl;
-    std::cout << "    z      | " << Hz_fro_err << " : (" << abs(Hz_fro_err - Hz_fro_tol) << ")" << std::endl;
+    cout << " Component | Frobenius err. : (  benchmark   )" << endl;
+    cout << "    x      | " << Hx_fro_err << " : (" << Hx_fro_tol << ")" << endl;
+    cout << "    y      | " << Hy_fro_err << " : (" << Hy_fro_tol << ")" << endl;
+    cout << "    z      | " << Hz_fro_err << " : (" << Hz_fro_tol << ")" << endl;
 }

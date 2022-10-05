@@ -43,6 +43,7 @@ inline double f_BLi_vs_Cubic(double x) {
  * - The order of the magnitude (of BOTH) errors is the same as that obtained from MATLAB (for validation reasons)
  */
 TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
+    cout << "===== Benchmarking BLi against cubic interpolation =====" << endl;
     // number of cell sizes to test at
     const int n_trials = 4;
     // Yee cell sizes to test across

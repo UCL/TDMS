@@ -6,6 +6,7 @@
 #include <interpolation_methods.h>
 
 #include <catch2/catch_test_macros.hpp>
+#include <iostream>
 
 using namespace std;
 
@@ -74,6 +75,7 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
  *
  */
 TEST_CASE("best_interp_scheme: correct interpolation chosen") {
+    cout << "===== Testing interpolation scheme selection logic =====" << endl;
     int N = 10;
     // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
     REQUIRE_THROWS_AS(best_interp_scheme(3, 2), out_of_range);

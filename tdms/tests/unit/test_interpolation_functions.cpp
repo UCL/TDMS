@@ -22,6 +22,7 @@ using namespace tdms_math_constants;
  * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
 TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact") {
+    cout << "===== Testing exact cubic interpolation =====" << endl;
     // equidistant points
     double x[] = {0., 1., 2., 3.};
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
@@ -125,6 +126,7 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
  * Note - the coefficients are not required to sum to unity!
  */
 TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value") {
+    cout << "===== Testing BLi coefficient sum =====" << endl;
     /* Tolerance to accept imprecision to
     max. 16 FLOPs implies max discrepency of 8*_DBL_EPSILON__ error
     (8 additions, error in each number max __DBL_EPSILON__).
@@ -171,6 +173,8 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
  * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: constant function") {
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== (real valued) BLi: constant function test case =====" << endl;
     int nSamples = 100;                         // number of "Yee cells" in this dimension
     double const_fn_data[nSamples];             // function data (only need 8 data points, but simulate 100 cells)
     fill_n(const_fn_data, nSamples, 1);         // initalise to f(x)=1
@@ -209,8 +213,6 @@ TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(const_fn_max_error <= const_fn_MATLAB_error);
     // report test results
-    cout << fixed << scientific << setprecision(8);
-    cout << "BLi: constant function interpolation" << endl;
     cout << "Error: " << const_fn_max_error << " | Benchmark: " << const_fn_MATLAB_error << endl;
 }
 
@@ -223,6 +225,8 @@ inline double s2pi(double x) {
  * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== (real valued) BLi: sin(2pi x) test case =====" << endl;
     int nSamples = 100;                             // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);   // spacing between Yee cell centres
     double xi[nSamples];                            // positions of the "field components"
@@ -277,8 +281,6 @@ TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < sin_MATLAB_error);
     // report test results
-    cout << fixed << scientific << setprecision(8);
-    cout << "BLi: sine function interpolation" << endl;
     cout << "Error: " << max_error << " | Benchmark: " << sin_MATLAB_error << endl;
 }
 
@@ -312,6 +314,8 @@ inline double pulse(double x) {
  * - pulse function             : range 0,1         : max. element-wise error (MATLAB) 4.87599933e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== (real valued) BLi: compact pulse test case =====" << endl;
     int nSamples = 100;                           // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1); // spacing between Yee cell centres
     double xi[nSamples];                          // positions of the "field components"
@@ -364,8 +368,6 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < pulse_MATLAB_error);
     // report test results
-    cout << fixed << scientific << setprecision(8);
-    cout << "BLi: compact pulse function interpolation" << endl;
     cout << "Error: " << max_error << " | Benchmark: " << pulse_MATLAB_error << endl;
 }
 
@@ -379,6 +381,8 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
  * Interoplation will then be tested against over the range [0,1], the max element-wise error (by absolute value) will be determined. We will then check that this is of the same order of magnitude as the error produced by MATLAB, 5.35317432e-04.
  */
 TEST_CASE("(complex-valued) Band limited interpolation") {
+    cout << fixed << scientific << setprecision(8);
+    cout << "===== (complex valued) BLi: complex function test case =====" << endl;
     int nSamples = 100;                            // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);  // spacing between Yee cell centres
     double xi[nSamples];                           // positions of the "field components"
@@ -429,7 +433,5 @@ TEST_CASE("(complex-valued) Band limited interpolation") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < MATLAB_error);
     // report test results
-    cout << fixed << scientific << setprecision(8);
-    cout << "BLi: complex function interpolation" << endl;
     cout << "Error: " << max_error << " | Benchmark: " << MATLAB_error << endl;
 }
