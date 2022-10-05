@@ -43,7 +43,7 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
     // now fill the interpolation data
     // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
     for (int ind = scheme.first_nonzero_coeff; ind <= scheme.last_nonzero_coeff; ind++) {
-        interp_data[ind] = Eyx[k][j - scheme.number_of_datapoints_to_left + ind][i] + Eyz[k][j - scheme.number_of_datapoints_to_left + ind][j];
+        interp_data[ind] = Eyx[k][j - scheme.number_of_datapoints_to_left + ind][i] + Eyz[k][j - scheme.number_of_datapoints_to_left + ind][i];
     }
 
     // now run the interpolation scheme and place the result into the output
