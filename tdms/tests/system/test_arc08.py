@@ -6,7 +6,7 @@ from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 ZIP_PATH = Path(os.path.dirname(os.path.abspath(__file__)), "data", "arc_08.zip")
 
 if not ZIP_PATH.exists():
-    download_data("https://zenodo.org/record/7086087/files/arc_08.zip", to=ZIP_PATH)
+    download_data("https://zenodo.org/record/7147020/files/arc_08.zip", to=ZIP_PATH)
 
 
 @work_in_zipped_dir(ZIP_PATH)
