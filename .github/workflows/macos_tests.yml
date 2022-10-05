@@ -15,7 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
+<<<<<<< HEAD
           - macos-latest
+=======
+          - macos-12
+>>>>>>> 53817a868cb657778c68a8a3079d39fd2d427cc5
         build_type:
           - Release
         build_testing:
@@ -37,17 +41,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw libomp python3
-
+          brew install fftw llvm python3
       - name: Install Python dependencies
         shell: bash
         run: |
           pip3 install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
-
       - name: Create Build Environment
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
-
       - name: Configure TDMS
         shell: bash
         working-directory: ${{runner.workspace}}/build
@@ -57,21 +58,19 @@ jobs:
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON\
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}\
            -DBUILD_TESTING=${{ matrix.build_testing }}\
-           -DOMP_ROOT=/usr/local/opt/llvm/ -DCXX_ROOT=/usr/local/opt/llvm
+           -DOMP_ROOT=/usr/local/opt/llvm/
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           cmake --build . --config ${{ matrix.build_type }}
-
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
-
       - name: Run TDMS system tests
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         # run system tests in mac only on pushes to main (they are a bit slow)
