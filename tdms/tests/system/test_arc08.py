@@ -13,9 +13,9 @@ if not ZIP_PATH.exists():
 def test_fs():
     """Ensure that the free space stady-state PSTD output matches the reference"""
 
-    run_tdms("arc_08/pstd_fs_steady_input_fast.mat", "pstd_fs_steady_output_fast.mat")
+    run_tdms("arc_08/in/pstd_fs_steady_fast.mat", "pstd_fs_steady_output_fast.mat")
 
-    reference = HDF5File("arc_08/pstd_fs_steady_reference_output_fast.mat")
+    reference = HDF5File("arc_08/out/pstd_fs_steady_fast.mat")
     assert HDF5File("pstd_fs_steady_output_fast.mat").matches(
         reference
     ), "The free space, steady-state PSTD output doesn't match the reference."
@@ -25,9 +25,9 @@ def test_fs():
 def test_sph():
     """Ensure that the spherical steady-state PSTD output matches the reference."""
 
-    run_tdms("arc_08/pstd_sph_steady_input_fast.mat", "pstd_sph_steady_output_fast.mat")
+    run_tdms("arc_08/in/pstd_sph_steady_fast.mat", "pstd_sph_steady_output_fast.mat")
 
-    reference = HDF5File("arc_08/pstd_sph_steady_reference_output_fast.mat")
+    reference = HDF5File("arc_08/out/pstd_sph_steady_fast.mat")
     assert HDF5File("pstd_sph_steady_output_fast.mat").matches(
         reference
     ), "The spherical steady-state PSTD output doesn't match the reference."

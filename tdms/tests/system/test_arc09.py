@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 
 ZIP_PATH = Path(os.path.dirname(os.path.abspath(__file__)), "data", "arc_09.zip")
@@ -9,6 +10,7 @@ if not ZIP_PATH.exists():
     download_data("https://zenodo.org/record/7097063/files/arc_09.zip", to=ZIP_PATH)
 
 
+@pytest.mark.skip(reason="We know about this: likely a data problem.")
 @work_in_zipped_dir(ZIP_PATH)
 def test_fs():
     """
