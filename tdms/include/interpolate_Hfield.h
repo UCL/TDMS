@@ -465,9 +465,9 @@ void interpolateSplitFieldH(Tx ***Hxy, Tx ***Hxz,
  * @param[out] Hx_interp,Hy_interp,Hz_interp Interpolated values of the x,y,z (respectively) field component
  */
 template <typename Tx, typename Ty, typename Tz>
-void interpolateFreqDomainHField(Tx ***Hx, Ty ***Hy, Tz ***Hz,
-                                 int i, int j, int k, int nI, int nJ, int nK,
-                                 Tx *Hx_interp, Ty *Hy_interp, Tz *Hz_interp) {
+void interpolateH(Tx ***Hx, Ty ***Hy, Tz ***Hz,
+                  int i, int j, int k, int nI, int nJ, int nK,
+                  Tx *Hx_interp, Ty *Hy_interp, Tz *Hz_interp) {
     interpolateHx(Hx, i, j, k, nJ, nK, Hx_interp);
     interpolateHy(Hy, i, j, k, nI, nK, Hy_interp);
     interpolateHz(Hz, i, j, k, nI, nJ, Hz_interp);
