@@ -371,7 +371,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hx_interp;
-                interpolateTimeDomainHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
+                interpolateSplitFieldHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
 
                 // compute the errors
                 Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
@@ -394,7 +394,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hy_interp;
-                interpolateTimeDomainHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
+                interpolateSplitFieldHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
 
                 // compute the errors
                 Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
@@ -417,7 +417,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hz_interp;
-                interpolateTimeDomainHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
+                interpolateSplitFieldHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
 
                 // compute the errors
                 Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
