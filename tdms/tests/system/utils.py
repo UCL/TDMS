@@ -77,9 +77,9 @@ class HDF5File(dict):
 
     def matches(self, other: "HDF5File", rtol=1e-10) -> bool:
         """
-        Does this file match another. All arrays must be within a rtol
+        Does this file match another? All arrays must be within a rtol
         to the other, where rtol is the relative difference between the two
-        arrays
+        arrays.
         """
 
         for key, value in self.items():

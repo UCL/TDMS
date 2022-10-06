@@ -7,6 +7,12 @@ on:
   release:
   workflow_dispatch:
 
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: always.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Test - ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
@@ -42,7 +48,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw libomp python3
+          brew install fftw llvm
+          # Not striclty necessary to install llvm, because it comes in the
+          # MacOS runner images, but adding here means the brew --prefix
+          # command is guaranteed to work (even if the image is updated).
 
       - name: Install Python dependencies
         shell: bash
@@ -59,11 +68,13 @@ jobs:
         env:
           CXXFLAGS: -Werror
         run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON\
-           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}\
-           -DBUILD_TESTING=${{ matrix.build_testing }}\
-           -DOMP_ROOT=/usr/local/opt/llvm/ -DCXX_ROOT=/usr/local/opt/llvm \
+
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+           -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DOMP_ROOT=$(brew --prefix llvm) \
            -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
+
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
