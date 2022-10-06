@@ -102,10 +102,14 @@ TEST_CASE("E-field interpolation check") {
     double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
            ***Eyx = allocate3dmemory(Nx, Ny, Nz), ***Eyz = allocate3dmemory(Nx, Ny, Nz),
            ***Ezx = allocate3dmemory(Nx, Ny, Nz), ***Ezy = allocate3dmemory(Nx, Ny, Nz);
+    // setup for non-split field components
+    double ***Ex = allocate3dmemory(Nx, Ny, Nz),
+           ***Ey = allocate3dmemory(Nx, Ny, Nz),
+           ***Ez = allocate3dmemory(Nx, Ny, Nz);
     // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
-    double ***Ex_error = allocate3dmemory(Nx - 1, Ny, Nz),
-           ***Ey_error = allocate3dmemory(Nx, Ny - 1, Nz),
-           ***Ez_error = allocate3dmemory(Nx, Ny, Nz - 1);
+    double ***Ex_error = allocate3dmemory(Nx - 1, Ny, Nz), ***Ex_split_error = allocate3dmemory(Nx - 1, Ny, Nz),
+           ***Ey_error = allocate3dmemory(Nx, Ny - 1, Nz), ***Ey_split_error = allocate3dmemory(Nx, Ny - 1, Nz),
+           ***Ez_error = allocate3dmemory(Nx, Ny, Nz - 1), ***Ez_split_error = allocate3dmemory(Nx, Ny, Nz - 1);
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
@@ -123,12 +127,18 @@ TEST_CASE("E-field interpolation check") {
                 // and the other to be 0.
 
                 // E{x,y,z} offsets from cell centres are 0.5*D{x,y,z}
-                Exy[kk][jj][ii] = Ecomponent(cell_centre[0] + 0.5 * cellDims[0], cell_centre[1], cell_centre[2]);
+                double x_comp_value = Ecomponent(cell_centre[0] + 0.5 * cellDims[0], cell_centre[1], cell_centre[2]),
+                       y_comp_value = Ecomponent(cell_centre[0], cell_centre[1] + 0.5 * cellDims[1], cell_centre[2]),
+                       z_comp_value = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5 * cellDims[2]);
+                // assign component values
+                Ex[kk][jj][ii] = x_comp_value; Ey[kk][jj][ii] = y_comp_value; Ez[kk][jj][ii] = z_comp_value;
+                // split fields - use some wieghting that sums to one for the split cells
+                Exy[kk][jj][ii] = x_comp_value;
                 Exz[kk][jj][ii] = 0.;
-                Eyx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1] + 0.5 * cellDims[1], cell_centre[2]);
-                Eyz[kk][jj][ii] = 0.;
-                Ezx[kk][jj][ii] = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5 * cellDims[2]);
-                Ezy[kk][jj][ii] = 0.;
+                Eyx[kk][jj][ii] = y_comp_value * .5;
+                Eyz[kk][jj][ii] = y_comp_value * .5;
+                Ezx[kk][jj][ii] = z_comp_value * .25;
+                Ezy[kk][jj][ii] = z_comp_value * .75;
             }
         }
     }
@@ -150,11 +160,13 @@ TEST_CASE("E-field interpolation check") {
                 double Ex_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Ex_interp;
-                interpolateSplitFieldEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_interp);
+                double Ex_interp, Ex_split_interp;
+                interpolateEx(Ex, ii + 1, jj, kk, Nx, &Ex_interp);
+                interpolateSplitFieldEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_split_interp);
 
                 // compute the errors
                 Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
+                Ex_split_error[kk][jj][ii] = Ex_split_interp - Ex_exact;
             }
         }
     }
@@ -173,11 +185,13 @@ TEST_CASE("E-field interpolation check") {
                 double Ey_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Ey_interp;
-                interpolateSplitFieldEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_interp);
+                double Ey_interp, Ey_split_interp;
+                interpolateEy(Ey, ii, jj + 1, kk, Ny, &Ey_interp);
+                interpolateSplitFieldEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_split_interp);
 
                 // compute the errors
                 Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
+                Ey_split_error[kk][jj][ii] = Ey_split_interp - Ey_exact;
             }
         }
     }
@@ -196,11 +210,13 @@ TEST_CASE("E-field interpolation check") {
                 double Ez_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Ez_interp;
-                interpolateSplitFieldEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_interp);
+                double Ez_interp, Ez_split_interp;
+                interpolateEz(Ez, ii, jj, kk + 1, Nz, &Ez_interp);
+                interpolateSplitFieldEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_split_interp);
 
                 // compute the errors
                 Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;
+                Ez_split_error[kk][jj][ii] = Ez_split_interp - Ez_exact;
             }
         }
     }
@@ -212,54 +228,76 @@ TEST_CASE("E-field interpolation check") {
     delete Eyz;
     delete Ezx;
     delete Ezy;
+    delete Ex;
+    delete Ey;
+    delete Ez;
 
-    // compute Frobenius norms
-    double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1);
-    double Ey_fro_err = Frobenius(Ey_error, Nz, Ny - 1, Nx);
-    double Ez_fro_err = Frobenius(Ez_error, Nz - 1, Ny, Nx);
+    // compute error-matrix Frobenius norms
+    double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1),
+           Ey_fro_err = Frobenius(Ey_error, Nz, Ny - 1, Nx),
+           Ez_fro_err = Frobenius(Ez_error, Nz - 1, Ny, Nx),
+           Ex_split_fro_err = Frobenius(Ex_split_error, Nz, Ny, Nx - 1),
+           Ey_split_fro_err = Frobenius(Ey_split_error, Nz, Ny - 1, Nx),
+           Ez_split_fro_err = Frobenius(Ez_split_error, Nz - 1, Ny, Nx);
 
     // compute max-slice errors
-    double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.;
+    double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.,
+           Ex_split_ms_err = 0., Ey_split_ms_err = 0., Ez_split_ms_err = 0.;
     // Ex-slices
     for (int jj = 0; jj < Ny; jj++) {
         for (int kk = 0; kk < Nz; kk++) {
             // "slices" might not constitute sequential memory
             // as such, make a new array for safety
-            double jk_errors[Nx - 1];
+            double jk_errors[Nx - 1], jk_split_errors[Nx -1];
             for (int ii = 0; ii < Nx - 1; ii++) {
                 jk_errors[ii] = Ex_error[kk][jj][ii];
+                jk_split_errors[ii] = Ex_split_error[kk][jj][ii];
             }
             // compute norm-error of this slice
-            double jk_slice_error = Euclidean(jk_errors, Nx - 1);
+            double jk_slice_error = Euclidean(jk_errors, Nx - 1),
+                   jk_split_slice_error = Euclidean(jk_split_errors, Nx - 1);
             // if this exceeds the current recorded maximum error, record this
             if (jk_slice_error > Ex_ms_err) {
                 Ex_ms_err = jk_slice_error;
+            }
+            if (jk_split_slice_error > Ex_split_ms_err) {
+                Ex_split_ms_err = jk_split_slice_error;
             }
         }
     }
     // Ey-slices
     for (int ii = 0; ii < Nx; ii++) {
         for (int kk = 0; kk < Nz; kk++) {
-            double ik_errors[Ny - 1];
+            double ik_errors[Ny - 1], ik_split_errors[Ny - 1];
             for (int jj = 0; jj < Ny - 1; jj++) {
                 ik_errors[jj] = Ey_error[kk][jj][ii];
+                ik_split_errors[jj] = Ey_split_error[kk][jj][ii];
             }
-            double ik_slice_error = Euclidean(ik_errors, Ny - 1);
+            double ik_slice_error = Euclidean(ik_errors, Ny - 1),
+                   ik_split_slice_error = Euclidean(ik_split_errors, Ny - 1);
             if (ik_slice_error > Ey_ms_err) {
                 Ey_ms_err = ik_slice_error;
+            }
+            if (ik_split_slice_error > Ey_split_ms_err) {
+                Ey_split_ms_err = ik_split_slice_error;
             }
         }
     }
     // Ez-slices
     for (int ii = 0; ii < Nx; ii++) {
         for (int jj = 0; jj < Ny; jj++) {
-            double ij_errors[Nz - 1];
+            double ij_errors[Nz - 1], ij_split_errors[Nz - 1];
             for (int kk = 0; kk < Nz - 1; kk++) {
                 ij_errors[kk] = Ez_error[kk][jj][ii];
+                ij_split_errors[kk] = Ez_split_error[kk][jj][ii];
             }
-            double ij_slice_error = Euclidean(ij_errors, Nz - 1);
+            double ij_slice_error = Euclidean(ij_errors, Nz - 1),
+                   ij_split_slice_error = Euclidean(ij_split_errors, Nz - 1);
             if (ij_slice_error > Ez_ms_err) {
                 Ez_ms_err = ij_slice_error;
+            }
+            if (ij_split_slice_error > Ez_split_ms_err) {
+                Ez_split_ms_err = ij_split_slice_error;
             }
         }
     }
@@ -268,11 +306,17 @@ TEST_CASE("E-field interpolation check") {
     CHECK(Ex_fro_err <= Ex_fro_tol + acc_tol);
     CHECK(Ey_fro_err <= Ey_fro_tol + acc_tol);
     CHECK(Ez_fro_err <= Ez_fro_tol + acc_tol);
+    CHECK(Ex_split_fro_err <= Ex_fro_tol + acc_tol);
+    CHECK(Ey_split_fro_err <= Ey_fro_tol + acc_tol);
+    CHECK(Ez_split_fro_err <= Ez_fro_tol + acc_tol);
 
     // check max-slice errors are acceptable
     CHECK(Ex_ms_err <= Ex_ms_tol + acc_tol);
     CHECK(Ey_ms_err <= Ey_ms_tol + acc_tol);
     CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
+    CHECK(Ex_split_ms_err <= Ex_ms_tol + acc_tol);
+    CHECK(Ey_split_ms_err <= Ey_ms_tol + acc_tol);
+    CHECK(Ez_split_ms_err <= Ez_ms_tol + acc_tol);
 
     // print information to the debugger/log
     cout << " Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << endl;
@@ -281,6 +325,13 @@ TEST_CASE("E-field interpolation check") {
     cout << "    y      | " << Ey_fro_err << " : (" << Ey_fro_tol;
     cout << ") | " << Ey_ms_err << " : (" << Ey_ms_tol << ")" << endl;
     cout << "    z      | " << Ez_fro_err << " : (" << Ez_fro_tol;
+    cout << ") | " << Ez_ms_err << " : (" << Ez_ms_tol << ")" << endl;
+    cout << " [Split] Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << endl;
+    cout << "        x          | " << Ex_fro_err << " : (" << Ex_fro_tol;
+    cout << ") | " << Ex_ms_err << " : (" << Ex_ms_tol << ")" << endl;
+    cout << "        y          | " << Ey_fro_err << " : (" << Ey_fro_tol;
+    cout << ") | " << Ey_ms_err << " : (" << Ey_ms_tol << ")" << endl;
+    cout << "        z          | " << Ez_fro_err << " : (" << Ez_fro_tol;
     cout << ") | " << Ez_ms_err << " : (" << Ez_ms_tol << ")" << endl;
 }
 
@@ -312,14 +363,18 @@ TEST_CASE("H-field interpolation check") {
     int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]), Nz = round(extent_z / cellDims[2]);
     cout << "(Nx, Ny, Nz) = (" << Nx << "," << Ny << "," << Nz << ")" << endl;
 
-    // setup the "split" E-field components
+    // setup the "split" H-field components
     double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
            ***Hyx = allocate3dmemory(Nx, Ny, Nz), ***Hyz = allocate3dmemory(Nx, Ny, Nz),
            ***Hzx = allocate3dmemory(Nx, Ny, Nz), ***Hzy = allocate3dmemory(Nx, Ny, Nz);
+    // setup the non-split field components
+    double ***Hx = allocate3dmemory(Nx, Ny, Nz),
+           ***Hy = allocate3dmemory(Nx, Ny, Nz),
+           ***Hz = allocate3dmemory(Nx, Ny, Nz);
     // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
-    double ***Hx_error = allocate3dmemory(Nx, Ny - 1, Nz - 1),
-           ***Hy_error = allocate3dmemory(Nx - 1, Ny, Nz - 1),
-           ***Hz_error = allocate3dmemory(Nx - 1, Ny - 1, Nz);
+    double ***Hx_error = allocate3dmemory(Nx, Ny - 1, Nz - 1), ***Hx_split_error = allocate3dmemory(Nx, Ny - 1, Nz - 1),
+           ***Hy_error = allocate3dmemory(Nx - 1, Ny, Nz - 1), ***Hy_split_error = allocate3dmemory(Nx - 1, Ny, Nz - 1),
+           ***Hz_error = allocate3dmemory(Nx - 1, Ny - 1, Nz), ***Hz_split_error = allocate3dmemory(Nx - 1, Ny - 1, Nz);
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
@@ -337,18 +392,25 @@ TEST_CASE("H-field interpolation check") {
                 // and the other to be 0.
 
                 // H{x,y,z} offsets from cell centres are 0.5 * D{!{x,y,z}} IE, 0.5 away from the centre in the two directions that are _not_ the field component
-                Hxy[kk][jj][ii] = Hcomponent(cell_centre[0],
-                                             cell_centre[1] + 0.5 * cellDims[1],
-                                             cell_centre[2] + 0.5 * cellDims[2]);
+                double x_comp_value = Hcomponent(cell_centre[0],
+                                                 cell_centre[1] + 0.5 * cellDims[1],
+                                                 cell_centre[2] + 0.5 * cellDims[2]),
+                       y_comp_value = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
+                                                 cell_centre[1],
+                                                 cell_centre[2] + 0.5 * cellDims[2]),
+                       z_comp_value = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
+                                                 cell_centre[1] + 0.5 * cellDims[1],
+                                                 cell_centre[2]);
+                // assign fields. For split field, use weightings that sum to unity
+                Hx[kk][jj][ii] = x_comp_value;
+                Hy[kk][jj][ii] = y_comp_value;
+                Hz[kk][jj][ii] = z_comp_value;
+                Hxy[kk][jj][ii] = x_comp_value;
                 Hxz[kk][jj][ii] = 0.;
-                Hyx[kk][jj][ii] = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
-                                             cell_centre[1],
-                                             cell_centre[2] + 0.5 * cellDims[2]);
-                Hyz[kk][jj][ii] = 0.;
-                Hzx[kk][jj][ii] = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
-                                             cell_centre[1] + 0.5 * cellDims[1],
-                                             cell_centre[2]);
-                Hzy[kk][jj][ii] = 0.;
+                Hyx[kk][jj][ii] = .125 * y_comp_value;
+                Hyz[kk][jj][ii] = .875 * y_comp_value;
+                Hzx[kk][jj][ii] = .0625 * z_comp_value;
+                Hzy[kk][jj][ii] = .9375 * z_comp_value;
             }
         }
     }
@@ -370,11 +432,13 @@ TEST_CASE("H-field interpolation check") {
                 double Hx_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Hx_interp;
-                interpolateSplitFieldHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
+                double Hx_interp, Hx_split_interp;
+                interpolateHx(Hx, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
+                interpolateSplitFieldHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_split_interp);
 
                 // compute the errors
                 Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
+                Hx_split_error[kk][jj][ii] = Hx_split_interp - Hx_exact;
             }
         }
     }
@@ -393,11 +457,13 @@ TEST_CASE("H-field interpolation check") {
                 double Hy_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Hy_interp;
-                interpolateSplitFieldHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
+                double Hy_interp, Hy_split_interp;
+                interpolateHy(Hy, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
+                interpolateSplitFieldHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_split_interp);
 
                 // compute the errors
                 Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
+                Hy_split_error[kk][jj][ii] = Hy_split_interp - Hy_exact;
             }
         }
     }
@@ -416,11 +482,13 @@ TEST_CASE("H-field interpolation check") {
                 double Hz_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
 
                 // interpolate to the centre of this cell
-                double Hz_interp;
-                interpolateSplitFieldHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
+                double Hz_interp, Hz_split_interp;
+                interpolateHz(Hz, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
+                interpolateSplitFieldHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_split_interp);
 
                 // compute the errors
                 Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
+                Hz_split_error[kk][jj][ii] = Hz_split_interp - Hz_exact;
             }
         }
     }
@@ -432,20 +500,33 @@ TEST_CASE("H-field interpolation check") {
     delete Hyz;
     delete Hzx;
     delete Hzy;
+    delete Hx;
+    delete Hy;
+    delete Hz;
 
     // compute Frobenius norms
-    double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx);
-    double Hy_fro_err = Frobenius(Hy_error, Nz - 1, Ny, Nx - 1);
-    double Hz_fro_err = Frobenius(Hz_error, Nz, Ny - 1, Nx - 1);
+    double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx),
+           Hy_fro_err = Frobenius(Hy_error, Nz - 1, Ny, Nx - 1),
+           Hz_fro_err = Frobenius(Hz_error, Nz, Ny - 1, Nx - 1),
+           Hx_split_fro_err = Frobenius(Hx_split_error, Nz - 1, Ny - 1, Nx),
+           Hy_split_fro_err = Frobenius(Hy_split_error, Nz - 1, Ny, Nx - 1),
+           Hz_split_fro_err = Frobenius(Hz_split_error, Nz, Ny - 1, Nx - 1);
 
     // check Frobenius errors are acceptable
     CHECK(Hx_fro_err <= Hx_fro_tol + acc_tol);
     CHECK(Hy_fro_err <= Hy_fro_tol + acc_tol);
     CHECK(Hz_fro_err <= Hz_fro_tol + acc_tol);
+    CHECK(Hx_split_fro_err <= Hx_fro_tol + acc_tol);
+    CHECK(Hy_split_fro_err <= Hy_fro_tol + acc_tol);
+    CHECK(Hz_split_fro_err <= Hz_fro_tol + acc_tol);
 
     // print information to the debugger/log
     cout << " Component | Frobenius err. : (  benchmark   )" << endl;
     cout << "    x      | " << Hx_fro_err << " : (" << Hx_fro_tol << ")" << endl;
     cout << "    y      | " << Hy_fro_err << " : (" << Hy_fro_tol << ")" << endl;
     cout << "    z      | " << Hz_fro_err << " : (" << Hz_fro_tol << ")" << endl;
+    cout << " [Split] Component | Frobenius err. : (  benchmark   )" << endl;
+    cout << "        x          | " << Hx_split_fro_err << " : (" << Hx_fro_tol << ")" << endl;
+    cout << "        y          | " << Hy_split_fro_err << " : (" << Hy_fro_tol << ")" << endl;
+    cout << "        z          | " << Hz_split_fro_err << " : (" << Hz_fro_tol << ")" << endl;
 }

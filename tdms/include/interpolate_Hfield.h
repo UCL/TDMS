@@ -186,7 +186,7 @@ void interpolateHx(T ***Hx, int i, int j, int k, int nJ, int nK, T *Hx_interp) {
  * @param[out] Hy Interpolated value of the Hy field at centre of Yee cell i,j,k
  */
 template <typename T>
-void interpolateSplitFieldHy(T ***Hxy, T ***Hxz, int i, int j, int k, int nI, int nK, T *Hy) {
+void interpolateSplitFieldHy(T ***Hyx, T ***Hyz, int i, int j, int k, int nI, int nK, T *Hy) {
     // Associations: a = y, b = z, c = x
 
     // determine the x-direction scheme
@@ -317,7 +317,7 @@ void interpolateHy(T ***Hy, int i, int j, int k, int nI, int nK, T *Hy_interp) {
  * @param[out] Hz Interpolated value of the Hz field at centre of Yee cell i,j,k
  */
 template <typename T>
-void interpolateSplitFieldHz(T ***Hxy, T ***Hxz, int i, int j, int k, int nI, int nJ, T *Hz) {
+void interpolateSplitFieldHz(T ***Hzx, T ***Hzy, int i, int j, int k, int nI, int nJ, T *Hz) {
     // Associations: a = z, b = x, c = y
 
     // determine the x-direction scheme
@@ -382,7 +382,7 @@ void interpolateSplitFieldHz(T ***Hxy, T ***Hxz, int i, int j, int k, int nI, in
  * @param[out] Hz_interp Interpolated value of the Hz field at centre of Yee cell i,j,k
  */
 template <typename T>
-void interpolateHz(T ***Hx, int i, int j, int k, int nJ, int nK, T *Hz_interp) {
+void interpolateHz(T ***Hz, int i, int j, int k, int nI, int nJ, T *Hz_interp) {
     // Associations: a = z, b = x, c = y
 
     // determine the x-direction scheme
