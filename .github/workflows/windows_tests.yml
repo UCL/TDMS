@@ -87,23 +87,17 @@ jobs:
         run: |
           cp Release/* .
 
-      # TODO: simplify this once MATLAB dependency is removed and mexFunction is replaced
-      - name: Run PSTD TDMS system tests
-        if: matrix.derivative_type == 'PS'
+      - name: Run CLI test
+        # For Windows, we skip the main system tests and just test the CLI
+        # note that if we decide to turn these back on, we need to split into
+        # two test steps and guard each one based on
+        # if: matrix.derivative_type == 'PS'
+        # or 'FD', and filter the pytest labels accordingly
+        # pytest <blah> -m fdtd_build_only
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
           export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
           export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x -m "not fdtd_build_only"
-
-      - name: Run FDTD TDMS system tests
-        if: matrix.derivative_type == 'FD'
-        working-directory: ${{runner.workspace}}/build
-        shell: bash
-        run: |
-          export OMP_NUM_THREADS=1
-          export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
-          export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x -m fdtd_build_only
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x 
