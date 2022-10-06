@@ -151,7 +151,7 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ex_interp;
-                interpolateTimeDomainEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_interp);
+                interpolateSplitFieldEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_interp);
 
                 // compute the errors
                 Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
@@ -174,7 +174,7 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ey_interp;
-                interpolateTimeDomainEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_interp);
+                interpolateSplitFieldEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_interp);
 
                 // compute the errors
                 Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
@@ -197,7 +197,7 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ez_interp;
-                interpolateTimeDomainEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_interp);
+                interpolateSplitFieldEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_interp);
 
                 // compute the errors
                 Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;

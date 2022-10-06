@@ -3,12 +3,13 @@
 #include "interpolation_methods.h"
 
 using namespace std;
-
-void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int nI, double *Ex) {
+/*
+template<typename T>
+void interpolateSplitFieldEx(T ***Exy, T ***Exz, int i, int j, int k, int nI, T *Ex) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
-    double interp_data[8];
+    T interp_data[8];
 
     // now fill the interpolation data
     // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -19,11 +20,12 @@ void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, 
     // now run the interpolation scheme and place the result into the output
     *Ex = scheme.interpolate(interp_data);
 }
-void interpolateFreqDomainEx(complex<double> ***Ex, int i, int j, int k, int nI, complex<double> *Ex_interp) {
+template<typename T>
+void interpolateEx(T ***Ex, int i, int j, int k, int nI, T *Ex_interp) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
-    std::complex<double> interp_data[8];
+    T interp_data[8];
 
     // now fill the interpolation data
     // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -34,7 +36,7 @@ void interpolateFreqDomainEx(complex<double> ***Ex, int i, int j, int k, int nI,
     *Ex_interp = scheme.interpolate(interp_data);
 }
 
-void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int nJ, double *Ey) {
+void interpolateSplitFieldEy(double ***Eyx, double ***Eyz, int i, int j, int k, int nJ, double *Ey) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
@@ -49,7 +51,7 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
     // now run the interpolation scheme and place the result into the output
     *Ey = scheme.interpolate(interp_data);
 }
-void interpolateFreqDomainEy(complex<double> ***Ey, int i, int j, int k, int nJ, complex<double> *Ey_interp) {
+void interpolateEy(complex<double> ***Ey, int i, int j, int k, int nJ, complex<double> *Ey_interp) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
@@ -65,7 +67,7 @@ void interpolateFreqDomainEy(complex<double> ***Ey, int i, int j, int k, int nJ,
     *Ey_interp = scheme.interpolate(interp_data);
 }
 
-void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int nK, double *Ez) {
+void interpolateSplitFieldEz(double ***Ezx, double ***Ezy, int i, int j, int k, int nK, double *Ez) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
@@ -80,7 +82,7 @@ void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, 
     // now run the interpolation scheme and place the result into the output
     *Ez = scheme.interpolate(interp_data);
 }
-void interpolateTimeDomainEz(complex<double> ***Ez, int i, int j, int k, int nK, complex<double> *Ez_interp) {
+void interpolateEz(complex<double> ***Ez, int i, int j, int k, int nK, complex<double> *Ez_interp) {
     // determine the interpolation scheme to use
     const interpScheme &scheme = best_interp_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
@@ -96,18 +98,19 @@ void interpolateTimeDomainEz(complex<double> ***Ez, int i, int j, int k, int nK,
     *Ez_interp = scheme.interpolate(interp_data);
 }
 
-void interpolateTimeDomainEField(double ***Exy, double ***Exz, double ***Eyx,
-                                 double ***Eyz, double ***Ezx, double ***Ezy,
-                                 int i, int j, int k, int nI, int nJ, int nK,
-                                 double *Ex, double *Ey, double *Ez) {
-    interpolateTimeDomainEx(Exy, Exz, i, j, k, nI, Ex);
-    interpolateTimeDomainEy(Eyx, Eyz, i, j, k, nJ, Ey);
-    interpolateTimeDomainEz(Ezx, Ezy, i, j, k, nK, Ez);
+void interpolateSplitFieldE(double ***Exy, double ***Exz, double ***Eyx,
+                            double ***Eyz, double ***Ezx, double ***Ezy,
+                            int i, int j, int k, int nI, int nJ, int nK,
+                            double *Ex, double *Ey, double *Ez) {
+    interpolateSplitFieldEx(Exy, Exz, i, j, k, nI, Ex);
+    interpolateSplitFieldEy(Eyx, Eyz, i, j, k, nJ, Ey);
+    interpolateSplitFieldEz(Ezx, Ezy, i, j, k, nK, Ez);
 }
-void interpolateFreqDomainEField(complex<double> ***Ex, complex<double> ***Ey, complex<double> ***Ez,
-                                 int i, int j, int k, int nI, int nJ, int nK,
-                                 complex<double> *Ex_interp, complex<double> *Ey_interp, complex<double> *Ez_interp) {
-    interpolateFreqDomainEx(Ex, i, j, k, nI, Ex_interp);
-    interpolateFreqDomainEy(Ey, i, j, k, nJ, Ey_interp);
-    interpolateTimeDomainEz(Ez, i, j, k, nK, Ez_interp);
+void interpolateE(complex<double> ***Ex, complex<double> ***Ey, complex<double> ***Ez,
+                  int i, int j, int k, int nI, int nJ, int nK,
+                  complex<double> *Ex_interp, complex<double> *Ey_interp, complex<double> *Ez_interp) {
+    interpolateEx(Ex, i, j, k, nI, Ex_interp);
+    interpolateEy(Ey, i, j, k, nJ, Ey_interp);
+    interpolateEz(Ez, i, j, k, nK, Ez_interp);
 }
+*/
