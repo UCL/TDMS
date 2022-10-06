@@ -92,7 +92,7 @@ jobs:
           export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
           pytest ${GITHUB_WORKSPACE}/tdms/tests/system/test_cli.py -s -x -m "not fdtd_build_only"
 
-      - name: Run PSTD TDMS system tests
+      - name: Run FDTD TDMS system tests
         if: matrix.derivative_type == 'FD'
         working-directory: ${{runner.workspace}}/build
         shell: bash
