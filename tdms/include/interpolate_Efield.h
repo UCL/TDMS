@@ -4,9 +4,6 @@
  * @brief Template functions for interpolating the electric field.
  */
 #pragma once
-
-#include <complex>
-
 #include "interpolation_methods.h"
 
 /**
