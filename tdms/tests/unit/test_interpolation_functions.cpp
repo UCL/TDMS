@@ -4,17 +4,18 @@
  * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
  */
 #include <algorithm>
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 #include <complex>
-#include <iomanip>
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "globals.h"
 #include "interpolation_methods.h"
 
-using namespace std;
 using namespace tdms_math_constants;
+using Catch::Approx;
+using namespace std;
 
 /**
  * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
@@ -22,33 +23,29 @@ using namespace tdms_math_constants;
  * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
 TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact") {
-    cout << "===== Testing exact cubic interpolation =====" << endl;
+    SPDLOG_INFO("===== Testing exact cubic interpolation =====");
     // equidistant points
     double x[] = {0., 1., 2., 3.};
     // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
     // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
     double tol = 4e1 * __DBL_EPSILON__;
-    // array that will be passed to Interp_scheme::interpolate
-    double interp_data[4];
 
     // constant field
-    double c0 = 3.1415;
-    interp_data[0] = c0;
-    interp_data[1] = c0;
-    interp_data[2] = c0;
-    interp_data[3] = c0;
+    double c0 = M_PI;
+    // array that will be passed to Interp_scheme::interpolate
+    double interp_data[4] = {c0, c0, c0, c0};
 
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
 
     // check old interp methods
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
-    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
+    CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
+    CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
+    CHECK(v34 == Approx(CBLst.interpolate(interp_data)).epsilon(tol));
 
     // linear
     double c1 = -2.7182818;
@@ -65,13 +62,13 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v34 += c1 * (x[3] + x[2]) / 2.;
 
     // check old interp methods
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
-    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
+    CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
+    CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
+    CHECK(v34 == Approx(CBLst.interpolate(interp_data)).epsilon(tol));
 
     // quadratic
     double c2 = 9.81;
@@ -88,13 +85,13 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
     // check old interp methods
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
-    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
+    CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
+    CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
+    CHECK(v34 == Approx(CBLst.interpolate(interp_data)).epsilon(tol));
 
     // cubic
     double c3 = 4.2;
@@ -111,13 +108,13 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
     // check old interp methods
-    CHECK(abs(v12 - interp2(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v23 - interp1(v1, v2, v3, v4)) <= tol);
-    CHECK(abs(v34 - interp3(v1, v2, v3, v4)) <= tol);
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
-    CHECK(abs(v12 - CBFst.interpolate(interp_data)) <= tol);
-    CHECK(abs(v23 - CBMid.interpolate(interp_data)) <= tol);
-    CHECK(abs(v34 - CBLst.interpolate(interp_data)) <= tol);
+    CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
+    CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
+    CHECK(v34 == Approx(CBLst.interpolate(interp_data)).epsilon(tol));
 }
 
 /**
@@ -126,7 +123,7 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
  * Note - the coefficients are not required to sum to unity!
  */
 TEST_CASE("bandlimited_interpolation: check that the interpolation constant values all sum to the same value") {
-    cout << "===== Testing BLi coefficient sum =====" << endl;
+    SPDLOG_INFO("===== Testing BLi coefficient sum =====");
     /* Tolerance to accept imprecision to
     max. 16 FLOPs implies max discrepency of 8*_DBL_EPSILON__ error
     (8 additions, error in each number max __DBL_EPSILON__).
@@ -161,6 +158,7 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
  * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
  * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
  * - pulse function             : range 0,1         : max. element-wise error (MATLAB) 4.87599933e-04
+ * Error values produced from benchmark_test_interpolation_functions.m
  *
  * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, and determine whether the order of magnitude of the errors is the same.
  *
@@ -173,16 +171,16 @@ TEST_CASE("bandlimited_interpolation: check that the interpolation constant valu
  * - The constant function 1    : range 0,1         : max. element-wise error (MATLAB) 2.82944733e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: constant function") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== (real valued) BLi: constant function test case =====" << endl;
+    SPDLOG_INFO("===== (real valued) BLi: constant function test case =====");
     int nSamples = 100;                         // number of "Yee cells" in this dimension
     double const_fn_data[nSamples];             // function data (only need 8 data points, but simulate 100 cells)
-    fill_n(const_fn_data, nSamples, 1);         // initalise to f(x)=1
+    fill_n(const_fn_data, nSamples, 1);    // initalise to f(x)=1
     double const_fn_interp[nSamples];           // interpolated values
     double const_fn_errors[nSamples];           // error in interpolated values
     double const_fn_max_error;                  // maximum error
 
-    double const_fn_MATLAB_error = 2.82944733e-04;  // the MATLAB error
+    // hardcoding the MATLAB error (benchmark_test_interpolation_functions.m)
+    double const_fn_MATLAB_error = 2.82944733e-04;  
     
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
     // Also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i
@@ -213,7 +211,7 @@ TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(const_fn_max_error <= const_fn_MATLAB_error);
     // report test results
-    cout << "Error: " << const_fn_max_error << " | Benchmark: " << const_fn_MATLAB_error << endl;
+    SPDLOG_INFO("Error: {0:.8e} | Benchmark: {1:.8e}", const_fn_max_error, const_fn_MATLAB_error);
 }
 
 inline double s2pi(double x) {
@@ -225,8 +223,7 @@ inline double s2pi(double x) {
  * - sin(2\pi x)                : range 0,1         : max. element-wise error (MATLAB) 2.63468327e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== (real valued) BLi: sin(2pi x) test case =====" << endl;
+    SPDLOG_INFO("===== (real valued) BLi: sin(2pi x) test case =====");
     int nSamples = 100;                             // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);   // spacing between Yee cell centres
     double xi[nSamples];                            // positions of the "field components"
@@ -237,7 +234,8 @@ TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     double f_errors[nSamples];                      // error at xi5
     double max_error;                               // maximum error across xi5 points
 
-    double sin_MATLAB_error = 2.63468327e-04;       // the MATLAB error
+    // hardcoding the MATLAB error (benchmark_test_interpolation_functions.m)
+    double sin_MATLAB_error = 2.63468327e-04;
 
     // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
     for (int i = 0; i < nSamples; i++)
@@ -281,7 +279,7 @@ TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < sin_MATLAB_error);
     // report test results
-    cout << "Error: " << max_error << " | Benchmark: " << sin_MATLAB_error << endl;
+    SPDLOG_INFO("Error: {0:.8e} | Benchmark: {1:.8e}", max_error, sin_MATLAB_error);
 }
 
 /**
@@ -314,8 +312,7 @@ inline double pulse(double x) {
  * - pulse function             : range 0,1         : max. element-wise error (MATLAB) 4.87599933e-04
  */
 TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== (real valued) BLi: compact pulse test case =====" << endl;
+    SPDLOG_INFO("===== (real valued) BLi: compact pulse test case =====");
     int nSamples = 100;                           // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1); // spacing between Yee cell centres
     double xi[nSamples];                          // positions of the "field components"
@@ -326,7 +323,8 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     double f_errors[nSamples];                    // error at xi5
     double max_error;                             // maximum error across xi5 points
 
-    double pulse_MATLAB_error = 4.87599933e-04;   // the MATLAB error
+    // hardcoding the MATLAB error (benchmark_test_interpolation_functions.m)
+    double pulse_MATLAB_error = 4.87599933e-04;
 
     // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
     for (int i = 0; i < nSamples; i++)
@@ -368,7 +366,7 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < pulse_MATLAB_error);
     // report test results
-    cout << "Error: " << max_error << " | Benchmark: " << pulse_MATLAB_error << endl;
+    SPDLOG_INFO("Error: {0:.8e} | Benchmark: {1:.8e}", max_error, pulse_MATLAB_error);
 }
 
 /**
@@ -381,20 +379,20 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
  * Interoplation will then be tested against over the range [0,1], the max element-wise error (by absolute value) will be determined. We will then check that this is of the same order of magnitude as the error produced by MATLAB, 5.35317432e-04.
  */
 TEST_CASE("(complex-valued) Band limited interpolation") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== (complex valued) BLi: complex function test case =====" << endl;
+    SPDLOG_INFO("===== (complex valued) BLi: complex function test case =====");
     int nSamples = 100;                            // number of "Yee cells" in this dimension
     double spacing = 1. / (double)(nSamples - 1);  // spacing between Yee cell centres
     double xi[nSamples];                           // positions of the "field components"
     double xi5[nSamples];                          // positions of the "Yee cell" centres, xi5[i] = centre of cell i
     
-    complex<double> f_data[nSamples];              // constant function data at xi
-    complex<double> f_exact[nSamples];             // constant function exact values at xi5
-    complex<double> f_interp[nSamples];            // interpolated values at xi5
+    complex<double> f_data[nSamples];         // constant function data at xi
+    complex<double> f_exact[nSamples];        // constant function exact values at xi5
+    complex<double> f_interp[nSamples];       // interpolated values at xi5
     double f_abs_errors[nSamples];                 // error at xi5
 
     double max_error;                              // maximum error across xi5 points
-    double MATLAB_error = 5.35317432e-04;          // the MATLAB error
+    // hardcoding the MATLAB error (benchmark_test_interpolation_functions.m)
+    double MATLAB_error = 5.35317432e-04;
 
     // setup the sample points, Yee cell centres, and function values (for sampling and exactness)
     for (int i = 0; i < nSamples; i++) {
@@ -433,5 +431,5 @@ TEST_CASE("(complex-valued) Band limited interpolation") {
     // compare absolute error - flag (and fail, but less harshly) if we are doing worse than we expect (but are close)
     CHECK(max_error < MATLAB_error);
     // report test results
-    cout << "Error: " << max_error << " | Benchmark: " << MATLAB_error << endl;
+    SPDLOG_INFO("Error: {0:.8e} | Benchmark {1:.8e}", max_error, MATLAB_error);
 }

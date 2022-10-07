@@ -6,11 +6,9 @@
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "interpolation_methods.h"
-
-using namespace std;
 
 // Computes the 2-norm of the vector v from buffer start to buffer end
 inline double norm(double *v, int end, int start = 0) {
@@ -50,7 +48,7 @@ int orderOfMagnitude(double x) {
  * - The order of the magnitude (of BOTH) errors is the same as that obtained from MATLAB (for validation reasons)
  */
 TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
-    cout << "===== Benchmarking BLi against cubic interpolation =====" << endl;
+    SPDLOG_INFO("===== Benchmarking BLi against cubic interpolation =====");
     // number of cell sizes to test at
     const int n_trials = 4;
     // Yee cell sizes to test across

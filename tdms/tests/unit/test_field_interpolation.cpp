@@ -5,17 +5,10 @@
  */
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
-#include <iomanip>
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "interpolate_Efield.h"
 #include "interpolate_Hfield.h"
-
-using std::cout;
-using std::fixed;
-using std::scientific;
-using std::setprecision;
-using std::endl;
 
 /* Overview of Tests
 
@@ -29,7 +22,7 @@ All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over
 */
 
 // computes the Frobenius norm of a 3d-array (or pointer thereto)
-inline double Frobenius(double ***M, int d1, int d2, int d3) {
+inline double frobenius(double ***M, int d1, int d2, int d3) {
     double norm_val = 0.;
     for (int i1 = 0; i1 < d1; i1++) {
         for (int i2 = 0; i2 < d2; i2++) {
@@ -41,7 +34,7 @@ inline double Frobenius(double ***M, int d1, int d2, int d3) {
     return sqrt(norm_val);
 }
 // computes the Euclidean norm of a 1d-array (or pointer thereto)
-inline double Euclidean(double *v, int end, int start = 0) {
+inline double euclidean(double *v, int end, int start = 0) {
     double norm_val = 0.;
     for (int i = start; i < end; i++) {
         norm_val += v[i] * v[i];
@@ -79,9 +72,9 @@ inline double ***allocate3dmemory(int nI, int nJ, int nK) {
  * We test both the Fro- and slice-norm metrics, since interpolation only happens along one axis
  */
 TEST_CASE("E-field interpolation check") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== Testing E-field BLi =====" << endl;
+    SPDLOG_INFO("===== Testing E-field BLi =====");
     // error tolerance, based on MATLAB performance
+    // script: benchmark_test_field_interpolation_H.m
     double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
     double Ey_fro_tol = 7.8295329699969822e-03, Ey_ms_tol = 7.5320765734192925e-04;
     double Ez_fro_tol = 7.5650677900775624e-03, Ez_ms_tol = 1.3131049239745484e-03;
@@ -96,7 +89,7 @@ TEST_CASE("E-field interpolation check") {
     // The number of cells in each direction is then 16 = 4/0.25, 40 = 4/0.1, 80 = 4/0.05.
     // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
     int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]), Nz = round(extent_z / cellDims[2]);
-    cout << "(Nx, Ny, Nz) = (" << Nx << "," << Ny << "," << Nz << ")" << endl;
+    SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
     // setup the "split" E-field components
     double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
@@ -233,12 +226,12 @@ TEST_CASE("E-field interpolation check") {
     delete Ez;
 
     // compute error-matrix Frobenius norms
-    double Ex_fro_err = Frobenius(Ex_error, Nz, Ny, Nx - 1),
-           Ey_fro_err = Frobenius(Ey_error, Nz, Ny - 1, Nx),
-           Ez_fro_err = Frobenius(Ez_error, Nz - 1, Ny, Nx),
-           Ex_split_fro_err = Frobenius(Ex_split_error, Nz, Ny, Nx - 1),
-           Ey_split_fro_err = Frobenius(Ey_split_error, Nz, Ny - 1, Nx),
-           Ez_split_fro_err = Frobenius(Ez_split_error, Nz - 1, Ny, Nx);
+    double Ex_fro_err = frobenius(Ex_error, Nz, Ny, Nx - 1),
+           Ey_fro_err = frobenius(Ey_error, Nz, Ny - 1, Nx),
+           Ez_fro_err = frobenius(Ez_error, Nz - 1, Ny, Nx),
+           Ex_split_fro_err = frobenius(Ex_split_error, Nz, Ny, Nx - 1),
+           Ey_split_fro_err = frobenius(Ey_split_error, Nz, Ny - 1, Nx),
+           Ez_split_fro_err = frobenius(Ez_split_error, Nz - 1, Ny, Nx);
 
     // compute max-slice errors
     double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.,
@@ -254,8 +247,8 @@ TEST_CASE("E-field interpolation check") {
                 jk_split_errors[ii] = Ex_split_error[kk][jj][ii];
             }
             // compute norm-error of this slice
-            double jk_slice_error = Euclidean(jk_errors, Nx - 1),
-                   jk_split_slice_error = Euclidean(jk_split_errors, Nx - 1);
+            double jk_slice_error = euclidean(jk_errors, Nx - 1),
+                   jk_split_slice_error = euclidean(jk_split_errors, Nx - 1);
             // if this exceeds the current recorded maximum error, record this
             if (jk_slice_error > Ex_ms_err) {
                 Ex_ms_err = jk_slice_error;
@@ -273,8 +266,8 @@ TEST_CASE("E-field interpolation check") {
                 ik_errors[jj] = Ey_error[kk][jj][ii];
                 ik_split_errors[jj] = Ey_split_error[kk][jj][ii];
             }
-            double ik_slice_error = Euclidean(ik_errors, Ny - 1),
-                   ik_split_slice_error = Euclidean(ik_split_errors, Ny - 1);
+            double ik_slice_error = euclidean(ik_errors, Ny - 1),
+                   ik_split_slice_error = euclidean(ik_split_errors, Ny - 1);
             if (ik_slice_error > Ey_ms_err) {
                 Ey_ms_err = ik_slice_error;
             }
@@ -291,8 +284,8 @@ TEST_CASE("E-field interpolation check") {
                 ij_errors[kk] = Ez_error[kk][jj][ii];
                 ij_split_errors[kk] = Ez_split_error[kk][jj][ii];
             }
-            double ij_slice_error = Euclidean(ij_errors, Nz - 1),
-                   ij_split_slice_error = Euclidean(ij_split_errors, Nz - 1);
+            double ij_slice_error = euclidean(ij_errors, Nz - 1),
+                   ij_split_slice_error = euclidean(ij_split_errors, Nz - 1);
             if (ij_slice_error > Ez_ms_err) {
                 Ez_ms_err = ij_slice_error;
             }
@@ -319,20 +312,14 @@ TEST_CASE("E-field interpolation check") {
     CHECK(Ez_split_ms_err <= Ez_ms_tol + acc_tol);
 
     // print information to the debugger/log
-    cout << " Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << endl;
-    cout << "    x      | " << Ex_fro_err << " : (" << Ex_fro_tol;
-    cout << ") | " << Ex_ms_err << " : (" << Ex_ms_tol << ")" << endl;
-    cout << "    y      | " << Ey_fro_err << " : (" << Ey_fro_tol;
-    cout << ") | " << Ey_ms_err << " : (" << Ey_ms_tol << ")" << endl;
-    cout << "    z      | " << Ez_fro_err << " : (" << Ez_fro_tol;
-    cout << ") | " << Ez_ms_err << " : (" << Ez_ms_tol << ")" << endl;
-    cout << " [Split] Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )" << endl;
-    cout << "        x          | " << Ex_fro_err << " : (" << Ex_fro_tol;
-    cout << ") | " << Ex_ms_err << " : (" << Ex_ms_tol << ")" << endl;
-    cout << "        y          | " << Ey_fro_err << " : (" << Ey_fro_tol;
-    cout << ") | " << Ey_ms_err << " : (" << Ey_ms_tol << ")" << endl;
-    cout << "        z          | " << Ez_fro_err << " : (" << Ez_fro_tol;
-    cout << ") | " << Ez_ms_err << " : (" << Ez_ms_tol << ")" << endl;
+    SPDLOG_INFO(" Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )");
+    SPDLOG_INFO("    x      | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ex_fro_err, Ex_fro_tol, Ex_ms_err, Ex_ms_tol);
+    SPDLOG_INFO("    y      | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ey_fro_err, Ey_fro_tol, Ey_ms_err, Ey_ms_tol);
+    SPDLOG_INFO("    z      | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ez_fro_err, Ez_fro_tol, Ez_ms_err, Ez_ms_tol);
+    SPDLOG_INFO(" [Split] Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )");
+    SPDLOG_INFO("        x          | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ex_split_fro_err, Ex_fro_tol, Ex_split_ms_err, Ex_ms_tol);
+    SPDLOG_INFO("        y          | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ey_split_fro_err, Ey_fro_tol, Ey_split_ms_err, Ey_ms_tol);
+    SPDLOG_INFO("        z          | {0:.8e} : ({1:.8e}) | {2:.8e} : ({3:.8e})", Ez_split_fro_err, Ez_fro_tol, Ez_split_ms_err, Ez_ms_tol);
 }
 
 /**
@@ -344,9 +331,9 @@ TEST_CASE("E-field interpolation check") {
  * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
  */
 TEST_CASE("H-field interpolation check") {
-    cout << fixed << scientific << setprecision(8);
-    cout << "===== Testing H-field BLi =====" << endl;
+    SPDLOG_INFO("===== Testing H-field BLi =====");
     // error tolerance, based on MATLAB performance
+    // script: benchmark_test_field_interpolation_H.m
     double Hx_fro_tol = 1.8946211079489815e-02;
     double Hy_fro_tol = 7.9076626528757438e-02;
     double Hz_fro_tol = 8.0012805533367606e-02;
@@ -361,7 +348,7 @@ TEST_CASE("H-field interpolation check") {
     // The number of cells in each direction is then 16 = 4/0.25, 40 = 4/0.1, 80 = 4/0.05.
     // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
     int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]), Nz = round(extent_z / cellDims[2]);
-    cout << "(Nx, Ny, Nz) = (" << Nx << "," << Ny << "," << Nz << ")" << endl;
+    SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
     // setup the "split" H-field components
     double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
@@ -505,12 +492,12 @@ TEST_CASE("H-field interpolation check") {
     delete Hz;
 
     // compute Frobenius norms
-    double Hx_fro_err = Frobenius(Hx_error, Nz - 1, Ny - 1, Nx),
-           Hy_fro_err = Frobenius(Hy_error, Nz - 1, Ny, Nx - 1),
-           Hz_fro_err = Frobenius(Hz_error, Nz, Ny - 1, Nx - 1),
-           Hx_split_fro_err = Frobenius(Hx_split_error, Nz - 1, Ny - 1, Nx),
-           Hy_split_fro_err = Frobenius(Hy_split_error, Nz - 1, Ny, Nx - 1),
-           Hz_split_fro_err = Frobenius(Hz_split_error, Nz, Ny - 1, Nx - 1);
+    double Hx_fro_err = frobenius(Hx_error, Nz - 1, Ny - 1, Nx),
+           Hy_fro_err = frobenius(Hy_error, Nz - 1, Ny, Nx - 1),
+           Hz_fro_err = frobenius(Hz_error, Nz, Ny - 1, Nx - 1),
+           Hx_split_fro_err = frobenius(Hx_split_error, Nz - 1, Ny - 1, Nx),
+           Hy_split_fro_err = frobenius(Hy_split_error, Nz - 1, Ny, Nx - 1),
+           Hz_split_fro_err = frobenius(Hz_split_error, Nz, Ny - 1, Nx - 1);
 
     // check Frobenius errors are acceptable
     CHECK(Hx_fro_err <= Hx_fro_tol + acc_tol);
@@ -521,12 +508,12 @@ TEST_CASE("H-field interpolation check") {
     CHECK(Hz_split_fro_err <= Hz_fro_tol + acc_tol);
 
     // print information to the debugger/log
-    cout << " Component | Frobenius err. : (  benchmark   )" << endl;
-    cout << "    x      | " << Hx_fro_err << " : (" << Hx_fro_tol << ")" << endl;
-    cout << "    y      | " << Hy_fro_err << " : (" << Hy_fro_tol << ")" << endl;
-    cout << "    z      | " << Hz_fro_err << " : (" << Hz_fro_tol << ")" << endl;
-    cout << " [Split] Component | Frobenius err. : (  benchmark   )" << endl;
-    cout << "        x          | " << Hx_split_fro_err << " : (" << Hx_fro_tol << ")" << endl;
-    cout << "        y          | " << Hy_split_fro_err << " : (" << Hy_fro_tol << ")" << endl;
-    cout << "        z          | " << Hz_split_fro_err << " : (" << Hz_fro_tol << ")" << endl;
+    SPDLOG_INFO(" Component | Frobenius err. : (  benchmark   )");
+    SPDLOG_INFO("    x      | {0:.8e} : ({1:.8e})", Hx_fro_err, Hx_fro_tol);
+    SPDLOG_INFO("    y      | {0:.8e} : ({1:.8e})", Hy_fro_err, Hy_fro_tol);
+    SPDLOG_INFO("    z      | {0:.8e} : ({1:.8e})", Hz_fro_err, Hz_fro_tol);
+    SPDLOG_INFO(" [Split] Component | Frobenius err. : (  benchmark   )");
+    SPDLOG_INFO("        x          | {0:.8e} : ({1:.8e})", Hx_split_fro_err, Hx_fro_tol);
+    SPDLOG_INFO("        y          | {0:.8e} : ({1:.8e})", Hy_split_fro_err, Hy_fro_tol);
+    SPDLOG_INFO("        z          | {0:.8e} : ({1:.8e})", Hz_split_fro_err, Hz_fro_tol);
 }
