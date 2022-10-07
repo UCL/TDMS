@@ -20,9 +20,15 @@ inline double norm(double *v, int end, int start = 0) {
     }
     return sqrt(norm_val);
 }
+
 // function to interpolate
 inline double f_BLi_vs_Cubic(double x) {
     return 1. / ((10. * x * x) + 1.);
+}
+
+// computes order of magnitude of a double
+int orderOfMagnitude(double x) {
+    return floor(log10(x));
 }
 
 /**
@@ -37,6 +43,7 @@ inline double f_BLi_vs_Cubic(double x) {
  *  0.1         | 7.10587711e-04    | 5.49601748e-03
  *  0.05        | 7.80325615e-04    | 5.53430587e-04
  *  0.01        | 1.97562511e-03    | 2.06917814e-06
+ * Values computed via the benchmark_test_BLi_vs_cubic.m script.
  *
  * We will test the following:
  * - The norm-error of BLi is lesser/greater than cubic in each case
@@ -72,10 +79,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         double cellSize = cell_sizes[trial];
         // the number of Yee cells that we want
         int n_YCs = ceil(extent / cellSize);
-        if (n_YCs < 8) {
-            // BLi cannot run, throw error
-            throw runtime_error("nSamples < 8 - cannot interpolate using BLi!");
-        }
+        CHECK(n_YCs > 8); // BLi cannot run otherwise
 
         // the centres of the Yee cells
         double cell_centres[n_YCs];
@@ -115,8 +119,10 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
 
         // BLi interpolation
         for (int i = 1; i < n_YCs; i++) {
-            // we checked earlier that BLi should always be available, so this is always a BLi scheme
+            // we checked earlier that BLi should always be available (CHECK(n_YCs>8)), so this is always a BLi scheme
             interpScheme use_scheme = best_interp_scheme(n_YCs, i);
+            // to be on the safe side, check that we have a BLi scheme. BLi schemes are always strictly better than CUBIC_INTERP_MIDDLE, and not equal or worse.
+            CHECK(use_scheme.is_better_than(CUBIC_INTERP_MIDDLE));
             // interpolate using the cell data we have provided
             // i - (use_scheme.index + 1) is the index of field_samples to read as the point v[0] in the scheme
             BLi_interp[i] = use_scheme.interpolate(field_samples, i - use_scheme.number_of_datapoints_to_left);
@@ -131,12 +137,12 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         BLi_norm_errs[trial] = norm(BLi_err, n_YCs - 1, 1);
         cub_norm_errs[trial] = norm(cub_err, n_YCs - 1, 1);
 
-        // value-testing commences
-        // assert a lower error when expected, and _not_ a lower error when we don't
+        // value-testing commences: the better method should be superior, and the worse method should be worse.
+        // assert this is the case for each cellSize we used.
         CHECK((BLi_norm_errs[trial] <= cub_norm_errs[trial]) == BLi_is_better[trial]);
 
         // in all cases, assert that the order of magnitude of error is what we expect, if we had used MATLAB
         CHECK(floor(log10(BLi_norm_errs[trial])) == floor(log10(MATLAB_BLi_errs[trial])));
-        CHECK(floor(log10(cub_norm_errs[trial])) == floor(log10(MATLAB_cub_errs[trial])));
+        CHECK(orderOfMagnitude(cub_norm_errs[trial]) == orderOfMagnitude(MATLAB_cub_errs[trial]));
     }
 }
