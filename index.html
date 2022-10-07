@@ -137,9 +137,11 @@ Compiling and debugging</h2>
 <div class="line"># -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \</div>
 <div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
 <div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
+<div class="line"># -DDERIVATIVE_TYPE=FD</div>
 <div class="line">make install</div>
 </div><!-- fragment --><p>You may need to help CMake find MATLAB/fftw etc.</p>
 <ul>
+<li>There are two methods to choose from: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. <b>This choice must be made at compile time</b>, to comply with MATLAB. The default is PSTD. You can select FDTD with <code>-DDERIVATIVE_TYPE=FD</code>.</li>
 <li>By default, build testing is turned off. You can turn it on with <code>-DBUILD_TESTING=ON</code>.</li>
 <li>Also by default, debug printout is off. Turn on with <code>-DCMAKE_BUILD_TYPE=Debug</code> or manually at some specific place in the code with: <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;spdlog/spdlog.h&gt;</span></div>
 <div class="line"> </div>
@@ -154,8 +156,7 @@ Compiling and debugging</h2>
 </ul>
 <h2><a class="anchor" id="autotoc_md4"></a>
 Compiling on UCL's Myriad cluster</h2>
-<p>&lt;details&gt;</p>
-<blockquote class="doxtable">
+<p>&lt;details&gt; </p><blockquote class="doxtable">
 <p><b>Warning</b> These instructions are a bit experimental. Please use with care (and report anything that's wrong here)! </p>
 </blockquote>
 <p>If you want to test changes on UCL's <a href="https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/">Myriad</a> (and/or don't have MATLAB on your pesonal machine) you can try these instructions. Firstly, you will probably want to <a href="https://stackoverflow.com/questions/12257968/">forward your ssh agent</a> for your github ssh key. To do this, you first need to run the following your <em>local</em> machine: </p><div class="fragment"><div class="line">ssh-add -L # check your ssh agent is running</div>
@@ -175,8 +176,7 @@ Compiling on UCL's Myriad cluster</h2>
 </div><!-- fragment --><p>If you get the following error (or similar) </p><div class="fragment"><div class="line">fatal: unable to access &#39;https://github.com/gabime/spdlog/&#39;: error setting certificate verify locations:</div>
 <div class="line">CAfile: /etc/ssl/certs/ca-certificates.crt</div>
 <div class="line">CApath: none</div>
-</div><!-- fragment --><p>it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead.</p>
-<p>&lt;/details&gt;</p>
+</div><!-- fragment --><p>it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead. &lt;/details&gt;</p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Where's the main?</h1>
 <p>The C++ <code>main</code> function is in <a class="el" href="openandorder_8cpp.html" title="Launch and file IO.">openandorder.cpp</a> however this only really does file I/O and setup. The main FDTD algorithm code is in iterator.cpp and classes included therein.</p>
@@ -215,7 +215,10 @@ System</h2>
 <p>When you run the tests for the first time, the example data will be downloaded to <code>tdms/tests/system/data</code> (which is <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). Subsequent runs of the test will not re-download unless you manually delete the zip file.</p>
 <p>A good example of running the <code>tdms</code> executable for a given input and expected output is <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_arc01.py">test_arc01.py</a></p>
 <p>You need to <a href="#compiling">compile</a> <code>tdms</code>, then the system tests can be run, e.g. from the build directory:</p>
-<div class="fragment"><div class="line">pytest ../tests/system/</div>
+<div class="fragment"><div class="line">pytest ../tests/system/ -m &quot;not fdtd_build_only&quot;</div>
+</div><!-- fragment --><p>A slight complication - which we hope to simplify - it is possible to build in two different configurations for two different methods: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. We therefore <a href="https://docs.pytest.org/en/stable/example/markers.html">mark</a> some of the system tests <code>fdtd_build_only</code>.</p>
+<p>To test the FDTD build: <a href="#compiling">recompile</a> with <code>-DDERIVATIVE_TYPE=FD</code> and run:</p>
+<div class="fragment"><div class="line">pytest ../tests/system/ -m fdtd_build_only</div>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
