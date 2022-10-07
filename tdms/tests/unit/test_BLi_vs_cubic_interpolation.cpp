@@ -10,6 +10,8 @@
 
 #include "interpolation_methods.h"
 
+using namespace std;
+
 // Computes the 2-norm of the vector v from buffer start to buffer end
 inline double norm(double *v, int end, int start = 0) {
     double norm_val = 0.;
@@ -138,9 +140,10 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         // value-testing commences: the better method should be superior, and the worse method should be worse.
         // assert this is the case for each cellSize we used.
         CHECK((BLi_norm_errs[trial] <= cub_norm_errs[trial]) == BLi_is_better[trial]);
+        SPDLOG_INFO("BLi err: {0:.8e} | Cubic err : {1:.8e} | Expected BLi to be better: {2:d}", BLi_norm_errs[trial], cub_norm_errs[trial], BLi_is_better[trial]);
 
         // in all cases, assert that the order of magnitude of error is what we expect, if we had used MATLAB
-        CHECK(floor(log10(BLi_norm_errs[trial])) == floor(log10(MATLAB_BLi_errs[trial])));
+        CHECK(orderOfMagnitude(BLi_norm_errs[trial]) == orderOfMagnitude(MATLAB_BLi_errs[trial]));
         CHECK(orderOfMagnitude(cub_norm_errs[trial]) == orderOfMagnitude(MATLAB_cub_errs[trial]));
     }
 }
