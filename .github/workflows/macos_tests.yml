@@ -28,6 +28,10 @@ jobs:
         build_testing:
           - ON
           - OFF
+        # TODO: remove this once MATLAB dependency is removed and mexFunction is replaced
+        derivative_type:
+          - PS
+          - FD
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -64,11 +68,14 @@ jobs:
         env:
           CXXFLAGS: -Werror
         run: |
+
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
            -DBUILD_TESTING=${{ matrix.build_testing }} \
-           -DOMP_ROOT=$(brew --prefix llvm)
-           
+           -DOMP_ROOT=$(brew --prefix llvm) \
+           -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
+
+
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
         shell: bash
@@ -82,11 +89,21 @@ jobs:
           export OMP_NUM_THREADS=1
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
-      - name: Run TDMS system tests
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      # TODO: simplify this once MATLAB dependency is removed and mexFunction is replaced
+      - name: Run PSTD TDMS system tests
         # run system tests in mac only on pushes to main (they are a bit slow)
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.derivative_type == 'PS' }}
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
-          py.test ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x  -m "not fdtd_build_only"
+
+      - name: Run FDTD TDMS system tests
+        # run system tests in mac only on pushes to main (they are a bit slow)
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.derivative_type == 'FD' }}
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          export OMP_NUM_THREADS=1
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x  -m fdtd_build_only

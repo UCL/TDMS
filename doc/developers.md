@@ -80,10 +80,12 @@ cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+# -DDERIVATIVE_TYPE=FD
 make install
 ```
 You may need to help CMake find MATLAB/fftw etc.
 
+- There are two methods to choose from: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. **This choice must be made at compile time**, to comply with MATLAB. The default is PSTD. You can select FDTD with `-DDERIVATIVE_TYPE=FD`.
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
@@ -100,7 +102,6 @@ spdlog::debug("Send help");
 
 ### Compiling on UCL's Myriad cluster
 <details>
-  
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
@@ -135,7 +136,6 @@ spdlog::debug("Send help");
   CApath: none
   ```
   it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
-  
 </details>
 
 
@@ -198,5 +198,14 @@ A good example of running the `tdms` executable for a given input and expected o
 You need to [compile](#compiling) `tdms`, then the system tests can be run, e.g. from the build directory:
 
 ```{.sh}
-pytest ../tests/system/
+pytest ../tests/system/ -m "not fdtd_build_only"
+```
+
+A slight complication - which we hope to simplify - it is possible to build in two different configurations for two different methods: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives.
+We therefore [mark](https://docs.pytest.org/en/stable/example/markers.html) some of the system tests `fdtd_build_only`.
+
+To test the FDTD build: [recompile](#compiling) with `-DDERIVATIVE_TYPE=FD` and run:
+
+```{.sh}
+pytest ../tests/system/ -m fdtd_build_only
 ```
