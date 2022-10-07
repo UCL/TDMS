@@ -7,6 +7,12 @@ on:
   release:
   workflow_dispatch:
 
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: always.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Test - ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
@@ -20,6 +26,10 @@ jobs:
           - Release
         build_testing:
           - OFF
+        # TODO: remove this once MATLAB dependency is removed and mexFunction is replaced
+        derivative_type:
+          - PS
+          - FD
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -59,7 +69,10 @@ jobs:
         shell: bash
         working-directory: ${{runner.workspace}}/build
         run: |
-          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_TESTING=${{ matrix.build_testing }}
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+           -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
@@ -74,7 +87,13 @@ jobs:
         run: |
           cp Release/* .
 
-      - name: Run TDMS system tests
+      - name: Run CLI test
+        # For Windows, we skip the main system tests and just test the CLI
+        # note that if we decide to turn these back on, we need to split into
+        # two test steps and guard each one based on
+        # if: matrix.derivative_type == 'PS'
+        # or 'FD', and filter the pytest labels accordingly
+        # pytest <blah> -m fdtd_build_only
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
