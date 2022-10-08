@@ -1340,6 +1340,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       fprintf(stdout,"%e ",Exy[k][13][13]+Exz[k][13][13]);
       fprintf(stdout,"\n");
     */
+    (void)n;  // n is unused in FD derivatives – this silences the compiler warning
+
 #pragma omp parallel default(shared) private(i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,\
                                              beta_l, gamma_l, kappa_l, sigma_l, Enp1,              \
                                              Jnp1)//,ca_vec,cb_vec,cc_vec,eh_vec)
