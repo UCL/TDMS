@@ -84,7 +84,8 @@ $(document).ready(function(){initNavTree('simulation__parameters_8h.html',''); i
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">simulation_parameters.h File Reference</div>  </div>
 </div><!--header-->
@@ -92,7 +93,14 @@ $(document).ready(function(){initNavTree('simulation__parameters_8h.html',''); i
 
 <p>Classes collecting parameters for the simulation.  
 <a href="#details">More...</a></p>
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<code>#include &quot;arrays.h&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for simulation_parameters.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="simulation__parameters_8h__incl.png" border="0" usemap="#tdms_2include_2simulation__parameters_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="simulation__parameters_8h__dep__incl.png" border="0" usemap="#tdms_2include_2simulation__parameters_8hdep" alt=""/></div>
@@ -102,13 +110,64 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulationParameters.html">SimulationParameters</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The full collection of simulation parameters.  <a href="classSimulationParameters.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPhasorInc.html">PhasorInc</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulationParameters.html">SimulationParameters</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a6714f5f9c6806ef7f15116ce912bf167"><td class="memItemLeft" align="right" valign="top"><a id="a6714f5f9c6806ef7f15116ce912bf167"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>SourceMode</b> { <b>steadystate</b>, 
+<b>pulsed</b>
+ }</td></tr>
+<tr class="separator:a6714f5f9c6806ef7f15116ce912bf167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dfe11cf1a3a8121f6cd7fec4bf5947e"><td class="memItemLeft" align="right" valign="top"><a id="a3dfe11cf1a3a8121f6cd7fec4bf5947e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>RunMode</b> { <b>complete</b>, 
+<b>analyse</b>
+ }</td></tr>
+<tr class="separator:a3dfe11cf1a3a8121f6cd7fec4bf5947e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="memItemLeft" align="right" valign="top"><a id="afeeb3ea8d8350f7e9c636d23679a4dca"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Dimension</b> { <b>THREE</b>, 
+<b>TE</b>, 
+<b>TM</b>
+ }</td></tr>
+<tr class="separator:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0081e804011c551ea0f4a596a64b284"><td class="memItemLeft" align="right" valign="top"><a id="aa0081e804011c551ea0f4a596a64b284"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>InterpolationMethod</b> { <b>null</b>, 
+<b>cubic</b>, 
+<b>band_limited</b>
+ }</td></tr>
+<tr class="separator:aa0081e804011c551ea0f4a596a64b284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5808a87728ffa9d8e3fe1b4f2e39736"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a> { <br />
+&#160;&#160;<b>Ex</b> = 1, 
+<b>Ey</b>, 
+<b>Ez</b>, 
+<b>Hx</b>, 
+<br />
+&#160;&#160;<b>Hy</b>, 
+<b>Hz</b>
+<br />
+ }</td></tr>
+<tr class="separator:ad5808a87728ffa9d8e3fe1b4f2e39736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Classes collecting parameters for the simulation. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ad5808a87728ffa9d8e3fe1b4f2e39736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5808a87728ffa9d8e3fe1b4f2e39736">&#9670;&nbsp;</a></span>FieldComponents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enum defining a mapping to integers used in the MATLAB initialisation </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

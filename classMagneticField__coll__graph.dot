@@ -6,4 +6,8 @@ digraph "MagneticField"
   Node1 [label="MagneticField",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="Field",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classField.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Grid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGrid.html",tooltip=" "];
+  Node4 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" imag\nreal" ,fontname="Helvetica"];
+  Node4 [label="XYZTensor3D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classXYZTensor3D.html",tooltip=" "];
 }

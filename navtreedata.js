@@ -42,7 +42,8 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ]
+        [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -59,7 +60,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0"
+"classTensor3D.html#a1a0249197c6c8c175713b15f3be3b079",
+"structPhasorInc.html#af520353a497ad0db35a86107f716da00"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -84,33 +84,128 @@ $(document).ready(function(){initNavTree('classSimulationParameters.html',''); i
 
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classSimulationParameters-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">SimulationParameters Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>The full collection of simulation parameters.  
- <a href="classSimulationParameters.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for SimulationParameters:</div>
+<div class="dyncontent">
+<div class="center"><img src="classSimulationParameters__coll__graph.png" border="0" usemap="#SimulationParameters_coll__map" alt="Collaboration graph"/></div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a53cf1622c7241589d5bbdec8e9bce381"><td class="memItemLeft" align="right" valign="top"><a id="a53cf1622c7241589d5bbdec8e9bce381"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_run_mode</b> (std::string mode_string)</td></tr>
+<tr class="separator:a53cf1622c7241589d5bbdec8e9bce381"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e53406a8ec8ebc8b359c829a3a6bb89"><td class="memItemLeft" align="right" valign="top"><a id="a9e53406a8ec8ebc8b359c829a3a6bb89"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_source_mode</b> (std::string mode_string)</td></tr>
+<tr class="separator:a9e53406a8ec8ebc8b359c829a3a6bb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0553bebfaa4facd6333cc2ae1e6385d7"><td class="memItemLeft" align="right" valign="top"><a id="a0553bebfaa4facd6333cc2ae1e6385d7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_dimension</b> (std::string mode_string)</td></tr>
+<tr class="separator:a0553bebfaa4facd6333cc2ae1e6385d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad72ac9e398fd4dc092b8d4a545b72aa5"><td class="memItemLeft" align="right" valign="top"><a id="ad72ac9e398fd4dc092b8d4a545b72aa5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_phasorinc</b> (const double *vector)</td></tr>
+<tr class="separator:ad72ac9e398fd4dc092b8d4a545b72aa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memItemLeft" align="right" valign="top"><a id="a329f77bf60b70aae7c7e744a56dcc3fb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_Np</b> (<a class="el" href="classFrequencyExtractVector.html">FrequencyExtractVector</a> &amp;f_ex_vec)</td></tr>
+<tr class="separator:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ac5c64624a96845244c7dd7d3377990c5"><td class="memItemLeft" align="right" valign="top"><a id="ac5c64624a96845244c7dd7d3377990c5"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>omega_an</b> = 0.0</td></tr>
 <tr class="separator:ac5c64624a96845244c7dd7d3377990c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed164dd04a68fe56649cf48340d88b19"><td class="memItemLeft" align="right" valign="top"><a id="aed164dd04a68fe56649cf48340d88b19"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>Nsteps</b> = 0</td></tr>
-<tr class="separator:aed164dd04a68fe56649cf48340d88b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d93a7ae439aaa40d785ff5adadc6b77"><td class="memItemLeft" align="right" valign="top"><a id="a5d93a7ae439aaa40d785ff5adadc6b77"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>Nt</b> = 0</td></tr>
+<tr class="separator:a5d93a7ae439aaa40d785ff5adadc6b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a76dd41d2e5d00d7ca4f590188674d"><td class="memItemLeft" align="right" valign="top"><a id="a24a76dd41d2e5d00d7ca4f590188674d"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>Np</b> = 0</td></tr>
+<tr class="separator:a24a76dd41d2e5d00d7ca4f590188674d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fb6da4b2a6736a56e66e6b4ca37a409"><td class="memItemLeft" align="right" valign="top"><a id="a6fb6da4b2a6736a56e66e6b4ca37a409"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>Npe</b> = 0</td></tr>
+<tr class="separator:a6fb6da4b2a6736a56e66e6b4ca37a409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1fab2ae52be051315ff384405ccf907"><td class="memItemLeft" align="right" valign="top"><a id="ab1fab2ae52be051315ff384405ccf907"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>start_tind</b> = 0</td></tr>
+<tr class="separator:ab1fab2ae52be051315ff384405ccf907"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c91af7f1d5f1d27724d78b839ebb46e"><td class="memItemLeft" align="right" valign="top"><a id="a9c91af7f1d5f1d27724d78b839ebb46e"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>dt</b> = 0.0</td></tr>
 <tr class="separator:a9c91af7f1d5f1d27724d78b839ebb46e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c92ddf431d1e7b3eec380f56d3e2e60"><td class="memItemLeft" align="right" valign="top"><a id="a2c92ddf431d1e7b3eec380f56d3e2e60"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_tdfdir</b> = false</td></tr>
+<tr class="separator:a2c92ddf431d1e7b3eec380f56d3e2e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a808b2d1f7960f6f3ac0294537992d494"><td class="memItemLeft" align="right" valign="top"><a id="a808b2d1f7960f6f3ac0294537992d494"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_multilayer</b> = false</td></tr>
+<tr class="separator:a808b2d1f7960f6f3ac0294537992d494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa73de26c7c4f97662a042d925068ae46"><td class="memItemLeft" align="right" valign="top"><a id="aa73de26c7c4f97662a042d925068ae46"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_disp_ml</b> = false</td></tr>
+<tr class="separator:aa73de26c7c4f97662a042d925068ae46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88fe3ae74e6ccedff91d43e583ea83ec"><td class="memItemLeft" align="right" valign="top"><a id="a88fe3ae74e6ccedff91d43e583ea83ec"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>to_l</b> = 0.0</td></tr>
+<tr class="separator:a88fe3ae74e6ccedff91d43e583ea83ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3512415720a8451c66b7cf8066fa74"><td class="memItemLeft" align="right" valign="top"><a id="adc3512415720a8451c66b7cf8066fa74"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>hwhm</b> = 0.0</td></tr>
+<tr class="separator:adc3512415720a8451c66b7cf8066fa74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f42d7990734b415471573f012cd738d"><td class="memItemLeft" align="right" valign="top"><a id="a2f42d7990734b415471573f012cd738d"></a>
+<a class="el" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><b>pml</b></td></tr>
+<tr class="separator:a2f42d7990734b415471573f012cd738d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0952e96b007178614e242e12ac168e08"><td class="memItemLeft" align="right" valign="top"><a id="a0952e96b007178614e242e12ac168e08"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>exphasorsvolume</b> = false</td></tr>
+<tr class="separator:a0952e96b007178614e242e12ac168e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aade8f83edaa97f04e88fade6bc76f6f8"><td class="memItemLeft" align="right" valign="top"><a id="aade8f83edaa97f04e88fade6bc76f6f8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>exphasorssurface</b> = false</td></tr>
+<tr class="separator:aade8f83edaa97f04e88fade6bc76f6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c8e6e97bb0fde8e3934832f964a142"><td class="memItemLeft" align="right" valign="top"><a id="a45c8e6e97bb0fde8e3934832f964a142"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>intphasorssurface</b> = false</td></tr>
+<tr class="separator:a45c8e6e97bb0fde8e3934832f964a142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a5536684a90a0cf1cad9f224e45ac8"><td class="memItemLeft" align="right" valign="top"><a id="ad7a5536684a90a0cf1cad9f224e45ac8"></a>
+RunMode&#160;</td><td class="memItemRight" valign="bottom"><b>run_mode</b> = complete</td></tr>
+<tr class="separator:ad7a5536684a90a0cf1cad9f224e45ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89f81c750f54aef2aa547d21dfe828e6"><td class="memItemLeft" align="right" valign="top"><a id="a89f81c750f54aef2aa547d21dfe828e6"></a>
+SourceMode&#160;</td><td class="memItemRight" valign="bottom"><b>source_mode</b> = pulsed</td></tr>
+<tr class="separator:a89f81c750f54aef2aa547d21dfe828e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa549b3cbaf7ee48b26ac67bcf0e87db"><td class="memItemLeft" align="right" valign="top"><a id="aaa549b3cbaf7ee48b26ac67bcf0e87db"></a>
+Dimension&#160;</td><td class="memItemRight" valign="bottom"><b>dimension</b> = THREE</td></tr>
+<tr class="separator:aaa549b3cbaf7ee48b26ac67bcf0e87db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ea0b5e8f7c316f1460492f1335a9b1"><td class="memItemLeft" align="right" valign="top"><a id="a77ea0b5e8f7c316f1460492f1335a9b1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_structure</b> = false</td></tr>
+<tr class="separator:a77ea0b5e8f7c316f1460492f1335a9b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1dd2afb143602df28457a3397335f3d"><td class="memItemLeft" align="right" valign="top"><a id="ad1dd2afb143602df28457a3397335f3d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>exdetintegral</b> = false</td></tr>
+<tr class="separator:ad1dd2afb143602df28457a3397335f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0e993a2169d0ebe474495de656f5a26"><td class="memItemLeft" align="right" valign="top"><a id="ab0e993a2169d0ebe474495de656f5a26"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>k_det_obs</b> = 0</td></tr>
+<tr class="separator:ab0e993a2169d0ebe474495de656f5a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2cf718db973cf176a5503e8466a09d4"><td class="memItemLeft" align="right" valign="top"><a id="ad2cf718db973cf176a5503e8466a09d4"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>z_obs</b> = 0.0</td></tr>
+<tr class="separator:ad2cf718db973cf176a5503e8466a09d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5bca090e0a1d2c206b6dc82f1475c54"><td class="memItemLeft" align="right" valign="top"><a id="ac5bca090e0a1d2c206b6dc82f1475c54"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>air_interface_present</b> = false</td></tr>
+<tr class="separator:ac5bca090e0a1d2c206b6dc82f1475c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7424744418c09d3991646f3f1d9c238e"><td class="memItemLeft" align="right" valign="top"><a id="a7424744418c09d3991646f3f1d9c238e"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>air_interface</b> = 0.0</td></tr>
+<tr class="separator:a7424744418c09d3991646f3f1d9c238e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24bf2309a8d07a6547271f3fbf76dcc0"><td class="memItemLeft" align="right" valign="top"><a id="a24bf2309a8d07a6547271f3fbf76dcc0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>interp_mat_props</b> = false</td></tr>
+<tr class="separator:a24bf2309a8d07a6547271f3fbf76dcc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08af006e0f52948599944d17c8a65e03"><td class="memItemLeft" align="right" valign="top"><a id="a08af006e0f52948599944d17c8a65e03"></a>
+InterpolationMethod&#160;</td><td class="memItemRight" valign="bottom"><b>interp_method</b> = cubic</td></tr>
+<tr class="separator:a08af006e0f52948599944d17c8a65e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f3f74d91dff7b0403750783d256c9e6"><td class="memItemLeft" align="right" valign="top"><a id="a1f3f74d91dff7b0403750783d256c9e6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>exi_present</b> = false</td></tr>
+<tr class="separator:a1f3f74d91dff7b0403750783d256c9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a174a7aaf6bb9570a09184dc2e87efdcc"><td class="memItemLeft" align="right" valign="top"><a id="a174a7aaf6bb9570a09184dc2e87efdcc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>eyi_present</b> = false</td></tr>
+<tr class="separator:a174a7aaf6bb9570a09184dc2e87efdcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e20454df417fe9e710594e6eb7352a"><td class="memItemLeft" align="right" valign="top"><a id="a51e20454df417fe9e710594e6eb7352a"></a>
+<a class="el" href="structPhasorInc.html">PhasorInc</a>&#160;</td><td class="memItemRight" valign="bottom"><b>phasorinc</b></td></tr>
+<tr class="separator:a51e20454df417fe9e710594e6eb7352a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The full collection of simulation parameters. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a></li>
 <li>tdms/src/simulation_parameters.cpp</li>
 </ul>

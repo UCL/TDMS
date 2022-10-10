@@ -1,4 +1,4 @@
 var classElectricField =
 [
-    [ "add_to_angular_norm", "classElectricField.html#a9780b0282cc521e33ae7751cf97ef899", null ]
+    [ "phase", "classElectricField.html#ab2629030d34824e329dbf0b93410cfc5", null ]
 ];

@@ -21,12 +21,10 @@ var globals_8h =
       [ "parallel", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca906be981ba932a8b90590636ecab34bf", null ],
       [ "perpendicular", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca925a6f3e03e5ba73559d120ddc352c9b", null ]
     ] ],
-    [ "convergence_level", "globals_8h.html#a4dfe599ec1bcff79c291c3a2529cf84c", null ],
-    [ "dcpi", "globals_8h.html#ab55109049579ba8433c7275cd5391ff6", null ],
-    [ "eo", "globals_8h.html#a1a5cd6164087aec46dc80b1aace86540", null ],
-    [ "I", "globals_8h.html#a7b1b9727f274f114ae4565946585518a", null ],
-    [ "light_v", "globals_8h.html#abbcff46282823f585da09150f23818b9", null ],
-    [ "mo", "globals_8h.html#a23abb95f6e9abf0f140d51974bf4b031", null ],
-    [ "zero", "globals_8h.html#a554f7b66b1ba49443447eb746978c268", null ],
-    [ "Zo", "globals_8h.html#aac4a485cc81f030269f15a95bd7ad76d", null ]
+    [ "DCPI", "globals_8h.html#a09ffe6a1b2a4552ccf14a5aeb78f3540", null ],
+    [ "EPSILON0", "globals_8h.html#a16ae302ea1c1e9dfbac9ce2f8a163294", null ],
+    [ "IMAGINARY_UNIT", "globals_8h.html#addd1b4be98977eac7328d71dc65e8864", null ],
+    [ "LIGHT_V", "globals_8h.html#a61748f632916e27724f36b524845e601", null ],
+    [ "MU0", "globals_8h.html#aac1ebe7acec587c03768fbfd00e4bb09", null ],
+    [ "Z0", "globals_8h.html#a9c60fb355feb5166f5edeafcb5d0b34c", null ]
 ];

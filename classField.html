@@ -84,24 +84,204 @@ $(document).ready(function(){initNavTree('classField.html',''); initResizable();
 
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classField-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Field Class Reference</div>  </div>
+<div class="title">Field Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="field_8h_source.html">field.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Field:</div>
 <div class="dyncontent">
 <div class="center"><img src="classField__inherit__graph.png" border="0" usemap="#Field_inherit__map" alt="Inheritance graph"/></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for Field:</div>
+<div class="dyncontent">
+<div class="center"><img src="classField__coll__graph.png" border="0" usemap="#Field_coll__map" alt="Collaboration graph"/></div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top"><a id="a616a0a2e9edb5ee42374611c2eea777e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>normalise_volume</b> ()</td></tr>
+<tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5511a94b5f37a81ee7b3dacb83dd20b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6">zero</a> ()</td></tr>
+<tr class="separator:a5511a94b5f37a81ee7b3dacb83dd20b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c2e1c843986da2cce6a54379466bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a88c2e1c843986da2cce6a54379466bbb">set_phasors</a> (<a class="el" href="classSplitField.html">SplitField</a> &amp;F, int n, double omega, double dt, int Nt)</td></tr>
+<tr class="separator:a88c2e1c843986da2cce6a54379466bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top"><a id="a263a2ebc51f6e0dff6c60138b68c9e82"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add_to_angular_norm</b> (int n, int Nt, <a class="el" href="classSimulationParameters.html">SimulationParameters</a> &amp;params)</td></tr>
+<tr class="separator:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a787899ca782f76307f96ca13a763417e"><td class="memItemLeft" align="right" valign="top"><a id="a787899ca782f76307f96ca13a763417e"></a>
+std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>phasor_norm</b> (double f, int n, double omega, double dt, int Nt)</td></tr>
+<tr class="separator:a787899ca782f76307f96ca13a763417e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a865cfb4be5000462a8a4f94a40934695"><td class="memItemLeft" align="right" valign="top"><a id="a865cfb4be5000462a8a4f94a40934695"></a>
+virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (int n, double omega, double dt)=0</td></tr>
+<tr class="separator:a865cfb4be5000462a8a4f94a40934695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">set_values_from</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
+<tr class="separator:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
+<tr class="memitem:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d">max_IJK_tot</a> () const</td></tr>
+<tr class="separator:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a567bf007e40534b8500132c80f29ed51"><td class="memItemLeft" align="right" valign="top"><a id="a567bf007e40534b8500132c80f29ed51"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>ft</b> = 0.</td></tr>
+<tr class="separator:a567bf007e40534b8500132c80f29ed51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a931bc141e5d00611ed8267b90b01a4b4"><td class="memItemLeft" align="right" valign="top"><a id="a931bc141e5d00611ed8267b90b01a4b4"></a>
 std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>angular_norm</b> = 0.</td></tr>
 <tr class="separator:a931bc141e5d00611ed8267b90b01a4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11b520c750c115ca4986e17d3a52df44"><td class="memItemLeft" align="right" valign="top"><a id="a11b520c750c115ca4986e17d3a52df44"></a>
+<a class="el" href="classXYZTensor3D.html">XYZTensor3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>real</b></td></tr>
+<tr class="separator:a11b520c750c115ca4986e17d3a52df44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99e9fac8b7c56d855a502d8472a3928d"><td class="memItemLeft" align="right" valign="top"><a id="a99e9fac8b7c56d855a502d8472a3928d"></a>
+<a class="el" href="classXYZTensor3D.html">XYZTensor3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>imag</b></td></tr>
+<tr class="separator:a99e9fac8b7c56d855a502d8472a3928d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d97d97622e26cf1a7249e9c75e72884"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a5d97d97622e26cf1a7249e9c75e72884">il</a> = 0</td></tr>
+<tr class="separator:a5d97d97622e26cf1a7249e9c75e72884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5378dc8e01791b0be5e26dc605863fab"><td class="memItemLeft" align="right" valign="top"><a id="a5378dc8e01791b0be5e26dc605863fab"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>iu</b> = 0</td></tr>
+<tr class="separator:a5378dc8e01791b0be5e26dc605863fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ab720021eb6cba082d0ff88eb71f52"><td class="memItemLeft" align="right" valign="top"><a id="a98ab720021eb6cba082d0ff88eb71f52"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>jl</b> = 0</td></tr>
+<tr class="separator:a98ab720021eb6cba082d0ff88eb71f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab160fa6eca86bcbe170f7f7575117341"><td class="memItemLeft" align="right" valign="top"><a id="ab160fa6eca86bcbe170f7f7575117341"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>ju</b> = 0</td></tr>
+<tr class="separator:ab160fa6eca86bcbe170f7f7575117341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07012e838ee114f9590756daf589b69f"><td class="memItemLeft" align="right" valign="top"><a id="a07012e838ee114f9590756daf589b69f"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>kl</b> = 0</td></tr>
+<tr class="separator:a07012e838ee114f9590756daf589b69f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5c3d22eda742cd2a03f718fdd462e2"><td class="memItemLeft" align="right" valign="top"><a id="a9c5c3d22eda742cd2a03f718fdd462e2"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>ku</b> = 0</td></tr>
+<tr class="separator:a9c5c3d22eda742cd2a03f718fdd462e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
+<tr class="memitem:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="abc62df28e06b99a32b0eb94043054975"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>I_tot</b> = 0</td></tr>
+<tr class="separator:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="af905adb66d69fc7b71b1096c2f93773c"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>J_tot</b> = 0</td></tr>
+<tr class="separator:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a7380bf9a24e5f50af087676009086af6"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr>
+<tr class="separator:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A complex field defined over a grid. Has real and imaginary components at each (x, y, z) grid point </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a88c2e1c843986da2cce6a54379466bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88c2e1c843986da2cce6a54379466bbb">&#9670;&nbsp;</a></span>set_phasors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::set_phasors </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classSplitField.html">SplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>F</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>omega</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>Nt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the phasors for this field, given a split field. Result gives field according to the exp(-iwt) convention </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">F</td><td></td></tr>
+    <tr><td class="paramname">n</td><td></td></tr>
+    <tr><td class="paramname">omega</td><td></td></tr>
+    <tr><td class="paramname">dt</td><td></td></tr>
+    <tr><td class="paramname">Nt</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9aaf9b68cac30ee0c2ad27ca15975f5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aaf9b68cac30ee0c2ad27ca15975f5b">&#9670;&nbsp;</a></span>set_values_from()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::set_values_from </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classField.html">Field</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the values of all components in this field from another, equally sized field </p>
+
+</div>
+</div>
+<a id="a5511a94b5f37a81ee7b3dacb83dd20b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5511a94b5f37a81ee7b3dacb83dd20b6">&#9670;&nbsp;</a></span>zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::zero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Zero all components of the real and imaginary parts of the field </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5d97d97622e26cf1a7249e9c75e72884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d97d97622e26cf1a7249e9c75e72884">&#9670;&nbsp;</a></span>il</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Field::il = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Upper (u) and lower (l) indices in the x,y,z directions. e.g. il is the first non-pml cell in the i direction and iu the last in the corresponding split field grid </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>tdms/include/<a class="el" href="field_8h_source.html">field.h</a></li>
 </ul>

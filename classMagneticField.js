@@ -1,4 +1,4 @@
 var classMagneticField =
 [
-    [ "add_to_angular_norm", "classMagneticField.html#a3456bbeccdc99b70e808114026f286da", null ]
+    [ "phase", "classMagneticField.html#a35aee669e5e026e810c399b6e6e1d8fb", null ]
 ];
