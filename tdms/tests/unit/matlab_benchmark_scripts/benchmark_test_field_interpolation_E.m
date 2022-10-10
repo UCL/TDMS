@@ -8,7 +8,7 @@ test_field_interpolation::TEST_CASE("E-field interpolation check").
 The E-field used will have identical field components, each of which are
 given by the expression:
 
-E{x,y,z}(xx,yy,zz) = sin(2\pi zz) * exp(-yy^2) * ( 1./ (10xx^2+1) ),
+E_t(tt) = sin(2\pi tt) exp(-tt^2),
 
 and will be tested over the range $[-2,4]^3$.
 

@@ -9,6 +9,9 @@
 
 #include "interpolate_Efield.h"
 #include "interpolate_Hfield.h"
+#include "globals.h"
+
+using namespace tdms_math_constants;
 
 /* Overview of Tests
 
@@ -44,11 +47,11 @@ inline double euclidean(double *v, int end, int start = 0) {
 
 // functional form for the E-field components
 inline double Ecomponent(double t) {
-    return sin(2. * M_PI * t) * exp(-t * t);
+    return sin(2. * DCPI * t) * exp(-t * t);
 }
 // functional form for the H-field components
-inline double Hcomponent(double x, double y, double z) {
-    return cos(.5 * M_PI * z) * exp(-y * y) * (1. / (5. * x * x + 1.));
+inline double Hcomponent(double t) {
+    return sin(2. * DCPI * t) * exp(-t * t);
 }
 
 // for memory allocation of 3D arrays
@@ -326,7 +329,7 @@ TEST_CASE("E-field interpolation check") {
  * @brief Test the interpolation of the H-field components to the centre of the Yee cells
  *
  * Each component of the H-field will take the form
- * H{x,y,z}(xx,yy,zz) = cos(0.5\pi zz) * exp(-yy^2) * ( 1./ (5xx^2+1) ).
+ * H_t(tt) = sin(2\pi tt) * exp(-tt^2).
  *
  * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
  */
@@ -334,9 +337,9 @@ TEST_CASE("H-field interpolation check") {
     SPDLOG_INFO("===== Testing H-field BLi =====");
     // error tolerance, based on MATLAB performance
     // script: benchmark_test_field_interpolation_H.m
-    double Hx_fro_tol = 1.8946211079489815e-02;
-    double Hy_fro_tol = 7.9076626528757438e-02;
-    double Hz_fro_tol = 8.0012805533367606e-02;
+    double Hx_fro_tol = 4.9722096274682832e-02;
+    double Hy_fro_tol = 4.8756759347066955e-02;
+    double Hz_fro_tol = 4.8447195218466632e-02;
 
     // additional tolerance to allow for floating-point rounding imprecisions, etc
     double acc_tol = 1e-12;
@@ -379,15 +382,9 @@ TEST_CASE("H-field interpolation check") {
                 // and the other to be 0.
 
                 // H{x,y,z} offsets from cell centres are 0.5 * D{!{x,y,z}} IE, 0.5 away from the centre in the two directions that are _not_ the field component
-                double x_comp_value = Hcomponent(cell_centre[0],
-                                                 cell_centre[1] + 0.5 * cellDims[1],
-                                                 cell_centre[2] + 0.5 * cellDims[2]),
-                       y_comp_value = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
-                                                 cell_centre[1],
-                                                 cell_centre[2] + 0.5 * cellDims[2]),
-                       z_comp_value = Hcomponent(cell_centre[0] + 0.5 * cellDims[0],
-                                                 cell_centre[1] + 0.5 * cellDims[1],
-                                                 cell_centre[2]);
+                double x_comp_value = Hcomponent(cell_centre[0]),
+                       y_comp_value = Hcomponent(cell_centre[1]),
+                       z_comp_value = Hcomponent(cell_centre[2]);
                 // assign fields. For split field, use weightings that sum to unity
                 Hx[kk][jj][ii] = x_comp_value;
                 Hy[kk][jj][ii] = y_comp_value;
@@ -416,7 +413,7 @@ TEST_CASE("H-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Hx_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Hx_exact = Hcomponent(cell_centre[0]);
 
                 // interpolate to the centre of this cell
                 double Hx_interp, Hx_split_interp;
@@ -441,7 +438,7 @@ TEST_CASE("H-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Hy_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Hy_exact = Hcomponent(cell_centre[1]);
 
                 // interpolate to the centre of this cell
                 double Hy_interp, Hy_split_interp;
@@ -466,7 +463,7 @@ TEST_CASE("H-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Hz_exact = Hcomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Hz_exact = Hcomponent(cell_centre[2]);
 
                 // interpolate to the centre of this cell
                 double Hz_interp, Hz_split_interp;

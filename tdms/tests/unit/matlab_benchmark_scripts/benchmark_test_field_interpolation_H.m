@@ -8,7 +8,7 @@ test_field_interpolation::TEST_CASE("H-field interpolation check").
 The H-field used will have identical field components, each of which are
 given by the expression:
 
-H{x,y,z}(xx,yy,zz) = cos(0.5\pi zz) * exp(-yy^2) * ( 1./ (5xx^2+1) ),
+H_t(tt) = sin(2\pi tt) exp(-tt^2),
 
 and will be tested over the range $[-2,4]^3$.
 
