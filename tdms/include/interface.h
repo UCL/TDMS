@@ -1,3 +1,7 @@
+/**
+ * @file interface.h
+ */
+#pragma once
 
 class InterfaceComponent{
 public:

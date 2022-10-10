@@ -1,3 +1,7 @@
+/**
+ * @file grid_labels.h
+ * @brief Class to hold the labels of a Yee cell.
+ */
 #pragma once
 #include "matlabio.h"
 
