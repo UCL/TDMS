@@ -18,7 +18,9 @@ using Catch::Approx;
 using namespace std;
 
 /**
- * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error).
+ * @brief In the case when cubic interpolation is to be used, check that all
+ * polynomial fields up to cubic order are interpolated exactly (to within
+ * machine error)
  *
  * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
  */
@@ -118,7 +120,8 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 }
 
 /**
- * @brief The hard-coded numerical values for the interpolation constant should all sum to the same value
+ * @brief The hard-coded numerical values for the interpolation constant should 
+ * all sum to the same value
  *
  * Note - the coefficients are not required to sum to unity!
  */
@@ -183,20 +186,20 @@ TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     double const_fn_MATLAB_error = 2.82944733e-04;  
     
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // Also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i
+    // also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // constant function interpolation
-    const_fn_interp[1] = best_interp_scheme(nSamples, 1).interpolate(const_fn_data);
-    const_fn_interp[2] = best_interp_scheme(nSamples, 2).interpolate(const_fn_data);
-    const_fn_interp[3] = best_interp_scheme(nSamples, 3).interpolate(const_fn_data);
+    const_fn_interp[1] = best_scheme(nSamples, 1).interpolate(const_fn_data);
+    const_fn_interp[2] = best_scheme(nSamples, 2).interpolate(const_fn_data);
+    const_fn_interp[3] = best_scheme(nSamples, 3).interpolate(const_fn_data);
     for (int i=4; i<nSamples-4; i++) {
         // need to offset now so that the correct sample points are provided
-        const_fn_interp[i] = best_interp_scheme(nSamples, i).interpolate(const_fn_data, i-4);
+        const_fn_interp[i] = best_scheme(nSamples, i).interpolate(const_fn_data, i-4);
     }
-    const_fn_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(const_fn_data, nSamples-8);
-    const_fn_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(const_fn_data, nSamples-8);
-    const_fn_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(const_fn_data, nSamples-8);
-    const_fn_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-4] = best_scheme(nSamples, nSamples-4).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-3] = best_scheme(nSamples, nSamples-3).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-2] = best_scheme(nSamples, nSamples-2).interpolate(const_fn_data, nSamples-8);
+    const_fn_interp[nSamples-1] = best_scheme(nSamples, nSamples-1).interpolate(const_fn_data, nSamples-8);
 
     // Compare interpolated values to the true values, which are just f(x)=1.
     // NOTE: cont_fn_interp[0] is uninitialised, since we don't presently interpolate to cell 0's centre, and is thus skipped
@@ -248,21 +251,21 @@ TEST_CASE("(real-valued) Band limited interpolation: sin(2 pi x)") {
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
+    // also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // sin function interpolation
-    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
-    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
-    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
+    f_interp[1] = best_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_scheme(nSamples, 3).interpolate(f_data);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
+        f_interp[i] = best_scheme(nSamples, i).interpolate(f_data, i - 4);
     }
-    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 4] = best_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
 
     // Compare interpolated values to the true values. 
     // NOTE: index 0 is invalid as we currently don't interpolate to here
@@ -337,21 +340,21 @@ TEST_CASE("(real-valued) Band limited interpolation: compact pulse") {
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
+    // Also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // pulse function interpolation
-    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
-    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
-    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
+    f_interp[1] = best_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_scheme(nSamples, 3).interpolate(f_data);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
+        f_interp[i] = best_scheme(nSamples, i).interpolate(f_data, i - 4);
     }
-    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 4] = best_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++)
@@ -407,17 +410,17 @@ TEST_CASE("(complex-valued) Band limited interpolation") {
     // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position xi5[i].
 
     // pulse function interpolation
-    f_interp[1] = best_interp_scheme(nSamples, 1).interpolate(f_data);
-    f_interp[2] = best_interp_scheme(nSamples, 2).interpolate(f_data);
-    f_interp[3] = best_interp_scheme(nSamples, 3).interpolate(f_data);
+    f_interp[1] = best_scheme(nSamples, 1).interpolate(f_data);
+    f_interp[2] = best_scheme(nSamples, 2).interpolate(f_data);
+    f_interp[3] = best_scheme(nSamples, 3).interpolate(f_data);
     for (int i = 4; i < nSamples - 4; i++) {
         // need to offset now so that the correct sample points are provided
-        f_interp[i] = best_interp_scheme(nSamples, i).interpolate(f_data, i - 4);
+        f_interp[i] = best_scheme(nSamples, i).interpolate(f_data, i - 4);
     }
-    f_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
-    f_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 4] = best_scheme(nSamples, nSamples - 4).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 3] = best_scheme(nSamples, nSamples - 3).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 2] = best_scheme(nSamples, nSamples - 2).interpolate(f_data, nSamples - 8);
+    f_interp[nSamples - 1] = best_scheme(nSamples, nSamples - 1).interpolate(f_data, nSamples - 8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++) {

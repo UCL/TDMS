@@ -1,6 +1,7 @@
 /**
  * A collection of functions for tensor initialisation given matlab pointers
  */
+#pragma once
 #include <string>
 #include <vector>
 #include "vector_collection.h"

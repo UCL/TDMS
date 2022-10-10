@@ -1,3 +1,7 @@
+/**
+ * @file arrays.h
+ * @brief Classes describing arrays, vertices etc.
+ */
 #pragma once
 #include <complex>
 #include <string>
