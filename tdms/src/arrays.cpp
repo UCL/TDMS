@@ -4,8 +4,8 @@
 #include "globals.h"
 #include "utils.h"
 
-
 using namespace std;
+using namespace tdms_math_constants;
 
 void XYZVectors::set_ptr(const char c, double* ptr){
   switch (c) {
@@ -135,7 +135,7 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
   if (mxIsEmpty(ptr)) {
     n = 1;
     vector = (double *) malloc(sizeof(double));
-    vector[0] = omega_an / 2. / dcpi;
+    vector[0] = omega_an / 2. / DCPI;
 
   } else {
     auto dims = mxGetDimensions(ptr);
@@ -244,7 +244,7 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr
   for (int k = 0; k < n_det_modes; k++)
     for (int j = 0; j < n_cols; j++)
       for (int i = 0; i < n_rows; i++) {
-        p[j][i][k] = temp_re[j][i][k] + I * temp_im[j][i][k];
+        p[j][i][k] = temp_re[j][i][k] + IMAGINARY_UNIT * temp_im[j][i][k];
       }
 
   free_cast_matlab_3D_array(temp_re, n_cols);

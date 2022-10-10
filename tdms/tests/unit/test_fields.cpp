@@ -5,9 +5,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
 #include "field.h"
+#include "globals.h"
 
 using namespace std;
-
 
 template<typename T>
 inline bool is_close(T a, T b){
@@ -27,7 +27,7 @@ TEST_CASE("Test electric field angular norm addition") {
   double DT = 0.1;
   int N = 3;
   int N_T = 5;
-  auto I = complex<double>(0., 1.);
+  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto E = ElectricField();
   E.ft = 1.0;
@@ -48,7 +48,7 @@ TEST_CASE("Test magnetic field angular norm addition") {
   double DT = 0.2;
   int N = 7;
   int N_T = 5;
-  auto I = complex<double>(0., 1.);
+  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto H = MagneticField();
   H.ft = 1.0;

@@ -2,8 +2,9 @@
  * @file test_interpolation_determination.cpp
  * @brief Tests of the interpolation functions.
  */
-#include <catch2/catch_test_macros.hpp>
 #include <interpolation_methods.h>
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace std;
 
