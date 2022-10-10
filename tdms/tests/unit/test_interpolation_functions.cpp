@@ -8,7 +8,9 @@
 using namespace std;
 
 /**
- * @brief In the case when cubic interpolation is to be used, check that all polynomial fields up to cubic order are interpolated exactly (to within machine error)
+ * @brief In the case when cubic interpolation is to be used, check that all
+ * polynomial fields up to cubic order are interpolated exactly (to within
+ * machine error)
  *
  */
 TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exact")
@@ -73,7 +75,8 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 }
 
 /**
- * @brief The hard-coded numerical values for the interpolation constant should all sum to the same value
+ * @brief The hard-coded numerical values for the interpolation constant should 
+ * all sum to the same value
  *
  * Note - the coefficients are not required to sum to unity!
  */
@@ -141,20 +144,20 @@ TEST_CASE("bandlimited_interpolation: order of error, constant function")
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // constant function interpolation
-    const_fn_interp[1] = best_interp_scheme(nSamples, 1).interpolate(const_fn_vals);
-    const_fn_interp[2] = best_interp_scheme(nSamples, 2).interpolate(const_fn_vals);
-    const_fn_interp[3] = best_interp_scheme(nSamples, 3).interpolate(const_fn_vals);
+    const_fn_interp[1] = best_scheme(nSamples, 1).interpolate(const_fn_vals);
+    const_fn_interp[2] = best_scheme(nSamples, 2).interpolate(const_fn_vals);
+    const_fn_interp[3] = best_scheme(nSamples, 3).interpolate(const_fn_vals);
     for (int i=4; i<nSamples-4; i++) {
         // need to offset now so that the correct sample points are provided
-        const_fn_interp[i] = best_interp_scheme(nSamples, i).interpolate(const_fn_vals, i-4);
+        const_fn_interp[i] = best_scheme(nSamples, i).interpolate(const_fn_vals, i-4);
     }
-    const_fn_interp[nSamples-4] = best_interp_scheme(nSamples, nSamples-4).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-3] = best_interp_scheme(nSamples, nSamples-3).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-2] = best_interp_scheme(nSamples, nSamples-2).interpolate(const_fn_vals, nSamples-8);
-    const_fn_interp[nSamples-1] = best_interp_scheme(nSamples, nSamples-1).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-4] = best_scheme(nSamples, nSamples-4).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-3] = best_scheme(nSamples, nSamples-3).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-2] = best_scheme(nSamples, nSamples-2).interpolate(const_fn_vals, nSamples-8);
+    const_fn_interp[nSamples-1] = best_scheme(nSamples, nSamples-1).interpolate(const_fn_vals, nSamples-8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i=0; i<nSamples-1; i++) {
@@ -192,21 +195,21 @@ TEST_CASE("bandlimited_interpolation: order of error, sine function")
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // sin function interpolation
-    sin_interp[1] = best_interp_scheme(nSamples, 1).interpolate(sin_vals);
-    sin_interp[2] = best_interp_scheme(nSamples, 2).interpolate(sin_vals);
-    sin_interp[3] = best_interp_scheme(nSamples, 3).interpolate(sin_vals);
+    sin_interp[1] = best_scheme(nSamples, 1).interpolate(sin_vals);
+    sin_interp[2] = best_scheme(nSamples, 2).interpolate(sin_vals);
+    sin_interp[3] = best_scheme(nSamples, 3).interpolate(sin_vals);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        sin_interp[i] = best_interp_scheme(nSamples, i).interpolate(sin_vals, i - 4);
+        sin_interp[i] = best_scheme(nSamples, i).interpolate(sin_vals, i - 4);
     }
-    sin_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(sin_vals, nSamples - 8);
-    sin_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(sin_vals, nSamples - 8);
+    sin_interp[nSamples - 4] = best_scheme(nSamples, nSamples - 4).interpolate(sin_vals, nSamples - 8);
+    sin_interp[nSamples - 3] = best_scheme(nSamples, nSamples - 3).interpolate(sin_vals, nSamples - 8);
+    sin_interp[nSamples - 2] = best_scheme(nSamples, nSamples - 2).interpolate(sin_vals, nSamples - 8);
+    sin_interp[nSamples - 1] = best_scheme(nSamples, nSamples - 1).interpolate(sin_vals, nSamples - 8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++)
@@ -261,21 +264,21 @@ TEST_CASE("bandlimited_interpolation: order of error, compact pulse")
     }
 
     // Yee cell 0 has no value "to the left" - this will change with BL_TO_CELL_0 being included.
-    // also recall that best_interp_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
+    // Also recall that best_scheme(nSamples, i) returns the scheme that interpolates to the centre of cell i, IE, to position Yee_cell_centres[i].
 
     // pulse function interpolation
-    pulse_interp[1] = best_interp_scheme(nSamples, 1).interpolate(pulse_vals);
-    pulse_interp[2] = best_interp_scheme(nSamples, 2).interpolate(pulse_vals);
-    pulse_interp[3] = best_interp_scheme(nSamples, 3).interpolate(pulse_vals);
+    pulse_interp[1] = best_scheme(nSamples, 1).interpolate(pulse_vals);
+    pulse_interp[2] = best_scheme(nSamples, 2).interpolate(pulse_vals);
+    pulse_interp[3] = best_scheme(nSamples, 3).interpolate(pulse_vals);
     for (int i = 4; i < nSamples - 4; i++)
     {
         // need to offset now so that the correct sample points are provided
-        pulse_interp[i] = best_interp_scheme(nSamples, i).interpolate(pulse_vals, i - 4);
+        pulse_interp[i] = best_scheme(nSamples, i).interpolate(pulse_vals, i - 4);
     }
-    pulse_interp[nSamples - 4] = best_interp_scheme(nSamples, nSamples - 4).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 3] = best_interp_scheme(nSamples, nSamples - 3).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 2] = best_interp_scheme(nSamples, nSamples - 2).interpolate(pulse_vals, nSamples - 8);
-    pulse_interp[nSamples - 1] = best_interp_scheme(nSamples, nSamples - 1).interpolate(pulse_vals, nSamples - 8);
+    pulse_interp[nSamples - 4] = best_scheme(nSamples, nSamples - 4).interpolate(pulse_vals, nSamples - 8);
+    pulse_interp[nSamples - 3] = best_scheme(nSamples, nSamples - 3).interpolate(pulse_vals, nSamples - 8);
+    pulse_interp[nSamples - 2] = best_scheme(nSamples, nSamples - 2).interpolate(pulse_vals, nSamples - 8);
+    pulse_interp[nSamples - 1] = best_scheme(nSamples, nSamples - 1).interpolate(pulse_vals, nSamples - 8);
 
     // compare interpolated values to the true values. NOTE: index 0 is invalid as we currently don't interpolate to here
     for (int i = 0; i < nSamples - 1; i++)

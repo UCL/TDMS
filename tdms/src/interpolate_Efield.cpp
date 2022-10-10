@@ -5,7 +5,7 @@
 void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, int nI, double *Ex) {
 
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &scheme = best_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 
@@ -22,7 +22,7 @@ void interpolateTimeDomainEx(double ***Exy, double ***Exz, int i, int j, int k, 
 void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, int nJ, double *Ey)
 {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &scheme = best_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 
@@ -40,7 +40,7 @@ void interpolateTimeDomainEy(double ***Eyx, double ***Eyz, int i, int j, int k, 
 void interpolateTimeDomainEz(double ***Ezx, double ***Ezy, int i, int j, int k, int nK, double *Ez) {
 
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &scheme = best_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     double interp_data[8];
 

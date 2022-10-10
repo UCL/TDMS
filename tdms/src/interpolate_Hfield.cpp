@@ -43,9 +43,9 @@ void interpolateTimeDomainHx(double ***Hxy, double ***Hxz, int i, int j, int k, 
     // Associations: a = x, b = y, c = z
 
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     double data_for_second_scheme[8];
@@ -104,9 +104,9 @@ void interpolateTimeDomainHy(double ***Hyx, double ***Hyz, int i, int j, int k, 
     // Associations: a = y, b = z, c = x
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
 
     // this data will be passed to the second interpolation scheme
     double data_for_second_scheme[8];
@@ -165,9 +165,9 @@ void interpolateTimeDomainHz(double ***Hzx, double ***Hzy, int i, int j, int k, 
     // Associations: a = z, b = x, c = y
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     double data_for_second_scheme[8];
