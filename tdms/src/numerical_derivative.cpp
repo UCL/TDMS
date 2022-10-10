@@ -47,11 +47,11 @@ void init_diff_shift_op(double delta, fftw_complex *Dk, int N){
   }
 
   for(int i=0;i<=(N-1);i++){
-    Dk[i][REAL] = -1.*sin(an[i]*2.*dcpi*delta/( (double)N ))*an[i]*2.*dcpi;
-    Dk[i][IMAG] =  cos(an[i]*2.*dcpi*delta/( (double)N ))*an[i]*2.*dcpi;
+    Dk[i][REAL] = -1.*sin(an[i]*2.*DCPI*delta/( (double)N ))*an[i]*2.*DCPI;
+    Dk[i][IMAG] =  cos(an[i]*2.*DCPI*delta/( (double)N ))*an[i]*2.*DCPI;
   }
   if( (N % 2) == 0){
-    Dk[N/2][REAL] = -1.*sin(an[N/2]*2.*dcpi*delta/( (double)N ))*an[N/2]*2.*dcpi;
+    Dk[N/2][REAL] = -1.*sin(an[N/2]*2.*DCPI*delta/( (double)N ))*an[N/2]*2.*DCPI;
     Dk[N/2][IMAG] = 0.;
   }
   spdlog::trace("delta: {}\n", delta);

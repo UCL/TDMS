@@ -52,7 +52,7 @@ enum RCSType   { parallel , perpendicular };
 
 namespace tdms_math_constants
 {
-const double dcpi = 3.14159265358979323846;                                  // Pi
+const double DCPI = 3.14159265358979323846;                                  // Pi
 const std::complex<double> IMAGINARY_UNIT = std::complex<double>(0.0, 1.0);  // Imaginary unit
 }
 
@@ -62,9 +62,9 @@ const std::complex<double> IMAGINARY_UNIT = std::complex<double>(0.0, 1.0);  // 
 
 namespace tdms_phys_constants
 {
-const double eo = 8.85400e-12;                               // free space electric permitivity
-const double mo = 4.0 * tdms_math_constants::dcpi * 1.0e-7;  // free space magnetic permeability
-const double light_v = 1.0 / sqrt(mo * eo);                  // free space light velocity
-const double Zo = 376.734;                                   // free space inpedance
+const double EPSILON0 = 8.85400e-12;                         // free space electric permitivity
+const double MU0 = 4.0 * tdms_math_constants::DCPI * 1.0e-7; // free space magnetic permeability
+const double LIGHT_V = 1.0 / sqrt(EPSILON0 * MU0);           // free space light velocity
+const double Z0 = 376.734;                                   // free space inpedance
 }
 

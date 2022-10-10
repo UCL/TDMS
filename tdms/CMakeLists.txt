@@ -100,18 +100,27 @@ endif()
 
 # TDMS target -----------------------------------------------------------------
 set(SOURCES
+    src/fields/base.cpp
+    src/fields/electric.cpp
+    src/fields/magnetic.cpp
+    src/fields/split.cpp
+    src/fields/td_field_exporter_2d.cpp
     src/argument_parser.cpp
-    src/electric_field.cpp
+    src/array_init.cpp
+    src/arrays.cpp
+    src/dimensions.cpp
     src/fdtd_grid_initialiser.cpp
+    src/grid_labels.cpp
+    src/interface.cpp
     src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
-    src/magnetic_field.cpp
     src/matrix_collection.cpp
     src/mesh_base.cpp
-    src/numeric.cpp
     src/numerical_derivative.cpp
+    src/shapes.cpp
     src/simulation_parameters.cpp
+    src/source.cpp
     src/timer.cpp
     src/utils.cpp
     matlabio/matlabio.cpp
