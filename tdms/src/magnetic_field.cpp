@@ -12,6 +12,6 @@ void MagneticField::add_to_angular_norm(double f, int n, int Nt, SimulationParam
 
 complex<double> MagneticField::phasor_norm(double f, int n, double omega, double dt, int Nt){
   return f
-         * exp( fmod(omega*((double) n + 0.5)*dt, 2*dcpi) * IMAGINARY_UNIT)
+         * exp( fmod(omega*((double) n + 0.5)*dt, 2*DCPI) * IMAGINARY_UNIT)
          * 1./((double) Nt);
 }
