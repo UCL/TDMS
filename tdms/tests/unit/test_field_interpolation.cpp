@@ -43,8 +43,8 @@ inline double euclidean(double *v, int end, int start = 0) {
 }
 
 // functional form for the E-field components
-inline double Ecomponent(double x, double y, double z) {
-    return sin(2. * M_PI * z) * exp(-y * y) * (1. / (10. * x * x + 1.));
+inline double Ecomponent(double t) {
+    return sin(2. * M_PI * t) * exp(-t * t);
 }
 // functional form for the H-field components
 inline double Hcomponent(double x, double y, double z) {
@@ -67,7 +67,7 @@ inline double ***allocate3dmemory(int nI, int nJ, int nK) {
  * @brief Test the interpolation of the E-field components to the centre of the Yee cells
  *
  * Each component of the E-field will take the form
- * E{x,y,z}(xx,yy,zz) = sin(2\pi zz) * exp(-yy^2) * ( 1./ (10xx^2+1) ).
+ * E_t(tt) = sin(2\pi tt) * exp(-tt^2)
  *
  * We test both the Fro- and slice-norm metrics, since interpolation only happens along one axis
  */
@@ -75,9 +75,9 @@ TEST_CASE("E-field interpolation check") {
     SPDLOG_INFO("===== Testing E-field BLi =====");
     // error tolerance, based on MATLAB performance
     // script: benchmark_test_field_interpolation_H.m
-    double Ex_fro_tol = 2.8200485621983595e-01, Ex_ms_tol = 1.2409211493579948e-02;
-    double Ey_fro_tol = 7.8295329699969822e-03, Ey_ms_tol = 7.5320765734192925e-04;
-    double Ez_fro_tol = 7.5650677900775624e-03, Ez_ms_tol = 1.3131049239745484e-03;
+    double Ex_fro_tol = 1.8602247952705870e+00, Ex_ms_tol = 3.2884439181679728e-02;
+    double Ey_fro_tol = 2.8009859776421876e-02, Ey_ms_tol = 7.8289938125395461e-04;
+    double Ez_fro_tol = 1.0884557082700464e-02, Ez_ms_tol = 4.3024989629313981e-04;
 
     // additional tolerance to allow for floating-point rounding imprecisions, etc
     double acc_tol = 1e-12;
@@ -120,9 +120,9 @@ TEST_CASE("E-field interpolation check") {
                 // and the other to be 0.
 
                 // E{x,y,z} offsets from cell centres are 0.5*D{x,y,z}
-                double x_comp_value = Ecomponent(cell_centre[0] + 0.5 * cellDims[0], cell_centre[1], cell_centre[2]),
-                       y_comp_value = Ecomponent(cell_centre[0], cell_centre[1] + 0.5 * cellDims[1], cell_centre[2]),
-                       z_comp_value = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2] + 0.5 * cellDims[2]);
+                double x_comp_value = Ecomponent(cell_centre[0] + 0.5 * cellDims[0]),
+                       y_comp_value = Ecomponent(cell_centre[1] + 0.5 * cellDims[1]),
+                       z_comp_value = Ecomponent(cell_centre[2] + 0.5 * cellDims[2]);
                 // assign component values
                 Ex[kk][jj][ii] = x_comp_value; Ey[kk][jj][ii] = y_comp_value; Ez[kk][jj][ii] = z_comp_value;
                 // split fields - use some wieghting that sums to one for the split cells
@@ -150,7 +150,7 @@ TEST_CASE("E-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Ex_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Ex_exact = Ecomponent(cell_centre[0]);
 
                 // interpolate to the centre of this cell
                 double Ex_interp, Ex_split_interp;
@@ -175,7 +175,7 @@ TEST_CASE("E-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Ey_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Ey_exact = Ecomponent(cell_centre[1]);
 
                 // interpolate to the centre of this cell
                 double Ey_interp, Ey_split_interp;
@@ -200,7 +200,7 @@ TEST_CASE("E-field interpolation check") {
                 cell_centre[2] = z_lower + ((double)kk + 1.5) * cellDims[2];
 
                 // compute the true value of the field components at the centre of this Yee cell
-                double Ez_exact = Ecomponent(cell_centre[0], cell_centre[1], cell_centre[2]);
+                double Ez_exact = Ecomponent(cell_centre[2]);
 
                 // interpolate to the centre of this cell
                 double Ez_interp, Ez_split_interp;

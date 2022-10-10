@@ -57,12 +57,12 @@ for i=1:nX
             fp_ex = FP(i,j,k,"Ex");
             fp_ey = FP(i,j,k,"Ey");
             fp_ez = FP(i,j,k,"Ez");
-            Ex_exact(i,j,k) = E_field(centre(1), centre(2), centre(3));
-            Ey_exact(i,j,k) = E_field(centre(1), centre(2), centre(3));
-            Ez_exact(i,j,k) = E_field(centre(1), centre(2), centre(3));
-            Ex_sample(i,j,k) = E_field(fp_ex(1), fp_ex(2), fp_ex(3));
-            Ey_sample(i,j,k) = E_field(fp_ey(1), fp_ey(2), fp_ey(3));
-            Ez_sample(i,j,k) = E_field(fp_ez(1), fp_ez(2), fp_ez(3));
+            Ex_exact(i,j,k) = Ex_field(centre(1), centre(2), centre(3));
+            Ey_exact(i,j,k) = Ey_field(centre(1), centre(2), centre(3));
+            Ez_exact(i,j,k) = Ez_field(centre(1), centre(2), centre(3));
+            Ex_sample(i,j,k) = Ex_field(fp_ex(1), fp_ex(2), fp_ex(3));
+            Ey_sample(i,j,k) = Ey_field(fp_ey(1), fp_ey(2), fp_ey(3));
+            Ez_sample(i,j,k) = Ez_field(fp_ez(1), fp_ez(2), fp_ez(3));
         end
     end
 end
@@ -127,10 +127,16 @@ fprintf("Ey max-slice norm error: \t %.16e \n", Ey_max_slice_norm);
 fprintf("Ez Frobenius norm error: \t %.16e \n", Ez_norm_err);
 fprintf("Ez max-slice norm error: \t %.16e \n", Ez_max_slice_norm);
 
-%% E-field component function
-% E{x,y,z}(xx,yy,zz) = sin(2\pi zz) * exp(-yy^2) * ( 1./ (10xx^2+1) )
-function [value] = E_field(x,y,z)
-    value = (1 ./ (10 * x.^2 + 1)) * exp(-y.^2) * sin(2*pi*z);
+%% E-field component functions
+% Field components E_t(tt) = sin(2\pi tt) exp(-tt^2)
+function [value] = Ex_field(x,~,~)
+    value = sin(2.*pi*x) * exp(-x.^2);
+end
+function [value] = Ey_field(~,y,~)
+    value = sin(2.*pi*y) * exp(-y.^2);
+end
+function [value] = Ez_field(~,~,z)
+    value = sin(2.*pi*z) * exp(-z.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell

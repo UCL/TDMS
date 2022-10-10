@@ -56,12 +56,12 @@ for i=1:nX
             fp_ex = FP(i,j,k,"Hx");
             fp_ey = FP(i,j,k,"Hy");
             fp_ez = FP(i,j,k,"Hz");
-            Hx_exact(i,j,k) = H_field(centre(1), centre(2), centre(3));
-            Hy_exact(i,j,k) = H_field(centre(1), centre(2), centre(3));
-            Hz_exact(i,j,k) = H_field(centre(1), centre(2), centre(3));
-            Hx_sample(i,j,k) = H_field(fp_ex(1), fp_ex(2), fp_ex(3));
-            Hy_sample(i,j,k) = H_field(fp_ey(1), fp_ey(2), fp_ey(3));
-            Hz_sample(i,j,k) = H_field(fp_ez(1), fp_ez(2), fp_ez(3));
+            Hx_exact(i,j,k) = Hx_field(centre(1), centre(2), centre(3));
+            Hy_exact(i,j,k) = Hy_field(centre(1), centre(2), centre(3));
+            Hz_exact(i,j,k) = Hz_field(centre(1), centre(2), centre(3));
+            Hx_sample(i,j,k) = Hx_field(fp_ex(1), fp_ex(2), fp_ex(3));
+            Hy_sample(i,j,k) = Hy_field(fp_ey(1), fp_ey(2), fp_ey(3));
+            Hz_sample(i,j,k) = Hz_field(fp_ez(1), fp_ez(2), fp_ez(3));
         end
     end
 end
@@ -157,9 +157,15 @@ Hz_fro_err = norm( Hz_errors, "fro" );
 fprintf("Hz Frobenius norm error: \t %.16e \n", Hz_fro_err);
 
 %% H-field component function
-% H{x,y,z}(xx,yy,zz) = cos(0.5\pi zz) * exp(-yy^2) * ( 1./ (5xx^2+1) )
-function [value] = H_field(x,y,z)
-    value = (1 ./ (5 * x.^2 + 1)) * exp(-y.^2) * cos(0.5*pi*z);
+% Field components H_t(tt) = sin(2\pi tt) exp(-tt^2)
+function [value] = Hx_field(x,~,~)
+    value = sin(2. * pi * x) * exp(-x.^2);
+end
+function [value] = Hy_field(~,y,~)
+    value = sin(2. * pi * y) * exp(-y.^2);
+end
+function [value] = Hz_field(~,~,z)
+    value = sin(2. * pi * z) * exp(-z.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell
