@@ -84,7 +84,7 @@ enum scheme_value
     CUBIC_INTERP_LAST = 0           // cubic interpolation to last 2 of 4 points (interp3)
 };
 
-class interpScheme {
+class InterpolationScheme {
     private:
         // the "preference" or "value" of applying this scheme. It may be better to apply another scheme with a higher priority.
         scheme_value priority;
@@ -97,7 +97,7 @@ class interpScheme {
          * 
          * @param value A value associtated to one of the possible schemes
          */
-        interpScheme(scheme_value value);
+        InterpolationScheme(scheme_value value);
 
         /* FETCH METHODS */
 
@@ -145,22 +145,22 @@ class interpScheme {
          * @return true This scheme has greater value
          * @return false This scheme has lesser, or equal, value to s
          */
-        bool is_better_than(const interpScheme s) const;
+        bool is_better_than(const InterpolationScheme s) const;
 };
 
 /* Constant members of the interpScheme class */
-const interpScheme BL0 = interpScheme(BAND_LIMITED_0);
-const interpScheme BL1 = interpScheme(BAND_LIMITED_1);
-const interpScheme BL2 = interpScheme(BAND_LIMITED_2);
-const interpScheme BL3 = interpScheme(BAND_LIMITED_3);
-const interpScheme BL4 = interpScheme(BAND_LIMITED_4);
-const interpScheme BL5 = interpScheme(BAND_LIMITED_5);
-const interpScheme BL6 = interpScheme(BAND_LIMITED_6);
-const interpScheme BL7 = interpScheme(BAND_LIMITED_7);
-const interpScheme BL_TO_CELL_0 = interpScheme(BAND_LIMITED_CELL_ZERO);
-const interpScheme CBFst = interpScheme(CUBIC_INTERP_FIRST);
-const interpScheme CBMid = interpScheme(CUBIC_INTERP_MIDDLE);
-const interpScheme CBLst = interpScheme(CUBIC_INTERP_LAST);
+const InterpolationScheme BL0 = InterpolationScheme(BAND_LIMITED_0);
+const InterpolationScheme BL1 = InterpolationScheme(BAND_LIMITED_1);
+const InterpolationScheme BL2 = InterpolationScheme(BAND_LIMITED_2);
+const InterpolationScheme BL3 = InterpolationScheme(BAND_LIMITED_3);
+const InterpolationScheme BL4 = InterpolationScheme(BAND_LIMITED_4);
+const InterpolationScheme BL5 = InterpolationScheme(BAND_LIMITED_5);
+const InterpolationScheme BL6 = InterpolationScheme(BAND_LIMITED_6);
+const InterpolationScheme BL7 = InterpolationScheme(BAND_LIMITED_7);
+const InterpolationScheme BL_TO_CELL_0 = InterpolationScheme(BAND_LIMITED_CELL_ZERO);
+const InterpolationScheme CBFst = InterpolationScheme(CUBIC_INTERP_FIRST);
+const InterpolationScheme CBMid = InterpolationScheme(CUBIC_INTERP_MIDDLE);
+const InterpolationScheme CBLst = InterpolationScheme(CUBIC_INTERP_LAST);
 
 /**
  * @brief Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.
@@ -169,4 +169,4 @@ const interpScheme CBLst = interpScheme(CUBIC_INTERP_LAST);
  * @param cell_id The current cell index to interpolate to the centre of
  * @return const interpScheme* The interpolation scheme that should be used
  */
-const interpScheme &best_interp_scheme(int cells_in_direction, int cell_id);
+const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id);

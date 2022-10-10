@@ -1,6 +1,9 @@
 /**
- * A collection of functions for array initialisation given matlab pointers
+ * @file array_init.h
+ * @brief A collection of functions for array initialisation given MATLAB
+ * pointers.
  */
+#pragma once
 #include "arrays.h"
 #include "field.h"
 #include "mat_io.h"

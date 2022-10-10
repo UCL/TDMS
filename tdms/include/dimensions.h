@@ -1,3 +1,7 @@
+/**
+ * @file dimensions.h
+ * @brief 
+ */
 #pragma once
 #include "matlabio.h"
 

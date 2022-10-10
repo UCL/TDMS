@@ -61,7 +61,7 @@ void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k
 
 // THESE WILL BE THE RELEVANT FUNCTIONS ONCE INTERPOLATION SCHEMES ARE COMPLETE AND TESTED
 
-interpScheme::interpScheme(scheme_value val) {
+InterpolationScheme::InterpolationScheme(scheme_value val) {
 
     // set the value field
     priority = val;
@@ -229,15 +229,15 @@ interpScheme::interpScheme(scheme_value val) {
     }
 }
 
-scheme_value interpScheme::get_priority() const {
+scheme_value InterpolationScheme::get_priority() const {
     return priority;
 }
 
-int interpScheme::num_nonzero_coeffs() const {
+int InterpolationScheme::num_nonzero_coeffs() const {
     return last_nonzero_coeff - first_nonzero_coeff + 1;
 }
 
-double interpScheme::interpolate(const double *v, const int offset) const {
+double InterpolationScheme::interpolate(const double *v, const int offset) const {
 
     double interp_value = 0.;
     for(int ind=first_nonzero_coeff; ind<=last_nonzero_coeff; ind++) {
@@ -246,11 +246,11 @@ double interpScheme::interpolate(const double *v, const int offset) const {
     return interp_value;
 }
 
-bool interpScheme::is_better_than(const interpScheme s) const {
+bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
     return (priority > s.get_priority());
 }
 
-const interpScheme &best_interp_scheme(int cells_in_direction, int cell_id) {
+const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id) {
 
     // interpolation is impossible with fewer than 4 cells in a dimension
     if (cells_in_direction < 4) {

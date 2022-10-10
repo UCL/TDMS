@@ -1,3 +1,7 @@
+/**
+ * @file source.h
+ */
+#pragma once
 #include <string>
 #include <stdexcept>
 #include "matlabio.h"
