@@ -120,7 +120,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         // BLi interpolation
         for (int i = 1; i < n_YCs; i++) {
             // we checked earlier that BLi should always be available (CHECK(n_YCs>8)), so this is always a BLi scheme
-            interpScheme use_scheme = best_interp_scheme(n_YCs, i);
+            InterpolationScheme use_scheme = best_scheme(n_YCs, i);
             // to be on the safe side, check that we have a BLi scheme. BLi schemes are always strictly better than CUBIC_INTERP_MIDDLE, and not equal or worse.
             CHECK(use_scheme.is_better_than(CUBIC_INTERP_MIDDLE));
             // interpolate using the cell data we have provided

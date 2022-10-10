@@ -245,7 +245,7 @@ double InterpolationScheme::interpolate(const double *v, const int offset) const
     }
     return interp_value;
 }
-complex<double> interpScheme::interpolate(const complex<double> *v, const int offset) const {
+complex<double> InterpolationScheme::interpolate(const complex<double> *v, const int offset) const {
     complex<double> interp_value = 0.;
     for (int ind = first_nonzero_coeff; ind <= last_nonzero_coeff; ind++) {
         interp_value += scheme_coeffs[ind] * v[ind + offset];

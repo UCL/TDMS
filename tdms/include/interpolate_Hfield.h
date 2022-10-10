@@ -59,9 +59,9 @@ void interpolateSplitFieldHx(T ***Hxy, T ***Hxz, int i, int j, int k, int nJ, in
     // Associations: a = x, b = y, c = z
 
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];
@@ -124,9 +124,9 @@ void interpolateHx(T ***Hx, int i, int j, int k, int nJ, int nK, T *Hx_interp) {
     // Associations: a = x, b = y, c = z
 
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];
@@ -190,9 +190,9 @@ void interpolateSplitFieldHy(T ***Hyx, T ***Hyz, int i, int j, int k, int nI, in
     // Associations: a = y, b = z, c = x
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];
@@ -255,9 +255,9 @@ void interpolateHy(T ***Hy, int i, int j, int k, int nI, int nK, T *Hy_interp) {
     // Associations: a = y, b = z, c = x
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the z-direction scheme
-    const interpScheme &z_scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &z_scheme = best_scheme(nK, k);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];
@@ -321,9 +321,9 @@ void interpolateSplitFieldHz(T ***Hzx, T ***Hzy, int i, int j, int k, int nI, in
     // Associations: a = z, b = x, c = y
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];
@@ -386,9 +386,9 @@ void interpolateHz(T ***Hz, int i, int j, int k, int nI, int nJ, T *Hz_interp) {
     // Associations: a = z, b = x, c = y
 
     // determine the x-direction scheme
-    const interpScheme &x_scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &x_scheme = best_scheme(nI, i);
     // determine the y-direction scheme
-    const interpScheme &y_scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &y_scheme = best_scheme(nJ, j);
 
     // this data will be passed to the second interpolation scheme
     T data_for_second_scheme[8];

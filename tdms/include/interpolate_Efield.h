@@ -17,7 +17,7 @@
 template <typename T>
 void interpolateSplitFieldEx(T ***Exy, T ***Exz, int i, int j, int k, int nI, T *Ex) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &scheme = best_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
@@ -41,7 +41,7 @@ void interpolateSplitFieldEx(T ***Exy, T ***Exz, int i, int j, int k, int nI, T 
 template <typename T>
 void interpolateEx(T ***Ex, int i, int j, int k, int nI, T *Ex_interp) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nI, i);
+    const InterpolationScheme &scheme = best_scheme(nI, i);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
@@ -65,7 +65,7 @@ void interpolateEx(T ***Ex, int i, int j, int k, int nI, T *Ex_interp) {
 template <typename T>
 void interpolateSplitFieldEy(T ***Eyx, T ***Eyz, int i, int j, int k, int nJ, T *Ey) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &scheme = best_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
@@ -89,7 +89,7 @@ void interpolateSplitFieldEy(T ***Eyx, T ***Eyz, int i, int j, int k, int nJ, T 
 template <typename T>
 void interpolateEy(T ***Ey, int i, int j, int k, int nJ, T *Ey_interp) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nJ, j);
+    const InterpolationScheme &scheme = best_scheme(nJ, j);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
@@ -114,7 +114,7 @@ void interpolateEy(T ***Ey, int i, int j, int k, int nJ, T *Ey_interp) {
 template <typename T>
 void interpolateSplitFieldEz(T ***Ezx, T ***Ezy, int i, int j, int k, int nK, T *Ez) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &scheme = best_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
@@ -138,7 +138,7 @@ void interpolateSplitFieldEz(T ***Ezx, T ***Ezy, int i, int j, int k, int nK, T 
 template <typename T>
 void interpolateEz(T ***Ez, int i, int j, int k, int nK, T *Ez_interp) {
     // determine the interpolation scheme to use
-    const interpScheme &scheme = best_interp_scheme(nK, k);
+    const InterpolationScheme &scheme = best_scheme(nK, k);
     // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
     T interp_data[8];
 
