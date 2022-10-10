@@ -1,9 +1,14 @@
-# include "catch2/catch_test_macros.hpp"
-# include "interpolation_methods.h"
+/**
+ * @file test_interpolation_functions.cpp
+ * @author William Graham (ccaegra@ucl.ac.uk)
+ * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
+ */
+#include <algorithm>
+#include <catch2/catch_test_macros.hpp>
+#include <cmath>
+#include <iostream>
 
-# include <algorithm>
-# include <cmath>
-# include <iostream>
+#include "interpolation_methods.h"
 
 using namespace std;
 

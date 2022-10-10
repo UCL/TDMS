@@ -22,7 +22,7 @@ jobs:
       matrix:
         os:
           - macos-12
-          # TODO: can change to macos-latest (but it's currently aliased to macos-11)
+        # TODO: can change to macos-latest (but it's currently aliased to macos-11)
         build_type:
           - Release
         build_testing:
@@ -57,18 +57,15 @@ jobs:
         shell: bash
         run: |
           pip3 install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
-
       - name: Create Build Environment
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
-
       - name: Configure TDMS
         shell: bash
         working-directory: ${{runner.workspace}}/build
         env:
           CXXFLAGS: -Werror
         run: |
-
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
            -DBUILD_TESTING=${{ matrix.build_testing }} \
@@ -81,7 +78,6 @@ jobs:
         shell: bash
         run: |
           cmake --build . --config ${{ matrix.build_type }}
-
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
         working-directory: ${{runner.workspace}}/build
