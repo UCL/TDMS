@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TDMS: interpScheme Class Reference</title>
+<title>TDMS: InterpolationScheme Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,7 +64,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('classinterpScheme.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('classInterpolationScheme.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -87,60 +87,60 @@ $(document).ready(function(){initNavTree('classinterpScheme.html',''); initResiz
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
-<a href="classinterpScheme-members.html">List of all members</a>  </div>
+<a href="classInterpolationScheme-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">interpScheme Class Reference</div>  </div>
+<div class="title">InterpolationScheme Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a14f85de0c828b35deca93f8320c0a65d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinterpScheme.html#a14f85de0c828b35deca93f8320c0a65d">interpScheme</a> (scheme_value value)</td></tr>
-<tr class="memdesc:a14f85de0c828b35deca93f8320c0a65d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new interp Scheme object, by providing the scheme value.  <a href="classinterpScheme.html#a14f85de0c828b35deca93f8320c0a65d">More...</a><br /></td></tr>
-<tr class="separator:a14f85de0c828b35deca93f8320c0a65d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20e5794e3467c307b49dabe787414d2d"><td class="memItemLeft" align="right" valign="top">scheme_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinterpScheme.html#a20e5794e3467c307b49dabe787414d2d">get_priority</a> () const</td></tr>
-<tr class="memdesc:a20e5794e3467c307b49dabe787414d2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the value object.  <a href="classinterpScheme.html#a20e5794e3467c307b49dabe787414d2d">More...</a><br /></td></tr>
-<tr class="separator:a20e5794e3467c307b49dabe787414d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afadf7afe490a6c936e74ef76df623066"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinterpScheme.html#afadf7afe490a6c936e74ef76df623066">num_nonzero_coeffs</a> () const</td></tr>
-<tr class="memdesc:afadf7afe490a6c936e74ef76df623066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the number of non-zero coefficients in the interpolation scheme.  <a href="classinterpScheme.html#afadf7afe490a6c936e74ef76df623066">More...</a><br /></td></tr>
-<tr class="separator:afadf7afe490a6c936e74ef76df623066"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00555e23c172e05f6212440b4c17a4e0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinterpScheme.html#a00555e23c172e05f6212440b4c17a4e0">interpolate</a> (const double *v, const int offset=0) const</td></tr>
-<tr class="memdesc:a00555e23c172e05f6212440b4c17a4e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the interpolation scheme on the data provided.  <a href="classinterpScheme.html#a00555e23c172e05f6212440b4c17a4e0">More...</a><br /></td></tr>
-<tr class="separator:a00555e23c172e05f6212440b4c17a4e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d8b393f957c1a8cde13fc4635ca6ca3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinterpScheme.html#a2d8b393f957c1a8cde13fc4635ca6ca3">is_better_than</a> (const <a class="el" href="classinterpScheme.html">interpScheme</a> s) const</td></tr>
-<tr class="memdesc:a2d8b393f957c1a8cde13fc4635ca6ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether another <a class="el" href="classinterpScheme.html">interpScheme</a> has greater value than this one.  <a href="classinterpScheme.html#a2d8b393f957c1a8cde13fc4635ca6ca3">More...</a><br /></td></tr>
-<tr class="separator:a2d8b393f957c1a8cde13fc4635ca6ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4538815b746df6521fea1f9a444a7e4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInterpolationScheme.html#a4538815b746df6521fea1f9a444a7e4d">InterpolationScheme</a> (scheme_value value)</td></tr>
+<tr class="memdesc:a4538815b746df6521fea1f9a444a7e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new interp Scheme object, by providing the scheme value.  <a href="classInterpolationScheme.html#a4538815b746df6521fea1f9a444a7e4d">More...</a><br /></td></tr>
+<tr class="separator:a4538815b746df6521fea1f9a444a7e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2f89ae59a2b4c2b4aea0aaa0331fb12"><td class="memItemLeft" align="right" valign="top">scheme_value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInterpolationScheme.html#aa2f89ae59a2b4c2b4aea0aaa0331fb12">get_priority</a> () const</td></tr>
+<tr class="memdesc:aa2f89ae59a2b4c2b4aea0aaa0331fb12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the value object.  <a href="classInterpolationScheme.html#aa2f89ae59a2b4c2b4aea0aaa0331fb12">More...</a><br /></td></tr>
+<tr class="separator:aa2f89ae59a2b4c2b4aea0aaa0331fb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66152c3e66f87d9be1af1972dec74f77"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInterpolationScheme.html#a66152c3e66f87d9be1af1972dec74f77">num_nonzero_coeffs</a> () const</td></tr>
+<tr class="memdesc:a66152c3e66f87d9be1af1972dec74f77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the number of non-zero coefficients in the interpolation scheme.  <a href="classInterpolationScheme.html#a66152c3e66f87d9be1af1972dec74f77">More...</a><br /></td></tr>
+<tr class="separator:a66152c3e66f87d9be1af1972dec74f77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9f31d128fd0180d0d9cc07697543b70"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInterpolationScheme.html#ad9f31d128fd0180d0d9cc07697543b70">interpolate</a> (const double *v, const int offset=0) const</td></tr>
+<tr class="memdesc:ad9f31d128fd0180d0d9cc07697543b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the interpolation scheme on the data provided.  <a href="classInterpolationScheme.html#ad9f31d128fd0180d0d9cc07697543b70">More...</a><br /></td></tr>
+<tr class="separator:ad9f31d128fd0180d0d9cc07697543b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97601664faf29986a3c2318f2ecf35c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInterpolationScheme.html#a97601664faf29986a3c2318f2ecf35c9">is_better_than</a> (const <a class="el" href="classInterpolationScheme.html">InterpolationScheme</a> s) const</td></tr>
+<tr class="memdesc:a97601664faf29986a3c2318f2ecf35c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether another interpScheme has greater value than this one.  <a href="classInterpolationScheme.html#a97601664faf29986a3c2318f2ecf35c9">More...</a><br /></td></tr>
+<tr class="separator:a97601664faf29986a3c2318f2ecf35c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a5780dffddd3e9fb68a4b3a16df6534a0"><td class="memItemLeft" align="right" valign="top"><a id="a5780dffddd3e9fb68a4b3a16df6534a0"></a>
+<tr class="memitem:a503d58313aca717066512d4ffa0cd722"><td class="memItemLeft" align="right" valign="top"><a id="a503d58313aca717066512d4ffa0cd722"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>number_of_datapoints_to_left</b></td></tr>
-<tr class="separator:a5780dffddd3e9fb68a4b3a16df6534a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27a33749f6dfdd0ac5fda62a94c1393c"><td class="memItemLeft" align="right" valign="top"><a id="a27a33749f6dfdd0ac5fda62a94c1393c"></a>
+<tr class="separator:a503d58313aca717066512d4ffa0cd722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fc1c6b54e3d852d9bbb413526b5da26"><td class="memItemLeft" align="right" valign="top"><a id="a5fc1c6b54e3d852d9bbb413526b5da26"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>first_nonzero_coeff</b></td></tr>
-<tr class="separator:a27a33749f6dfdd0ac5fda62a94c1393c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab05063da648a439352d995e56f96be2e"><td class="memItemLeft" align="right" valign="top"><a id="ab05063da648a439352d995e56f96be2e"></a>
+<tr class="separator:a5fc1c6b54e3d852d9bbb413526b5da26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85f7c08708dcea3b64260cf4a5f83d6"><td class="memItemLeft" align="right" valign="top"><a id="af85f7c08708dcea3b64260cf4a5f83d6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>last_nonzero_coeff</b></td></tr>
-<tr class="separator:ab05063da648a439352d995e56f96be2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:af85f7c08708dcea3b64260cf4a5f83d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a4237a920c1840cca138b30a724523cba"><td class="memItemLeft" align="right" valign="top"><a id="a4237a920c1840cca138b30a724523cba"></a>
+<tr class="memitem:aef4a3b2b29289abc76127a3d73389ea5"><td class="memItemLeft" align="right" valign="top"><a id="aef4a3b2b29289abc76127a3d73389ea5"></a>
 scheme_value&#160;</td><td class="memItemRight" valign="bottom"><b>priority</b></td></tr>
-<tr class="separator:a4237a920c1840cca138b30a724523cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf1f924b38b5bbb3e92e79cac77b1f4e"><td class="memItemLeft" align="right" valign="top"><a id="acf1f924b38b5bbb3e92e79cac77b1f4e"></a>
+<tr class="separator:aef4a3b2b29289abc76127a3d73389ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa93e878d200ffeb3066a40c07558466"><td class="memItemLeft" align="right" valign="top"><a id="afa93e878d200ffeb3066a40c07558466"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>scheme_coeffs</b> [8]</td></tr>
-<tr class="separator:acf1f924b38b5bbb3e92e79cac77b1f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:afa93e878d200ffeb3066a40c07558466"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a14f85de0c828b35deca93f8320c0a65d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14f85de0c828b35deca93f8320c0a65d">&#9670;&nbsp;</a></span>interpScheme()</h2>
+<a id="a4538815b746df6521fea1f9a444a7e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4538815b746df6521fea1f9a444a7e4d">&#9670;&nbsp;</a></span>InterpolationScheme()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">interpScheme::interpScheme </td>
+          <td class="memname">InterpolationScheme::InterpolationScheme </td>
           <td>(</td>
           <td class="paramtype">scheme_value&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -160,14 +160,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>scheme_coeffs</b> [
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a20e5794e3467c307b49dabe787414d2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20e5794e3467c307b49dabe787414d2d">&#9670;&nbsp;</a></span>get_priority()</h2>
+<a id="aa2f89ae59a2b4c2b4aea0aaa0331fb12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2f89ae59a2b4c2b4aea0aaa0331fb12">&#9670;&nbsp;</a></span>get_priority()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">scheme_value interpScheme::get_priority </td>
+          <td class="memname">scheme_value InterpolationScheme::get_priority </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -180,14 +180,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>scheme_coeffs</b> [
 
 </div>
 </div>
-<a id="a00555e23c172e05f6212440b4c17a4e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00555e23c172e05f6212440b4c17a4e0">&#9670;&nbsp;</a></span>interpolate()</h2>
+<a id="ad9f31d128fd0180d0d9cc07697543b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f31d128fd0180d0d9cc07697543b70">&#9670;&nbsp;</a></span>interpolate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double interpScheme::interpolate </td>
+          <td class="memname">double InterpolationScheme::interpolate </td>
           <td>(</td>
           <td class="paramtype">const double *&#160;</td>
           <td class="paramname"><em>v</em>, </td>
@@ -219,26 +219,26 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>scheme_coeffs</b> [
 
 </div>
 </div>
-<a id="a2d8b393f957c1a8cde13fc4635ca6ca3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d8b393f957c1a8cde13fc4635ca6ca3">&#9670;&nbsp;</a></span>is_better_than()</h2>
+<a id="a97601664faf29986a3c2318f2ecf35c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97601664faf29986a3c2318f2ecf35c9">&#9670;&nbsp;</a></span>is_better_than()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool interpScheme::is_better_than </td>
+          <td class="memname">bool InterpolationScheme::is_better_than </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinterpScheme.html">interpScheme</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classInterpolationScheme.html">InterpolationScheme</a>&#160;</td>
           <td class="paramname"><em>s</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Determines whether another <a class="el" href="classinterpScheme.html">interpScheme</a> has greater value than this one. </p>
+<p>Determines whether another interpScheme has greater value than this one. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">s</td><td>The other <a class="el" href="classinterpScheme.html">interpScheme</a> to compare against </td></tr>
+    <tr><td class="paramname">s</td><td>The other interpScheme to compare against </td></tr>
   </table>
   </dd>
 </dl>
@@ -248,14 +248,14 @@ false This scheme has lesser, or equal, value to s </dd></dl>
 
 </div>
 </div>
-<a id="afadf7afe490a6c936e74ef76df623066"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afadf7afe490a6c936e74ef76df623066">&#9670;&nbsp;</a></span>num_nonzero_coeffs()</h2>
+<a id="a66152c3e66f87d9be1af1972dec74f77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66152c3e66f87d9be1af1972dec74f77">&#9670;&nbsp;</a></span>num_nonzero_coeffs()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int interpScheme::num_nonzero_coeffs </td>
+          <td class="memname">int InterpolationScheme::num_nonzero_coeffs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -277,7 +277,7 @@ false This scheme has lesser, or equal, value to s </dd></dl>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="classinterpScheme.html">interpScheme</a></li>
+    <li class="navelem"><a class="el" href="classInterpolationScheme.html">InterpolationScheme</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>

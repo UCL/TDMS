@@ -34,7 +34,7 @@ var hierarchy =
     [ "GridLabels", "classGridLabels.html", null ],
     [ "IncidentField", "classIncidentField.html", null ],
     [ "InterfaceComponent", "classInterfaceComponent.html", null ],
-    [ "interpScheme", "classinterpScheme.html", null ],
+    [ "InterpolationScheme", "classInterpolationScheme.html", null ],
     [ "MaterialCollection", "classMaterialCollection.html", [
       [ "CMaterial", "classCMaterial.html", null ],
       [ "DMaterial", "classDMaterial.html", null ]

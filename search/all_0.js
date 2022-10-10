@@ -7,6 +7,8 @@ var searchData=
   ['argument_5fparser_2eh_4',['argument_parser.h',['../argument__parser_8h.html',1,'']]],
   ['argumentnamespace_5',['ArgumentNamespace',['../classArgumentNamespace.html',1,'ArgumentNamespace'],['../classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6',1,'ArgumentNamespace::ArgumentNamespace()']]],
   ['argumentparser_6',['ArgumentParser',['../classArgumentParser.html',1,'']]],
-  ['assert_5fcan_5fopen_5ffile_7',['assert_can_open_file',['../utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849',1,'utils.cpp']]],
-  ['assign_5fmatrix_5fpointers_8',['assign_matrix_pointers',['../openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp'],['../openandorder_8cpp.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp']]]
+  ['array_5finit_2eh_7',['array_init.h',['../array__init_8h.html',1,'']]],
+  ['arrays_2eh_8',['arrays.h',['../arrays_8h.html',1,'']]],
+  ['assert_5fcan_5fopen_5ffile_9',['assert_can_open_file',['../utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849',1,'utils.cpp']]],
+  ['assign_5fmatrix_5fpointers_10',['assign_matrix_pointers',['../openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp'],['../openandorder_8cpp.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp']]]
 ];

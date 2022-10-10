@@ -124,22 +124,22 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>interp3</b> (double
 <tr class="memitem:ae729ae820cc0e2c163de6c9e233f57b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8cpp.html#ae729ae820cc0e2c163de6c9e233f57b2">checkInterpolationPoints</a> (int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK)</td></tr>
 <tr class="memdesc:ae729ae820cc0e2c163de6c9e233f57b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the limits of field extraction are within range of the FDTD grid.  <a href="interpolation__methods_8cpp.html#ae729ae820cc0e2c163de6c9e233f57b2">More...</a><br /></td></tr>
 <tr class="separator:ae729ae820cc0e2c163de6c9e233f57b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af985407a8156f345904eecf2b785c49b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classinterpScheme.html">interpScheme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8cpp.html#af985407a8156f345904eecf2b785c49b">best_interp_scheme</a> (int cells_in_direction, int cell_id)</td></tr>
-<tr class="memdesc:af985407a8156f345904eecf2b785c49b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.  <a href="interpolation__methods_8cpp.html#af985407a8156f345904eecf2b785c49b">More...</a><br /></td></tr>
-<tr class="separator:af985407a8156f345904eecf2b785c49b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51b426eea6dfe1e2f410dfaba7503b3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classInterpolationScheme.html">InterpolationScheme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8cpp.html#ae51b426eea6dfe1e2f410dfaba7503b3">best_scheme</a> (int cells_in_direction, int cell_id)</td></tr>
+<tr class="memdesc:ae51b426eea6dfe1e2f410dfaba7503b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.  <a href="interpolation__methods_8cpp.html#ae51b426eea6dfe1e2f410dfaba7503b3">More...</a><br /></td></tr>
+<tr class="separator:ae51b426eea6dfe1e2f410dfaba7503b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>InterpScheme class methods and supporting functions. </p>
 <dl class="section author"><dt>Author</dt><dd>William Graham (<a href="#" onclick="location.href='mai'+'lto:'+'cca'+'eg'+'ra@'+'uc'+'l.a'+'c.'+'uk'; return false;">ccaeg<span style="display: none;">.nosp@m.</span>ra@u<span style="display: none;">.nosp@m.</span>cl.ac<span style="display: none;">.nosp@m.</span>.uk</a>) Non InterpScheme methods are required to preserve functionality whilst testing new schemes </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="af985407a8156f345904eecf2b785c49b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af985407a8156f345904eecf2b785c49b">&#9670;&nbsp;</a></span>best_interp_scheme()</h2>
+<a id="ae51b426eea6dfe1e2f410dfaba7503b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51b426eea6dfe1e2f410dfaba7503b3">&#9670;&nbsp;</a></span>best_scheme()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classinterpScheme.html">interpScheme</a>&amp; best_interp_scheme </td>
+          <td class="memname">const <a class="el" href="classInterpolationScheme.html">InterpolationScheme</a>&amp; best_scheme </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>cells_in_direction</em>, </td>
