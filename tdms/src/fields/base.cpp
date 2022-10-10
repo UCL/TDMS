@@ -3,6 +3,7 @@
 #include "globals.h"
 
 using namespace std;
+using namespace tdms_math_constants;
 
 void Field::add_to_angular_norm(int n, int Nt, SimulationParameters &params) {
   angular_norm += phasor_norm(ft, n, params.omega_an, params.dt, Nt);
@@ -38,7 +39,7 @@ void Field::zero() {
 
 complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int Nt){
   return f
-         * exp( fmod(phase(n, omega, dt), 2*dcpi) * I)
+         * exp( fmod(phase(n, omega, dt), 2*DCPI) * IMAGINARY_UNIT)
          * 1./((double) Nt);
 }
 
@@ -57,7 +58,7 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
   complex<double> subResult;
   double x_m, y_m, z_m;
 
-  auto phaseTerm = exp(phase(n, omega, dt) * I) * 1. / ((double) Nt);
+  auto phaseTerm = exp(phase(n, omega, dt) * IMAGINARY_UNIT) * 1. / ((double) Nt);
 
 #pragma omp parallel default(shared) private(x_m, y_m, z_m, subResult)
   {
