@@ -98,9 +98,6 @@ TEST_CASE("E-field interpolation check") {
     // setup the "split" E-field components
     ElectricSplitField E_split(Nx, Ny, Nz);
     E_split.allocate();
-    // double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
-    //        ***Eyx = allocate3dmemory(Nx, Ny, Nz), ***Eyz = allocate3dmemory(Nx, Ny, Nz),
-    //        ***Ezx = allocate3dmemory(Nx, Ny, Nz), ***Ezy = allocate3dmemory(Nx, Ny, Nz);
     // setup for non-split field components
     double ***Ex = allocate3dmemory(Nx, Ny, Nz),
            ***Ey = allocate3dmemory(Nx, Ny, Nz),
@@ -351,9 +348,8 @@ TEST_CASE("H-field interpolation check") {
     SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
     // setup the "split" H-field components
-    double ***Hxy = allocate3dmemory(Nx, Ny, Nz), ***Hxz = allocate3dmemory(Nx, Ny, Nz),
-           ***Hyx = allocate3dmemory(Nx, Ny, Nz), ***Hyz = allocate3dmemory(Nx, Ny, Nz),
-           ***Hzx = allocate3dmemory(Nx, Ny, Nz), ***Hzy = allocate3dmemory(Nx, Ny, Nz);
+    MagneticSplitField H_split(Nx, Ny, Nz);
+    H_split.allocate();
     // setup the non-split field components
     double ***Hx = allocate3dmemory(Nx, Ny, Nz),
            ***Hy = allocate3dmemory(Nx, Ny, Nz),
@@ -386,12 +382,12 @@ TEST_CASE("H-field interpolation check") {
                 Hx[kk][jj][ii] = x_comp_value;
                 Hy[kk][jj][ii] = y_comp_value;
                 Hz[kk][jj][ii] = z_comp_value;
-                Hxy[kk][jj][ii] = x_comp_value;
-                Hxz[kk][jj][ii] = 0.;
-                Hyx[kk][jj][ii] = .125 * y_comp_value;
-                Hyz[kk][jj][ii] = .875 * y_comp_value;
-                Hzx[kk][jj][ii] = .0625 * z_comp_value;
-                Hzy[kk][jj][ii] = .9375 * z_comp_value;
+                H_split.xy[kk][jj][ii] = x_comp_value;
+                H_split.xz[kk][jj][ii] = 0.;
+                H_split.yx[kk][jj][ii] = .125 * y_comp_value;
+                H_split.yz[kk][jj][ii] = .875 * y_comp_value;
+                H_split.zx[kk][jj][ii] = .0625 * z_comp_value;
+                H_split.zy[kk][jj][ii] = .9375 * z_comp_value;
             }
         }
     }
@@ -415,7 +411,7 @@ TEST_CASE("H-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Hx_interp, Hx_split_interp;
                 interpolateHx(Hx, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
-                interpolateSplitFieldHx(Hxy, Hxz, ii, jj + 1, kk + 1, Ny, Nz, &Hx_split_interp);
+                Hx_split_interp = H_split.interpolate_x_to_centre(ii, jj + 1, kk + 1);
 
                 // compute the errors
                 Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
@@ -440,7 +436,7 @@ TEST_CASE("H-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Hy_interp, Hy_split_interp;
                 interpolateHy(Hy, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
-                interpolateSplitFieldHy(Hyx, Hyz, ii + 1, jj, kk + 1, Nx, Nz, &Hy_split_interp);
+                Hy_split_interp = H_split.interpolate_y_to_centre(ii + 1, jj, kk + 1);
 
                 // compute the errors
                 Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
@@ -465,7 +461,7 @@ TEST_CASE("H-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Hz_interp, Hz_split_interp;
                 interpolateHz(Hz, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
-                interpolateSplitFieldHz(Hzx, Hzy, ii + 1, jj + 1, kk, Nx, Ny, &Hz_split_interp);
+                Hz_split_interp = H_split.interpolate_z_to_centre(ii + 1, jj + 1, kk);
 
                 // compute the errors
                 Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
@@ -475,12 +471,6 @@ TEST_CASE("H-field interpolation check") {
     }
 
     // can now deallocate our sample field arrays
-    delete Hxy;
-    delete Hxz;
-    delete Hyx;
-    delete Hyz;
-    delete Hzx;
-    delete Hzy;
     delete Hx;
     delete Hy;
     delete Hz;

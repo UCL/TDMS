@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "field.h"
+#include "interpolation_methods.h"
 
 using namespace std;
 
