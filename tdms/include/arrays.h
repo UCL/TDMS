@@ -222,7 +222,7 @@ public:
 
   void allocate(int nK, int nJ, int nI){
     n_layers = nK, n_cols = nJ, n_rows = nI;
-    tensor = (T ***)malloc(n_layers * sizeof(T *));
+    tensor = (T ***)malloc(n_layers * sizeof(T **));
 
     for(int k=0; k < n_layers; k++){
       tensor[k] = (T **)malloc(n_cols * sizeof(T *));
