@@ -25,18 +25,6 @@ The maximum of this is then the max-slice error: keeping track of this ensures u
 All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over the range [-2,2].
 */
 
-// computes the Frobenius norm of a 3d-array (or pointer thereto)
-inline double frobenius(double ***M, int d1, int d2, int d3) {
-    double norm_val = 0.;
-    for (int i1 = 0; i1 < d1; i1++) {
-        for (int i2 = 0; i2 < d2; i2++) {
-            for (int i3 = 0; i3 < d3; i3++) {
-                norm_val += M[i1][i2][i3] * M[i1][i2][i3];
-            }
-        }
-    }
-    return sqrt(norm_val);
-}
 // computes the Euclidean norm of a 1d-array (or pointer thereto)
 inline double euclidean(double *v, int end, int start = 0) {
     double norm_val = 0.;
@@ -53,18 +41,6 @@ inline double Ecomponent(double t) {
 // functional form for the H-field components
 inline double Hcomponent(double t) {
     return sin(2. * DCPI * t) * exp(-t * t);
-}
-
-// for memory allocation of 3D arrays
-inline double ***allocate3dmemory(int nI, int nJ, int nK) {
-    double ***p = (double ***)malloc(nK * sizeof(double **));
-    for (int k = 0; k < nK; k++) {
-        p[k] = (double **)malloc(nJ * sizeof(double *));
-        for (int j = 0; j < nJ; j++) {
-            p[k][j] = (double *)malloc(nI * sizeof(double));
-        }
-    }
-    return p;
 }
 
 /**
@@ -100,7 +76,7 @@ TEST_CASE("E-field interpolation check") {
     E_split.allocate();
     // setup for non-split field components
     ElectricField E(Nx, Ny, Nz);
-    E.allocate_and_zero();
+    E.allocate();
     // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
     Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error, Ez_split_error;
     Ex_error.allocate(Nz, Ny, Nx - 1); Ex_split_error.allocate(Nz, Ny, Nx - 1);
@@ -127,9 +103,9 @@ TEST_CASE("E-field interpolation check") {
                        y_comp_value = Ecomponent(cell_centre[1] + 0.5 * cellDims[1]),
                        z_comp_value = Ecomponent(cell_centre[2] + 0.5 * cellDims[2]);
                 // assign component values
-                E.real.x[kk][jj][ii] = x_comp_value; 
-                E.real.y[kk][jj][ii] = y_comp_value; 
-                E.real.z[kk][jj][ii] = z_comp_value;
+                E.real.x[kk][jj][ii] = x_comp_value; E.imag.x[kk][jj][ii] = 0.;
+                E.real.y[kk][jj][ii] = y_comp_value; E.imag.y[kk][jj][ii] = 0.;
+                E.real.z[kk][jj][ii] = z_comp_value; E.imag.z[kk][jj][ii] = 0.;
                 // split fields - use some wieghting that sums to one for the split cells
                 E_split.xy[kk][jj][ii] = x_comp_value;
                 E_split.xz[kk][jj][ii] = 0.;
@@ -147,7 +123,6 @@ TEST_CASE("E-field interpolation check") {
     for (int ii = 0; ii < Nx - 1; ii++) {
         for (int jj = 0; jj < Ny; jj++) {
           for (int kk = 0; kk < Nz; kk++) {
-            SPDLOG_INFO("{},{},{}", ii, jj, kk);
             // we are interpolating to the centre of cell ii+1,jj,kk
             // these are the coordinates of the Yee cell's centre
             double cell_centre[3];
@@ -321,9 +296,10 @@ TEST_CASE("E-field interpolation check") {
  * @brief Test the interpolation of the H-field components to the centre of the Yee cells
  *
  * Each component of the H-field will take the form
- * H_t(tt) = sin(2\pi tt) * exp(-tt^2).
+ * H_t(tt) = \mathrm{i} * ( sin(2\pi tt) * exp(-tt^2) ).
+ * The decision to make this function wholey imaginary is just to test whether the imaginary part of the field is correctly picked up and worked with.
  *
- * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component
+ * We only test Fro-norm error metrics, since interpolation must occur along two axes for each component.
  */
 TEST_CASE("H-field interpolation check") {
     SPDLOG_INFO("===== Testing H-field BLi =====");
@@ -349,13 +325,13 @@ TEST_CASE("H-field interpolation check") {
     MagneticSplitField H_split(Nx, Ny, Nz);
     H_split.allocate();
     // setup the non-split field components
-    double ***Hx = allocate3dmemory(Nx, Ny, Nz),
-           ***Hy = allocate3dmemory(Nx, Ny, Nz),
-           ***Hz = allocate3dmemory(Nx, Ny, Nz);
+    MagneticField H(Nx, Ny, Nz);
+    H.allocate();
     // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
-    double ***Hx_error = allocate3dmemory(Nx, Ny - 1, Nz - 1), ***Hx_split_error = allocate3dmemory(Nx, Ny - 1, Nz - 1),
-           ***Hy_error = allocate3dmemory(Nx - 1, Ny, Nz - 1), ***Hy_split_error = allocate3dmemory(Nx - 1, Ny, Nz - 1),
-           ***Hz_error = allocate3dmemory(Nx - 1, Ny - 1, Nz), ***Hz_split_error = allocate3dmemory(Nx - 1, Ny - 1, Nz);
+    Tensor3D<double> Hx_error, Hx_split_error, Hy_error, Hy_split_error, Hz_error, Hz_split_error;
+    Hx_error.allocate(Nz - 1, Ny - 1, Nx); Hx_split_error.allocate(Nz - 1, Ny - 1, Nx);
+    Hy_error.allocate(Nz - 1, Ny, Nx - 1); Hy_split_error.allocate(Nz - 1, Ny, Nx - 1);
+    Hz_error.allocate(Nz, Ny - 1, Nx - 1); Hz_split_error.allocate(Nz, Ny - 1, Nx - 1);
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
@@ -377,9 +353,9 @@ TEST_CASE("H-field interpolation check") {
                        y_comp_value = Hcomponent(cell_centre[1]),
                        z_comp_value = Hcomponent(cell_centre[2]);
                 // assign fields. For split field, use weightings that sum to unity
-                Hx[kk][jj][ii] = x_comp_value;
-                Hy[kk][jj][ii] = y_comp_value;
-                Hz[kk][jj][ii] = z_comp_value;
+                H.imag.x[kk][jj][ii] = x_comp_value; H.real.x[kk][jj][ii] = 0.;
+                H.imag.y[kk][jj][ii] = y_comp_value; H.real.y[kk][jj][ii] = 0.;
+                H.imag.z[kk][jj][ii] = z_comp_value; H.real.z[kk][jj][ii] = 0.;
                 H_split.xy[kk][jj][ii] = x_comp_value;
                 H_split.xz[kk][jj][ii] = 0.;
                 H_split.yx[kk][jj][ii] = .125 * y_comp_value;
@@ -408,7 +384,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hx_interp, Hx_split_interp;
-                interpolateHx(Hx, ii, jj + 1, kk + 1, Ny, Nz, &Hx_interp);
+                Hx_interp = H.interpolate_x_to_centre(ii, jj + 1, kk + 1).imag();
                 Hx_split_interp = H_split.interpolate_x_to_centre(ii, jj + 1, kk + 1);
 
                 // compute the errors
@@ -433,7 +409,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hy_interp, Hy_split_interp;
-                interpolateHy(Hy, ii + 1, jj, kk + 1, Nx, Nz, &Hy_interp);
+                Hy_interp = H.interpolate_y_to_centre(ii + 1, jj, kk + 1).imag();
                 Hy_split_interp = H_split.interpolate_y_to_centre(ii + 1, jj, kk + 1);
 
                 // compute the errors
@@ -458,7 +434,7 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hz_interp, Hz_split_interp;
-                interpolateHz(Hz, ii + 1, jj + 1, kk, Nx, Ny, &Hz_interp);
+                Hz_interp = H.interpolate_z_to_centre(ii + 1, jj + 1, kk).imag();
                 Hz_split_interp = H_split.interpolate_z_to_centre(ii + 1, jj + 1, kk);
 
                 // compute the errors
@@ -468,18 +444,13 @@ TEST_CASE("H-field interpolation check") {
         }
     }
 
-    // can now deallocate our sample field arrays
-    delete Hx;
-    delete Hy;
-    delete Hz;
-
     // compute Frobenius norms
-    double Hx_fro_err = frobenius(Hx_error, Nz - 1, Ny - 1, Nx),
-           Hy_fro_err = frobenius(Hy_error, Nz - 1, Ny, Nx - 1),
-           Hz_fro_err = frobenius(Hz_error, Nz, Ny - 1, Nx - 1),
-           Hx_split_fro_err = frobenius(Hx_split_error, Nz - 1, Ny - 1, Nx),
-           Hy_split_fro_err = frobenius(Hy_split_error, Nz - 1, Ny, Nx - 1),
-           Hz_split_fro_err = frobenius(Hz_split_error, Nz, Ny - 1, Nx - 1);
+    double Hx_fro_err = Hx_error.frobenius(),
+           Hy_fro_err = Hy_error.frobenius(),
+           Hz_fro_err = Hz_error.frobenius(),
+           Hx_split_fro_err = Hx_split_error.frobenius(),
+           Hy_split_fro_err = Hy_split_error.frobenius(),
+           Hz_split_fro_err = Hz_split_error.frobenius();
 
     // check Frobenius errors are acceptable
     CHECK(Hx_fro_err <= Hx_fro_tol + acc_tol);

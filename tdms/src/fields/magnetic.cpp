@@ -1,8 +1,9 @@
 #include "field.h"
 #include "interpolation_methods.h"
+#include "globals.h"
 
 using namespace std;
-
+using namespace tdms_math_constants;
 
 double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
@@ -45,6 +46,168 @@ Now with approximations of Ha at each (a_i, cell_b + Db, c_k), we can pass this 
 
 In a 2D simulation, J_tot = 0. This means we cannot interpolate in two directions for the Hx and Hz fields, since there is no y-direction to interpolate in. As a result, we only interpolate in the z-direction for Hx and x-direction for Hz when running a two-dimensional simulation.
 */
+complex<double> MagneticField::interpolate_x_to_centre(int i, int j, int k) {
+  // Associations: a = x, b = y, c = z
+
+  // determine the z-direction scheme
+  const InterpolationScheme &z_scheme = best_scheme(K_tot, k);
+  // determine the y-direction scheme
+  const InterpolationScheme &y_scheme = best_scheme(J_tot, j);
+
+  // this data will be passed to the second interpolation scheme
+  complex<double> data_for_second_scheme[8];
+  // this data will hold values for the interpolation in the first interpolation scheme
+  complex<double> data_for_first_scheme[8];
+
+  // which of z_scheme and y_scheme is WORSE? We will interpolate in this direction SECOND
+  if (z_scheme.is_better_than(y_scheme)) {
+    // we will be interpolating in the z-direction first, then in y
+    for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++) {
+      // this is the j-index of the cell we are looking at
+      int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+      // determine the Hx values of cells (i, cell_j, k-z_scheme.index-1) through (i, cell_j, k-z_scheme.index-1+7), and interpolate them via z_scheme
+      for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++) {
+        // the k-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+        // gather the data for interpolating in the z dimension
+        data_for_first_scheme[kk] =
+                real.x[cell_k][cell_j][i] + IMAGINARY_UNIT * imag.x[cell_k][cell_j][i];
+      }
+      // interpolate in z to obtain a value for the Hx field at position (i, cell_j+Dy, k)
+      // place this into the appropriate index in the data being passed to the y_scheme
+      data_for_second_scheme[jj] = z_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
+    return y_scheme.interpolate(data_for_second_scheme);
+  } else {
+    // we will be interpolating in the y-direction first, then in z
+    for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++) {
+      // this is the k-index of the cell we are looking at
+      int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+      // determine the Hx values of cells (i, j - y_scheme.index-1, cell_k) through (i, j - y_scheme.index-1+7, cell_k), and interpolate them via y_scheme
+      for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++) {
+        // the j-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+        // gather the data for interpolating in the y dimension
+        data_for_first_scheme[jj] =
+                real.x[cell_k][cell_j][i] + IMAGINARY_UNIT * imag.x[cell_k][cell_j][i];
+      }
+      // interpolate in y to obtain a value for the Hx field at position (i, j, cell_k+Dz)
+      // place this into the appropriate index in the data being passed to the y_scheme
+      data_for_second_scheme[kk] = y_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
+    return z_scheme.interpolate(data_for_second_scheme);
+  }
+}
+complex<double> MagneticField::interpolate_y_to_centre(int i, int j, int k) {
+  // Associations: a = y, b = z, c = x
+
+  // determine the x-direction scheme
+  const InterpolationScheme &x_scheme = best_scheme(I_tot, i);
+  // determine the z-direction scheme
+  const InterpolationScheme &z_scheme = best_scheme(K_tot, k);
+
+  // this data will be passed to the second interpolation scheme
+  complex<double> data_for_second_scheme[8];
+  // this data will hold values for the interpolation in the first interpolation scheme
+  complex<double> data_for_first_scheme[8];
+
+  // which of x_scheme and z_scheme is WORSE? We will interpolate in this direction SECOND
+  if (z_scheme.is_better_than(x_scheme)) {
+    // we will be interpolating in the z-direction first, then in x
+    for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++) {
+      // this is the i-index of the cell we are looking at
+      int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+      // determine the Hy values of cells (cell_i, j, k-z_scheme.index-1) through (cell_i, j, k-z_scheme.index-1+7), and interpolate them via z_scheme
+      for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++) {
+        // the k-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+        // gather the data for interpolating in the z dimension
+        data_for_first_scheme[kk] =
+                real.y[cell_k][j][cell_i] + IMAGINARY_UNIT * imag.y[cell_k][j][cell_i];
+      }
+      // interpolate in z to obtain a value for the Hy field at position (cell_i+Dx, j, k)
+      // place this into the appropriate index in the data being passed to the x_scheme
+      data_for_second_scheme[ii] = z_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
+    return x_scheme.interpolate(data_for_second_scheme);
+  } else {
+    // we will be interpolating in the x-direction first, then in z
+    for (int kk = z_scheme.first_nonzero_coeff; kk <= z_scheme.last_nonzero_coeff; kk++) {
+      // this is the k-index of the cell we are looking at
+      int cell_k = k - z_scheme.number_of_datapoints_to_left + kk;
+      // determine the Hy values of cells (i - x_scheme.index-1, j, cell_k) through (i- x_scheme.index-1+7, j, cell_k), and interpolate them via x_scheme
+      for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++) {
+        // the i-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+        // gather the data for interpolating in the x dimension
+        data_for_first_scheme[ii] =
+                real.y[cell_k][j][cell_i] + IMAGINARY_UNIT * imag.y[cell_k][j][cell_i];
+      }
+      // interpolate in x to obtain a value for the Hy field at position (i, j, cell_k+Dz)
+      // place this into the appropriate index in the data being passed to the y_scheme
+      data_for_second_scheme[kk] = x_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the z-direction to the centre of Yee cell (i,j,k)
+    return z_scheme.interpolate(data_for_second_scheme);
+  }
+}
+complex<double> MagneticField::interpolate_z_to_centre(int i, int j, int k) {
+  // Associations: a = z, b = x, c = y
+
+  // determine the x-direction scheme
+  const InterpolationScheme &x_scheme = best_scheme(I_tot, i);
+  // determine the y-direction scheme
+  const InterpolationScheme &y_scheme = best_scheme(J_tot, j);
+
+  // this data will be passed to the second interpolation scheme
+  complex<double> data_for_second_scheme[8];
+  // this data will hold values for the interpolation in the first interpolation scheme
+  complex<double> data_for_first_scheme[8];
+
+  // which of x_scheme and y_scheme is WORSE? We will interpolate in this direction SECOND
+  if (y_scheme.is_better_than(x_scheme)) {
+    // we will be interpolating in the y-direction first, then in x
+    for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++) {
+      // this is the i-index of the cell we are looking at
+      int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+      // determine the Hz values of cells (cell_i, j-y_scheme.index-1, k) through (cell_i, j-y_scheme.index-1+7, k), and interpolate them via y_scheme
+      for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++) {
+        // the j-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+        // gather the data for interpolating in the y dimension
+        data_for_first_scheme[jj] =
+                real.z[k][cell_j][cell_i] + IMAGINARY_UNIT * imag.z[k][cell_j][cell_i];
+      }
+      // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
+      // place this into the appropriate index in the data being passed to the x_scheme
+      data_for_second_scheme[ii] = y_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
+    return x_scheme.interpolate(data_for_second_scheme);
+  } else {
+    // we will be interpolating in the x-direction first, then in y
+    for (int jj = y_scheme.first_nonzero_coeff; jj <= y_scheme.last_nonzero_coeff; jj++) {
+      // this is the j-index of the cell we are looking at
+      int cell_j = j - y_scheme.number_of_datapoints_to_left + jj;
+      // determine the Hz values of cells (i - x_scheme.index-1, cell_j, k) through (i- x_scheme.index-1+7, cell_j, k), and interpolate them via x_scheme
+      for (int ii = x_scheme.first_nonzero_coeff; ii <= x_scheme.last_nonzero_coeff; ii++) {
+        // the i-index of the current cell we are looking at (readability, don't need to define this here)
+        int cell_i = i - x_scheme.number_of_datapoints_to_left + ii;
+        // gather the data for interpolating in the x dimension
+        data_for_first_scheme[ii] =
+                real.z[k][cell_j][cell_i] + IMAGINARY_UNIT * imag.z[k][cell_j][cell_i];
+      }
+      // interpolate in x to obtain a value for the Hz field at position (i, j, cell_k+Dz)
+      // place this into the appropriate index in the data being passed to the y_scheme
+      data_for_second_scheme[jj] = x_scheme.interpolate(data_for_first_scheme);
+    }
+    // now interpolate in the y-direction to the centre of Yee cell (i,j,k)
+    return y_scheme.interpolate(data_for_second_scheme);
+  }
+}
 
 double MagneticSplitField::interpolate_x_to_centre(int i, int j, int k) {
   if (J_tot==0) {

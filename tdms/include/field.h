@@ -292,6 +292,7 @@ private:
 public:
   ElectricField() = default;
   ElectricField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
+
   /**
    * @brief Interpolate the Ex component to the centre of cell (i,j,k)
    * 
@@ -323,6 +324,28 @@ private:
 public:
   MagneticField() = default;
   MagneticField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
+
+  /**
+   * @brief Interpolate the Hx component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_x_to_centre(int i, int j, int k);
+  /**
+   * @brief Interpolate the Hy component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of 
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_y_to_centre(int i, int j, int k);
+  /**
+   * @brief Interpolate the Hz component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of 
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_z_to_centre(int i, int j, int k);
 };
 
 /**
