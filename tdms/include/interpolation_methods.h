@@ -141,8 +141,14 @@ class InterpolationScheme {
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
          */
-        double interpolate(const double *v, const int offset = 0) const;
-        std::complex<double> interpolate(const std::complex<double> *v, const int offset = 0) const;
+        template<typename T>
+        T interpolate(const T *v, const int offset = 0) const {
+          T interp_value = 0.;
+          for (int ind = first_nonzero_coeff; ind <= last_nonzero_coeff; ind++) {
+            interp_value += scheme_coeffs[ind] * v[ind + offset];
+          }
+          return interp_value;
+        };
 
         /**
          * @brief Determines whether another interpScheme has greater value than this one

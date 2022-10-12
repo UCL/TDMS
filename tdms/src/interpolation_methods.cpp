@@ -236,7 +236,7 @@ scheme_value InterpolationScheme::get_priority() const {
 int InterpolationScheme::num_nonzero_coeffs() const {
     return last_nonzero_coeff - first_nonzero_coeff + 1;
 }
-
+/*
 double InterpolationScheme::interpolate(const double *v, const int offset) const {
 
     double interp_value = 0.;
@@ -251,7 +251,7 @@ complex<double> InterpolationScheme::interpolate(const complex<double> *v, const
         interp_value += scheme_coeffs[ind] * v[ind + offset];
     }
     return interp_value;
-}
+}*/
 
 bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
     return (priority > s.get_priority());

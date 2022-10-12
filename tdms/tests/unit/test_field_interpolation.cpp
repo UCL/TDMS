@@ -99,13 +99,13 @@ TEST_CASE("E-field interpolation check") {
     ElectricSplitField E_split(Nx, Ny, Nz);
     E_split.allocate();
     // setup for non-split field components
-    double ***Ex = allocate3dmemory(Nx, Ny, Nz),
-           ***Ey = allocate3dmemory(Nx, Ny, Nz),
-           ***Ez = allocate3dmemory(Nx, Ny, Nz);
+    ElectricField E(Nx, Ny, Nz);
+    E.allocate_and_zero();
     // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
-    double ***Ex_error = allocate3dmemory(Nx - 1, Ny, Nz), ***Ex_split_error = allocate3dmemory(Nx - 1, Ny, Nz),
-           ***Ey_error = allocate3dmemory(Nx, Ny - 1, Nz), ***Ey_split_error = allocate3dmemory(Nx, Ny - 1, Nz),
-           ***Ez_error = allocate3dmemory(Nx, Ny, Nz - 1), ***Ez_split_error = allocate3dmemory(Nx, Ny, Nz - 1);
+    Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error, Ez_split_error;
+    Ex_error.allocate(Nz, Ny, Nx - 1); Ex_split_error.allocate(Nz, Ny, Nx - 1);
+    Ey_error.allocate(Nz, Ny - 1, Nx); Ey_split_error.allocate(Nz, Ny - 1, Nx);
+    Ez_error.allocate(Nz - 1, Ny, Nx); Ez_split_error.allocate(Nz - 1, Ny, Nx);
 
     // compute the exact field and the "split field" components
     // the interpolation functions are expecting split fields, but we can bypass this by making one split field component equal to _the entire field_ value, and the other zero
@@ -127,7 +127,9 @@ TEST_CASE("E-field interpolation check") {
                        y_comp_value = Ecomponent(cell_centre[1] + 0.5 * cellDims[1]),
                        z_comp_value = Ecomponent(cell_centre[2] + 0.5 * cellDims[2]);
                 // assign component values
-                Ex[kk][jj][ii] = x_comp_value; Ey[kk][jj][ii] = y_comp_value; Ez[kk][jj][ii] = z_comp_value;
+                E.real.x[kk][jj][ii] = x_comp_value; 
+                E.real.y[kk][jj][ii] = y_comp_value; 
+                E.real.z[kk][jj][ii] = z_comp_value;
                 // split fields - use some wieghting that sums to one for the split cells
                 E_split.xy[kk][jj][ii] = x_comp_value;
                 E_split.xz[kk][jj][ii] = 0.;
@@ -144,26 +146,27 @@ TEST_CASE("E-field interpolation check") {
     // interpolate Ex
     for (int ii = 0; ii < Nx - 1; ii++) {
         for (int jj = 0; jj < Ny; jj++) {
-            for (int kk = 0; kk < Nz; kk++) {
-                // we are interpolating to the centre of cell ii+1,jj,kk
-                // these are the coordinates of the Yee cell's centre
-                double cell_centre[3];
-                cell_centre[0] = x_lower + ((double)ii + 1.5) * cellDims[0];
-                cell_centre[1] = y_lower + ((double)jj + 0.5) * cellDims[1];
-                cell_centre[2] = z_lower + ((double)kk + 0.5) * cellDims[2];
+          for (int kk = 0; kk < Nz; kk++) {
+            SPDLOG_INFO("{},{},{}", ii, jj, kk);
+            // we are interpolating to the centre of cell ii+1,jj,kk
+            // these are the coordinates of the Yee cell's centre
+            double cell_centre[3];
+            cell_centre[0] = x_lower + ((double) ii + 1.5) * cellDims[0];
+            cell_centre[1] = y_lower + ((double) jj + 0.5) * cellDims[1];
+            cell_centre[2] = z_lower + ((double) kk + 0.5) * cellDims[2];
 
-                // compute the true value of the field components at the centre of this Yee cell
-                double Ex_exact = Ecomponent(cell_centre[0]);
+            // compute the true value of the field components at the centre of this Yee cell
+            double Ex_exact = Ecomponent(cell_centre[0]);
 
-                // interpolate to the centre of this cell
-                double Ex_interp, Ex_split_interp;
-                interpolateEx(Ex, ii + 1, jj, kk, Nx, &Ex_interp);
-                Ex_split_interp = E_split.interpolate_x_to_centre(ii + 1, jj, kk);
+            // interpolate to the centre of this cell
+            double Ex_interp, Ex_split_interp;
+            Ex_interp = E.interpolate_x_to_centre(ii + 1, jj, kk).real();
+            Ex_split_interp = E_split.interpolate_x_to_centre(ii + 1, jj, kk);
 
-                // compute the errors
-                Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
-                Ex_split_error[kk][jj][ii] = Ex_split_interp - Ex_exact;
-            }
+            // compute the errors
+            Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
+            Ex_split_error[kk][jj][ii] = Ex_split_interp - Ex_exact;
+          }
         }
     }
     // interpolate Ey
@@ -182,7 +185,7 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ey_interp, Ey_split_interp;
-                interpolateEy(Ey, ii, jj + 1, kk, Ny, &Ey_interp);
+                Ey_interp = E.interpolate_y_to_centre(ii, jj + 1, kk).real();
                 Ey_split_interp = E_split.interpolate_y_to_centre(ii, jj + 1, kk);
 
                 // compute the errors
@@ -207,7 +210,7 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ez_interp, Ez_split_interp;
-                interpolateEz(Ez, ii, jj, kk + 1, Nz, &Ez_interp);
+                Ez_interp = E.interpolate_z_to_centre(ii, jj, kk + 1).real();
                 Ez_split_interp = E_split.interpolate_z_to_centre(ii, jj, kk + 1);
 
                 // compute the errors
@@ -217,18 +220,13 @@ TEST_CASE("E-field interpolation check") {
         }
     }
 
-    // can now deallocate our sample field arrays
-    delete Ex;
-    delete Ey;
-    delete Ez;
-
     // compute error-matrix Frobenius norms
-    double Ex_fro_err = frobenius(Ex_error, Nz, Ny, Nx - 1),
-           Ey_fro_err = frobenius(Ey_error, Nz, Ny - 1, Nx),
-           Ez_fro_err = frobenius(Ez_error, Nz - 1, Ny, Nx),
-           Ex_split_fro_err = frobenius(Ex_split_error, Nz, Ny, Nx - 1),
-           Ey_split_fro_err = frobenius(Ey_split_error, Nz, Ny - 1, Nx),
-           Ez_split_fro_err = frobenius(Ez_split_error, Nz - 1, Ny, Nx);
+    double Ex_fro_err = Ex_error.frobenius(),
+           Ey_fro_err = Ey_error.frobenius(),
+           Ez_fro_err = Ez_error.frobenius(),
+           Ex_split_fro_err = Ex_split_error.frobenius(),
+           Ey_split_fro_err = Ey_split_error.frobenius(),
+           Ez_split_fro_err = Ez_split_error.frobenius();
 
     // compute max-slice errors
     double Ex_ms_err = 0., Ey_ms_err = 0., Ez_ms_err = 0.,

@@ -213,7 +213,7 @@ public:
 
   std::complex<double> angular_norm = 0.;
 
-  // TODO: this is likely better as a set of complex arrays
+  // TODO: this is likely better as a set of complex arrays - use Tensor3d<std::complex<double>>
   XYZTensor3D real;
   XYZTensor3D imag;
 
@@ -228,9 +228,34 @@ public:
   void normalise_volume();
 
   /**
-     * Zero all components of the real and imaginary parts of the field
+     * Default no arguments constructor
+     */
+  Field() = default;
+
+  /**
+     * Constructor of the field with a defined size in the x, y, z Cartesian
+     * dimensions
+     */
+  Field(int I_total, int J_total, int K_total);
+
+  /**
+     * Allocate the memory appropriate for all the 3D tensors associated with
+     * this split field
+     */
+  void allocate();
+
+  /**
+     * Set all the values of all components of the field to zero
      */
   void zero();
+
+  /**
+     * Allocate and set to zero all components of the field
+     */
+  void allocate_and_zero() {
+    allocate();
+    zero();
+  }
 
   /**
    * Set the phasors for this field, given a split field. Result gives field according to the
@@ -263,12 +288,41 @@ class ElectricField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+public:
+  ElectricField() = default;
+  ElectricField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
+  /**
+   * @brief Interpolate the Ex component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_x_to_centre(int i, int j, int k);
+  /**
+   * @brief Interpolate the Ey component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of 
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_y_to_centre(int i, int j, int k);
+  /**
+   * @brief Interpolate the Ez component to the centre of cell (i,j,k)
+   * 
+   * @param i,j,k Cell to interpolate to the centre of 
+   * @return double Interpolated value
+   */
+  std::complex<double> interpolate_z_to_centre(int i, int j, int k);
 };
 
 class MagneticField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+public:
+  MagneticField() = default;
+  MagneticField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
 };
 
 /**
