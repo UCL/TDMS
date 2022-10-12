@@ -10,6 +10,7 @@
 #include "interpolate_Efield.h"
 #include "interpolate_Hfield.h"
 #include "globals.h"
+#include "field.h"
 
 using namespace tdms_math_constants;
 
@@ -95,9 +96,11 @@ TEST_CASE("E-field interpolation check") {
     SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
     // setup the "split" E-field components
-    double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
-           ***Eyx = allocate3dmemory(Nx, Ny, Nz), ***Eyz = allocate3dmemory(Nx, Ny, Nz),
-           ***Ezx = allocate3dmemory(Nx, Ny, Nz), ***Ezy = allocate3dmemory(Nx, Ny, Nz);
+    ElectricSplitField E_split(Nx, Ny, Nz);
+    E_split.allocate();
+    // double ***Exy = allocate3dmemory(Nx, Ny, Nz), ***Exz = allocate3dmemory(Nx, Ny, Nz),
+    //        ***Eyx = allocate3dmemory(Nx, Ny, Nz), ***Eyz = allocate3dmemory(Nx, Ny, Nz),
+    //        ***Ezx = allocate3dmemory(Nx, Ny, Nz), ***Ezy = allocate3dmemory(Nx, Ny, Nz);
     // setup for non-split field components
     double ***Ex = allocate3dmemory(Nx, Ny, Nz),
            ***Ey = allocate3dmemory(Nx, Ny, Nz),
@@ -129,12 +132,12 @@ TEST_CASE("E-field interpolation check") {
                 // assign component values
                 Ex[kk][jj][ii] = x_comp_value; Ey[kk][jj][ii] = y_comp_value; Ez[kk][jj][ii] = z_comp_value;
                 // split fields - use some wieghting that sums to one for the split cells
-                Exy[kk][jj][ii] = x_comp_value;
-                Exz[kk][jj][ii] = 0.;
-                Eyx[kk][jj][ii] = y_comp_value * .5;
-                Eyz[kk][jj][ii] = y_comp_value * .5;
-                Ezx[kk][jj][ii] = z_comp_value * .25;
-                Ezy[kk][jj][ii] = z_comp_value * .75;
+                E_split.xy[kk][jj][ii] = x_comp_value;
+                E_split.xz[kk][jj][ii] = 0.;
+                E_split.yx[kk][jj][ii] = y_comp_value * .5;
+                E_split.yz[kk][jj][ii] = y_comp_value * .5;
+                E_split.zx[kk][jj][ii] = z_comp_value * .25;
+                E_split.zy[kk][jj][ii] = z_comp_value * .75;
             }
         }
     }
@@ -158,7 +161,7 @@ TEST_CASE("E-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Ex_interp, Ex_split_interp;
                 interpolateEx(Ex, ii + 1, jj, kk, Nx, &Ex_interp);
-                interpolateSplitFieldEx(Exy, Exz, ii + 1, jj, kk, Nx, &Ex_split_interp);
+                Ex_split_interp = E_split.interpolate_x_to_centre(ii + 1, jj, kk);
 
                 // compute the errors
                 Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
@@ -183,7 +186,7 @@ TEST_CASE("E-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Ey_interp, Ey_split_interp;
                 interpolateEy(Ey, ii, jj + 1, kk, Ny, &Ey_interp);
-                interpolateSplitFieldEy(Eyx, Eyz, ii, jj + 1, kk, Ny, &Ey_split_interp);
+                Ey_split_interp = E_split.interpolate_y_to_centre(ii, jj + 1, kk);
 
                 // compute the errors
                 Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
@@ -208,7 +211,7 @@ TEST_CASE("E-field interpolation check") {
                 // interpolate to the centre of this cell
                 double Ez_interp, Ez_split_interp;
                 interpolateEz(Ez, ii, jj, kk + 1, Nz, &Ez_interp);
-                interpolateSplitFieldEz(Ezx, Ezy, ii, jj, kk + 1, Nz, &Ez_split_interp);
+                Ez_split_interp = E_split.interpolate_z_to_centre(ii, jj, kk + 1);
 
                 // compute the errors
                 Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;
@@ -218,12 +221,6 @@ TEST_CASE("E-field interpolation check") {
     }
 
     // can now deallocate our sample field arrays
-    delete Exy;
-    delete Exz;
-    delete Eyx;
-    delete Eyz;
-    delete Ezx;
-    delete Ezy;
     delete Ex;
     delete Ey;
     delete Ez;

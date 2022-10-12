@@ -126,6 +126,28 @@ public:
      */
     ElectricSplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
+
+    /**
+     * @brief Interpolate the x-component to the centre of cell (i,j,k)
+     * 
+     * @param i,j,k Index of the cell to interpolate to the centre of 
+     * @return double Value of the Ex component at the cell centre
+     */
+    double interpolate_x_to_centre(int i, int j, int k);
+    /**
+     * @brief Interpolate the y-component to the centre of cell (i,j,k)
+     * 
+     * @param i,j,k Index of the cell to interpolate to the centre of 
+     * @return double Value of the Ey component at the cell centre
+     */
+    double interpolate_y_to_centre(int i, int j, int k);
+    /**
+     * @brief Interpolate the z-component to the centre of cell (i,j,k)
+     * 
+     * @param i,j,k Index of the cell to interpolate to the centre of 
+     * @return double Value of the Ez component at the cell centre
+     */
+    double interpolate_z_to_centre(int i, int j, int k);
 };
 
 class MagneticSplitField: public SplitField{
@@ -141,6 +163,10 @@ public:
      */
     MagneticSplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
+
+    double interpolate_x_to_centre(int i, int j, int k);
+    double interpolate_y_to_centre(int i, int j, int k);
+    double interpolate_z_to_centre(int i, int j, int k);
 };
 
 class CurrentDensitySplitField: public SplitField{
