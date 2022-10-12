@@ -7,8 +7,6 @@
 #include <cmath>
 #include <spdlog/spdlog.h>
 
-#include "interpolate_Efield.h"
-#include "interpolate_Hfield.h"
 #include "globals.h"
 #include "field.h"
 
