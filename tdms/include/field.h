@@ -286,6 +286,11 @@ public:
   virtual std::complex<double> interpolate_z_to_centre(int i, int j, int k) = 0;
 
   /**
+   * Set the values of all components in this field from another, equally sized field
+   */
+   void set_values_from(Field &other);
+
+   /**
    * @brief Interpolate the Field to the centre of all Yee cells within the provided index range.
    * 
    * Interpolation is performed across all cells if no cutoffs are specified.
@@ -294,17 +299,12 @@ public:
    * @param i_lower_cutoff,j_lower_cutoff,k_lower_cutoff First cell index in the x,y,z direction (respectively) to interpolate to the centre of.
    * @param i_upper_cutoff,j_upper_cutoff,k_upper_cutoff Last cell index in the x,y,z direction (respectively) to interpolate to the centre of.
    */
-  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
-                                int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff);
-  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out);
+   void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                 int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
+                                 int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff);
+   void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out);
 
-  /**
-   * Set the values of all components in this field from another, equally sized field
-   */
-   void set_values_from(Field &other);
-
-  ~Field();
+   ~Field();
 };
 
 class ElectricField: public Field{

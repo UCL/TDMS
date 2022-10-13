@@ -1091,7 +1091,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   t0 = (double) time(NULL);
   //    fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"dz: %e, c: %e, dz/c: %e\n",dz,LIGHT_V,dz/LIGHT_V);
-
+  
   spdlog::debug("Starting main loop");
   auto main_loop_timer = Timer();
 
@@ -1168,15 +1168,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                Ex_temp = E_s.interpolate_x_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
-                                                      fieldsample.j[jt] + params.pml.Dyl - 1,
-                                                      fieldsample.k[kt] + params.pml.Dzl - 1);
-                Ey_temp = E_s.interpolate_y_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
-                                                      fieldsample.j[jt] + params.pml.Dyl - 1,
-                                                      fieldsample.k[kt] + params.pml.Dzl - 1);
-                Ez_temp = E_s.interpolate_z_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
-                                                      fieldsample.j[jt] + params.pml.Dyl - 1,
-                                                      fieldsample.k[kt] + params.pml.Dzl - 1);
+                // Ex_temp = E_s.interpolate_x_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
+                //                                       fieldsample.j[jt] + params.pml.Dyl - 1,
+                //                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                // Ey_temp = E_s.interpolate_y_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
+                //                                       fieldsample.j[jt] + params.pml.Dyl - 1,
+                //                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                // Ez_temp = E_s.interpolate_z_to_centre(fieldsample.i[it] + params.pml.Dxl - 1,
+                //                                       fieldsample.j[jt] + params.pml.Dyl - 1,
+                //                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                interpolateTimeDomainFieldCentralEBandLimited(
+                        E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
+                        fieldsample.i[it] + params.pml.Dxl - 1,
+                        fieldsample.j[jt] + params.pml.Dyl - 1,
+                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
@@ -1186,9 +1191,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
         }
     }
-
     /*end extract fieldsample*/
-
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -4536,8 +4539,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
-              E.J_tot - 2, E.K_tot - 2);
       //fprintf(stderr,"Pos 15_m1a\n");
       // mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
       //                            E.I_tot - 2, 2, E.J_tot - 2, 2,

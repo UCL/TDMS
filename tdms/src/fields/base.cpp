@@ -107,16 +107,12 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
 void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
                                      int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
                                      int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff) {
-  // check we have 3 dimensional arrays - this is superflous thanks to our new classes?
-  if ((int) mxGetNumberOfDimensions((const mxArray *) real.x) < 3) {
-    throw runtime_error("real.x is not 3D!\n");
-  }
   // these are the dimensions of the field arrays. We assume they all have the same dimensions. We don't actually know this, unless we added an error check to the input array pointers when we read them in and used them to construct the field
-  const int *indims = (int *) mxGetDimensions((mxArray *) real.x);
   const int ndims = 3;
 
   // construct the output arrays
-  int outdims[ndims] = {iu - il + 1, jl - ju + 1, ku - kl + 1};
+  int outdims[ndims] = {i_upper_cutoff - i_lower_cutoff + 1, j_lower_cutoff - j_upper_cutoff + 1,
+                        k_upper_cutoff - k_lower_cutoff + 1};
   if (outdims[1] < 1) {
     // if simulation is 2D, allow one cell in the y-direction so the output is not NULL
     outdims[1] = 1;
@@ -133,7 +129,7 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
   imag_out.z = cast_matlab_3D_array(mxGetPi(*z_out), outdims[0], outdims[1], outdims[2]);
 
   // now interpolate the fields, placing the values into the outputs
-  if (J_tot == 0) {
+  if (j_upper_cutoff < j_lower_cutoff) {
     // in a 2D simulation, interpolate across only two dimensions
     for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
       for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
@@ -165,7 +161,6 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
     }
   }
 }
-
 
 void Field::set_values_from(Field &other) {
 
