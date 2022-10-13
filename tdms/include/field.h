@@ -224,7 +224,13 @@ public:
      */
   int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
 
-  // TODO: Docstring. Not implemented because I'm not sure what this does!
+  /**
+   * @brief Normalise all field values by the angular_norm
+   * 
+   * If the field values are stored as complex numbers, this amounts to dividing each stored field value by angular_norm.
+   * 
+   * If the field values are stored in their real and imaginary parts separately, the expressions are more complicated.
+   */
   void normalise_volume();
 
   /**
@@ -275,6 +281,23 @@ public:
   std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt);
 
   virtual double phase(int n, double omega, double dt) = 0;
+  virtual std::complex<double> interpolate_x_to_centre(int i, int j, int k) = 0;
+  virtual std::complex<double> interpolate_y_to_centre(int i, int j, int k) = 0;
+  virtual std::complex<double> interpolate_z_to_centre(int i, int j, int k) = 0;
+
+  /**
+   * @brief Interpolate the Field to the centre of all Yee cells within the provided index range.
+   * 
+   * Interpolation is performed across all cells if no cutoffs are specified.
+   * 
+   * @param x_out,y_out,z_out Arrays in which to store the interpolated x, y, z components respectively. 
+   * @param i_lower_cutoff,j_lower_cutoff,k_lower_cutoff First cell index in the x,y,z direction (respectively) to interpolate to the centre of.
+   * @param i_upper_cutoff,j_upper_cutoff,k_upper_cutoff Last cell index in the x,y,z direction (respectively) to interpolate to the centre of.
+   */
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
+                                int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff);
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out);
 
   /**
    * Set the values of all components in this field from another, equally sized field
