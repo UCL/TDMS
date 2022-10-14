@@ -144,7 +144,7 @@ public:
    * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k);
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class MagneticSplitField: public SplitField{
@@ -168,7 +168,7 @@ public:
    * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k);
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class CurrentDensitySplitField: public SplitField{
@@ -185,7 +185,7 @@ public:
     CurrentDensitySplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
 
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) { return 0.; };
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override { return 0.; };
 };
 
 /**
@@ -294,7 +294,7 @@ public:
    * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
    * @return std::complex<double> The interpolated component value
    */
-  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k);
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class MagneticField: public Field{
@@ -313,7 +313,7 @@ public:
    * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
    * @return std::complex<double> The interpolated component value
    */
-  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k);
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 /**
