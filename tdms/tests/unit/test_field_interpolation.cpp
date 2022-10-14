@@ -133,8 +133,8 @@ TEST_CASE("E-field interpolation check") {
 
             // interpolate to the centre of this cell
             double Ex_interp, Ex_split_interp;
-            Ex_interp = E.interpolate_x_to_centre(ii + 1, jj, kk).real();
-            Ex_split_interp = E_split.interpolate_x_to_centre(ii + 1, jj, kk);
+            Ex_interp = E.interpolate_to_centre_of(AxialDirection::X, ii + 1, jj, kk).real();
+            Ex_split_interp = E_split.interpolate_to_centre_of(AxialDirection::X, ii + 1, jj, kk);
 
             // compute the errors
             Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
@@ -158,8 +158,8 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ey_interp, Ey_split_interp;
-                Ey_interp = E.interpolate_y_to_centre(ii, jj + 1, kk).real();
-                Ey_split_interp = E_split.interpolate_y_to_centre(ii, jj + 1, kk);
+                Ey_interp = E.interpolate_to_centre_of(AxialDirection::Y, ii, jj + 1, kk).real();
+                Ey_split_interp = E_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj + 1, kk);
 
                 // compute the errors
                 Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
@@ -183,8 +183,8 @@ TEST_CASE("E-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Ez_interp, Ez_split_interp;
-                Ez_interp = E.interpolate_z_to_centre(ii, jj, kk + 1).real();
-                Ez_split_interp = E_split.interpolate_z_to_centre(ii, jj, kk + 1);
+                Ez_interp = E.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk + 1).real();
+                Ez_split_interp = E_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk + 1);
 
                 // compute the errors
                 Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;
@@ -382,8 +382,8 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hx_interp, Hx_split_interp;
-                Hx_interp = H.interpolate_x_to_centre(ii, jj + 1, kk + 1).imag();
-                Hx_split_interp = H_split.interpolate_x_to_centre(ii, jj + 1, kk + 1);
+                Hx_interp = H.interpolate_to_centre_of(AxialDirection::X, ii, jj + 1, kk + 1).imag();
+                Hx_split_interp = H_split.interpolate_to_centre_of(AxialDirection::X, ii, jj + 1, kk + 1);
 
                 // compute the errors
                 Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
@@ -407,8 +407,8 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hy_interp, Hy_split_interp;
-                Hy_interp = H.interpolate_y_to_centre(ii + 1, jj, kk + 1).imag();
-                Hy_split_interp = H_split.interpolate_y_to_centre(ii + 1, jj, kk + 1);
+                Hy_interp = H.interpolate_to_centre_of(AxialDirection::Y, ii + 1, jj, kk + 1).imag();
+                Hy_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Y, ii + 1, jj, kk + 1);
 
                 // compute the errors
                 Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
@@ -432,8 +432,8 @@ TEST_CASE("H-field interpolation check") {
 
                 // interpolate to the centre of this cell
                 double Hz_interp, Hz_split_interp;
-                Hz_interp = H.interpolate_z_to_centre(ii + 1, jj + 1, kk).imag();
-                Hz_split_interp = H_split.interpolate_z_to_centre(ii + 1, jj + 1, kk);
+                Hz_interp = H.interpolate_to_centre_of(AxialDirection::Z, ii + 1, jj + 1, kk).imag();
+                Hz_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Z, ii + 1, jj + 1, kk);
 
                 // compute the errors
                 Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
