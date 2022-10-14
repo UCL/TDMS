@@ -245,7 +245,7 @@ public:
   /**
    * @brief Computes the Frobenius norm of the tensor
    * 
-   * fro_norm = \sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }
+   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
    */
   double frobenius();
 

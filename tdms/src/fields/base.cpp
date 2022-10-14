@@ -133,8 +133,8 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
     // in a 2D simulation, interpolate across only two dimensions
     for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
       for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
-        complex<double> x_at_centre = interpolate_x_to_centre(i, 0, k),
-                        z_at_centre = interpolate_z_to_centre(i, 0, k);
+        complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, 0, k),
+                        z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, 0, k);
         real_out.x[k][0][i] = x_at_centre.real();
         imag_out.x[k][0][i] = x_at_centre.imag();
         real_out.y[k][0][i] = real.y[k][0][i];
@@ -147,9 +147,9 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
     for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
       for (int j = j_lower_cutoff; j <= j_upper_cutoff; j++) {
         for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
-          complex<double> x_at_centre = interpolate_x_to_centre(i, j, k),
-                          y_at_centre = interpolate_y_to_centre(i, j, k),
-                          z_at_centre = interpolate_z_to_centre(i, j, k);
+          complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k),
+                          y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k),
+                          z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
           real_out.x[k][j][i] = x_at_centre.real();
           imag_out.x[k][j][i] = x_at_centre.imag();
           real_out.y[k][j][i] = y_at_centre.real();
