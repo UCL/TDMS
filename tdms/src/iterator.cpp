@@ -4553,10 +4553,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     else
       mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
                                     E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    if (params.dimension == THREE)
-      mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
+    if (params.dimension == THREE) {
+      // mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
+      //                            E.I_tot - 2, 2, E.J_tot - 2, 2,
+      //                            E.K_tot - 2);
+      H.interpolate_across_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+                               H.K_tot - 2);
+    }
     else if (params.dimension == TE)
       mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
                                     E.I_tot - 2, 2, E.J_tot - 2, 0, 0);

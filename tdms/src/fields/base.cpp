@@ -101,25 +101,28 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
   }
 }
 
-void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out) {
-  interpolate_across_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot);
+void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out, Dimension mode) {
+  interpolate_across_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot, mode);
 }
 void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
                                      int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
-                                     int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff) {
+                                     int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff,
+                                     Dimension mode) {
   // these are the dimensions of the field arrays. We assume they all have the same dimensions. We don't actually know this, unless we added an error check to the input array pointers when we read them in and used them to construct the field
   const int ndims = 3;
-
-  // construct the output arrays
   int outdims[ndims] = {i_upper_cutoff - i_lower_cutoff + 1, j_lower_cutoff - j_upper_cutoff + 1,
                         k_upper_cutoff - k_lower_cutoff + 1};
-  if (outdims[1] < 1) {
-    // if simulation is 2D, allow one cell in the y-direction so the output is not NULL
+  if (mode==THREE && outdims[1]<1) {
+    // if this is a full simulation in 2D, allow one cell in the y-direction so the output is not NULL
     outdims[1] = 1;
+  } else if (mode==TE || mode==TM) {
+    outdims[2] = 1;
   }
+  // create output memory in MATLAB-friendly format
   *x_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *y_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *z_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
+  // allow output memory to be cast to our datatypes
   XYZTensor3D real_out, imag_out;
   real_out.x = cast_matlab_3D_array(mxGetPr(*x_out), outdims[0], outdims[1], outdims[2]);
   imag_out.x = cast_matlab_3D_array(mxGetPi(*x_out), outdims[0], outdims[1], outdims[2]);
@@ -127,38 +130,53 @@ void Field::interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray *
   imag_out.y = cast_matlab_3D_array(mxGetPi(*y_out), outdims[0], outdims[1], outdims[2]);
   real_out.z = cast_matlab_3D_array(mxGetPr(*z_out), outdims[0], outdims[1], outdims[2]);
   imag_out.z = cast_matlab_3D_array(mxGetPi(*z_out), outdims[0], outdims[1], outdims[2]);
-
-  // now interpolate the fields, placing the values into the outputs
-  if (j_upper_cutoff < j_lower_cutoff) {
-    // in a 2D simulation, interpolate across only two dimensions
-    for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
-      for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
-        complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, 0, k),
-                        z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, 0, k);
-        real_out.x[k][0][i] = x_at_centre.real();
-        imag_out.x[k][0][i] = x_at_centre.imag();
-        real_out.y[k][0][i] = real.y[k][0][i];
-        imag_out.y[k][0][i] = imag.y[k][0][i];
-        real_out.z[k][0][i] = z_at_centre.real();
-        imag_out.z[k][0][i] = z_at_centre.imag();
-      }
-    }
-  } else {
-    for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
-      for (int j = j_lower_cutoff; j <= j_upper_cutoff; j++) {
-        for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
-          complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k),
-                          y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k),
-                          z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
-          real_out.x[k][j][i] = x_at_centre.real();
-          imag_out.x[k][j][i] = x_at_centre.imag();
-          real_out.y[k][j][i] = y_at_centre.real();
-          imag_out.y[k][j][i] = y_at_centre.imag();
-          real_out.z[k][j][i] = z_at_centre.real();
-          imag_out.z[k][j][i] = z_at_centre.imag();
+  // interpolate, depending on the simulation mode (and, which field is being interpolated)
+  switch (mode) {
+    case THREE:
+      // 3D simulations always interpolate all components that are available
+      if (j_upper_cutoff < j_lower_cutoff) {
+        // in a 2D simulation, interpolate across only two dimensions
+        for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
+          for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
+            complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, 0, k),
+                            z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, 0, k);
+            real_out.x[k][0][i] = x_at_centre.real();
+            imag_out.x[k][0][i] = x_at_centre.imag();
+            real_out.y[k][0][i] = real.y[k][0][i];
+            imag_out.y[k][0][i] = imag.y[k][0][i];
+            real_out.z[k][0][i] = z_at_centre.real();
+            imag_out.z[k][0][i] = z_at_centre.imag();
+          }
+        }
+      } else {
+        for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
+          for (int j = j_lower_cutoff; j <= j_upper_cutoff; j++) {
+            for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
+              complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k),
+                              y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k),
+                              z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+              real_out.x[k][j][i] = x_at_centre.real();
+              imag_out.x[k][j][i] = x_at_centre.imag();
+              real_out.y[k][j][i] = y_at_centre.real();
+              imag_out.y[k][j][i] = y_at_centre.imag();
+              real_out.z[k][j][i] = z_at_centre.real();
+              imag_out.z[k][j][i] = z_at_centre.imag();
+            }
+          }
         }
       }
-    }
+      break;
+    case TE:
+      interpolate_across_range_TE(real_out, imag_out, i_lower_cutoff, i_upper_cutoff,
+                                  j_lower_cutoff, j_upper_cutoff, k_lower_cutoff, k_upper_cutoff);
+      break;
+    case TM:
+      interpolate_across_range_TM(real_out, imag_out, i_lower_cutoff, i_upper_cutoff,
+                                  j_lower_cutoff, j_upper_cutoff, k_lower_cutoff, k_upper_cutoff);
+      break;
+    default:
+      throw runtime_error("Error: unrecognised simulation mode - cannot interpolate components.\n");
+      break;
   }
 }
 

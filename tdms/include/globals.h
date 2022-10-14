@@ -38,13 +38,6 @@ typedef struct complex_vector
 	std::complex<double> Z;
 } complex_vector;
 
-enum AxialDirection 
-{
-	X = 'x',
-	Y = 'y',
-	Z = 'z'
-};
-
 // **********************
 //  Enumerated constants
 // **********************

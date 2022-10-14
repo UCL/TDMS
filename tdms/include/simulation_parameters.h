@@ -62,6 +62,13 @@ enum FieldComponents{
   Hz
 };
 
+enum AxialDirection 
+{
+	X = 'x',
+	Y = 'y',
+	Z = 'z'
+};
+
 class SimulationParameters{
 
 public:

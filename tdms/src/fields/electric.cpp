@@ -57,6 +57,44 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
   return scheme->interpolate(interp_data);
 }
 
+void ElectricField::interpolate_across_range_TE(XYZTensor3D real_out, XYZTensor3D imag_out,
+                                                int i_lower_cutoff, int i_upper_cutoff,
+                                                int j_lower_cutoff, int j_upper_cutoff,
+                                                int k_lower_cutoff, int k_upper_cutoff) {
+  for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
+    for (int j = j_lower_cutoff; j <= j_upper_cutoff; j++) {
+      for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
+        complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k),
+                        y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        real_out.x[k][j][i] = x_at_centre.real();
+        imag_out.x[k][j][i] = x_at_centre.imag();
+        real_out.y[k][j][i] = y_at_centre.real();
+        imag_out.y[k][j][i] = y_at_centre.imag();
+        real_out.z[k][j][i] = 0.;
+        imag_out.z[k][j][i] = 0.;
+      }
+    }
+  }
+}
+void ElectricField::interpolate_across_range_TM(XYZTensor3D real_out, XYZTensor3D imag_out,
+                                                int i_lower_cutoff, int i_upper_cutoff,
+                                                int j_lower_cutoff, int j_upper_cutoff,
+                                                int k_lower_cutoff, int k_upper_cutoff) {
+  for (int i = i_lower_cutoff; i <= i_upper_cutoff; i++) {
+    for (int j = j_lower_cutoff; j <= j_upper_cutoff; j++) {
+      for (int k = k_lower_cutoff; k <= k_upper_cutoff; k++) {
+        complex<double> z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        real_out.x[k][j][i] = 0.;
+        imag_out.x[k][j][i] = 0.;
+        real_out.y[k][j][i] = 0.;
+        imag_out.y[k][j][i] = 0.;
+        real_out.z[k][j][i] = z_at_centre.real();
+        imag_out.z[k][j][i] = z_at_centre.imag();
+      }
+    }
+  }
+}
+
 double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
   const InterpolationScheme *scheme;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind

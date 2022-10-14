@@ -10,8 +10,6 @@
 #include "mat_io.h"
 #include "simulation_parameters.h"
 #include "utils.h"
-#include "globals.h"
-
 
 /**
  * A generic grid entity. For example:
@@ -193,6 +191,15 @@ public:
  * at each (x, y, z) grid point
  */
 class Field : public Grid{
+protected:
+  void virtual interpolate_across_range_TE(XYZTensor3D real_out, XYZTensor3D imag_out,
+                                           int i_lower_cutoff, int i_upper_cutoff,
+                                           int j_lower_cutoff, int j_upper_cutoff,
+                                           int k_lower_cutoff, int k_upper_cutoff) = 0;
+  void virtual interpolate_across_range_TM(XYZTensor3D real_out, XYZTensor3D imag_out,
+                                           int i_lower_cutoff, int i_upper_cutoff,
+                                           int j_lower_cutoff, int j_upper_cutoff,
+                                           int k_lower_cutoff, int k_upper_cutoff) = 0;
 
 public:
   double ft = 0.;  // TODO: an explanation of what this is
@@ -279,29 +286,41 @@ public:
   /**
    * Set the values of all components in this field from another, equally sized field
    */
-   void set_values_from(Field &other);
+  void set_values_from(Field &other);
 
-   /**
+  /**
    * @brief Interpolate the Field to the centre of all Yee cells within the provided index range.
    * 
    * Interpolation is performed across all cells if no cutoffs are specified.
+   * If no mode is specified, the default is a full field simulation (THREE).
    * 
    * @param x_out,y_out,z_out Arrays in which to store the interpolated x, y, z components respectively. 
    * @param i_lower_cutoff,j_lower_cutoff,k_lower_cutoff First cell index in the x,y,z direction (respectively) to interpolate to the centre of.
    * @param i_upper_cutoff,j_upper_cutoff,k_upper_cutoff Last cell index in the x,y,z direction (respectively) to interpolate to the centre of.
+   * @param mode Either THREE, TE, or TM - the components that are interpolated will be restricted to the specified mode.
    */
-   void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                 int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
-                                 int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff);
-   void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out);
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
+                                int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff,
+                                Dimension mode = Dimension::THREE);
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                Dimension mode = Dimension::THREE);
 
-   ~Field();
+  ~Field();
 };
 
 class ElectricField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+protected:
+  void interpolate_across_range_TE(XYZTensor3D real_out, XYZTensor3D imag_out, int i_lower_cutoff,
+                                   int i_upper_cutoff, int j_lower_cutoff, int j_upper_cutoff,
+                                   int k_lower_cutoff, int k_upper_cutoff) override;
+  void interpolate_across_range_TM(XYZTensor3D real_out, XYZTensor3D imag_out, int i_lower_cutoff,
+                                   int i_upper_cutoff, int j_lower_cutoff, int j_upper_cutoff,
+                                   int k_lower_cutoff, int k_upper_cutoff) override;
 
 public:
   ElectricField() = default;
@@ -315,12 +334,36 @@ public:
    * @return std::complex<double> The interpolated component value
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+
+  /**
+   * @brief Interpolate the E-field components of the respectivel mode to the centre of all Yee cells within the provided index range.
+   * 
+   * Interpolation is performed across all cells if no cutoffs are specified.
+   * Interpolation is performed for a full simulation if no mode is specified.
+   * 
+   * @param x_out,y_out,z_out Arrays in which to store the interpolated x, y, z components respectively. 
+   * @param i_lower_cutoff,j_lower_cutoff,k_lower_cutoff First cell index in the x,y,z direction (respectively) to interpolate to the centre of.
+   * @param i_upper_cutoff,j_upper_cutoff,k_upper_cutoff Last cell index in the x,y,z direction (respectively) to interpolate to the centre of.
+   * @param mode Either THREE, TE, or TM - the components that are interpolated will be restricted to the specified mode.
+   */
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                int i_lower_cutoff, int i_upper_cutoff, int j_lower_cutoff,
+                                int j_upper_cutoff, int k_lower_cutoff, int k_upper_cutoff, Dimension mode=Dimension::THREE);
+  void interpolate_across_range(mxArray **x_out, mxArray **y_out, mxArray **z_out, Dimension mode=Dimension::THREE);
 };
 
 class MagneticField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+protected:
+  void interpolate_across_range_TE(XYZTensor3D real_out, XYZTensor3D imag_out, int i_lower_cutoff,
+                                   int i_upper_cutoff, int j_lower_cutoff, int j_upper_cutoff,
+                                   int k_lower_cutoff, int k_upper_cutoff) override;
+  void interpolate_across_range_TM(XYZTensor3D real_out, XYZTensor3D imag_out, int i_lower_cutoff,
+                                   int i_upper_cutoff, int j_lower_cutoff, int j_upper_cutoff,
+                                   int k_lower_cutoff, int k_upper_cutoff) override;
 
 public:
   MagneticField() = default;
