@@ -9,6 +9,11 @@ double ElectricField::phase(int n, double omega, double dt){
   return omega * ((double) n + 1) * dt;
 }
 
+/*
+You may notice several +1's appearing when the interpolation data (interp_data) arrays are constructed from the field values.
+This is because E.x[k][j][i] is, by construction of the Grid class, not the value associated to Yee cell (i,j,k) but rather cell (i-1,j,k). Similarly Ey[k][j][i] is the value of cell (i,j-1,k) and Ez[k][j][i] of cell (i,j,k-1).
+*/
+
 complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
   const InterpolationScheme *scheme;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
@@ -21,8 +26,8 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
         interp_data[ind] =
-                real.x[k][j][i - scheme->number_of_datapoints_to_left + ind] +
-                IMAGINARY_UNIT * imag.x[k][j][i - scheme->number_of_datapoints_to_left + ind];
+                real.x[k][j][i + 1 - scheme->number_of_datapoints_to_left + ind] +
+                IMAGINARY_UNIT * imag.x[k][j][i + 1 - scheme->number_of_datapoints_to_left + ind];
       }
       break;
     case Y:
@@ -33,8 +38,8 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
       // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
         interp_data[ind] =
-                real.y[k][j - scheme->number_of_datapoints_to_left + ind][i] +
-                IMAGINARY_UNIT * imag.y[k][j - scheme->number_of_datapoints_to_left + ind][i];
+                real.y[k][j + 1 - scheme->number_of_datapoints_to_left + ind][i] +
+                IMAGINARY_UNIT * imag.y[k][j + 1 - scheme->number_of_datapoints_to_left + ind][i];
       }
       break;
     case Z:
@@ -45,8 +50,8 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
       // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
         interp_data[ind] =
-                real.z[k - scheme->number_of_datapoints_to_left + ind][j][i] +
-                IMAGINARY_UNIT * imag.z[k - scheme->number_of_datapoints_to_left + ind][j][i];
+                real.z[k + 1 - scheme->number_of_datapoints_to_left + ind][j][i] +
+                IMAGINARY_UNIT * imag.z[k + 1 - scheme->number_of_datapoints_to_left + ind][j][i];
       }
       break;
     default:
@@ -68,8 +73,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
       // now fill the interpolation data
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
-        interp_data[ind] = xy[k][j][i - scheme->number_of_datapoints_to_left + ind] +
-                           xz[k][j][i - scheme->number_of_datapoints_to_left + ind];
+        interp_data[ind] = xy[k][j][i + 1 - scheme->number_of_datapoints_to_left + ind] +
+                           xz[k][j][i + 1 - scheme->number_of_datapoints_to_left + ind];
       }
       // now run the interpolation scheme and place the result into the output
       return scheme->interpolate(interp_data);
@@ -79,8 +84,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
       // now fill the interpolation data
       // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
-        interp_data[ind] = yx[k][j - scheme->number_of_datapoints_to_left + ind][i] +
-                           yz[k][j - scheme->number_of_datapoints_to_left + ind][i];
+        interp_data[ind] = yx[k][j + 1 - scheme->number_of_datapoints_to_left + ind][i] +
+                           yz[k][j + 1 - scheme->number_of_datapoints_to_left + ind][i];
       }
       // now run the interpolation scheme and place the result into the output
       return scheme->interpolate(interp_data);
@@ -90,8 +95,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
       // now fill the interpolation data
       // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
-        interp_data[ind] = zx[k - scheme->number_of_datapoints_to_left + ind][j][i] +
-                           zy[k - scheme->number_of_datapoints_to_left + ind][j][i];
+        interp_data[ind] = zx[k + 1 - scheme->number_of_datapoints_to_left + ind][j][i] +
+                           zy[k + 1 - scheme->number_of_datapoints_to_left + ind][j][i];
       }
       // now run the interpolation scheme and place the result into the output
       return scheme->interpolate(interp_data);

@@ -22,22 +22,22 @@ x = linspace(0,1,r*nSamples); % sample points
 % Constant function interpolation
 const_fn_data = const_fn(x);
 const_fn_interp = interp(const_fn_data(1:r:end),r,N);
-const_fn_err = max(abs( const_fn_interp(2:r:end) - const_fn_data(2:r:end) ));
+const_fn_err = max(abs( const_fn_interp(2:r:end-1) - const_fn_data(2:r:end-1) ));
 
 % sin(2\pi x) interpolation
 s2pi_data = s2pi(x);
 s2pi_interp = interp(s2pi_data(1:r:end),r,N);
-s2pi_err = max(abs( s2pi_interp(2:r:end) - s2pi_data(2:r:end) ));
+s2pi_err = max(abs( s2pi_interp(2:r:end-1) - s2pi_data(2:r:end-1) ));
 
 % pulse function interpolation
 pulse_data = pulse_fn(x);
 pulse_interp = interp(pulse_data(1:r:end),r,N);
-pulse_err = max(abs( pulse_interp(2:r:end) - pulse_data(2:r:end) ));
+pulse_err = max(abs( pulse_interp(2:r:end-1) - pulse_data(2:r:end-1) ));
 
 % complex: s2pi(x) + i*pulse_fn(x) interpolation
 complex_data = complex_test(x);
 complex_interp = interp(complex_data(1:r:end),r,N);
-complex_err = max(abs( complex_interp(2:r:end) - complex_data(2:r:end) ));
+complex_err = max(abs( complex_interp(2:r:end-1) - complex_data(2:r:end-1) ));
 
 fprintf("Constant function error: %.8e \n", const_fn_err);
 fprintf("sin function error:      %.8e \n", s2pi_err);

@@ -26,16 +26,17 @@ cell_Sizes = [0.25, 0.1, 0.05, 0.01];
 % for each trial compute BLi and cubic errors
 for trial=1:4
     cellSize = cell_Sizes(trial);
-    n_YCs = ceil(4/cellSize); % number of Yee cells
+    n_datapts = ceil(4/cellSize); % number of Yee cells
     x_lower = -2.; % lower value of the range over which we shall test
     
-    cell_centres = zeros(1,n_YCs); % interpolation positions (Yee cell centres)
-    field_pos = zeros(1,n_YCs); % data sample positions (field component associated to Yee cells)
-    for i=1:n_YCs
-        cell_centres(i) = x_lower + (i-0.5)*cellSize;
-        field_pos(i) = x_lower + (i)*cellSize;
+    cell_centres = zeros(1,n_datapts-1); % interpolation positions (Yee cell centres)
+    field_pos = zeros(1,n_datapts); % data sample positions (field component associated to Yee cells)
+    for i=1:n_datapts
+        if i~=n_datapts
+            cell_centres(i) = x_lower + (i-0.5)*cellSize;
+        end
+        field_pos(i) = x_lower + (i-1)*cellSize;
     end
-    cell_centres = cell_centres(2:end); % shave off the extra point MATLAB generates
     field_samples = BLi_vs_cubic_fn(field_pos); % compute data samples
     exact_vals = BLi_vs_cubic_fn(cell_centres); % compute exact values
     
@@ -43,13 +44,12 @@ for trial=1:4
     BLi_interp = BLi_interp_full(2:2:end-1); % final point is beyond last Yee cell
     
     % perform cubic interpolation
-    cubic_interp = zeros(1,n_YCs); 
-    cubic_interp(2) = interp_cubic(field_samples(1:4),-1);
-    for i=3:n_YCs-1
-        cubic_interp(i) = interp_cubic(field_samples(i-2:i+1),0);
+    cubic_interp = zeros(1,n_datapts-1); 
+    cubic_interp(1) = interp_cubic(field_samples(1:4),-1);
+    for i=2:n_datapts-2
+        cubic_interp(i) = interp_cubic(field_samples(i-1:i+2),0);
     end
-    cubic_interp(end) = interp_cubic(field_samples(end-3:end),1);
-    cubic_interp = cubic_interp(2:end);
+    cubic_interp(n_datapts-1) = interp_cubic(field_samples(end-3:end),1);
     
     % compute errors
     BLi_err = abs( BLi_interp - exact_vals );
@@ -70,21 +70,19 @@ for trial=1:4
     fprintf("Cubic: \t %.8e\n", cub_err_norm);
     fprintf("BLi: \t %.8e\n", BLi_err_norm);
     fprintf("Pointwise, BLi was better at %d points.\n", sum(BLi_was_better));
-
 end
 
 function [out] = interp_cubic(v, pos)
     if pos==0
         % midpoint interpolate
-        out = - v(1) + 9*v(2) + 9*v(3) - v(4);
+        out = -(1/16) * v(1) + (9/16)*v(2) + (9/16)*v(3) - (1/16)*v(4);
     elseif pos==-1
         % left interp
-        out = 5*v(1) + 15*v(2) - 5*v(3) + v(4);
+        out = (5/16)*v(1) + (15/16)*v(2) - (5/16)*v(3) + (1/16)*v(4);
     elseif pos==1
         % right interp
-        out = v(1) - 5*v(2) + 15*v(3) + 5*v(4);
+        out = (1/16)*v(1) - (5/16)*v(2) + (15/16)*v(3) + (5/16)*v(4);
     end
-    out = out/16;
 end
 
 function [out] = BLi_vs_cubic_fn(x)

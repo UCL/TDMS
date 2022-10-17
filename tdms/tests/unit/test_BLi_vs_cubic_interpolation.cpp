@@ -58,14 +58,10 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
     // Flags for whether or not we expect BLi to perform better
     bool BLi_is_better[n_trials] = {true, true, false, false};
     // MATLAB errors for BLi
-    double MATLAB_BLi_errs[n_trials] = {1.25953429e-02,
-                                        7.10587711e-04,
-                                        7.80325615e-04,
+    double MATLAB_BLi_errs[n_trials] = {1.25953429e-02, 7.10587711e-04, 7.80325615e-04,
                                         1.97562511e-03};
     // MATLAB errors for cubic interp
-    double MATLAB_cub_errs[n_trials] = {3.28105674e-02,
-                                        5.49601748e-03,
-                                        5.53430587e-04,
+    double MATLAB_cub_errs[n_trials] = {3.28105674e-02, 5.49601748e-03, 5.53430587e-04,
                                         2.06917814e-06};
     // coordinate of the LHS of the first Yee cell
     double x_lower = -2.;
@@ -77,65 +73,63 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
     for (int trial = 0; trial < n_trials; trial++) {
         // Yee cell "size" to use
         double cellSize = cell_sizes[trial];
-        // the number of Yee cells that we want
-        int n_YCs = ceil(extent / cellSize);
-        CHECK(n_YCs > 8); // BLi cannot run otherwise
+        // the number of datapoints that we have, the number of "cells" we have is one less than this
+        int n_datapts = round(extent / cellSize);
+        CHECK(n_datapts > 8); // BLi cannot run otherwise
 
         // the centres of the Yee cells
-        double cell_centres[n_YCs];
+        double cell_centres[n_datapts - 1];
         // the exact field values at the Yee cell centres
-        double exact_field_values[n_YCs];
+        double exact_field_values[n_datapts - 1];
         // the spatial coordinates of the samples of our field
-        double field_positions[n_YCs];
+        double field_positions[n_datapts];
         // the field values at the sample positions
-        double field_samples[n_YCs];
-        for (int i = 0; i < n_YCs; i++) {
-            cell_centres[i] = x_lower + (((double)i) + 0.5) * cellSize;
-            field_positions[i] = x_lower + (i + 1) * cellSize;
+        double field_samples[n_datapts];
+        for (int i = 0; i < n_datapts; i++) {
+          if (i != n_datapts - 1) { cell_centres[i] = x_lower + (((double) i) + 0.5) * cellSize; }
+          field_positions[i] = x_lower + ((double) i) * cellSize;
 
-            exact_field_values[i] = f_BLi_vs_Cubic(cell_centres[i]);
-            field_samples[i] = f_BLi_vs_Cubic(field_positions[i]);
+          exact_field_values[i] = f_BLi_vs_Cubic(cell_centres[i]);
+          field_samples[i] = f_BLi_vs_Cubic(field_positions[i]);
         }
 
         // the interpolated field values via BLi
-        double BLi_interp[n_YCs];
+        double BLi_interp[n_datapts - 1];
         // the interpolated field values via cubic interp
-        double cub_interp[n_YCs];
+        double cub_interp[n_datapts - 1];
 
         // pointwise-interpolation error in BLi
-        double BLi_err[n_YCs];
+        double BLi_err[n_datapts - 1];
         // pointwise-interpolation error in cubic
-        double cub_err[n_YCs];
+        double cub_err[n_datapts - 1];
 
-        // perform interpolation - currently DO NOT interpolate to cell 0's centre
-
-        // have to manually do cubic interpolation since best_interp_scheme will always want to do BLi
+        // perform interpolation - this is manual since best_interp_scheme will always want to do BLi
         // cubic interpolation only changes at the first and last cells
-        cub_interp[1] = CBFst.interpolate(field_samples, 1 - CBFst.number_of_datapoints_to_left);
-        for (int i = 2; i <= n_YCs - 2; i++) {
-            cub_interp[i] = CBMid.interpolate(field_samples, i - CBMid.number_of_datapoints_to_left);
+        cub_interp[0] = CBFst.interpolate(field_samples);
+        for (int i = 1; i < n_datapts - 2; i++) {
+            cub_interp[i] = CBMid.interpolate(field_samples, i + 1 - CBMid.number_of_datapoints_to_left);
         }
-        cub_interp[n_YCs - 1] = CBLst.interpolate(field_samples, n_YCs - 1 - CBLst.number_of_datapoints_to_left);
+        cub_interp[n_datapts - 2] = CBLst.interpolate(field_samples, n_datapts - 1 - CBLst.number_of_datapoints_to_left);
 
         // BLi interpolation
-        for (int i = 1; i < n_YCs; i++) {
-            // we checked earlier that BLi should always be available (CHECK(n_YCs>8)), so this is always a BLi scheme
-            InterpolationScheme use_scheme = best_scheme(n_YCs, i);
+        for (int i = 0; i < n_datapts - 1; i++) {
+            // we checked earlier that BLi should always be available, so this is always a BLi scheme
+            InterpolationScheme use_scheme = best_scheme(n_datapts - 1, i);
             // to be on the safe side, check that we have a BLi scheme. BLi schemes are always strictly better than CUBIC_INTERP_MIDDLE, and not equal or worse.
             CHECK(use_scheme.is_better_than(CUBIC_INTERP_MIDDLE));
             // interpolate using the cell data we have provided
-            // i - (use_scheme.index + 1) is the index of field_samples to read as the point v[0] in the scheme
-            BLi_interp[i] = use_scheme.interpolate(field_samples, i - use_scheme.number_of_datapoints_to_left);
+            // i + 1 - use_scheme.number_of_datapoints_to_left is the index of field_samples to read as the point v[0] in the schemes
+            BLi_interp[i] = use_scheme.interpolate(field_samples, i + 1 - use_scheme.number_of_datapoints_to_left);
         }
 
         // compare to exact values - again ignore cell 0 for the time being
-        for (int i = 1; i < n_YCs; i++) {
+        for (int i = 0; i < n_datapts - 1; i++) {
             BLi_err[i] = abs(BLi_interp[i] - exact_field_values[i]);
             cub_err[i] = abs(cub_interp[i] - exact_field_values[i]);
         }
         // compute square-norm error
-        BLi_norm_errs[trial] = norm(BLi_err, n_YCs - 1, 1);
-        cub_norm_errs[trial] = norm(cub_err, n_YCs - 1, 1);
+        BLi_norm_errs[trial] = norm(BLi_err, n_datapts - 2);
+        cub_norm_errs[trial] = norm(cub_err, n_datapts - 2);
 
         // value-testing commences: the better method should be superior, and the worse method should be worse.
         // assert this is the case for each cellSize we used.
