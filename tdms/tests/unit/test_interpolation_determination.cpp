@@ -77,10 +77,12 @@ TEST_CASE("checkInterpolationPoints: check valid inputs") {
 TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     SPDLOG_INFO("===== Testing interpolation scheme selection logic =====");
     int N = 10;
-    // should throw out_of_range exception if interpolation is impossible (<4 Yee cells in direction)
-    REQUIRE_THROWS_AS(best_scheme(3, 2), out_of_range);
-    // should throw out_of_range exception if Yee cell of invalid index is requested
-    REQUIRE_THROWS_AS(best_scheme(N, 0), out_of_range);
+    // should throw out_of_range exception if interpolation is impossible (<3 Yee cells in direction)
+    REQUIRE_THROWS_AS(best_scheme(1, 0), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(2, 0), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(2, 1), out_of_range);
+    // should throw out_of_range exception if Yee cell if invalid index is requested
+    REQUIRE_THROWS_AS(best_scheme(N, -1), out_of_range);
     REQUIRE_THROWS_AS(best_scheme(N, N), out_of_range);
 
     /* Suppose we have N >= 8 Yee cells in a dimension. The program should determine:
@@ -90,10 +92,10 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
         - cell_id == N-3,N-2,N-1 : Use BAND_LIMITED_(4,5,6) scheme respectively
     */
     N = 10;
-    CHECK(best_scheme(N, 1).get_priority() == BAND_LIMITED_0);
-    CHECK(best_scheme(N, 2).get_priority() == BAND_LIMITED_1);
-    CHECK(best_scheme(N, 3).get_priority() == BAND_LIMITED_2);
-    for (int i = 4; i <= N - 4; i++) {
+    CHECK(best_scheme(N, 0).get_priority() == BAND_LIMITED_0);
+    CHECK(best_scheme(N, 1).get_priority() == BAND_LIMITED_1);
+    CHECK(best_scheme(N, 2).get_priority() == BAND_LIMITED_2);
+    for (int i = 3; i <= N - 4; i++) {
         CHECK(best_scheme(N, i).get_priority() == BAND_LIMITED_3);
     }
     CHECK(best_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
@@ -106,8 +108,8 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
         - cell_id == 2,...,N-2 : Use CUBIC_MIDDLE
         - cell_id == N-1 : Use CUBIC_LAST
     */
-    N = 7;
-    CHECK(best_scheme(N, 1).get_priority() == CUBIC_INTERP_FIRST);
-    for(int i=2; i<=N-2; i++) {CHECK(best_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
+    N = 6;
+    CHECK(best_scheme(N, 0).get_priority() == CUBIC_INTERP_FIRST);
+    for(int i=1; i<=N-2; i++) {CHECK(best_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);}
     CHECK(best_scheme(N, N-1).get_priority() == CUBIC_INTERP_LAST);
 }

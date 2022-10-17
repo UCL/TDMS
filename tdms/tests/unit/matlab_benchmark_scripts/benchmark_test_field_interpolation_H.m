@@ -30,7 +30,7 @@ N = 4;
 global cellDims;
 
 % (1,2,3) = (Dx, Dy, Dz)
-cellDims = [0.25, 0.1, 0.05];
+cellDims = [0.1, 0.05, 0.025];
 x_lower = -2.; extent_x = 4;
 y_lower = -2.; extent_y = 4;
 z_lower = -2.; extent_z = 4;
@@ -94,7 +94,7 @@ for i=1:nX
 end
 % take worst-case scenario, in the C++ scheme chooses to use one dimension
 % over another arbitrarily
-Hx_errors = max(abs(Hx_interp_zy - Hx_exact(:,2:end,2:end)), abs(Hx_interp_yz - Hx_exact(:,2:end,2:end)));
+Hx_errors = max(abs(Hx_interp_zy - Hx_exact(:,1:end-1,1:end-1)), abs(Hx_interp_yz - Hx_exact(:,1:end-1,1:end-1)));
 Hx_fro_err = norm( Hx_errors, "fro" );
 fprintf("Hx Frobenius norm error: \t %.16e \n", Hx_fro_err);
 
@@ -124,7 +124,7 @@ for j=1:nY
 end
 % take worst-case scenario, in the C++ scheme chooses to use one dimension
 % over another arbitrarily
-Hy_errors = max(abs(Hy_interp_zx - Hy_exact(2:end,:,2:end)), abs(Hy_interp_xz - Hy_exact(2:end,:,2:end)));
+Hy_errors = max(abs(Hy_interp_zx - Hy_exact(1:end-1,:,1:end-1)), abs(Hy_interp_xz - Hy_exact(1:end-1,:,1:end-1)));
 Hy_fro_err = norm( Hy_errors, "fro" );
 fprintf("Hy Frobenius norm error: \t %.16e \n", Hy_fro_err);
 
@@ -139,10 +139,6 @@ for k=1:nZ
         temp_x = interp(reshape( Hz_sample(:,j,k),1,nX),r,N);
         Hz_xpullback(:,j,k) = temp_x(2:2:end-1);
     end
-    for i=1:nX-1
-        temp_y = interp(reshape( Hz_xpullback(i,:,k),1,nY),r,N);
-        Hz_interp_xy(i,:,k) = temp_y(2:2:end-1);
-    end
     for i=1:nX
         temp_y = interp(reshape( Hz_sample(i,:,k),1,nY),r,N);
         Hz_ypullback(i,:,k) = temp_y(2:2:end-1);
@@ -150,22 +146,26 @@ for k=1:nZ
     for j=1:nY-1
         temp_x = interp(reshape( Hz_ypullback(:,j,k),1,nX),r,N);
         Hz_interp_yx(:,j,k) = temp_x(2:2:end-1);
+    for i=1:nX-1
+        temp_y = interp(reshape( Hz_xpullback(i,:,k),1,nY),r,N);
+        Hz_interp_xy(i,:,k) = temp_y(2:2:end-1);
+    end
     end
 end
-Hz_errors = max(abs(Hz_interp_yx - Hz_exact(2:end,2:end,:)), abs(Hz_interp_xy - Hz_exact(2:end,2:end,:)));
+Hz_errors = max(abs(Hz_interp_yx - Hz_exact(1:end-1,1:end-1,:)), abs(Hz_interp_xy - Hz_exact(1:end-1,1:end-1,:)));
 Hz_fro_err = norm( Hz_errors, "fro" );
 fprintf("Hz Frobenius norm error: \t %.16e \n", Hz_fro_err);
 
 %% H-field component function
 % Field components H_t(tt) = sin(2\pi tt) exp(-tt^2)
-function [value] = Hx_field(x,~,~)
-    value = sin(2. * pi * x) * exp(-x.^2);
-end
-function [value] = Hy_field(~,y,~)
+function [value] = Hx_field(~,y,~)
     value = sin(2. * pi * y) * exp(-y.^2);
 end
-function [value] = Hz_field(~,~,z)
+function [value] = Hy_field(~,~,z)
     value = sin(2. * pi * z) * exp(-z.^2);
+end
+function [value] = Hz_field(x,~,~)
+    value = sin(2. * pi * x) * exp(-x.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell
@@ -179,20 +179,20 @@ function [fieldPos] = GetFieldPos(i,j,k,x_lower,y_lower,z_lower,component)
     global cellDims;
     fieldPos = GetCellCentre(i,j,k,x_lower,y_lower,z_lower);
     if component=="Ex"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
     elseif component=="Ey"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     elseif component=="Ez"
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hx"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hy"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hz"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     else
         error("Not a recognised component")
     end

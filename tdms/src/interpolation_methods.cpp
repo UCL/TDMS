@@ -236,22 +236,6 @@ scheme_value InterpolationScheme::get_priority() const {
 int InterpolationScheme::num_nonzero_coeffs() const {
     return last_nonzero_coeff - first_nonzero_coeff + 1;
 }
-/*
-double InterpolationScheme::interpolate(const double *v, const int offset) const {
-
-    double interp_value = 0.;
-    for(int ind=first_nonzero_coeff; ind<=last_nonzero_coeff; ind++) {
-        interp_value += scheme_coeffs[ind] * v[ind+offset];
-    }
-    return interp_value;
-}
-complex<double> InterpolationScheme::interpolate(const complex<double> *v, const int offset) const {
-    complex<double> interp_value = 0.;
-    for (int ind = first_nonzero_coeff; ind <= last_nonzero_coeff; ind++) {
-        interp_value += scheme_coeffs[ind] * v[ind + offset];
-    }
-    return interp_value;
-}*/
 
 bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
     return (priority > s.get_priority());
@@ -259,26 +243,26 @@ bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
 
 const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id) {
 
-    // interpolation is impossible with fewer than 4 cells in a dimension
-    if (cells_in_direction < 4) {
-        throw out_of_range("Error: computational domain has fewer than 4 cells in at least 1 dimension, cubic and bandlimited interpolation impossible.\n");
+    // interpolation is impossible with fewer than 4 datapoints in a dimension
+    // 4 datapoints => 3 cells in a given direction
+    if (cells_in_direction < 3) {
+        throw out_of_range("Error: domain axis has < 3 cells (< 4 datapoints), cubic and bandlimited interpolation impossible.\n");
     }
-    // Yee cell with index <0 does exist (starts from 0)
-    // Current code functionality is to error if we attempt to interpolate to cell 0, because the cubic interpolation found this impossible
-    // However, BL_TO_CELL_0 can handle this, provided cells_in_direction >= 8.
-    else if (cell_id <= 0) {
-        throw out_of_range("Error: Yee cell index <=0 requested (must be >=1).\n");
+    // Yee cell with index <0 doesn't allow for interpolation (this is the PML)
+    else if (cell_id < 0) {
+        throw out_of_range("Error: Yee cell index < 0 requested.\n");
     }
     // Yee cell with index >= cells_in_direction doesn't exist
     // Again, we can in theory determine the value "here" using BL7, however cubic interpolation cannot do this, and so current code functionality is to throw an error here.
     else if (cell_id >= cells_in_direction) {
         throw out_of_range("Error: Yee cell index beyond maximum number of Yee cells requested.\n");
     }
-    else if (cells_in_direction < 8) {
+    else if (cells_in_direction < 7) {
         // we do not have enough cells to use bandlimited interpolation, but can use cubic
-        // by definition, cell_id = 1 requires us to use CBFst, cell_id = cells_in_direction-1 CBLast,
-        // and everything else CBMid
-        if (cell_id == 1) {
+        // cell_id = 0 requires us to use CBFst, 
+        // cell_id = 1,2,...,cells_in_direction-2 requires us to use CBMid,
+        // cell_id = cells_in_direction-1 requires us to use CBLast
+        if (cell_id == 0) {
             return CBFst;
         }
         else if (cell_id == cells_in_direction-1) {
@@ -290,17 +274,17 @@ const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id) {
     }
     else {
         // we can apply bandlimited interpolation.
-        // unless we are <=3 cells away from either boundary, we will want to use BL3
-        if ((cell_id >= 4) && (cell_id <= cells_in_direction - 4)) {
+        // if there are 4 datapoints either side, we want to use BL3
+        if ((cell_id > 2) && (cell_id < cells_in_direction - 3)) {
             return BL3;
         }
-        else if (cell_id == 1) {
+        else if (cell_id == 0) {
             return BL0;
         }
-        else if (cell_id == 2) {
+        else if (cell_id == 1) {
             return BL1;
         }
-        else if (cell_id == 3) {
+        else if (cell_id == 2) {
             return BL2;
         }
         else if (cell_id == cells_in_direction - 3) {

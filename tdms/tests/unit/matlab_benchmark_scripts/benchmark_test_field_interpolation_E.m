@@ -40,9 +40,9 @@ GCC = @(x,y,z) GetCellCentre(x,y,z,x_lower,y_lower,z_lower);
 FP = @(x,y,z,c) GetFieldPos(x,y,z,x_lower,y_lower,z_lower,c);
 
 % number of Yee cells in each dimension
-nX = ceil(extent_x/cellDims(1));
-nY = ceil(extent_y/cellDims(2));
-nZ = ceil(extent_z/cellDims(3));
+nX = round(extent_x/cellDims(1));
+nY = round(extent_y/cellDims(2));
+nZ = round(extent_z/cellDims(3));
 
 % components of the field at the Yee cell centres,
 % and at the field-sample positions
@@ -79,7 +79,7 @@ for k=1:nZ
         Ex_interp(:,j,k) = temp_x(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(j,k) = norm(Ex_interp(:,j,k) - Ex_exact(2:end,j,k));
+        slice_norms(j,k) = norm(Ex_interp(:,j,k) - Ex_exact(1:end-1,j,k));
     end
 end
 Ex_errs = Ex_interp - Ex_exact(2:end,:,:);
@@ -96,7 +96,7 @@ for k=1:nZ
         Ey_interp(i,:,k) = temp_y(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(i,k) = norm(Ey_interp(i,:,k) - Ey_exact(i,2:end,k));
+        slice_norms(i,k) = norm(Ey_interp(i,:,k) - Ey_exact(i,1:end-1,k));
     end
 end
 Ey_errs = Ey_interp - Ey_exact(:,2:end,:);
@@ -113,7 +113,7 @@ for i=1:nX
         Ez_interp(i,j,:) = temp_z(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(i,j) = norm(reshape(Ez_interp(i,j,:) - Ez_exact(i,j,2:end), 1, nZ-1));
+        slice_norms(i,j) = norm(reshape(Ez_interp(i,j,:) - Ez_exact(i,j,1:end-1), 1, nZ-1));
     end
 end
 Ez_errs = Ez_interp - Ez_exact(:,:,2:end);
@@ -129,14 +129,14 @@ fprintf("Ez max-slice norm error: \t %.16e \n", Ez_max_slice_norm);
 
 %% E-field component functions
 % Field components E_t(tt) = sin(2\pi tt) exp(-tt^2)
-function [value] = Ex_field(x,~,~)
-    value = sin(2.*pi*x) * exp(-x.^2);
-end
-function [value] = Ey_field(~,y,~)
+function [value] = Ex_field(~,y,~)
     value = sin(2.*pi*y) * exp(-y.^2);
 end
-function [value] = Ez_field(~,~,z)
+function [value] = Ey_field(~,~,z)
     value = sin(2.*pi*z) * exp(-z.^2);
+end
+function [value] = Ez_field(x,~,~)
+    value = sin(2.*pi*x) * exp(-x.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell
@@ -150,20 +150,20 @@ function [fieldPos] = GetFieldPos(i,j,k,x_lower,y_lower,z_lower,component)
     global cellDims;
     fieldPos = GetCellCentre(i,j,k,x_lower,y_lower,z_lower);
     if component=="Ex"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
     elseif component=="Ey"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     elseif component=="Ez"
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hx"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hy"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hz"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     else
         error("Not a recognised component")
     end
