@@ -179,20 +179,20 @@ function [fieldPos] = GetFieldPos(i,j,k,x_lower,y_lower,z_lower,component)
     global cellDims;
     fieldPos = GetCellCentre(i,j,k,x_lower,y_lower,z_lower);
     if component=="Ex"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
     elseif component=="Ey"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     elseif component=="Ez"
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hx"
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hy"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(3) = fieldPos(3) + 0.5*cellDims(3);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(3) = fieldPos(3) - 0.5*cellDims(3);
     elseif component=="Hz"
-        fieldPos(1) = fieldPos(1) + 0.5*cellDims(1);
-        fieldPos(2) = fieldPos(2) + 0.5*cellDims(2);
+        fieldPos(1) = fieldPos(1) - 0.5*cellDims(1);
+        fieldPos(2) = fieldPos(2) - 0.5*cellDims(2);
     else
         error("Not a recognised component")
     end
