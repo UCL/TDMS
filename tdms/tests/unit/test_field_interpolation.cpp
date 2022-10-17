@@ -265,9 +265,9 @@ TEST_CASE("H-field interpolation check") {
   SPDLOG_INFO("===== Testing H-field BLi =====");
   // error tolerance, based on MATLAB performance
   // script: benchmark_test_field_interpolation_H.m
-  double Hx_fro_tol = 5.5575756664974406e+01; //4.9722096274682832e-02;
-  double Hy_fro_tol = 2.7454769817636155e+01; //4.8756759347066955e-02;
-  double Hz_fro_tol = 1.2427801688671789e+02; //4.8447195218466632e-02;
+  double Hx_fro_tol = 6.1860732269207769e-02;
+  double Hy_fro_tol = 1.2622903101481411e-01;
+  double Hz_fro_tol = 7.3136417157073502e-02;
 
   // additional tolerance to allow for floating-point rounding imprecisions, etc
   double acc_tol = 1e-12;
@@ -275,8 +275,8 @@ TEST_CASE("H-field interpolation check") {
   // fake domain setup
   double x_lower = -2., y_lower = -2., z_lower = -2.;
   double extent_x = 4., extent_y = 4., extent_z = 4.;
-  double cellDims[3] = {0.25, 0.1, 0.05};
-  // The number of cells in each direction is then 16 = 4/0.25, 40 = 4/0.1, 80 = 4/0.05.
+  double cellDims[3] = {0.1, 0.05, 0.025};
+  // The number of cells in each direction is then 40, 80,  160 respectively
   // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
   int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]),
       Nz = round(extent_z / cellDims[2]);
@@ -378,8 +378,10 @@ TEST_CASE("H-field interpolation check") {
     }
   }
   // compute Frobenius norms
-  double Hx_fro_err = Hx_error.frobenius(), Hy_fro_err = Hy_error.frobenius(),
-         Hz_fro_err = Hz_error.frobenius(), Hx_split_fro_err = Hx_split_error.frobenius(),
+  double Hx_fro_err = Hx_error.frobenius(), 
+         Hy_fro_err = Hy_error.frobenius(),
+         Hz_fro_err = Hz_error.frobenius(), 
+         Hx_split_fro_err = Hx_split_error.frobenius(),
          Hy_split_fro_err = Hy_split_error.frobenius(),
          Hz_split_fro_err = Hz_split_error.frobenius();
 

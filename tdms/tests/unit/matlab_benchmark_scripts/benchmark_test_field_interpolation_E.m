@@ -79,7 +79,7 @@ for k=1:nZ
         Ex_interp(:,j,k) = temp_x(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(j,k) = norm(Ex_interp(:,j,k) - Ex_exact(2:end,j,k));
+        slice_norms(j,k) = norm(Ex_interp(:,j,k) - Ex_exact(1:end-1,j,k));
     end
 end
 Ex_errs = Ex_interp - Ex_exact(2:end,:,:);
@@ -96,7 +96,7 @@ for k=1:nZ
         Ey_interp(i,:,k) = temp_y(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(i,k) = norm(Ey_interp(i,:,k) - Ey_exact(i,2:end,k));
+        slice_norms(i,k) = norm(Ey_interp(i,:,k) - Ey_exact(i,1:end-1,k));
     end
 end
 Ey_errs = Ey_interp - Ey_exact(:,2:end,:);
@@ -113,7 +113,7 @@ for i=1:nX
         Ez_interp(i,j,:) = temp_z(2:2:end-1);
 
         % manual check along this axis of the square-norm error
-        slice_norms(i,j) = norm(reshape(Ez_interp(i,j,:) - Ez_exact(i,j,2:end), 1, nZ-1));
+        slice_norms(i,j) = norm(reshape(Ez_interp(i,j,:) - Ez_exact(i,j,1:end-1), 1, nZ-1));
     end
 end
 Ez_errs = Ez_interp - Ez_exact(:,:,2:end);
