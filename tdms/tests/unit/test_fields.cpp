@@ -4,10 +4,12 @@
  */
 #include <catch2/catch_test_macros.hpp>
 #include <complex>
+
 #include "field.h"
 #include "globals.h"
 
 using namespace std;
+using namespace tdms_math_constants;
 
 template<typename T>
 inline bool is_close(T a, T b){
@@ -27,7 +29,6 @@ TEST_CASE("Test electric field angular norm addition") {
   double DT = 0.1;
   int N = 3;
   int N_T = 5;
-  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto E = ElectricField();
   E.ft = 1.0;
@@ -36,7 +37,7 @@ TEST_CASE("Test electric field angular norm addition") {
   params.dt = DT;
 
   // z = e^(iω(n+1)dt) / N_t
-  auto expected = exp(OMEGA * ((double)N + 1) * DT * I) / ((double) N_T);
+  auto expected = exp(OMEGA * ((double)N + 1) * DT * IMAGINARY_UNIT) / ((double) N_T);
 
   E.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(E.angular_norm, expected));
@@ -48,17 +49,15 @@ TEST_CASE("Test magnetic field angular norm addition") {
   double DT = 0.2;
   int N = 7;
   int N_T = 5;
-  auto I = tdms_math_constants::IMAGINARY_UNIT;
 
   auto H = MagneticField();
   H.ft = 1.0;
-  
   auto params = SimulationParameters();
   params.omega_an = OMEGA;
   params.dt = DT;
 
   // z = e^(iω(n+1/2)dt) / N_t
-  auto expected = exp(OMEGA * ((double)N + 0.5) * DT * I) / ((double) N_T);
+  auto expected = exp(OMEGA * ((double)N + 0.5) * DT * IMAGINARY_UNIT) / ((double) N_T);
 
   H.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(H.angular_norm, expected));
