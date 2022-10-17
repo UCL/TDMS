@@ -113,6 +113,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>zero</b> ()</td></tr>
 <tr class="memitem:aa1b54c0461f6424ca7f74dbf044358e5"><td class="memItemLeft" align="right" valign="top"><a id="aa1b54c0461f6424ca7f74dbf044358e5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>allocate</b> (int nK, int nJ, int nI)</td></tr>
 <tr class="separator:aa1b54c0461f6424ca7f74dbf044358e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68b2ad27844616772a714b8294985db6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTensor3D.html#a68b2ad27844616772a714b8294985db6">frobenius</a> ()</td></tr>
+<tr class="memdesc:a68b2ad27844616772a714b8294985db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Frobenius norm of the tensor.  <a href="classTensor3D.html#a68b2ad27844616772a714b8294985db6">More...</a><br /></td></tr>
+<tr class="separator:a68b2ad27844616772a714b8294985db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4879b07b12cd37a5ed3a79209dd3489"><td class="memItemLeft" align="right" valign="top"><a id="ac4879b07b12cd37a5ed3a79209dd3489"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>frobenius</b> ()</td></tr>
+<tr class="separator:ac4879b07b12cd37a5ed3a79209dd3489"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -135,6 +141,29 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>n_rows</b> = 0</td></t
 T ***&#160;</td><td class="memItemRight" valign="bottom"><b>tensor</b> = nullptr</td></tr>
 <tr class="separator:a0114d4bc063bc51a9d8e93341bd49e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a68b2ad27844616772a714b8294985db6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68b2ad27844616772a714b8294985db6">&#9670;&nbsp;</a></span>frobenius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classTensor3D.html">Tensor3D</a>&lt; T &gt;::frobenius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the Frobenius norm of the tensor. </p>
+<p>fro_norm = <img class="formulaInl" alt="$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }$" src="form_0.png"/> </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
 <li>tdms/src/arrays.cpp</li>

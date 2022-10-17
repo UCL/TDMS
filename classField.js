@@ -1,7 +1,12 @@
 var classField =
 [
+    [ "Field", "classField.html#a49946f632ba55deabf6bc8cd5f100225", null ],
+    [ "Field", "classField.html#aebcda2e27b2a7abf93642e35bfd247dc", null ],
     [ "~Field", "classField.html#a45d6e6d09b8f8e46de62b40119d62c60", null ],
     [ "add_to_angular_norm", "classField.html#a263a2ebc51f6e0dff6c60138b68c9e82", null ],
+    [ "allocate", "classField.html#aff629336b1c74036e8a9435bd9c65e70", null ],
+    [ "allocate_and_zero", "classField.html#a15784ebeb6582788e6e6cd732f5dfc26", null ],
+    [ "interpolate_to_centre_of", "classField.html#ae0dbaf04799d4ba48201cc03a98b4be2", null ],
     [ "normalise_volume", "classField.html#a616a0a2e9edb5ee42374611c2eea777e", null ],
     [ "phase", "classField.html#a865cfb4be5000462a8a4f94a40934695", null ],
     [ "phasor_norm", "classField.html#a787899ca782f76307f96ca13a763417e", null ],

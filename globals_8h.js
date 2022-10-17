@@ -13,6 +13,11 @@ var globals_8h =
     [ "IArray_2d", "globals_8h.html#a262a97f7a6d66d241e40871bd68c99fe", null ],
     [ "IArray_3d", "globals_8h.html#a9f736e7fbc0c46d1f604cf71866b4bb2", null ],
     [ "PlanarInterface", "globals_8h.html#aec083534efe3194c42f0f9f768a231b0", null ],
+    [ "AxialDirection", "globals_8h.html#a5879680973bb58d228b0c6b21849b91b", [
+      [ "X", "globals_8h.html#a5879680973bb58d228b0c6b21849b91ba58833a3110c570fb05130d40c365d1e4", null ],
+      [ "Y", "globals_8h.html#a5879680973bb58d228b0c6b21849b91ba5596231eabd6cf29050967d5ac83ad84", null ],
+      [ "Z", "globals_8h.html#a5879680973bb58d228b0c6b21849b91baa70478ce277ffc322f8e1e3418e07355", null ]
+    ] ],
     [ "ModeOfRun", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75", [
       [ "Pass1", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a24553a2fdacf611cf1fb636d49cd3af7", null ],
       [ "Pass2", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a7dd0791ec75e1af594b61ed389686b9e", null ]

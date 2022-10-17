@@ -109,8 +109,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top"><a id="a616a0a2e9edb5ee42374611c2eea777e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>normalise_volume</b> ()</td></tr>
 <tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49946f632ba55deabf6bc8cd5f100225"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a49946f632ba55deabf6bc8cd5f100225">Field</a> ()=default</td></tr>
+<tr class="separator:a49946f632ba55deabf6bc8cd5f100225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebcda2e27b2a7abf93642e35bfd247dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aebcda2e27b2a7abf93642e35bfd247dc">Field</a> (int I_total, int J_total, int K_total)</td></tr>
+<tr class="separator:aebcda2e27b2a7abf93642e35bfd247dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff629336b1c74036e8a9435bd9c65e70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aff629336b1c74036e8a9435bd9c65e70">allocate</a> ()</td></tr>
+<tr class="separator:aff629336b1c74036e8a9435bd9c65e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5511a94b5f37a81ee7b3dacb83dd20b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6">zero</a> ()</td></tr>
 <tr class="separator:a5511a94b5f37a81ee7b3dacb83dd20b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15784ebeb6582788e6e6cd732f5dfc26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a15784ebeb6582788e6e6cd732f5dfc26">allocate_and_zero</a> ()</td></tr>
+<tr class="separator:a15784ebeb6582788e6e6cd732f5dfc26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88c2e1c843986da2cce6a54379466bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a88c2e1c843986da2cce6a54379466bbb">set_phasors</a> (<a class="el" href="classSplitField.html">SplitField</a> &amp;F, int n, double omega, double dt, int Nt)</td></tr>
 <tr class="separator:a88c2e1c843986da2cce6a54379466bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top"><a id="a263a2ebc51f6e0dff6c60138b68c9e82"></a>
@@ -122,6 +130,9 @@ std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom">
 <tr class="memitem:a865cfb4be5000462a8a4f94a40934695"><td class="memItemLeft" align="right" valign="top"><a id="a865cfb4be5000462a8a4f94a40934695"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (int n, double omega, double dt)=0</td></tr>
 <tr class="separator:a865cfb4be5000462a8a4f94a40934695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="memItemLeft" align="right" valign="top">virtual std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ae0dbaf04799d4ba48201cc03a98b4be2">interpolate_to_centre_of</a> (AxialDirection d, int i, int j, int k)=0</td></tr>
+<tr class="memdesc:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a <a class="el" href="classField.html">Field</a> component to the centre of a Yee cell.  <a href="classField.html#ae0dbaf04799d4ba48201cc03a98b4be2">More...</a><br /></td></tr>
+<tr class="separator:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">set_values_from</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
 <tr class="separator:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
@@ -172,7 +183,173 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A complex field defined over a grid. Has real and imaginary components at each (x, y, z) grid point </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a49946f632ba55deabf6bc8cd5f100225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49946f632ba55deabf6bc8cd5f100225">&#9670;&nbsp;</a></span>Field() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Field::Field </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Default no arguments constructor </p>
+
+</div>
+</div>
+<a id="aebcda2e27b2a7abf93642e35bfd247dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebcda2e27b2a7abf93642e35bfd247dc">&#9670;&nbsp;</a></span>Field() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Field::Field </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I_total</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J_total</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K_total</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor of the field with a defined size in the x, y, z Cartesian dimensions </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aff629336b1c74036e8a9435bd9c65e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff629336b1c74036e8a9435bd9c65e70">&#9670;&nbsp;</a></span>allocate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::allocate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate the memory appropriate for all the 3D tensors associated with this split field </p>
+
+</div>
+</div>
+<a id="a15784ebeb6582788e6e6cd732f5dfc26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15784ebeb6582788e6e6cd732f5dfc26">&#9670;&nbsp;</a></span>allocate_and_zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::allocate_and_zero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Allocate and set to zero all components of the field </p>
+
+</div>
+</div>
+<a id="ae0dbaf04799d4ba48201cc03a98b4be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0dbaf04799d4ba48201cc03a98b4be2">&#9670;&nbsp;</a></span>interpolate_to_centre_of()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::complex&lt;double&gt; Field::interpolate_to_centre_of </td>
+          <td>(</td>
+          <td class="paramtype">AxialDirection&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates a <a class="el" href="classField.html">Field</a> component to the centre of a Yee cell. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td><a class="el" href="classField.html">Field</a> component to interpolate </td></tr>
+    <tr><td class="paramname">i,j,k</td><td>Index (i,j,k) of the Yee cell to interpolate to the centre of </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::complex&lt;double&gt; The interpolated field value </dd></dl>
+
+<p>Implemented in <a class="el" href="classMagneticField.html#af3aed3a63c9ac03b979e0b8eaed9233a">MagneticField</a>, and <a class="el" href="classElectricField.html#a1711a154255c99927e5d048ac0176538">ElectricField</a>.</p>
+
+</div>
+</div>
 <a id="a88c2e1c843986da2cce6a54379466bbb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88c2e1c843986da2cce6a54379466bbb">&#9670;&nbsp;</a></span>set_phasors()</h2>
 
@@ -262,7 +439,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Zero all components of the real and imaginary parts of the field </p>
+<p>Set all the values of all components of the field to zero </p>
 
 </div>
 </div>

@@ -59,9 +59,7 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "InterfaceComponent", "classInterfaceComponent.html", "classInterfaceComponent" ]
     ] ],
     [ "interpolate.h", "interpolate_8h.html", "interpolate_8h" ],
-    [ "interpolate_Efield.h", "interpolate__Efield_8h.html", "interpolate__Efield_8h" ],
-    [ "interpolate_Hfield.h", "interpolate__Hfield_8h.html", "interpolate__Hfield_8h" ],
-    [ "interpolation_methods.h", "interpolation__methods_8h_source.html", null ],
+    [ "interpolation_methods.h", "interpolation__methods_8h.html", "interpolation__methods_8h" ],
     [ "iterator.h", "iterator_8h.html", "iterator_8h" ],
     [ "mat_io.h", "mat__io_8h.html", null ],
     [ "matrix_collection.h", "matrix__collection_8h.html", [

@@ -97,6 +97,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa2365e09606577d18ee9ffc5ff59b691"><td class="memItemLeft" align="right" valign="top"><a id="aa2365e09606577d18ee9ffc5ff59b691"></a>
 double ***&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (char c) const</td></tr>
 <tr class="separator:aa2365e09606577d18ee9ffc5ff59b691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5edf50739f41fbe6b7890461a249ee54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZTensor3D.html#a5edf50739f41fbe6b7890461a249ee54">allocate</a> (int I_total, int J_total, int K_total)</td></tr>
+<tr class="memdesc:a5edf50739f41fbe6b7890461a249ee54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays.  <a href="classXYZTensor3D.html#a5edf50739f41fbe6b7890461a249ee54">More...</a><br /></td></tr>
+<tr class="separator:a5edf50739f41fbe6b7890461a249ee54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -110,8 +113,52 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>y</b> = nullptr
 double ***&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr</td></tr>
 <tr class="separator:aa56cb20574f4ef24faebf38f4f6b27bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5edf50739f41fbe6b7890461a249ee54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5edf50739f41fbe6b7890461a249ee54">&#9670;&nbsp;</a></span>allocate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XYZTensor3D::allocate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I_total</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J_total</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K_total</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">I_total,J_total,K_total</td><td><a class="el" href="classDimensions.html">Dimensions</a> of the tensor size to set </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
+<li>tdms/src/arrays.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,0 +1,13 @@
+digraph "tdms/include/interpolation_methods.h"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="tdms/include/interpolation\l_methods.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="InterpScheme class methods and supporting functions."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="tdms/tests/unit/test\l_BLi_vs_cubic_interpolation.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__BLi__vs__cubic__interpolation_8cpp.html",tooltip="Tests the performance of band-limited interpolation against cubic interpolation."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="tdms/tests/unit/test\l_interpolation_determination.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__interpolation__determination_8cpp.html",tooltip="Tests the logic that determines which interpolation schemes are appropriate."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="tdms/tests/unit/test\l_interpolation_functions.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__interpolation__functions_8cpp.html",tooltip="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes."];
+}

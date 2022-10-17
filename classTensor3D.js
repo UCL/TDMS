@@ -4,6 +4,8 @@ var classTensor3D =
     [ "Tensor3D", "classTensor3D.html#ae36fb50dc264719584c8a96733293173", null ],
     [ "~Tensor3D", "classTensor3D.html#a11f9f6ccb956af458ff6684dc25280c6", null ],
     [ "allocate", "classTensor3D.html#aa1b54c0461f6424ca7f74dbf044358e5", null ],
+    [ "frobenius", "classTensor3D.html#ac4879b07b12cd37a5ed3a79209dd3489", null ],
+    [ "frobenius", "classTensor3D.html#a68b2ad27844616772a714b8294985db6", null ],
     [ "has_elements", "classTensor3D.html#ac230a1bca2e8ec346c53c79f1c061439", null ],
     [ "initialise", "classTensor3D.html#a877b688f96f17583c0f8baeaf404f27f", null ],
     [ "operator[]", "classTensor3D.html#a4bee7f6b0b03d3d7d2b9a3d26e3f3a21", null ],

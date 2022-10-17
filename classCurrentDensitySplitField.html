@@ -106,6 +106,9 @@ Collaboration diagram for CurrentDensitySplitField:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6f483a46cf842f11b902c796282abc90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCurrentDensitySplitField.html#a6f483a46cf842f11b902c796282abc90">CurrentDensitySplitField</a> (int I_total, int J_total, int K_total)</td></tr>
 <tr class="separator:a6f483a46cf842f11b902c796282abc90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9422860ce2b3e0000780b65d186519a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCurrentDensitySplitField.html#ae9422860ce2b3e0000780b65d186519a">interpolate_to_centre_of</a> (AxialDirection d, int i, int j, int k) override</td></tr>
+<tr class="memdesc:ae9422860ce2b3e0000780b65d186519a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a <a class="el" href="classSplitField.html">SplitField</a> component to the centre of a Yee cell.  <a href="classCurrentDensitySplitField.html#ae9422860ce2b3e0000780b65d186519a">More...</a><br /></td></tr>
+<tr class="separator:ae9422860ce2b3e0000780b65d186519a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSplitField"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSplitField')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSplitField.html">SplitField</a></td></tr>
 <tr class="memitem:a2bdcf6a2af5f99c6ec348b4d8e842418 inherit pub_methods_classSplitField"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSplitField.html#a2bdcf6a2af5f99c6ec348b4d8e842418">SplitField</a> ()=default</td></tr>
 <tr class="separator:a2bdcf6a2af5f99c6ec348b4d8e842418 inherit pub_methods_classSplitField"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +205,67 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 </table>
 </div><div class="memdoc">
 <p>Constructor of the field with a defined size in the x, y, z Cartesian dimensions </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae9422860ce2b3e0000780b65d186519a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9422860ce2b3e0000780b65d186519a">&#9670;&nbsp;</a></span>interpolate_to_centre_of()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double CurrentDensitySplitField::interpolate_to_centre_of </td>
+          <td>(</td>
+          <td class="paramtype">AxialDirection&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates a <a class="el" href="classSplitField.html">SplitField</a> component to the centre of a Yee cell. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td><a class="el" href="classSplitField.html">SplitField</a> component to interpolate </td></tr>
+    <tr><td class="paramname">i,j,k</td><td>Index (i,j,k) of the Yee cell to interpolate to the centre of </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double The interpolated field value </dd></dl>
+
+<p>Implements <a class="el" href="classSplitField.html#a85568d40c79cdd842fe351a951bd00e3">SplitField</a>.</p>
 
 </div>
 </div>
