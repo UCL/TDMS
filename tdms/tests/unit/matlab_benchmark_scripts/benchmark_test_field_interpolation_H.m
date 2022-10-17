@@ -158,14 +158,14 @@ fprintf("Hz Frobenius norm error: \t %.16e \n", Hz_fro_err);
 
 %% H-field component function
 % Field components H_t(tt) = sin(2\pi tt) exp(-tt^2)
-function [value] = Hx_field(x,~,~)
-    value = sin(2. * pi * x) * exp(-x.^2);
-end
-function [value] = Hy_field(~,y,~)
+function [value] = Hx_field(~,y,~)
     value = sin(2. * pi * y) * exp(-y.^2);
 end
-function [value] = Hz_field(~,~,z)
+function [value] = Hy_field(~,~,z)
     value = sin(2. * pi * z) * exp(-z.^2);
+end
+function [value] = Hz_field(x,~,~)
+    value = sin(2. * pi * x) * exp(-x.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell

@@ -40,9 +40,9 @@ GCC = @(x,y,z) GetCellCentre(x,y,z,x_lower,y_lower,z_lower);
 FP = @(x,y,z,c) GetFieldPos(x,y,z,x_lower,y_lower,z_lower,c);
 
 % number of Yee cells in each dimension
-nX = ceil(extent_x/cellDims(1));
-nY = ceil(extent_y/cellDims(2));
-nZ = ceil(extent_z/cellDims(3));
+nX = round(extent_x/cellDims(1));
+nY = round(extent_y/cellDims(2));
+nZ = round(extent_z/cellDims(3));
 
 % components of the field at the Yee cell centres,
 % and at the field-sample positions
@@ -129,14 +129,14 @@ fprintf("Ez max-slice norm error: \t %.16e \n", Ez_max_slice_norm);
 
 %% E-field component functions
 % Field components E_t(tt) = sin(2\pi tt) exp(-tt^2)
-function [value] = Ex_field(x,~,~)
-    value = sin(2.*pi*x) * exp(-x.^2);
-end
-function [value] = Ey_field(~,y,~)
+function [value] = Ex_field(~,y,~)
     value = sin(2.*pi*y) * exp(-y.^2);
 end
-function [value] = Ez_field(~,~,z)
+function [value] = Ey_field(~,~,z)
     value = sin(2.*pi*z) * exp(-z.^2);
+end
+function [value] = Ez_field(x,~,~)
+    value = sin(2.*pi*x) * exp(-x.^2);
 end
 
 %% Computes the coordinates of the centre of a Yee cell
