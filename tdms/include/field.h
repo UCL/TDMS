@@ -23,6 +23,9 @@
  *  (0, 0, 0)   (1, 0, 0)     (2, 0, 0)
  *
  *  has I_tot = 2, J_tot = 1, K_tot = 0.
+ * 
+ * NOTE: For storage purposes, this means that field values associated to cells are stored _to the left_.
+ * That is, Grid(0,0,0) is associated to the cell (-1,-1,-1). This is contrary to the way values are associated to cells, where cell (0,0,0) is associated to the field values (0,0,0).
  */
 class Grid{
 
