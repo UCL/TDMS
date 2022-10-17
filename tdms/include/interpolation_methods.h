@@ -1,11 +1,13 @@
 /**
- * @file interpolation_methods.cpp
+ * @file interpolation_methods.h
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief InterpScheme class methods and supporting functions
  * 
  * Non InterpScheme methods are required to preserve functionality whilst testing new schemes
  */
 #pragma once
+
+#include <complex>
 
 /*Use cubic interpolation to interpolate between the middle 2 of 4 points
  * v0    v1    v2    v3
@@ -78,7 +80,7 @@ enum scheme_value
     BAND_LIMITED_5 = 5,             // use bandlimited interpolation w/ interp position = 5
     BAND_LIMITED_6 = 3,             // use bandlimited interpolation w/ interp position = 6
     BAND_LIMITED_7 = -1,            // use bandlimited interpolation w/ interp position = 7 [Only applicable if we want to extend beyond the final Yee cell, current code functionality is to throw an error in the case where this would be used.]
-    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell 0 [implemented, but current code functionality is to throw an error here]
+    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell <0 [implemented, but current code functionality is to throw an error here]
     CUBIC_INTERP_MIDDLE = 2,        // cubic interpolation to middle 2 of 4 points (interp1)
     CUBIC_INTERP_FIRST = 1,         // cubic interpolation to first 2 of 4 points (interp2)
     CUBIC_INTERP_LAST = 0           // cubic interpolation to last 2 of 4 points (interp3)
@@ -129,14 +131,24 @@ class InterpolationScheme {
          * @brief Executes the interpolation scheme on the data provided
          * 
          * The interpolation schemes are all of the form
-         * interpolated_value = \sum_{i=first_nonzero_coeff}^{last_nonzero_coeff} scheme_coeffs[i] * v[i],
+         * interpolated_value = \sum_{i=0}^{7} scheme_coeffs[i] * v[i],
          * so provided that the coefficients have been set correctly in construction (and the data gathered appropriately), we can run the same for loop for each interpolation scheme.
          * 
-         * @param v Sample datapoints to use in interpolation
+         * For slight speedup, the actual sum performed loops over those i such that
+         * 0 <= first_nonzero_coeff <= i <= last_nonzero_coeff <= 7.
+         * 
+         * @param v Sample datapoints to use in interpolation; v[0] should be the first of 8 values
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
          */
-        double interpolate(const double *v, const int offset = 0) const;
+        template<typename T>
+        T interpolate(const T *v, const int offset = 0) const {
+          T interp_value = 0.;
+          for (int ind = first_nonzero_coeff; ind <= last_nonzero_coeff; ind++) {
+            interp_value += scheme_coeffs[ind] * v[ind + offset];
+          }
+          return interp_value;
+        };
 
         /**
          * @brief Determines whether another interpScheme has greater value than this one

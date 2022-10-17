@@ -25,6 +25,13 @@ public:
       default: throw std::runtime_error("Have no element " + to_string(c));
     }
   }
+
+  /**
+   * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays
+   * 
+   * @param I_total,J_total,K_total Dimensions of the tensor size to set
+   */
+  void allocate(int I_total, int J_total, int K_total);
 };
 
 class XYZVectors {
@@ -222,7 +229,7 @@ public:
 
   void allocate(int nK, int nJ, int nI){
     n_layers = nK, n_cols = nJ, n_rows = nI;
-    tensor = (T ***)malloc(n_layers * sizeof(T *));
+    tensor = (T ***)malloc(n_layers * sizeof(T **));
 
     for(int k=0; k < n_layers; k++){
       tensor[k] = (T **)malloc(n_cols * sizeof(T *));
@@ -234,6 +241,13 @@ public:
       }
     }
   };
+
+  /**
+   * @brief Computes the Frobenius norm of the tensor
+   * 
+   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
+   */
+  double frobenius();
 
   ~Tensor3D(){
     if (tensor == nullptr) return;

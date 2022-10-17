@@ -7,6 +7,22 @@
 using namespace std;
 using namespace tdms_math_constants;
 
+void XYZTensor3D::allocate(int I_total, int J_total, int K_total) {
+  x = (double ***) malloc(K_total * sizeof(double **));
+  y = (double ***) malloc(K_total * sizeof(double **));
+  z = (double ***) malloc(K_total * sizeof(double **));
+  for (int k = 0; k < K_total; k++) {
+    x[k] = (double **) malloc(J_total * sizeof(double *));
+    y[k] = (double **) malloc(J_total * sizeof(double *));
+    z[k] = (double **) malloc(J_total * sizeof(double *));
+    for (int j = 0; j < J_total; j++) { 
+      x[k][j] = (double *) malloc(I_total * sizeof(double));
+      y[k][j] = (double *) malloc(I_total * sizeof(double));
+      z[k][j] = (double *) malloc(I_total * sizeof(double));
+    }
+  }
+}
+
 void XYZVectors::set_ptr(const char c, double* ptr){
   switch (c) {
     case 'x': {x = ptr; break;}
@@ -214,6 +230,27 @@ void Tensor3D<double>::zero() {
       for (int i = 0; i < n_rows; i++) {
         tensor[k][j][i] = 0.0;
       }
+}
+
+template<>
+double Tensor3D<double>::frobenius() {
+  double norm_val = 0.;
+  for (int i1 = 0; i1 < n_layers; i1++) {
+    for (int i2 = 0; i2 < n_cols; i2++) {
+      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += tensor[i1][i2][i3] * tensor[i1][i2][i3]; }
+    }
+  }
+  return sqrt(norm_val);
+}
+template<>
+double Tensor3D<complex<double>>::frobenius() {
+  double norm_val = 0.;
+  for (int i1 = 0; i1 < n_layers; i1++) {
+    for (int i2 = 0; i2 < n_cols; i2++) {
+      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += norm(tensor[i1][i2][i3]); }
+    }
+  }
+  return sqrt(norm_val);
 }
 
 void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,

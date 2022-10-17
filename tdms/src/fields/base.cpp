@@ -27,8 +27,19 @@ void Field::normalise_volume() {
         }
 }
 
-void Field::zero() {
+Field::Field(int I_total, int J_total, int K_total) {
+  I_tot = I_total;
+  J_tot = J_total;
+  K_tot = K_total;
+}
 
+void Field::allocate() {
+  for (auto arr : {&real, &imag}) {
+    arr->allocate(I_tot+1, J_tot+1, K_tot+1);
+  }
+};
+
+void Field::zero() {
   for (auto &arr : {real, imag})
     for (char c : {'x', 'y', 'z'})
       for (int k = 0; k < K_tot; k++)
