@@ -10,6 +10,7 @@
 #include "mat_io.h"
 #include "simulation_parameters.h"
 #include "utils.h"
+#include "globals.h"
 
 
 /**
@@ -111,6 +112,15 @@ public:
      * @param eh_vec // TODO
      */
     void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
+
+    /**
+   * @brief Interpolates a SplitField component to the centre of a Yee cell
+   * 
+   * @param d SplitField component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return double The interpolated field value
+   */
+    virtual double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
 };
 
 class ElectricSplitField: public SplitField{
@@ -126,6 +136,15 @@ public:
      */
     ElectricSplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
+
+    /**
+   * @brief Interpolates a split E-field component to the centre of a Yee cell
+   * 
+   * @param d Field component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return double The interpolated component value
+   */
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class MagneticSplitField: public SplitField{
@@ -141,6 +160,15 @@ public:
      */
     MagneticSplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
+
+    /**
+   * @brief Interpolates a split E-field component to the centre of a Yee cell
+   * 
+   * @param d Field component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return double The interpolated component value
+   */
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class CurrentDensitySplitField: public SplitField{
@@ -156,6 +184,8 @@ public:
      */
     CurrentDensitySplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
+
+    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override { return 0.; };
 };
 
 /**
@@ -169,7 +199,7 @@ public:
 
   std::complex<double> angular_norm = 0.;
 
-  // TODO: this is likely better as a set of complex arrays
+  // TODO: this is likely better as a set of complex arrays - use Tensor3d<std::complex<double>>
   XYZTensor3D real;
   XYZTensor3D imag;
 
@@ -184,9 +214,34 @@ public:
   void normalise_volume();
 
   /**
-     * Zero all components of the real and imaginary parts of the field
+     * Default no arguments constructor
+     */
+  Field() = default;
+
+  /**
+     * Constructor of the field with a defined size in the x, y, z Cartesian
+     * dimensions
+     */
+  Field(int I_total, int J_total, int K_total);
+
+  /**
+     * Allocate the memory appropriate for all the 3D tensors associated with
+     * this split field
+     */
+  void allocate();
+
+  /**
+     * Set all the values of all components of the field to zero
      */
   void zero();
+
+  /**
+     * Allocate and set to zero all components of the field
+     */
+  void allocate_and_zero() {
+    allocate();
+    zero();
+  }
 
   /**
    * Set the phasors for this field, given a split field. Result gives field according to the
@@ -206,6 +261,14 @@ public:
   std::complex<double> phasor_norm(double f, int n, double omega, double dt, int Nt);
 
   virtual double phase(int n, double omega, double dt) = 0;
+  /**
+   * @brief Interpolates a Field component to the centre of a Yee cell
+   * 
+   * @param d Field component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return std::complex<double> The interpolated field value
+   */
+  virtual std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
 
   /**
    * Set the values of all components in this field from another, equally sized field
@@ -219,12 +282,38 @@ class ElectricField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+public:
+  ElectricField() = default;
+  ElectricField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
+
+  /**
+   * @brief Interpolates an E-field component to the centre of a Yee cell
+   * 
+   * @param d Field component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return std::complex<double> The interpolated component value
+   */
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 class MagneticField: public Field{
 
 private:
   double phase(int n, double omega, double dt) override;
+
+public:
+  MagneticField() = default;
+  MagneticField(int I_total, int J_total, int K_total) : Field(I_total, J_total, K_total){};
+
+  /**
+   * @brief Interpolates an H-field component to the centre of a Yee cell
+   * 
+   * @param d Field component to interpolate
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @return std::complex<double> The interpolated component value
+   */
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 };
 
 /**
