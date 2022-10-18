@@ -22,7 +22,7 @@ public:
     cell_k = indices[buffer_start + 2];
   };
 
-  int i() { return cell_i; };   // fetch i
-  int j() { return cell_j; };   // fetch j
-  int k() { return cell_k; };   // fetch k
+  int i() { return cell_i; };   //< fetch i
+  int j() { return cell_j; };   //< fetch j
+  int k() { return cell_k; };   //< fetch k
 };
