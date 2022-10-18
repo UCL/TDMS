@@ -16,6 +16,12 @@ struct PerfectlyMatchedLayer {
   int Dzu = 0;
 };
 
+struct YeeCellDimensions {
+  double dx = 0.;
+  double dy = 0.;
+  double dz = 0.;
+};
+
 enum SourceMode{
   steadystate,
   pulsed
@@ -96,6 +102,7 @@ public:
     bool         exi_present = false;       // Is the time dependent x incident field present?
     bool         eyi_present = false;       // Is the time dependent y incident field present?
     PhasorInc    phasorinc;                 // Surface stride for extracting phasors
+    YeeCellDimensions delta;                // Yee cell dimensions (dx, dy, dz)
 
     void set_run_mode(std::string mode_string);
 
