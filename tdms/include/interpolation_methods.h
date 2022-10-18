@@ -9,54 +9,6 @@
 
 #include <complex>
 
-/*Use cubic interpolation to interpolate between the middle 2 of 4 points
- * v0    v1    v2    v3
- * o     o  x   o    o
- */
-double interp1(double v1, double v2, double v3, double v4);
-/*Use cubic interpolation to interpolate between the middle 2 of 4 points
- * v0    v1    v2    v3
- * o     o  x   o    o
- */
-double interp1(double *v);
-/*Use cubic interpolation to interpolate between the first 2 of 4 points
- * v0    v1    v2    v3
- * o  x   o     o    o
- */
-double interp2(double v1, double v2, double v3, double v4);
-/*Use cubic interpolation to interpolate between the first 2 of 4 points
- * v0    v1    v2    v3
- * o  x   o     o    o
- */
-double interp2(double *v);
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
- * v0    v1    v2    v3
- * o     o     o  x  o
- */
-double interp3(double v1, double v2, double v3, double v4);
-/*Use cubic interpolation to interpolate between the last 2 of 4 points
- * v0    v1    v2    v3
- * o     o     o  x  o
- */
-double interp3(double *v);
-
-/**
- * @brief Checks whether the limits of field extraction are within range of the FDTD grid
- *
- * Since cubic interpolation is being used, it must be ensured that (in any given direction) that the least index used is no smaller than 2, whilst the greatest no larger than the maximum number of cells in that direction - 2.
- *
- * @param i_l Least i index into the FDTD grid to evaluate the field at
- * @param i_u Greatest i index into the FDTD grid to evaluate the field at
- * @param j_l Least j index into the FDTD grid to evaluate the field at
- * @param j_u Greatest j index into the FDTD grid to evaluate the field at
- * @param k_l Least k index into the FDTD grid to evaluate the field at
- * @param k_u Greatest k index into the FDTD grid to evaluate the field at
- * @param nI,nJ,nK Number of elements in the i,j,k (respectively) direction of the FDTD grid
- *
- * @throws runtime_error In the event that the limits of field extraction are outside the FDTD grid
- */
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK);
-
 /**
  * @brief Defines our order of preference for the use of the various schemes.
  *

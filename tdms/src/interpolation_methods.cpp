@@ -5,62 +5,6 @@
 
 using namespace std;
 
-// CUBIC INTERPOLATION FUNCTIONS - LEAVE HERE TO PRESERVE interpolate.cpp current functionality prior to testing!
-
-double interp1(double v1, double v2, double v3, double v4)
-{
-    return -1. / 16. * v1 + 9. / 16. * v2 + 9. / 16. * v3 - 1. / 16. * v4;
-}
-double interp1(double *v) {
-    return -1. / 16. * v[0] + 9. / 16. * v[1] + 9. / 16. * v[2] - 1. / 16. * v[3];
-}
-double interp2(double v1, double v2, double v3, double v4)
-{
-    return 5. / 16. * v1 + 15. / 16. * v2 - 5. / 16. * v3 + 1. / 16. * v4;
-}
-double interp2(double *v)
-{
-    return 5. / 16. * v[0] + 15. / 16. * v[1] - 5. / 16. * v[2] + 1. / 16. * v[3];
-}
-double interp3(double v1, double v2, double v3, double v4)
-{
-    return 1. / 16. * v1 - 5. / 16. * v2 + 15. / 16. * v3 + 5. / 16. * v4;
-}
-double interp3(double *v)
-{
-    return 1. / 16. * v[0] - 5. / 16. * v[1] + 15. / 16. * v[2] + 5. / 16. * v[3];
-}
-
-void checkInterpolationPoints(int i_l, int i_u, int j_l, int j_u, int k_l, int k_u, int nI, int nJ, int nK)
-{
-    if (i_l < 2)
-    {
-        throw runtime_error("Interpolation error: i_l too small");
-    }
-    else if (i_u > nI - 2)
-    {
-        throw runtime_error("Interpolation error: i_u too large");
-    }
-    else if (j_l < 2)
-    {
-        throw runtime_error("Interpolation error: j_l too small");
-    }
-    else if (j_u > nJ - 2)
-    {
-        throw runtime_error("Interpolation error: j_u too large");
-    }
-    else if (k_l < 2)
-    {
-        throw runtime_error("Interpolation error: k_l too small");
-    }
-    else if (k_u > nK - 2)
-    {
-        throw runtime_error("Interpolation error: k_u too large");
-    }
-}
-
-// THESE WILL BE THE RELEVANT FUNCTIONS ONCE INTERPOLATION SCHEMES ARE COMPLETE AND TESTED
-
 InterpolationScheme::InterpolationScheme(scheme_value val) {
 
     // set the value field
