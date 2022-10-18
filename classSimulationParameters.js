@@ -8,6 +8,7 @@ var classSimulationParameters =
     [ "set_source_mode", "classSimulationParameters.html#a9e53406a8ec8ebc8b359c829a3a6bb89", null ],
     [ "air_interface", "classSimulationParameters.html#a7424744418c09d3991646f3f1d9c238e", null ],
     [ "air_interface_present", "classSimulationParameters.html#ac5bca090e0a1d2c206b6dc82f1475c54", null ],
+    [ "delta", "classSimulationParameters.html#ad0bffaf734c1228c2a309ffea89e9e65", null ],
     [ "dimension", "classSimulationParameters.html#aaa549b3cbaf7ee48b26ac67bcf0e87db", null ],
     [ "dt", "classSimulationParameters.html#a9c91af7f1d5f1d27724d78b839ebb46e", null ],
     [ "exdetintegral", "classSimulationParameters.html#ad1dd2afb143602df28457a3397335f3d", null ],

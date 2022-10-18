@@ -33,6 +33,9 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "CCoefficientMatrix", "classCCoefficientMatrix.html", null ],
       [ "EHVec", "classEHVec.html", "classEHVec" ]
     ] ],
+    [ "cell_coordinate.h", "cell__coordinate_8h.html", [
+      [ "CellCoordinate", "classCellCoordinate.html", "classCellCoordinate" ]
+    ] ],
     [ "dimensions.h", "dimensions_8h.html", [
       [ "Dimensions", "classDimensions.html", "classDimensions" ]
     ] ],

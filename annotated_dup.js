@@ -5,6 +5,7 @@ var annotated_dup =
     [ "CCoefficientMatrix", "classCCoefficientMatrix.html", null ],
     [ "CCollection", "classCCollection.html", "classCCollection" ],
     [ "CCollectionBase", "classCCollectionBase.html", "classCCollectionBase" ],
+    [ "CellCoordinate", "classCellCoordinate.html", "classCellCoordinate" ],
     [ "CMaterial", "classCMaterial.html", "classCMaterial" ],
     [ "complex_vector", "structcomplex__vector.html", "structcomplex__vector" ],
     [ "ComplexAmplitudeSample", "classComplexAmplitudeSample.html", "classComplexAmplitudeSample" ],
@@ -52,5 +53,6 @@ var annotated_dup =
     [ "Vector", "classVector.html", "classVector" ],
     [ "Vertices", "classVertices.html", "classVertices" ],
     [ "XYZTensor3D", "classXYZTensor3D.html", "classXYZTensor3D" ],
-    [ "XYZVectors", "classXYZVectors.html", "classXYZVectors" ]
+    [ "XYZVectors", "classXYZVectors.html", "classXYZVectors" ],
+    [ "YeeCellDimensions", "structYeeCellDimensions.html", "structYeeCellDimensions" ]
 ];

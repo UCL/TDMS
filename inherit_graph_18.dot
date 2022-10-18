@@ -4,9 +4,17 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="Matrix\< double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMatrix.html",tooltip=" "];
-  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="CCoefficientMatrix",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCCoefficientMatrix.html",tooltip=" "];
-  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="Pupil",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classPupil.html",tooltip=" "];
+  Node59 [label="CCollectionBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCCollectionBase.html",tooltip=" "];
+  Node59 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="CCollection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCCollection.html",tooltip=" "];
+  Node59 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="CMaterial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classCMaterial.html",tooltip=" "];
+  Node53 [label="DCollectionBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDCollectionBase.html",tooltip=" "];
+  Node53 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="DCollection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDCollection.html",tooltip=" "];
+  Node53 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="DMaterial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDMaterial.html",tooltip=" "];
+  Node0 [label="MaterialCollection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classMaterialCollection.html",tooltip=" "];
+  Node0 -> Node1 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 -> Node2 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
 }

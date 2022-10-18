@@ -6,6 +6,7 @@ var hierarchy =
       [ "CCollection", "classCCollection.html", null ],
       [ "CMaterial", "classCMaterial.html", null ]
     ] ],
+    [ "CellCoordinate", "classCellCoordinate.html", null ],
     [ "complex_vector", "structcomplex__vector.html", null ],
     [ "ComplexAmplitudeSample", "classComplexAmplitudeSample.html", null ],
     [ "Cuboid", "classCuboid.html", null ],
@@ -74,5 +75,6 @@ var hierarchy =
       [ "FieldComponentsVector", "classFieldComponentsVector.html", null ]
     ] ],
     [ "XYZTensor3D", "classXYZTensor3D.html", null ],
-    [ "XYZVectors", "classXYZVectors.html", null ]
+    [ "XYZVectors", "classXYZVectors.html", null ],
+    [ "YeeCellDimensions", "structYeeCellDimensions.html", null ]
 ];

@@ -8,4 +8,6 @@ digraph "SimulationParameters"
   Node2 [label="PhasorInc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structPhasorInc.html",tooltip=" "];
   Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pml" ,fontname="Helvetica"];
   Node3 [label="PerfectlyMatchedLayer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structPerfectlyMatchedLayer.html",tooltip=" "];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" delta" ,fontname="Helvetica"];
+  Node4 [label="YeeCellDimensions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structYeeCellDimensions.html",tooltip=" "];
 }
