@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-
 using namespace std;
 
 void Cuboid::initialise(const mxArray *ptr, int J_tot) {

@@ -13,7 +13,6 @@
 #include "field.h"
 #include "grid_labels.h"
 
-
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs, 
 			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, 
         ElectricSplitField &E, MagneticSplitField &H,

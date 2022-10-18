@@ -4,10 +4,11 @@
  * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
  */
 #include <algorithm>
-#include <catch2/catch_approx.hpp>
-#include <catch2/catch_test_macros.hpp>
 #include <cmath>
 #include <complex>
+
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include "globals.h"

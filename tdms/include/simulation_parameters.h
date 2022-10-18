@@ -8,7 +8,6 @@
 
 #include "arrays.h"
 
-
 struct PerfectlyMatchedLayer {
   int Dxl = 0;  // Thickness of lower pml in the x direction
   int Dxu = 0;  //              upper
