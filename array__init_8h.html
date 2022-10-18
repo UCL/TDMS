@@ -107,13 +107,62 @@ Include dependency graph for array_init.h:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0995aa2ccd3cc9402dcec568cd5eca19"><td class="memItemLeft" align="right" valign="top"><a id="a0995aa2ccd3cc9402dcec568cd5eca19"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init_grid_arrays</b> (const mxArray *ptr, <a class="el" href="classSplitField.html">SplitField</a> &amp;E_s, <a class="el" href="classSplitField.html">SplitField</a> &amp;H_s, uint8_t ***&amp;materials)</td></tr>
+<tr class="memitem:a0995aa2ccd3cc9402dcec568cd5eca19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array__init_8h.html#a0995aa2ccd3cc9402dcec568cd5eca19">init_grid_arrays</a> (const mxArray *ptr, <a class="el" href="classSplitField.html">SplitField</a> &amp;E_s, <a class="el" href="classSplitField.html">SplitField</a> &amp;H_s, uint8_t ***&amp;materials)</td></tr>
 <tr class="separator:a0995aa2ccd3cc9402dcec568cd5eca19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A collection of functions for array initialisation given MATLAB pointers. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a0995aa2ccd3cc9402dcec568cd5eca19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0995aa2ccd3cc9402dcec568cd5eca19">&#9670;&nbsp;</a></span>init_grid_arrays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void init_grid_arrays </td>
+          <td>(</td>
+          <td class="paramtype">const mxArray *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classSplitField.html">SplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>E_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classSplitField.html">SplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>H_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t ***&amp;&#160;</td>
+          <td class="paramname"><em>materials</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialise the grid tensors/arrays, including the electric and magnetic split fields and the materials array. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>Pointer to the matlab struct </td></tr>
+    <tr><td class="paramname">E_s</td><td>Electric split field </td></tr>
+    <tr><td class="paramname">H_s</td><td>Magnetic split field </td></tr>
+    <tr><td class="paramname">materials</td><td>Materials array </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
