@@ -89,27 +89,112 @@ $(document).ready(function(){initNavTree('mesh__base_8h_source.html',''); initRe
 <div class="contents">
 <a href="mesh__base_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/**</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @file mesh_base.h</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief TODO: what are these functions?</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="simulation__parameters_8h.html">simulation_parameters.h</a>&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K,<span class="keywordtype">int</span> coordmap[], <span class="keywordtype">int</span> order, mxArray **vertexMatrix);</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K,<span class="keywordtype">int</span> coordmap[], <span class="keywordtype">int</span> order, mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ);</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> triangulateCuboid(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertexMatrix);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> triangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ, <span class="keywordtype">int</span> dK);</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> conciseTriangulateCuboid(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                  mxArray **vertices, mxArray ** facets);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> conciseTriangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                                  <a class="code" href="structPhasorInc.html">PhasorInc</a> &amp;phasorinc, mxArray **vertices, mxArray ** facets);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">void</span> conciseCreateBoundary(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1,<span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertices, mxArray ** facets);</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief Generation of orientated mesh.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * Generate an oriented mesh on the surface of a cuboid within the FDTD grid.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mat__io_8h.html">mat_io.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="simulation__parameters_8h.html">simulation_parameters.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * @brief Generate a matrix of vertices which define a triangulation of a</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> * regular two dimensional grid. </span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> *   </span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> * This function assumes that the space of interest is a 2d surface with</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> * coordinates (i,j). I0 represents the lowest value of i for any point on the</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> * rectangular grid and I1 the highest. Similarly for j. A value of k is</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> * constant. A line of the output matrix looks like:</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> *   i1 j1 k i2 j2 k i3 j3 k</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *   </span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * Triangles are taken by subdividing squares in the grid in a regular manner.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * @param coordmap is an integer array with three entries. This array can be a</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> * permutation of {0,1,2}. This defines the mapping between i,j,k and the</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"> * indices in the output matrix.  For example, if coordmap = {0,1,2} then a row</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> * in the matric would look like:</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> *   </span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> *   i1 j1 k i2 j2 k i3 j3 k</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * If, however, we have coordmap = {2,1,0} then we would get</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> *   k j1 i1 k j2 i2 k j3 i3</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment"> * This should be interpreted as original i columns moves to column k. original</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"> * k column moves to column i.</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"> *   </span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"> *         i</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"> *      I1 ^ .  .  .  .</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment"> *         | .  .  .  .</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"> *      I0 | .  .  .  .  </span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment"> *         +------------&gt;j</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment"> *          J0        J1</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"> * @param order specifies the direction of the surface normals of the triangles. This</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"> * can take only 2 possible values +1 or -1. They have the following meaning:</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"> *   </span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment"> * order = 1 means that the surface normal for a triangle in the:</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"> *     xy plane will || to the z-axis</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"> *     zy plane will || to the x-axis</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"> *     xz plane will || to the negative z-axis</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"> *      </span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> * order = -1 means surface normals are in the opposite direction. The surface</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"> * normal is assumed to be in the direction (p2-p1)x(p3-p1) where p1-p3 are the</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> * points which define the triangle, in the order that they are listed in the</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> * facet matrix.</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment"> * The space allocated by *vertexMatrix must be freed after use.</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">*/</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K,<span class="keywordtype">int</span> coordmap[], <span class="keywordtype">int</span> order, mxArray **vertexMatrix);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K,<span class="keywordtype">int</span> coordmap[], <span class="keywordtype">int</span> order, mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ);<span class="comment"></span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"> * @brief </span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * @param vertexMatrix should be a 6 element array. Generates 6 arrays of facets using triangulatePlane.</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> *  Each matrix is a plane of the cuboid which is defined by:</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment"> *                   </span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"> * (I0,I1)x(J0,J1)x(K0,K1)</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"> * Each vertexMatrix[i] should be destroyed after calling this function</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertexMatrix);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keywordtype">void</span> triangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ, <span class="keywordtype">int</span> dK);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"> * @brief Generates a triangulation of a cuboid defined the surface of a regular</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"> * grid. </span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> *  </span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> * The result is returned in a concise manner, ie, a list of vertices and a list</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> * of facets which index in to the list of vertices. </span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> * The list of vertices is itself a list of indices in to the x, y and z grid</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * label vectors. In this sense this function deals only with the topology of</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> * the cuboid and the mesh. An extra step is required to generate the actual </span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> * mesh from the values returned by this function.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> * The surface of the volume [I0,I1]x[J0,J1]x[K0,K1] is meshed by this function.</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * </span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * @param vertices an array of vertices, each row is a numbered vertex.</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> * @param facets an array of facets each of which is created using 3 vertex</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> * indices. Each index is an index in to the vertices array.</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertices,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                              mxArray **facets);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keywordtype">void</span> conciseTriangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                                  <a class="code" href="structPhasorInc.html">PhasorInc</a> &amp;phasorinc, mxArray **vertices, mxArray **facets);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">void</span> conciseCreateBoundary(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1,<span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertices, mxArray ** facets);</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="astructPhasorInc_html"><div class="ttname"><a href="structPhasorInc.html">PhasorInc</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:52</div></div>
+<div class="ttc" id="amesh__base_8h_html_af542151614a30a9fea3279e6730463fd"><div class="ttname"><a href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a></div><div class="ttdeci">void triangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:248</div></div>
+<div class="ttc" id="astructPhasorInc_html"><div class="ttname"><a href="structPhasorInc.html">PhasorInc</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:53</div></div>
 <div class="ttc" id="asimulation__parameters_8h_html"><div class="ttname"><a href="simulation__parameters_8h.html">simulation_parameters.h</a></div><div class="ttdoc">Classes collecting parameters for the simulation.</div></div>
-<div class="ttc" id="amesh__base_8h_html_a33e5a5bb9c09e69af86409399ddfdce9"><div class="ttname"><a href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a></div><div class="ttdeci">void triangulatePlane(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:60</div></div>
-<div class="ttc" id="amesh__base_8h_html_a5f577c512f3cce916d1effaf7275d46b"><div class="ttname"><a href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a></div><div class="ttdeci">void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:175</div></div>
+<div class="ttc" id="amesh__base_8h_html_a33e5a5bb9c09e69af86409399ddfdce9"><div class="ttname"><a href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a></div><div class="ttdeci">void triangulatePlane(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix)</div><div class="ttdoc">Generate a matrix of vertices which define a triangulation of a regular two dimensional grid.</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:11</div></div>
+<div class="ttc" id="amesh__base_8h_html_ad1d38a26a5651489a9f8d82fb9afb747"><div class="ttname"><a href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a></div><div class="ttdeci">void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices, mxArray **facets)</div><div class="ttdoc">Generates a triangulation of a cuboid defined the surface of a regular grid.</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:293</div></div>
+<div class="ttc" id="amat__io_8h_html"><div class="ttname"><a href="mat__io_8h.html">mat_io.h</a></div><div class="ttdoc">Includes MATLAB headers for I/O.</div></div>
+<div class="ttc" id="amesh__base_8h_html_a5f577c512f3cce916d1effaf7275d46b"><div class="ttname"><a href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a></div><div class="ttdeci">void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:126</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

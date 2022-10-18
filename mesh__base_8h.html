@@ -90,9 +90,10 @@ $(document).ready(function(){initNavTree('mesh__base_8h.html',''); initResizable
 </div><!--header-->
 <div class="contents">
 
-<p>TODO: what are these functions?  
+<p>Generation of orientated mesh.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="mat__io_8h_source.html">mat_io.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for mesh_base.h:</div>
 <div class="dyncontent">
@@ -104,17 +105,17 @@ Include dependency graph for mesh_base.h:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a33e5a5bb9c09e69af86409399ddfdce9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a> (int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix)</td></tr>
+<tr class="memdesc:a33e5a5bb9c09e69af86409399ddfdce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a matrix of vertices which define a triangulation of a regular two dimensional grid.  <a href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">More...</a><br /></td></tr>
 <tr class="separator:a33e5a5bb9c09e69af86409399ddfdce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f577c512f3cce916d1effaf7275d46b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a> (int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ)</td></tr>
 <tr class="separator:a5f577c512f3cce916d1effaf7275d46b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af542151614a30a9fea3279e6730463fd"><td class="memItemLeft" align="right" valign="top"><a id="af542151614a30a9fea3279e6730463fd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>triangulateCuboid</b> (int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix)</td></tr>
+<tr class="memitem:af542151614a30a9fea3279e6730463fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a> (int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix)</td></tr>
 <tr class="separator:af542151614a30a9fea3279e6730463fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe4d37c890f693e97b0c69078676bcea"><td class="memItemLeft" align="right" valign="top"><a id="abe4d37c890f693e97b0c69078676bcea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>triangulateCuboidSkip</b> (int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix, int dI, int dJ, int dK)</td></tr>
 <tr class="separator:abe4d37c890f693e97b0c69078676bcea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1d38a26a5651489a9f8d82fb9afb747"><td class="memItemLeft" align="right" valign="top"><a id="ad1d38a26a5651489a9f8d82fb9afb747"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseTriangulateCuboid</b> (int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices, mxArray **facets)</td></tr>
+<tr class="memitem:ad1d38a26a5651489a9f8d82fb9afb747"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a> (int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices, mxArray **facets)</td></tr>
+<tr class="memdesc:ad1d38a26a5651489a9f8d82fb9afb747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a triangulation of a cuboid defined the surface of a regular grid.  <a href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">More...</a><br /></td></tr>
 <tr class="separator:ad1d38a26a5651489a9f8d82fb9afb747"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91daecad4f69a7034bedd99e62dcdcca"><td class="memItemLeft" align="right" valign="top"><a id="a91daecad4f69a7034bedd99e62dcdcca"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseTriangulateCuboidSkip</b> (int I0, int I1, int J0, int J1, int K0, int K1, <a class="el" href="structPhasorInc.html">PhasorInc</a> &amp;phasorinc, mxArray **vertices, mxArray **facets)</td></tr>
@@ -124,8 +125,151 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseCreateBoundary
 <tr class="separator:aa9d918b9e4733401bb2aab936bcd3af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>TODO: what are these functions? </p>
+<div class="textblock"><p>Generation of orientated mesh. </p>
+<p>Generate an oriented mesh on the surface of a cuboid within the FDTD grid. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="ad1d38a26a5651489a9f8d82fb9afb747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1d38a26a5651489a9f8d82fb9afb747">&#9670;&nbsp;</a></span>conciseTriangulateCuboid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void conciseTriangulateCuboid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>facets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generates a triangulation of a cuboid defined the surface of a regular grid. </p>
+<p>The result is returned in a concise manner, ie, a list of vertices and a list of facets which index in to the list of vertices.</p>
+<p>The list of vertices is itself a list of indices in to the x, y and z grid label vectors. In this sense this function deals only with the topology of the cuboid and the mesh. An extra step is required to generate the actual mesh from the values returned by this function.</p>
+<p>The surface of the volume [I0,I1]x[J0,J1]x[K0,K1] is meshed by this function.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertices</td><td>an array of vertices, each row is a numbered vertex. </td></tr>
+    <tr><td class="paramname">facets</td><td>an array of facets each of which is created using 3 vertex indices. Each index is an index in to the vertices array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af542151614a30a9fea3279e6730463fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af542151614a30a9fea3279e6730463fd">&#9670;&nbsp;</a></span>triangulateCuboid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void triangulateCuboid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>I1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>J1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>vertexMatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertexMatrix</td><td>should be a 6 element array. Generates 6 arrays of facets using triangulatePlane. Each matrix is a plane of the cuboid which is defined by:</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>(I0,I1)x(J0,J1)x(K0,K1)</p>
+<p>Each vertexMatrix[i] should be destroyed after calling this function </p>
+
+</div>
+</div>
 <a id="a33e5a5bb9c09e69af86409399ddfdce9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a33e5a5bb9c09e69af86409399ddfdce9">&#9670;&nbsp;</a></span>triangulatePlane()</h2>
 
@@ -187,6 +331,35 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseCreateBoundary
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Generate a matrix of vertices which define a triangulation of a regular two dimensional grid. </p>
+<p>This function assumes that the space of interest is a 2d surface with coordinates (i,j). I0 represents the lowest value of i for any point on the rectangular grid and I1 the highest. Similarly for j. A value of k is constant. A line of the output matrix looks like:</p>
+<p>i1 j1 k i2 j2 k i3 j3 k</p>
+<p>Triangles are taken by subdividing squares in the grid in a regular manner.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">coordmap</td><td>is an integer array with three entries. This array can be a permutation of {0,1,2}. This defines the mapping between i,j,k and the indices in the output matrix. For example, if coordmap = {0,1,2} then a row in the matric would look like:</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>i1 j1 k i2 j2 k i3 j3 k</p>
+<p>If, however, we have coordmap = {2,1,0} then we would get</p>
+<p>k j1 i1 k j2 i2 k j3 i3</p>
+<p>This should be interpreted as original i columns moves to column k. original k column moves to column i. </p><pre class="fragment">    i
+ I1 ^ .  .  .  .
+    | .  .  .  .
+ I0 | .  .  .  .  
+    +------------&gt;j
+     J0        J1
+</pre><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">order</td><td>specifies the direction of the surface normals of the triangles. This can take only 2 possible values +1 or -1. They have the following meaning:</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>order = 1 means that the surface normal for a triangle in the: xy plane will || to the z-axis zy plane will || to the x-axis xz plane will || to the negative z-axis</p>
+<p>order = -1 means surface normals are in the opposite direction. The surface normal is assumed to be in the direction (p2-p1)x(p3-p1) where p1-p3 are the points which define the triangle, in the order that they are listed in the facet matrix.</p>
+<p>The space allocated by *vertexMatrix must be freed after use. </p>
 <p>vertex 2</p>
 <p>vertex 3</p>
 <p>vertex 2</p>

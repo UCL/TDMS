@@ -13,6 +13,7 @@ var searchData=
   ['complex_5fmult_5fvec_22',['complex_mult_vec',['../numerical__derivative_8h.html#a217eabdfd29264b5cea1535b19662996',1,'numerical_derivative.cpp']]],
   ['complex_5fvector_23',['complex_vector',['../structcomplex__vector.html',1,'']]],
   ['complexamplitudesample_24',['ComplexAmplitudeSample',['../classComplexAmplitudeSample.html',1,'']]],
-  ['cuboid_25',['Cuboid',['../classCuboid.html',1,'']]],
-  ['currentdensitysplitfield_26',['CurrentDensitySplitField',['../classCurrentDensitySplitField.html',1,'CurrentDensitySplitField'],['../classCurrentDensitySplitField.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
+  ['concisetriangulatecuboid_25',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
+  ['cuboid_26',['Cuboid',['../classCuboid.html',1,'']]],
+  ['currentdensitysplitfield_27',['CurrentDensitySplitField',['../classCurrentDensitySplitField.html',1,'CurrentDensitySplitField'],['../classCurrentDensitySplitField.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
 ];

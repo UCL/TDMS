@@ -92,24 +92,26 @@ $(document).ready(function(){initNavTree('grid__labels_8h_source.html',''); init
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief Class to hold the labels of a Yee cell.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;matlabio.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * Grid labels hold the cartesian labels of Yee cell, in the x, y and z directions</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classGridLabels.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridLabels.html">GridLabels</a>{</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keywordtype">double</span> *x = <span class="keyword">nullptr</span>;  <span class="comment">// Start of the labels in the x direction</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">double</span> *y = <span class="keyword">nullptr</span>;  <span class="comment">//                            y</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordtype">double</span> *z = <span class="keyword">nullptr</span>;  <span class="comment">//                            z</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classGridLabels.html">GridLabels</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classGridLabels.html">GridLabels</a>(<span class="keyword">const</span> mxArray *ptr);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mat__io_8h.html">mat_io.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> * Grid labels hold the cartesian labels of Yee cell, in the x, y and z directions</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classGridLabels.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGridLabels.html">GridLabels</a>{</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">double</span> *x = <span class="keyword">nullptr</span>;  <span class="comment">// Start of the labels in the x direction</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordtype">double</span> *y = <span class="keyword">nullptr</span>;  <span class="comment">//                            y</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keywordtype">double</span> *z = <span class="keyword">nullptr</span>;  <span class="comment">//                            z</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classGridLabels.html">GridLabels</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classGridLabels.html">GridLabels</a>(<span class="keyword">const</span> mxArray *ptr);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aclassGridLabels_html"><div class="ttname"><a href="classGridLabels.html">GridLabels</a></div><div class="ttdef"><b>Definition:</b> grid_labels.h:11</div></div>
+<div class="ttc" id="amat__io_8h_html"><div class="ttname"><a href="mat__io_8h.html">mat_io.h</a></div><div class="ttdoc">Includes MATLAB headers for I/O.</div></div>
+<div class="ttc" id="aclassGridLabels_html"><div class="ttname"><a href="classGridLabels.html">GridLabels</a></div><div class="ttdef"><b>Definition:</b> grid_labels.h:12</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

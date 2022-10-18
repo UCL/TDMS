@@ -70,7 +70,6 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "MatFileMatrixCollection", "classMatFileMatrixCollection.html", "classMatFileMatrixCollection" ]
     ] ],
     [ "mesh_base.h", "mesh__base_8h.html", "mesh__base_8h" ],
-    [ "numeric.h", "numeric_8h_source.html", null ],
     [ "numerical_derivative.h", "numerical__derivative_8h.html", "numerical__derivative_8h" ],
     [ "openandorder.h", "openandorder_8h.html", "openandorder_8h" ],
     [ "shapes.h", "shapes_8h_source.html", null ],

@@ -92,51 +92,53 @@ $(document).ready(function(){initNavTree('fdtd__grid__initialiser_8h_source.html
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @brief Initialisation of the FDTD grid</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mat__io_8h.html">mat_io.h</a>&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> * @brief A class to initialise an FDTD grid from a MATLAB file</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classfdtdGridInitialiser.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classfdtdGridInitialiser.html">fdtdGridInitialiser</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">const</span> mxArray *pointer;         <span class="comment">//&lt; Pointer to the array</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> *mat_filename;       <span class="comment">//&lt; Filename of the MATLAB file</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    std::vector&lt;mwSize&gt; dimensions; <span class="comment">//&lt; The dimensions of the array</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">    /**</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">     * @brief Get a value from a integer attribute of the FDTD grid defined in a</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">     * .mat file</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">     * </span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">     * @param key the name of the attribute</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">     * @return int the value of the attribute</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    mwSize <a class="code" href="classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429">value_of_attribute</a>(<span class="keyword">const</span> std::string&amp; key);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:<span class="comment"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    /**</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">     * @brief Construct a new fdtd Grid Initialiser object</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">     * </span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">     * @param fdtd_pointer pointer to the FDTD grid</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">     * @param mat_filename the filename of the MATLAB file</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser</a>(<span class="keyword">const</span> mxArray *fdtd_pointer, <span class="keyword">const</span> <span class="keywordtype">char</span>* mat_filename);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    /**</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">     * @brief Set an FDTD grid attribute to a tensor full of zeros</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">     * @param name of the attribute</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">add_tensor</a>(<span class="keyword">const</span> std::string &amp;name);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mat__io_8h.html">mat_io.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * @brief A class to initialise an FDTD grid from a MATLAB file</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classfdtdGridInitialiser.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classfdtdGridInitialiser.html">fdtdGridInitialiser</a> {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">const</span> mxArray *pointer;         <span class="comment">//&lt; Pointer to the array</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> *mat_filename;       <span class="comment">//&lt; Filename of the MATLAB file</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    std::vector&lt;mwSize&gt; dimensions; <span class="comment">//&lt; The dimensions of the array</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    /**</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">     * @brief Get a value from a integer attribute of the FDTD grid defined in a</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">     * .mat file</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">     * </span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">     * @param key the name of the attribute</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">     * @return int the value of the attribute</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    mwSize <a class="code" href="classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429">value_of_attribute</a>(<span class="keyword">const</span> std::string&amp; key);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:<span class="comment"></span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">    /**</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">     * @brief Construct a new fdtd Grid Initialiser object</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">     * </span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">     * @param fdtd_pointer pointer to the FDTD grid</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">     * @param mat_filename the filename of the MATLAB file</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser</a>(<span class="keyword">const</span> mxArray *fdtd_pointer, <span class="keyword">const</span> <span class="keywordtype">char</span>* mat_filename);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">    /**</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">     * @brief Set an FDTD grid attribute to a tensor full of zeros</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">     * @param name of the attribute</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">add_tensor</a>(<span class="keyword">const</span> std::string &amp;name);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aclassfdtdGridInitialiser_html"><div class="ttname"><a href="classfdtdGridInitialiser.html">fdtdGridInitialiser</a></div><div class="ttdoc">A class to initialise an FDTD grid from a MATLAB file.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.h:13</div></div>
-<div class="ttc" id="aclassfdtdGridInitialiser_html_a062454c2a78cc33365598cd3b615835e"><div class="ttname"><a href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">fdtdGridInitialiser::add_tensor</a></div><div class="ttdeci">void add_tensor(const std::string &amp;name)</div><div class="ttdoc">Set an FDTD grid attribute to a tensor full of zeros.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:38</div></div>
+<div class="ttc" id="aclassfdtdGridInitialiser_html"><div class="ttname"><a href="classfdtdGridInitialiser.html">fdtdGridInitialiser</a></div><div class="ttdoc">A class to initialise an FDTD grid from a MATLAB file.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.h:15</div></div>
+<div class="ttc" id="aclassfdtdGridInitialiser_html_a062454c2a78cc33365598cd3b615835e"><div class="ttname"><a href="classfdtdGridInitialiser.html#a062454c2a78cc33365598cd3b615835e">fdtdGridInitialiser::add_tensor</a></div><div class="ttdeci">void add_tensor(const std::string &amp;name)</div><div class="ttdoc">Set an FDTD grid attribute to a tensor full of zeros.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:39</div></div>
 <div class="ttc" id="amat__io_8h_html"><div class="ttname"><a href="mat__io_8h.html">mat_io.h</a></div><div class="ttdoc">Includes MATLAB headers for I/O.</div></div>
-<div class="ttc" id="aclassfdtdGridInitialiser_html_ac73ca0b90f34e6d8cf13e95891696429"><div class="ttname"><a href="classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429">fdtdGridInitialiser::value_of_attribute</a></div><div class="ttdeci">mwSize value_of_attribute(const std::string &amp;key)</div><div class="ttdoc">Get a value from a integer attribute of the FDTD grid defined in a .mat file.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:20</div></div>
-<div class="ttc" id="aclassfdtdGridInitialiser_html_a68572b27a73480baa213baf93360f7cf"><div class="ttname"><a href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser::fdtdGridInitialiser</a></div><div class="ttdeci">fdtdGridInitialiser(const mxArray *fdtd_pointer, const char *mat_filename)</div><div class="ttdoc">Construct a new fdtd Grid Initialiser object.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:8</div></div>
+<div class="ttc" id="aclassfdtdGridInitialiser_html_ac73ca0b90f34e6d8cf13e95891696429"><div class="ttname"><a href="classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429">fdtdGridInitialiser::value_of_attribute</a></div><div class="ttdeci">mwSize value_of_attribute(const std::string &amp;key)</div><div class="ttdoc">Get a value from a integer attribute of the FDTD grid defined in a .mat file.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:21</div></div>
+<div class="ttc" id="aclassfdtdGridInitialiser_html_a68572b27a73480baa213baf93360f7cf"><div class="ttname"><a href="classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser::fdtdGridInitialiser</a></div><div class="ttdeci">fdtdGridInitialiser(const mxArray *fdtd_pointer, const char *mat_filename)</div><div class="ttdoc">Construct a new fdtd Grid Initialiser object.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.cpp:9</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
