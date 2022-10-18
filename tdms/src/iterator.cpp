@@ -1,9 +1,12 @@
+#include "iterator.h"
+
 #include <complex>
 #include <algorithm>
 #include <ctime>
+
 #include <omp.h>
 #include <spdlog/spdlog.h>
-#include "iterator.h"
+
 #include "mesh_base.h"
 #include "numerical_derivative.h"
 #include "array_init.h"

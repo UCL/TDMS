@@ -1,6 +1,7 @@
+#include "fdtd_grid_initialiser.h"
+
 #include <string>
 #include <stdexcept>
-#include "fdtd_grid_initialiser.h"
 
 using namespace std;
 

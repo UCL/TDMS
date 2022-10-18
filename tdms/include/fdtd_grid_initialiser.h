@@ -3,9 +3,11 @@
  * @brief Initialisation of the FDTD grid
  */
 #pragma once
-#include "mat_io.h"
+
 #include <vector>
 #include <string>
+
+#include "mat_io.h"
 
 /**
  * @brief A class to initialise an FDTD grid from a MATLAB file

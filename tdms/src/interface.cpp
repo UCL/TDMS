@@ -1,7 +1,9 @@
+#include "interface.h"
+
 #include <string>
 #include <algorithm>
+
 #include "matlabio.h"
-#include "interface.h"
 
 using namespace std;
 

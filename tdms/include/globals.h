@@ -3,6 +3,7 @@
  * @brief Type definitions and global constants.
  */
 #pragma once
+
 #include <complex>
 
 // ******************

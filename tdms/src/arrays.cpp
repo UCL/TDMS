@@ -1,6 +1,8 @@
+#include "arrays.h"
+
 #include <iostream>
 #include <utility>
-#include "arrays.h"
+
 #include "globals.h"
 #include "utils.h"
 

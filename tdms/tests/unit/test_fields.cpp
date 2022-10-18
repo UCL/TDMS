@@ -2,10 +2,12 @@
  * @file test_fields.cpp
  * @brief Test of the Field class and subclasses.
  */
-#include <catch2/catch_test_macros.hpp>
+#include "field.h"
+
 #include <complex>
 
-#include "field.h"
+#include <catch2/catch_test_macros.hpp>
+
 #include "globals.h"
 
 using namespace std;

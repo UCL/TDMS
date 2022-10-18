@@ -3,7 +3,8 @@
  * @brief Class to hold the labels of a Yee cell.
  */
 #pragma once
-#include "matlabio.h"
+
+#include "mat_io.h"
 
 /**
  * Grid labels hold the cartesian labels of Yee cell, in the x, y and z directions

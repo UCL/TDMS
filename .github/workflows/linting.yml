@@ -1,12 +1,10 @@
 name: Run python code linting
-
 on:
   push:
     branches: "main"
   pull_request:
   release:
   workflow_dispatch:
-
 jobs:
   pre-commit:
     name: Run pre-commit

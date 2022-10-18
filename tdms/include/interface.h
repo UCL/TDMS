@@ -3,6 +3,10 @@
  */
 #pragma once
 
+#include <string>
+
+#include "mat_io.h"
+
 class InterfaceComponent{
 public:
   bool apply;

@@ -3,7 +3,8 @@
  * @brief 
  */
 #pragma once
-#include "matlabio.h"
+
+#include "mat_io.h"
 
 class Dimensions{
 private:
@@ -12,7 +13,6 @@ private:
   int k = 0;
 
   bool are_nd(int n) const{return (bool(i) + bool(j) + bool(k)) == n;}
-
 
 public:
   int operator[] (int value) const;

@@ -1,6 +1,8 @@
-#include <stdexcept>
 #include "dimensions.h"
 
+#include <stdexcept>
+
+#include "utils.h"
 
 using namespace std;
 

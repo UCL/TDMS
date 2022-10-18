@@ -7,7 +7,9 @@
  * spatial position.
  */
 #pragma once
-#include "matrix.h"
+
+#include <matrix.h>
+
 #include "field.h"
 
 /**

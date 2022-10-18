@@ -5,6 +5,7 @@
  * This code is the main dependency on FFTW3.
  */
 #pragma once
+
 #include <fftw3.h>
 
 /**

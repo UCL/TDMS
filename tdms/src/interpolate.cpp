@@ -1,5 +1,7 @@
-#include <stdexcept>
 #include "interpolate.h"
+
+#include <stdexcept>
+
 #include "interpolation_methods.h"
 #include "matlabio.h"
 

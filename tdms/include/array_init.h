@@ -5,11 +5,8 @@
  */
 #pragma once
 
-#include "arrays.h"
 #include "field.h"
 #include "mat_io.h"
-#include <string>
-#include <vector>
 
 /**
  * Initialise the grid tensors/arrays, including the electric and magnetic split fields and the

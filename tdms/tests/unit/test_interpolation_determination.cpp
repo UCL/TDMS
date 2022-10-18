@@ -3,7 +3,7 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests the logic that determines which interpolation schemes are appropriate.
  */
-#include <interpolation_methods.h>
+#include "interpolation_methods.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>

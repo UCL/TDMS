@@ -3,9 +3,10 @@
  * @brief Classes collecting parameters for the simulation.
  */
 #pragma once
-#include <string>
-#include "arrays.h"
 
+#include <string>
+
+#include "arrays.h"
 
 struct PerfectlyMatchedLayer {
   int Dxl = 0;  // Thickness of lower pml in the x direction
