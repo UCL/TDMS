@@ -11,6 +11,11 @@
 #include "field.h"
 #include "grid_labels.h"
 
+/**
+ * @brief The Mother of all Functions
+ * Used to be the MATLAB mexFunction
+ */
+void moaf(int, mxArray**, int, const mxArray**);
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs, 
 			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, 

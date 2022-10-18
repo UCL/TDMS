@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "fdtd_grid_initialiser.h"
 #include "openandorder.h"
+#include "iterator.h"
 
 
 #define NMATRICES 49              //< number of input matrices
@@ -59,7 +60,7 @@ int main(int nargs, char *argv[]){
   }
 
   //now run the time propagation code
-  mexFunction(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
+  moaf(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
 
   if( !args.have_flag("-m") ){ //prints vertices and facets
     saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL, args.output_filename());

@@ -231,7 +231,7 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   auto params = SimulationParameters();
 
