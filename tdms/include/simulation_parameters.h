@@ -3,7 +3,9 @@
  * @brief Classes collecting parameters for the simulation.
  */
 #pragma once
+
 #include <string>
+
 #include "arrays.h"
 
 

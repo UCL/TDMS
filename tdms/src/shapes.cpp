@@ -1,5 +1,6 @@
-#include <algorithm>
 #include "shapes.h"
+
+#include <algorithm>
 
 
 using namespace std;

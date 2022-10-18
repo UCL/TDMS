@@ -3,13 +3,12 @@
  * @brief Classes for the electric and magnetic (split) fields on a grid.
  */
 #pragma once
+
 #include <complex>
-#include <stdexcept>
-#include "arrays.h"
+
 #include "dimensions.h"
 #include "mat_io.h"
 #include "simulation_parameters.h"
-#include "utils.h"
 #include "globals.h"
 
 

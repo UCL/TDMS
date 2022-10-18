@@ -3,13 +3,15 @@
  * @brief Classes describing arrays, vertices etc.
  */
 #pragma once
+
 #include <complex>
 #include <string>
-#include <fftw3.h>
 #include <stdexcept>
+
+#include <fftw3.h>
+
 #include "matlabio.h"
 #include "utils.h"
-
 
 class XYZTensor3D {
 public:

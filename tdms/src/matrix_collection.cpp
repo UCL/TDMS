@@ -1,11 +1,11 @@
-#include <string>
-#include <stdexcept>
-#include "mat_io.h"
 #include "matrix_collection.h"
 
+#include <string>
+#include <stdexcept>
+
+#include "mat_io.h"
 
 using namespace std;
-
 
 MatFileMatrixCollection::MatFileMatrixCollection(const char *filename){
 

@@ -6,13 +6,15 @@
  * matrices to the mexFunction and writing the output to the specified output
  * file.
  */
+#include "openandorder.h"
 
-#include <spdlog/spdlog.h>
 #include <cstdio>
 #include <stdexcept>
+
+#include <spdlog/spdlog.h>
 #include "utils.h"
+
 #include "fdtd_grid_initialiser.h"
-#include "openandorder.h"
 
 
 #define NMATRICES 49              //< number of input matrices

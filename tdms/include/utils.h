@@ -2,6 +2,7 @@
  * @file utils.h
  * @brief Useful miscellaneous utility functions
  */
+#include <string>
 
 /**
  * @brief Throws a runtime error if a file is not found.
@@ -9,8 +10,6 @@
  * @param filename The name of the file to check.
  * @param mode The mode to try and open with.
  */
-#include <string>
-
 void assert_can_open_file(const char* filename, const char* mode);
 
 /**

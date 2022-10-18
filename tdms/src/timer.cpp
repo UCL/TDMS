@@ -1,6 +1,8 @@
-#include <cstdio>
-#include <omp.h>
 #include "timer.h"
+
+#include <cstdio>
+
+#include <omp.h>
 
 
 void Timer::start() {

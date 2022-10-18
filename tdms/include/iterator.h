@@ -6,7 +6,9 @@
  * extraction etc. Works in both pulsed and steady state mode.
  */
 #pragma once
+
 #include <complex>
+
 #include "arrays.h"
 #include "field.h"
 #include "grid_labels.h"
