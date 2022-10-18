@@ -3,7 +3,6 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Class declaration for Yee cell coordinates 
  */
-#include "simulation_parameters.h"
 
 class CellCoordinate {
 
