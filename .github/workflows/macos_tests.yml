@@ -60,6 +60,7 @@ jobs:
       - name: Create Build Environment
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
+
       - name: Configure TDMS
         shell: bash
         working-directory: ${{runner.workspace}}/build
@@ -71,7 +72,6 @@ jobs:
            -DBUILD_TESTING=${{ matrix.build_testing }} \
            -DOMP_ROOT=$(brew --prefix llvm) \
            -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
-
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build

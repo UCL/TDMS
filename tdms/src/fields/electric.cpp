@@ -1,4 +1,5 @@
 #include "field.h"
+
 #include "globals.h"
 #include "interpolation_methods.h"
 

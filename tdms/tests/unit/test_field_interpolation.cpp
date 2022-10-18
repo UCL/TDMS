@@ -3,12 +3,14 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests interpolation of E- and H-fields and compares the errors against MATLAB benchmarks
  */
-#include <catch2/catch_test_macros.hpp>
+#include "field.h"
+
 #include <cmath>
+
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
-#include "field.h"
 
 using namespace tdms_math_constants;
 

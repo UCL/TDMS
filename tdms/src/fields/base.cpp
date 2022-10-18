@@ -1,5 +1,6 @@
-#include "matlabio.h"
 #include "field.h"
+
+#include "matlabio.h"
 #include "globals.h"
 
 using namespace std;
@@ -8,6 +9,8 @@ using namespace tdms_math_constants;
 void Field::add_to_angular_norm(int n, int Nt, SimulationParameters &params) {
   angular_norm += phasor_norm(ft, n, params.omega_an, params.dt, Nt);
 }
+
+
 
 void Field::normalise_volume() {
 
@@ -53,6 +56,8 @@ complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int
          * exp( fmod(phase(n, omega, dt), 2*DCPI) * IMAGINARY_UNIT)
          * 1./((double) Nt);
 }
+
+
 
 Field::~Field() {
 

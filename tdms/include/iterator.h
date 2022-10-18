@@ -6,11 +6,12 @@
  * extraction etc. Works in both pulsed and steady state mode.
  */
 #pragma once
+
 #include <complex>
+
 #include "arrays.h"
 #include "field.h"
 #include "grid_labels.h"
-
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs, 
 			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, 

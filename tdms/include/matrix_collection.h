@@ -3,7 +3,8 @@
  * @brief A collection of named MATLAB matrices.
  */
 #pragma once
-#include <string>
+
+#include "mat_io.h"
 
 /**
  * A collection of matlab matrices with names

@@ -2,13 +2,12 @@
  * @file test_numerical_derivative.cpp
  * @brief Tests of the numerical differentiation/FFT functions.
  */
+#include "numerical_derivative.h"
+
 #include <fftw3.h>
 #include <spdlog/spdlog.h>
-
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-
-#include "numerical_derivative.h"
 
 using Catch::Approx;
 

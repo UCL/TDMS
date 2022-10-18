@@ -1,9 +1,4 @@
-/*****************************************************************
- *  Application.:  matlab data structure manipulation
- *  Description.:  code for processing the matlab data structures
- ******************************************************************/
 #include "matlabio.h"
-
 
 using namespace std;
 

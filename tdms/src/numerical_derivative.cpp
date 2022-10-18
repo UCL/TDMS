@@ -1,10 +1,10 @@
 #include "numerical_derivative.h"
 
-#include <fftw3.h>
-#include <spdlog/spdlog.h>
-
 #include <cmath>
 #include <cstdlib>
+
+#include <fftw3.h>
+#include <spdlog/spdlog.h>
 
 #include "globals.h"
 #include "matlabio.h"

@@ -3,6 +3,7 @@
  * @brief Parse the command line options.
  */
 #pragma once
+
 #include <string>
 #include <vector>
 

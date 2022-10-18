@@ -1,13 +1,11 @@
+#include "utils.h"
+
 #include <cstdio>
 #include <string>
 #include <cstring>
 #include <stdexcept>
-#include "utils.h"
-
-
 
 using namespace std;
-
 
 void assert_can_open_file(const char* filename, const char* mode){
 

@@ -1,6 +1,8 @@
-#include <stdexcept>
-#include <spdlog/spdlog.h>
 #include "argument_parser.h"
+
+#include <stdexcept>
+
+#include <spdlog/spdlog.h>
 
 using namespace std;
 

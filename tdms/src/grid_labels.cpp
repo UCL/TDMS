@@ -1,5 +1,6 @@
 #include "grid_labels.h"
 
+#include "matlabio.h"
 
 GridLabels::GridLabels(const mxArray *ptr){
 

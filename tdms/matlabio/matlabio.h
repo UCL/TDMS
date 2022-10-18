@@ -1,7 +1,14 @@
+/**
+ * @file matlabio.h
+ * @brief MATLAB data structure manipulation
+ * Code for processing the matlab data structures.
+ */
 #pragma once
+
 #include <algorithm>
 #include <complex>
 #include <string>
+
 #include "mat_io.h"
 
 /**
