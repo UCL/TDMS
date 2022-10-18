@@ -3,13 +3,13 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests the performance of band-limited interpolation against cubic interpolation
  */
+#include "interpolation_methods.h"
+
 #include <algorithm>
 #include <cmath>
 
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
-
-#include "interpolation_methods.h"
 
 using namespace std;
 

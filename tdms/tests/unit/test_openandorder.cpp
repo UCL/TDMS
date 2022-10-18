@@ -2,9 +2,9 @@
  * @file test_openandorder.cpp
  * @brief Tests of the argument parsing and file I/O.
  */
-#include <catch2/catch_test_macros.hpp>
-
 #include "argument_parser.h"
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace std;
 

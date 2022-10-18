@@ -3,6 +3,8 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
  */
+#include "interpolation_methods.h"
+
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -12,7 +14,6 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
-#include "interpolation_methods.h"
 
 using namespace tdms_math_constants;
 using Catch::Approx;
