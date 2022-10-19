@@ -60,6 +60,7 @@ int main(int nargs, char *argv[]){
     openandorder(args.grid_filename(), (char **)matrixnames_gridfile, matrixptrs, 1);
   }
 
+  // decide which derivative method to use (PSTD or FDTD)
   DerivativeMethod method = PseudoSpectral; // default
   if (args.finite_difference()) 
     method = DerivativeMethod::FiniteDifference;
