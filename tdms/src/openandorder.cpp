@@ -12,8 +12,8 @@
 #include <stdexcept>
 
 #include <spdlog/spdlog.h>
-#include "utils.h"
 
+#include "utils.h"
 #include "fdtd_grid_initialiser.h"
 #include "iterator.h"
 
@@ -60,8 +60,12 @@ int main(int nargs, char *argv[]){
     openandorder(args.grid_filename(), (char **)matrixnames_gridfile, matrixptrs, 1);
   }
 
+  DerivativeMethod method = PseudoSpectral; // default
+  if (args.finite_difference()) 
+    method = DerivativeMethod::FiniteDifference;
+
   //now run the time propagation code
-  moaf(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
+  moaf(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, method);
 
   if( !args.have_flag("-m") ){ //prints vertices and facets
     saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL, args.output_filename());

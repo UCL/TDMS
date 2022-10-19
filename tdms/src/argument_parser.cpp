@@ -51,6 +51,7 @@ void ArgumentParser::print_help_message(){
                  "openandorder [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
+                 "--finite-difference:\tUse finite-difference derivatives\n"
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
@@ -73,13 +74,17 @@ bool ArgumentNamespace::is_a_flag_argument(std::string arg){
   return arg[0] == '-';
 }
 
-bool ArgumentNamespace::have_flag(std::string const &flag){
+bool ArgumentNamespace::have_flag(std::string const &flag) const {
 
   for (const auto& arg : arguments){
     if(arg == flag) return true;
   }
 
   return false;
+}
+
+bool ArgumentNamespace::finite_difference() const {
+  return this->have_flag("-fd") || this->have_flag("--finite-difference");
 }
 
 const char* ArgumentNamespace::output_filename() {

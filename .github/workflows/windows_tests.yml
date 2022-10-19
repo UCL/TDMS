@@ -26,10 +26,6 @@ jobs:
           - Release
         build_testing:
           - OFF
-        # TODO: remove this once MATLAB dependency is removed and mexFunction is replaced
-        derivative_type:
-          - PS
-          - FD
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -88,11 +84,6 @@ jobs:
 
       - name: Run CLI test
         # For Windows, we skip the main system tests and just test the CLI
-        # note that if we decide to turn these back on, we need to split into
-        # two test steps and guard each one based on
-        # if: matrix.derivative_type == 'PS'
-        # or 'FD', and filter the pytest labels accordingly
-        # pytest <blah> -m fdtd_build_only
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
