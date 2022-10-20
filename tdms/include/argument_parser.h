@@ -65,7 +65,7 @@ public:
     static bool is_a_flag_argument(std::string arg);
 
     /**
-     * @brief Check whether we were asked to use finite-difference derivatives.
+     * @brief Check whether we were asked to use the finite-difference method.
      * (the default is pseudospectral.)
      * 
      * @return true if provided '-fd' or '--finite-difference'
