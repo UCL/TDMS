@@ -61,12 +61,12 @@ int main(int nargs, char *argv[]){
   }
 
   // decide which derivative method to use (PSTD or FDTD)
-  DerivativeMethod method = PseudoSpectral; // default
+  SolverMethod method = PseudoSpectral; // default
   if (args.finite_difference()) 
-    method = DerivativeMethod::FiniteDifference;
+    method = SolverMethod::FiniteDifference;
 
   //now run the time propagation code
-  moaf(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, method);
+  execute_simulation(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, method);
 
   if( !args.have_flag("-m") ){ //prints vertices and facets
     saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL, args.output_filename());

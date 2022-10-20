@@ -233,9 +233,9 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], DerivativeMethod method) {
+void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], SolverMethod method) {
 
-  if (method == DerivativeMethod::FiniteDifference) {
+  if (method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
   } else {
     spdlog::info("Using pseudospectral method (PSTD)");
@@ -282,7 +282,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
   int Ni_tdf = 0, Nk_tdf = 0;
 
   int skip_tdf = 1;
-  if (method == DerivativeMethod::FiniteDifference) skip_tdf = 6;
+  if (method == SolverMethod::FiniteDifference) skip_tdf = 6;
 
   // PSTD storage (not used if FD)
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
@@ -526,7 +526,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
   CCoefficientMatrix ca_vec, cb_vec, cc_vec;
   EHVec eh_vec;
 
-  if (method == DerivativeMethod::PseudoSpectral) {
+  if (method == SolverMethod::PseudoSpectral) {
     int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
     ca_vec.allocate(n_threads, max_IJK + 1);
     cb_vec.allocate(n_threads, max_IJK + 1);
@@ -1357,7 +1357,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
       array_ind = 0;
 
       if (params.dimension == THREE || params.dimension == TE) {
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.xy
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -1637,7 +1637,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
 
         //fprintf(stderr,"Pos 04:\n");
         //E_s.xz updates
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
           for (k = 1; k < K_tot; k++)
             for (j = 0; j < J_tot_p1_bound; j++)
@@ -1912,7 +1912,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
 
         //fprintf(stderr,"Pos 05:\n");
         //E_s.yx updates
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.yx
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -2170,7 +2170,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
 
         //fprintf(stderr,"Pos 06:\n");
         //E_s.yz updates
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, E_s.yz
 #pragma omp for
           for (k = 1; k < K_tot; k++)
@@ -2421,7 +2421,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
 
       //fprintf(stderr,"Pos 07:\n");
       if (params.dimension == THREE || params.dimension == TE) {
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
           //E_s.zx updates
           for (k = 0; k < K_tot; k++)
@@ -2766,7 +2766,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
       }
       //fprintf(stderr,"Pos 08:\n");
       if (params.dimension == THREE || params.dimension == TE) {
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.zy
 #pragma omp for
           //E_s.zy updates
@@ -3522,7 +3522,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
       n = omp_get_thread_num();
 
       if (params.dimension == THREE || params.dimension == TE) {
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
           //H_s.xz updates
@@ -3599,7 +3599,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
           //PSTD, H_s.xz
         }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xy
 #pragma omp for
           //H_s.xy updates
@@ -3696,7 +3696,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
           //PSTD, H_s.xy
         }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yx
 #pragma omp for
           //H_s.yx updates
@@ -3777,7 +3777,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
           //PSTD, H_s.yx
         }
 
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yz
 #pragma omp for
           //H_s.yz updates
@@ -3949,7 +3949,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
       }
 
       if (params.dimension == THREE || params.dimension == TE) {
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
           //H_s.zy update
@@ -4030,7 +4030,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
         }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
 
-        if (method == DerivativeMethod::FiniteDifference) {
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zx
 #pragma omp for
           //H_s.zx update
@@ -4737,7 +4737,7 @@ void moaf(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], Derivative
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-  if (method == DerivativeMethod::PseudoSpectral) {
+  if (method == SolverMethod::PseudoSpectral) {
     fftw_free(dk_e_x);
     fftw_free(dk_e_y);
     fftw_free(dk_e_z);

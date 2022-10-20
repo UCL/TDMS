@@ -51,7 +51,7 @@ void ArgumentParser::print_help_message(){
                  "openandorder [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
-                 "--finite-difference:\tUse finite-difference derivatives\n"
+                 "--finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
