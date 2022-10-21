@@ -1172,18 +1172,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
+                double Ex_store, Ey_store, Ez_store;
+                int i = fieldsample.i[it] + params.pml.Dxl - 1,
+                    j = fieldsample.j[jt] + params.pml.Dyl - 1,
+                    k = fieldsample.k[kt] + params.pml.Dzl - 1;
+                interpolateTimeDomainFieldCentralEBandLimited(E_s.xy, E_s.xz, E_s.yx, E_s.yz,
+                                                              E_s.zx, E_s.zy, i, j, k, &Ex_store,
+                                                              &Ey_store, &Ez_store);
                 Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X,
                                              fieldsample.i[it] + params.pml.Dxl - 1,
                                              fieldsample.j[jt] + params.pml.Dyl - 1,
                                              fieldsample.k[kt] + params.pml.Dzl - 1);
-                Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y,
-                                                       fieldsample.i[it] + params.pml.Dxl - 1,
-                                                       fieldsample.j[jt] + params.pml.Dyl - 1,
-                                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                if (j != 0) {
+                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+                } else {
+                  Ey_temp = E_s.yx[k][0][i] + E_s.yz[k][0][i];
+                }
                 Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z,
                                                        fieldsample.i[it] + params.pml.Dxl - 1,
                                                        fieldsample.j[jt] + params.pml.Dyl - 1,
                                                        fieldsample.k[kt] + params.pml.Dzl - 1);
+                fprintf(stderr, "(it, jt, kt) %d %d %d :\n\t x (old) %.8e (%.8e)\n\t y (old) %.8e (%.8e)\n\t z (old) %.8e (%.8e)\n", it, jt, kt, Ex_temp, Ex_store, Ey_temp, Ey_store, Ez_temp, Ez_store);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +

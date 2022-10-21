@@ -231,7 +231,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
 
   switch (d) {
     case X:
-      if (J_tot <= 0) {
+      if (J_tot <= 1) {
         // in a 2D simulation, we must interpolate in the z-direction to recover Hx, due to the magnetic-field offsets from the centre
         b_scheme = &(best_scheme(K_tot, k));
         // now fill the interpolation data
@@ -333,7 +333,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
       }
       break;
     case Z:
-      if (J_tot <= 0) {
+      if (J_tot <= 1) {
         // in a 2D simulation, we must interpolate in the x-direction to recover Hz, due to the magnetic-field offsets from the centre
         b_scheme = &(best_scheme(I_tot, i));
         // now fill the interpolation data
