@@ -1172,20 +1172,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                ////fprintf(stderr,"Pos fs 1\n");
-                interpolateTimeDomainFieldCentralEBandLimited(
-                        E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        fieldsample.i[it] + params.pml.Dxl - 1,
-                        fieldsample.j[jt] + params.pml.Dyl - 1,
-                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
-                //fprintf(stderr,"Pos fs 2\n");
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X,
+                                             fieldsample.i[it] + params.pml.Dxl - 1,
+                                             fieldsample.j[jt] + params.pml.Dyl - 1,
+                                             fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y,
+                                                       fieldsample.i[it] + params.pml.Dxl - 1,
+                                                       fieldsample.j[jt] + params.pml.Dyl - 1,
+                                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z,
+                                                       fieldsample.i[it] + params.pml.Dxl - 1,
+                                                       fieldsample.j[jt] + params.pml.Dyl - 1,
+                                                       fieldsample.k[kt] + params.pml.Dzl - 1);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
                               fieldsample.n[nt] / 2.) /
                                   params.Nt;
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_vecs.n[nt], (int)fieldsample_vecs.i[it] + params.pml.Dxl - 1, (int)fieldsample_vecs.j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_vecs.k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_vecs.n[nt] - 2);
               }
         }
     }
