@@ -1173,7 +1173,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                double Ex_store, Ey_store, Ez_store;
                 int i = fieldsample.i[it] + params.pml.Dxl - 1,
                     j = fieldsample.j[jt] + params.pml.Dyl - 1,
                     k = fieldsample.k[kt] + params.pml.Dzl - 1;
