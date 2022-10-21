@@ -1176,19 +1176,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 int i = fieldsample.i[it] + params.pml.Dxl - 1,
                     j = fieldsample.j[jt] + params.pml.Dyl - 1,
                     k = fieldsample.k[kt] + params.pml.Dzl - 1;
-                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X,
-                                             fieldsample.i[it] + params.pml.Dxl - 1,
-                                             fieldsample.j[jt] + params.pml.Dyl - 1,
-                                             fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, i, j, k);
                 if (j != 0) {
                   Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
                 } else {
                   Ey_temp = E_s.yx[k][0][i] + E_s.yz[k][0][i];
                 }
-                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z,
-                                                       fieldsample.i[it] + params.pml.Dxl - 1,
-                                                       fieldsample.j[jt] + params.pml.Dyl - 1,
-                                                       fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
