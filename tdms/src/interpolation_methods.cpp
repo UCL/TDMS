@@ -241,64 +241,65 @@ bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
     return (priority > s.get_priority());
 }
 
-const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id) {
+const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position) {
 
     // interpolation is impossible with fewer than 4 datapoints in a dimension
-    // 4 datapoints => 3 cells in a given direction
-    if (cells_in_direction < 3) {
-        throw out_of_range("Error: domain axis has < 3 cells (< 4 datapoints), cubic and bandlimited interpolation impossible.\n");
+    if (datapts_in_direction < 4) {
+        throw out_of_range("Error: domain axis has <4 datapoints, cubic and bandlimited interpolation impossible.\n");
     }
-    // Yee cell with index <0 doesn't allow for interpolation (this is the PML)
-    else if (cell_id < 0) {
-        throw out_of_range("Error: Yee cell index < 0 requested.\n");
-    }
-    // Yee cell with index >= cells_in_direction doesn't exist
-    // Again, we can in theory determine the value "here" using BL7, however cubic interpolation cannot do this, and so current code functionality is to throw an error here.
-    else if (cell_id >= cells_in_direction) {
-        throw out_of_range("Error: Yee cell index beyond maximum number of Yee cells requested.\n");
-    }
-    else if (cells_in_direction < 7) {
-        // we do not have enough cells to use bandlimited interpolation, but can use cubic
-        // cell_id = 0 requires us to use CBFst, 
-        // cell_id = 1,2,...,cells_in_direction-2 requires us to use CBMid,
-        // cell_id = cells_in_direction-1 requires us to use CBLast
-        if (cell_id == 0) {
-            return CBFst;
-        }
-        else if (cell_id == cells_in_direction-1) {
-            return CBLst;
+    else if (datapts_in_direction < 8) {
+        // we are restricted to cubic interpolation
+        if (interpolation_position <= 0 || interpolation_position >= datapts_in_direction) {
+            throw out_of_range("Error: Cubic interpolation impossible to position " + to_string(interpolation_position) + "\n");
         }
         else {
-            return CBMid;
+            // determine cubic interpolation scheme to use
+            if (interpolation_position == 1) {
+                return CBFst;
+            }
+            else if (interpolation_position == datapts_in_direction - 1) {
+                return CBLst;
+            }
+            else {
+                return CBMid;
+            }
         }
     }
+    else if (interpolation_position < 0 || interpolation_position > datapts_in_direction) {
+        // cannot interpolate to here using BLi, throw error
+        throw out_of_range("Error: BLi interpolation impossible to position " + to_string(interpolation_position) + "\n");
+    }
     else {
-        // we can apply bandlimited interpolation.
-        // if there are 4 datapoints either side, we want to use BL3
-        if ((cell_id > 2) && (cell_id < cells_in_direction - 3)) {
-            return BL3;
+        // safe to use BLi, figure out which scheme we need
+        if (interpolation_position == 0) {
+            return BL_TO_CELL_0;
         }
-        else if (cell_id == 0) {
+        else if (interpolation_position == datapts_in_direction) {
+            return BL7;
+        }
+        else if (interpolation_position == 1) {
             return BL0;
         }
-        else if (cell_id == 1) {
+        else if (interpolation_position == 2) {
             return BL1;
         }
-        else if (cell_id == 2) {
+        else if (interpolation_position == 3) {
             return BL2;
         }
-        else if (cell_id == cells_in_direction - 3) {
+        else if (interpolation_position == datapts_in_direction - 3) {
             return BL4;
         }
-        else if (cell_id == cells_in_direction - 2) {
+        else if (interpolation_position == datapts_in_direction - 2) {
             return BL5;
         }
-        else if (cell_id == cells_in_direction - 1) {
+        else if (interpolation_position == datapts_in_direction - 1) {
             return BL6;
         }
         else {
-            // we somehow got to here, but we should have covered all possible bases above. Return an error
-            throw runtime_error("Error: could not identify scheme despite appropriate Yee cell index and number of cells.\n");
+            // we have 4 datapoints either side of where we want to interpolate to
+            return BL3;
         }
     }
+    // if we get to here we have, somehow, not returned a scheme. Raise an error
+    throw runtime_error("Error: could not identify scheme for unknown reasons, diagnose further.\n");
 }

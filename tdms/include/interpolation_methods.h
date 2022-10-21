@@ -79,11 +79,11 @@ enum scheme_value
     BAND_LIMITED_4 = 7,             // use bandlimited interpolation w/ interp position = 4
     BAND_LIMITED_5 = 5,             // use bandlimited interpolation w/ interp position = 5
     BAND_LIMITED_6 = 3,             // use bandlimited interpolation w/ interp position = 6
-    BAND_LIMITED_7 = -1,            // use bandlimited interpolation w/ interp position = 7 [Only applicable if we want to extend beyond the final Yee cell, current code functionality is to throw an error in the case where this would be used.]
-    BAND_LIMITED_CELL_ZERO = -2,    // use bandlimited interpolation to interpolate to the centre of Yee cell <0 [implemented, but current code functionality is to throw an error here]
-    CUBIC_INTERP_MIDDLE = 2,        // cubic interpolation to middle 2 of 4 points (interp1)
-    CUBIC_INTERP_FIRST = 1,         // cubic interpolation to first 2 of 4 points (interp2)
-    CUBIC_INTERP_LAST = 0           // cubic interpolation to last 2 of 4 points (interp3)
+    BAND_LIMITED_7 = 2,             // use bandlimited interpolation w/ interp position = 7
+    BAND_LIMITED_CELL_ZERO = 1,     // use bandlimited interpolation to interpolate to the centre of Yee cell 0
+    CUBIC_INTERP_MIDDLE = 0,        // cubic interpolation to middle 2 of 4 points (interp1)
+    CUBIC_INTERP_FIRST = -1,        // cubic interpolation to first 2 of 4 points (interp2)
+    CUBIC_INTERP_LAST = -2          // cubic interpolation to last 2 of 4 points (interp3)
 };
 
 class InterpolationScheme {
@@ -175,10 +175,10 @@ const InterpolationScheme CBMid = InterpolationScheme(CUBIC_INTERP_MIDDLE);
 const InterpolationScheme CBLst = InterpolationScheme(CUBIC_INTERP_LAST);
 
 /**
- * @brief Determines the appropriate interpolation scheme to use, given the current cell and number of cells in a given dimension.
- * 
- * @param cells_in_direction The number of cells in the direction parallel to interpolation
- * @param cell_id The current cell index to interpolate to the centre of
- * @return const interpScheme* The interpolation scheme that should be used
+ * @brief Determine the appropriate interpolation scheme to use, given the number of datapoints available and the position to which we wish to interpolate to.
+ *
+ * @param datapts_in_direction The number of datapoints available along this axis
+ * @param interpolation_position Interpolation is to be performed to the midpoint of the datapoints indexed with (interpolation_position-1) and (interpolation_position)
+ * @return const InterpolationScheme& 
  */
-const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id);
+const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position);

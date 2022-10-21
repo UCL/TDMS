@@ -69,38 +69,27 @@ TEST_CASE("E-field interpolation check") {
   SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
   // setup the "split" E-field components
-  ElectricSplitField E_split(Nx, Ny, Nz);
-  E_split.allocate();
+  ElectricSplitField E_split(Nx-1, Ny-1, Nz-1);
+  E_split.allocate(); // alocates Nx, Ny, Nz memory space here
+  E_split.I_tot++; E_split.J_tot++; E_split.K_tot++; // correct the "number of datapoints" variable for these fields
   // setup for non-split field components
   ElectricField E(Nx, Ny, Nz);
   E.allocate();
-  // storage for pointwise errors
-  Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error, Ez_split_error;
-  Ex_error.allocate(Nz, Ny, Nx - 1);
-  Ex_split_error.allocate(Nz, Ny, Nx - 1);
-  Ey_error.allocate(Nz, Ny - 1, Nx);
-  Ey_split_error.allocate(Nz, Ny - 1, Nx);
-  Ez_error.allocate(Nz - 1, Ny, Nx);
-  Ez_split_error.allocate(Nz - 1, Ny, Nx);
 
-  // compute the exact field and the "split field" components
-  // indices range from (0,0,0) to (Nx, Ny, Nz) INCLUSIVE!
-  for (int ii = 0; ii <= Nx; ii++) {
-    for (int jj = 0; jj <= Ny; jj++) {
-      for (int kk = 0; kk <= Nz; kk++) {
-        /* The coordinates of the grids are different, which throws a spanner in the works.
-            Recall that the "x-grid" is at the position of the (i,j,k)-th Ex field sample.
-                x-grid coordinates: (i,j,k) = (x_lower + i*cellDims[0], y_lower + (j-0.5)*cellDims[1], z_lower + (k-0.5)*cellDims[2])
-                y-grid coordinates: (i,j,k) = (x_lower + (i-0.5)*cellDims[0], y_lower + j*cellDims[1], z_lower + (k-0.5)*cellDims[2])
-                z-grid coordinates: (i,j,k) = (x_lower + (i-0.5)*cellDims[0], y_lower + (j-0.5)*cellDims[1], z_lower + k*cellDims[2])
-            The components only depend on one of the coordinate directions, so we don't need to compute all 9 values.
-            */
+  /* Compute the exact field and the "split field" components
+  Ex[k][j][i] is the value of the field at position (x_lower,y_lower,z_lower) + (i,j+0.5,k+0.5)*cellDims
+  Ey[k][j][i] is the value of the field at position (x_lower,y_lower,z_lower) + (i+0.5,j,k+0.5)*cellDims
+  Ez[k][j][i] is the value of the field at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k)*cellDims
+  */
+  for (int ii = 0; ii < Nx; ii++) {
+    for (int jj = 0; jj < Ny; jj++) {
+      for (int kk = 0; kk < Nz; kk++) {
         double x_comp_value =
-                field_component(y_lower + (((double) jj) + 0.5) * cellDims[1]);// Ex depends on y
+                field_component(y_lower + ((double) jj + 0.5) * cellDims[1]);// Ex depends on y
         double y_comp_value =
-                field_component(z_lower + (((double) kk) + 0.5) * cellDims[2]);// Ey depends on z
+                field_component(z_lower + ((double) kk + 0.5) * cellDims[2]);// Ey depends on z
         double z_comp_value =
-                field_component(x_lower + (((double) ii) + 0.5) * cellDims[0]);// Ez depends on x
+                field_component(x_lower + ((double) ii + 0.5) * cellDims[0]);// Ez depends on x
         // assign to "freq domain" ElectricField
         E.real.x[kk][jj][ii] = x_comp_value;
         E.imag.x[kk][jj][ii] = 0.;
@@ -118,52 +107,58 @@ TEST_CASE("E-field interpolation check") {
       }
     }
   }
-  // the fields are now assigned, we next need to test the interpolation itself
-  // we perform Nx-1, Ny-1, Nz-1 interpolations here (for Ex, Ey, Ez respectively) so with some logic checks we can do everything in one for loop
-  // however, cell "1" has centre 0.5*cellDims, yet we are storing the true field value and interpolated values at index "0", so there are some index-offsets here
+
+  /* In each axis, we will now interpolate to positions 1 through N{x,y,z}-1. Recall this means to the midpoint of the datapoints indexed by 0 and 1, then 1 and 2, ..., N{x,y,z}-3 and N{x,y,z}-2, and finally N{x,y,z}-2 and N{x,y,z}-1.
+  Ex_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  Ey_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  Ez_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  */
+  Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error, Ez_split_error;
+  Ex_error.allocate(Nz, Ny, Nx-1);
+  Ex_split_error.allocate(Nz, Ny, Nx-1);
+  Ey_error.allocate(Nz, Ny-1, Nx);
+  Ey_split_error.allocate(Nz, Ny-1, Nx);
+  Ez_error.allocate(Nz-1, Ny, Nx);
+  Ez_split_error.allocate(Nz-1, Ny, Nx);
+  // now interpolate
+  // note that we aren't interpolating to position 0 (before 1st point) or N{x,y,z} (after last point)
   for (int ii = 0; ii < Nx; ii++) {
     for (int jj = 0; jj < Ny; jj++) {
       for (int kk = 0; kk < Nz; kk++) {
         // coordinates of the cell that we are interested in
-        double cell_centre[3];
-        cell_centre[0] = x_lower + ((double) ii + 0.5) * cellDims[0];
-        cell_centre[1] = y_lower + ((double) jj + 0.5) * cellDims[1];
-        cell_centre[2] = z_lower + ((double) kk + 0.5) * cellDims[2];
-        // Ex interpolation only goes up to Nx-1
-        if (ii != Nx - 1) {
-          // exact field value
-          double Ex_exact = field_component(cell_centre[1]);
-          // split field interpolation
-          double Ex_split_interp =
-                  E_split.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk);
-          // freq domain field interpolation - take real part since using entirely real field
+        double x_eval_position = y_lower + ((double) jj + 0.5) * cellDims[1];
+        double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
+        double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
+
+        // Ex interpolation
+        if (ii!=0) {
+          double Ex_exact = field_component(x_eval_position);// Ex depends on y
+          double Ex_split_interp = E_split.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk);
           double Ex_interp = E.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk).real();
-          // compute the errors
-          Ex_error[kk][jj][ii] = Ex_interp - Ex_exact;
-          Ex_split_error[kk][jj][ii] = Ex_split_interp - Ex_exact;
+          Ex_error[kk][jj][ii-1] = Ex_interp - Ex_exact;
+          Ex_split_error[kk][jj][ii-1] = Ex_split_interp - Ex_exact;
         }
-        // Ey interpolation only goes up to Ny-1
-        if (jj != Ny - 1) {
-          double Ey_exact = field_component(cell_centre[2]);
-          double Ey_split_interp =
-                  E_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk);
+
+        // Ey interpolation
+        if (jj!=0) {
+          double Ey_exact = field_component(y_eval_position);// Ey depends on z
+          double Ey_split_interp = E_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk);
           double Ey_interp = E.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk).real();
-          Ey_error[kk][jj][ii] = Ey_interp - Ey_exact;
-          Ey_split_error[kk][jj][ii] = Ey_split_interp - Ey_exact;
+          Ey_error[kk][jj-1][ii] = Ey_interp - Ey_exact;
+          Ey_split_error[kk][jj-1][ii] = Ey_split_interp - Ey_exact;
         }
-        // Ez interpolation only goes up to Nz-1
-        if (kk != Nz - 1) {
-          double Ez_exact = field_component(cell_centre[0]);
-          double Ez_split_interp =
-                  E_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk);
+
+        // Ez interpolation
+        if (kk!=0) {
+          double Ez_exact = field_component(z_eval_position);// Ez depends on x
+          double Ez_split_interp = E_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk);
           double Ez_interp = E.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk).real();
-          Ez_error[kk][jj][ii] = Ez_interp - Ez_exact;
-          Ez_split_error[kk][jj][ii] = Ez_split_interp - Ez_exact;
+          Ez_error[kk-1][jj][ii] = Ez_interp - Ez_exact;
+          Ez_split_error[kk-1][jj][ii] = Ez_split_interp - Ez_exact;
         }
       }
     }
   }
-
   // compute error-matrix Frobenius norms
   double Ex_fro_err = Ex_error.frobenius(), Ey_fro_err = Ey_error.frobenius(),
          Ez_fro_err = Ez_error.frobenius(), Ex_split_fro_err = Ex_split_error.frobenius(),
@@ -285,38 +280,29 @@ TEST_CASE("H-field interpolation check") {
   SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
   // setup the "split" H-field components
-  MagneticSplitField H_split(Nx, Ny, Nz);
-  H_split.allocate();
+  MagneticSplitField H_split(Nx - 1, Ny - 1, Nz - 1);
+  H_split.allocate();// alocates Nx, Ny, Nz memory space here
   // setup the non-split field components
+  H_split.I_tot++;
+  H_split.J_tot++;
+  H_split.K_tot++;// correct the "number of datapoints" variable for these fields
   MagneticField H(Nx, Ny, Nz);
   H.allocate();
-  // storage for pointwise errors (-1 since we don't interpolate to cell 0's centre)
-  Tensor3D<double> Hx_error, Hx_split_error, Hy_error, Hy_split_error, Hz_error, Hz_split_error;
-  Hx_error.allocate(Nz - 1, Ny - 1, Nx);
-  Hx_split_error.allocate(Nz - 1, Ny - 1, Nx);
-  Hy_error.allocate(Nz - 1, Ny, Nx - 1);
-  Hy_split_error.allocate(Nz - 1, Ny, Nx - 1);
-  Hz_error.allocate(Nz, Ny - 1, Nx - 1);
-  Hz_split_error.allocate(Nz, Ny - 1, Nx - 1);
 
-  // compute the exact field and the "split field" components
-  // indices range from (0,0,0) to (Nx, Ny, Nz) INCLUSIVE!
-  for (int ii = 0; ii <= Nx; ii++) {
-    for (int jj = 0; jj <= Ny; jj++) {
-      for (int kk = 0; kk <= Nz; kk++) {
-        /* The coordinates of the grids are different, which throws a spanner in the works.
-            Recall that the "x-grid" is at the position of the (i,j,k)-th Hx field sample.
-                x-grid coordinates: (i,j,k) = (x_lower + (i-0.5)*cellDims[0], y_lower + j*cellDims[1], z_lower + k*cellDims[2])
-                y-grid coordinates: (i,j,k) = (x_lower + i*cellDims[0], y_lower + (j-0.5)*cellDims[1], z_lower + k*cellDims[2])
-                z-grid coordinates: (i,j,k) = (x_lower + i*cellDims[0], y_lower + j*cellDims[1], z_lower + (k-0.5)*cellDims[2])
-            The components only depend on one of the coordinate directions, so we don't need to compute all 9 values.
-            */
+  /* Compute the exact field and the "split field" components
+  Hx_exact[k-1][j-1][i] is the value of the field at position (x_lower,y_lower,z_lower) + (i+0.5,j,k)*cellDims
+  Hy_exact[k-1][j][i-1] is the value of the field at position (x_lower,y_lower,z_lower) + (i,j+0.5,k)*cellDims
+  Hz_exact[k][j-1][i-1] is the value of the field at position (x_lower,y_lower,z_lower) + (i,j,k+0.5)*cellDims
+  */
+  for (int ii = 0; ii < Nx; ii++) {
+    for (int jj = 0; jj < Ny; jj++) {
+      for (int kk = 0; kk < Nz; kk++) {
         double x_comp_value =
-                field_component(y_lower + ((double) jj) * cellDims[1]);// Hx depends on y
+                field_component(y_lower + ((double) jj + 1.) * cellDims[1]);// Hx depends on y
         double y_comp_value =
-                field_component(z_lower + ((double) kk) * cellDims[2]);// Hy depends on z
+                field_component(z_lower + ((double) kk + 1.) * cellDims[2]);// Hy depends on z
         double z_comp_value =
-                field_component(x_lower + ((double) ii) * cellDims[0]);// Hz depends on x
+                field_component(x_lower + ((double) ii + 1.) * cellDims[0]);// Hz depends on x
         // assign to "freq domain" ElectricField
         H.imag.x[kk][jj][ii] = x_comp_value;
         H.real.x[kk][jj][ii] = 0.;
@@ -334,47 +320,55 @@ TEST_CASE("H-field interpolation check") {
       }
     }
   }
-  // the fields are now assigned, we next need to test the interpolation itself
+
+  /* In each axis, we will now interpolate to positions 1 through N{x,y,z}-1. Recall this means to the midpoint of the datapoints indexed by 0 and 1, then 1 and 2, ..., N{x,y,z}-3 and N{x,y,z}-2, and finally N{x,y,z}-2 and N{x,y,z}-1.
+  Ex_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  Ey_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  Ez_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
+  */
+  Tensor3D<double> Hx_error, Hx_split_error, Hy_error, Hy_split_error, Hz_error, Hz_split_error;
+  Hx_error.allocate(Nz - 1, Ny - 1, Nx);
+  Hx_split_error.allocate(Nz - 1, Ny - 1, Nx);
+  Hy_error.allocate(Nz - 1, Ny, Nx - 1);
+  Hy_split_error.allocate(Nz - 1, Ny, Nx - 1);
+  Hz_error.allocate(Nz, Ny - 1, Nx - 1);
+  Hz_split_error.allocate(Nz, Ny - 1, Nx - 1);
+
+  // now interpolate
+  // note that we aren't interpolating to position 0 (before 1st point) or N{x,y,z} (after last point)
   for (int ii = 0; ii < Nx; ii++) {
     for (int jj = 0; jj < Ny; jj++) {
       for (int kk = 0; kk < Nz; kk++) {
         // coordinates of the cell that we are interested in
-        double cell_centre[3];
-        cell_centre[0] = x_lower + ((double) ii + 0.5) * cellDims[0];
-        cell_centre[1] = y_lower + ((double) jj + 0.5) * cellDims[1];
-        cell_centre[2] = z_lower + ((double) kk + 0.5) * cellDims[2];
-        // Hx interpolation only goes up to Ny-1, Nz-1
-        if ((jj != Ny - 1) && (kk != Nz - 1)) {
-          // exact field value
-          double Hx_exact = field_component(cell_centre[1]);
-          // split field interpolation
-          double Hx_split_interp =
-                  H_split.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk);
-          // freq domain field interpolation - take real part since using entirely real field
-          double Hx_interp =
-                  H.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk).imag();
-          // compute the errors
-          Hx_error[kk][jj][ii] = Hx_interp - Hx_exact;
-          Hx_split_error[kk][jj][ii] = Hx_split_interp - Hx_exact;
+        double x_eval_position = y_lower + ((double) jj + 0.5) * cellDims[1];
+        double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
+        double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
+
+        // Ex interpolation
+        if (jj != 0 && kk != 0) {
+          double Hx_exact = field_component(x_eval_position);// Hx depends on y
+          double Hx_split_interp = H_split.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk);
+          double Hx_interp = H.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk).imag();
+          Hx_error[kk-1][jj-1][ii] = Hx_interp - Hx_exact;
+          Hx_split_error[kk-1][jj-1][ii] = Hx_split_interp - Hx_exact;
         }
-        // Hy interpolation only goes up to Nx-1,Nz-1
-        if ((ii != Nx - 1) && (kk != Nz - 1)) {
-          double Hy_exact = field_component(cell_centre[2]);
-          double Hy_split_interp =
-                  H_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk);
-          double Hy_interp =
-                  H.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk).imag();
-          Hy_error[kk][jj][ii] = Hy_interp - Hy_exact;
-          Hy_split_error[kk][jj][ii] = Hy_split_interp - Hy_exact;
+
+        // Ey interpolation
+        if (ii != 0 && kk != 0) {
+          double Hy_exact = field_component(y_eval_position);// Hy depends on z
+          double Hy_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk);
+          double Hy_interp = H.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk).imag();
+          Hy_error[kk-1][jj][ii-1] = Hy_interp - Hy_exact;
+          Hy_split_error[kk-1][jj][ii-1] = Hy_split_interp - Hy_exact;
         }
-        // Hz interpolation only goes up to Nx-1,Ny-1
-        if ((ii != Nx - 1) && (jj != Ny - 1)) {
-          double Hz_exact = field_component(cell_centre[0]);
-          double Hz_split_interp =
-                  H_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk);
+
+        // Ez interpolation
+        if (ii != 0 && jj != 0) {
+          double Hz_exact = field_component(z_eval_position);// Hz depends on x
+          double Hz_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk);
           double Hz_interp = H.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk).imag();
-          Hz_error[kk][jj][ii] = Hz_interp - Hz_exact;
-          Hz_split_error[kk][jj][ii] = Hz_split_interp - Hz_exact;
+          Hz_error[kk][jj-1][ii-1] = Hz_interp - Hz_exact;
+          Hz_split_error[kk][jj-1][ii-1] = Hz_split_interp - Hz_exact;
         }
       }
     }

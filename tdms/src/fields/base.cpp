@@ -38,7 +38,7 @@ Field::Field(int I_total, int J_total, int K_total) {
 
 void Field::allocate() {
   for (auto arr : {&real, &imag}) {
-    arr->allocate(I_tot+1, J_tot+1, K_tot+1);
+    arr->allocate(I_tot, J_tot, K_tot);
   }
 };
 
