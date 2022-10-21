@@ -1176,9 +1176,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 int i = fieldsample.i[it] + params.pml.Dxl - 1,
                     j = fieldsample.j[jt] + params.pml.Dyl - 1,
                     k = fieldsample.k[kt] + params.pml.Dzl - 1;
-                interpolateTimeDomainFieldCentralEBandLimited(E_s.xy, E_s.xz, E_s.yx, E_s.yz,
-                                                              E_s.zx, E_s.zy, i, j, k, &Ex_store,
-                                                              &Ey_store, &Ez_store);
                 Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X,
                                              fieldsample.i[it] + params.pml.Dxl - 1,
                                              fieldsample.j[jt] + params.pml.Dyl - 1,
