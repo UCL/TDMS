@@ -7,7 +7,7 @@ from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 ZIP_PATH = Path(os.path.dirname(os.path.abspath(__file__)), "data", "arc_13.zip")
 
 if not ZIP_PATH.exists():
-    download_data("https://zenodo.org/record/FIXME/files/arc_13.zip", to=ZIP_PATH)
+    download_data("https://zenodo.org/record/7233118/files/arc_13.zip", to=ZIP_PATH)
 
 
 @pytest.mark.fdtd_build_only
