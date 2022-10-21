@@ -1162,6 +1162,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Pos 01b:\n");
     }
     /*extract fieldsample*/
+    // NOTE: H-field interpolation needs to be added to this proceedure too (#109)
     if (fieldsample.all_vectors_are_non_empty()) {
       //if( (tind-params.start_tind) % params.Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
@@ -1192,7 +1193,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                                        fieldsample.i[it] + params.pml.Dxl - 1,
                                                        fieldsample.j[jt] + params.pml.Dyl - 1,
                                                        fieldsample.k[kt] + params.pml.Dzl - 1);
-                fprintf(stderr, "(it, jt, kt) %d %d %d :\n\t x (old) %.8e (%.8e)\n\t y (old) %.8e (%.8e)\n\t z (old) %.8e (%.8e)\n", it, jt, kt, Ex_temp, Ex_store, Ey_temp, Ey_store, Ez_temp, Ez_store);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
