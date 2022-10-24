@@ -273,6 +273,29 @@ public:
   virtual std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
 
   /**
+   * @brief Interpolates the Field over the range provided.
+   * 
+   * Default range is to interpolate to the midpoint of all consecutive points.
+   * 
+   * @param[out] x_out,y_out,z_out Output arrays for interpolated values
+   * @param i_lower,j_lower,k_lower Lower index for interpolation in the i,j,k directions, respectively
+   * @param i_upper,j_upper,k_upper Upper index for interpolation in the i,j,k directions, respectively
+   * @param mode Determines which field components to compute, based on the simulation Dimension
+   */
+  void interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                              int i_upper, int j_lower, int j_upper, int k_lower, int k_upper,
+                              Dimension mode = Dimension::THREE);
+  void interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                              Dimension mode = Dimension::THREE);
+
+  virtual void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                         int i_lower, int i_upper, int j_lower, int j_upper,
+                                         int k_lower, int k_upper) = 0;
+  virtual void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                         int i_lower, int i_upper, int j_lower, int j_upper,
+                                         int k_lower, int k_upper) = 0;
+
+  /**
    * Set the values of all components in this field from another, equally sized field
    */
    void set_values_from(Field &other);
@@ -297,6 +320,13 @@ public:
    * @return std::complex<double> The interpolated component value
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+
+  void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                         int i_lower, int i_upper, int j_lower, int j_upper,
+                                         int k_lower, int k_upper) override;
+  void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+                                         int i_lower, int i_upper, int j_lower, int j_upper,
+                                         int k_lower, int k_upper) override;
 };
 
 class MagneticField: public Field{
@@ -316,6 +346,13 @@ public:
    * @return std::complex<double> The interpolated component value
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+
+  void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                                 int i_upper, int j_lower, int j_upper, int k_lower,
+                                 int k_upper) override;
+  void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                                 int i_upper, int j_lower, int j_upper, int k_lower,
+                                 int k_upper) override;
 };
 
 /**

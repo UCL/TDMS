@@ -10,6 +10,13 @@ double ElectricField::phase(int n, double omega, double dt){
   return omega * ((double) n + 1) * dt;
 }
 
+void ElectricField::interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                               int i_upper, int j_lower, int j_upper, int k_lower,
+                               int k_upper) {}
+void ElectricField::interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                               int i_upper, int j_lower, int j_upper, int k_lower,
+                               int k_upper) {}
+
 complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
   const InterpolationScheme *scheme;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind

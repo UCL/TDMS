@@ -10,6 +10,13 @@ double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
 }
 
+void MagneticField::interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                               int i_upper, int j_lower, int j_upper, int k_lower,
+                               int k_upper) {}
+void MagneticField::interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+                               int i_upper, int j_lower, int j_upper, int k_lower,
+                               int k_upper) {}
+
 /* 2D INTERPOLATION SCHEMES (FOR THE MAGNETIC FIELD IN 3D SIMULATIONS)
 
 Unlike the E-field, the H-field components associated with Yee cell i,j,k are _not_ aligned with the centre of the Yee cells.
