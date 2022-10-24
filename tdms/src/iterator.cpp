@@ -4538,7 +4538,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   
   auto interp_output_grid_labels = GridLabels();
 
-  //fprintf(stderr,"Pos 15_m1\n");
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
@@ -4546,23 +4545,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               E.K_tot - 2);
       E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
                                E.K_tot - 2, Dimension::THREE);
-      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
-                               E.K_tot - 2, Dimension::THREE);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+                               H.K_tot - 2, Dimension::THREE);
       // mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
       //                            E.I_tot - 2, 2, E.J_tot - 2, 2, E.K_tot - 2);
       // mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
       //                            E.I_tot - 2, 2, E.J_tot - 2, 2, E.K_tot - 2);
 
     } else if (params.dimension == TE) {
-      mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-      mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      E.interpolate_over_range_TE(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                  0, 0);
+      H.interpolate_over_range_TE(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2,
+                                  0, 0);
+      // mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
+      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      // mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
+      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     } else {
-      mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-      mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      E.interpolate_over_range_TM(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                  0, 0);
+      H.interpolate_over_range_TM(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2,
+                                  0, 0);
+      // mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
+      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      // mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
+      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     }
 
     //fprintf(stderr,"Pos 15a\n");
