@@ -288,17 +288,29 @@ public:
   void interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
                               Dimension mode = Dimension::THREE);
 
-  virtual void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                         int i_lower, int i_upper, int j_lower, int j_upper,
-                                         int k_lower, int k_upper) = 0;
-  virtual void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                         int i_lower, int i_upper, int j_lower, int j_upper,
-                                         int k_lower, int k_upper) = 0;
+  /**
+   * @brief Interpolates the Field's TE components to the centre of Yee cell i,j,k
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  virtual void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                         std::complex<double> *y_at_centre,
+                                         std::complex<double> *z_at_centre) = 0;
+  /**
+   * @brief Interpolates the Field's TM components to the centre of Yee cell i,j,k
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  virtual void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                         std::complex<double> *y_at_centre,
+                                         std::complex<double> *z_at_centre) = 0;
 
   /**
    * Set the values of all components in this field from another, equally sized field
    */
-   void set_values_from(Field &other);
+  void set_values_from(Field &other);
 
   ~Field();
 };
@@ -321,12 +333,28 @@ public:
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 
-  void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                         int i_lower, int i_upper, int j_lower, int j_upper,
-                                         int k_lower, int k_upper) override;
-  void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                                         int i_lower, int i_upper, int j_lower, int j_upper,
-                                         int k_lower, int k_upper) override;
+  /**
+   * @brief Interpolates the TE components to the centre of Yee cell i,j,k.
+   * 
+   * Ex and Ey are interpolated. Ez is set to a placeholder (default) value.
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                 std::complex<double> *y_at_centre,
+                                 std::complex<double> *z_at_centre) override;
+  /**
+   * @brief Interpolates the TM components to the centre of Yee cell i,j,k.
+   * 
+   * Ez is interpolated. Ex and Ey are set to a placeholder (default) values.
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                 std::complex<double> *y_at_centre,
+                                 std::complex<double> *z_at_centre) override;
 };
 
 class MagneticField: public Field{
@@ -347,12 +375,28 @@ public:
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 
-  void interpolate_over_range_TE(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
-                                 int i_upper, int j_lower, int j_upper, int k_lower,
-                                 int k_upper) override;
-  void interpolate_over_range_TM(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
-                                 int i_upper, int j_lower, int j_upper, int k_lower,
-                                 int k_upper) override;
+  /**
+   * @brief Interpolates the TE components to the centre of Yee cell i,j,k.
+   * 
+   * Hz is interpolated. Hx and Hy are set to a placeholder (default) values.
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                 std::complex<double> *y_at_centre,
+                                 std::complex<double> *z_at_centre) override;
+  /**
+   * @brief Interpolates the TM components to the centre of Yee cell i,j,k.
+   * 
+   * Hx and Hy are interpolated. Hz is set to a placeholder (default) value.
+   * 
+   * @param[in] i,j,k Yee cell index 
+   * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
+   */
+  void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
+                                 std::complex<double> *y_at_centre,
+                                 std::complex<double> *z_at_centre) override;
 };
 
 /**

@@ -4547,29 +4547,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                E.K_tot - 2, Dimension::THREE);
       H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
                                H.K_tot - 2, Dimension::THREE);
-      // mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-      //                            E.I_tot - 2, 2, E.J_tot - 2, 2, E.K_tot - 2);
-      // mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-      //                            E.I_tot - 2, 2, E.J_tot - 2, 2, E.K_tot - 2);
 
-    } else if (params.dimension == TE) {
-      E.interpolate_over_range_TE(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                  0, 0);
-      H.interpolate_over_range_TE(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2,
-                                  0, 0);
-      // mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-      // mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
     } else {
-      E.interpolate_over_range_TM(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                  0, 0);
-      H.interpolate_over_range_TM(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2,
-                                  0, 0);
-      // mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-      // mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-      //                               E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+                               0, params.dimension);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+                               0, params.dimension);
     }
 
     //fprintf(stderr,"Pos 15a\n");
