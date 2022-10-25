@@ -50,7 +50,7 @@ jobs:
         run: |
           brew install fftw
       - name: Hack to fix omp headers not linked
-      - run: |
+        run: |
           brew unlink libomp
           brew link --force libomp
 
