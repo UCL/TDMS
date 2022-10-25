@@ -50,8 +50,9 @@ enum AxialDirection
 //  Enumerated constants
 // **********************
 
-enum ModeOfRun { Pass1 , Pass2 };
-enum RCSType   { parallel , perpendicular };
+enum ModeOfRun    { Pass1 , Pass2 };
+enum RCSType      { parallel , perpendicular };
+enum SolverMethod { PseudoSpectral, FiniteDifference };
 
 // **************************************
 //			Mathematical Constants

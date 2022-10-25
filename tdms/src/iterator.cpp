@@ -32,7 +32,6 @@ using namespace tdms_phys_constants;
 //parameter to control the with of the ramp when introducing the waveform in steady state mode
 #define ramp_width 4.
 
-
 /*This mex function will take in the following arguments and perform the
  entire simulation
   
@@ -234,7 +233,13 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], SolverMethod method) {
+
+  if (method == SolverMethod::FiniteDifference) {
+    spdlog::info("Using finite-difference method (FDTD)");
+  } else {
+    spdlog::info("Using pseudospectral method (PSTD)");
+  }
 
   auto params = SimulationParameters();
 
@@ -276,16 +281,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   int **surface_vertices, n_surface_vertices = 0;
   int Ni_tdf = 0, Nk_tdf = 0;
 
-#ifdef FDFLAG
-  int skip_tdf = 6;
-
-#else
   int skip_tdf = 1;
+  if (method == SolverMethod::FiniteDifference) skip_tdf = 6;
 
-  //PSTD storage
+  // PSTD storage (not used if FD)
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-#endif
 
   const mwSize *dimptr_out;
   mwSize *dims;
@@ -299,7 +300,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
 
-  fprintf(stdout, "Using %d OMP threads\n", omp_get_max_threads());
+  spdlog::info("Using {} OMP threads\n", omp_get_max_threads());
 
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
 
@@ -525,39 +526,39 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   CCoefficientMatrix ca_vec, cb_vec, cc_vec;
   EHVec eh_vec;
 
-#ifndef FDFLAG// only perform if using the PSTD method
-  int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
-  ca_vec.allocate(n_threads, max_IJK + 1);
-  cb_vec.allocate(n_threads, max_IJK + 1);
-  cc_vec.allocate(n_threads, max_IJK + 1);
-  eh_vec.allocate(n_threads, max_IJK + 1);
+  if (method == SolverMethod::PseudoSpectral) {
+    int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
+    ca_vec.allocate(n_threads, max_IJK + 1);
+    cb_vec.allocate(n_threads, max_IJK + 1);
+    cc_vec.allocate(n_threads, max_IJK + 1);
+    eh_vec.allocate(n_threads, max_IJK + 1);
 
-  E_s.initialise_fftw_plan(n_threads, eh_vec);
-  H_s.initialise_fftw_plan(n_threads, eh_vec);
+    E_s.initialise_fftw_plan(n_threads, eh_vec);
+    H_s.initialise_fftw_plan(n_threads, eh_vec);
 
-  N_e_x = I_tot - 1 + 1;
-  N_e_y = J_tot - 1 + 1;
-  N_e_z = K_tot - 1 + 1;
-  N_h_x = I_tot + 1;
-  N_h_y = J_tot + 1;
-  N_h_z = K_tot + 1;
+    N_e_x = I_tot - 1 + 1;
+    N_e_y = J_tot - 1 + 1;
+    N_e_z = K_tot - 1 + 1;
+    N_h_x = I_tot + 1;
+    N_h_y = J_tot + 1;
+    N_h_z = K_tot + 1;
 
-  dk_e_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_x));
-  dk_e_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_y));
-  dk_e_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_z));
+    dk_e_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_x));
+    dk_e_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_y));
+    dk_e_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_z));
 
-  dk_h_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_x));
-  dk_h_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_y));
-  dk_h_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_z));
+    dk_h_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_x));
+    dk_h_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_y));
+    dk_h_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_z));
 
-  init_diff_shift_op(-0.5, dk_e_x, N_e_x);
-  init_diff_shift_op(-0.5, dk_e_y, N_e_y);
-  init_diff_shift_op(-0.5, dk_e_z, N_e_z);
+    init_diff_shift_op(-0.5, dk_e_x, N_e_x);
+    init_diff_shift_op(-0.5, dk_e_y, N_e_y);
+    init_diff_shift_op(-0.5, dk_e_z, N_e_z);
 
-  init_diff_shift_op(0.5, dk_h_x, N_h_x);
-  init_diff_shift_op(0.5, dk_h_y, N_h_y);
-  init_diff_shift_op(0.5, dk_h_z, N_h_z);
-#endif
+    init_diff_shift_op(0.5, dk_h_x, N_h_x);
+    init_diff_shift_op(0.5, dk_h_y, N_h_y);
+    init_diff_shift_op(0.5, dk_h_z, N_h_z);
+  } // if (method == DerivativeMethod::PseudoSpectral) 
 
   params.set_Np(f_ex_vec);
 
@@ -607,7 +608,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     surface_EHi = cast_matlab_3D_array(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
                                        dims[2]);
     //now need to add a command to update the complex amplitudes
-  }
+  } // if (params.exphasorssurface && params.run_mode == RunMode::complete) 
 
   //fprintf(stderr,"Pre 03\n");
   /*Now set up the phasor array, we will have 3 complex output arrays for Ex, Ey and Ez.
@@ -699,7 +700,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       E_copy.I_tot = E.I_tot;
       E_copy.J_tot = E.J_tot;
       E_copy.K_tot = E.K_tot;
-    }
+    } // if (params.source_mode == SourceMode::steadystate)
     //fprintf(stderr,"Pre 07\n");
     //this will be a copy of the phasors which are extracted from the previous cycle
 
@@ -1356,275 +1357,275 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       array_ind = 0;
 
       if (params.dimension == THREE || params.dimension == TE) {
-#ifdef FDFLAG// Use central difference derivatives
-             //FDTD, E_s.xy
+        if (method == SolverMethod::FiniteDifference) {
+          //FDTD, E_s.xy
 #pragma omp for
-        for (k = 0; k < (K_tot + 1); k++)
-          for (j = 1; j < J_tot; j++)
-            for (i = 0; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][j][i + 1]) {
-                //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+          for (k = 0; k < (K_tot + 1); k++)
+            for (j = 1; j < J_tot; j++)
+              for (i = 0; i < I_tot; i++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][j][i + 1]) {
+                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.y[array_ind];
+                    Cb = C.b.y[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.y[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.y[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.y[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k][j][i + 1]) {
+                      Ca = Ca + C.a.y[array_ind];
+                      Cb = Cb + C.b.y[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.y[materials[k][j][i + 1] - 1];
+                      Cb = Cb + Cmaterial.b.y[materials[k][j][i + 1] - 1];
+                      Cc = Cc + Cmaterial.c.y[materials[k][j][i + 1] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.y[array_ind];
                   Cb = C.b.y[array_ind];
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.y[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.y[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.y[array_ind];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k][j][i + 1]) {
-                    Ca = Ca + C.a.y[array_ind];
-                    Cb = Cb + C.b.y[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.y[materials[k][j][i + 1] - 1];
-                    Cb = Cb + Cmaterial.b.y[materials[k][j][i + 1] - 1];
-                    Cc = Cc + Cmaterial.c.y[materials[k][j][i + 1] - 1];
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.y[array_ind];
+                  kappa_l = ml.kappa.y[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][j][i + 1]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][j][i + 1]) {
+                      alpha_l += alpha[materials[k][j][i + 1] - 1];
+                      beta_l += beta[materials[k][j][i + 1] - 1];
+                      gamma_l += gamma[materials[k][j][i + 1] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
                   }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
                 }
-              } else {
-                Ca = C.a.y[array_ind];
-                Cb = C.b.y[array_ind];
-                if (params.is_disp_ml) Cc = C.c.y[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.y[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
 
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.y[array_ind];
-                kappa_l = ml.kappa.y[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
+                Enp1 = Ca * E_s.xy[k][j][i] + Cb * (H_s.zy[k][j][i] + H_s.zx[k][j][i] -
+                                                    H_s.zy[k][j - 1][i] - H_s.zx[k][j - 1][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.xy[k][j][i] -
+                          1. / 2. * Cb * params.delta.dy *
+                                  ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xy[k][j][i];
 
-                  if (materials[k][j][i + 1]) {
-                    alpha_l += alpha[materials[k][j][i + 1] - 1];
-                    beta_l += beta[materials[k][j][i + 1] - 1];
-                    gamma_l += gamma[materials[k][j][i + 1] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
+                  E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
+                  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
+                  J_s.xy[k][j][i] = Jnp1;
+
+                  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
+
+                if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
+
+                E_s.xy[k][j][i] = Enp1;
               }
-
-
-              Enp1 = Ca * E_s.xy[k][j][i] +
-                     Cb * (H_s.zy[k][j][i] + H_s.zx[k][j][i] - H_s.zy[k][j - 1][i] - H_s.zx[k][j - 1][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.xy[k][j][i] -
-                        1. / 2. * Cb * params.delta.dy *
-                                ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xy[k][j][i];
-
-                E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
-                J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
-                J_s.xy[k][j][i] = Jnp1;
-
-                //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
-              }
-
-              if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
-
-              E_s.xy[k][j][i] = Enp1;
-            }
-            //FDTD, E_s.xy
-#else//PSTD, E_s.xy
+          //FDTD, E_s.xy
+        } else { 
 //fprintf(stderr,"Pos 02d:\n");
 #pragma omp for
-        for (k = 0; k < (K_tot + 1); k++)
-          for (i = 0; i < I_tot; i++) {
-            for (j = 1; j < J_tot; j++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][j][i + 1]) {
-                //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+          for (k = 0; k < (K_tot + 1); k++)
+            for (i = 0; i < I_tot; i++) {
+              for (j = 1; j < J_tot; j++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][j][i + 1]) {
+                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.y[array_ind];
+                    Cb = C.b.y[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.y[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.y[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.y[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k][j][i + 1]) {
+                      Ca = Ca + C.a.y[array_ind];
+                      Cb = Cb + C.b.y[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.y[materials[k][j][i + 1] - 1];
+                      Cb = Cb + Cmaterial.b.y[materials[k][j][i + 1] - 1];
+                      Cc = Cc + Cmaterial.c.y[materials[k][j][i + 1] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.y[array_ind];
                   Cb = C.b.y[array_ind];
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.y[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.y[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.y[array_ind];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k][j][i + 1]) {
-                    Ca = Ca + C.a.y[array_ind];
-                    Cb = Cb + C.b.y[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.y[materials[k][j][i + 1] - 1];
-                    Cb = Cb + Cmaterial.b.y[materials[k][j][i + 1] - 1];
-                    Cc = Cc + Cmaterial.c.y[materials[k][j][i + 1] - 1];
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.y[array_ind];
+                  kappa_l = ml.kappa.y[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][j][i + 1]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][j][i + 1]) {
+                      alpha_l += alpha[materials[k][j][i + 1] - 1];
+                      beta_l += beta[materials[k][j][i + 1] - 1];
+                      gamma_l += gamma[materials[k][j][i + 1] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
                   }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
                 }
-              } else {
-                Ca = C.a.y[array_ind];
-                Cb = C.b.y[array_ind];
-                if (params.is_disp_ml) Cc = C.c.y[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.y[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
 
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.y[array_ind];
-                kappa_l = ml.kappa.y[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
+                Enp1 = 0.0;
+                //Enp1 = Ca*E_s.xy[k][j][i]+Cb*(H_s.zy[k][j][i] + H_s.zx[k][j][i] - H_s.zy[k][j-1][i] - H_s.zx[k][j-1][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.xy[k][j][i] -
+                          1. / 2. * Cb * params.delta.dy *
+                                  ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xy[k][j][i];
 
-                  if (materials[k][j][i + 1]) {
-                    alpha_l += alpha[materials[k][j][i + 1] - 1];
-                    beta_l += beta[materials[k][j][i + 1] - 1];
-                    gamma_l += gamma[materials[k][j][i + 1] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
+                  E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
+                  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
+                  J_s.xy[k][j][i] = Jnp1;
+
+                  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
+
+                if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
+
+                eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                ca_vec[n][j - 1] = Ca;
+                cb_vec[n][j - 1] = Cb;
               }
+              if (J_tot > 1) {
+                j = 0;
+                eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                first_derivative(eh_vec[n], eh_vec[n], dk_e_y, N_e_y, E_s.xy.plan_f[n],
+                                 E_s.xy.plan_b[n]);
 
 
-              Enp1 = 0.0;
-              //Enp1 = Ca*E_s.xy[k][j][i]+Cb*(H_s.zy[k][j][i] + H_s.zx[k][j][i] - H_s.zy[k][j-1][i] - H_s.zx[k][j-1][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.xy[k][j][i] -
-                        1. / 2. * Cb * params.delta.dy *
-                                ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xy[k][j][i];
+                //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,n,omp_get_num_threads());
 
-                E_nm1.xy[k][j][i] = E_s.xy[k][j][i];
-                J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
-                J_s.xy[k][j][i] = Jnp1;
-
-                //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
-              }
-
-              if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
-
-              eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
-              eh_vec[n][j][1] = 0.;
-              ca_vec[n][j - 1] = Ca;
-              cb_vec[n][j - 1] = Cb;
-            }
-            if (J_tot > 1) {
-              j = 0;
-              eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
-              eh_vec[n][j][1] = 0.;
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_y,
-                               N_e_y, E_s.xy.plan_f[n], E_s.xy.plan_b[n]);
-
-
-              //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,n,omp_get_num_threads());
-
-              for (j = 1; j < J_tot; j++) {
-                E_s.xy[k][j][i] = ca_vec[n][j - 1] * E_s.xy[k][j][i] +
-                                  cb_vec[n][j - 1] *
-                                          eh_vec[n][j][0] / ((double) N_e_y);
+                for (j = 1; j < J_tot; j++) {
+                  E_s.xy[k][j][i] = ca_vec[n][j - 1] * E_s.xy[k][j][i] +
+                                    cb_vec[n][j - 1] * eh_vec[n][j][0] / ((double) N_e_y);
+                }
               }
             }
-          }
           //PSTD, E_s.xy
-#endif
-
-            /*
+        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        /*
     if(is_disp){
     i=36;
     j=36;
@@ -1634,245 +1635,247 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
   */
 
-            //fprintf(stderr,"Pos 04:\n");
-            //E_s.xz updates
-#ifdef FDFLAG// Use central difference derivatives
+        //fprintf(stderr,"Pos 04:\n");
+        //E_s.xz updates
+        if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
-        for (k = 1; k < K_tot; k++)
+          for (k = 1; k < K_tot; k++)
+            for (j = 0; j < J_tot_p1_bound; j++)
+              for (i = 0; i < I_tot; i++) {
+                rho = 0.;
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][j][i + 1]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.z[k_loc];
+                    Cb = C.b.z[k_loc];
+                    if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.z[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.z[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k][j][i + 1]) {
+                      Ca = Ca + C.a.z[k_loc];
+                      Cb = Cb + C.b.z[k_loc];
+                      if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
+                    } else {
+                      Ca = Ca + Cmaterial.a.z[materials[k][j][i + 1] - 1];
+                      Cb = Cb + Cmaterial.b.z[materials[k][j][i + 1] - 1];
+                      Cc = Cc + Cmaterial.c.z[materials[k][j][i + 1] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
+                  Ca = C.a.z[k_loc];
+                  Cb = C.b.z[k_loc];
+                  if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                  else
+                    Cc = 0.;
+                  if (is_cond) rho = rho_cond.z[k_loc];
+                }
+
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.z[k_loc];
+                  kappa_l = ml.kappa.z[k_loc];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][j][i + 1]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][j][i + 1]) {
+                      alpha_l += alpha[materials[k][j][i + 1] - 1];
+                      beta_l += beta[materials[k][j][i + 1] - 1];
+                      gamma_l += gamma[materials[k][j][i + 1] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
+                }
+                /*if( materials[k][j][i] || materials[k][j][i+1])
+      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);
+      if(tind==0)
+      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
+                Enp1 = Ca * E_s.xz[k][j][i] + Cb * (H_s.yx[k - 1][j][i] + H_s.yz[k - 1][j][i] -
+                                                    H_s.yx[k][j][i] - H_s.yz[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.xz[k][j][i] -
+                          1. / 2. * Cb * params.delta.dz *
+                                  ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xz[k][j][i];
+                  E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
+                  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
+                  J_s.xz[k][j][i] = Jnp1;
+                }
+
+                if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
+
+                E_s.xz[k][j][i] = Enp1;
+              }
+          //FDTD, E_s.xz
+        } else {
+          //#pragma omp for
           for (j = 0; j < J_tot_p1_bound; j++)
-            for (i = 0; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][j][i + 1]) {
-                rho = 0.;
-                if (!materials[k][j][i]) {
-                  Ca = C.a.z[k_loc];
-                  Cb = C.b.z[k_loc];
-                  if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                  else
-                    Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.z[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.z[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.z[materials[k][j][i] - 1];
-                }
-
-                if (params.interp_mat_props) {
-                  if (!materials[k][j][i + 1]) {
-                    Ca = Ca + C.a.z[k_loc];
-                    Cb = Cb + C.b.z[k_loc];
-                    if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
-                  } else {
-                    Ca = Ca + Cmaterial.a.z[materials[k][j][i + 1] - 1];
-                    Cb = Cb + Cmaterial.b.z[materials[k][j][i + 1] - 1];
-                    Cc = Cc + Cmaterial.c.z[materials[k][j][i + 1] - 1];
-                  }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
-                }
-              } else {
-                Ca = C.a.z[k_loc];
-                Cb = C.b.z[k_loc];
-                if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.z[k_loc];
-              }
-
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.z[k_loc];
-                kappa_l = ml.kappa.z[k_loc];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][j][i + 1]) {
-                    alpha_l += alpha[materials[k][j][i + 1] - 1];
-                    beta_l += beta[materials[k][j][i + 1] - 1];
-                    gamma_l += gamma[materials[k][j][i + 1] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-              /*if( materials[k][j][i] || materials[k][j][i+1])
-      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);
-      if(tind==0)
-      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
-              Enp1 = Ca * E_s.xz[k][j][i] +
-                     Cb * (H_s.yx[k - 1][j][i] + H_s.yz[k - 1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.xz[k][j][i] -
-                        1. / 2. * Cb * params.delta.dz *
-                                ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xz[k][j][i];
-                E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
-                J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
-                J_s.xz[k][j][i] = Jnp1;
-              }
-
-              if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
-
-              E_s.xz[k][j][i] = Enp1;
-            }
-            //FDTD, E_s.xz
-#else//PSTD, E_s.xz
-        //#pragma omp for
-        for (j = 0; j < J_tot_p1_bound; j++)
 #pragma omp for
-          for (i = 0; i < I_tot; i++) {
-            for (k = 1; k < K_tot; k++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][j][i + 1]) {
+            for (i = 0; i < I_tot; i++) {
+              for (k = 1; k < K_tot; k++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][j][i + 1]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.z[k_loc];
+                    Cb = C.b.z[k_loc];
+                    if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.z[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.z[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  }
+                  if (params.interp_mat_props) {
+                    if (!materials[k][j][i + 1]) {
+                      Ca = Ca + C.a.z[k_loc];
+                      Cb = Cb + C.b.z[k_loc];
+                      if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
+                    } else {
+                      Ca = Ca + Cmaterial.a.z[materials[k][j][i + 1] - 1];
+                      Cb = Cb + Cmaterial.b.z[materials[k][j][i + 1] - 1];
+                      Cc = Cc + Cmaterial.c.z[materials[k][j][i + 1] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.z[k_loc];
                   Cb = C.b.z[k_loc];
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.z[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.z[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.z[k_loc];
                 }
-                if (params.interp_mat_props) {
-                  if (!materials[k][j][i + 1]) {
-                    Ca = Ca + C.a.z[k_loc];
-                    Cb = Cb + C.b.z[k_loc];
-                    if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
-                  } else {
-                    Ca = Ca + Cmaterial.a.z[materials[k][j][i + 1] - 1];
-                    Cb = Cb + Cmaterial.b.z[materials[k][j][i + 1] - 1];
-                    Cc = Cc + Cmaterial.c.z[materials[k][j][i + 1] - 1];
+
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.z[k_loc];
+                  kappa_l = ml.kappa.z[k_loc];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][j][i + 1]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][j][i + 1]) {
+                      alpha_l += alpha[materials[k][j][i + 1] - 1];
+                      beta_l += beta[materials[k][j][i + 1] - 1];
+                      gamma_l += gamma[materials[k][j][i + 1] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
                   }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
                 }
-              } else {
-                Ca = C.a.z[k_loc];
-                Cb = C.b.z[k_loc];
-                if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.z[k_loc];
-              }
-
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.z[k_loc];
-                kappa_l = ml.kappa.z[k_loc];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][j][i + 1]) {
-                    alpha_l += alpha[materials[k][j][i + 1] - 1];
-                    beta_l += beta[materials[k][j][i + 1] - 1];
-                    gamma_l += gamma[materials[k][j][i + 1] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-              /*if( materials[k][j][i] || materials[k][j][i+1])
+                /*if( materials[k][j][i] || materials[k][j][i+1])
       fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);
       if(tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
-              //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.xz[k][j][i] -
-                        1. / 2. * Cb * params.delta.dz *
-                                ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xz[k][j][i];
-                E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
-                J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
-                J_s.xz[k][j][i] = Jnp1;
+                //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.xz[k][j][i] -
+                          1. / 2. * Cb * params.delta.dz *
+                                  ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.xz[k][j][i];
+                  E_nm1.xz[k][j][i] = E_s.xz[k][j][i];
+                  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
+                  J_s.xz[k][j][i] = Jnp1;
+                }
+
+                if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
+
+                eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+                eh_vec[n][k][1] = 0.;
+                ca_vec[n][k - 1] = Ca;
+                cb_vec[n][k - 1] = Cb;
               }
-
-              if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
-
+              k = 0;
               eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
               eh_vec[n][k][1] = 0.;
-              ca_vec[n][k - 1] = Ca;
-              cb_vec[n][k - 1] = Cb;
-            }
-            k = 0;
-            eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-            eh_vec[n][k][1] = 0.;
-            /*
+              /*
     if (tind==1 & i==25 & j==25){
     for(k=0;k<N_e_z;k++)
     fprintf(stdout,"%e ",dk_e_z[k][0]);
@@ -1887,9 +1890,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fprintf(stdout,"%e ",eh_vec[n][k][1]);
     }
         */
-            first_derivative(eh_vec[n], eh_vec[n], dk_e_z,
-                             N_e_z, E_s.xz.plan_f[n], E_s.xz.plan_b[n]);
-            /*
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_z, N_e_z, E_s.xz.plan_f[n],
+                               E_s.xz.plan_b[n]);
+              /*
     if (tind==1 & i==25 & j==25){
     fprintf(stdout,"\n\n");
     for(k=0;k<N_e_z;k++)
@@ -1899,782 +1902,784 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fprintf(stdout,"%e ",eh_vec[k][1]);
     }
         */
-            for (k = 1; k < K_tot; k++) {
-              E_s.xz[k][j][i] = ca_vec[n][k - 1] * E_s.xz[k][j][i] -
-                                cb_vec[n][k - 1] *
-                                        eh_vec[n][k][0] / ((double) N_e_z);
+              for (k = 1; k < K_tot; k++) {
+                E_s.xz[k][j][i] = ca_vec[n][k - 1] * E_s.xz[k][j][i] -
+                                  cb_vec[n][k - 1] * eh_vec[n][k][0] / ((double) N_e_z);
+              }
             }
-          }
           //PSTD, E_s.xz
-#endif
+        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-            //fprintf(stderr,"Pos 05:\n");
-            //E_s.yx updates
-#ifdef FDFLAG// Use central difference derivatives
-             //FDTD, E_s.yx
+        //fprintf(stderr,"Pos 05:\n");
+        //E_s.yx updates
+        if (method == SolverMethod::FiniteDifference) {
+          //FDTD, E_s.yx
 #pragma omp for
-        for (k = 0; k < (K_tot + 1); k++)
-          for (j = 0; j < J_tot_bound; j++)
-            for (i = 1; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure) {
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+          for (k = 0; k < (K_tot + 1); k++)
+            for (j = 0; j < J_tot_bound; j++)
+              for (i = 1; i < I_tot; i++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure) {
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.x[array_ind];
+                    Cb = C.b.x[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.x[array_ind];
+                    else
+                      Cc = 0;
+                  } else {
+                    Ca = Cmaterial.a.x[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.x[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  }
+                  if (params.interp_mat_props) {
+                    if (!materials[k][min(J_tot, j + 1)][i]) {
+                      Ca = Ca + C.a.x[array_ind];
+                      Cb = Cb + C.b.x[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cb = Cb + Cmaterial.b.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cc = Cc + Cmaterial.c.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.x[array_ind];
                   Cb = C.b.x[array_ind];
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
-                    Cc = 0;
-                } else {
-                  Ca = Cmaterial.a.x[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.x[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                    Cc = 0.;
+                  if (is_cond) rho = rho_cond.x[array_ind];
                 }
-                if (params.interp_mat_props) {
-                  if (!materials[k][min(J_tot, j + 1)][i]) {
-                    Ca = Ca + C.a.x[array_ind];
-                    Cb = Cb + C.b.x[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cb = Cb + Cmaterial.b.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cc = Cc + Cmaterial.c.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                  }
 
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.x[array_ind];
+                  kappa_l = ml.kappa.x[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][min(J_tot, j + 1)][i]) {
+                      alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
+                      beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
+                      gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
                 }
-              } else {
-                Ca = C.a.x[array_ind];
-                Cb = C.b.x[array_ind];
-                if (params.is_disp_ml) Cc = C.c.x[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.x[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
 
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.x[array_ind];
-                kappa_l = ml.kappa.x[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][min(J_tot, j + 1)][i]) {
-                    alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
-                    beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
-                    gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
+                Enp1 = Ca * E_s.yx[k][j][i] + Cb * (H_s.zx[k][j][i - 1] + H_s.zy[k][j][i - 1] -
+                                                    H_s.zx[k][j][i] - H_s.zy[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.yx[k][j][i] -
+                          1. / 2. * Cb * params.delta.dx *
+                                  ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yx[k][j][i];
+                  E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
+                  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
+                  J_s.yx[k][j][i] = Jnp1;
                 }
+                if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
+
+                E_s.yx[k][j][i] = Enp1;
               }
-
-
-              Enp1 = Ca * E_s.yx[k][j][i] +
-                     Cb * (H_s.zx[k][j][i - 1] + H_s.zy[k][j][i - 1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.yx[k][j][i] -
-                        1. / 2. * Cb * params.delta.dx *
-                                ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yx[k][j][i];
-                E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
-                J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
-                J_s.yx[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
-
-              E_s.yx[k][j][i] = Enp1;
-            }
-            //FDTD, E_s.yx
-#else//PSTD, E_s.yx
+          //FDTD, E_s.yx
+        } else {
 #pragma omp for
-        for (k = 0; k < (K_tot + 1); k++)
-          for (j = 0; j < J_tot_bound; j++) {
-            for (i = 1; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure) {
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+          for (k = 0; k < (K_tot + 1); k++)
+            for (j = 0; j < J_tot_bound; j++) {
+              for (i = 1; i < I_tot; i++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure) {
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.x[array_ind];
+                    Cb = C.b.x[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.x[array_ind];
+                    else
+                      Cc = 0;
+                  } else {
+                    Ca = Cmaterial.a.x[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.x[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  }
+                  if (params.interp_mat_props) {
+                    if (!materials[k][min(J_tot, j + 1)][i]) {
+                      Ca = Ca + C.a.x[array_ind];
+                      Cb = Cb + C.b.x[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cb = Cb + Cmaterial.b.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cc = Cc + Cmaterial.c.x[materials[k][min(J_tot, j + 1)][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.x[array_ind];
                   Cb = C.b.x[array_ind];
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
-                    Cc = 0;
-                } else {
-                  Ca = Cmaterial.a.x[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.x[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                    Cc = 0.;
+                  if (is_cond) rho = rho_cond.x[array_ind];
                 }
-                if (params.interp_mat_props) {
-                  if (!materials[k][min(J_tot, j + 1)][i]) {
-                    Ca = Ca + C.a.x[array_ind];
-                    Cb = Cb + C.b.x[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cb = Cb + Cmaterial.b.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cc = Cc + Cmaterial.c.x[materials[k][min(J_tot, j + 1)][i] - 1];
-                  }
 
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.x[array_ind];
+                  kappa_l = ml.kappa.x[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][min(J_tot, j + 1)][i]) {
+                      alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
+                      beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
+                      gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
                 }
-              } else {
-                Ca = C.a.x[array_ind];
-                Cb = C.b.x[array_ind];
-                if (params.is_disp_ml) Cc = C.c.x[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.x[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
 
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.x[array_ind];
-                kappa_l = ml.kappa.x[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][min(J_tot, j + 1)][i]) {
-                    alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
-                    beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
-                    gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
+                //Enp1 = Ca*E_s.yx[k][j][i]+Cb*(H_s.zx[k][j][i-1] + H_s.zy[k][j][i-1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.yx[k][j][i] -
+                          1. / 2. * Cb * params.delta.dx *
+                                  ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yx[k][j][i];
+                  E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
+                  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
+                  J_s.yx[k][j][i] = Jnp1;
                 }
+                if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
+
+                eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
+                eh_vec[n][i][1] = 0.;
+                ca_vec[n][i - 1] = Ca;
+                cb_vec[n][i - 1] = Cb;
               }
-
-
-              //Enp1 = Ca*E_s.yx[k][j][i]+Cb*(H_s.zx[k][j][i-1] + H_s.zy[k][j][i-1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.yx[k][j][i] -
-                        1. / 2. * Cb * params.delta.dx *
-                                ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yx[k][j][i];
-                E_nm1.yx[k][j][i] = E_s.yx[k][j][i];
-                J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
-                J_s.yx[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
-
+              i = 0;
               eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
               eh_vec[n][i][1] = 0.;
-              ca_vec[n][i - 1] = Ca;
-              cb_vec[n][i - 1] = Cb;
-            }
-            i = 0;
-            eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
-            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_e_x,
-                             N_e_x, E_s.yx.plan_f[n], E_s.yx.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_x, N_e_x, E_s.yx.plan_f[n],
+                               E_s.yx.plan_b[n]);
 
-            for (i = 1; i < I_tot; i++) {
-              E_s.yx[k][j][i] = ca_vec[n][i - 1] * E_s.yx[k][j][i] -
-                                cb_vec[n][i - 1] *
-                                        eh_vec[n][i][0] / ((double) N_e_x);
-              //E_s.yx[k][j][i] = Enp1;
+              for (i = 1; i < I_tot; i++) {
+                E_s.yx[k][j][i] = ca_vec[n][i - 1] * E_s.yx[k][j][i] -
+                                  cb_vec[n][i - 1] * eh_vec[n][i][0] / ((double) N_e_x);
+                //E_s.yx[k][j][i] = Enp1;
+              }
             }
-          }
           //PSTD, E_s.yx
-#endif
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-            //fprintf(stderr,"Pos 06:\n");
-            //E_s.yz updates
-#ifdef FDFLAG// Use central difference derivatives
+        //fprintf(stderr,"Pos 06:\n");
+        //E_s.yz updates
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, E_s.yz
 #pragma omp for
-        for (k = 1; k < K_tot; k++)
+          for (k = 1; k < K_tot; k++)
+            for (j = 0; j < J_tot_bound; j++)
+              for (i = 0; i < (I_tot + 1); i++) {
+                rho = 0.;
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.z[k_loc];
+                    Cb = C.b.z[k_loc];
+                    if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.z[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.z[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k][min(J_tot, j + 1)][i]) {
+                      Ca = Ca + C.a.z[k_loc];
+                      Cb = Cb + C.b.z[k_loc];
+                      if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
+                    } else {
+                      Ca = Ca + Cmaterial.a.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cb = Cb + Cmaterial.b.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cc = Cc + Cmaterial.c.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
+                  Ca = C.a.z[k_loc];
+                  Cb = C.b.z[k_loc];
+                  if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                  else
+                    Cc = 0.;
+                  if (is_cond) rho = rho_cond.z[k_loc];
+                }
+
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.z[k_loc];
+                  kappa_l = ml.kappa.z[k_loc];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][min(J_tot, j + 1)][i]) {
+                      alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
+                      beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
+                      gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
+                }
+
+                //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
+                Enp1 = Ca * E_s.yz[k][j][i] + Cb * (H_s.xy[k][j][i] + H_s.xz[k][j][i] -
+                                                    H_s.xy[k - 1][j][i] - H_s.xz[k - 1][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.yz[k][j][i] -
+                          1. / 2. * Cb * params.delta.dz *
+                                  ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
+
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yz[k][j][i];
+                  E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
+                  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
+                  J_s.yz[k][j][i] = Jnp1;
+                }
+                if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
+
+                E_s.yz[k][j][i] = Enp1;
+              }
+          //FDTD, E_s.yz
+        } else {
+#pragma omp for
           for (j = 0; j < J_tot_bound; j++)
             for (i = 0; i < (I_tot + 1); i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+              for (k = 1; k < K_tot; k++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.z[k_loc];
+                    Cb = C.b.z[k_loc];
+                    if (params.is_disp_ml) Cc = C.c.z[k_loc];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.z[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.z[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k][min(J_tot, j + 1)][i]) {
+                      Ca = Ca + C.a.z[k_loc];
+                      Cb = Cb + C.b.z[k_loc];
+                      if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
+                    } else {
+                      Ca = Ca + Cmaterial.a.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cb = Cb + Cmaterial.b.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                      Cc = Cc + Cmaterial.c.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.z[k_loc];
                   Cb = C.b.z[k_loc];
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.z[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.z[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.z[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.z[k_loc];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k][min(J_tot, j + 1)][i]) {
-                    Ca = Ca + C.a.z[k_loc];
-                    Cb = Cb + C.b.z[k_loc];
-                    if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
-                  } else {
-                    Ca = Ca + Cmaterial.a.z[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cb = Cb + Cmaterial.b.z[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cc = Cc + Cmaterial.c.z[materials[k][min(J_tot, j + 1)][i] - 1];
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.z[k_loc];
+                  kappa_l = ml.kappa.z[k_loc];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k][min(J_tot, j + 1)][i]) {
+                      alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
+                      beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
+                      gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
                   }
-
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
-                }
-              } else {
-                Ca = C.a.z[k_loc];
-                Cb = C.b.z[k_loc];
-                if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.z[k_loc];
-              }
-
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.z[k_loc];
-                kappa_l = ml.kappa.z[k_loc];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][min(J_tot, j + 1)][i]) {
-                    alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
-                    beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
-                    gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-
-              //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
-              Enp1 = Ca * E_s.yz[k][j][i] +
-                     Cb * (H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k - 1][j][i] - H_s.xz[k - 1][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.yz[k][j][i] -
-                        1. / 2. * Cb * params.delta.dz *
-                                ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
-
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yz[k][j][i];
-                E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
-                J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
-                J_s.yz[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
-
-              E_s.yz[k][j][i] = Enp1;
-            }
-//FDTD, E_s.yz
-#else//PSTD, E_s.yz
-#pragma omp for
-        for (j = 0; j < J_tot_bound; j++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            for (k = 1; k < K_tot; k++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
-                rho = 0.;
-                if (!materials[k][j][i]) {
-                  Ca = C.a.z[k_loc];
-                  Cb = C.b.z[k_loc];
-                  if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                  else
-                    Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.z[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.z[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.z[materials[k][j][i] - 1];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k][min(J_tot, j + 1)][i]) {
-                    Ca = Ca + C.a.z[k_loc];
-                    Cb = Cb + C.b.z[k_loc];
-                    if (params.is_disp_ml) Cc = Cc + C.c.z[k_loc];
-                  } else {
-                    Ca = Ca + Cmaterial.a.z[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cb = Cb + Cmaterial.b.z[materials[k][min(J_tot, j + 1)][i] - 1];
-                    Cc = Cc + Cmaterial.c.z[materials[k][min(J_tot, j + 1)][i] - 1];
-                  }
+                //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
+                //Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.yz[k][j][i] -
+                          1. / 2. * Cb * params.delta.dz *
+                                  ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
 
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yz[k][j][i];
+                  E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
+                  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
+                  J_s.yz[k][j][i] = Jnp1;
                 }
-              } else {
-                Ca = C.a.z[k_loc];
-                Cb = C.b.z[k_loc];
-                if (params.is_disp_ml) Cc = C.c.z[k_loc];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.z[k_loc];
+                if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
+
+                eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+                eh_vec[n][k][1] = 0.;
+                ca_vec[n][k - 1] = Ca;
+                cb_vec[n][k - 1] = Cb;
               }
-
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.z[k_loc];
-                kappa_l = ml.kappa.z[k_loc];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k][min(J_tot, j + 1)][i]) {
-                    alpha_l += alpha[materials[k][min(J_tot, j + 1)][i] - 1];
-                    beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
-                    gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-
-              //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
-              //Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.yz[k][j][i] -
-                        1. / 2. * Cb * params.delta.dz *
-                                ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
-
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.yz[k][j][i];
-                E_nm1.yz[k][j][i] = E_s.yz[k][j][i];
-                J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
-                J_s.yz[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
-
+              k = 0;
               eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
               eh_vec[n][k][1] = 0.;
-              ca_vec[n][k - 1] = Ca;
-              cb_vec[n][k - 1] = Cb;
-            }
-            k = 0;
-            eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-            eh_vec[n][k][1] = 0.;
-            first_derivative(eh_vec[n], eh_vec[n], dk_e_z,
-                             N_e_z, E_s.yz.plan_f[n], E_s.yz.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_z, N_e_z, E_s.yz.plan_f[n],
+                               E_s.yz.plan_b[n]);
 
 
-            for (k = 1; k < K_tot; k++) {
-              E_s.yz[k][j][i] = ca_vec[n][k - 1] * E_s.yz[k][j][i] +
-                                cb_vec[n][k - 1] *
-                                        eh_vec[n][k][0] / ((double) N_e_z);
-              //E_s.yz[k][j][i] = Enp1;
+              for (k = 1; k < K_tot; k++) {
+                E_s.yz[k][j][i] = ca_vec[n][k - 1] * E_s.yz[k][j][i] +
+                                  cb_vec[n][k - 1] * eh_vec[n][k][0] / ((double) N_e_z);
+                //E_s.yz[k][j][i] = Enp1;
+              }
             }
-          }
           //PSTD, E_s.yz
-#endif
-      }//if(params.dimension==THREE || params.dimension==TE)
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+      }  //if(params.dimension==THREE || params.dimension==TE)
 
       //fprintf(stderr,"Pos 07:\n");
       if (params.dimension == THREE || params.dimension == TE) {
-#ifdef FDFLAG// Use central difference derivatives
+        if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
-        //E_s.zx updates
-        for (k = 0; k < K_tot; k++)
-          for (j = 0; j < J_tot_p1_bound; j++)
-            for (i = 1; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k + 1][j][i]) {
+          //E_s.zx updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot_p1_bound; j++)
+              for (i = 1; i < I_tot; i++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k + 1][j][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.x[array_ind];
+                    Cb = C.b.x[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.x[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.x[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.x[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k + 1][j][i]) {
+                      Ca = Ca + C.a.x[array_ind];
+                      Cb = Cb + C.b.x[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.x[materials[k + 1][j][i] - 1];
+                      Cb = Cb + Cmaterial.b.x[materials[k + 1][j][i] - 1];
+                      Cc = Cc + Cmaterial.c.x[materials[k + 1][j][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.x[array_ind];
                   Cb = C.b.x[array_ind];
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.x[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.x[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.x[array_ind];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k + 1][j][i]) {
-                    Ca = Ca + C.a.x[array_ind];
-                    Cb = Cb + C.b.x[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.x[materials[k + 1][j][i] - 1];
-                    Cb = Cb + Cmaterial.b.x[materials[k + 1][j][i] - 1];
-                    Cc = Cc + Cmaterial.c.x[materials[k + 1][j][i] - 1];
-                  }
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
 
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.x[array_ind];
+                  kappa_l = ml.kappa.x[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k + 1][j][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k + 1][j][i]) {
+                      alpha_l += alpha[materials[k + 1][j][i] - 1];
+                      beta_l += beta[materials[k + 1][j][i] - 1];
+                      gamma_l += gamma[materials[k + 1][j][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
                 }
-              } else {
-                Ca = C.a.x[array_ind];
-                Cb = C.b.x[array_ind];
-                if (params.is_disp_ml) Cc = C.c.x[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.x[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.x[array_ind];
-                kappa_l = ml.kappa.x[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k + 1][j][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k + 1][j][i]) {
-                    alpha_l += alpha[materials[k + 1][j][i] - 1];
-                    beta_l += beta[materials[k + 1][j][i] - 1];
-                    gamma_l += gamma[materials[k + 1][j][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-
-              /*if( materials[k][j][i] || materials[k][j][i+1])
+                /*if( materials[k][j][i] || materials[k][j][i+1])
         fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);*/
-              Enp1 = Ca * E_s.zx[k][j][i] +
-                     Cb * (H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i - 1] - H_s.yz[k][j][i - 1]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zx[k][j][i] -
-                        1. / 2. * Cb * params.delta.dx *
-                                ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zx[k][j][i];
-                E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
-                J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
-                J_s.zx[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
-
-              E_s.zx[k][j][i] = Enp1;
-            }
-//FDTD, E_s.zx
-#else//PSTD, E_s.zx
-#pragma omp for
-        for (k = 0; k < K_tot; k++)
-          for (j = 0; j < J_tot_p1_bound; j++) {
-            for (i = 1; i < I_tot; i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
+                Enp1 = Ca * E_s.zx[k][j][i] + Cb * (H_s.yx[k][j][i] + H_s.yz[k][j][i] -
+                                                    H_s.yx[k][j][i - 1] - H_s.yz[k][j][i - 1]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.zx[k][j][i] -
+                          1. / 2. * Cb * params.delta.dx *
+                                  ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zx[k][j][i];
+                  E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
+                  J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
+                  J_s.zx[k][j][i] = Jnp1;
                 }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
+                if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k + 1][j][i]) {
+                E_s.zx[k][j][i] = Enp1;
+              }
+          //FDTD, E_s.zx
+        } else {
+#pragma omp for
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot_p1_bound; j++) {
+              for (i = 1; i < I_tot; i++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k + 1][j][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.x[array_ind];
+                    Cb = C.b.x[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.x[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.x[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.x[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k + 1][j][i]) {
+                      Ca = Ca + C.a.x[array_ind];
+                      Cb = Cb + C.b.x[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.x[materials[k + 1][j][i] - 1];
+                      Cb = Cb + Cmaterial.b.x[materials[k + 1][j][i] - 1];
+                      Cc = Cc + Cmaterial.c.x[materials[k + 1][j][i] - 1];
+                    }
+
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+                } else {
                   Ca = C.a.x[array_ind];
                   Cb = C.b.x[array_ind];
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.x[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.x[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.x[materials[k][j][i] - 1];
+                  if (is_cond) rho = rho_cond.x[array_ind];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k + 1][j][i]) {
-                    Ca = Ca + C.a.x[array_ind];
-                    Cb = Cb + C.b.x[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.x[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.x[materials[k + 1][j][i] - 1];
-                    Cb = Cb + Cmaterial.b.x[materials[k + 1][j][i] - 1];
-                    Cc = Cc + Cmaterial.c.x[materials[k + 1][j][i] - 1];
-                  }
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
 
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.x[array_ind];
+                  kappa_l = ml.kappa.x[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k + 1][j][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k + 1][j][i]) {
+                      alpha_l += alpha[materials[k + 1][j][i] - 1];
+                      beta_l += beta[materials[k + 1][j][i] - 1];
+                      gamma_l += gamma[materials[k + 1][j][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
                 }
-              } else {
-                Ca = C.a.x[array_ind];
-                Cb = C.b.x[array_ind];
-                if (params.is_disp_ml) Cc = C.c.x[array_ind];
-                else
-                  Cc = 0.;
-                if (is_cond) rho = rho_cond.x[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.x[array_ind];
-                kappa_l = ml.kappa.x[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k + 1][j][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k + 1][j][i]) {
-                    alpha_l += alpha[materials[k + 1][j][i] - 1];
-                    beta_l += beta[materials[k + 1][j][i] - 1];
-                    gamma_l += gamma[materials[k + 1][j][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-
-              /*if( materials[k][j][i] || materials[k][j][i+1])
+                /*if( materials[k][j][i] || materials[k][j][i+1])
         fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);*/
-              //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zx[k][j][i] -
-                        1. / 2. * Cb * params.delta.dx *
-                                ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zx[k][j][i];
-                E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
-                J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
-                J_s.zx[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
+                //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.zx[k][j][i] -
+                          1. / 2. * Cb * params.delta.dx *
+                                  ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zx[k][j][i];
+                  E_nm1.zx[k][j][i] = E_s.zx[k][j][i];
+                  J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
+                  J_s.zx[k][j][i] = Jnp1;
+                }
+                if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
+                eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
+                eh_vec[n][i][1] = 0.;
+                ca_vec[n][i - 1] = Ca;
+                cb_vec[n][i - 1] = Cb;
+              }
+              i = 0;
               eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
               eh_vec[n][i][1] = 0.;
-              ca_vec[n][i - 1] = Ca;
-              cb_vec[n][i - 1] = Cb;
-            }
-            i = 0;
-            eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
-            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_e_x,
-                             N_e_x, E_s.zx.plan_f[n], E_s.zx.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_e_x, N_e_x, E_s.zx.plan_f[n],
+                               E_s.zx.plan_b[n]);
 
-            for (i = 1; i < I_tot; i++) {
-              E_s.zx[k][j][i] = ca_vec[n][i - 1] * E_s.zx[k][j][i] +
-                                cb_vec[n][i - 1] *
-                                        eh_vec[n][i][0] / ((double) N_e_x);
-              //E_s.zx[k][j][i] = Enp1;
+              for (i = 1; i < I_tot; i++) {
+                E_s.zx[k][j][i] = ca_vec[n][i - 1] * E_s.zx[k][j][i] +
+                                  cb_vec[n][i - 1] * eh_vec[n][i][0] / ((double) N_e_x);
+                //E_s.zx[k][j][i] = Enp1;
+              }
             }
-          }
           //PSTD, E_s.zx
-#endif
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -2761,265 +2766,266 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       }
       //fprintf(stderr,"Pos 08:\n");
       if (params.dimension == THREE || params.dimension == TE) {
-#ifdef FDFLAG// Use central difference derivatives
-             //FDTD, E_s.zy
+        if (method == SolverMethod::FiniteDifference) {
+          //FDTD, E_s.zy
 #pragma omp for
-        //E_s.zy updates
-        for (k = 0; k < K_tot; k++)
-          for (j = 1; j < J_tot; j++)
+          //E_s.zy updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 1; j < J_tot; j++)
+              for (i = 0; i < (I_tot + 1); i++) {
+                rho = 0.;
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k + 1][j][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.y[array_ind];
+                    Cb = C.b.y[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.y[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.y[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.y[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k + 1][j][i]) {
+                      Ca = Ca + C.a.y[array_ind];
+                      Cb = Cb + C.b.y[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.y[materials[k + 1][j][i] - 1];
+                      Cb = Cb + Cmaterial.b.y[materials[k + 1][j][i] - 1];
+                      Cc = Cc + Cmaterial.c.y[materials[k + 1][j][i] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+
+                } else {
+                  Ca = C.a.y[array_ind];
+                  Cb = C.b.y[array_ind];
+                  if (params.is_disp_ml) Cc = C.c.y[array_ind];
+                  else
+                    Cc = 0;
+                  if (is_cond) rho = rho_cond.y[array_ind];
+                }
+
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.y[array_ind];
+                  kappa_l = ml.kappa.y[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k + 1][j][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k + 1][j][i]) {
+                      alpha_l += alpha[materials[k + 1][j][i] - 1];
+                      beta_l += beta[materials[k + 1][j][i] - 1];
+                      gamma_l += gamma[materials[k + 1][j][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
+                  }
+                }
+
+
+                Enp1 = Ca * E_s.zy[k][j][i] + Cb * (H_s.xy[k][j - 1][i] + H_s.xz[k][j - 1][i] -
+                                                    H_s.xy[k][j][i] - H_s.xz[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.zy[k][j][i] -
+                          1. / 2. * Cb * params.delta.dy *
+                                  ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
+
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
+
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zy[k][j][i];
+                  E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
+                  J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
+                  J_s.zy[k][j][i] = Jnp1;
+                }
+                if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
+                E_s.zy[k][j][i] = Enp1;
+              }
+          //FDTD, E_s.zy
+        } else {
+#pragma omp for
+          //E_s.zy updates
+          for (k = 0; k < K_tot; k++)
             for (i = 0; i < (I_tot + 1); i++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k + 1][j][i]) {
+              for (j = 1; j < J_tot; j++) {
                 rho = 0.;
-                if (!materials[k][j][i]) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+
+                //use the average of material parameters between nodes
+                if (materials[k][j][i] || materials[k + 1][j][i]) {
+                  rho = 0.;
+                  if (!materials[k][j][i]) {
+                    Ca = C.a.y[array_ind];
+                    Cb = C.b.y[array_ind];
+                    if (params.is_disp_ml) Cc = C.c.y[array_ind];
+                    else
+                      Cc = 0.;
+                  } else {
+                    Ca = Cmaterial.a.y[materials[k][j][i] - 1];
+                    Cb = Cmaterial.b.y[materials[k][j][i] - 1];
+                    Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                  }
+
+                  if (params.interp_mat_props) {
+                    if (!materials[k + 1][j][i]) {
+                      Ca = Ca + C.a.y[array_ind];
+                      Cb = Cb + C.b.y[array_ind];
+                      if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
+                    } else {
+                      Ca = Ca + Cmaterial.a.y[materials[k + 1][j][i] - 1];
+                      Cb = Cb + Cmaterial.b.y[materials[k + 1][j][i] - 1];
+                      Cc = Cc + Cmaterial.c.y[materials[k + 1][j][i] - 1];
+                    }
+                    Ca = Ca / 2.;
+                    Cb = Cb / 2.;
+                    Cc = Cc / 2.;
+                  }
+
+                } else {
                   Ca = C.a.y[array_ind];
                   Cb = C.b.y[array_ind];
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
-                    Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.y[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.y[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.y[materials[k][j][i] - 1];
+                    Cc = 0;
+                  if (is_cond) rho = rho_cond.y[array_ind];
                 }
 
-                if (params.interp_mat_props) {
-                  if (!materials[k + 1][j][i]) {
-                    Ca = Ca + C.a.y[array_ind];
-                    Cb = Cb + C.b.y[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.y[materials[k + 1][j][i] - 1];
-                    Cb = Cb + Cmaterial.b.y[materials[k + 1][j][i] - 1];
-                    Cc = Cc + Cmaterial.c.y[materials[k + 1][j][i] - 1];
+                alpha_l = 0.;
+                beta_l = 0.;
+                gamma_l = 0.;
+                kappa_l = 1.;
+                sigma_l = 0.;
+
+                if (is_disp || params.is_disp_ml) {
+                  sigma_l = ml.sigma.y[array_ind];
+                  kappa_l = ml.kappa.y[array_ind];
+                  alpha_l = ml.alpha[k_loc];
+                  beta_l = ml.beta[k_loc];
+                  gamma_l = ml.gamma[k_loc];
+                  if (materials[k][j][i] || materials[k + 1][j][i]) {
+                    if (materials[k][j][i]) {
+                      alpha_l = alpha[materials[k][j][i] - 1];
+                      beta_l = beta[materials[k][j][i] - 1];
+                      gamma_l = gamma[materials[k][j][i] - 1];
+                    } else {
+                      alpha_l = ml.alpha[k_loc];
+                      beta_l = ml.beta[k_loc];
+                      gamma_l = ml.gamma[k_loc];
+                    }
+
+                    if (materials[k + 1][j][i]) {
+                      alpha_l += alpha[materials[k + 1][j][i] - 1];
+                      beta_l += beta[materials[k + 1][j][i] - 1];
+                      gamma_l += gamma[materials[k + 1][j][i] - 1];
+                    } else {
+                      alpha_l += ml.alpha[k_loc];
+                      beta_l += ml.beta[k_loc];
+                      gamma_l += ml.gamma[k_loc];
+                    }
+                    alpha_l = alpha_l / 2.;
+                    beta_l = beta_l / 2.;
+                    gamma_l = gamma_l / 2.;
                   }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
                 }
 
-              } else {
-                Ca = C.a.y[array_ind];
-                Cb = C.b.y[array_ind];
-                if (params.is_disp_ml) Cc = C.c.y[array_ind];
-                else
-                  Cc = 0;
-                if (is_cond) rho = rho_cond.y[array_ind];
-              }
 
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
+                //Enp1 = Ca*E_s.zy[k][j][i]+Cb*(H_s.xy[k][j-1][i] + H_s.xz[k][j-1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
+                if ((is_disp || params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * E_nm1.zy[k][j][i] -
+                          1. / 2. * Cb * params.delta.dy *
+                                  ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
+                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
 
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.y[array_ind];
-                kappa_l = ml.kappa.y[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k + 1][j][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
+                if ((is_disp || params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
+                         kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
 
-                  if (materials[k + 1][j][i]) {
-                    alpha_l += alpha[materials[k + 1][j][i] - 1];
-                    beta_l += beta[materials[k + 1][j][i] - 1];
-                    gamma_l += gamma[materials[k + 1][j][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zy[k][j][i];
+                  E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
+                  J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
+                  J_s.zy[k][j][i] = Jnp1;
                 }
+                if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
+
+                eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                ca_vec[n][j - 1] = Ca;
+                cb_vec[n][j - 1] = Cb;
               }
-
-
-              Enp1 = Ca * E_s.zy[k][j][i] +
-                     Cb * (H_s.xy[k][j - 1][i] + H_s.xz[k][j - 1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zy[k][j][i] -
-                        1. / 2. * Cb * params.delta.dy *
-                                ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
-
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
-
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zy[k][j][i];
-                E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
-                J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
-                J_s.zy[k][j][i] = Jnp1;
+              if (J_tot > 1) {
+                j = 0;
+                eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                first_derivative(eh_vec[n], eh_vec[n], dk_e_y, N_e_y, E_s.zy.plan_f[n],
+                                 E_s.zy.plan_b[n]);
               }
-              if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
-              E_s.zy[k][j][i] = Enp1;
+              for (j = 1; j < J_tot; j++) {
+                E_s.zy[k][j][i] = ca_vec[n][j - 1] * E_s.zy[k][j][i] -
+                                  cb_vec[n][j - 1] * eh_vec[n][j][0] / ((double) N_e_y);
+                //E_s.zy[k][j][i] = Enp1;
+              }
             }
-//FDTD, E_s.zy
-#else//PSTD, E_s.zy
-#pragma omp for
-        //E_s.zy updates
-        for (k = 0; k < K_tot; k++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            for (j = 1; j < J_tot; j++) {
-              rho = 0.;
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-
-              //use the average of material parameters between nodes
-              if (materials[k][j][i] || materials[k + 1][j][i]) {
-                rho = 0.;
-                if (!materials[k][j][i]) {
-                  Ca = C.a.y[array_ind];
-                  Cb = C.b.y[array_ind];
-                  if (params.is_disp_ml) Cc = C.c.y[array_ind];
-                  else
-                    Cc = 0.;
-                } else {
-                  Ca = Cmaterial.a.y[materials[k][j][i] - 1];
-                  Cb = Cmaterial.b.y[materials[k][j][i] - 1];
-                  Cc = Cmaterial.c.y[materials[k][j][i] - 1];
-                }
-
-                if (params.interp_mat_props) {
-                  if (!materials[k + 1][j][i]) {
-                    Ca = Ca + C.a.y[array_ind];
-                    Cb = Cb + C.b.y[array_ind];
-                    if (params.is_disp_ml) Cc = Cc + C.c.y[array_ind];
-                  } else {
-                    Ca = Ca + Cmaterial.a.y[materials[k + 1][j][i] - 1];
-                    Cb = Cb + Cmaterial.b.y[materials[k + 1][j][i] - 1];
-                    Cc = Cc + Cmaterial.c.y[materials[k + 1][j][i] - 1];
-                  }
-                  Ca = Ca / 2.;
-                  Cb = Cb / 2.;
-                  Cc = Cc / 2.;
-                }
-
-              } else {
-                Ca = C.a.y[array_ind];
-                Cb = C.b.y[array_ind];
-                if (params.is_disp_ml) Cc = C.c.y[array_ind];
-                else
-                  Cc = 0;
-                if (is_cond) rho = rho_cond.y[array_ind];
-              }
-
-              alpha_l = 0.;
-              beta_l = 0.;
-              gamma_l = 0.;
-              kappa_l = 1.;
-              sigma_l = 0.;
-
-              if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.y[array_ind];
-                kappa_l = ml.kappa.y[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
-                if (materials[k][j][i] || materials[k + 1][j][i]) {
-                  if (materials[k][j][i]) {
-                    alpha_l = alpha[materials[k][j][i] - 1];
-                    beta_l = beta[materials[k][j][i] - 1];
-                    gamma_l = gamma[materials[k][j][i] - 1];
-                  } else {
-                    alpha_l = ml.alpha[k_loc];
-                    beta_l = ml.beta[k_loc];
-                    gamma_l = ml.gamma[k_loc];
-                  }
-
-                  if (materials[k + 1][j][i]) {
-                    alpha_l += alpha[materials[k + 1][j][i] - 1];
-                    beta_l += beta[materials[k + 1][j][i] - 1];
-                    gamma_l += gamma[materials[k + 1][j][i] - 1];
-                  } else {
-                    alpha_l += ml.alpha[k_loc];
-                    beta_l += ml.beta[k_loc];
-                    gamma_l += ml.gamma[k_loc];
-                  }
-                  alpha_l = alpha_l / 2.;
-                  beta_l = beta_l / 2.;
-                  gamma_l = gamma_l / 2.;
-                }
-              }
-
-
-              //Enp1 = Ca*E_s.zy[k][j][i]+Cb*(H_s.xy[k][j-1][i] + H_s.xz[k][j-1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
-              if ((is_disp || params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zy[k][j][i] -
-                        1. / 2. * Cb * params.delta.dy *
-                                ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
-
-              if ((is_disp || params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
-
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * E_s.zy[k][j][i];
-                E_nm1.zy[k][j][i] = E_s.zy[k][j][i];
-                J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
-                J_s.zy[k][j][i] = Jnp1;
-              }
-              if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
-
-              eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-              eh_vec[n][j][1] = 0.;
-              ca_vec[n][j - 1] = Ca;
-              cb_vec[n][j - 1] = Cb;
-            }
-            if (J_tot > 1) {
-              j = 0;
-              eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
-              eh_vec[n][j][1] = 0.;
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_y,
-                               N_e_y, E_s.zy.plan_f[n], E_s.zy.plan_b[n]);
-            }
-            for (j = 1; j < J_tot; j++) {
-              E_s.zy[k][j][i] = ca_vec[n][j - 1] * E_s.zy[k][j][i] -
-                                cb_vec[n][j - 1] *
-                                        eh_vec[n][j][0] / ((double) N_e_y);
-              //E_s.zy[k][j][i] = Enp1;
-            }
-          }
-//PSTD, E_s.zy
-#endif
+          //PSTD, E_s.zy
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -3516,159 +3522,161 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       n = omp_get_thread_num();
 
       if (params.dimension == THREE || params.dimension == TE) {
-#ifdef FDFLAG// Use central difference derivatives
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
-        //H_s.xz updates
-        for (k = 0; k < K_tot; k++)
+          //H_s.xz updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot_bound; j++)
+              for (i = 0; i < (I_tot + 1); i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+
+                if (!materials[k][j][i])
+                  H_s.xz[k][j][i] = D.a.z[k_loc] * H_s.xz[k][j][i] +
+                                    D.b.z[k_loc] * (E_s.yx[k + 1][j][i] + E_s.yz[k + 1][j][i] -
+                                                    E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+                else
+                  H_s.xz[k][j][i] = Dmaterial.a.z[materials[k][j][i] - 1] * H_s.xz[k][j][i] +
+                                    Dmaterial.b.z[materials[k][j][i] - 1] *
+                                            (E_s.yx[k + 1][j][i] + E_s.yz[k + 1][j][i] -
+                                             E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+              }
+          //FDTD, H_s.xz
+        } else {
+#pragma omp for
+          //H_s.xz updates
           for (j = 0; j < J_tot_bound; j++)
             for (i = 0; i < (I_tot + 1); i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
+              for (k = 0; k < K_tot; k++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+
+                if (!materials[k][j][i]) {
+                  ca_vec[n][k] = D.a.z[k_loc];
+                  cb_vec[n][k] = D.b.z[k_loc];
+                  //H_s.xz[k][j][i] = D.a.z[k_loc]*H_s.xz[k][j][i]+D.b.z[k_loc]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+                } else {
+                  ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                  cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                  //H_s.xz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
                 }
 
-              if (!materials[k][j][i])
-                H_s.xz[k][j][i] = D.a.z[k_loc] * H_s.xz[k][j][i] +
-                               D.b.z[k_loc] * (E_s.yx[k + 1][j][i] + E_s.yz[k + 1][j][i] - E_s.yx[k][j][i] -
-                                             E_s.yz[k][j][i]);
-              else
-                H_s.xz[k][j][i] =
-                        Dmaterial.a.z[materials[k][j][i] - 1] * H_s.xz[k][j][i] +
-                        Dmaterial.b.z[materials[k][j][i] - 1] *
-                                (E_s.yx[k + 1][j][i] + E_s.yz[k + 1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
-            }
-//FDTD, H_s.xz
-#else//PSTD, H_s.xz
-#pragma omp for
-        //H_s.xz updates
-        for (j = 0; j < J_tot_bound; j++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            for (k = 0; k < K_tot; k++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-
-              if (!materials[k][j][i]) {
-                ca_vec[n][k] = D.a.z[k_loc];
-                cb_vec[n][k] = D.b.z[k_loc];
-                //H_s.xz[k][j][i] = D.a.z[k_loc]*H_s.xz[k][j][i]+D.b.z[k_loc]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
-              } else {
-                ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
-                //H_s.xz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+                eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
+                eh_vec[n][k][1] = 0.;
               }
-
+              k = K_tot;
               eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
               eh_vec[n][k][1] = 0.;
-            }
-            k = K_tot;
-            eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
-            eh_vec[n][k][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_z,
-                             N_h_z, H_s.xz.plan_f[n], H_s.xz.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_h_z, N_h_z, H_s.xz.plan_f[n],
+                               H_s.xz.plan_b[n]);
 
-            for (k = 0; k < K_tot; k++) {
-              H_s.xz[k][j][i] = ca_vec[n][k] * H_s.xz[k][j][i] +
-                                cb_vec[n][k] *
-                                        eh_vec[n][k][0] / ((double) N_h_z);
+              for (k = 0; k < K_tot; k++) {
+                H_s.xz[k][j][i] = ca_vec[n][k] * H_s.xz[k][j][i] +
+                                  cb_vec[n][k] * eh_vec[n][k][0] / ((double) N_h_z);
+              }
             }
-          }
 
           //PSTD, H_s.xz
-#endif
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-#ifdef FDFLAG// Use central difference derivatives
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xy
 #pragma omp for
-        //H_s.xy updates
-        for (k = 0; k < K_tot; k++)
-          for (j = 0; j < J_tot; j++)
-            for (i = 0; i < (I_tot + 1); i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-              if (!materials[k][j][i])
-                H_s.xy[k][j][i] = D.a.y[array_ind] * H_s.xy[k][j][i] +
-                               D.b.y[array_ind] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] -
-                                                 E_s.zx[k][j + 1][i]);
-              else
-                H_s.xy[k][j][i] =
-                        Dmaterial.a.y[materials[k][j][i] - 1] * H_s.xy[k][j][i] +
-                        Dmaterial.b.y[materials[k][j][i] - 1] *
-                                (E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
-            }
-//FDTD, H_s.xy
-#else//PSTD, H_s.xy
-#pragma omp for
-        //H_s.xy updates
-        for (k = 0; k < K_tot; k++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            for (j = 0; j < J_tot; j++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-              if (!materials[k][j][i]) {
-                ca_vec[n][j] = D.a.y[array_ind];
-                cb_vec[n][j] = D.b.y[array_ind];
-                //		H_s.xy[k][j][i] = D.a.y[array_ind]*H_s.xy[k][j][i]+D.b.y[array_ind]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
-              } else {
-                ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
-                //		H_s.xy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+          //H_s.xy updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot; j++)
+              for (i = 0; i < (I_tot + 1); i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+                if (!materials[k][j][i])
+                  H_s.xy[k][j][i] = D.a.y[array_ind] * H_s.xy[k][j][i] +
+                                    D.b.y[array_ind] * (E_s.zy[k][j][i] + E_s.zx[k][j][i] -
+                                                        E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
+                else
+                  H_s.xy[k][j][i] = Dmaterial.a.y[materials[k][j][i] - 1] * H_s.xy[k][j][i] +
+                                    Dmaterial.b.y[materials[k][j][i] - 1] *
+                                            (E_s.zy[k][j][i] + E_s.zx[k][j][i] -
+                                             E_s.zy[k][j + 1][i] - E_s.zx[k][j + 1][i]);
               }
+          //FDTD, H_s.xy
+        } else {
+#pragma omp for
+          //H_s.xy updates
+          for (k = 0; k < K_tot; k++)
+            for (i = 0; i < (I_tot + 1); i++) {
+              for (j = 0; j < J_tot; j++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+                if (!materials[k][j][i]) {
+                  ca_vec[n][j] = D.a.y[array_ind];
+                  cb_vec[n][j] = D.b.y[array_ind];
+                  //		H_s.xy[k][j][i] = D.a.y[array_ind]*H_s.xy[k][j][i]+D.b.y[array_ind]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+                } else {
+                  ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                  cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                  //		H_s.xy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+                }
 
+                eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
+              }
+              j = J_tot;
               eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
               eh_vec[n][j][1] = 0.;
-            }
-            j = J_tot;
-            eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
-            eh_vec[n][j][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_y,
-                             N_h_y, H_s.xy.plan_f[n], H_s.xy.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.xy.plan_f[n],
+                               H_s.xy.plan_b[n]);
 
-            for (j = 0; j < J_tot; j++) {
-              H_s.xy[k][j][i] = ca_vec[n][j] * H_s.xy[k][j][i] -
-                                cb_vec[n][j] *
-                                        eh_vec[n][j][0] / ((double) N_h_y);
-            }
+              for (j = 0; j < J_tot; j++) {
+                H_s.xy[k][j][i] = ca_vec[n][j] * H_s.xy[k][j][i] -
+                                  cb_vec[n][j] * eh_vec[n][j][0] / ((double) N_h_y);
+              }
 
-            /*
+              /*
     if( i==12 && k==24){
     fprintf(stdout,"tind: %d\n",tind);
     fprintf(stdout,"Da: ");
@@ -3684,163 +3692,166 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     fprintf(stdout,"\n");
     }
         */
-          }
-//PSTD, H_s.xy
-#endif
-
-#ifdef FDFLAG// Use central difference derivatives
-//FDTD, H_s.yx
-#pragma omp for
-        //H_s.yx updates
-        for (k = 0; k < K_tot; k++)
-          for (j = 0; j < J_tot_p1_bound; j++)
-            for (i = 0; i < I_tot; i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-              if (!materials[k][j][i])
-                H_s.yx[k][j][i] = D.a.x[array_ind] * H_s.yx[k][j][i] +
-                               D.b.x[array_ind] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] -
-                                                 E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-              else {
-                H_s.yx[k][j][i] =
-                        Dmaterial.a.x[materials[k][j][i] - 1] * H_s.yx[k][j][i] +
-                        Dmaterial.b.x[materials[k][j][i] - 1] *
-                                (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-              }
             }
-//FDTD, H_s.yx
-#else//PSTD, H_s.yx
-#pragma omp for
-        //H_s.yx updates
-        for (k = 0; k < K_tot; k++)
-          for (j = 0; j < J_tot_p1_bound; j++) {
-            for (i = 0; i < I_tot; i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-              if (!materials[k][j][i]) {
-                ca_vec[n][i] = D.a.x[array_ind];
-                cb_vec[n][i] = D.b.x[array_ind];
-                //		H_s.yx[k][j][i] = D.a.x[array_ind]*H_s.yx[k][j][i]+D.b.x[array_ind]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-              } else {
-                ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
-                cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
-                //	H_s.yx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
-              }
+          //PSTD, H_s.xy
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
+        if (method == SolverMethod::FiniteDifference) {
+//FDTD, H_s.yx
+#pragma omp for
+          //H_s.yx updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot_p1_bound; j++)
+              for (i = 0; i < I_tot; i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+                if (!materials[k][j][i])
+                  H_s.yx[k][j][i] = D.a.x[array_ind] * H_s.yx[k][j][i] +
+                                    D.b.x[array_ind] * (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] -
+                                                        E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                else {
+                  H_s.yx[k][j][i] = Dmaterial.a.x[materials[k][j][i] - 1] * H_s.yx[k][j][i] +
+                                    Dmaterial.b.x[materials[k][j][i] - 1] *
+                                            (E_s.zx[k][j][i + 1] + E_s.zy[k][j][i + 1] -
+                                             E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                }
+              }
+          //FDTD, H_s.yx
+        } else {
+#pragma omp for
+          //H_s.yx updates
+          for (k = 0; k < K_tot; k++)
+            for (j = 0; j < J_tot_p1_bound; j++) {
+              for (i = 0; i < I_tot; i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+                if (!materials[k][j][i]) {
+                  ca_vec[n][i] = D.a.x[array_ind];
+                  cb_vec[n][i] = D.b.x[array_ind];
+                  //		H_s.yx[k][j][i] = D.a.x[array_ind]*H_s.yx[k][j][i]+D.b.x[array_ind]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                } else {
+                  ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
+                  cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
+                  //	H_s.yx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                }
+
+                eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
+                eh_vec[n][i][1] = 0.;
+              }
+              i = I_tot;
               eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
               eh_vec[n][i][1] = 0.;
-            }
-            i = I_tot;
-            eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
-            eh_vec[n][i][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_x,
-                             N_h_x, H_s.yx.plan_f[n], H_s.yx.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_h_x, N_h_x, H_s.yx.plan_f[n],
+                               H_s.yx.plan_b[n]);
 
-            for (i = 0; i < I_tot; i++) {
-              H_s.yx[k][j][i] = ca_vec[n][i] * H_s.yx[k][j][i] +
-                                cb_vec[n][i] *
-                                        eh_vec[n][i][0] / ((double) N_h_x);
-            }
-          }
-//PSTD, H_s.yx
-#endif
-
-#ifdef FDFLAG// Use central difference derivatives
-//FDTD, H_s.yz
-#pragma omp for
-        //H_s.yz updates
-        for (k = 0; k < K_tot; k++) {
-          for (j = 0; j < J_tot_p1_bound; j++)
-            for (i = 0; i < I_tot; i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!materials[k][j][i]) {
-                /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
-                H_s.yz[k][j][i] = D.a.z[k_loc] * H_s.yz[k][j][i] +
-                               D.b.z[k_loc] * (E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k + 1][j][i] -
-                                             E_s.xz[k + 1][j][i]);
-              } else {
-                /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
-                H_s.yz[k][j][i] =
-                        Dmaterial.a.z[materials[k][j][i] - 1] * H_s.yz[k][j][i] +
-                        Dmaterial.b.z[materials[k][j][i] - 1] *
-                                (E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k + 1][j][i] - E_s.xz[k + 1][j][i]);
+              for (i = 0; i < I_tot; i++) {
+                H_s.yx[k][j][i] = ca_vec[n][i] * H_s.yx[k][j][i] +
+                                  cb_vec[n][i] * eh_vec[n][i][0] / ((double) N_h_x);
               }
             }
+          //PSTD, H_s.yx
         }
-//FDTD, H_s.yz
-#else//PSTD, H_s.yz
-        //#pragma omp for
-        //H_s.yz updates
-        for (j = 0; j < J_tot_p1_bound; j++)
-#pragma omp for
-          for (i = 0; i < I_tot; i++) {
-            for (k = 0; k < K_tot; k++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!materials[k][j][i]) {
-                ca_vec[n][k] = D.a.z[k_loc];
-                cb_vec[n][k] = D.b.z[k_loc];
-                /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
-                //H_s.yz[k][j][i] = D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
-              } else {
-                ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
-                /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
-                //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
-              }
 
+        if (method == SolverMethod::FiniteDifference) {
+//FDTD, H_s.yz
+#pragma omp for
+          //H_s.yz updates
+          for (k = 0; k < K_tot; k++) {
+            for (j = 0; j < J_tot_p1_bound; j++)
+              for (i = 0; i < I_tot; i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!materials[k][j][i]) {
+                  /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
+                  H_s.yz[k][j][i] = D.a.z[k_loc] * H_s.yz[k][j][i] +
+                                    D.b.z[k_loc] * (E_s.xy[k][j][i] + E_s.xz[k][j][i] -
+                                                    E_s.xy[k + 1][j][i] - E_s.xz[k + 1][j][i]);
+                } else {
+                  /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
+                  H_s.yz[k][j][i] = Dmaterial.a.z[materials[k][j][i] - 1] * H_s.yz[k][j][i] +
+                                    Dmaterial.b.z[materials[k][j][i] - 1] *
+                                            (E_s.xy[k][j][i] + E_s.xz[k][j][i] -
+                                             E_s.xy[k + 1][j][i] - E_s.xz[k + 1][j][i]);
+                }
+              }
+          }
+          //FDTD, H_s.yz
+        } else {
+          //#pragma omp for
+          //H_s.yz updates
+          for (j = 0; j < J_tot_p1_bound; j++)
+#pragma omp for
+            for (i = 0; i < I_tot; i++) {
+              for (k = 0; k < K_tot; k++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!materials[k][j][i]) {
+                  ca_vec[n][k] = D.a.z[k_loc];
+                  cb_vec[n][k] = D.b.z[k_loc];
+                  /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
+                  //H_s.yz[k][j][i] = D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
+                } else {
+                  ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                  cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                  /*if(tind==0)
+        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
+                  //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
+                }
+
+                eh_vec[n][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+                eh_vec[n][k][1] = 0.;
+              }
+              k = K_tot;
               eh_vec[n][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
               eh_vec[n][k][1] = 0.;
-            }
-            k = K_tot;
-            eh_vec[n][k][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-            eh_vec[n][k][1] = 0.;
 
-            /*
+              /*
     if( i==12 & j==12 ){
     for(k=0;k<K_tot;k++)
     fprintf(stdout,"%.10e ",eh_vec[n][k][0]);
@@ -3848,18 +3859,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
         */
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_z,
-                             N_h_z, H_s.yz.plan_f[n], H_s.yz.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_h_z, N_h_z, H_s.yz.plan_f[n],
+                               H_s.yz.plan_b[n]);
 
-            for (k = 0; k < K_tot; k++) {
-              H_s.yz[k][j][i] = ca_vec[n][k] * H_s.yz[k][j][i] -
-                                cb_vec[n][k] *
-                                        eh_vec[n][k][0] / ((double) N_h_z);
+              for (k = 0; k < K_tot; k++) {
+                H_s.yz[k][j][i] = ca_vec[n][k] * H_s.yz[k][j][i] -
+                                  cb_vec[n][k] * eh_vec[n][k][0] / ((double) N_h_z);
+              }
             }
-          }
-//PSTD, H_s.yz
-#endif
-      }//(params.dimension==THREE || params.dimension==TE)
+          //PSTD, H_s.yz
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+      }  //(params.dimension==THREE || params.dimension==TE)
       else {
 
 #pragma omp for
@@ -3939,117 +3949,120 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       }
 
       if (params.dimension == THREE || params.dimension == TE) {
-#ifdef FDFLAG// Use central difference derivatives
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
-        //H_s.zy update
-        for (k = 0; k < (K_tot + 1); k++)
-          for (j = 0; j < J_tot; j++)
-            for (i = 0; i < I_tot; i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-              if (!materials[k][j][i])
-                H_s.zy[k][j][i] = D.a.y[array_ind] * H_s.zy[k][j][i] +
-                               D.b.y[array_ind] * (E_s.xy[k][j + 1][i] + E_s.xz[k][j + 1][i] -
-                                                 E_s.xy[k][j][i] - E_s.xz[k][j][i]);
-              else
-                H_s.zy[k][j][i] =
-                        Dmaterial.a.y[materials[k][j][i] - 1] * H_s.zy[k][j][i] +
-                        Dmaterial.b.y[materials[k][j][i] - 1] *
-                                (E_s.xy[k][j + 1][i] + E_s.xz[k][j + 1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
-            }
-//FDTD, H_s.zy
-#else//PSTD, H_s.zy
-#pragma omp for
-        //H_s.zy update
-        for (k = 0; k < (K_tot + 1); k++)
-          for (i = 0; i < I_tot; i++) {
-            for (j = 0; j < J_tot; j++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = j;
-              else
-                array_ind = (J_tot + 1) * k_loc + j;
-              if (!materials[k][j][i]) {
-                ca_vec[n][j] = D.a.y[array_ind];
-                cb_vec[n][j] = D.b.y[array_ind];
-                //	      H_s.zy[k][j][i] = D.a.y[array_ind]*H_s.zy[k][j][i]+D.b.y[array_ind]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
-              } else {
-                ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
-                //	      H_s.zy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+          //H_s.zy update
+          for (k = 0; k < (K_tot + 1); k++)
+            for (j = 0; j < J_tot; j++)
+              for (i = 0; i < I_tot; i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+                if (!materials[k][j][i])
+                  H_s.zy[k][j][i] = D.a.y[array_ind] * H_s.zy[k][j][i] +
+                                    D.b.y[array_ind] * (E_s.xy[k][j + 1][i] + E_s.xz[k][j + 1][i] -
+                                                        E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+                else
+                  H_s.zy[k][j][i] = Dmaterial.a.y[materials[k][j][i] - 1] * H_s.zy[k][j][i] +
+                                    Dmaterial.b.y[materials[k][j][i] - 1] *
+                                            (E_s.xy[k][j + 1][i] + E_s.xz[k][j + 1][i] -
+                                             E_s.xy[k][j][i] - E_s.xz[k][j][i]);
               }
+          //FDTD, H_s.zy
+        } else {
+#pragma omp for
+          //H_s.zy update
+          for (k = 0; k < (K_tot + 1); k++)
+            for (i = 0; i < I_tot; i++) {
+              for (j = 0; j < J_tot; j++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = j;
+                else
+                  array_ind = (J_tot + 1) * k_loc + j;
+                if (!materials[k][j][i]) {
+                  ca_vec[n][j] = D.a.y[array_ind];
+                  cb_vec[n][j] = D.b.y[array_ind];
+                  //	      H_s.zy[k][j][i] = D.a.y[array_ind]*H_s.zy[k][j][i]+D.b.y[array_ind]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+                } else {
+                  ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                  cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                  //	      H_s.zy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+                }
 
+                eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
+              }
+              j = J_tot;
               eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
               eh_vec[n][j][1] = 0.;
-            }
-            j = J_tot;
-            eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
-            eh_vec[n][j][1] = 0.;
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.zy.plan_f[n], H_s.zy.plan_b[n]);
+              first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.zy.plan_f[n],
+                               H_s.zy.plan_b[n]);
 
-            for (j = 0; j < J_tot; j++) {
-              H_s.zy[k][j][i] = ca_vec[n][j] * H_s.zy[k][j][i] +
-                                cb_vec[n][j] *
-                                        eh_vec[n][j][0] / ((double) N_h_y);
+              for (j = 0; j < J_tot; j++) {
+                H_s.zy[k][j][i] = ca_vec[n][j] * H_s.zy[k][j][i] +
+                                  cb_vec[n][j] * eh_vec[n][j][0] / ((double) N_h_y);
+              }
             }
-          }
           //PSTD, H_s.zy
-#endif
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
 
-#ifdef FDFLAG// Use central difference derivatives
+        if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zx
 #pragma omp for
-        //H_s.zx update
-        for (k = 0; k < (K_tot + 1); k++)
-          for (j = 0; j < J_tot_bound; j++)
-            for (i = 0; i < I_tot; i++) {
-              k_loc = k;
-              if (params.is_structure)
-                if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
-                  if ((k - structure[i][1]) < (K + params.pml.Dzl) && (k - structure[i][1]) > params.pml.Dzl)
-                    k_loc = k - structure[i][1];
-                  else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
-                    k_loc = params.pml.Dzl + K - 1;
-                  else
-                    k_loc = params.pml.Dzl + 1;
-                }
-              if (!params.is_multilayer) array_ind = i;
-              else
-                array_ind = (I_tot + 1) * k_loc + i;
-              if (!materials[k][j][i])
-                H_s.zx[k][j][i] = D.a.x[array_ind] * H_s.zx[k][j][i] +
-                               D.b.x[array_ind] * (E_s.yx[k][j][i] + E_s.yz[k][j][i] - E_s.yx[k][j][i + 1] -
-                                                 E_s.yz[k][j][i + 1]);
-              else
-                H_s.zx[k][j][i] =
-                        Dmaterial.a.x[materials[k][j][i] - 1] * H_s.zx[k][j][i] +
-                        Dmaterial.b.x[materials[k][j][i] - 1] *
-                                (E_s.yx[k][j][i] + E_s.yz[k][j][i] - E_s.yx[k][j][i + 1] - E_s.yz[k][j][i + 1]);
-            }
-//FDTD, H_s.zx
-#else//PSTD, H_s.zx
+          //H_s.zx update
+          for (k = 0; k < (K_tot + 1); k++)
+            for (j = 0; j < J_tot_bound; j++)
+              for (i = 0; i < I_tot; i++) {
+                k_loc = k;
+                if (params.is_structure)
+                  if (k > params.pml.Dzl && k < (params.pml.Dzl + K)) {
+                    if ((k - structure[i][1]) < (K + params.pml.Dzl) &&
+                        (k - structure[i][1]) > params.pml.Dzl)
+                      k_loc = k - structure[i][1];
+                    else if ((k - structure[i][1]) >= (K + params.pml.Dzl))
+                      k_loc = params.pml.Dzl + K - 1;
+                    else
+                      k_loc = params.pml.Dzl + 1;
+                  }
+                if (!params.is_multilayer) array_ind = i;
+                else
+                  array_ind = (I_tot + 1) * k_loc + i;
+                if (!materials[k][j][i])
+                  H_s.zx[k][j][i] = D.a.x[array_ind] * H_s.zx[k][j][i] +
+                                    D.b.x[array_ind] * (E_s.yx[k][j][i] + E_s.yz[k][j][i] -
+                                                        E_s.yx[k][j][i + 1] - E_s.yz[k][j][i + 1]);
+                else
+                  H_s.zx[k][j][i] = Dmaterial.a.x[materials[k][j][i] - 1] * H_s.zx[k][j][i] +
+                                    Dmaterial.b.x[materials[k][j][i] - 1] *
+                                            (E_s.yx[k][j][i] + E_s.yz[k][j][i] -
+                                             E_s.yx[k][j][i + 1] - E_s.yz[k][j][i + 1]);
+              }
+          //FDTD, H_s.zx
+        } else {
 #pragma omp for
         //H_s.zx update
         for (k = 0; k < (K_tot + 1); k++)
@@ -4096,7 +4109,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             }
           }
 //PSTD, H_s.zx
-#endif
+        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
     }  //end parallel
     if (TIME_EXEC) { timer.click(); }
@@ -4724,16 +4737,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-#ifndef FDFLAG// Using PS
+  if (method == SolverMethod::PseudoSpectral) {
+    fftw_free(dk_e_x);
+    fftw_free(dk_e_y);
+    fftw_free(dk_e_z);
 
-  fftw_free(dk_e_x);
-  fftw_free(dk_e_y);
-  fftw_free(dk_e_z);
-
-  fftw_free(dk_h_x);
-  fftw_free(dk_h_y);
-  fftw_free(dk_h_z);
-#endif
+    fftw_free(dk_h_x);
+    fftw_free(dk_h_y);
+    fftw_free(dk_h_z);
+  }
 
   free(E_norm);
   free(H_norm);

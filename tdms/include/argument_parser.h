@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "globals.h"
+
 /**
  * @brief Wraps a vector of string CL arguments with some helpful functionality.
  */
@@ -34,7 +36,7 @@ public:
      * @return true if the flag is present
      * @return false otherwise
      */
-    bool have_flag(std::string const &flag);
+    bool have_flag(std::string const &flag) const;
 
     /**
      * @brief Have we been provided with a grid filename?
@@ -61,6 +63,15 @@ public:
      * @return false otherwise
      */
     static bool is_a_flag_argument(std::string arg);
+
+    /**
+     * @brief Check whether we were asked to use the finite-difference method.
+     * (the default is pseudospectral.)
+     * 
+     * @return true if provided '-fd' or '--finite-difference'
+     * @return false otherwise
+     */
+    bool finite_difference() const;
 
     /**
      * @brief Gets the input filename

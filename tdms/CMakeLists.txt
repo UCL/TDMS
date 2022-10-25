@@ -32,22 +32,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
 
 
-# Command line options for CMake ----------------------------------------------
-# Type of derivatives to use
-set(DERIVATIVE_TYPE "PS" CACHE STRING "Type of derivatives to compute.
-Either Use pseudo spectral (PS) or finite differences (FD).
-Options: {FD, PS}")
-set_property(CACHE DERIVATIVE_TYPE PROPERTY STRINGS "FD" "PS")
-get_property(x CACHE DERIVATIVE_TYPE PROPERTY STRINGS)
-if (NOT DERIVATIVE_TYPE IN_LIST x)
-    message(FATAL_ERROR "Cannot set DERIVATIVE_TYPE=${DERIVATIVE_TYPE}. Options: ${x}")
-endif()
-
-if (${DERIVATIVE_TYPE} STREQUAL FD)
-    set(DFLAG "-DFDFLAG")
-endif()
-
-
 # Matlab ----------------------------------------------------------------------
 find_package(Matlab REQUIRED MAT_LIBRARY)
 include_directories(${Matlab_INCLUDE_DIRS})
