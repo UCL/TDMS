@@ -1135,17 +1135,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * DCPI,
                                   Nsteps, J_tot, params);
+          }
           dft_counter++;
         } else {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
                                                  f_ex_vec[ifx] * 2 * DCPI, Nsteps,
                                                  J_tot, params);
+          }
           dft_counter++;
         }
       }
@@ -1191,16 +1193,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
               }
         }
     }
-
     /*end extract fieldsample*/
 
-    //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
+          }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
@@ -1208,7 +1209,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                     n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
       }
     }
-
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
       //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -1224,7 +1224,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
       }
     }
-    
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -4540,8 +4539,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2, E.J_tot - 2,
-              E.K_tot - 2);
       E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
                                E.K_tot - 2, Dimension::THREE);
       H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
@@ -4555,7 +4552,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                                0, params.dimension);
     }
 
-    //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
     label_dims[0] = 1;
     label_dims[1] = E.I_tot - 3;
@@ -4845,7 +4841,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
 
   cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
+  
   //loop over every vertex in the list
 #pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, phaseTermE, phaseTermH,       \
                                              subResultE, subResultH, vindex)
@@ -4859,7 +4855,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
         Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
         Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
-        if (J_tot == 0) {
+        if (J_tot != 0) {
           Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
           Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
           Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
@@ -4935,7 +4931,6 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E,
 
   cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
 #pragma omp parallel default(none)                                                                 \
         shared(E, H, EHr, EHi, campssample) private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k)       \
                 firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
@@ -4951,7 +4946,7 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E,
         Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
         Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
-        if (J_tot == 0) {
+        if (J_tot != 0) {
           Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
           Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
           Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
