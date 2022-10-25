@@ -5,7 +5,7 @@
 %Initialises the update equations for the Yee algorithm. Primary
 %purpose is to implement the PML.
 %
-%Inputs - 
+%Inputs -
 %
 %R0 - maximum reflection tolerated
 %I - the number of Yee cells (excluding PML) in the x direction
@@ -20,7 +20,7 @@
 function [sigma, C, D, freespace, conductive_aux, dispersive_aux] = initialiseupdateterms(R0, I, J, K, Dxl, Dxu, Dyl, Dyu, Dzl, Dzu, n, delta, dt, epsr_star, mur, multilayer, omega, kappa_max, vc_vec_i, wp_vec_i)
 %    fprintf(1,'Entering initialiseupdateterms');
 %define some constants
-[epso , muo , c] = import_constants;    
+[epso , muo , c] = import_constants;
 
 %Initialise the sigma matrices
 sigma_x.E = zeros(I+Dxl+Dxu+1,K+Dzl+Dzu+1);
@@ -56,21 +56,21 @@ if isempty(multilayer)
     epsr_x(:) = epsr;
     epsr_y(:) = epsr;
     kappa_max_z(:) = kappa_max;
-    
+
     vc_vec(:) = vc_vec_i;
     wp_vec(:) = wp_vec_i;
-    
+
     sigma_int = sigma_vec;
     sigma_int_x(:) = sigma_int;
     sigma_int_y(:) = sigma_int;
     sigma_int_z(:) = sigma_int;
-else    
+else
     %epsr = 1;%this needs to be addressed
     epsr = epsr_vec(1);%this is less incorrect...
     start_ind = 1+Dzl;
-    
+
     padded_multilayer = [multilayer (K+1)]+Dzl;
-    
+
     for tc=1:length(padded_multilayer)
 	for td=start_ind:(padded_multilayer(tc)-1)
 %	    fprintf(1,'td: %d ',td);
@@ -103,10 +103,10 @@ else
     end
     sigma_int_x = ones(I+Dxl+Dxu+1,1)*sigma_int_z;
     sigma_int_y = ones(J+Dyl+Dyu+1,1)*sigma_int_z;
-    
+
     epsr_x = ones(I+Dxl+Dxu+1,1)*epsr_z;
     epsr_y = ones(J+Dyl+Dyu+1,1)*epsr_z;
-    
+
 %        fprintf(1,'\n');
  end
 
@@ -233,13 +233,13 @@ pmlvec_Se = pmlvec_Se_xl;
 pmlvec_Sh = pmlvec_Sh_xl;
 if Dx ~= 0
     for i=1:(Dx+1)
-	sigma_x.E(i,:) = pmlvec_Se(Dx+1-i+1,:);    
+	sigma_x.E(i,:) = pmlvec_Se(Dx+1-i+1,:);
 	if i < Dx + 1
-	    sigma_x.H(i,:) = pmlvec_Sh(Dx+1-i,:);    
+	    sigma_x.H(i,:) = pmlvec_Sh(Dx+1-i,:);
 	end
     end
 end
-    
+
 Dx = Dxu;
 pmlvec_Se = pmlvec_Se_xu;
 pmlvec_Sh = pmlvec_Sh_xu;
@@ -261,9 +261,9 @@ pmlvec_Sh = pmlvec_Sh_yl;
 %now populate the sigma_y matrix
 if Dy ~= 0
     for j=1:(Dy+1)
-	sigma_y.E(j,:) = pmlvec_Se(Dy+1-j+1,:);    
+	sigma_y.E(j,:) = pmlvec_Se(Dy+1-j+1,:);
 	if j < Dy + 1
-	    sigma_y.H(j,:) = pmlvec_Sh(Dy+1-j,:);    
+	    sigma_y.H(j,:) = pmlvec_Sh(Dy+1-j,:);
 	end
     end
 end
@@ -291,9 +291,9 @@ pmlvec_Sh = pmlvec_Sh_zl;
 %now populate the sigma_z matrix
 if Dz ~= 0
     for k=1:(Dz+1)
-	sigma_z.E(k) = pmlvec_Se(Dz+1-k+1);    
+	sigma_z.E(k) = pmlvec_Se(Dz+1-k+1);
 	if k < Dz + 1
-	    sigma_z.H(k) = pmlvec_Sh(Dz+1-k);    
+	    sigma_z.H(k) = pmlvec_Sh(Dz+1-k);
 	end
     end
 end
@@ -402,7 +402,7 @@ if isempty(multilayer)
     Day = Day(:,1).';
     Dbx = Dbx(:,1).';
     Dby = Dby(:,1).';
-    
+
     conductive_aux.rho_x = conductive_aux.rho_x(:,1).';
     conductive_aux.rho_y = conductive_aux.rho_y(:,1).';
 end
@@ -434,6 +434,3 @@ freespace.Cbx = dt/(eps*delta.x);
 freespace.Dby = dt/(mu*delta.y);
 freespace.Dbz = dt/(mu*delta.z);
 freespace.Dbx = dt/(mu*delta.x);
-
-
-

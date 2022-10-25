@@ -27,7 +27,7 @@ void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c, int len
 }
 
 void init_diff_shift_op(double delta, fftw_complex *Dk, int N){
-  
+
   spdlog::debug("init_diff_shift_op, delta={}", delta);
 
   //define an
@@ -68,7 +68,7 @@ void first_derivative( fftw_complex *in_pb_pf, fftw_complex *out_pb_pf,
    *  2. Multiply the result of the FT (out_pb_pf) by the Dk coefficients, placing
    *     the result into in_pb_pf.
    *  3. Fourier transform back.
-   * 
+   *
    *  Due to how we've organised things, we can use the same fftw_scheme as in the
    *  first step, providing the data in_pb_pf and getting the output in out_pb_pf
    */

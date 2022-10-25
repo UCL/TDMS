@@ -55,7 +55,7 @@ function [Cmaterial, Dmaterial, fdtdgrid] = updateupdateterms(Dxl,Dyl, Dzl, dt, 
     Dmaterial.Dbx = zeros(1,o);
     Dmaterial.Dby = zeros(1,o);
     Dmaterial.Dbz = zeros(1,o);
-    
+
     if(isempty(composition_matrix) & ~isempty(material_matrix) )
 	fprintf(1,'\n\nWarning: An non-empty material matrix has been specified \nalong with an empty composition matrix - the material\nmatrix will not be integrated into the FDTD input file.\n\n');
     end
@@ -90,69 +90,69 @@ function [Cmaterial, Dmaterial, fdtdgrid] = updateupdateterms(Dxl,Dyl, Dzl, dt, 
 	    sigma_x.H = materialprops(8);
 	    sigma_y.H = materialprops(9);
 	    sigma_z.H = materialprops(10);
-	    
+
 	    if max(abs(diff([sigma_x.E sigma_y.E sigma_z.E]))) > 1e-15 |  max(abs(diff([sigma_x.H sigma_y.H sigma_z.H]))) > 1e-15
-		
+
 		error('Anisotropic sigmas in interior - program not currently designed to handle this');
-		
+
 	    end
-	    
+
 	    %Added 11/2/2004 - experimental
 	    if(sigma_x.E > eps_0 & abs(vc)<eps_0 & abs(wp)<eps_0)
 		fprintf(1,'Non-zero conductivity, using exponential time stepping...');
-		
+
 		Cmaterial.Cax(materialidentifier) = exp(-1*sigma_x.E*dt/eps);
 		Cmaterial.Cbx(materialidentifier) = (1 - exp(-1*sigma_x.E*dt/eps))./(sigma_x.E*delta.x);
-		
+
 		Cmaterial.Cay(materialidentifier) = exp(-1*sigma_y.E*dt/eps);
 		Cmaterial.Cby(materialidentifier) = (1 - exp(-1*sigma_y.E*dt/eps))./(sigma_y.E*delta.y);
-		
+
 		Cmaterial.Caz(materialidentifier) = exp(-1*sigma_z.E*dt/eps);
 		Cmaterial.Cbz(materialidentifier) = (1 - exp(-1*sigma_z.E*dt/eps))./(sigma_z.E*delta.z);
-		
+
 	    else
 		%end of added section
-		
+
 		%handle the dispersive case, will revert to usual case
 		%when dispersive parameters are set to 0
-		
+
 		gamma = 2*epso*wp*wp*dt*dt/(vc*dt+2);
-		
+
 		Cmaterial.Cax(materialidentifier) = (2*eps - sigma_x.E*dt)/(2*eps + .5*gamma + sigma_x.E*dt);
 		Cmaterial.Cbx(materialidentifier) = 2*dt/delta.x/(2*eps + 0.5*gamma + sigma_x.E*dt);
 		Cmaterial.Ccx(materialidentifier) = 0.5*gamma/(2*eps + 0.5*gamma + sigma_x.E*dt);
-		
+
 		Cmaterial.Cay(materialidentifier) = (2*eps - sigma_y.E*dt)/(2*eps + .5*gamma + sigma_y.E*dt);
 		Cmaterial.Cby(materialidentifier) = 2*dt/delta.y/(2*eps + 0.5*gamma + sigma_y.E*dt);
 		Cmaterial.Ccy(materialidentifier) = 0.5*gamma/(2*eps + 0.5*gamma + sigma_y.E*dt);
-		
+
 		Cmaterial.Caz(materialidentifier) = (2*eps - sigma_z.E*dt)/(2*eps + .5*gamma + sigma_z.E*dt);
 		Cmaterial.Cbz(materialidentifier) = 2*dt/delta.z/(2*eps + 0.5*gamma + sigma_z.E*dt);
 		Cmaterial.Ccz(materialidentifier) = 0.5*gamma/(2*eps + 0.5*gamma + sigma_z.E*dt);
-		
+
 % $$$ 		Cmaterial.Cax(materialidentifier) = (1-sigma_x.E*dt/(2*eps))./(1+sigma_x.E*dt/(2*eps));
 % $$$ 		Cmaterial.Cbx(materialidentifier) = dt/(eps*delta.x)./ (1+sigma_x.E*dt/(2*eps));
-% $$$ 		
+% $$$
 % $$$ 		Cmaterial.Cay(materialidentifier) = (1-sigma_y.E*dt/(2*eps))./(1+sigma_y.E*dt/(2*eps));
 % $$$ 		Cmaterial.Cby(materialidentifier) = dt/(eps*delta.y)./(1+sigma_y.E*dt/(2*eps));
-% $$$ 		
+% $$$
 % $$$ 		Cmaterial.Caz(materialidentifier) = (1-sigma_z.E*dt/(2*eps))./(1+sigma_z.E*dt/(2*eps));
 % $$$ 		Cmaterial.Cbz(materialidentifier) = dt/(eps*delta.z)./(1+sigma_z.E*dt/(2*eps));
-		
+
 	    end
-	    
-	    
-	    
+
+
+
 	    Dmaterial.Dax(materialidentifier) = (1-sigma_x.H*dt/(2*mu))./(1+sigma_x.H*dt/(2*mu));
 	    Dmaterial.Dbx(materialidentifier) = dt/(mu*delta.x)./(1+sigma_x.H*dt/(2*mu));
-	    
+
 	    Dmaterial.Day(materialidentifier) = (1-sigma_y.H*dt/(2*mu))./(1+sigma_y.H*dt/(2*mu));
 	    Dmaterial.Dby(materialidentifier) = dt/(mu*delta.y)./(1+sigma_y.H*dt/(2*mu));
-	    
+
 	    Dmaterial.Daz(materialidentifier) = (1-sigma_z.H*dt/(2*mu))./(1+sigma_z.H*dt/(2*mu));
 	    Dmaterial.Dbz(materialidentifier) = dt/(mu*delta.z)./(1+sigma_z.H*dt/(2*mu));
-	    
-	    
+
+
 	end
 	inds = sub2ind(size(fdtdgrid.materials),cellindex(:,1),cellindex(:,2),cellindex(:,3));
 	%now populate fdtdgrid

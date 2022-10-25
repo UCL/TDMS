@@ -81,7 +81,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
-          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose 
+          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
       # TODO: simplify this once MATLAB dependency is removed and mexFunction is replaced
       - name: Run PSTD TDMS system tests

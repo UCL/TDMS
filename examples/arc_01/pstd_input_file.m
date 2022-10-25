@@ -2,7 +2,7 @@
 lambda = 1300e-9;
 
 %size of Yee cell in metres
-delta.x = lambda/4; 
+delta.x = lambda/4;
 delta.y = lambda/4;
 delta.z = lambda/4;
 
@@ -56,7 +56,7 @@ interface.K0 = [10 1];
 interface.K1 = [K-5 0];
 
 %not used as run mode is complete
-outputs_array ={};    
+outputs_array ={};
 
 %these are the function names used to generate the field
 efname = 'efield_gauss';
@@ -138,4 +138,3 @@ det_trans_x = (-30:2:30)*1e-6;
 det_trans_y = (-30:2:30)*1e-6;
 
 illspecfun = '';
-

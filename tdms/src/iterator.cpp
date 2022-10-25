@@ -35,7 +35,7 @@ using namespace tdms_phys_constants;
 
 /*This mex function will take in the following arguments and perform the
  entire simulation
-  
+
   fdtdgrid
   Cmaterial
   Dmaterial
@@ -79,7 +79,7 @@ using namespace tdms_phys_constants;
 
   fdtdgrid.Exy       (double)
   fdtdgrid.Exz
-  fdtdgrid.Eyx 
+  fdtdgrid.Eyx
   fdtdgrid.Eyz
   fdtdgrid.Ezx
   fdtdgrid.Ezy
@@ -92,7 +92,7 @@ using namespace tdms_phys_constants;
 
   fdtdgrid.materials (uint8)
 
-  Cmaterial - A structure with the following members, each of which is a 1 dimensional 
+  Cmaterial - A structure with the following members, each of which is a 1 dimensional
   array indexed by indices od scattering materials:
 
   Cmaterial.Cax      (double)
@@ -105,7 +105,7 @@ using namespace tdms_phys_constants;
   Cmaterial.Ccy
   Cmaterial.Ccz
 
-  Dmaterial - A structure with the following members, each of which is a 1 dimensional 
+  Dmaterial - A structure with the following members, each of which is a 1 dimensional
   array indexed by indices od scattering materials:
 
   Dmaterial.Cax      (double)
@@ -115,11 +115,11 @@ using namespace tdms_phys_constants;
   Dmaterial.Cby
   Dmaterial.Cbz
 
-  C - A structure with the same elements as Cmaterial whose elements relate to the background 
-  region. Elements are not restricted to 1 dimension. 
+  C - A structure with the same elements as Cmaterial whose elements relate to the background
+  region. Elements are not restricted to 1 dimension.
 
-  D - A structure with the same elements as Cmaterial whose elements relate to the background 
-  region. Elements are not restricted to 1 dimension. 
+  D - A structure with the same elements as Cmaterial whose elements relate to the background
+  region. Elements are not restricted to 1 dimension.
 
   freespace - A structure with the following members each of which is a double
 
@@ -141,9 +141,9 @@ using namespace tdms_phys_constants;
   delta.x (double)
   delta.y
   delta.z
-  
+
   interface - A structure with the following members each of which is a double
-         
+
   interface.I0 - [I0 apply]
   interface.I1 - [I1 apply]
   interface.J0 - [J0 apply]
@@ -156,21 +156,21 @@ using namespace tdms_phys_constants;
   whether or not to apply the boundary condition
 
   Isource - A 3d matrix of dimension 8x(J1-J0+1)x(K1-K0+1) which contains
-  complex amplitude information for the interface equations at the I0 and I1 
-  planes. Should be Isource(1,:,:) - Ey, Isource(2,:,:) - Ez, Isource(3,:,:) - Hy, 
-  Isource(4,:,:) - Hz,Isource(5,:,:) - Ey, Isource(6,:,:) - Ez, Isource(7,:,:) - Hy, 
+  complex amplitude information for the interface equations at the I0 and I1
+  planes. Should be Isource(1,:,:) - Ey, Isource(2,:,:) - Ez, Isource(3,:,:) - Hy,
+  Isource(4,:,:) - Hz,Isource(5,:,:) - Ey, Isource(6,:,:) - Ez, Isource(7,:,:) - Hy,
   Isource(8,:,:) - Hz
 
   Jsource - A 3d matrix of dimension 8x(I1-I0+1)x(K1-K0+1) which contains
-  complex amplitude information for the interface equations at the J0 and J1 
-  planes. Should be Jsource(1,:,:) - Ex, Jsource(2,:,:) - Ez, Jsource(3,:,:) - Hx, 
-  Jsource(4,:,:) - Hz,Jsource(5,:,:) - Ex, Jsource(6,:,:) - Ez, Jsource(7,:,:) - Hx, 
+  complex amplitude information for the interface equations at the J0 and J1
+  planes. Should be Jsource(1,:,:) - Ex, Jsource(2,:,:) - Ez, Jsource(3,:,:) - Hx,
+  Jsource(4,:,:) - Hz,Jsource(5,:,:) - Ex, Jsource(6,:,:) - Ez, Jsource(7,:,:) - Hx,
   Jsource(8,:,:) - Hz
 
   Ksource - A 3d matrix of dimension 8x(I1-I0+1)x(J1-J0+1) which contains
-  complex amplitude information for the interface equations at the K0 and K1 
-  planes. Should be Ksource(1,:,:) - Ex, Ksource(2,:,:) - Ey, Ksource(3,:,:) - Hx, 
-  Ksource(4,:,:) - Hy,Ksource(5,:,:) - Ex, Ksource(6,:,:) - Ey, Ksource(7,:,:) - Hx, 
+  complex amplitude information for the interface equations at the K0 and K1
+  planes. Should be Ksource(1,:,:) - Ex, Ksource(2,:,:) - Ey, Ksource(3,:,:) - Hx,
+  Ksource(4,:,:) - Hy,Ksource(5,:,:) - Ex, Ksource(6,:,:) - Ey, Ksource(7,:,:) - Hx,
   Ksource(8,:,:) - Hy
 
   grid_labels - A structure with 3 elements, represents the axis labels:
@@ -210,7 +210,7 @@ using namespace tdms_phys_constants;
 
   phasorsurface - A list of indices defining the cuboid to extract the phasors at
 
-  phasorinc - An integer vector of three elements describing the factor by which to reduce the 
+  phasorinc - An integer vector of three elements describing the factor by which to reduce the
   density of vertices in the enclosing observation mesh
 
   dimension - A string of value "3", "TE" or "TM"
@@ -230,7 +230,7 @@ using namespace tdms_phys_constants;
   fieldsample.k - indices along the z-direction of locations at which to sample the field
   fieldsample.n - vector of the moments of the field to sample
 
-  campssample.vertices - N x 3 matrix of indices where the complex amplitudes will be sampled 
+  campssample.vertices - N x 3 matrix of indices where the complex amplitudes will be sampled
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
@@ -424,14 +424,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   /*Get dispersive_aux*/
   auto ml = DispersiveMultiLayer(prhs[input_counter++]);
-  
+
   /*Get structure*/
   auto structure = GratingStructure(prhs[input_counter++], I_tot);
   params.is_structure = structure.has_elements();
 
   /*Get f_ex_vec*/
   auto f_ex_vec = FrequencyExtractVector(prhs[input_counter++], params.omega_an);
-  
+
   /*Get exdetintegral*/
   if (!mxIsEmpty(prhs[input_counter])) {
     params.exdetintegral = bool_cast_from_double_in(prhs[input_counter], "exdetintegral");
@@ -1222,7 +1222,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
       }
     }
-    
+
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -4374,7 +4374,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	  If instead we use tind % Nsteps=n, we see that n=q, leading to the same exponential function as
 	  above. So the two cases are equivalent.
 	 */
-	
+
         E.add_to_angular_norm(tind, Nsteps, params);
         H.add_to_angular_norm(tind, Nsteps, params);
 
@@ -4532,7 +4532,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     setGridLabels(input_grid_labels, output_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
-  
+
   auto interp_output_grid_labels = GridLabels();
 
   //fprintf(stderr,"Pos 15_m1\n");
@@ -4813,7 +4813,7 @@ void normaliseSurface(double **surface_EHr, double **surface_EHi, int **surface_
 void normaliseVertices(double **EHr, double **EHi, ComplexAmplitudeSample &campssample, complex<double> Enorm, complex<double> Hnorm) {
 
   for (int i = 0; i < 6; i++) {
-    
+
     auto norm = i < 3 ? Enorm : Hnorm;
     double norm_r = real(norm);
     double norm_i = imag(norm);

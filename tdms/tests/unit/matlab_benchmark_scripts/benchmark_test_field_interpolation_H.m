@@ -19,11 +19,11 @@ metric.
 
 Results are displayed to stdout for each component; Hx, Hy, Hz.
 %}
-clear; 
+clear;
 close all;
 
 % interp parameters
-r = 2; 
+r = 2;
 N = 4;
 % bad practice but saves us passing dimensions to subfunctions
 % with clear and close all, this should be safe

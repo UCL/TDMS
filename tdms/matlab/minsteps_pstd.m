@@ -3,7 +3,7 @@
 %estimates the minmum number of steps required in a fdtd simulation
 %assuming the time step used is 0.95xmaximum time step and that the
 %trailing edge of the guassian pulse travels at the speed of
-%light. (dispersion free). Calculates the edge of the pulse travelling from 
+%light. (dispersion free). Calculates the edge of the pulse travelling from
 %interface to end wall and back.
 function [n] = minsteps_pstd(inputfile)
 

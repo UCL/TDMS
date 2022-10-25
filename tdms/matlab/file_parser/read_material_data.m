@@ -28,11 +28,11 @@
 %                       cells
 %
 %-a material is defined using the following format:
-%   <material identifier> <eps_r> <mu_r> <sigma_x> <sigma_y> <sigma_z> <sigma_x*> <sigma_y*> <sigma_z*> 
+%   <material identifier> <eps_r> <mu_r> <sigma_x> <sigma_y> <sigma_z> <sigma_x*> <sigma_y*> <sigma_z*>
 %
 %   or
 %
-%   <material identifier> <eps_r> <mu_r> <vc> <wp> <sigma_x> <sigma_y> <sigma_z> <sigma_x*> <sigma_y*> <sigma_z*> 
+%   <material identifier> <eps_r> <mu_r> <vc> <wp> <sigma_x> <sigma_y> <sigma_z> <sigma_x*> <sigma_y*> <sigma_z*>
 %
 %   where a dispersive material is to be defined.
 %
@@ -47,7 +47,7 @@
 %   i j k <material identifier>
 %
 %   the indices i j k are relative to an origin which is defined as the first non PML
-%   cell in the grid. The first means that with each index the minimum such that the 
+%   cell in the grid. The first means that with each index the minimum such that the
 %   cell is non-PML. This means that the origin has global index (Dxl, Dyl, Dzl).
 %
 %   indexing should start from (1,1,1) s.t. the cell (1,1,1) is the first non-PML
@@ -80,31 +80,31 @@ else
 end
 
 if file_type == file_ascii
-    
-			       
+
+
     %but need to store whether or not any
     %entries are actually made
     t_composition_filled = 0;
     t_material_filled = 0;
-    
-    
+
+
     fid = fopen(filename);
-    
+
     if fid == -1
 	error(sprintf('Failed to open %s\n',filename));
     end
-    
+
     buffer = fgets(fid);
-    
+
     material_counter = 1;
     composition_counter = 1;
-    
+
     t_material = zeros(1,11);
     t_composition = zeros(1,4);%used to build the above matrices - used
 			       %for efficiency
-        			       
+
     mode = 0; %1 for materials, 2 for cells
-    
+
     while buffer ~= -1 %while not at end of file
 	if ~strncmp(buffer,'%',1) & ~is_white_space(buffer)%if not a comment
 	    if strncmp(buffer,'materials',length('materials'))
@@ -114,12 +114,12 @@ if file_type == file_ascii
 		mode = 2;
 		buffer = fgets(fid);
 	    end
-	    
+
 	    if buffer ~= -1 & ~strncmp(buffer,'%',1) & ~is_white_space(buffer)
 		if mode==1
 		    [material_data,count] = sscanf(buffer,'%d %e %e %e %e %e %e %e %e %e %e');
 		    if count ~= 9 & count ~= 11
-			error(sprintf('Encountered incorrect line in %s - %s',filename,buffer));    
+			error(sprintf('Encountered incorrect line in %s - %s',filename,buffer));
 		    end
 		    if count==11
 			t_material(material_counter,:) = material_data.';
@@ -129,11 +129,11 @@ if file_type == file_ascii
 			t_material(material_counter,6:11) = material_data(4:9).';
 		    end
 		    t_material_filled = 1;
-		    material_counter = material_counter + 1;   
+		    material_counter = material_counter + 1;
 		elseif mode==2
 		    [composition_data,count] = sscanf(buffer,'%d %d %d %d');
 		    if count ~= 4
-			error(sprintf('Encountered incorrect line in %s - %s',filename,buffer));        
+			error(sprintf('Encountered incorrect line in %s - %s',filename,buffer));
 		    end
 		    t_composition(composition_counter,:) = composition_data.';
 		    t_composition_filled = 1;
@@ -142,7 +142,7 @@ if file_type == file_ascii
 	    end
 	end
 	if buffer ~= -1
-	    buffer = fgets(fid);      
+	    buffer = fgets(fid);
 	end
     end
 else
@@ -152,9 +152,9 @@ else
     [nrows, ncols] = size(t_material);
     if ncols==9
         t_material = [t_material(:,1:3) zeros(nrows,2) t_material(:,4:9)];
-    end     
-    t_composition = dat.composition_matrix; 
-        
+    end
+    t_composition = dat.composition_matrix;
+
     t_material_filled = 1;
     t_composition_filled = 1;
 end
@@ -183,4 +183,3 @@ if t_composition_filled
 else
     composition_matrix = [];
 end
-

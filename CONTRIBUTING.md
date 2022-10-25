@@ -2,8 +2,8 @@
 
 ### New features/Issues
 
-To suggest a new feature or report an issue please use the 
-[issues](https://github.com/UCL/TDMS/issues) board providing details of either 
+To suggest a new feature or report an issue please use the
+[issues](https://github.com/UCL/TDMS/issues) board providing details of either
 the feature or the bug.
 
 For bugs, please provide detailed steps to reproduce, your operating system, and what you expected to happen.

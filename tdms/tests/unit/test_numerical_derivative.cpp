@@ -19,7 +19,7 @@ const int REAL=0, IMAG=1;
  * derivative).
  */
 TEST_CASE("Element-by-element multiplication of array of complex numbers") {
-    
+
     // setup
     fftw_complex a[3] = { {0, 1}, {1, 1}, {0, 1}, };
     fftw_complex b[3] = { {0, 1}, {1, 1}, {1, -1}, };
@@ -99,5 +99,5 @@ TEST_CASE("Numerical derivative") {
     for (int i=0; i<NSAMPLES; i++)
         if (not std::isnan(ratio[i]))
             REQUIRE(ratio[i] == Approx(mean));
-   
+
 }

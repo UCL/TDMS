@@ -113,12 +113,12 @@ spdlog::debug("Send help");
   ssh-add /path/to/your/github/key/id_rsa
   ssh -o ForwardAgent=yes your_user@myriad.rc.ucl.ac.uk
   ```
-  
+
   And once you're on Myriad:
-  
+
   ```{.sh}
   git clone git@github.com:UCL/TDMS.git
-  
+
   module purge
   module load beta-modules
   module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
@@ -128,7 +128,7 @@ spdlog::debug("Send help");
   # -DGIT_SSH=ON
   make install
   ```
-  
+
   If you get the following error (or similar)
   ```
   fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
@@ -164,7 +164,7 @@ To write a new test, as a rough sketch you need:
 
 /**
  * @brief Detailed description of the testing.
- * 
+ *
  * Maybe go into details about the test setup.
  */
 TEST_CASE("Write a meaningful test case name") {
@@ -182,7 +182,7 @@ It's good practice, and reassuring for your pull-request reviewers, if new C++ f
 ### System {#system-tests}
 
 The full system tests are written in Python 3, and call the `tdms` executable for known inputs and compare to expected outputs.
-We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/). 
+We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/).
 
 There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before running the tests so run:
 ```{.sh}

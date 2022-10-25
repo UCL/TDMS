@@ -27,7 +27,7 @@
 \setlength{\parindent}{0pt} \setlength{\parskip}{1.6ex}
 
 \begin{document}
-	\bibliographystyle{unsrt}   
+	\bibliographystyle{unsrt}
 	% this starts your document.
 	% this includes the title
 	\maketitle\tableofcontents
@@ -46,7 +46,7 @@
 	two dimensions may be modelled. An understanding of much of the
 	following will be enhanced by consulting the book by Taflove and
 	Hagness \cite{taflove00book}.
-	
+
 	\section{Introduction \& Overview}
 	\subsection{Incident field}
 	To be strictly correct the incident field should be introduced from
@@ -54,8 +54,8 @@
 	known as the ``Total-Field/Scattered-Field'' formulation. This
 	implementation allows only for a steady-state simulation using this
 	method. This involves slowly ``ramping up'' the inicident field and
-	then waiting until the scattered-field reaches a steady state. 
-	
+	then waiting until the scattered-field reaches a steady state.
+
 	Tightly focused fields may be introduced by using a technique which is
 	only strictly correct for waveguides. As long as ``the majority'' of
 	the power in the incident field is contained within a single plane of
@@ -64,20 +64,20 @@
 	incident field is introduced as a Gaussian modulated pulse. A time
 	harmonic solution may be obtained by performing a discrete Fourier
 	transform at the frequency of interest, normally the centre frequency
-	of the Gaussian spectrum. 
-	
+	of the Gaussian spectrum.
+
 	\subsection{Materials}
 	Materials comprising both the homogeneous background or multi-layer
 	structure as well as the scattering cells may be specified using
 	both the means of conductivity and relative permitivity or a
-	dispersive model (Drude) may be used. 
-	
+	dispersive model (Drude) may be used.
+
 	\subsection{PML}
 	A perfectly matched layer (PML) is implemented so that open scattering
 	problems can be modelled. The PML correctly handles the case of
 	dispersive and lossy materials as per Gedney
 	\cite{gedney96electromagnetics399,gedney96ieeetransantprop1630}.
-	
+
 	\subsection{Field extraction}
 	The time harmonic field can be obtained either at each point within
 	the FDTD grid or on the surface of a cuboid. The latter is useful as
@@ -86,8 +86,8 @@
 	integral \cite{poggio73book,stratton39pr99}. One however must ensure
 	that all material inhomogeneities are contained within the cuboid and
 	that only the scattered field is used in the Stratton-Chu calculation.
-	
-	
+
+
 	\subsection{Performing a simulation}
 	The software runs in a number of modes. It can be called directly from
 	the Matlab command line or be called as a stand alone executable
@@ -115,7 +115,7 @@
 	material properties of each cell may differ however. Scattering
 	objects may then be defined by varying the material composition of
 	cells to model as closely as possible the geometry of the object to be modelled.
-	
+
 	Many parameters must be set in order to specify a problem to be
 	modelled. These parameters can be partitioned into a number of
 	categories. For example, the grid size and material composition must
@@ -142,7 +142,7 @@
 		\item Perfectly Matched Layer (PML): This is used to model unbounded
 		free space scattering with a finite grid. These must be set by an
 		experienced user.
-		
+
 	\end{itemize}
 	A few concepts must be explained before outlining in detail the
 	various input parameters. These relate to how the material composition
@@ -156,7 +156,7 @@
 	along each axis. The only confusing factor is that sometimes a
 	\emph{interior} indexing scheme is used and sometimes a \emph{global}
 	indexing scheme is used.
-	
+
 	In general the user need only worry about the interior indexing scheme
 	and the global indexing scheme is used by the program internally. The
 	two indexing schemes arise because of the previously mentioned
@@ -164,7 +164,7 @@
 	truncate the FDTD grid for open region scattering problems. It is a
 	low reflection, high loss material for plane waves at any angle of
 	incidence.
-	
+
 	The thickness of the PML around the grid is set by an input
 	parameter. Thus in many cases the first cell in the grid would be a
 	PML cell. When specifying the problem to be modelled however, it is very
@@ -172,14 +172,14 @@
 	the PML to any index specified. Thus most indices used in the input
 	file are given in the interior coordinate system which has its origin
 	(cell $(1,1,1)$) as the first non-PML cell in the grid.
-	
+
 	In some cases the global system may be used, for example, when the
 	user wants to extract the calculate field in the PML (this would only
 	seldomly be done however). When this is the
 	case the user must explicitly state that the global system is being
 	used. The global system has as its origin at the cell $(1,1,1)$ which is
 	the first cell in the FDTD grid, PML or otherwise.
-	
+
 	As an example, consider the FDTD grids depicted in Figure
 	\ref{fig:coords}. In both cases an FDTD grid with 8 non-PML cells and
 	a PML layer 2 cells thick on the lower plane of the grid in each
@@ -190,7 +190,7 @@
 	case the cell with index $(1,1,1)$ is in the interior of the grid and
 	is at the first non-PML cell. Notice that indices may be less than 1
 	for this case.
-	
+
 	\begin{figure}[h]
 		\begin{center}
 			\includegraphics[width=\textwidth]{figures/0.pdf}
@@ -200,8 +200,8 @@
 			\label{fig:coords}
 		\end{center}
 	\end{figure}
-	
-	
+
+
 	\subsection{Input File Format}
 	The input file is written using the conventions of a matlab
 	m-file. Thus, comments may be included using a \%. A number of values
@@ -209,7 +209,7 @@
 	required value is not specified, the FDTD program will not execute but
 	will report which value was not specified. The required input values
 	are outlined below using the categories mentioned previously.
-	
+
 	\subsubsection{Grid}
 	\begin{itemize}
 		\item \verb+dimension+: This specifies the dimensionallity of the
@@ -245,7 +245,7 @@
 		\item \verb+vc_vec+: A vector of dimension $1\times N_l$ which
 		specifies the collision frequency, $\nu_c$, of each layer. See
 		Section \ref{sec:drude} for further details.
-		
+
 		\item \verb+mur+: The relative permeability of the background
 		material. All cells in the grid are assumed to be composed of this
 		material unless specified otherwise in the materials file. This is
@@ -271,7 +271,7 @@
 			\item \verb+delta.z+: Width of each FDTD cell in the $z$-direction
 			(in m).
 		\end{itemize}
-		
+
 		\item \verb+material_file+: This is the name of the file which
 		describes the scattering object within the FDTD grid. This is
 		explained in more detail in the accompanying ``FDTD
@@ -293,37 +293,37 @@
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			introduced at the specified plane. The field will not be introduced
-			if this is set to 0.  
+			if this is set to 0.
 			\item \verb+interface.I1+: A $1\times 2$ vector where the first element
 			gives the index $i$ of a plane parallel to the $jk$ plane where the
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			intrduced at the specified plane. The field will not be introduced
-			if this is set to 0.   
+			if this is set to 0.
 			\item \verb+interface.J0+: A $1\times 2$ vector where the first element
 			gives the index $j$ of a plane parallel to the $ik$ plane where the
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			intrduced at the specified plane. The field will not be introduced
-			if this is set to 0.   
+			if this is set to 0.
 			\item \verb+interface.J1+: A $1\times 2$ vector where the first element
 			gives the index $j$ of a plane parallel to the $ik$ plane where the
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			intrduced at the specified plane. The field will not be introduced
-			if this is set to 0.   
+			if this is set to 0.
 			\item \verb+interface.K0+: A $1\times 2$ vector where the first element
 			gives the index $k$ of a plane parallel to the $ij$ plane where the
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			intrduced at the specified plane. The field will not be introduced
-			if this is set to 0.    
+			if this is set to 0.
 			\item \verb+interface.K1+ A $1\times 2$ vector where the first element
 			gives the index $k$ of a plane parallel to the $ij$ plane where the
 			incident field is introduced. The second element of the vector is a
 			boolean value which determines whether or not the field will be
 			intrduced at the specified plane. The field will not be introduced
-			if this is set to 0.     
+			if this is set to 0.
 		\end{itemize}
 		\label{sec:cuboid}
 		Six interface vectors are specified so that the incident field can be
@@ -338,9 +338,9 @@
 		cut away), the interface plane marks the boundary between total and
 		scattered field regions. The scattered field can always be recovered
 		from the total field
-		by subtracting the incident field from the total field. 
-		
-		
+		by subtracting the incident field from the total field.
+
+
 		\begin{figure}[h]
 			\begin{center}
 				\includegraphics[width=\textwidth]{figures/2.pdf}
@@ -351,16 +351,16 @@
 				\label{fig:interface}
 			\end{center}
 		\end{figure}
-		
+
 		\item \verb+efname+: The name of the m-file (as a string) which describes the
 		incident electric field. The function should be structured
 		as (where for example the line \verb+efname = 'plane_wave_electric'+
 		appears in the input file):
-		
+
 		\begin{verbatim}
 			function [E] = plane_wave_electric(X,Y,Z)
 		\end{verbatim}
-		
+
 		Where:
 		\begin{itemize}
 			\item the parameters \verb+X+,\verb+Y+ and \verb+Z+ will be
@@ -371,13 +371,13 @@
 			\item \verb+E+ is a $1\times3$ cell array where \verb+E{1}+ contains
 			the $x$-components of electric field, \verb+E{2}+ contains
 			the $y$-components of electric field and \verb+E{3}+ contains
-			the $z$-components of electric field. 
-			
+			the $z$-components of electric field.
+
 		\end{itemize}
 		Note that following relationship between the inputs
 		\verb+X+,\verb+Y+ and \verb+Z+ and the output \verb+E+ must hold:
 		\begin{eqnarray}
-			E\{1\}(i,j)& =& E_x(X(i,j),Y(i,j),Z(i,j))  \nonumber \\ 
+			E\{1\}(i,j)& =& E_x(X(i,j),Y(i,j),Z(i,j))  \nonumber \\
 			E\{2\}(i,j)& =& E_y(X(i,j),Y(i,j),Z(i,j)) \nonumber \\
 			E\{3\}(i,j)& =& E_z(X(i,j),Y(i,j),Z(i,j)) \nonumber
 		\end{eqnarray}
@@ -391,27 +391,27 @@
 		electromagnetic field is defined relative to this coordinate
 		system. For more information on this, see the section titled
 		``Compuational space coordinate system'' in the accompanying ``FDTD
-		material composition input file'' document. 
+		material composition input file'' document.
 		\item \verb+z_launch+: Sets the $z$-coordinate of the \verb+illorigin+
 		cell. This cell will then have a position of $(0,0,z\_launch)$ in the
 		cartesian coordinate system of the grid. The cartesian coordinates
 		of other cells are found using the width of each FDTD cell. The
 		cartesian coordinates are mapped to the interior FDTD lattice
-		indices according to: 
+		indices according to:
 		\begin{equation}
 			\left[\begin{array}{c} x\\ y\\ z\end{array}\right] = \left[\begin{array}{ccc}\Delta x & 0 & 0\\ 0 & \Delta y &
 				0\\ 0 & 0 & \Delta z
-			\end{array}\right]\left[\begin{array}{c}i-O_x\\j-O_y\\k-O_z\end{array}\right]+\left[\begin{array}{c} 0\\ 0\\ z_{launch}\end{array}\right]\label{eq:mapping} 
+			\end{array}\right]\left[\begin{array}{c}i-O_x\\j-O_y\\k-O_z\end{array}\right]+\left[\begin{array}{c} 0\\ 0\\ z_{launch}\end{array}\right]\label{eq:mapping}
 		\end{equation}
 		where \verb+illorigin+$=[O_x,O_y,O_z]$, \verb+z_launch+$=z_{launch}$
 		and \verb+delta.x+$=\Delta x$ and so on for the other components.
-		
+
 		\item \verb+wavelengthwidth+: \emph{This parameter should be set by someone
 			with experience in FDTD and should always be tested for
 			suitability}. This is the spectral width of the modulating pulse of
 		the incident electromagnetic field. The spectral width of this pulse
 		should not be too wide as this will lead to the grid being unable to
-		sufficiently spatially sample the field. 
+		sufficiently spatially sample the field.
 	\end{itemize}
 	\subsubsection{Simulation type}
 	\begin{itemize}
@@ -432,7 +432,7 @@
 			introduced and iteration continues until a steady state has been
 			reached. When this option is used, the field around all faces of
 			the interface cuboid must be specified (see section
-			\ref{sec:cuboid}). 
+			\ref{sec:cuboid}).
 		\end{itemize}
 		\item \verb+runmode+: This can take two values, \verb+'complete'+ or
 		\verb+'analyse'+. These have the following meaning:
@@ -446,7 +446,7 @@
 			at each iteration may be output to a file. This is useful for
 			debugging or where it may be useful to view the field as it evolves
 			in time. This option may only be used when the simulation is being
-			run from matlab and not when it is being run as a stand alone application.  
+			run from matlab and not when it is being run as a stand alone application.
 		\end{itemize}
 	\end{itemize}
 	\subsubsection{FDTD specific}
@@ -455,7 +455,7 @@
 	\begin{itemize}
 		\item \verb+dt+: This is the time step parameter used by the FDTD
 		simulation. This is subject to the restriction \cite{taflove00book}:
-		
+
 		\begin{eqnarray}
 			dt\le \frac{1}{c\sqrt{\frac{1}{delta.x^2}+\frac{1}{delta.y^2}+\frac{1}{delta.z^2}}}
 		\end{eqnarray}
@@ -510,7 +510,7 @@
 			file is written with all of the field data. In the latter case a
 			separate fiel is written for each time increment.
 		\end{itemize}
-		
+
 		%{'/tmp/fdtd_output3/6output','global',[60 1 1],[60 J+Dyl+Dyu+1 K+Dzl+Dzu+1],'xyz','dump'};
 		\item \verb+exphasorsvolume+: Setting this to $1$ will cause phasors
 		in the entire volume of the FDTD grid (excluding the PML) to be
@@ -519,7 +519,7 @@
 		\item \verb+exphasorssurface+: Setting this to $1$ will cause phasors
 		to be extracted about the surface of a user specified cuboid. This
 		is the most memory efficient way to extract the field and is all
-		that is necessary for the general imaging model. 
+		that is necessary for the general imaging model.
 		\item \verb+phasorssurface+: Specifies the cuboid surface where the phasors
 		should be extracted. Should be specified as:
 		\begin{verbatim}
@@ -538,7 +538,7 @@
 		associated FDTD lattice dimension. That is, if
 		\verb+phasorinc=[pix,piy,piz]+ then $pix$ should divide $I$ and
 		$piy$ should divide $J$ etc. The default value of phasorinc is $[1,1,1]$.
-		
+
 		\begin{figure}[h]
 			\begin{center}
 				\includegraphics[width=\textwidth]{figures/3.pdf}
@@ -547,8 +547,8 @@
 				\label{fig:phasesurf}
 			\end{center}
 		\end{figure}
-		
-		
+
+
 	\end{itemize}
 	\subsubsection{PML}
 	These parameters determine the properties of the PML. The PML is a
@@ -556,7 +556,7 @@
 	simulated using a finite grid. The PML acts as a very low reflection
 	(theoretically zero), very high loss material. This any incident field
 	is rapidly disipated with very small refelection. These should be set
-	by an experienced user. 
+	by an experienced user.
 	\begin{itemize}
 		\item \verb+n+: The order of the PML. The conductivity of the PML is
 		increased at a rate proporional to $r^n$ where $r$ is the depth
@@ -641,7 +641,7 @@
 	$\sigma_x=\sigma_y=\sigma_z=\sigma$ to model a material with
 	electrical conductivity $\sigma$.
 	%<material identifier> <eps_r> <mu_r> <v_c> <w_p> <sigma_x> <sigma_y>
-	%<sigma_z> <sigma_x*> <sigma_y*> <sigma_z*> 
+	%<sigma_z> <sigma_x*> <sigma_y*> <sigma_z*>
 	\subsection{Dispersive Media}\label{sec:drude}
 	Hitherto, we have not applied this model to the solution of time
 	varying problems. Thus, unclusion of the Drude model is only to be
@@ -649,7 +649,7 @@
 	frequency. Thus, it may be simpler to employ an expression the
 	relative permitivity containing only a single pole however for a
 	variety of reasons the full Drude model was implemented.
-	
+
 	Starting with the definition of complex permitivity according to
 	Drude and assuming the $\exp(-i\omega t)$ time convention:
 	\begin{equation}
@@ -689,7 +689,7 @@
 		t)dt\\
 		&=&\epsilon_0\epsilon_\infty\boldsymbol{E}'(t)+\boldsymbol{J}_p(t)
 	\end{eqnarray}
-	where 
+	where
 	\begin{eqnarray}
 		\int_{-\infty}^{\infty}\omega\left(\omega+i\nu_c\right)\boldsymbol{J}_p(\omega)\exp(-i\omega t)dt&=&\epsilon_0\int_{-\infty}^{\infty}i\omega\omega_p^2\boldsymbol{E}(\omega)\exp(-i\omega
 		t)dt\label{eq:jpexp1}
@@ -717,7 +717,7 @@
 	${J}_p(t)$. We then express Eq. \ref{eq:polarisationcurrent} in terms
 	of a discrete time step $\Delta t$ using central differences. This is
 	done by making the substitutions:
-	
+
 	\begin{eqnarray}
 		\epsilon_0\omega_p^2\left(\frac{\boldsymbol{E}^{n+1}-\boldsymbol{E}^{n-1}}{2\Delta
 			t}\right)=\frac{\boldsymbol{J}_p^{n+1}-2\boldsymbol{J}_p^{n}+\boldsymbol{J}_p^{n-1}}{\Delta t^2}+\nu_c\left(\frac{\boldsymbol{J}_p^{n+1}-\boldsymbol{J}_p^{n-1}}{2\Delta
@@ -728,7 +728,7 @@
 		\boldsymbol{J}_p^{n+1}=\alpha\boldsymbol{J}_p^{n}+\beta\boldsymbol{J}_p^{n-1}+\gamma\left(\frac{\boldsymbol{E}^{n+1}-\boldsymbol{E}^{n-1}}{2\Delta
 			t}\right)\label{eq:jpmaster}
 	\end{equation}
-	where 
+	where
 	\begin{eqnarray}
 		\alpha&=&\frac{4}{\nu_c\Delta t+2}\\
 		\beta&=&\frac{\nu_c\Delta t-2}{\nu_c\Delta t+2}\\
@@ -839,7 +839,7 @@
 		$(\texttt{x\_i(i)},\texttt{y\_i(j)},\texttt{z\_i(k)})$.
 		\item \verb+vertices+ is an $N_v\times 3$ array of $N_v$ vertices where the
 		time harmonic field has been extracted. This is only calculated if
-		\verb+exphasorssurface+ is set to 1. 
+		\verb+exphasorssurface+ is set to 1.
 		\item \verb+camplitudes+ is an $N_v\times 6$ array of complex
 		amplitudes, one for each vertex. Each row of the array has the form
 		$(E_x,E_y,E_z,H_x,H_y,H_z)$.
@@ -874,14 +874,14 @@
 		$make clean
 		$make
 	\end{verbatim}
-	
+
 	\section{Running a simulation}
 	\subsection{Problem setup}
 	The m-file \verb+iteratefdtd_matrix+ is used to setup or run the FDTD
 	simulation. It has the following options:
 	\begin{verbatim}
 		iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
-		
+
 		input_file    - file with input configuration information
 		operation     - either 'run', 'filesetup', 'gridsetup' or
 		'illsetup;. In the case of 'run', the FDTD
@@ -943,16 +943,16 @@
 	the FDTD computational space can very slightly due to numerical
 	dispersion. The result of these scattering calculations are calculated
 	according to:
-	
+
 	\begin{verbatim}
 		$../../../iterater/prtmfdtd case1_fs.mat case1_fs_out.mat
 		$../../../iterater/prtmfdtd case1.mat case1_out.mat
 	\end{verbatim}
-	
+
 	Finally, the result can be compared to the field calculated using the
 	series of Mie by executing \verb+analyse_res_case+, resulting in the
 	results displayed in Figure .
-	
+
 	\begin{figure}[!h]
 		\begin{center}
 			% \includegraphics[bb=0 0 934 700,width = .7\textwidth]{samples/case1_comparison.jpg}\label{fig:case1}
@@ -990,7 +990,7 @@
 	the sphere is varied. There are examples where conductivity is used to
 	obtain a complex refractive index and also where a dispersive model is
 	used. Table summarises the properties of each example.
-	
+
 	\begin{table}[!h]
 		\begin{center}
 			\begin{tabular}{|c|c|c|c|}
@@ -1012,7 +1012,7 @@
 		\caption{Summary of sphere scattering examples.}
 		\label{tab:examples}
 	\end{table}
-	
+
 	Each of these results can be analysed by setting the value of
 	\verb+sphere_case+ in the m-file \verb+analyse_res_case.m+ and
 	executing the m-file.
@@ -1022,16 +1022,16 @@
 	calculated. The input file is generated by the m-file
 	\newline\verb+dispersive1.2/doc/master/samples/multi_layer/gen_input_disp.m+
 	and the result analysed by the m-file \verb+calc_ref.m+.
-	
+
 	\subsection{Diffraction by a circular aperture}
 	The m-file
 	\newline\verb+dispersive1.2/doc/master/samples/multi_layer/gen_input_ap.m+
 	generates an input file which may be used to calculate the diffraction
 	by a circular aperture in a conducting medium of finite thickness and conductivity.
-	
+
 	\bibliography{refs}
 	\clearpage
-	
+
 	\appendix
 	\section{The finite-difference time-domain method}
 	\subsection{Overview}
@@ -1049,7 +1049,7 @@
 	Since the publication of these papers, the method has developed
 	immensely and is now a very mature numerical method used in numerous
 	applications.
-	
+
 	The starting point of the FDTD method is two of Maxwell's equations in the
 	time domain:
 	\begin{eqnarray}
@@ -1160,8 +1160,8 @@
 	advanced by a time step at each iteration from an initial set of field
 	values. Note that that in order to facilitate central differences in
 	time, the $\mathbf{E}$ and $\mathbf{H}$ fields are calculated half a
-	time step apart. 
-	
+	time step apart.
+
 	The difference equations also dictate a particular arrangement of
 	field components within the computational grid proposed by Yee. The
 	arrangement and the basic cell used to demonstrate this arrangement is
@@ -1172,8 +1172,8 @@
 	application of PEC boundary conditions. On a PEC boundary the
 	tangential component of electric field and normal component of
 	magnetic field vanish. Thus a PEC boundary is easily imposed upon any
-	of the faces of the Yee cell. 
-	
+	of the faces of the Yee cell.
+
 	As previously mentioned, the FDTD method essentially solves an initial
 	value problem. In most problems however, a known field is incident upon
 	the scattering object for a period comparable to the simulation time. In order to deal with this the FDTD grid is
@@ -1212,8 +1212,8 @@
 	placed between the scatterer and the PEC boundary of the computational
 	grid. The material content of the cells is especially designed such
 	that the interface with the homogeneous region has a very low
-	reflection.  
-	
+	reflection.
+
 	A PML must be positioned in between the
 	scatterer and the PEC boundary employed around the edge of the
 	computational region. The PML was actually developed for use in the
@@ -1224,7 +1224,7 @@
 	absorbing boundary condition. The role of the PML is to absorb the the
 	scattered field with minimal reflection. Details of how the PML works
 	will are given in \sect{sec:fdtd:abcpml}.
-	
+
 	Since FDTD simulations are performed in the time domain, an additional
 	step must be performed in order to extract the field in the frequency
 	domain. One way of doing this is simply to wait until the fields reach
@@ -1237,8 +1237,8 @@
 	by Gaussian pulse but care must be taken to ensure that the pulse is
 	sufficiently broad to restrict the bandwidth of the incident
 	field. The field at various wavelengths may then be found through
-	application of a discrete Fourier transform. 
-	
+	application of a discrete Fourier transform.
+
 	There are a few restrictions which must be observed in order for the
 	FDTD method to work correctly. Firstly, the size of each Yee cell must
 	be sufficiently small to accurately sample the field. This is usually
@@ -1252,8 +1252,8 @@
 		\label{eq:numermeth:courant}
 	\end{equation}
 	where $c_{max}$ is the maximum wave phase velocity expected within
-	the model. 
-	
+	the model.
+
 	The FDTD method uses memory in linear
 	proportion to the number of cells within the computational grid thus
 	making it relatively efficient compared with the
@@ -1263,7 +1263,7 @@
 	modelled using the FDTD method than can be solved with the MOM and the
 	Green's tensor method since as previously explained, these methods use
 	memory in proportion with the square of the number of scattering cells.
-	
+
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=7cm]{fig/yee2.eps}
@@ -1271,7 +1271,7 @@
 			components are sampled.}
 		\label{fig:numermeth:yeediag}
 	\end{figure}
-	
+
 	The FDTD method has a number of advantages over other methods. The
 	first advantage is that it is easy to implement. The simplicity stems
 	from the very logical mapping of the algorithm into a computer
@@ -1289,7 +1289,7 @@
 	\cite{taflove75ieeetransmicrotheoryandtech888,kunz78ieeetransemc328,taflove80ieeetransemc191,sullivan88ieeetransbiomedeng179,joseph91opticsletters31}
 	and so a great deal of knowledge has been acquired making the FDTD a
 	very powerful tool the electromagnetic scattering calculations.
-	
+
 	The FDTD method does of course have some non ideal attributes. To
 	start with, it models dispersive materials poorly. This is because it is necessary to take a frequency domain
 	description of a material and convert it to a time domain
@@ -1322,7 +1322,7 @@
 	comprehensive description of the method. It builds on concepts
 	introduced in \sect{sec:numermeth:fdtd} and is intended to be
 	largely self supporting.
-	
+
 	\subsection{Discretisation of Maxwell's equations}
 	The principle behind the FDTD method is the discretisation in space
 	and time of Maxwell's equations in differential
@@ -1372,8 +1372,8 @@
 	$(i\Delta_x,j\Delta_y,k\Delta_z)$ where $\Delta_x$, $\Delta_y$ and
 	$\Delta_z$ are the lengths of the Yee cell in the $x$-, $y$- and $z$-directions respectively. Thus the computational volume may be gridded
 	with different resolution in each of the three orthogonal directions.
-	
-	
+
+
 	The arrangement of the Yee cell is important for two primary reasons. Firstly, it is ideal for imposing PEC boundary conditions
 	on any face of the cell. This is because each face of the Yee cell
 	contains components of electric field tangential to the face and a
@@ -1399,7 +1399,7 @@
 			case approximation of a scatterer is indicated by the shaded cells.}
 		\label{fig:fdtd:fdtdgrid}
 	\end{figure}
-	
+
 	Time must also be sampled. This is done by selecting a time step
 	$\Delta t$ which describes the spacing in time of successive samples in
 	the simulation. In order to facilitate central differences in time,
@@ -1412,7 +1412,7 @@
 	(k+1/2)\Delta_z)$. The diagram in \rfig{fig:fdtd:tfsfeg} shows that
 	if the Yee cell is centred on position $(i,j,k)$ then the $E_x$
 	component is indeed located at $(i,j+1/2,k+1/2)$.
-	
+
 	By employing this sampling scheme in space and time and approximating
 	each derivative in \eqr{eq:fdtd:pdes1}{eq:fdtd:pdes6} with a central difference
 	operation (see \sect{sec:numermeth:fdtd}), the following set of
@@ -1444,7 +1444,7 @@
 		&D_{b_y}|_{i,j+1,k+1/2}\left(E_x|^{n+1/2}_{i,j+3/2,k+1/2} -
 		E_x|^{n+1/2}_{i,j+1/2,k+1/2}\right)+\nonumber\\&D_{b_x}|_{i,j+1,k+1/2}\left(E_y|^{n+1/2}_{i-1/2,j+1,k+1/2}-E_y|^{n+1/2}_{i+1/2,j+1,k+1/2}\right)
 	\end{align}
-	where 
+	where
 	\begin{eqnarray}
 		\label{eq:fdtd:ca}
 		C_{a}|_{i,j,k}&=&\left(1-\frac{\sigma_{i,j,k}\Delta
@@ -1470,7 +1470,7 @@
 	$(i,j,k)$. Note that it is also necessary to make the so called
 	semi-implicit approximation: $E_s|^n=(E_s|^{n+1/2}+E_s^{n-1/2})/2$ in
 	order to treat the magnetic loss and conductivity terms appearing in \eqr{eq:fdtd:pdes1}{eq:fdtd:pdes6}.
-	
+
 	This system of difference equations provides a means by which, given
 	$\mathbf{E}|^{n-1/2}$ and $\mathbf{H}|^n$ throughout the computational
 	grid, $\mathbf{E}|^{n+1/2}$ may be
@@ -1481,7 +1481,7 @@
 	scheme employed in the simulation. Note that this assumes the use of a
 	boundary condition at the boundary of the computational region. This
 	is dealt with in \sect{sec:fdtd:abcpml}.
-	
+
 	\subsection{Introducing an incident waveform}
 	\label{sec:fdtd:incwave}
 	Scattering problems typically have
@@ -1552,7 +1552,7 @@
 			field regions and a Yee cell.}
 		\label{fig:fdtd:tfsfeg}
 	\end{figure}
-	
+
 	The temporal properties of the waveform to be introduced must be
 	considered very carefully. For instance, if the time harmonic field of
 	an incident wave is known then it could be introduced simply by
@@ -1569,7 +1569,7 @@
 	field within the computational region over successive sinusoidal
 	cycles. Extraction of the complex amplitude of the field phasors allow
 	the time harmonic field to be extracted from the simulation.
-	
+
 	An alternative to this method is to introduce an incident wave
 	modulated by a single Gaussian pulse. The Gaussian pulse provides a
 	way to accurately control the spectral width of the incident field. The time harmonic scattered field may then be found from the time
@@ -1613,8 +1613,8 @@
 	of the order of 0.1. $t_0$ is set so that when the source starts at $t=0$,
 	it has a very small amplitude. Testing shows that an initial
 	magnitude of 8 orders of magnitude below the peak amplitude is
-	sufficient. 
-	
+	sufficient.
+
 	The time domain expression of the incident field, \eq{eq:fdtd:tdinc}, is discretised as
 	required by the FDTD update equations which maintain the consistency
 	between scattered and total field regions. At each time step the
@@ -1641,14 +1641,14 @@
 	calculating the DFT of the modulating pulse concurrently with the
 	field DFT. The time harmonic scattered field at a particular frequency
 	may then be found by dividing the DFT of the field by the DFT of the
-	modulating pulse at the frequency of interest. 
-	
+	modulating pulse at the frequency of interest.
+
 	This method of introducing an incident field using a pulsed excitation
 	is preferred since it avoids the problem of establishing when the
 	field reaches a steady state. Also, as an added bonus, it allows the
 	broadband response of a structure to be calculated based upon a single
-	FDTD simulation. 
-	
+	FDTD simulation.
+
 	The incident wave theory represented hitherto is valid only for a single
 	plane wave excitation. This is because a particular direction of
 	propagation of the wave front must be chosen in order that the
@@ -1662,7 +1662,7 @@
 	methods are computationally demanding. Fortunately there is an
 	approximation which may be used in the case where the incident wave is
 	a focused beam.
-	
+
 	In the vicinity of the focus of a high NA lens, the field decays
 	extremely quickly in the transverse direction. Thus it is possible to
 	define a window transverse to the optical axis of the lens, positioned
@@ -1672,7 +1672,7 @@
 	neglect the update equations on the edges of the window. This allows a
 	complex waveform to be launched into the computational volume with
 	minimum computational load.
-	
+
 	This approximation may be interpreted in a number of ways. Firstly it
 	may be considered that the focused beam is apertured. Since the aperture is large compared to the focused spot
 	it has a negligible effect. Secondly, this is very similar to the way
@@ -1689,8 +1689,8 @@
 	step place a constraint on the phase velocity of waves travelling in
 	the FDTD system. A full analysis of numerical dispersion is beyond the
 	scope of this section however it is possible to obtain some results
-	for restricted cases. 
-	
+	for restricted cases.
+
 	The strategy is as outlined by Taflove \cite{taflove00book} and
 	involves postulating a trial solution for a plane wave propagating
 	within a FDTD simulation. The solution obtained at an arbitrary time
@@ -1781,8 +1781,8 @@
 	$\Delta$ should be chosen sufficiently small such that the waveforms
 	vary approximately linearly between field component sample points on
 	adjacent Yee cells. As a general rule, $\Delta$ is chosen to be no larger than
-	$\lambda/20$. 
-	
+	$\lambda/20$.
+
 	Accuracy is however not the only factor which affects the choice of
 	$\Delta$. This is because all scattering objects must be built up
 	using a staircase approximation. Thus, small features must be
@@ -1803,14 +1803,14 @@
 	because some data is missing, in particular those data points which
 	would be outside the artificial boundary of the computational
 	domain. A boundary condition of this type is called an Absorbing Boundary Condition (ABC).
-	
+
 	ABCs result in a boundary condition with an extremely low reflection
 	of outgoing radiation. An ideal ABC would absorb all outgoing
 	radiation without reflecting any back into the computational
 	volume. In practice there is always a small reflection however as long
 	as the reflection is sufficiently small the ABC will not be the factor
 	limiting the simulation accuracy.
-	
+
 	The first generations of absorbing boundary conditions were all what
 	are known as analytic ABCs. These have largely been made redundant due
 	to the development of the Perfectly Matched Layer (PML) which will be
@@ -1837,7 +1837,7 @@
 	methods have been used to good effect over a period of decades. The
 	PML has now superseded them in most applications. The theory behind
 	the PML will be discussed now.
-	
+
 	The previously introduced analytic ABCs all use different update
 	equations on the boundary of the computational space. The PML operates
 	in quite a different manner. A PML is a layer of absorbing material
@@ -1849,8 +1849,8 @@
 	propagate through it to be attenuated such that there is very little energy reflected
 	back of the PEC boundary. As long as the PML is situated in the
 	scattered field region of the FDTD computational space it is very
-	useful for simulating open region scattering problems. 
-	
+	useful for simulating open region scattering problems.
+
 	The PML was first introduced in two dimensions by Berenger
 	\cite{berenger94journcopmphys185} and then later in three dimensions
 	\cite{berenger96journalcopmphys363}. Berenger's formulation employs a
@@ -1872,7 +1872,7 @@
 	$n_1=\sqrt{\mu_1^*\epsilon_1^*}/\sqrt{\epsilon_0\mu_0}$,
 	$\epsilon_2^*=\epsilon_{r2}\epsilon_0(1-\sigma_2/(\imath\omega_0\epsilon_{r2}\epsilon_0)$,
 	$\epsilon^*_1=\epsilon_{r1}\epsilon_0$ and $\omega_0$ is the angular
-	frequency of the time harmonic plane wave. 
+	frequency of the time harmonic plane wave.
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=7cm]{fdtd/fig/fresnel.eps}
@@ -1886,8 +1886,8 @@
 	$\sigma_2^*/\mu_{r1}=\sigma_2/\epsilon_{r1}$. This provides the basis
 	for a material interface between a dielectric region and an absorbing
 	region with zero reflection. This is however only valid at normal
-	incidence. 
-	
+	incidence.
+
 	In order to derive an absorbing material with a reflectionless
 	interface with dielectric materials at oblique incidence, Berenger
 	introduced a so called splitting of Maxwell's equations. Each field
@@ -1966,8 +1966,8 @@
 	especially designed to be used within materials of high conductivity
 	and better models the exponentially decaying fields present within
 	such materials. The update equations may be found in Berenger
-	\cite{berenger96journalcopmphys363} and Taflove \cite{taflove00book}. 
-	
+	\cite{berenger96journalcopmphys363} and Taflove \cite{taflove00book}.
+
 	Although in the continuous case the PML results in zero reflection of
 	outgoing radiation this is not the case in the discretised version
 	actually used in the FDTD. A numerical
@@ -1989,7 +1989,7 @@
 	$\sigma(\rho)=\sigma_m(\rho/\delta)^n$ is used for some integer $n$
 	and constants $\sigma_m$ and $\delta$. These parameters are chosen to
 	ensure a suitable upper bound on the reflection coefficient.
-	
+
 	Although it is extremely effective, it is slightly dissatisfying to use
 	a modified set of Maxwell's equations without physical
 	justification. Fortunately, it has been shown that the split
@@ -2001,7 +2001,7 @@
 	Sacks \emph{et al.} \cite{sacks95ieeetransantprop} in the context of the FEM. The other interpretation considers the
 	PML as a material in a so called stretched coordinate system
 	defined by Maxwell's equations with the standard $\nabla$ operator
-	replaced by 
+	replaced by
 	$\nabla_s=\hat{\mathbf{x}}\frac{1}{s_x}\frac{\partial}{\partial
 		x}+\hat{\mathbf{y}}\frac{1}{s_y}\frac{\partial}{\partial
 		y}+\hat{\mathbf{z}}\frac{1}{s_z}\frac{\partial}{\partial z}$
@@ -2012,8 +2012,8 @@
 	preceding two interpretations of the PML. These two additional
 	interpretations have been included for completeness but as the split
 	formulation was implemented, they will not be discussed in detail
-	here. 
-	
+	here.
+
 	One point which should be noted is that it has been shown that PMLs do
 	not attenuate evanescent waves
 	\cite{moerloose95ieeemicguidwavlet,berenger99ieeetransantprop1497,berenger00intjournnummodel}.
@@ -2023,7 +2023,7 @@
 	it should ideally be situated sufficiently far from a scatterer so that
 	evanescent waves have attenuated significantly. If this is not
 	possible then the PML may need to be made thicker than usual.
-	
+
 	\subsection{Subtle aspects of the FDTD method}
 	This section discusses aspects of the FDTD method which are typically not
 	mentioned in the literature. They are however problems which may
@@ -2049,7 +2049,7 @@
 	points. In order to find $H_z$ at the reference point, $H^{i1}_{z}$
 	and $H^{i2}_z$ must be found using linear interpolation. Then the
 	field at the reference point is found by interpolation between
-	$H^{i1}_{z}$ and $H^{i2}_z$  
+	$H^{i1}_{z}$ and $H^{i2}_z$
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=7cm]{fdtd/fig/interp.eps}
@@ -2057,7 +2057,7 @@
 			the electric and magnetic field at a common reference point.}
 		\label{fig:fdtd:yeeinterp}
 	\end{figure}
-	
+
 	The problem with this scheme is that linear interpolation is not very
 	accurate. For example, consider a 1-dimensional travelling scalar wave
 	of the form $y(x,t) = \sin(kx-\omega t)$ and assume that the wave is
@@ -2071,7 +2071,7 @@
 	is significant even at $N=20$ and is thus not accurate enough to be
 	used in the FDTD simulation. Fortunately, away from scattering objects
 	the fields vary quite smoothly. This means that simple high order
-	interpolation scheme may be employed. 
+	interpolation scheme may be employed.
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=7cm]{fdtd/sims/interp/interp_error.eps}
@@ -2079,7 +2079,7 @@
 			cubic interpolation of a travelling wave.}
 		\label{fig:fdtd:linearerror}
 	\end{figure}
-	
+
 	Cubic interpolation is such a
 	higher order scheme that requires four data points in order to perform
 	interpolation. It is easy to show that when the value of a function
@@ -2102,7 +2102,7 @@
 			cubic interpolation.}
 		\label{fig:fdtd:cubicinterp}
 	\end{figure}
-	
+
 	Note that this requires that four field values are used to find each
 	electric field value and 16 field values are required to find each
 	magnetic field value. It is easy enough to see how this works for the
@@ -2120,7 +2120,7 @@
 	employed. Interpolation is still employed however the interpolated
 	values may not be calculated in the centre of the sample points. This
 	is illustrated in \rfig{fig:fdtd:cubichx}(b).
-	
+
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=7cm]{fdtd/fig/fdtd_cubic.eps}
@@ -2140,8 +2140,8 @@
 	negative $z$-directions. The central shaded cell has a different
 	refractive index, $n$, to the two surrounding cells which are composed
 	of free space. The centre of each cell
-	is located where the $H_z$ sample points are located. 
-	
+	is located where the $H_z$ sample points are located.
+
 	Under the most basic FDTD scheme the material properties of a cell are
 	determined by the material properties of the centre of the cell. All
 	update equations for the cell then employ the material properties at
@@ -2152,8 +2152,8 @@
 	$E_{x1}$ and $E_{x2}$ must differ. This leads to asymmetry since these
 	field components are equally spaced from the centre of the scattering
 	cell and are symmetric with respect to the polarisation of the
-	incident field and scattering object. 
-	
+	incident field and scattering object.
+
 	This problem arises because the use of a nearest neighbour approach to
 	selecting the refractive index to use enforces a directionality upon
 	the algorithm. This is overcome by interpolating the material
@@ -2166,7 +2166,7 @@
 			scattering cell (shaded) with refractive index $n$.}
 		\label{fig:fdtd:2dasym}
 	\end{figure}
-	
+
 	\subsection{Evaluation and analysis}
 	\subsubsection{Propagation of focused light}
 	\label{sec:fdtd:focuselight}
@@ -2185,7 +2185,7 @@
 		\item $\Delta t=0.95\times$Courant
 		\item $\Delta\lambda=60$nm
 		\item $NA=0.92$
-	\end{itemize} 
+	\end{itemize}
 	where $\lambda$ is the wavelength of the focused beam, $I$, $J$ and
 	$K$ are the number of Yee cells in the $x$-, $y$- and $z$-directions
 	respectively. $\Delta\lambda$ is the spectral FWHM of the modulating
@@ -2197,8 +2197,8 @@
 	simulation space corresponds to the focus of the beam. The size of the
 	grid in the $z$-direction or, equivalently, $K$ was varied where
 	necessary in order to fit the simulation into the computer memory
-	available. 
-	
+	available.
+
 	The accuracy of each simulation is measured using a metric which may
 	be described as an aggregate error measure. It is calculated according
 	to:
@@ -2217,7 +2217,7 @@
 	Cartesian coordinate system have been plotted in
 	\rfig{fig:fdtd:fdtd_rw}. Each plot has 6 lines on it corresponding to
 	each test. The tests are labelled 'a' to 'f' and the parameters used
-	for each test are outlined in \tab{tab:fdtd:sims}. 
+	for each test are outlined in \tab{tab:fdtd:sims}.
 	\begin{table}[!h]
 		\begin{center}
 			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
@@ -2252,7 +2252,7 @@
 			by the line for test d since they have such similar errors.}
 		\label{fig:fdtd:fdtd_rw}
 	\end{figure}
-	
+
 	The base test, 'a', produced accurate results with the aggregate error
 	of the $x$-component
 	remaining below 1\% several wavelengths down the grid. The error in
@@ -2260,7 +2260,7 @@
 	is most likely because the $y$-component is functionally more complex
 	than the $x$ and $z$ and it also has a lower magnitude. This is
 	demonstrated in \rfig{fig:fdtd:rw_field} where the magnitude of the electric field
-	components of the particular in-focus beam is illustrated. 
+	components of the particular in-focus beam is illustrated.
 	\begin{figure}[!h]
 		\centering
 		%\includegraphics[width=.9\textwidth]{fdtd/fig/rw_field.eps}
@@ -2268,13 +2268,13 @@
 			electric field for an in focus $x$-polarised beam with $NA$ 0.92.}
 		\label{fig:fdtd:rw_field}
 	\end{figure}
-	
+
 	Test 'b' employed a wider lateral grid size and resulted in a
 	reduction in the aggregate error for all components. Test 'e' used an
 	even wider grid and resulted in a further reduction in the aggregate
 	error for all components. This demonstrates that the most significant
-	parameter is the lateral width of the FDTD grid. 
-	
+	parameter is the lateral width of the FDTD grid.
+
 	The other tests show that there is little benefit to be gained, as far
 	as this example is concerned, in using smaller values of $\Delta_x$,
 	$\Delta_y$, $\Delta_z$ and $\Delta\lambda$. The conclusion of these
@@ -2282,8 +2282,8 @@
 	lateral directions as possible. Given that the main constraint
 	involved with performing FDTD calculations is computer memory, all
 	other parameters should be set to allow the size of the lateral grid
-	to be maximised.  
-	
+	to be maximised.
+
 	\subsubsection{Scattering by a sphere}
 	One of the most commonly used test cases for gauging the accuracy of
 	FDTD scattering calculations is scattering by a sphere. This is
@@ -2297,8 +2297,8 @@
 	as illustrated in \rfig{fig:fdtd:sphere_dims}. This was done because
 	the FDTD calculation required too much memory to calculate the scattered field in the
 	entire volume. By positioning the surface asymmetrically, both near
-	and intermediate fields could be assessed. 
-	
+	and intermediate fields could be assessed.
+
 	In the case of the FDTD method, two calculations were required for
 	each sphere type. This is because the incident field was calculated in
 	a separate FDTD calculation and subtracted from the result obtained
@@ -2338,7 +2338,7 @@
 			\label{fig:fdtd:scattered_field}
 		\end{center}
 	\end{figure}
-	Here, it is defined as: 
+	Here, it is defined as:
 	\begin{equation}
 		\epsilon_{\mathbf{E}}^{\mathbf{s}}=\frac{\sum\limits_{i=1}^{i=N_{vertices}}\left|\left(\mathbf{E}^{\textrm{FDTD}}_i-\mathbf{E}^{\textrm{Mie}}_i\right)\!\cdot\!\mathbf{s}\right|^2}{\sum\limits_{i=1}^{i=N_{vertices}}\left|\mathbf{E}^{\textrm{Mie}}_i\!\cdot\!\mathbf{s}\right|^2}
 		\label{eq:fdtd:aggerr2}
@@ -2356,7 +2356,7 @@
 	is still acceptable given that its magnitude is much less than that
 	of the $x$- and $z$-components. This is a good result because the
 	common type of dielectrics (such as plastic and latex) have a
-	refractive index yielding a relative permitivity of less than 3.5. 
+	refractive index yielding a relative permitivity of less than 3.5.
 	\begin{figure}[!h]
 		\begin{center}
 			%\includegraphics[width=.75\textwidth]{fdtd/fig/relativeperm.eps}
@@ -2384,12 +2384,12 @@
 	incorporate a dispersive material model into the FDTD method (see for example \refs
 	\cite{cummer97ieeetransantprop392,judkins95josaa1974}. This
 	also entails using a very fine FDTD grid and can lead to
-	substantial memory consumption. 
-	
+	substantial memory consumption.
+
 	Much work has also been done on the problem of staircasing. In
 	general, however, each method makes the FDTD substantially more complex for
 	only a moderate improvement in accuracy. Furthermore, the improvement
-	is usually only useful in a restricted range of problems. 
+	is usually only useful in a restricted range of problems.
 	\begin{figure}[!h]
 		\begin{center}
 			%\includegraphics[width=.75\textwidth]{fdtd/fig/conductivity.eps}
@@ -2409,13 +2409,13 @@
 	grid resolution of 20 samples per wavelengths provides sufficient
 	accuracy. This work has not previously been published and should thus
 	be considered original work.
-	
+
 	The accuracy of the FDTD method, when applied to scattering problems,
 	was also tested. It was shown that in the case of scattering by a
 	dielectric sphere, the FDTD method remains accurate for realistic
 	values of refractive index, say up to 2. In the case of a conducting sphere the
 	FDTD becomes inaccurate at the modest conductivity of $10^6$ S/m when
 	using simulation parameters which would be used when simulating
-	focused beams. 
-	
+	focused beams.
+
 \end{document}

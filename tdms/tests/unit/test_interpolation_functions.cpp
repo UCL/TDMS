@@ -122,7 +122,7 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
 }
 
 /**
- * @brief The hard-coded numerical values for the interpolation constant should 
+ * @brief The hard-coded numerical values for the interpolation constant should
  * all sum to the same value
  *
  * Note - the coefficients are not required to sum to unity!
@@ -185,7 +185,7 @@ TEST_CASE("(real-valued) Band limited interpolation: constant function") {
     double const_fn_max_error;                  // maximum error
 
     // hardcoding the MATLAB error (benchmark_test_interpolation_functions.m)
-    double const_fn_MATLAB_error = 2.82944733e-04;  
+    double const_fn_MATLAB_error = 2.82944733e-04;
 
     // constant function interpolation
     for (int i=0; i<nSamples-1; i++) {

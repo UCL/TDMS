@@ -7,4 +7,3 @@ make
 ```
 
 Requires both pdflatex and bibtex.
-

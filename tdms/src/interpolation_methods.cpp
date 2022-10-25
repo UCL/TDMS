@@ -69,7 +69,7 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
     // set values for this method based on the scheme_value passed in
     // these are all hard-coded values - there is no way around a long list of cases!
     switch (val) {
-        case BAND_LIMITED_0: 
+        case BAND_LIMITED_0:
         {
             scheme_coeffs[0] = 0.389880694606603;
             scheme_coeffs[1] = 0.752494454088346;
@@ -79,7 +79,7 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
             first_nonzero_coeff = 0;
             last_nonzero_coeff = 4;
             number_of_datapoints_to_left = 1;
-            break; 
+            break;
         }
         case BAND_LIMITED_1:
         {
@@ -123,7 +123,7 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
             number_of_datapoints_to_left = 4;
             break;
         }
-        case BAND_LIMITED_4: 
+        case BAND_LIMITED_4:
         {
             scheme_coeffs[1] = -0.006777513830539;
             scheme_coeffs[2] = 0.039457774230959;
@@ -176,7 +176,7 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
         }
         case BAND_LIMITED_CELL_ZERO:
         {
-            // by symmetry, we can reflect the setup for BLi to position 7 in order to interpolate to the centre of Yee cell 0 
+            // by symmetry, we can reflect the setup for BLi to position 7 in order to interpolate to the centre of Yee cell 0
             scheme_coeffs[0] = 1.609553415928240;
             scheme_coeffs[1] = -0.752494454088346;
             scheme_coeffs[2] = 0.182115867658487;
@@ -259,7 +259,7 @@ const InterpolationScheme &best_scheme(int cells_in_direction, int cell_id) {
     }
     else if (cells_in_direction < 7) {
         // we do not have enough cells to use bandlimited interpolation, but can use cubic
-        // cell_id = 0 requires us to use CBFst, 
+        // cell_id = 0 requires us to use CBFst,
         // cell_id = 1,2,...,cells_in_direction-2 requires us to use CBMid,
         // cell_id = cells_in_direction-1 requires us to use CBLast
         if (cell_id == 0) {

@@ -8,14 +8,14 @@ double****cast_matlab_4D_array(double *array, int nrows, int ncols, int nlayers,
 
   if( nlayers==0 )
 	  nlayers++;
-  
+
   if( nblocks==0 )
 	  nblocks++;
-  
+
   p = (double ****)malloc((unsigned) (nblocks*sizeof(double ***)));
   for(l=0; l<nblocks; l++)
     p[l] = (double ***)malloc((unsigned) (nlayers*sizeof(double **)));
-  
+
   for(l=0; l<nblocks; l++)
     for(k =0; k<nlayers;k++)
       p[l][k] = (double **)malloc((unsigned) (ncols*sizeof(double *)));

@@ -1,7 +1,7 @@
 /**
  * @file interpolate.h
  * @brief Interpolation of field values within FDTD grid.
- * 
+ *
  * The Yee cell specifies the 6 field components at different points in space.
  * Interpolation is required to calculate the 6 field components at the same
  * spatial position.
