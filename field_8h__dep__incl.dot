@@ -10,8 +10,10 @@ digraph "tdms/include/field.h"
   Node3 [label="tdms/include/interpolate.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$interpolate_8h.html",tooltip="Interpolation of field values within FDTD grid."];
   Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node4 [label="tdms/include/iterator.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$iterator_8h.html",tooltip="The main time propogation algorithm."];
-  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node5 [label="tdms/tests/unit/test\l_field_interpolation.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__field__interpolation_8cpp.html",tooltip="Tests interpolation of E- and H-fields and compares the errors against MATLAB benchmarks."];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="tdms/src/openandorder.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$openandorder_8cpp.html",tooltip="Launch and file IO."];
   Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node6 [label="tdms/tests/unit/test\l_fields.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__fields_8cpp.html",tooltip="Test of the Field class and subclasses."];
+  Node6 [label="tdms/tests/unit/test\l_field_interpolation.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__field__interpolation_8cpp.html",tooltip="Tests interpolation of E- and H-fields and compares the errors against MATLAB benchmarks."];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="tdms/tests/unit/test\l_fields.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$test__fields_8cpp.html",tooltip="Test of the Field class and subclasses."];
 }

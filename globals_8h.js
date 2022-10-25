@@ -26,6 +26,10 @@ var globals_8h =
       [ "parallel", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca906be981ba932a8b90590636ecab34bf", null ],
       [ "perpendicular", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca925a6f3e03e5ba73559d120ddc352c9b", null ]
     ] ],
+    [ "SolverMethod", "globals_8h.html#ad69c7e1a50315928048000e56d50e4e5", [
+      [ "PseudoSpectral", "globals_8h.html#ad69c7e1a50315928048000e56d50e4e5a6241872be6edfc4e73af9b4fd4859547", null ],
+      [ "FiniteDifference", "globals_8h.html#ad69c7e1a50315928048000e56d50e4e5a11fb91abf276a3a314432ea884e9de6d", null ]
+    ] ],
     [ "DCPI", "globals_8h.html#a09ffe6a1b2a4552ccf14a5aeb78f3540", null ],
     [ "EPSILON0", "globals_8h.html#a16ae302ea1c1e9dfbac9ce2f8a163294", null ],
     [ "IMAGINARY_UNIT", "globals_8h.html#addd1b4be98977eac7328d71dc65e8864", null ],

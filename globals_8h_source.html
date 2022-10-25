@@ -139,31 +139,32 @@ $(document).ready(function(){initNavTree('globals_8h_source.html',''); initResiz
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">//  Enumerated constants</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// **********************</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">enum</span> ModeOfRun { Pass1 , Pass2 };</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">enum</span> RCSType   { parallel , perpendicular };</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">// **************************************</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">//          Mathematical Constants</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">// **************************************</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keyword">namespace </span>tdms_math_constants</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> DCPI = 3.14159265358979323846;                                  <span class="comment">// Pi</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">const</span> std::complex&lt;double&gt; IMAGINARY_UNIT = std::complex&lt;double&gt;(0.0, 1.0);  <span class="comment">// Imaginary unit</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">// **************************************</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">//          Physical Constants</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">// **************************************</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">namespace </span>tdms_phys_constants</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> EPSILON0 = 8.85400e-12;                         <span class="comment">// free space electric permitivity</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> MU0 = 4.0 * tdms_math_constants::DCPI * 1.0e-7; <span class="comment">// free space magnetic permeability</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> LIGHT_V = 1.0 / sqrt(EPSILON0 * MU0);           <span class="comment">// free space light velocity</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> Z0 = 376.734;                                   <span class="comment">// free space inpedance</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">enum</span> ModeOfRun    { Pass1 , Pass2 };</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">enum</span> RCSType      { parallel , perpendicular };</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">enum</span> SolverMethod { PseudoSpectral, FiniteDifference };</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">// **************************************</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">//          Mathematical Constants</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">// **************************************</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">namespace </span>tdms_math_constants</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> DCPI = 3.14159265358979323846;                                  <span class="comment">// Pi</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">const</span> std::complex&lt;double&gt; IMAGINARY_UNIT = std::complex&lt;double&gt;(0.0, 1.0);  <span class="comment">// Imaginary unit</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">// **************************************</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">//          Physical Constants</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">// **************************************</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">namespace </span>tdms_phys_constants</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> EPSILON0 = 8.85400e-12;                         <span class="comment">// free space electric permitivity</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> MU0 = 4.0 * tdms_math_constants::DCPI * 1.0e-7; <span class="comment">// free space magnetic permeability</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> LIGHT_V = 1.0 / sqrt(EPSILON0 * MU0);           <span class="comment">// free space light velocity</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> Z0 = 376.734;                                   <span class="comment">// free space inpedance</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="astructPlanarInterface_html"><div class="ttname"><a href="structPlanarInterface.html">PlanarInterface</a></div><div class="ttdef"><b>Definition:</b> globals.h:25</div></div>

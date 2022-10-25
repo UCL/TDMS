@@ -137,11 +137,9 @@ Compiling and debugging</h2>
 <div class="line"># -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \</div>
 <div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
 <div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
-<div class="line"># -DDERIVATIVE_TYPE=FD</div>
 <div class="line">make install</div>
 </div><!-- fragment --><p>You may need to help CMake find MATLAB/fftw etc.</p>
 <ul>
-<li>There are two methods to choose from: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. <b>This choice must be made at compile time</b>, to comply with MATLAB. The default is PSTD. You can select FDTD with <code>-DDERIVATIVE_TYPE=FD</code>.</li>
 <li>By default, build testing is turned off. You can turn it on with <code>-DBUILD_TESTING=ON</code>.</li>
 <li>Also by default, debug printout is off. Turn on with <code>-DCMAKE_BUILD_TYPE=Debug</code> or manually at some specific place in the code with: <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;spdlog/spdlog.h&gt;</span></div>
 <div class="line"> </div>
@@ -191,8 +189,9 @@ Unit</h2>
 <div class="line"><span class="comment"> * @file test_file.cpp</span></div>
 <div class="line"><span class="comment"> * @brief Short description of the tests.</span></div>
 <div class="line"><span class="comment"> */</span></div>
-<div class="line"><span class="preprocessor">#include &lt;catch2/catch_test_macros.hpp&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;things_to_be_tested.h&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="preprocessor">#include &lt;catch2/catch_test_macros.hpp&gt;</span></div>
 <div class="line"><span class="comment"></span> </div>
 <div class="line"><span class="comment">/**</span></div>
 <div class="line"><span class="comment"> * @brief Detailed description of the testing.</span></div>
@@ -201,8 +200,8 @@ Unit</h2>
 <div class="line"><span class="comment"> */</span></div>
 <div class="line"><a class="code" href="test__BLi__vs__cubic__interpolation_8cpp.html#ae2da8b03fb4b6f44dd7cc21624ecac00">TEST_CASE</a>(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
 <div class="line">    <span class="comment">// set up function calls or whatever</span></div>
-<div class="line">    REQUIRE_THROW(&lt;something&gt;)</div>
-<div class="line">    CHECK(&lt;something&gt;)</div>
+<div class="line">    REQUIRE_THROW(&lt;something&gt;);</div>
+<div class="line">    CHECK(&lt;something&gt;);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>The doxygen-style comments will be included in this developer documentation.</p>
 <p>To run the unit tests, <a href="#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
@@ -215,10 +214,7 @@ System</h2>
 <p>When you run the tests for the first time, the example data will be downloaded to <code>tdms/tests/system/data</code> (which is <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). Subsequent runs of the test will not re-download unless you manually delete the zip file.</p>
 <p>A good example of running the <code>tdms</code> executable for a given input and expected output is <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_arc01.py">test_arc01.py</a></p>
 <p>You need to <a href="#compiling">compile</a> <code>tdms</code>, then the system tests can be run, e.g. from the build directory:</p>
-<div class="fragment"><div class="line">pytest ../tests/system/ -m &quot;not fdtd_build_only&quot;</div>
-</div><!-- fragment --><p>A slight complication - which we hope to simplify - it is possible to build in two different configurations for two different methods: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. We therefore <a href="https://docs.pytest.org/en/stable/example/markers.html">mark</a> some of the system tests <code>fdtd_build_only</code>.</p>
-<p>To test the FDTD build: <a href="#compiling">recompile</a> with <code>-DDERIVATIVE_TYPE=FD</code> and run:</p>
-<div class="fragment"><div class="line">pytest ../tests/system/ -m fdtd_build_only</div>
+<div class="fragment"><div class="line">pytest ../tests/system/</div>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

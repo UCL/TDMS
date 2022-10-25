@@ -104,15 +104,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6">ArgumentNamespace</a> (int n_args, char *argv[])</td></tr>
 <tr class="memdesc:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Argument Namespace object.  <a href="classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6">More...</a><br /></td></tr>
 <tr class="separator:ab932c669a76e2bc2c0e2c36e1b8fd5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79217b5762396d116854b9d8935af99"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#aa79217b5762396d116854b9d8935af99">have_flag</a> (std::string const &amp;flag)</td></tr>
-<tr class="memdesc:aa79217b5762396d116854b9d8935af99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the arguments for the flag provided.  <a href="classArgumentNamespace.html#aa79217b5762396d116854b9d8935af99">More...</a><br /></td></tr>
-<tr class="separator:aa79217b5762396d116854b9d8935af99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38d0b80a197f4c21d97ebca03b495807"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a38d0b80a197f4c21d97ebca03b495807">have_flag</a> (std::string const &amp;flag) const</td></tr>
+<tr class="memdesc:a38d0b80a197f4c21d97ebca03b495807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the arguments for the flag provided.  <a href="classArgumentNamespace.html#a38d0b80a197f4c21d97ebca03b495807">More...</a><br /></td></tr>
+<tr class="separator:a38d0b80a197f4c21d97ebca03b495807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e06546d075820aa48683294e4ff62ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a9e06546d075820aa48683294e4ff62ed">has_grid_filename</a> () const</td></tr>
 <tr class="memdesc:a9e06546d075820aa48683294e4ff62ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Have we been provided with a grid filename?  <a href="classArgumentNamespace.html#a9e06546d075820aa48683294e4ff62ed">More...</a><br /></td></tr>
 <tr class="separator:a9e06546d075820aa48683294e4ff62ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15954bd490626afc032eef379e16949b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a15954bd490626afc032eef379e16949b">have_correct_number_of_filenames</a> () const</td></tr>
 <tr class="memdesc:a15954bd490626afc032eef379e16949b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that the correct number of filename arguments are provided (either 2 or 3 non-flag arguments)  <a href="classArgumentNamespace.html#a15954bd490626afc032eef379e16949b">More...</a><br /></td></tr>
 <tr class="separator:a15954bd490626afc032eef379e16949b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7334784d24819031d41ed914a8ac058e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a7334784d24819031d41ed914a8ac058e">finite_difference</a> () const</td></tr>
+<tr class="memdesc:a7334784d24819031d41ed914a8ac058e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether we were asked to use the finite-difference method. (the default is pseudospectral.)  <a href="classArgumentNamespace.html#a7334784d24819031d41ed914a8ac058e">More...</a><br /></td></tr>
+<tr class="separator:a7334784d24819031d41ed914a8ac058e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bddfb193da659b05938b577db646ff4"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArgumentNamespace.html#a1bddfb193da659b05938b577db646ff4">input_filename</a> ()</td></tr>
 <tr class="memdesc:a1bddfb193da659b05938b577db646ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the input filename.  <a href="classArgumentNamespace.html#a1bddfb193da659b05938b577db646ff4">More...</a><br /></td></tr>
 <tr class="separator:a1bddfb193da659b05938b577db646ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +199,28 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7334784d24819031d41ed914a8ac058e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7334784d24819031d41ed914a8ac058e">&#9670;&nbsp;</a></span>finite_difference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::finite_difference </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether we were asked to use the finite-difference method. (the default is pseudospectral.) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if provided '-fd' or '&ndash;finite-difference' </dd>
+<dd>
+false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a75b3ea55ae247796f2e6be7f9654dfc6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a75b3ea55ae247796f2e6be7f9654dfc6">&#9670;&nbsp;</a></span>grid_filename()</h2>
 
@@ -260,8 +285,8 @@ false otherwise </dd></dl>
 
 </div>
 </div>
-<a id="aa79217b5762396d116854b9d8935af99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa79217b5762396d116854b9d8935af99">&#9670;&nbsp;</a></span>have_flag()</h2>
+<a id="a38d0b80a197f4c21d97ebca03b495807"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38d0b80a197f4c21d97ebca03b495807">&#9670;&nbsp;</a></span>have_flag()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,7 +296,7 @@ false otherwise </dd></dl>
           <td>(</td>
           <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>flag</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
