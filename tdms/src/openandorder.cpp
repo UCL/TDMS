@@ -1,7 +1,7 @@
 /**
  * @file openandorder.cpp
  * @brief Launch and file IO
- * 
+ *
  * Code for processing command line arguments, opening input files,  passing
  * matrices to the mexFunction and writing the output to the specified output
  * file.
@@ -62,7 +62,7 @@ int main(int nargs, char *argv[]){
 
   // decide which derivative method to use (PSTD or FDTD)
   SolverMethod method = PseudoSpectral; // default
-  if (args.finite_difference()) 
+  if (args.finite_difference())
     method = SolverMethod::FiniteDifference;
 
   //now run the time propagation code

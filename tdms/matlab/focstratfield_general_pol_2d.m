@@ -36,7 +36,7 @@ function [Ep,Em] = focstratfield_general_pol(vertices,nvec,hvec,NA,lambda,ntheta
 %To do
 %1) Update reference to published paper above
 %2) Update equation numbers cited in comments below
-    
+
 %The following parameters are currently not set as the features
 %they provide have not been fully tested
 
@@ -76,7 +76,7 @@ if numel(NA)~=1
 	if ~all(NA/nvec(1)<1)
 	    error('NA/nvec(1) must be < 1');
 	end
-	
+
 	if NA(1)>=NA(2)
 	    error('NA must be in ascending order');
 	end
@@ -85,7 +85,7 @@ else
     if NA<0
 	error('NA must be > 0');
     end
-    
+
     if NA/nvec(1)>1
 	error('NA/nvec(1) must be < 1');
     end
@@ -183,7 +183,7 @@ Rt = (Ti*vertices')';
 
 %calculate the location of the  original origin in the
 %reference frame O4 (see text for description of the different
-%refrence frames), Eq (2) 
+%refrence frames), Eq (2)
 origin = (Ti*([0 0 0]-zr*1*[0 0 1])')' + zr*1*[0 0 1];
 
 %The layers have the same z positions in reference frame O4, we
@@ -225,10 +225,10 @@ else
 end
 
 %Incident propagation vector at first interface
-St_0_p = [St(:,1) St(:,2)  St(:,3)];    
+St_0_p = [St(:,1) St(:,2)  St(:,3)];
 
 %Reflected propagation vector at first interface
-St_0_m = [St(:,1) St(:,2) -St(:,3)];    
+St_0_m = [St(:,1) St(:,2) -St(:,3)];
 
 %Transmitted  propagation vector after final interface
 St_N_p = [nvec(1)/nvec(end)*St(:,1) nvec(1)/nvec(end)*St(:,2) sqrt( 1-(nvec(1)/nvec(end)*St(:,1)).^2 -(nvec(1)/nvec(end)*St(:,2)).^2)];
@@ -318,16 +318,16 @@ if ~isempty(hvec)
 	%coefficients at the first and last interfaces
 	[STE] = multi_layer( hvec, nvec, lambda, theta_i(it), 'TE');
 	TTEi_final_boundary(it) = 1/STE(1,1);
-		
+
 	[STM] = multi_layer( hvec, nvec, lambda, theta_i(it), 'TM');
 	TTMi_final_boundary(it) = 1/STM(1,1);
-		
+
 	%nvec has been adjusted by this stage in the code to include a
 	%phantom interface, if necessary, to accomodate an observation
 	%point before the first interface. The final element of
 	%nvec_internal should be the refractive index before
 	%the first interface, either phantom or physical.
-	
+
 	%now we need to iterate through all possible
 	%z-locations
 	for iz=1:ifinalz
@@ -347,38 +347,38 @@ if ~isempty(hvec)
 	    if it==1
 		nvec_internal(iz) = nvec_temp(1);
 	    end
-	    
+
 	    theta_layer = asin(nvec(1)*sin(theta_i(it))/nvec_temp(1));
-	    
+
 	    [STE] = multi_layer( hvec_temp, nvec_temp, lambda, theta_layer, 'TE');
 	    RTEi(iz,it) = STE(2,1)*TTEi_final_boundary(it);
 	    TTEi(iz,it) = STE(1,1)*TTEi_final_boundary(it);
-	    
+
 	    [STM] = multi_layer( hvec_temp, nvec_temp, lambda, theta_layer, 'TM');
 	    RTMi(iz,it) = STM(2,1)*TTMi_final_boundary(it);
 	    TTMi(iz,it) = STM(1,1)*TTMi_final_boundary(it);
-	    
+
 	end
 	for iz=(ifinalz+1):numel(iunique)
 	    %z location of current vertices
 	    zloc = vertices(iunique(iz),3);
-	    
+
 	    hvec_temp = [hvec(end) zloc];
 	    nvec_temp = [nvec(end) nvec(end) nvec(end)];
 	    if it==1
 		nvec_internal(iz) = nvec_temp(1);
 	    end
-	    
+
 	    theta_layer = asin(nvec(1)*sin(theta_i(it))/nvec_temp(1));
-	    
+
 	    [STE] = multi_layer( hvec_temp, nvec_temp, lambda, theta_layer, 'TE');
 	    RTEi(iz,it) = 0;
 	    TTEi(iz,it) = TTEi_final_boundary(it)/STE(1,1);
-	    
+
 	    [STM] = multi_layer( hvec_temp, nvec_temp, lambda, theta_layer, 'TM');
 	    RTMi(iz,it) = 0;
 	    TTMi(iz,it) = TTMi_final_boundary(it)/STM(1,1);
-	    
+
 	end
     end
     %Perform the inerpolation. Currently, each element of THEi
@@ -446,14 +446,14 @@ if transalign
 		TEhat_2 = TEhat_0_p;
 		St_iz_p = [nvec(1)/nvec_internal(iz)*St(:,1) nvec(1)/nvec_internal(iz)*St(:,2) sqrt( 1-(nvec(1)/nvec_internal(iz)*St(:,1)).^2 -(nvec(1)/nvec_internal(iz)*St(:,2)).^2)];
 		TMhat_2_p = cross(TEhat_0_p,St_iz_p);
-		
+
 		St_iz_m = [nvec(1)/nvec_internal(iz)*St(:,1) nvec(1)/nvec_internal(iz)*St(:,2) -sqrt( 1-(nvec(1)/nvec_internal(iz)*St(:,1)).^2 -(nvec(1)/nvec_internal(iz)*St(:,2)).^2)];
 		TMhat_2_m = cross(TEhat_0_p,St_iz_m);
 	    end
 	    tmult_1 = WGAUSS.*WPHI.*WTHE.*PHASE1;
 	    %perform the integration over the TE and TM
-	    %components. 
-	    
+	    %components.
+
 	    Ep(ixvec_1(ix),:) = (tmult_1.*TEmag_0_p.*TTE(iz,:).').'*TEhat_2 + (tmult_1.*TMmag_0_p.*TTM(iz,:).').'*TMhat_2_p;
 	    Em(ixvec_1(ix),:) = (tmult_1.*TEmag_0_p.*RTE(iz,:).').'*TEhat_2 + (tmult_1.*TMmag_0_p.*RTM(iz,:).').'*TMhat_2_m;
 	end
@@ -464,7 +464,7 @@ else
 	    PHASE1 = exp(sqrt(-1)*nvec(1)*2*pi/lambda*(Rt(ix,1:2)*St_0_p(:,1:2).' + hvec(1)*St_0_p(:,3).')).';
 	    tmult_1 = WGAUSS.*WPHI.*WTHE.*PHASE1;
 	    %perform the integration over the TE and TM
-	    %components. 
+	    %components.
 	    TEhat_2 = TEhat_0_p;
 	    St_iz_p = [nvec(1)/nvec_internal(iz)*St(:,1) nvec(1)/nvec_internal(iz)*St(:,2) sqrt( 1-(nvec(1)/nvec_internal(iz)*St(:,1)).^2 -(nvec(1)/nvec_internal(iz)*St(:,2)).^2)];
 	    TMhat_2 = cross(TEhat_0_p,St_iz_p);

@@ -22,7 +22,7 @@ private:
     /**
      * @brief Get a value from a integer attribute of the FDTD grid defined in a
      * .mat file
-     * 
+     *
      * @param key the name of the attribute
      * @return int the value of the attribute
      */
@@ -31,7 +31,7 @@ private:
 public:
     /**
      * @brief Construct a new fdtd Grid Initialiser object
-     * 
+     *
      * @param fdtd_pointer pointer to the FDTD grid
      * @param mat_filename the filename of the MATLAB file
      */

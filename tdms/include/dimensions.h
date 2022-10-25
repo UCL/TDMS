@@ -1,6 +1,6 @@
 /**
  * @file dimensions.h
- * @brief 
+ * @brief
  */
 #pragma once
 

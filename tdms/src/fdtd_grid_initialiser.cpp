@@ -47,4 +47,3 @@ void fdtdGridInitialiser::add_tensor(const string &name){
 
   mxSetField(( mxArray *)pointer, 0, name.c_str(), element);
 }
-

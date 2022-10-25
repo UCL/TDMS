@@ -12,9 +12,9 @@ void interpolateFieldCentralE( double ***Ex_yee, double ***Ey_yee, double ***Ez_
 			      double ***Ex    , double ***Ey    , double ***Ez    ,
                               int       I     , int       J     , int       K     ,
 			      int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
- 
+
   //first check that the limits of field extraction of within range
   checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
 
@@ -63,9 +63,9 @@ void interpolateFieldCentralE_TE( double ***Ex_yee, double ***Ey_yee, double ***
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
 				 int       I     , int       J     , int       K     ,
 				 int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
- 
+
   //first check that the limits of field extraction of within range
   checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
 
@@ -101,9 +101,9 @@ void interpolateFieldCentralE_TM( double ***Ex_yee, double ***Ey_yee, double ***
 				 double ***Ex    , double ***Ey    , double ***Ez    ,
 				 int       I     , int       J     , int       K     ,
 				 int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
- 
+
   //first check that the limits of field extraction of within range
   checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
 
@@ -131,7 +131,7 @@ void interpolateFieldCentralE_TM( double ***Ex_yee, double ***Ey_yee, double ***
  * @param[in] j_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= J-2
  * @param[in] k_l Least k index into the FDTD grid to evaluate the field at. Should be >= 2
  * @param[in] k_u Greatest i index into the FDTD grid to evaluate the field at. Should be <= K-2
- * 
+ *
  * I, J, K are the number of elements in the i, j, k directions of the FDTD grid, respectively.
  */
 void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez_yee,
@@ -144,7 +144,7 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
 
   //fprintf(stderr, "mxInterpolateFieldCentralE Pos 00\n");
   if( (int)mxGetNumberOfDimensions( (const mxArray *)Ex_yee) < 3){
-    throw runtime_error("Error in mxInterpolateFieldCentralE, Ex_yee does not have 3 dimensions\n");   
+    throw runtime_error("Error in mxInterpolateFieldCentralE, Ex_yee does not have 3 dimensions\n");
   }
   //fprintf(stderr, "mxInterpolateFieldCentralE Pos 01\n");
 
@@ -176,7 +176,7 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
 
   //now construct the output matrices
   int ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   if(outdims[1]<1)
@@ -203,7 +203,7 @@ void mxInterpolateFieldCentralE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray *Ez
   interpolateFieldCentralE( Ex_yee_I, Ey_yee_I, Ez_yee_I, ExI, EyI, EzI, indims[0], indims[1], indims[2], i_l, i_u, j_l, j_u, k_l, k_u);
   // real part
   interpolateFieldCentralE( Ex_yee_R, Ey_yee_R, Ez_yee_R, ExR, EyR, EzR, indims[0], indims[1], indims[2], i_l, i_u, j_l, j_u, k_l, k_u);
-  
+
   //free the extra memory used by casting array
   free_cast_matlab_3D_array(Ex_yee_R, indims[2]);
   free_cast_matlab_3D_array(Ex_yee_I, indims[2]);
@@ -245,13 +245,13 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   double ***ExR, ***ExI, ***EyR, ***EyI, ***EzR, ***EzI,***Ex_yee_R, ***Ex_yee_I, ***Ey_yee_R, ***Ey_yee_I, ***Ez_yee_R, ***Ez_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  
+
   if( mxGetNumberOfDimensions(Ex_yee) !=2 ){
     throw runtime_error("Error in mxInterpolateFieldCentralE_TE, Ex_yee does not have 2 dimensions\n");
-    
-    
+
+
   }
-  
+
   indims = (int *)mxGetDimensions( (mxArray *)Ex_yee);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Ex_yee) ){
@@ -275,11 +275,11 @@ void mxInterpolateFieldCentralE_TE( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
 
   //now construct the output matrices
   ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   outdims[2] = 1;
-   
+
   *Ex = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -343,13 +343,13 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
   double ***ExR, ***ExI, ***EyR, ***EyI, ***EzR, ***EzI,***Ex_yee_R, ***Ex_yee_I, ***Ey_yee_R, ***Ey_yee_I, ***Ez_yee_R, ***Ez_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  
+
   if( mxGetNumberOfDimensions(Ex_yee) != 2){
     throw runtime_error("Error in mxInterpolateFieldCentralE_TM, Ex_yee does not have 2 dimensions\n");
-    
-    
+
+
   }
-  
+
   indims = (int *)mxGetDimensions(Ex_yee);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Ex_yee) ){
@@ -374,11 +374,11 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
 
   //now construct the output matrices
   ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   outdims[2] = 1;
-   
+
   *Ex = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ey = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Ez = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -403,7 +403,7 @@ void mxInterpolateFieldCentralE_TM( mxArray *Ex_yee , mxArray *Ey_yee , mxArray 
 			       ExR     , EyR     , EzR    ,
 			       indims[0]     , indims[1]     , indims[2]     ,
 			       i_l, i_u, j_l, j_u, k_l, k_u);
-  
+
   //free the extra memory used by casting array
   free_cast_matlab_3D_array(Ex_yee_R, 0);
   free_cast_matlab_3D_array(Ex_yee_I, 0);
@@ -443,10 +443,10 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
 			      double ***Hx    , double ***Hy    , double ***Hz    ,
                               int       I     , int       J     , int       K     ,
 			      int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
   double res1, res2, res3, res4;
- 
+
   //  throw runtime_error("Entering interpolateFieldCentralH\n");
   //first check that the limits of field extraction of within range
   checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
@@ -461,7 +461,7 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
 	      res3 = Hx_yee[k-1][j][i];
 	      res4 = Hx_yee[k-2][j][i];
 	      Hx[k-k_l][j][i-i_l] = interp1(res1, res2, res3, res4);
-	
+
 	      res1 = interp1(Hy_yee[k+1][j][i+1],Hy_yee[k+1][j][i],Hy_yee[k+1][j][i-1],Hy_yee[k+1][j][i-2]);
 	      res2 = interp1(Hy_yee[k  ][j][i+1],Hy_yee[k  ][j][i],Hy_yee[k  ][j][i-1],Hy_yee[k  ][j][i-2]);
 	      res3 = interp1(Hy_yee[k-1][j][i+1],Hy_yee[k-1][j][i],Hy_yee[k-1][j][i-1],Hy_yee[k-1][j][i-2]);
@@ -482,13 +482,13 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
           res3 = interp1(Hx_yee[k-1][j][i+1],Hx_yee[k-1][j][i],Hx_yee[k-1][j][i-1],Hx_yee[k-1][j][i-2]);
           res4 = interp1(Hx_yee[k-2][j][i+1],Hx_yee[k-2][j][i],Hx_yee[k-2][j][i-1],Hx_yee[k-2][j][i-2]);
           Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-          
+
           res1 = interp1(Hy_yee[k+1][j+1][i],Hy_yee[k+1][j][i],Hy_yee[k+1][j-1][i],Hy_yee[k+1][j-2][i]);
           res2 = interp1(Hy_yee[k  ][j+1][i],Hy_yee[k  ][j][i],Hy_yee[k  ][j-1][i],Hy_yee[k  ][j-2][i]);
           res3 = interp1(Hy_yee[k-1][j+1][i],Hy_yee[k-1][j][i],Hy_yee[k-1][j-1][i],Hy_yee[k-1][j-2][i]);
           res4 = interp1(Hy_yee[k-2][j+1][i],Hy_yee[k-2][j][i],Hy_yee[k-2][j-1][i],Hy_yee[k-2][j-2][i]);
           Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-          
+
           res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
           res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
           res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
@@ -500,13 +500,13 @@ void interpolateFieldCentralH( double ***Hx_yee, double ***Hy_yee, double ***Hz_
         res3 = interp1(Hx_yee[k-1][j+1][i],Hx_yee[k-1][j][i],Hx_yee[k-1][j-1][i],Hx_yee[k-1][j-2][i]);
         res4 = interp1(Hx_yee[k-2][j+1][i],Hx_yee[k-2][j][i],Hx_yee[k-2][j-1][i],Hx_yee[k-2][j-2][i]);
         Hx[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-        
+
         res1 = interp1(Hy_yee[k+1][j][i+1],Hy_yee[k+1][j][i],Hy_yee[k+1][j][i-1],Hy_yee[k+1][j][i-2]);
         res2 = interp1(Hy_yee[k  ][j][i+1],Hy_yee[k  ][j][i],Hy_yee[k  ][j][i-1],Hy_yee[k  ][j][i-2]);
         res3 = interp1(Hy_yee[k-1][j][i+1],Hy_yee[k-1][j][i],Hy_yee[k-1][j][i-1],Hy_yee[k-1][j][i-2]);
         res4 = interp1(Hy_yee[k-2][j][i+1],Hy_yee[k-2][j][i],Hy_yee[k-2][j][i-1],Hy_yee[k-2][j][i-2]);
         Hy[k-k_l][j-j_l][i-i_l] = interp1(res1, res2, res3, res4);
-        
+
         res1 = interp1(Hz_yee[k][j+1][i+1],Hz_yee[k][j+1][i],Hz_yee[k][j+1][i-1],Hz_yee[k][j+1][i-2]);
         res2 = interp1(Hz_yee[k][j  ][i+1],Hz_yee[k][j  ][i],Hz_yee[k][j  ][i-1],Hz_yee[k][j  ][i-2]);
         res3 = interp1(Hz_yee[k][j-1][i+1],Hz_yee[k][j-1][i],Hz_yee[k][j-1][i-1],Hz_yee[k][j-1][i-2]);
@@ -538,10 +538,10 @@ void interpolateFieldCentralH_TE( double ***Hx_yee, double ***Hy_yee, double ***
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
 				 int       I     , int       J     , int       K     ,
 				 int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
   double res1, res2, res3, res4;
- 
+
   //first check that the limits of field extraction of within range
   checkInterpolationPoints(i_l, i_u, j_l, j_u, k_l, k_u, I, J, K);
 
@@ -603,7 +603,7 @@ void interpolateFieldCentralH_TM( double ***Hx_yee, double ***Hy_yee, double ***
 				 double ***Hx    , double ***Hy    , double ***Hz    ,
 				 int       I     , int       J     , int       K     ,
 				 int i_l, int i_u, int j_l, int j_u, int k_l, int k_u){
-  
+
   int i,j,k;
 
   //first check that the limits of field extraction of within range
@@ -665,11 +665,11 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
   double ***HxR, ***HxI, ***HyR, ***HyI, ***HzR, ***HzI,***Hx_yee_R, ***Hx_yee_I, ***Hy_yee_R, ***Hy_yee_I, ***Hz_yee_R, ***Hz_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  
+
   if( mxGetNumberOfDimensions(Hx_yee) < 3){
     throw runtime_error("Error in mxInterpolateFieldCentralH, Ex_yee does not have 3 dimensions\n");
   }
-  
+
   indims = (int *)mxGetDimensions(Hx_yee);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Hx_yee) ){
@@ -694,13 +694,13 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
 
   //now construct the output matrices
   ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   if(outdims[1]<1)
     outdims[1]=1;
   outdims[2] = k_u - k_l + 1;
-   
+
   *Hx = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -725,7 +725,7 @@ void mxInterpolateFieldCentralH( mxArray *Hx_yee , mxArray *Hy_yee , mxArray *Hz
 			    HxR     , HyR     , HzR    ,
 			    indims[0]     , indims[1]     , indims[2]     ,
 			    i_l, i_u, j_l, j_u, k_l, k_u);
-  
+
   //free the extra memory used by casting array
   free_cast_matlab_3D_array(Hx_yee_R, indims[2]);
   free_cast_matlab_3D_array(Hx_yee_I, indims[2]);
@@ -767,13 +767,13 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   double ***HxR, ***HxI, ***HyR, ***HyI, ***HzR, ***HzI,***Hx_yee_R, ***Hx_yee_I, ***Hy_yee_R, ***Hy_yee_I, ***Hz_yee_R, ***Hz_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  
+
   if( mxGetNumberOfDimensions(Hx_yee) != 2){
     throw runtime_error("Error in mxInterpolateFieldCentralH_TE, Ex_yee does not have 3 dimensions\n");
-    
-    
+
+
   }
-  
+
   indims = (int *)mxGetDimensions(Hx_yee);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Hx_yee) ){
@@ -798,11 +798,11 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 
   //now construct the output matrices
   ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   outdims[2] = 1;
-   
+
   *Hx = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -827,7 +827,7 @@ void mxInterpolateFieldCentralH_TE( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 			       HxR     , HyR     , HzR    ,
 			       indims[0]     , indims[1]     , indims[2]     ,
 			       i_l, i_u, j_l, j_u, k_l, k_u);
-  
+
   //free the extra memory used by casting array
   free_cast_matlab_3D_array(Hx_yee_R, 0);
   free_cast_matlab_3D_array(Hx_yee_I, 0);
@@ -869,11 +869,11 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
   double ***HxR, ***HxI, ***HyR, ***HyI, ***HzR, ***HzI,***Hx_yee_R, ***Hx_yee_I, ***Hy_yee_R, ***Hy_yee_I, ***Hz_yee_R, ***Hz_yee_I;
   const int *indims;
   int outdims[3], ndims;
-  
+
   if( mxGetNumberOfDimensions(Hx_yee) != 2){
     throw runtime_error("Error in mxInterpolateFieldCentralH_TM, Ex_yee does not have 3 dimensions\n");
   }
-  
+
   indims = (int *)mxGetDimensions(Hx_yee);
   //assume that all matrices have the same dimensions
   if( !mxIsComplex(Hx_yee) ){
@@ -898,11 +898,11 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 
   //now construct the output matrices
   ndims = 3;
-  
+
   outdims[0] = i_u - i_l + 1;
   outdims[1] = j_u - j_l + 1;
   outdims[2] = 1;
-   
+
   *Hx = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hy = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *Hz = mxCreateNumericArray( ndims, (const mwSize *)outdims, mxDOUBLE_CLASS, mxCOMPLEX);
@@ -927,7 +927,7 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 			       HxR     , HyR     , HzR    ,
 			       indims[0]     , indims[1]     , indims[2]     ,
 			       i_l, i_u, j_l, j_u, k_l, k_u);
-  
+
   //free the extra memory used by casting array
   free_cast_matlab_3D_array(Hx_yee_R, 0);
   free_cast_matlab_3D_array(Hx_yee_I, 0);
@@ -954,7 +954,7 @@ void mxInterpolateFieldCentralH_TM( mxArray *Hx_yee , mxArray *Hy_yee , mxArray 
 void interpolateTimeDomainFieldCentralH( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					int i, int j, int k,
 					double *Hx, double *Hy, double *Hz){
-  
+
 
   double res1, res2, res3, res4;
 
@@ -963,13 +963,13 @@ void interpolateTimeDomainFieldCentralH( SplitFieldComponent& Hxy, SplitFieldCom
   res3 = interp1(Hxy[k-1][j+1][i]+Hxz[k-1][j+1][i],Hxy[k-1][j][i]+Hxz[k-1][j][i],Hxy[k-1][j-1][i]+Hxz[k-1][j-1][i],Hxy[k-1][j-2][i]+Hxz[k-1][j-2][i]);
   res4 = interp1(Hxy[k-2][j+1][i]+Hxz[k-2][j+1][i],Hxy[k-2][j][i]+Hxz[k-2][j][i],Hxy[k-2][j-1][i]+Hxz[k-2][j-1][i],Hxy[k-2][j-2][i]+Hxz[k-2][j-2][i]);
   *Hx  = interp1(res1, res2, res3, res4);
-  
+
   res1 = interp1(Hyx[k+1][j][i+1]+Hyz[k+1][j][i+1],Hyx[k+1][j][i]+Hyz[k+1][j][i],Hyx[k+1][j][i-1]+Hyz[k+1][j][i-1],Hyx[k+1][j][i-2]+Hyz[k+1][j][i-2]);
   res2 = interp1(Hyx[k  ][j][i+1]+Hyz[k  ][j][i+1],Hyx[k  ][j][i]+Hyz[k  ][j][i],Hyx[k  ][j][i-1]+Hyz[k  ][j][i-1],Hyx[k  ][j][i-2]+Hyz[k  ][j][i-2]);
   res3 = interp1(Hyx[k-1][j][i+1]+Hyz[k-1][j][i+1],Hyx[k-1][j][i]+Hyz[k-1][j][i],Hyx[k-1][j][i-1]+Hyz[k-1][j][i-1],Hyx[k-1][j][i-2]+Hyz[k-1][j][i-2]);
   res4 = interp1(Hyx[k-2][j][i+1]+Hyz[k-2][j][i+1],Hyx[k-2][j][i]+Hyz[k-2][j][i],Hyx[k-2][j][i-1]+Hyz[k-2][j][i-1],Hyx[k-2][j][i-2]+Hyz[k-2][j][i-2]);
   *Hy  = interp1(res1, res2, res3, res4);
-  
+
   res1 = interp1(Hzx[k][j+1][i+1]+Hzy[k][j+1][i+1],Hzx[k][j+1][i]+Hzy[k][j+1][i],Hzx[k][j+1][i-1]+Hzy[k][j+1][i-1],Hzx[k][j+1][i-2]+Hzy[k][j+1][i-2]);
   res2 = interp1(Hzx[k][j  ][i+1]+Hzy[k][j  ][i+1],Hzx[k][j  ][i]+Hzy[k][j  ][i],Hzx[k][j  ][i-1]+Hzy[k][j  ][i-1],Hzx[k][j  ][i-2]+Hzy[k][j  ][i-2]);
   res3 = interp1(Hzx[k][j-1][i+1]+Hzy[k][j-1][i+1],Hzx[k][j-1][i]+Hzy[k][j-1][i],Hzx[k][j-1][i-1]+Hzy[k][j-1][i-1],Hzx[k][j-1][i-2]+Hzy[k][j-1][i-2]);
@@ -998,7 +998,7 @@ void interpolateTimeDomainFieldCentralHBandLimited( SplitFieldComponent& Hxy, Sp
   double hx = 0;
   double hy = 0;
   double hz = 0;
-  
+
 
   for(int ind1=0;ind1<Nbvec;ind1++){
     hx = 0.;
@@ -1025,12 +1025,12 @@ void interpolateTimeDomainFieldCentralHBandLimited( SplitFieldComponent& Hxy, Sp
 void interpolateTimeDomainFieldCentralH_2Dy( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					int i, int j, int k,
 					double *Hx, double *Hy, double *Hz){
-  
+
 
   double res1, res2, res3, res4;
-  
+
   *Hx  = interp1(Hxy[k+1][j][i]+Hxz[k+1][j][i],Hxy[k][j][i]+Hxz[k][j][i],Hxy[k-1][j][i]+Hxz[k-1][j][i],Hxy[k-2][j][i]+Hxz[k-2][j][i]);
-  
+
   res1 = interp1(Hyx[k+1][j][i+1]+Hyz[k+1][j][i+1],Hyx[k+1][j][i]+Hyz[k+1][j][i],Hyx[k+1][j][i-1]+Hyz[k+1][j][i-1],Hyx[k+1][j][i-2]+Hyz[k+1][j][i-2]);
   res2 = interp1(Hyx[k  ][j][i+1]+Hyz[k  ][j][i+1],Hyx[k  ][j][i]+Hyz[k  ][j][i],Hyx[k  ][j][i-1]+Hyz[k  ][j][i-1],Hyx[k  ][j][i-2]+Hyz[k  ][j][i-2]);
   res3 = interp1(Hyx[k-1][j][i+1]+Hyz[k-1][j][i+1],Hyx[k-1][j][i]+Hyz[k-1][j][i],Hyx[k-1][j][i-1]+Hyz[k-1][j][i-1],Hyx[k-1][j][i-2]+Hyz[k-1][j][i-2]);
@@ -1050,13 +1050,13 @@ void interpolateTimeDomainFieldCentralH_2Dy( SplitFieldComponent& Hxy, SplitFiel
 void interpolateTimeDomainFieldCentralH_TE( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					   int i, int j, int k,
 					   double *Hx, double *Hy, double *Hz){
-  
+
 
   double res1, res2, res3, res4;
 
   *Hx  = 0.;
   *Hy  = 0.;
-  
+
   res1 = interp1(Hzx[k][j+1][i+1]+Hzy[k][j+1][i+1],Hzx[k][j+1][i]+Hzy[k][j+1][i],Hzx[k][j+1][i-1]+Hzy[k][j+1][i-1],Hzx[k][j+1][i-2]+Hzy[k][j+1][i-2]);
   res2 = interp1(Hzx[k][j  ][i+1]+Hzy[k][j  ][i+1],Hzx[k][j  ][i]+Hzy[k][j  ][i],Hzx[k][j  ][i-1]+Hzy[k][j  ][i-1],Hzx[k][j  ][i-2]+Hzy[k][j  ][i-2]);
   res3 = interp1(Hzx[k][j-1][i+1]+Hzy[k][j-1][i+1],Hzx[k][j-1][i]+Hzy[k][j-1][i],Hzx[k][j-1][i-1]+Hzy[k][j-1][i-1],Hzx[k][j-1][i-2]+Hzy[k][j-1][i-2]);
@@ -1074,15 +1074,15 @@ void interpolateTimeDomainFieldCentralH_TE( SplitFieldComponent& Hxy, SplitField
 void interpolateTimeDomainFieldCentralH_TM( SplitFieldComponent& Hxy, SplitFieldComponent& Hxz, SplitFieldComponent& Hyx, SplitFieldComponent& Hyz, SplitFieldComponent& Hzx, SplitFieldComponent& Hzy,
 					   int i, int j, int k,
 					   double *Hx, double *Hy, double *Hz){
-  
 
-  *Hx  = interp1(Hxy[k][j-2][i]+Hxz[k][j-2][i], Hxy[k][j-1][i]+Hxz[k][j-1][i], Hxy[k][j][i]+Hxz[k][j][i], Hxy[k][j+1][i]+Hxz[k][j+1][i]); 
+
+  *Hx  = interp1(Hxy[k][j-2][i]+Hxz[k][j-2][i], Hxy[k][j-1][i]+Hxz[k][j-1][i], Hxy[k][j][i]+Hxz[k][j][i], Hxy[k][j+1][i]+Hxz[k][j+1][i]);
   *Hy  = interp1(Hyx[k][j][i-2]+Hyz[k][j][i-2], Hyx[k][j][i-1]+Hyz[k][j][i-1], Hyx[k][j][i]+Hyz[k][j][i], Hyx[k][j][i+1]+Hyz[k][j][i+1]);
   *Hz  = 0.;
 }
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
- * 
+ *
  *[in]Exy to Ezy are the split components of the Yee cell
  *[in](i,j,k) denotes the particular Yee cell we are interested in
  *
@@ -1092,7 +1092,7 @@ void interpolateTimeDomainFieldCentralH_TM( SplitFieldComponent& Hxy, SplitField
 void interpolateTimeDomainFieldCentralE(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					 int i, int j, int k,
 					 double *Ex, double *Ey, double *Ez){
- 
+
   *Ex = interp1(Exy[k][j][i-2]+Exz[k][j][i-2], Exy[k][j][i-1]+Exz[k][j][i-1], Exy[k][j][i]+Exz[k][j][i], Exy[k][j][i+1]+Exz[k][j][i+1]);
   *Ey = interp1(Eyx[k][j-2][i]+Eyz[k][j-2][i], Eyx[k][j-1][i]+Eyz[k][j-1][i], Eyx[k][j][i]+Eyz[k][j][i], Eyx[k][j+1][i]+Eyz[k][j+1][i]);
   *Ez = interp1(Ezy[k-2][j][i]+Ezx[k-2][j][i], Ezy[k-1][j][i]+Ezx[k-1][j][i], Ezy[k][j][i]+Ezx[k][j][i], Ezy[k+1][j][i]+Ezx[k+1][j][i]);
@@ -1100,7 +1100,7 @@ void interpolateTimeDomainFieldCentralE(  SplitFieldComponent& Exy, SplitFieldCo
 
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain using band limited interpolation
- * 
+ *
  *[in]Exy to Ezy are the split components of the Yee cell
  *[in](i,j,k) denotes the particular Yee cell we are interested in
  *
@@ -1110,11 +1110,11 @@ void interpolateTimeDomainFieldCentralE(  SplitFieldComponent& Exy, SplitFieldCo
 void interpolateTimeDomainFieldCentralEBandLimited(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					 int i, int j, int k,
 					 double *Ex, double *Ey, double *Ez){
-  
+
   /*Array for performing bandwidth limited interpolation obtained using Matlab's interp function*/
   const int Nbvec = 8;
   const double bvec[Nbvec] = {-0.006777513830606,0.039457774230186,-0.142658093428622,0.609836360661632,0.609836360661632,-0.142658093428622,0.039457774230186,-0.006777513830606};
-  
+
   *Ex = 0.;
   *Ey = 0.;
   *Ez = 0.;
@@ -1136,7 +1136,7 @@ void interpolateTimeDomainFieldCentralEBandLimited(  SplitFieldComponent& Exy, S
 }
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
- * 
+ *
  *[in]Exy to Ezy are the split components of the Yee cell
  *[in](i,j,k) denotes the particular Yee cell we are interested in
  *
@@ -1153,7 +1153,7 @@ void interpolateTimeDomainFieldCentralE_2Dy(  SplitFieldComponent& Exy, SplitFie
 
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
- * 
+ *
  *[in]Exy to Ezy are the split components of the Yee cell
  *[in](i,j,k) denotes the particular Yee cell we are interested in
  *
@@ -1163,14 +1163,14 @@ void interpolateTimeDomainFieldCentralE_2Dy(  SplitFieldComponent& Exy, SplitFie
 void interpolateTimeDomainFieldCentralE_TE(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					    int i, int j, int k,
 					    double *Ex, double *Ey, double *Ez){
- 
+
   *Ex = interp1(Exy[k][j][i-2]+Exz[k][j][i-2], Exy[k][j][i-1]+Exz[k][j][i-1], Exy[k][j][i]+Exz[k][j][i], Exy[k][j][i+1]+Exz[k][j][i+1]);
   *Ey = interp1(Eyx[k][j-2][i]+Eyz[k][j-2][i], Eyx[k][j-1][i]+Eyz[k][j-1][i], Eyx[k][j][i]+Eyz[k][j][i], Eyx[k][j+1][i]+Eyz[k][j+1][i]);
   *Ez = 0.;
 }
 
 /*Interpolate the electric field to the origin of the Yee cell in the time domain
- * 
+ *
  *[in]Exy to Ezy are the split components of the Yee cell
  *[in](i,j,k) denotes the particular Yee cell we are interested in
  *
@@ -1180,7 +1180,7 @@ void interpolateTimeDomainFieldCentralE_TE(  SplitFieldComponent& Exy, SplitFiel
 void interpolateTimeDomainFieldCentralE_TM(  SplitFieldComponent& Exy, SplitFieldComponent& Exz, SplitFieldComponent& Eyx, SplitFieldComponent& Eyz, SplitFieldComponent& Ezx, SplitFieldComponent& Ezy,
 					    int i, int j, int k,
 					    double *Ex, double *Ey, double *Ez){
- 
+
   *Ex = 0.;
   *Ey = 0.;
   *Ez = Ezy[k][j][i]+Ezx[k][j][i];

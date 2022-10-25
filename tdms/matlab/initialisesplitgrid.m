@@ -2,15 +2,15 @@
 %
 %initialises a new FDTD grid for the split formulation with a PML.
 %EXCLUDING the PML there are I Yee cells
-%in the x-direction, J Yee cells in the y-direction 
-%and K Yee cells in the z direction. When the PML is taken 
+%in the x-direction, J Yee cells in the y-direction
+%and K Yee cells in the z direction. When the PML is taken
 %into account there are:
 %
 %I+2*Dx cells in x direction
 %J+2*Dy cells in y direction
 %K+2*Dz cells in z direction
 %
-%Inputs - 
+%Inputs -
 %
 %I - the number of Yee cells (excluding PML) in the x direction
 %J - the number of Yee cells (excluding PML) in the y direction
@@ -63,5 +63,3 @@ fdtdgrid.Exy = zeros(I+1,J+1,K+1);
 %fdtdgrid.Hzx = zeros(I+1,J+1,K+1);
 %fdtdgrid.Hzy = zeros(I+1,J+1,K+1);
 fdtdgrid.materials = uint8(zeros(I+1,J+1,K+1));
-
-

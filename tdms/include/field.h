@@ -22,7 +22,7 @@
  *  (0, 0, 0)   (1, 0, 0)     (2, 0, 0)
  *
  *  has I_tot = 2, J_tot = 1, K_tot = 0.
- * 
+ *
  * NOTE: For storage purposes, this means that field values associated to cells are stored _to the left_.
  * That is, Grid(0,0,0) is associated to the cell (-1,-1,-1). This is contrary to the way values are associated to cells, where cell (0,0,0) is associated to the field values (0,0,0).
  */
@@ -117,9 +117,9 @@ public:
 
     /**
    * @brief Interpolates a SplitField component to the centre of a Yee cell
-   * 
+   *
    * @param d SplitField component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated field value
    */
     virtual double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
@@ -141,9 +141,9 @@ public:
 
     /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
-   * 
+   *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
     double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
@@ -165,9 +165,9 @@ public:
 
     /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
-   * 
+   *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
     double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
@@ -265,9 +265,9 @@ public:
   virtual double phase(int n, double omega, double dt) = 0;
   /**
    * @brief Interpolates a Field component to the centre of a Yee cell
-   * 
+   *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated field value
    */
   virtual std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
@@ -291,9 +291,9 @@ public:
 
   /**
    * @brief Interpolates an E-field component to the centre of a Yee cell
-   * 
+   *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated component value
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
@@ -310,9 +310,9 @@ public:
 
   /**
    * @brief Interpolates an H-field component to the centre of a Yee cell
-   * 
+   *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of 
+   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated component value
    */
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
