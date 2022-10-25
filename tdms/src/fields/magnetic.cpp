@@ -10,6 +10,21 @@ double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
 }
 
+void MagneticField::interpolate_TE_components(int i, int j, int k, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
+  *x_at_centre = complex<double>(0., 0.);
+  *y_at_centre = complex<double>(0., 0.);
+  *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+}
+void MagneticField::interpolate_TM_components(int i, int j, int k, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
+  *x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
+  *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+  *z_at_centre = complex<double>(0., 0.);
+}
+
 /* 2D INTERPOLATION SCHEMES (FOR THE MAGNETIC FIELD IN 3D SIMULATIONS)
 
 Unlike the E-field, the H-field components associated with Yee cell i,j,k are _not_ aligned with the centre of the Yee cells.
@@ -231,7 +246,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
 
   switch (d) {
     case X:
-      if (J_tot <= 0) {
+      if (J_tot <= 1) {
         // in a 2D simulation, we must interpolate in the z-direction to recover Hx, due to the magnetic-field offsets from the centre
         b_scheme = &(best_scheme(K_tot, k));
         // now fill the interpolation data
@@ -333,7 +348,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
       }
       break;
     case Z:
-      if (J_tot <= 0) {
+      if (J_tot <= 1) {
         // in a 2D simulation, we must interpolate in the x-direction to recover Hz, due to the magnetic-field offsets from the centre
         b_scheme = &(best_scheme(I_tot, i));
         // now fill the interpolation data

@@ -12,7 +12,6 @@
 #include "array_init.h"
 #include "globals.h"
 #include "interface.h"
-#include "interpolate.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
@@ -1136,17 +1135,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, dft_counter, f_ex_vec[ifx] * 2 * DCPI,
                                   Nsteps, J_tot, params);
+          }
           dft_counter++;
         } else {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurfaceNoInterpolation(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
                                                  surface_vertices, n_surface_vertices, dft_counter,
                                                  f_ex_vec[ifx] * 2 * DCPI, Nsteps,
                                                  J_tot, params);
+          }
           dft_counter++;
         }
       }
@@ -1162,6 +1163,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       //fprintf(stderr,"Pos 01b:\n");
     }
     /*extract fieldsample*/
+    // NOTE: H-field interpolation needs to be added to this proceedure too (#109)
     if (fieldsample.all_vectors_are_non_empty()) {
       //if( (tind-params.start_tind) % params.Np == 0){
       double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
@@ -1172,33 +1174,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                ////fprintf(stderr,"Pos fs 1\n");
-                interpolateTimeDomainFieldCentralEBandLimited(
-                        E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        fieldsample.i[it] + params.pml.Dxl - 1,
-                        fieldsample.j[jt] + params.pml.Dyl - 1,
-                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
-                //fprintf(stderr,"Pos fs 2\n");
+                int i = fieldsample.i[it] + params.pml.Dxl - 1,
+                    j = fieldsample.j[jt] + params.pml.Dyl - 1,
+                    k = fieldsample.k[kt] + params.pml.Dzl - 1;
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+                if (j != 0) {
+                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+                } else {
+                  Ey_temp = E_s.yx[k][0][i] + E_s.yz[k][0][i];
+                }
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
                               fieldsample.n[nt] / 2.) /
                                   params.Nt;
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_vecs.n[nt], (int)fieldsample_vecs.i[it] + params.pml.Dxl - 1, (int)fieldsample_vecs.j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_vecs.k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_vecs.n[nt] - 2);
               }
         }
     }
-
     /*end extract fieldsample*/
 
-    //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
                                   n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
+          }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
             extractPhasorsSurfaceNoInterpolation(
@@ -1206,7 +1209,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                     n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
       }
     }
-
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
       //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -1222,7 +1224,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
         }
       }
     }
-    
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
       if ((tind - params.start_tind) % params.Np == 0) {
@@ -4535,36 +4536,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   
   auto interp_output_grid_labels = GridLabels();
 
-  //fprintf(stderr,"Pos 15_m1\n");
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
-              E.J_tot - 2, E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1a\n");
-      mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1b\n");
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
+                               E.K_tot - 2, Dimension::THREE);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+                               H.K_tot - 2, Dimension::THREE);
 
-    } else if (params.dimension == TE)
-      mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    if (params.dimension == THREE)
-      mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-    else if (params.dimension == TE)
-      mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+    } else {
+      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+                               0, params.dimension);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+                               0, params.dimension);
+    }
 
-    //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
     label_dims[0] = 1;
     label_dims[1] = E.I_tot - 3;
@@ -4854,58 +4841,44 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
 
   cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
+  
   //loop over every vertex in the list
 #pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, phaseTermE, phaseTermH,       \
                                              subResultE, subResultH, vindex)
   {
 #pragma omp for
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralE(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      //    fprintf(stderr,"1st interp donezn");
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralH(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      //    fprintf(stderr,"2nd interp donezn");
+      int i = surface_vertices[0][vindex], j = surface_vertices[1][vindex],
+          k = surface_vertices[2][vindex];
+      if (params.dimension == THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.yx[k][j][i] + E.yz[k][j][i];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        }
+      } else if (params.dimension == TE) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = 0.;
+      }
 
       /*Ex and Hx*/
       subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
@@ -4944,9 +4917,10 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
   }//end parallel region
 }
 
-void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
-                            ComplexAmplitudeSample &campssample, int n, double omega,
-                            double dt, int Nt, int dimension, int J_tot, int intmethod) {
+void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E,
+                            MagneticSplitField &H, ComplexAmplitudeSample &campssample, int n,
+                            double omega, double dt, int Nt, int dimension, int J_tot,
+                            int intmethod) {
 
   int vindex, i, j, k;
   double Ex, Ey, Ez, Hx, Hy, Hz;
@@ -4957,58 +4931,58 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
 
   cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-#pragma omp parallel default(none) \
-        shared(E, H, EHr, EHi, campssample) \
-        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k) \
-        firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
+#pragma omp parallel default(none)                                                                 \
+        shared(E, H, EHr, EHi, campssample) private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k)       \
+                firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
   {
 #pragma omp for
-    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
-
+    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {// loop over every vertex
       i = campssample.vertices[0][vindex];
       j = campssample.vertices[1][vindex];
       k = campssample.vertices[2][vindex];
 
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex,
-                                                 &Ey, &Ez);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                             &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k,
-                                                        &Ex, &Ey, &Ez);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx,
-                                                 &Hy, &Hz);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                             &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k,
-                                                        &Hx, &Hy, &Hz);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
+      if (dimension == THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.yx[k][j][i] + E.yz[k][j][i];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        }
+      } else if (dimension == TE) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = 0.;
+      }
 
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE,
+                Ex);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH,
+                Hx);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE,
+                Ey);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH,
+                Hy);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE,
+                Ez);
+      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH,
+                Hz);
     }
   }//end parallel region
 }
