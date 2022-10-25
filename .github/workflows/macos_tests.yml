@@ -44,10 +44,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw llvm
-          # Not striclty necessary to install llvm, because it comes in the
-          # MacOS runner images, but adding here means the brew --prefix
-          # command is guaranteed to work (even if the image is updated).
+          brew install fftw
+      - name: Hack to fix omp headers not linked
+        run: |
+          brew unlink libomp
+          brew link --force libomp
 
       - name: Install Python dependencies
         shell: bash
@@ -66,7 +67,7 @@ jobs:
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
            -DBUILD_TESTING=${{ matrix.build_testing }} \
-           -DOMP_ROOT=$(brew --prefix llvm) \
+           -DOMP_ROOT=$(brew --prefix libomp) \
            -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
 
       - name: Build TDMS
