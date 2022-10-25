@@ -12,10 +12,10 @@
 #include <stdexcept>
 
 #include <spdlog/spdlog.h>
+
 #include "utils.h"
-
 #include "fdtd_grid_initialiser.h"
-
+#include "iterator.h"
 
 #define NMATRICES 49              //< number of input matrices
 #define NOUTMATRICES_WRITE 23     //< number of output matrices to be written to output file
@@ -60,8 +60,13 @@ int main(int nargs, char *argv[]){
     openandorder(args.grid_filename(), (char **)matrixnames_gridfile, matrixptrs, 1);
   }
 
+  // decide which derivative method to use (PSTD or FDTD)
+  SolverMethod method = PseudoSpectral; // default
+  if (args.finite_difference())
+    method = SolverMethod::FiniteDifference;
+
   //now run the time propagation code
-  mexFunction(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs);
+  execute_simulation(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, method);
 
   if( !args.have_flag("-m") ){ //prints vertices and facets
     saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL, args.output_filename());
