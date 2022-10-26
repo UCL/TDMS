@@ -70,7 +70,6 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i,
   complex<double> data_for_first_scheme[8];
   // the interpolation schemes that are to be used
   const InterpolationScheme *b_scheme, *c_scheme;
-
   switch (d) {
     case X:
       // Associations: a = x, b = y, c = z
@@ -182,14 +181,14 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i,
         b_scheme = &(best_scheme(I_tot, i));
         for (int ii = b_scheme->first_nonzero_coeff; ii <= b_scheme->last_nonzero_coeff; ii++) {
           int cell_i = i - b_scheme->number_of_datapoints_to_left + ii;
-          data_for_first_scheme[ii] = real.x[k][0][cell_i] + IMAGINARY_UNIT * imag.x[k][0][cell_i];
+          data_for_first_scheme[ii] = real.z[k][0][cell_i] + IMAGINARY_UNIT * imag.z[k][0][cell_i];
         }
         return b_scheme->interpolate(data_for_first_scheme);
       }
       else {
         b_scheme = &(best_scheme(I_tot, i));
         c_scheme = &(best_scheme(J_tot, j));
-
+        
         if (c_scheme->is_better_than(*b_scheme)) {
           // we will be interpolating in the y-direction first, then in x
           for (int ii = b_scheme->first_nonzero_coeff; ii <= b_scheme->last_nonzero_coeff; ii++) {
@@ -203,6 +202,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i,
               data_for_first_scheme[jj] =
                       real.z[k][cell_j][cell_i] + IMAGINARY_UNIT * imag.z[k][cell_j][cell_i];
             }
+            
             // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
             // place this into the appropriate index in the data being passed to the x_scheme
             data_for_second_scheme[ii] = c_scheme->interpolate(data_for_first_scheme);
@@ -222,6 +222,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i,
               data_for_first_scheme[ii] =
                       real.z[k][cell_j][cell_i] + IMAGINARY_UNIT * imag.z[k][cell_j][cell_i];
             }
+            
             // interpolate in x to obtain a value for the Hz field at position (i, j, cell_k+Dz)
             // place this into the appropriate index in the data being passed to the y_scheme
             data_for_second_scheme[jj] = b_scheme->interpolate(data_for_first_scheme);
@@ -380,7 +381,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
             }
             // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
             // place this into the appropriate index in the data being passed to the x_scheme
-            data_for_second_scheme[ii] = c_scheme->interpolate(data_for_first_scheme);
+            data_for_second_scheme[ii] = c_scheme->interpolate(data_for_second_scheme);
           }
           // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
           return b_scheme->interpolate(data_for_second_scheme);
