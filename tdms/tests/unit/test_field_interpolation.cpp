@@ -374,9 +374,9 @@ TEST_CASE("H-field interpolation check") {
     }
   }
   // compute Frobenius norms
-  double Hx_fro_err = Hx_error.frobenius(), 
+  double Hx_fro_err = Hx_error.frobenius(),
          Hy_fro_err = Hy_error.frobenius(),
-         Hz_fro_err = Hz_error.frobenius(), 
+         Hz_fro_err = Hz_error.frobenius(),
          Hx_split_fro_err = Hx_split_error.frobenius(),
          Hy_split_fro_err = Hy_split_error.frobenius(),
          Hz_split_fro_err = Hz_split_error.frobenius();

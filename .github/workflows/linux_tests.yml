@@ -27,10 +27,6 @@ jobs:
         build_testing:
           - ON
           - OFF
-        # TODO: remove this once MATLAB dependency is removed and mexFunction is replaced
-        derivative_type:
-          - PS
-          - FD
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -81,21 +77,11 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
-          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose 
+          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
-      # TODO: simplify this once MATLAB dependency is removed and mexFunction is replaced
-      - name: Run PSTD TDMS system tests
-        if: matrix.derivative_type == 'PS'
+      - name: Run TDMS system tests
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
           export OMP_NUM_THREADS=1
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x  -m "not fdtd_build_only"
-
-      - name: Run FDTD TDMS system tests
-        if: matrix.derivative_type == 'FD'
-        working-directory: ${{runner.workspace}}/build
-        shell: bash
-        run: |
-          export OMP_NUM_THREADS=1
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x  -m fdtd_build_only
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x

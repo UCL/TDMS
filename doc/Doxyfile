@@ -4,7 +4,7 @@
 # doxygen (www.doxygen.org) for a the tdms project.
 #
 # Options are documented at https://www.doxygen.nl/manual/config.html
-# or by running 
+# or by running
 # doxygen -g DefaultTemplateDoxyfile
 # (it generates a Doxyfile with *a lot* of comments).
 #

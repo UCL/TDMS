@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import pytest
 from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
 
 ZIP_PATH = Path(
@@ -14,7 +13,6 @@ if not ZIP_PATH.exists():
     )
 
 
-@pytest.mark.fdtd_build_only
 @work_in_zipped_dir(ZIP_PATH)
 def test_fs():
     """
@@ -26,13 +24,14 @@ def test_fs():
     """
 
     # misleading filename here
-    run_tdms("arc_example_fdtd/in_pstd_fs.mat", "fdtd_fs_output.mat")
+    run_tdms(
+        "--finite-difference", "arc_example_fdtd/in_pstd_fs.mat", "fdtd_fs_output.mat"
+    )
 
     reference = HDF5File("arc_example_fdtd/out_fdtd_fs.mat")
     assert HDF5File("fdtd_fs_output.mat").matches(reference)
 
 
-@pytest.mark.fdtd_build_only
 @work_in_zipped_dir(ZIP_PATH)
 def test_cyl():
     """
@@ -42,7 +41,9 @@ def test_cyl():
     """
 
     # misleading filename here
-    run_tdms("arc_example_fdtd/in_pstd_cyl.mat", "fdtd_cyl_output.mat")
+    run_tdms(
+        "--finite-difference", "arc_example_fdtd/in_pstd_cyl.mat", "fdtd_cyl_output.mat"
+    )
 
     reference = HDF5File("arc_example_fdtd/out_fdtd_cyl.mat")
     assert HDF5File("fdtd_cyl_output.mat").matches(reference)

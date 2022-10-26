@@ -2,7 +2,7 @@
  * @file interpolation_methods.h
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief InterpScheme class methods and supporting functions
- * 
+ *
  * Non InterpScheme methods are required to preserve functionality whilst testing new schemes
  */
 #pragma once
@@ -96,7 +96,7 @@ class InterpolationScheme {
     public:
         /**
          * @brief Construct a new interp Scheme object, by providing the scheme value
-         * 
+         *
          * @param value A value associtated to one of the possible schemes
          */
         InterpolationScheme(scheme_value value);
@@ -105,13 +105,13 @@ class InterpolationScheme {
 
         /**
          * @brief Get the value object
-         * 
-         * @return scheme_value 
+         *
+         * @return scheme_value
          */
         scheme_value get_priority() const;
 
         /* END FETCH METHODS */
-        
+
         /* The number of datapoints "to the left" of where we are planning to interpolate to.
         For example, interpolating to interpolation position 0 requires 1 datapoint at a position before the location of the interpolation, whilst interpolation position 6 requires there to be 7.
         */
@@ -129,14 +129,14 @@ class InterpolationScheme {
 
         /**
          * @brief Executes the interpolation scheme on the data provided
-         * 
+         *
          * The interpolation schemes are all of the form
          * interpolated_value = \sum_{i=0}^{7} scheme_coeffs[i] * v[i],
          * so provided that the coefficients have been set correctly in construction (and the data gathered appropriately), we can run the same for loop for each interpolation scheme.
-         * 
+         *
          * For slight speedup, the actual sum performed loops over those i such that
          * 0 <= first_nonzero_coeff <= i <= last_nonzero_coeff <= 7.
-         * 
+         *
          * @param v Sample datapoints to use in interpolation; v[0] should be the first of 8 values
          * @param offset [Default 0] Read buffer from v[offset] rather than v[0]
          * @return double Interpolated value
@@ -152,7 +152,7 @@ class InterpolationScheme {
 
         /**
          * @brief Determines whether another interpScheme has greater value than this one
-         * 
+         *
          * @param s The other interpScheme to compare against
          * @return true This scheme has greater value
          * @return false This scheme has lesser, or equal, value to s

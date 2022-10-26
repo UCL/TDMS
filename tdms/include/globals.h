@@ -22,7 +22,7 @@ typedef std::complex<double>*	CArray_1d;
 typedef CArray_1d*			CArray_2d;
 typedef CArray_2d*			CArray_3d;
 
-typedef struct PlanarInterface	// Structure definition for a planar six-face interface 
+typedef struct PlanarInterface	// Structure definition for a planar six-face interface
 {
 	int I1;
 	int I2;
@@ -39,7 +39,7 @@ typedef struct complex_vector
 	std::complex<double> Z;
 } complex_vector;
 
-enum AxialDirection 
+enum AxialDirection
 {
 	X = 'x',
 	Y = 'y',
@@ -50,8 +50,9 @@ enum AxialDirection
 //  Enumerated constants
 // **********************
 
-enum ModeOfRun { Pass1 , Pass2 };
-enum RCSType   { parallel , perpendicular };
+enum ModeOfRun    { Pass1 , Pass2 };
+enum RCSType      { parallel , perpendicular };
+enum SolverMethod { PseudoSpectral, FiniteDifference };
 
 // **************************************
 //			Mathematical Constants
@@ -74,4 +75,3 @@ const double MU0 = 4.0 * tdms_math_constants::DCPI * 1.0e-7; // free space magne
 const double LIGHT_V = 1.0 / sqrt(EPSILON0 * MU0);           // free space light velocity
 const double Z0 = 376.734;                                   // free space inpedance
 }
-

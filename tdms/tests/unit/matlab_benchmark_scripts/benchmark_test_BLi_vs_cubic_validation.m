@@ -14,7 +14,7 @@ datapoint-separation  distances.
 
 Results are printed out for each cell size to stdout.
 %}
-clear; 
+clear;
 close all;
 
 % interp inputs
@@ -28,7 +28,7 @@ for trial=1:4
     cellSize = cell_Sizes(trial);
     n_datapts = ceil(4/cellSize); % number of Yee cells
     x_lower = -2.; % lower value of the range over which we shall test
-    
+
     cell_centres = zeros(1,n_datapts-1); % interpolation positions (Yee cell centres)
     field_pos = zeros(1,n_datapts); % data sample positions (field component associated to Yee cells)
     for i=1:n_datapts
@@ -39,18 +39,18 @@ for trial=1:4
     end
     field_samples = BLi_vs_cubic_fn(field_pos); % compute data samples
     exact_vals = BLi_vs_cubic_fn(cell_centres); % compute exact values
-    
+
     BLi_interp_full = interp(field_samples, r, N); % perform BLi interpolation
     BLi_interp = BLi_interp_full(2:2:end-1); % final point is beyond last Yee cell
-    
+
     % perform cubic interpolation
-    cubic_interp = zeros(1,n_datapts-1); 
+    cubic_interp = zeros(1,n_datapts-1);
     cubic_interp(1) = interp_cubic(field_samples(1:4),-1);
     for i=2:n_datapts-2
         cubic_interp(i) = interp_cubic(field_samples(i-1:i+2),0);
     end
     cubic_interp(n_datapts-1) = interp_cubic(field_samples(end-3:end),1);
-    
+
     % compute errors
     BLi_err = abs( BLi_interp - exact_vals );
     BLi_err_max = max(BLi_err);
@@ -58,10 +58,10 @@ for trial=1:4
     cub_err = abs( cubic_interp - exact_vals );
     cub_err_max = max(cub_err);
     cub_err_norm = norm( cubic_interp - exact_vals );
-    
+
     BLi_was_better = ones(size(BLi_err));
     BLi_was_better( cub_err < BLi_err ) = 0.;
-    
+
     fprintf(" ====== \n Cellsize %.3f : \n", cellSize);
     fprintf("MAX Errors: \n");
     fprintf("Cubic: \t %.8e\n", cub_err_max);

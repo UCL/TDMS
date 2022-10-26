@@ -23,7 +23,7 @@
  */
 void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c,
                       int len);
-                      
+
 /**
  * @brief Initialise the coefficients required to simultaneously perform
  * differentiation and shifting by amount delta, using a forward and backward

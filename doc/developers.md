@@ -80,12 +80,10 @@ cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
-# -DDERIVATIVE_TYPE=FD
 make install
 ```
 You may need to help CMake find MATLAB/fftw etc.
 
-- There are two methods to choose from: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives. **This choice must be made at compile time**, to comply with MATLAB. The default is PSTD. You can select FDTD with `-DDERIVATIVE_TYPE=FD`.
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
@@ -113,12 +111,12 @@ spdlog::debug("Send help");
   ssh-add /path/to/your/github/key/id_rsa
   ssh -o ForwardAgent=yes your_user@myriad.rc.ucl.ac.uk
   ```
-  
+
   And once you're on Myriad:
-  
+
   ```{.sh}
   git clone git@github.com:UCL/TDMS.git
-  
+
   module purge
   module load beta-modules
   module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
@@ -128,7 +126,7 @@ spdlog::debug("Send help");
   # -DGIT_SSH=ON
   make install
   ```
-  
+
   If you get the following error (or similar)
   ```
   fatal: unable to access 'https://github.com/gabime/spdlog/': error setting certificate verify locations:
@@ -159,18 +157,19 @@ To write a new test, as a rough sketch you need:
  * @file test_file.cpp
  * @brief Short description of the tests.
  */
-#include <catch2/catch_test_macros.hpp>
 #include "things_to_be_tested.h"
+
+#include <catch2/catch_test_macros.hpp>
 
 /**
  * @brief Detailed description of the testing.
- * 
+ *
  * Maybe go into details about the test setup.
  */
 TEST_CASE("Write a meaningful test case name") {
     // set up function calls or whatever
-    REQUIRE_THROW(<something>)
-    CHECK(<something>)
+    REQUIRE_THROW(<something>);
+    CHECK(<something>);
 }
 ```
 The doxygen-style comments will be included in this developer documentation.
@@ -182,7 +181,7 @@ It's good practice, and reassuring for your pull-request reviewers, if new C++ f
 ### System {#system-tests}
 
 The full system tests are written in Python 3, and call the `tdms` executable for known inputs and compare to expected outputs.
-We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/). 
+We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/).
 
 There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before running the tests so run:
 ```{.sh}
@@ -198,14 +197,5 @@ A good example of running the `tdms` executable for a given input and expected o
 You need to [compile](#compiling) `tdms`, then the system tests can be run, e.g. from the build directory:
 
 ```{.sh}
-pytest ../tests/system/ -m "not fdtd_build_only"
-```
-
-A slight complication - which we hope to simplify - it is possible to build in two different configurations for two different methods: pseudospectral time domain (PSTD) or finite-difference time domain (FDTD) derivatives.
-We therefore [mark](https://docs.pytest.org/en/stable/example/markers.html) some of the system tests `fdtd_build_only`.
-
-To test the FDTD build: [recompile](#compiling) with `-DDERIVATIVE_TYPE=FD` and run:
-
-```{.sh}
-pytest ../tests/system/ -m fdtd_build_only
+pytest ../tests/system/
 ```

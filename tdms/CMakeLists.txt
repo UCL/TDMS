@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tdms LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Allow building with testing, and default to off
 option(BUILD_TESTING "" OFF)
@@ -30,22 +30,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
 # and the  include directories for the project
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
-
-
-# Command line options for CMake ----------------------------------------------
-# Type of derivatives to use
-set(DERIVATIVE_TYPE "PS" CACHE STRING "Type of derivatives to compute.
-Either Use pseudo spectral (PS) or finite differences (FD).
-Options: {FD, PS}")
-set_property(CACHE DERIVATIVE_TYPE PROPERTY STRINGS "FD" "PS")
-get_property(x CACHE DERIVATIVE_TYPE PROPERTY STRINGS)
-if (NOT DERIVATIVE_TYPE IN_LIST x)
-    message(FATAL_ERROR "Cannot set DERIVATIVE_TYPE=${DERIVATIVE_TYPE}. Options: ${x}")
-endif()
-
-if (${DERIVATIVE_TYPE} STREQUAL FD)
-    set(DFLAG "-DFDFLAG")
-endif()
 
 
 # Matlab ----------------------------------------------------------------------

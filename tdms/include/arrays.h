@@ -30,7 +30,7 @@ public:
 
   /**
    * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays
-   * 
+   *
    * @param I_total,J_total,K_total Dimensions of the tensor size to set
    */
   void allocate(int I_total, int J_total, int K_total);
@@ -246,7 +246,7 @@ public:
 
   /**
    * @brief Computes the Frobenius norm of the tensor
-   * 
+   *
    * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
    */
   double frobenius();

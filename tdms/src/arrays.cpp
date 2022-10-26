@@ -17,7 +17,7 @@ void XYZTensor3D::allocate(int I_total, int J_total, int K_total) {
     x[k] = (double **) malloc(J_total * sizeof(double *));
     y[k] = (double **) malloc(J_total * sizeof(double *));
     z[k] = (double **) malloc(J_total * sizeof(double *));
-    for (int j = 0; j < J_total; j++) { 
+    for (int j = 0; j < J_total; j++) {
       x[k][j] = (double *) malloc(I_total * sizeof(double));
       y[k][j] = (double *) malloc(I_total * sizeof(double));
       z[k][j] = (double *) malloc(I_total * sizeof(double));
