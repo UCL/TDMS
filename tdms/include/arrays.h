@@ -13,13 +13,14 @@
 #include "matlabio.h"
 #include "utils.h"
 
+template<typename T>
 class XYZTensor3D {
 public:
-  double ***x = nullptr;
-  double ***y = nullptr;
-  double ***z = nullptr;
+  T ***x = nullptr;
+  T ***y = nullptr;
+  T ***z = nullptr;
 
-  double*** operator[] (char c) const{
+  T*** operator[] (char c) const{
     switch (c) {
       case 'x': return x;
       case 'y': return y;
@@ -33,7 +34,21 @@ public:
    *
    * @param I_total,J_total,K_total Dimensions of the tensor size to set
    */
-  void allocate(int I_total, int J_total, int K_total);
+  void allocate(int I_total, int J_total, int K_total) {
+    x = (T ***) malloc(K_total * sizeof(T **));
+    y = (T ***) malloc(K_total * sizeof(T **));
+    z = (T ***) malloc(K_total * sizeof(T **));
+    for (int k = 0; k < K_total; k++) {
+      x[k] = (T **) malloc(J_total * sizeof(T *));
+      y[k] = (T **) malloc(J_total * sizeof(T *));
+      z[k] = (T **) malloc(J_total * sizeof(T *));
+      for (int j = 0; j < J_total; j++) {
+        x[k][j] = (T *) malloc(I_total * sizeof(T));
+        y[k][j] = (T *) malloc(I_total * sizeof(T));
+        z[k][j] = (T *) malloc(I_total * sizeof(T));
+      }
+    }
+  }
 };
 
 class XYZVectors {
