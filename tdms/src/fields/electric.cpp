@@ -29,7 +29,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
   const InterpolationScheme *scheme;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   complex<double> interp_data[8];
-  
+
   switch (d) {
     case X:
       // determine the interpolation scheme to use
