@@ -2,7 +2,7 @@
  * @file test_Tensor3D.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests the functionality of the Tensor3D class, which is the building block for several further field classes
- * 
+ *
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -30,7 +30,7 @@ TEST_CASE("Tensor3D: allocation and deallocation") {
 
     // we should also check what happens when we use the overloaded constructor, providing a pre-built pointer to a "Tensor" in memory
     int ***p = (int ***) malloc(n_layers * sizeof(int **));
-    for (int k = 0; k < n_layers; k++) { 
+    for (int k = 0; k < n_layers; k++) {
         p[k] = (int **) malloc(n_cols * sizeof(int *));
         for (int j = 0; j < n_cols; j++) {
             p[k][j] = (int *) malloc(n_rows * sizeof(int));
