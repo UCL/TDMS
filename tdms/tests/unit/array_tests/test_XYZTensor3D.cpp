@@ -36,8 +36,8 @@ TEST_CASE("Test XYZTensor allocation") {
         }
       }
     }
-    }
-    // at end, destructor should be called as appropriate
-    // but this class has no destructor --- it doesn't store the size of its arrays
-    // so we should use Tensor3Ds for the components no??
+  }
+  // at end, destructor should be called as appropriate
+  // but this class has no destructor --- it doesn't store the size of its arrays
+  // so we should use Tensor3Ds for the components no??
 }
