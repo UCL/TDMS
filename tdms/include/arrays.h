@@ -219,9 +219,16 @@ public:
 
   Tensor3D() = default;
 
-  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows);
+  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows) {
+    initialise(tensor, n_layers, n_cols, n_rows);
+  }
 
-  void initialise(T*** tensor, int n_layers, int n_cols, int n_rows);
+  void initialise(T*** _tensor, int _n_layers, int _n_cols, int _n_rows) {
+    tensor = _tensor;
+    n_layers = _n_layers;
+    n_cols = _n_cols;
+    n_rows = _n_rows;
+  }
 
   inline T** operator[] (int value) const { return tensor[value]; };
 
@@ -249,7 +256,15 @@ public:
    *
    * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
    */
-  double frobenius();
+  double frobenius() {
+    T norm_val = 0;
+    for (int i1 = 0; i1 < n_layers; i1++) {
+      for (int i2 = 0; i2 < n_cols; i2++) {
+        for (int i3 = 0; i3 < n_rows; i3++) { norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]); }
+      }
+    }
+    return sqrt(norm_val);
+  }
 
   ~Tensor3D(){
     if (tensor == nullptr) return;

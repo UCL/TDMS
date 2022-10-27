@@ -212,19 +212,6 @@ Pupil::~Pupil() {
   matrix = nullptr;
 }
 
-template<typename T>
-Tensor3D<T>::Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows){
-  initialise(tensor, n_layers, n_cols, n_rows);
-}
-
-template<typename T>
-void Tensor3D<T>::initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows){
-  tensor = _tensor;
-  n_layers = _n_layers;
-  n_cols = _n_cols;
-  n_rows = _n_rows;
-}
-
 template<>
 void Tensor3D<double>::zero() {
   for (int k = 0; k < n_layers; k++)
@@ -232,27 +219,6 @@ void Tensor3D<double>::zero() {
       for (int i = 0; i < n_rows; i++) {
         tensor[k][j][i] = 0.0;
       }
-}
-
-template<>
-double Tensor3D<double>::frobenius() {
-  double norm_val = 0.;
-  for (int i1 = 0; i1 < n_layers; i1++) {
-    for (int i2 = 0; i2 < n_cols; i2++) {
-      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += tensor[i1][i2][i3] * tensor[i1][i2][i3]; }
-    }
-  }
-  return sqrt(norm_val);
-}
-template<>
-double Tensor3D<complex<double>>::frobenius() {
-  double norm_val = 0.;
-  for (int i1 = 0; i1 < n_layers; i1++) {
-    for (int i2 = 0; i2 < n_cols; i2++) {
-      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += norm(tensor[i1][i2][i3]); }
-    }
-  }
-  return sqrt(norm_val);
 }
 
 void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,
