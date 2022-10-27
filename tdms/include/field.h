@@ -47,6 +47,9 @@ public:
   fftw_plan* plan_f = nullptr;  // Forward fftw plan
   fftw_plan* plan_b = nullptr;  // Backward fftw plan
 
+  double **operator[](int value) const { return tensor[value]; };
+  double operator[](CellCoordinate cell) const { return tensor[cell.k()][cell.j()][cell.i()]; }
+
   void initialise_from_matlab(double*** tensor, Dimensions &dims);
 
   /**

@@ -91,8 +91,9 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
     // beyond that however, interpolation is the same
     for (int i = i_lower; i <= i_upper; i++) {
       for (int k = k_lower; k <= k_upper; k++) {
-        complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, 0, k),
-                        z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, 0, k);
+        CellCoordinate current_cell(i,0,k);
+        complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell),
+                        z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
         real_out.x[k - k_lower][0][i - i_lower] = x_at_centre.real();
         imag_out.x[k - k_lower][0][i - i_lower] = x_at_centre.imag();
         // y interpolation doesn't take place, so use placeholder values
@@ -108,18 +109,21 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
       for (int j = j_lower; j <= j_upper; j++) {
         for (int k = k_lower; k <= k_upper; k++) {
           complex<double> x_at_centre, y_at_centre, z_at_centre;
+          CellCoordinate current_cell(i,j,k);
           switch (mode) {
             case THREE:
               // 3D interpolation is identical for both E and H fields
-              x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
-              y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
-              z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+              x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell);
+              y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell);
+              z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
               break;
             case TE:
-              interpolate_transverse_electric_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_electric_components(current_cell, &x_at_centre, &y_at_centre,
+                                                         &z_at_centre);
               break;
             case TM:
-              interpolate_transverse_magnetic_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_magnetic_components(current_cell, &x_at_centre, &y_at_centre,
+                                                         &z_at_centre);
               break;
           }
           real_out.x[k - k_lower][j - j_lower][i - i_lower] = x_at_centre.real();

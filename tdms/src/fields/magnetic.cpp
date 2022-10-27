@@ -1,5 +1,6 @@
 #include "field.h"
 
+#include "cell_coordinate.h"
 #include "interpolation_methods.h"
 #include "globals.h"
 
@@ -10,20 +11,18 @@ double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
 }
 
-void MagneticField::interpolate_transverse_electric_components(int i, int j, int k,
-                                                               complex<double> *x_at_centre,
-                                                               complex<double> *y_at_centre,
-                                                               complex<double> *z_at_centre) {
+void MagneticField::interpolate_transverse_electric_components(CellCoordinate cell, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
-  *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+  *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, cell);
 }
-void MagneticField::interpolate_transverse_magnetic_components(int i, int j, int k,
-                                                               complex<double> *x_at_centre,
-                                                               complex<double> *y_at_centre,
-                                                               complex<double> *z_at_centre) {
-  *x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
-  *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+void MagneticField::interpolate_transverse_magnetic_components(CellCoordinate cell, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
+  *x_at_centre = interpolate_to_centre_of(AxialDirection::X, cell);
+  *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, cell);
   *z_at_centre = complex<double>(0., 0.);
 }
 
@@ -65,13 +64,15 @@ Now with approximations of Ha at each (a_i, cell_b + Db, c_k), we can pass this 
 In a 2D simulation, J_tot = 0. This means we cannot interpolate in two directions for the Hx and Hz fields, since there is no y-direction to interpolate in. As a result, we only interpolate in the z-direction for Hx and x-direction for Hz when running a two-dimensional simulation.
 */
 
-complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
+complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   // this data will be passed to the second interpolation scheme
   complex<double> data_for_second_scheme[8];
   // this data will hold values for the interpolation in the first interpolation scheme
   complex<double> data_for_first_scheme[8];
   // the interpolation schemes that are to be used
   const InterpolationScheme *b_scheme, *c_scheme;
+  int i, j, k;
+  cell.unpack(&i, &j, &k);
   switch (d) {
     case X:
       // Associations: a = x, b = y, c = z
@@ -240,8 +241,10 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, int i,
   }
 }
 
-double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
+double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *b_scheme, *c_scheme;
+  int i, j, k;
+  cell.unpack(&i, &j, &k);
   // this data will be passed to the second interpolation scheme
   double data_for_second_scheme[8];
   // this data will hold values for the interpolation in the first interpolation scheme
