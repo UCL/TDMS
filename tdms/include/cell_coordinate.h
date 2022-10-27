@@ -3,6 +3,7 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Class declaration for Yee cell coordinates
  */
+#pragma once
 
 class CellCoordinate {
 
