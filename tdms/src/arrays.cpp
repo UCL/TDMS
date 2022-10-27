@@ -9,22 +9,6 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-// void XYZTensor3D::allocate(int I_total, int J_total, int K_total) {
-//   x = (double ***) malloc(K_total * sizeof(double **));
-//   y = (double ***) malloc(K_total * sizeof(double **));
-//   z = (double ***) malloc(K_total * sizeof(double **));
-//   for (int k = 0; k < K_total; k++) {
-//     x[k] = (double **) malloc(J_total * sizeof(double *));
-//     y[k] = (double **) malloc(J_total * sizeof(double *));
-//     z[k] = (double **) malloc(J_total * sizeof(double *));
-//     for (int j = 0; j < J_total; j++) {
-//       x[k][j] = (double *) malloc(I_total * sizeof(double));
-//       y[k][j] = (double *) malloc(I_total * sizeof(double));
-//       z[k][j] = (double *) malloc(I_total * sizeof(double));
-//     }
-//   }
-// }
-
 void XYZVectors::set_ptr(const char c, double* ptr){
   switch (c) {
     case 'x': {x = ptr; break;}
