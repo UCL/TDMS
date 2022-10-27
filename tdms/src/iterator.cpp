@@ -12,7 +12,6 @@
 #include "array_init.h"
 #include "globals.h"
 #include "interface.h"
-#include "interpolate.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
