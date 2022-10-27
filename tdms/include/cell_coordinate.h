@@ -25,4 +25,15 @@ public:
   int i() { return cell_i; };   //< fetch i
   int j() { return cell_j; };   //< fetch j
   int k() { return cell_k; };   //< fetch k
+
+  /**
+   * @brief Copies the values of the cell indices into the addresses provided
+   *
+   * @param[out] i,j,k Address to place the value of cell_{i,j,k} into (respectively)
+   */
+  void unpack(int *i, int *j, int *k) {
+    *i = cell_i;
+    *j = cell_j;
+    *k = cell_k;
+  }
 };
