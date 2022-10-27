@@ -381,7 +381,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, int i, int
             }
             // interpolate in y to obtain a value for the Hz field at position (cell_i+Dx, j, k)
             // place this into the appropriate index in the data being passed to the x_scheme
-            data_for_second_scheme[ii] = c_scheme->interpolate(data_for_second_scheme);
+            data_for_second_scheme[ii] = c_scheme->interpolate(data_for_first_scheme);
           }
           // now interpolate in the x-direction to the centre of Yee cell (i,j,k)
           return b_scheme->interpolate(data_for_second_scheme);

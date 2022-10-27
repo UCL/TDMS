@@ -344,7 +344,7 @@ TEST_CASE("H-field interpolation check") {
         double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
         double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
 
-        // Ex interpolation
+        // Hx interpolation
         if (jj != 0 && kk != 0) {
           double Hx_exact = field_component(x_eval_position);// Hx depends on y
           double Hx_split_interp = H_split.interpolate_to_centre_of(AxialDirection::X, ii, jj, kk);
@@ -353,7 +353,7 @@ TEST_CASE("H-field interpolation check") {
           Hx_split_error[kk-1][jj-1][ii] = Hx_split_interp - Hx_exact;
         }
 
-        // Ey interpolation
+        // Hy interpolation
         if (ii != 0 && kk != 0) {
           double Hy_exact = field_component(y_eval_position);// Hy depends on z
           double Hy_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Y, ii, jj, kk);
@@ -362,7 +362,7 @@ TEST_CASE("H-field interpolation check") {
           Hy_split_error[kk-1][jj][ii-1] = Hy_split_interp - Hy_exact;
         }
 
-        // Ez interpolation
+        // Hz interpolation
         if (ii != 0 && jj != 0) {
           double Hz_exact = field_component(z_eval_position);// Hz depends on x
           double Hz_split_interp = H_split.interpolate_to_centre_of(AxialDirection::Z, ii, jj, kk);
