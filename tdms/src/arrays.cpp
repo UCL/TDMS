@@ -212,15 +212,6 @@ Pupil::~Pupil() {
   matrix = nullptr;
 }
 
-template<>
-void Tensor3D<double>::zero() {
-  for (int k = 0; k < n_layers; k++)
-    for (int j = 0; j < n_cols; j++)
-      for (int i = 0; i < n_rows; i++) {
-        tensor[k][j][i] = 0.0;
-      }
-}
-
 void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,
                            int n_rows, int n_cols){
 

@@ -12,6 +12,7 @@
 
 #include "matlabio.h"
 #include "utils.h"
+#include "globals.h"
 
 template<typename T>
 class XYZTensor3D {
@@ -26,6 +27,14 @@ public:
       case 'y': return y;
       case 'z': return z;
       default: throw std::runtime_error("Have no element " + to_string(c));
+    }
+  }
+  T*** operator[] (AxialDirection d) const{
+    switch (d) {
+      case AxialDirection::X: return x;
+      case AxialDirection::Y: return y;
+      case AxialDirection::Z: return z;
+      default: throw std::runtime_error("Have no element " + d);
     }
   }
 
@@ -249,7 +258,11 @@ public:
 
   bool has_elements(){ return tensor != nullptr; };
 
-  void zero();
+  void zero() {
+    for (int k = 0; k < n_layers; k++)
+      for (int j = 0; j < n_cols; j++)
+        for (int i = 0; i < n_rows; i++) { tensor[k][j][i] = 0; }
+  }
 
   void allocate(int nK, int nJ, int nI){
     n_layers = nK, n_cols = nJ, n_rows = nI;
@@ -294,7 +307,7 @@ public:
       }
       free(tensor);
     }
-  };
+  }
 };
 
 class DTilde{
