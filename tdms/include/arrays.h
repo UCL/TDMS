@@ -34,7 +34,7 @@ public:
       case AxialDirection::X: return x;
       case AxialDirection::Y: return y;
       case AxialDirection::Z: return z;
-      default: throw std::runtime_error("Have no element " + d);
+      default: throw std::runtime_error("Have no element " + to_string(d));
     }
   }
 
