@@ -42,6 +42,10 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
 
+    // check old interp methods
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -61,6 +65,10 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v23 += c1 * (x[2] + x[1]) / 2.;
     v34 += c1 * (x[3] + x[2]) / 2.;
 
+    // check old interp methods
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -80,6 +88,10 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
+    // check old interp methods
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -99,6 +111,10 @@ TEST_CASE("test_interpolation_functions: testing that cubic interpolation is exa
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
+    // check old interp methods
+    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
+    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));

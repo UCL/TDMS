@@ -96,6 +96,7 @@ set(SOURCES
     src/fdtd_grid_initialiser.cpp
     src/grid_labels.cpp
     src/interface.cpp
+    src/interpolate.cpp
     src/iterator.cpp
     src/interpolation_methods.cpp
     src/matrix_collection.cpp
