@@ -109,16 +109,16 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
         for (int k = k_lower; k <= k_upper; k++) {
           complex<double> x_at_centre, y_at_centre, z_at_centre;
           switch (mode) {
-            case THREE:
+            case Dimension::THREE:
               // 3D interpolation is identical for both E and H fields
               x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
               y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
               z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
               break;
-            case TE:
+            case Dimension::TRANSVERSE_ELECTRIC:
               interpolate_transverse_electric_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
-            case TM:
+            case Dimension::TRANSVERSE_MAGNETIC:
               interpolate_transverse_magnetic_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
           }

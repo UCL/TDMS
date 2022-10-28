@@ -1357,7 +1357,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       Enp1 = 0.0;
       array_ind = 0;
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.xy
 #pragma omp for
@@ -2421,7 +2421,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       }  //if(params.dimension==THREE || params.dimension==TE)
 
       //fprintf(stderr,"Pos 07:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
           //E_s.zx updates
@@ -2766,7 +2766,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
       }
       //fprintf(stderr,"Pos 08:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.zy
 #pragma omp for
@@ -3127,7 +3127,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I0.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I0.index] =
                       E_s.zx[k][j][I0.index] -
                       C.b.x[array_ind] *
@@ -3174,7 +3174,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I1.index] =
                       E_s.zx[k][j][I1.index] +
                       C.b.x[array_ind] *
@@ -3220,7 +3220,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       for (k = (K0.index); k <= (K1.index); k++)
         for (i = (I0.index); i <= (I1.index); i++) {
           if (J0.apply) {//Perform across J0
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
 
               if (!params.is_multilayer) array_ind = J0.index;
               else
@@ -3272,7 +3272,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (J_tot + 1) * k + J1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zy[k][(J1.index)][i] =
                       E_s.zy[k][(J1.index)][i] -
                       C.b.y[array_ind] *
@@ -3522,7 +3522,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     {
       n = omp_get_thread_num();
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
@@ -3949,7 +3949,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         }
       }
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
@@ -4135,7 +4135,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][0] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][0]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I0.index) - 1] =
                       H_s.yx[k][j][(I0.index) - 1] -
                       D.b.x[array_ind] *
@@ -4156,7 +4156,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][4] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I1.index)] =
                       H_s.yx[k][j][(I1.index)] +
                       D.b.x[array_ind] *
@@ -4182,7 +4182,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][0] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][0]));
 
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J0.index) - 1][i] =
                       H_s.xy[k][(J0.index) - 1][i] +
                       D.b.y[array_ind] *
@@ -4203,7 +4203,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][4] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J1.index)][i] =
                       H_s.xy[k][(J1.index)][i] -
                       D.b.y[array_ind] *
@@ -4865,7 +4865,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
       int i = surface_vertices[0][vindex], j = surface_vertices[1][vindex],
           k = surface_vertices[2][vindex];
-      if (params.dimension == THREE) {
+      if (params.dimension == Dimension::THREE) {
         // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
         Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
@@ -4879,7 +4879,7 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
           Ey = E.yx[k][j][i] + E.yz[k][j][i];
           Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
         }
-      } else if (params.dimension == TE) {
+      } else if (params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
         Ez = 0.;
@@ -4958,7 +4958,7 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
       j = campssample.vertices[1][vindex];
       k = campssample.vertices[2][vindex];
 
-      if (dimension == THREE) {
+      if (dimension == Dimension::THREE) {
         // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
         Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
@@ -4972,7 +4972,7 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
           Ey = E.yx[k][j][i] + E.yz[k][j][i];
           Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
         }
-      } else if (dimension == TE) {
+      } else if (dimension == Dimension::TRANSVERSE_ELECTRIC) {
         Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
         Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
         Ez = 0.;
