@@ -6,8 +6,8 @@ var simulation__parameters_8h =
     [ "SimulationParameters", "classSimulationParameters.html", "classSimulationParameters" ],
     [ "Dimension", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dca", [
       [ "THREE", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaa1251fbf93888ad32fe0ae54d49bcef17", null ],
-      [ "TE", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaa601f8082bedaa05d7593fa9cd93a60f3", null ],
-      [ "TM", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaac0f142a65b7d596e898b5ede310ac154", null ]
+      [ "TRANSVERSE_ELECTRIC", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaaf165474b57a2587fc707350aef7b687d", null ],
+      [ "TRANSVERSE_MAGNETIC", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaa3bb6315f793dfa33b6d2262a18d96fa2", null ]
     ] ],
     [ "FieldComponents", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736", [
       [ "Ex", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a9498420f987a58d92c85d24db7dbbd68", null ],

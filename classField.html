@@ -133,6 +133,18 @@ virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (
 <tr class="memitem:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="memItemLeft" align="right" valign="top">virtual std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ae0dbaf04799d4ba48201cc03a98b4be2">interpolate_to_centre_of</a> (AxialDirection d, int i, int j, int k)=0</td></tr>
 <tr class="memdesc:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a <a class="el" href="classField.html">Field</a> component to the centre of a Yee cell.  <a href="classField.html#ae0dbaf04799d4ba48201cc03a98b4be2">More...</a><br /></td></tr>
 <tr class="separator:ae0dbaf04799d4ba48201cc03a98b4be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb30ac26b024b801c426c63c0cf5eac8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aeb30ac26b024b801c426c63c0cf5eac8">interpolate_over_range</a> (mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower, int i_upper, int j_lower, int j_upper, int k_lower, int k_upper, Dimension mode=Dimension::THREE)</td></tr>
+<tr class="memdesc:aeb30ac26b024b801c426c63c0cf5eac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a> over the range provided.  <a href="classField.html#aeb30ac26b024b801c426c63c0cf5eac8">More...</a><br /></td></tr>
+<tr class="separator:aeb30ac26b024b801c426c63c0cf5eac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8df94d512196b144c0e23c40a41891"><td class="memItemLeft" align="right" valign="top"><a id="a2c8df94d512196b144c0e23c40a41891"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_over_range</b> (mxArray **x_out, mxArray **y_out, mxArray **z_out, Dimension mode=Dimension::THREE)</td></tr>
+<tr class="separator:a2c8df94d512196b144c0e23c40a41891"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916de8e930124308747b553e81b9e2f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a916de8e930124308747b553e81b9e2f9">interpolate_transverse_electric_components</a> (int i, int j, int k, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
+<tr class="memdesc:a916de8e930124308747b553e81b9e2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a>'s transverse electric components to the centre of Yee cell i,j,k.  <a href="classField.html#a916de8e930124308747b553e81b9e2f9">More...</a><br /></td></tr>
+<tr class="separator:a916de8e930124308747b553e81b9e2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d8f20f032fc297a1bd49fbfc76085ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a6d8f20f032fc297a1bd49fbfc76085ba">interpolate_transverse_magnetic_components</a> (int i, int j, int k, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
+<tr class="memdesc:a6d8f20f032fc297a1bd49fbfc76085ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a>'s transverse magnetic components to the centre of Yee cell i,j,k.  <a href="classField.html#a6d8f20f032fc297a1bd49fbfc76085ba">More...</a><br /></td></tr>
+<tr class="separator:a6d8f20f032fc297a1bd49fbfc76085ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">set_values_from</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
 <tr class="separator:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
@@ -290,6 +302,94 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 
 </div>
 </div>
+<a id="aeb30ac26b024b801c426c63c0cf5eac8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb30ac26b024b801c426c63c0cf5eac8">&#9670;&nbsp;</a></span>interpolate_over_range()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::interpolate_over_range </td>
+          <td>(</td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>x_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>y_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramname"><em>z_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i_lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i_upper</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j_lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j_upper</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k_lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k_upper</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dimension&#160;</td>
+          <td class="paramname"><em>mode</em> = <code>Dimension::THREE</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interpolates the <a class="el" href="classField.html">Field</a> over the range provided. </p>
+<p>Default range is to interpolate to the midpoint of all consecutive points.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">x_out,y_out,z_out</td><td>Output arrays for interpolated values </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">i_lower,j_lower,k_lower</td><td>Lower index for interpolation in the i,j,k directions, respectively </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">i_upper,j_upper,k_upper</td><td>Upper index for interpolation in the i,j,k directions, respectively </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mode</td><td>Determines which field components to compute, based on the simulation Dimension </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ae0dbaf04799d4ba48201cc03a98b4be2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae0dbaf04799d4ba48201cc03a98b4be2">&#9670;&nbsp;</a></span>interpolate_to_centre_of()</h2>
 
@@ -347,6 +447,148 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 <dl class="section return"><dt>Returns</dt><dd>std::complex&lt;double&gt; The interpolated field value </dd></dl>
 
 <p>Implemented in <a class="el" href="classMagneticField.html#af3aed3a63c9ac03b979e0b8eaed9233a">MagneticField</a>, and <a class="el" href="classElectricField.html#a1711a154255c99927e5d048ac0176538">ElectricField</a>.</p>
+
+</div>
+</div>
+<a id="a916de8e930124308747b553e81b9e2f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a916de8e930124308747b553e81b9e2f9">&#9670;&nbsp;</a></span>interpolate_transverse_electric_components()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Field::interpolate_transverse_electric_components </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>x_at_centre</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>y_at_centre</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>z_at_centre</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates the <a class="el" href="classField.html">Field</a>'s transverse electric components to the centre of Yee cell i,j,k. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i,j,k</td><td>Yee cell index </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x_at_centre,y_at_centre,z_at_centre</td><td>Addresses to write interpolated values for the x,y,z components (respectively) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classMagneticField.html#aed1f1614ff34a2dc48a5d5bbf61c0e87">MagneticField</a>, and <a class="el" href="classElectricField.html#a45d372aa9bc5f3f1d17ab2be95c4bb04">ElectricField</a>.</p>
+
+</div>
+</div>
+<a id="a6d8f20f032fc297a1bd49fbfc76085ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d8f20f032fc297a1bd49fbfc76085ba">&#9670;&nbsp;</a></span>interpolate_transverse_magnetic_components()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Field::interpolate_transverse_magnetic_components </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>x_at_centre</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>y_at_centre</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::complex&lt; double &gt; *&#160;</td>
+          <td class="paramname"><em>z_at_centre</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates the <a class="el" href="classField.html">Field</a>'s transverse magnetic components to the centre of Yee cell i,j,k. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i,j,k</td><td>Yee cell index </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x_at_centre,y_at_centre,z_at_centre</td><td>Addresses to write interpolated values for the x,y,z components (respectively) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classMagneticField.html#a1766ba07414b9640e1c2f7abe496843a">MagneticField</a>, and <a class="el" href="classElectricField.html#adef62f2f7bb80be8b3095e6fc968ad75">ElectricField</a>.</p>
 
 </div>
 </div>
