@@ -17,6 +17,14 @@ void XYZVectors::set_ptr(const char c, double* ptr){
     default: throw std::runtime_error("Have no element " + to_string(c));
   }
 }
+void XYZVectors::set_ptr(AxialDirection d, double* ptr){
+  switch (d) {
+    case AxialDirection::X: {x = ptr; break;}
+    case AxialDirection::Y: {y = ptr; break;}
+    case AxialDirection::Z: {z = ptr; break;}
+    default: throw std::runtime_error("Have no element " + to_string(d));
+  }
+}
 
 CMaterial::CMaterial(const mxArray *ptr) {
 

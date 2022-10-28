@@ -77,6 +77,12 @@ public:
    * @param ptr Pointer to assign
    */
   void set_ptr(char c, double* ptr);
+  /**
+   * Set the pointer for one of the vectors in this collection with a name of c
+   * @param d AxialDirection labeling the vector
+   * @param ptr Pointer to assign
+   */
+  void set_ptr(AxialDirection d, double *ptr);
 };
 
 // TODO: docstring

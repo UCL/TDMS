@@ -145,7 +145,8 @@ if (BUILD_TESTING)
             tests/unit/test_numerical_derivative.cpp
             tests/unit/test_openandorder.cpp
             tests/unit/array_tests/test_Tensor3D.cpp
-            tests/unit/array_tests/test_XYZTensor3D.cpp)
+            tests/unit/array_tests/test_XYZTensor3D.cpp
+            tests/unit/array_tests/test_XYZVectors.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
