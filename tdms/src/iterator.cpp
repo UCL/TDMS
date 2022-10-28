@@ -4894,42 +4894,42 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
         Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
         Hz = 0.;
       }
-        //    fprintf(stderr,"2nd interp donezn");
+      //    fprintf(stderr,"2nd interp donezn");
 
-        /*Ex and Hx*/
-        subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-        subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
+      /*Ex and Hx*/
+      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
-        //now update the master array
-        surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
-        surface_EHi[0][vindex] = surface_EHi[0][vindex] + imag(subResultE);
+      //now update the master array
+      surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
+      surface_EHi[0][vindex] = surface_EHi[0][vindex] + imag(subResultE);
 
-        surface_EHr[3][vindex] = surface_EHr[3][vindex] + real(subResultH);
-        surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
+      surface_EHr[3][vindex] = surface_EHr[3][vindex] + real(subResultH);
+      surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
 
-        /*Ey and Hy*/
-        subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-        subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
+      /*Ey and Hy*/
+      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
-        //now update the master array
-        surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
-        surface_EHi[1][vindex] = surface_EHi[1][vindex] + imag(subResultE);
+      //now update the master array
+      surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
+      surface_EHi[1][vindex] = surface_EHi[1][vindex] + imag(subResultE);
 
-        surface_EHr[4][vindex] = surface_EHr[4][vindex] + real(subResultH);
-        surface_EHi[4][vindex] = surface_EHi[4][vindex] + imag(subResultH);
+      surface_EHr[4][vindex] = surface_EHr[4][vindex] + real(subResultH);
+      surface_EHi[4][vindex] = surface_EHi[4][vindex] + imag(subResultH);
 
 
-        /*Ez and Hz*/
-        subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-        subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
+      /*Ez and Hz*/
+      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
+      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
 
-        //now update the master array
-        surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
-        surface_EHi[2][vindex] = surface_EHi[2][vindex] + imag(subResultE);
+      //now update the master array
+      surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
+      surface_EHi[2][vindex] = surface_EHi[2][vindex] + imag(subResultE);
 
-        surface_EHr[5][vindex] = surface_EHr[5][vindex] + real(subResultH);
-        surface_EHi[5][vindex] = surface_EHi[5][vindex] + imag(subResultH);
-      }
+      surface_EHr[5][vindex] = surface_EHr[5][vindex] + real(subResultH);
+      surface_EHi[5][vindex] = surface_EHi[5][vindex] + imag(subResultH);
+    }
   }//end parallel region
 }
 
