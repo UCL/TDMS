@@ -61,6 +61,7 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     [ "interface.h", "interface_8h.html", [
       [ "InterfaceComponent", "classInterfaceComponent.html", "classInterfaceComponent" ]
     ] ],
+    [ "interpolate.h", "interpolate_8h.html", "interpolate_8h" ],
     [ "interpolation_methods.h", "interpolation__methods_8h.html", "interpolation__methods_8h" ],
     [ "iterator.h", "iterator_8h.html", "iterator_8h" ],
     [ "mat_io.h", "mat__io_8h.html", null ],
