@@ -10,16 +10,18 @@ double ElectricField::phase(int n, double omega, double dt){
   return omega * ((double) n + 1) * dt;
 }
 
-void ElectricField::interpolate_TE_components(int i, int j, int k, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void ElectricField::interpolate_transverse_electric_components(int i, int j, int k,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
   *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
   *z_at_centre = complex<double>(0., 0.);
 }
-void ElectricField::interpolate_TM_components(int i, int j, int k, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void ElectricField::interpolate_transverse_magnetic_components(int i, int j, int k,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
   *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);

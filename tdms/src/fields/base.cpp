@@ -10,8 +10,6 @@ void Field::add_to_angular_norm(int n, int Nt, SimulationParameters &params) {
   angular_norm += phasor_norm(ft, n, params.omega_an, params.dt, Nt);
 }
 
-
-
 void Field::normalise_volume() {
 
   double norm_r = std::real(angular_norm);
@@ -118,10 +116,10 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
               z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
               break;
             case TE:
-              interpolate_TE_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_electric_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
             case TM:
-              interpolate_TM_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_magnetic_components(i, j, k, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
           }
           real_out.x[k - k_lower][j - j_lower][i - i_lower] = x_at_centre.real();

@@ -10,16 +10,18 @@ double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
 }
 
-void MagneticField::interpolate_TE_components(int i, int j, int k, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void MagneticField::interpolate_transverse_electric_components(int i, int j, int k,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
   *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
 }
-void MagneticField::interpolate_TM_components(int i, int j, int k, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void MagneticField::interpolate_transverse_magnetic_components(int i, int j, int k,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
   *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
   *z_at_centre = complex<double>(0., 0.);

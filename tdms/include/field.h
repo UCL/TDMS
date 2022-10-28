@@ -294,18 +294,20 @@ public:
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  virtual void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                         std::complex<double> *y_at_centre,
-                                         std::complex<double> *z_at_centre) = 0;
+  virtual void interpolate_transverse_electric_components(int i, int j, int k,
+                                                          std::complex<double> *x_at_centre,
+                                                          std::complex<double> *y_at_centre,
+                                                          std::complex<double> *z_at_centre) = 0;
   /**
    * @brief Interpolates the Field's transverse magnetic components to the centre of Yee cell i,j,k
    *
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  virtual void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                         std::complex<double> *y_at_centre,
-                                         std::complex<double> *z_at_centre) = 0;
+  virtual void interpolate_transverse_magnetic_components(int i, int j, int k,
+                                                          std::complex<double> *x_at_centre,
+                                                          std::complex<double> *y_at_centre,
+                                                          std::complex<double> *z_at_centre) = 0;
 
   /**
    * Set the values of all components in this field from another, equally sized field
@@ -341,7 +343,7 @@ public:
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
+  void interpolate_transverse_electric_components(int i, int j, int k, std::complex<double> *x_at_centre,
                                  std::complex<double> *y_at_centre,
                                  std::complex<double> *z_at_centre) override;
   /**
@@ -352,9 +354,10 @@ public:
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                 std::complex<double> *y_at_centre,
-                                 std::complex<double> *z_at_centre) override;
+  void interpolate_transverse_magnetic_components(int i, int j, int k,
+                                                  std::complex<double> *x_at_centre,
+                                                  std::complex<double> *y_at_centre,
+                                                  std::complex<double> *z_at_centre) override;
 };
 
 class MagneticField: public Field{
@@ -383,9 +386,10 @@ public:
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_TE_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                 std::complex<double> *y_at_centre,
-                                 std::complex<double> *z_at_centre) override;
+  void interpolate_transverse_electric_components(int i, int j, int k,
+                                                  std::complex<double> *x_at_centre,
+                                                  std::complex<double> *y_at_centre,
+                                                  std::complex<double> *z_at_centre) override;
   /**
    * @brief Interpolates the transverse magnetic components to the centre of Yee cell i,j,k.
    *
@@ -394,9 +398,10 @@ public:
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_TM_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                 std::complex<double> *y_at_centre,
-                                 std::complex<double> *z_at_centre) override;
+  void interpolate_transverse_magnetic_components(int i, int j, int k,
+                                                  std::complex<double> *x_at_centre,
+                                                  std::complex<double> *y_at_centre,
+                                                  std::complex<double> *z_at_centre) override;
 };
 
 /**
