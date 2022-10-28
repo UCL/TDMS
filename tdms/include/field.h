@@ -289,7 +289,7 @@ public:
                               Dimension mode = Dimension::THREE);
 
   /**
-   * @brief Interpolates the Field's TE components to the centre of Yee cell i,j,k
+   * @brief Interpolates the Field's transverse electric components to the centre of Yee cell i,j,k
    *
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
