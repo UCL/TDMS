@@ -12,7 +12,6 @@
 #include "array_init.h"
 #include "globals.h"
 #include "interface.h"
-#include "interpolate.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
@@ -1173,20 +1172,22 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                ////fprintf(stderr,"Pos fs 1\n");
-                interpolateTimeDomainFieldCentralEBandLimited(
-                        E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        fieldsample.i[it] + params.pml.Dxl - 1,
-                        fieldsample.j[jt] + params.pml.Dyl - 1,
-                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
-                //fprintf(stderr,"Pos fs 2\n");
+                int i = fieldsample.i[it] + params.pml.Dxl - 1,
+                    j = fieldsample.j[jt] + params.pml.Dyl - 1,
+                    k = fieldsample.k[kt] + params.pml.Dzl - 1;
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+                if (j != 0) {
+                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+                } else {
+                  Ey_temp = E_s.yx[k][0][i] + E_s.yz[k][0][i];
+                }
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
                               fieldsample.n[nt] / 2.) /
                                   params.Nt;
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_vecs.n[nt], (int)fieldsample_vecs.i[it] + params.pml.Dxl - 1, (int)fieldsample_vecs.j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_vecs.k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_vecs.n[nt] - 2);
               }
         }
     }
@@ -1356,7 +1357,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       Enp1 = 0.0;
       array_ind = 0;
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.xy
 #pragma omp for
@@ -2420,7 +2421,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       }  //if(params.dimension==THREE || params.dimension==TE)
 
       //fprintf(stderr,"Pos 07:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 #pragma omp for
           //E_s.zx updates
@@ -2765,7 +2766,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
       }
       //fprintf(stderr,"Pos 08:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.zy
 #pragma omp for
@@ -3126,7 +3127,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I0.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I0.index] =
                       E_s.zx[k][j][I0.index] -
                       C.b.x[array_ind] *
@@ -3173,7 +3174,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I1.index] =
                       E_s.zx[k][j][I1.index] +
                       C.b.x[array_ind] *
@@ -3219,7 +3220,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       for (k = (K0.index); k <= (K1.index); k++)
         for (i = (I0.index); i <= (I1.index); i++) {
           if (J0.apply) {//Perform across J0
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
 
               if (!params.is_multilayer) array_ind = J0.index;
               else
@@ -3271,7 +3272,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (J_tot + 1) * k + J1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zy[k][(J1.index)][i] =
                       E_s.zy[k][(J1.index)][i] -
                       C.b.y[array_ind] *
@@ -3521,7 +3522,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     {
       n = omp_get_thread_num();
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
@@ -3948,7 +3949,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         }
       }
 
-      if (params.dimension == THREE || params.dimension == TE) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
@@ -4134,7 +4135,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][0] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][0]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I0.index) - 1] =
                       H_s.yx[k][j][(I0.index) - 1] -
                       D.b.x[array_ind] *
@@ -4155,7 +4156,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][4] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I1.index)] =
                       H_s.yx[k][j][(I1.index)] +
                       D.b.x[array_ind] *
@@ -4181,7 +4182,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][0] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][0]));
 
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J0.index) - 1][i] =
                       H_s.xy[k][(J0.index) - 1][i] +
                       D.b.y[array_ind] *
@@ -4202,7 +4203,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][4] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J1.index)][i] =
                       H_s.xy[k][(J1.index)][i] -
                       D.b.y[array_ind] *
@@ -4552,30 +4553,19 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
-              E.J_tot - 2, E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1a\n");
-      mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1b\n");
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
+                               E.K_tot - 2, Dimension::THREE);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+                               H.K_tot - 2, Dimension::THREE);
 
-    } else if (params.dimension == TE)
-      mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    if (params.dimension == THREE)
-      mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-    else if (params.dimension == TE)
-      mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+
+    } else {
+      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+                               0, params.dimension);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+                               0, params.dimension);
+    }
 
     //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
@@ -4873,50 +4863,37 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
   {
 #pragma omp for
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralE(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      //    fprintf(stderr,"1st interp donezn");
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralH(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
+      int i = surface_vertices[0][vindex], j = surface_vertices[1][vindex],
+          k = surface_vertices[2][vindex];
+      if (params.dimension == Dimension::THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.yx[k][j][i] + E.yz[k][j][i];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        }
+      } else if (params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = 0.;
+      }
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
@@ -4977,43 +4954,39 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
   {
 #pragma omp for
     for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
-
       i = campssample.vertices[0][vindex];
       j = campssample.vertices[1][vindex];
       k = campssample.vertices[2][vindex];
 
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex,
-                                                 &Ey, &Ez);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                             &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k,
-                                                        &Ex, &Ey, &Ez);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx,
-                                                 &Hy, &Hz);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                             &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k,
-                                                        &Hx, &Hy, &Hz);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
+      if (dimension == Dimension::THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+          Ey = E.yx[k][j][i] + E.yz[k][j][i];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        }
+      } else if (dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Hz = 0.;
+      }
 
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
