@@ -11,16 +11,18 @@ double MagneticField::phase(int n, double omega, double dt){
   return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
 }
 
-void MagneticField::interpolate_transverse_electric_components(CellCoordinate cell, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void MagneticField::interpolate_transverse_electric_components(CellCoordinate cell,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
   *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, cell);
 }
-void MagneticField::interpolate_transverse_magnetic_components(CellCoordinate cell, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void MagneticField::interpolate_transverse_magnetic_components(CellCoordinate cell,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = interpolate_to_centre_of(AxialDirection::X, cell);
   *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, cell);
   *z_at_centre = complex<double>(0., 0.);
