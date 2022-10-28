@@ -298,7 +298,7 @@ public:
                                          std::complex<double> *y_at_centre,
                                          std::complex<double> *z_at_centre) = 0;
   /**
-   * @brief Interpolates the Field's TM components to the centre of Yee cell i,j,k
+   * @brief Interpolates the Field's transverse magnetic components to the centre of Yee cell i,j,k
    *
    * @param[in] i,j,k Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
@@ -334,7 +334,7 @@ public:
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 
   /**
-   * @brief Interpolates the TE components to the centre of Yee cell i,j,k.
+   * @brief Interpolates the transverse electric components to the centre of Yee cell i,j,k.
    *
    * Ex and Ey are interpolated. Ez is set to a placeholder (default) value.
    *
@@ -345,7 +345,7 @@ public:
                                  std::complex<double> *y_at_centre,
                                  std::complex<double> *z_at_centre) override;
   /**
-   * @brief Interpolates the TM components to the centre of Yee cell i,j,k.
+   * @brief Interpolates the transverse magnetic components to the centre of Yee cell i,j,k.
    *
    * Ez is interpolated. Ex and Ey are set to a placeholder (default) values.
    *
@@ -376,7 +376,7 @@ public:
   std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
 
   /**
-   * @brief Interpolates the TE components to the centre of Yee cell i,j,k.
+   * @brief Interpolates the transverse electric components to the centre of Yee cell i,j,k.
    *
    * Hz is interpolated. Hx and Hy are set to a placeholder (default) values.
    *
@@ -387,7 +387,7 @@ public:
                                  std::complex<double> *y_at_centre,
                                  std::complex<double> *z_at_centre) override;
   /**
-   * @brief Interpolates the TM components to the centre of Yee cell i,j,k.
+   * @brief Interpolates the transverse magnetic components to the centre of Yee cell i,j,k.
    *
    * Hx and Hy are interpolated. Hz is set to a placeholder (default) value.
    *
