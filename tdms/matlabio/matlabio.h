@@ -31,7 +31,7 @@ void free_cast_matlab_4D_array(double ****castArray, int nlayers, int nblocks);
 /**
  * Casts a 3-dimensional array such that it may be indexed according to the usual array indexing
  * scheme array[k,j,i].
- * @param array is a pointer to a matlab 3 dimensional array
+ * @param array is a pointer to a matlab 4 dimensional array
 
  * @param nrows the number of rows in the array
  * @param ncols the number of columns in the array
@@ -39,6 +39,7 @@ void free_cast_matlab_4D_array(double ****castArray, int nlayers, int nblocks);
  */
 template<typename T, typename S>
 T*** cast_matlab_3D_array(T *array, S nrows, S ncols, S nlayers){
+
   T ***p;
   nlayers = std::max(nlayers, S(1));
   p = (T ***)malloc((unsigned) (nlayers*sizeof(T **)));
