@@ -73,8 +73,8 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, CellCo
   complex<double> data_for_first_scheme[8];
   // the interpolation schemes that are to be used
   const InterpolationScheme *b_scheme, *c_scheme;
-  int i, j, k;
-  cell.unpack(&i, &j, &k);
+  int i = cell.i(), j = cell.j(), k = cell.k();
+
   switch (d) {
     case X:
       // Associations: a = x, b = y, c = z
@@ -245,8 +245,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, CellCo
 
 double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *b_scheme, *c_scheme;
-  int i, j, k;
-  cell.unpack(&i, &j, &k);
+  int i = cell.i(), j = cell.j(), k = cell.k();
   // this data will be passed to the second interpolation scheme
   double data_for_second_scheme[8];
   // this data will hold values for the interpolation in the first interpolation scheme

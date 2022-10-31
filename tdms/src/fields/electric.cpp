@@ -27,8 +27,7 @@ void ElectricField::interpolate_transverse_magnetic_components(CellCoordinate ce
 
 complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
-  int i, j, k;
-  cell.unpack(&i, &j, &k);
+  int i = cell.i(), j = cell.j(), k = cell.k();
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   complex<double> interp_data[8];
 
@@ -78,8 +77,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
 
 double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
-  int i, j, k;
-  cell.unpack(&i, &j, &k);
+  int i = cell.i(), j = cell.j(), k = cell.k();
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   double interp_data[8];
 
