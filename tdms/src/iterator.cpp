@@ -1176,7 +1176,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                             fieldsample.j[jt] + params.pml.Dyl - 1,
                                             fieldsample.k[kt] + params.pml.Dzl - 1);
                 Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, current_cell);
-                if (j != 0) {
+                if (current_cell.j() != 0) {
                   Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, current_cell);
                 } else {
                   Ey_temp = E_s.yx[current_cell] + E_s.yz[current_cell];
