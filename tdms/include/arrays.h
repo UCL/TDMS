@@ -157,21 +157,42 @@ protected:
   T** matrix = nullptr;
 
 public:
-  inline T* operator[] (int value) const { return matrix[value]; }
+  /**
+   * @brief Construct a new Matrix object, without assigned elements
+   *
+   */
+  Matrix() = default;
+  /**
+   * @brief Construct a new Matrix object, providing the dimensions
+   *
+   * @param n_rows,n_cols Number of rows and columns in the matrix
+   * @param initial_value The initial value of the elements, defaults to 0 to avoid initalised but unassigned values
+   */
+  Matrix(int n_rows, int n_cols) {
+    allocate(n_rows, n_cols);
+  }
 
+  inline T* operator[] (int value) const { return matrix[value]; }
+  /**
+   * @brief Check whether this matrix has elements assigned
+   *
+   * @return true If this matrix has assigned elements
+   * @return false This matrix is currently unassigned
+   */
   bool has_elements(){ return matrix != nullptr; };
 
   /**
-   * Allocate the memory for this matrix. Must be defined in the header
+   * Allocate the memory for this matrix
+   *
    * @param n_rows Number of rows
    * @param n_cols Number of columns
    */
-  void allocate(int n_rows, int n_cols){
+  void allocate(int n_rows, int n_cols, T initial_value = 0){
     this->n_rows = n_rows;
     this->n_cols = n_cols;
 
     matrix = (T **) malloc(sizeof(T *) * n_rows);
-    for (int i = 0; i < n_rows; i++){
+    for (int i = 0; i < n_rows; i++) {
       matrix[i] = (T *) malloc(sizeof(T) * n_cols);
     }
   };
