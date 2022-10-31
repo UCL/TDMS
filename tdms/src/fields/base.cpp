@@ -111,19 +111,17 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
           complex<double> x_at_centre, y_at_centre, z_at_centre;
           CellCoordinate current_cell(i,j,k);
           switch (mode) {
-            case THREE:
+            case Dimension::THREE:
               // 3D interpolation is identical for both E and H fields
               x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell);
               y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell);
               z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
               break;
-            case TE:
-              interpolate_transverse_electric_components(current_cell, &x_at_centre, &y_at_centre,
-                                                         &z_at_centre);
+            case Dimension::TRANSVERSE_ELECTRIC:
+              interpolate_transverse_electric_components(current_cell, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
-            case TM:
-              interpolate_transverse_magnetic_components(current_cell, &x_at_centre, &y_at_centre,
-                                                         &z_at_centre);
+            case Dimension::TRANSVERSE_MAGNETIC:
+              interpolate_transverse_magnetic_components(current_cell, &x_at_centre, &y_at_centre, &z_at_centre);
               break;
           }
           real_out.x[k - k_lower][j - j_lower][i - i_lower] = x_at_centre.real();

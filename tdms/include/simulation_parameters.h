@@ -34,9 +34,9 @@ enum RunMode{
 };
 
 enum Dimension{
-  THREE,  // Full dimensionality - compute all H and E components
-  TE,     // Transverse electric - only compute Ex, Ey, and Hz components
-  TM      // Transverse magnetic - only compute Hx, Hy, and Ez components
+  THREE,                    // Full dimensionality - compute all H and E components
+  TRANSVERSE_ELECTRIC,      // Transverse electric - only compute Ex, Ey, and Hz components
+  TRANSVERSE_MAGNETIC       // Transverse magnetic - only compute Hx, Hy, and Ez components
 };
 
 enum InterpolationMethod{
