@@ -225,7 +225,15 @@ protected:
 public:
   Vector() = default;
 
-  explicit Vector(const mxArray *ptr);
+  explicit Vector(const mxArray *ptr) {
+    n = (int) mxGetNumberOfElements(ptr);
+    vector = (T *) malloc((unsigned) (n * sizeof(T)));
+
+    auto matlab_ptr = mxGetPr(ptr);
+    for (int i = 0; i < n; i++) { vector[i] = (T) matlab_ptr[i]; }
+  }
+
+  bool has_elements() { return vector != nullptr; }
 
   inline T operator[] (int value) const { return vector[value]; };
 

@@ -129,17 +129,6 @@ GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
 }
 
-template <typename T>
-Vector<T>::Vector(const mxArray *ptr) {
-  n = (int)mxGetNumberOfElements(ptr);
-  vector = (T*) malloc((unsigned) (n * sizeof(T)));
-
-  auto matlab_ptr = mxGetPr(ptr);
-  for (int i = 0; i < n; i++){
-    vector[i] = (T) matlab_ptr[i];
-  }
-}
-
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
 
   if (mxIsEmpty(ptr)) {

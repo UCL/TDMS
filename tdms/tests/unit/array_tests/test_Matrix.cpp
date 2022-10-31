@@ -8,8 +8,6 @@
 
 #include "arrays.h"
 
-const double tol = 1e-16;
-
 TEST_CASE("Matrix: allocation and deallocation") {
   SPDLOG_INFO("== Testing Matrix allocation/deallocation");
 
