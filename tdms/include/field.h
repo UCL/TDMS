@@ -201,9 +201,9 @@ public:
 
   std::complex<double> angular_norm = 0.;
 
-  // TODO: this is likely better as a set of complex arrays - use Tensor3d<std::complex<double>>
-  XYZTensor3D real;
-  XYZTensor3D imag;
+  // TODO: this is likely better as a set of complex arrays - use XYZTensor3D<std::complex<double>>
+  XYZTensor3D<double> real;
+  XYZTensor3D<double> imag;
 
   /**
      * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
