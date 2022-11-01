@@ -5,9 +5,12 @@
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
+#include <numeric>
 
 #include "arrays.h"
 #include "globals.h"
+
+using std::accumulate;
 
 const double tol = 1e-8;
 
@@ -25,9 +28,6 @@ TEST_CASE("Test XYZVectors allocation") {
 
   // create some arrays to assign to the members
   double x_vec[nx] = {0.}, y_vec[ny] = {2., 1.}, z_vec[nz] = {4., 3., 2., 1.};
-  // and for testing they're pointing to the right values
-  double x_tot = 0., y_tot = 0., z_tot = 0.;
-
   // now let's try assigning
   v.set_ptr(AxialDirection::X, x_vec);
   REQUIRE(v.x != nullptr);
@@ -36,18 +36,15 @@ TEST_CASE("Test XYZVectors allocation") {
   v.set_ptr(AxialDirection::Z, z_vec);
   REQUIRE(v.z != nullptr);
   // and manipulating the components
-  for (int ix = 0; ix < nx; ix++) { x_tot += v.x[ix]; }
+  double x_tot = accumulate(v.x, v.x + nx, 0.);
   CHECK(abs(x_tot - 0.) <= tol);
-  for (int iy = 0; iy < ny; iy++) { y_tot += v.y[iy]; }
+  double y_tot = accumulate(v.y, v.y + ny, 0.);
   CHECK(abs(y_tot - 3.) <= tol);
-  for (int iz = 0; iz < nz; iz++) { z_tot += v.z[iz]; }
+  double z_tot = accumulate(v.z, v.z + nz, 0.);
   CHECK(abs(z_tot - 10.) <= tol);
 
   // in theory, we can also swap the components by reassigning the pointers
   v.set_ptr('x', z_vec);
-  x_tot = 0.;
-  for (int ix_but_really_iz = 0; ix_but_really_iz < nz; ix_but_really_iz++) {
-    x_tot += v.x[ix_but_really_iz];
-  }
+  x_tot = accumulate(v.x, v.x + nz, 0.);
   CHECK(abs(x_tot - 10.) <= tol);
 }

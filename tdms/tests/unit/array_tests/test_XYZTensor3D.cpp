@@ -9,8 +9,6 @@
 #include "arrays.h"
 #include "globals.h"
 
-const double tol = 1e-8;
-
 TEST_CASE("Test XYZTensor allocation") {
   SPDLOG_INFO("== Testing XYZTensor3D allocation/deallocation");
   // dimensions for the test-tensor
@@ -39,5 +37,14 @@ TEST_CASE("Test XYZTensor allocation") {
   }
   // at end, destructor should be called as appropriate
   // but this class has no destructor --- it doesn't store the size of its arrays
-  // so we should use Tensor3Ds for the components no??
+  // hence, manually deallocate here
+  for (char component : {'x', 'y', 'z'}) {
+    for (int k = 0; k < n_layers; k++) {
+      for (int j = 0; j < n_cols; j++) {
+        free(default_constructor_test[component][k][j]);
+      }
+      free(default_constructor_test[component][k]);
+    }
+    free(default_constructor_test[component]);
+  }
 }

@@ -9,7 +9,7 @@
 
 #include "arrays.h"
 
-const double tol = 1e-8;
+const double tol = 1e-16;
 
 TEST_CASE("Tensor3D: allocation and deallocation") {
     SPDLOG_INFO("== Testing Tensor3D allocation/deallocation");
