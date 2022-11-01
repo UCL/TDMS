@@ -20,4 +20,7 @@ digraph "tdms/include/simulation_parameters.h"
   Node3 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 [label="utils.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utils_8h.html",tooltip="Useful miscellaneous utility functions."];
   Node8 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="globals.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$globals_8h.html",tooltip="Type definitions and global constants."];
+  Node9 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

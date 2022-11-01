@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TDMS: XYZTensor3D Class Reference</title>
+<title>TDMS: XYZTensor3D&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,40 +88,48 @@ $(document).ready(function(){initNavTree('classXYZTensor3D.html',''); initResiza
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classXYZTensor3D-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">XYZTensor3D Class Reference</div>  </div>
+<div class="title">XYZTensor3D&lt; T &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa2365e09606577d18ee9ffc5ff59b691"><td class="memItemLeft" align="right" valign="top"><a id="aa2365e09606577d18ee9ffc5ff59b691"></a>
-double ***&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (char c) const</td></tr>
-<tr class="separator:aa2365e09606577d18ee9ffc5ff59b691"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5edf50739f41fbe6b7890461a249ee54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZTensor3D.html#a5edf50739f41fbe6b7890461a249ee54">allocate</a> (int I_total, int J_total, int K_total)</td></tr>
-<tr class="memdesc:a5edf50739f41fbe6b7890461a249ee54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays.  <a href="classXYZTensor3D.html#a5edf50739f41fbe6b7890461a249ee54">More...</a><br /></td></tr>
-<tr class="separator:a5edf50739f41fbe6b7890461a249ee54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a422f229deae907916c3b357bdc486eba"><td class="memItemLeft" align="right" valign="top"><a id="a422f229deae907916c3b357bdc486eba"></a>
+T ***&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (char c) const</td></tr>
+<tr class="separator:a422f229deae907916c3b357bdc486eba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77747862888b4ce04cafc954fcebe22a"><td class="memItemLeft" align="right" valign="top"><a id="a77747862888b4ce04cafc954fcebe22a"></a>
+T ***&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (AxialDirection d) const</td></tr>
+<tr class="separator:a77747862888b4ce04cafc954fcebe22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7894b517964b8f32a0578c469551a30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZTensor3D.html#ac7894b517964b8f32a0578c469551a30">allocate</a> (int I_total, int J_total, int K_total)</td></tr>
+<tr class="memdesc:ac7894b517964b8f32a0578c469551a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays.  <a href="classXYZTensor3D.html#ac7894b517964b8f32a0578c469551a30">More...</a><br /></td></tr>
+<tr class="separator:ac7894b517964b8f32a0578c469551a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4cc20c78e0c18d32d2769fba5ee634a9"><td class="memItemLeft" align="right" valign="top"><a id="a4cc20c78e0c18d32d2769fba5ee634a9"></a>
-double ***&#160;</td><td class="memItemRight" valign="bottom"><b>x</b> = nullptr</td></tr>
-<tr class="separator:a4cc20c78e0c18d32d2769fba5ee634a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e6774a5b2a1be5060b135775915aebf"><td class="memItemLeft" align="right" valign="top"><a id="a5e6774a5b2a1be5060b135775915aebf"></a>
-double ***&#160;</td><td class="memItemRight" valign="bottom"><b>y</b> = nullptr</td></tr>
-<tr class="separator:a5e6774a5b2a1be5060b135775915aebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa56cb20574f4ef24faebf38f4f6b27bf"><td class="memItemLeft" align="right" valign="top"><a id="aa56cb20574f4ef24faebf38f4f6b27bf"></a>
-double ***&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr</td></tr>
-<tr class="separator:aa56cb20574f4ef24faebf38f4f6b27bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1deda3f4d0cfe1ecf9569d41c7436c0d"><td class="memItemLeft" align="right" valign="top"><a id="a1deda3f4d0cfe1ecf9569d41c7436c0d"></a>
+T ***&#160;</td><td class="memItemRight" valign="bottom"><b>x</b> = nullptr</td></tr>
+<tr class="separator:a1deda3f4d0cfe1ecf9569d41c7436c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462c351afc01b5fa2c0f36453788643b"><td class="memItemLeft" align="right" valign="top"><a id="a462c351afc01b5fa2c0f36453788643b"></a>
+T ***&#160;</td><td class="memItemRight" valign="bottom"><b>y</b> = nullptr</td></tr>
+<tr class="separator:a462c351afc01b5fa2c0f36453788643b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86b21e2b7e685584eb5a2dacbb8ec2ab"><td class="memItemLeft" align="right" valign="top"><a id="a86b21e2b7e685584eb5a2dacbb8ec2ab"></a>
+T ***&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr</td></tr>
+<tr class="separator:a86b21e2b7e685584eb5a2dacbb8ec2ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5edf50739f41fbe6b7890461a249ee54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5edf50739f41fbe6b7890461a249ee54">&#9670;&nbsp;</a></span>allocate()</h2>
+<a id="ac7894b517964b8f32a0578c469551a30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7894b517964b8f32a0578c469551a30">&#9670;&nbsp;</a></span>allocate()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void XYZTensor3D::allocate </td>
+          <td class="memname">void <a class="el" href="classXYZTensor3D.html">XYZTensor3D</a>&lt; T &gt;::allocate </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>I_total</em>, </td>
@@ -144,6 +152,11 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays. </p>
@@ -156,9 +169,8 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
-<li>tdms/src/arrays.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

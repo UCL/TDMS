@@ -7,5 +7,5 @@ digraph "Field"
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="Grid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGrid.html",tooltip=" "];
   Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" imag\nreal" ,fontname="Helvetica"];
-  Node3 [label="XYZTensor3D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classXYZTensor3D.html",tooltip=" "];
+  Node3 [label="XYZTensor3D\< double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classXYZTensor3D.html",tooltip=" "];
 }

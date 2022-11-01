@@ -94,14 +94,20 @@ $(document).ready(function(){initNavTree('classMatrix.html',''); initResizable()
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a8f3dfbe2a101bdc58c768d315dbc1234"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234">Matrix</a> ()=default</td></tr>
+<tr class="memdesc:a8f3dfbe2a101bdc58c768d315dbc1234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classMatrix.html">Matrix</a> object, without assigned elements.  <a href="classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234">More...</a><br /></td></tr>
+<tr class="separator:a8f3dfbe2a101bdc58c768d315dbc1234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb2069811295ea871b8f0a690aa734f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a8eb2069811295ea871b8f0a690aa734f">Matrix</a> (int n_rows, int n_cols)</td></tr>
+<tr class="memdesc:a8eb2069811295ea871b8f0a690aa734f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classMatrix.html">Matrix</a> object, providing the dimensions.  <a href="classMatrix.html#a8eb2069811295ea871b8f0a690aa734f">More...</a><br /></td></tr>
+<tr class="separator:a8eb2069811295ea871b8f0a690aa734f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0380587265eb63cabac80983545703bb"><td class="memItemLeft" align="right" valign="top"><a id="a0380587265eb63cabac80983545703bb"></a>
 T *&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int value) const</td></tr>
 <tr class="separator:a0380587265eb63cabac80983545703bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2648a207d77a770e1ed60af68194480b"><td class="memItemLeft" align="right" valign="top"><a id="a2648a207d77a770e1ed60af68194480b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_elements</b> ()</td></tr>
+<tr class="memitem:a2648a207d77a770e1ed60af68194480b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a2648a207d77a770e1ed60af68194480b">has_elements</a> ()</td></tr>
+<tr class="memdesc:a2648a207d77a770e1ed60af68194480b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether this matrix has elements assigned.  <a href="classMatrix.html#a2648a207d77a770e1ed60af68194480b">More...</a><br /></td></tr>
 <tr class="separator:a2648a207d77a770e1ed60af68194480b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d2f2689ed6cbc16498a76d879949262"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a5d2f2689ed6cbc16498a76d879949262">allocate</a> (int n_rows, int n_cols)</td></tr>
-<tr class="separator:a5d2f2689ed6cbc16498a76d879949262"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e16b537c11a8a608bbd9c1c853f5a99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a6e16b537c11a8a608bbd9c1c853f5a99">allocate</a> (int n_rows, int n_cols, T initial_value=0)</td></tr>
+<tr class="separator:a6e16b537c11a8a608bbd9c1c853f5a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91aa704de674203e96aece9e1955ccd3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMatrix.html#a91aa704de674203e96aece9e1955ccd3">~Matrix</a> ()</td></tr>
 <tr class="separator:a91aa704de674203e96aece9e1955ccd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -118,6 +124,82 @@ T **&#160;</td><td class="memItemRight" valign="bottom"><b>matrix</b> = nullptr<
 <tr class="separator:a167377d42f7e6e685f35bcdfca1383b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a8f3dfbe2a101bdc58c768d315dbc1234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f3dfbe2a101bdc58c768d315dbc1234">&#9670;&nbsp;</a></span>Matrix() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a>&lt; T &gt;::<a class="el" href="classMatrix.html">Matrix</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new <a class="el" href="classMatrix.html">Matrix</a> object, without assigned elements. </p>
+
+</div>
+</div>
+<a id="a8eb2069811295ea871b8f0a690aa734f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eb2069811295ea871b8f0a690aa734f">&#9670;&nbsp;</a></span>Matrix() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMatrix.html">Matrix</a>&lt; T &gt;::<a class="el" href="classMatrix.html">Matrix</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_cols</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new <a class="el" href="classMatrix.html">Matrix</a> object, providing the dimensions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n_rows,n_cols</td><td>Number of rows and columns in the matrix </td></tr>
+    <tr><td class="paramname">initial_value</td><td>The initial value of the elements, defaults to 0 to avoid initalised but unassigned values </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a91aa704de674203e96aece9e1955ccd3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a91aa704de674203e96aece9e1955ccd3">&#9670;&nbsp;</a></span>~Matrix()</h2>
 
@@ -147,8 +229,8 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5d2f2689ed6cbc16498a76d879949262"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d2f2689ed6cbc16498a76d879949262">&#9670;&nbsp;</a></span>allocate()</h2>
+<a id="a6e16b537c11a8a608bbd9c1c853f5a99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e16b537c11a8a608bbd9c1c853f5a99">&#9670;&nbsp;</a></span>allocate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -168,7 +250,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n_cols</em>&#160;</td>
+          <td class="paramname"><em>n_cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>initial_value</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -182,13 +270,46 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Allocate the memory for this matrix. Must be defined in the header </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Allocate the memory for this matrix</p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">n_rows</td><td>Number of rows </td></tr>
     <tr><td class="paramname">n_cols</td><td>Number of columns </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a2648a207d77a770e1ed60af68194480b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2648a207d77a770e1ed60af68194480b">&#9670;&nbsp;</a></span>has_elements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classMatrix.html">Matrix</a>&lt; T &gt;::has_elements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether this matrix has elements assigned. </p>
+<dl class="section return"><dt>Returns</dt><dd>true If this matrix has assigned elements </dd>
+<dd>
+false This matrix is currently unassigned </dd></dl>
 
 </div>
 </div>

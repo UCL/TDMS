@@ -17,4 +17,7 @@ digraph "tdms/include/arrays.h"
   Node1 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 [label="utils.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utils_8h.html",tooltip="Useful miscellaneous utility functions."];
   Node7 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="globals.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$globals_8h.html",tooltip="Type definitions and global constants."];
+  Node8 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }

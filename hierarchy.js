@@ -74,7 +74,8 @@ var hierarchy =
     [ "Vector< int >", "classVector.html", [
       [ "FieldComponentsVector", "classFieldComponentsVector.html", null ]
     ] ],
-    [ "XYZTensor3D", "classXYZTensor3D.html", null ],
+    [ "XYZTensor3D< T >", "classXYZTensor3D.html", null ],
+    [ "XYZTensor3D< double >", "classXYZTensor3D.html", null ],
     [ "XYZVectors", "classXYZVectors.html", null ],
     [ "YeeCellDimensions", "structYeeCellDimensions.html", null ]
 ];
