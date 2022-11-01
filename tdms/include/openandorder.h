@@ -50,3 +50,8 @@ void check_files_can_be_accessed(ArgumentNamespace &args);
  * @param pointers Pointers to the matrices.
  */
 void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual, const mxArray **pointers);
+
+/**
+ * @brief Test of HDF5 I/O
+ */
+void test_hdf5();

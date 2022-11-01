@@ -48,13 +48,14 @@ where lines need to be commented in and the paths modified if cmake cannot
     -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
     -DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
     -DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
+    -DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5
     ```
 
     On an ARM Mac install the x86 version of brew with
     ```bash
     arch -x86_64 zsh
     arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    arch -x86_64 /usr/local/bin/brew install llvm
+    arch -x86_64 /usr/local/bin/brew install llvm hdf5
     ```
 </details>
 

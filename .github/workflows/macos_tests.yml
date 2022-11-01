@@ -44,7 +44,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install fftw
+          brew install fftw hdf5
+
       - name: Hack to fix omp headers not linked
         run: |
           brew unlink libomp

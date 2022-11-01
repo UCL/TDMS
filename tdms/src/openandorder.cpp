@@ -8,12 +8,15 @@
  */
 #include "openandorder.h"
 
+#include <string>
+#include <iostream>
 #include <cstdio>
 #include <stdexcept>
 
 #include "utils.h"
 #include "fdtd_grid_initialiser.h"
 #include "iterator.h"
+#include "hdf5_io.h"
 
 using namespace std;
 
