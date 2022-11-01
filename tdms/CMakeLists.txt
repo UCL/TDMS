@@ -1,7 +1,7 @@
 # General setup ---------------------------------------------------------------
 cmake_minimum_required(VERSION 3.21)
 
-project(tdms LANGUAGES CXX)
+project(tdms LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 
 # Allow building with testing, and default to off
@@ -57,6 +57,11 @@ else()
     find_package(OpenMP REQUIRED)
 endif()
 
+# hdf5
+#ENABLE_LANGUAGE(C)
+find_package(HDF5 REQUIRED)
+include_directories(${HDF5_INCLUDE_DIR})
+#DISABLE_LANGUAGE(C)
 
 # spdlog ----------------------------------------------------------------------
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
