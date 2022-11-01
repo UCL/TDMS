@@ -190,7 +190,7 @@ void test_hdf5() {
         { 29, 'M', "Tarou", 166.6   }
     };
     // the length of the data
-    int length = sizeof(person_list) / sizeof(PersonalInformation);
+    //int length = sizeof(person_list) / sizeof(PersonalInformation);
     // the array of each length of multidimentional data.
     hsize_t dim[1];
     dim[0] = sizeof(person_list) / sizeof(PersonalInformation);
