@@ -5,9 +5,13 @@
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
+#include <complex.h>
 
 #include "arrays.h"
 #include "globals.h"
+
+using namespace std;
+const int REAL = 0, IMAG = 1;
 
 TEST_CASE("Test XYZTensor allocation") {
   SPDLOG_INFO("== Testing XYZTensor3D allocation/deallocation");
@@ -15,7 +19,7 @@ TEST_CASE("Test XYZTensor allocation") {
   int n_layers = 4, n_cols = 8, n_rows = 16;
 
   // try creating an XYZTensor3D using the default constructor
-  XYZTensor3D<double> default_constructor_test;
+  XYZTensor3D<complex<double>> default_constructor_test;
   // check that, although this has been declared, its members still point to nullptrs
   // we should be able to index this through AxialDirection
   REQUIRE(default_constructor_test[AxialDirection::X] == nullptr);
@@ -29,8 +33,13 @@ TEST_CASE("Test XYZTensor allocation") {
     for (int k = 0; k < n_layers; k++) {
       for (int j = 0; j < n_cols; j++) {
         for (int i = 0; i < n_rows; i++) {
-          // shouldn't seg fault
-          REQUIRE_NOTHROW(default_constructor_test[component][k][j][i] = 0.);
+          // shouldn't seg fault when assigning
+          // cast type all at once
+          REQUIRE_NOTHROW(default_constructor_test[component][k][j][i] = complex<double>(1., 2.));
+          // was the real part cast?
+          CHECK(default_constructor_test[component][k][j][i].real() == 1.);
+          // and the imaginary part?
+          CHECK(default_constructor_test[component][k][j][i].imag() == 2.);
         }
       }
     }
