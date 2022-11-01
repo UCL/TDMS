@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libgomp1 python3
+          sudo apt-get install libfftw3-dev libhdf5-dev libgomp1 python3
 
       - name: Install Python dependencies
         shell: bash
