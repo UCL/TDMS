@@ -60,7 +60,7 @@ jobs:
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libgomp1 python3
+          sudo apt-get install libfftw3-dev libhdf5-dev libgomp1 python3
 
       # -------------------------------------------------------------------------------
       # Windows
@@ -77,12 +77,14 @@ jobs:
         run: |
           conda install fftw --yes
           echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          conda install hdf5
+          echo "HDF5_DIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       # -------------------------------------------------------------------------------
       # MacOS
       - name: Install dependencies for MacOS
         if: ${{ contains(matrix.os, 'macos') }}
-        run: brew install fftw
+        run: brew install fftw hdf5
 
       - name: Fix omp headers not linked on MacOS
         if: ${{ contains(matrix.os, 'macos') }}
