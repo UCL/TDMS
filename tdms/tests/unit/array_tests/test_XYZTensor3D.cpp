@@ -11,7 +11,6 @@
 #include "globals.h"
 
 using namespace std;
-const int REAL = 0, IMAG = 1;
 
 TEST_CASE("Test XYZTensor allocation") {
   SPDLOG_INFO("== Testing XYZTensor3D allocation/deallocation");
@@ -19,15 +18,20 @@ TEST_CASE("Test XYZTensor allocation") {
   int n_layers = 4, n_cols = 8, n_rows = 16;
 
   // try creating an XYZTensor3D using the default constructor
-  XYZTensor3D<complex<double>> default_constructor_test;
+  XYZTensor3D<complex<double>> complex_test;
+  XYZTensor3D<double> double_test;
   // check that, although this has been declared, its members still point to nullptrs
   // we should be able to index this through AxialDirection
-  REQUIRE(default_constructor_test[AxialDirection::X] == nullptr);
-  REQUIRE(default_constructor_test[AxialDirection::Y] == nullptr);
-  REQUIRE(default_constructor_test[AxialDirection::Z] == nullptr);
+  REQUIRE(complex_test[AxialDirection::X] == nullptr);
+  REQUIRE(complex_test[AxialDirection::Y] == nullptr);
+  REQUIRE(complex_test[AxialDirection::Z] == nullptr);
+  REQUIRE(double_test[AxialDirection::X] == nullptr);
+  REQUIRE(double_test[AxialDirection::Y] == nullptr);
+  REQUIRE(double_test[AxialDirection::Z] == nullptr);
 
   // now try to allocate the components
-  default_constructor_test.allocate(n_rows, n_cols, n_layers);
+  complex_test.allocate(n_rows, n_cols, n_layers);
+  double_test.allocate(n_rows, n_cols, n_layers);
   // we should be able to safely populate each of the XYZ tensors now
   for (char component : {'x', 'y', 'z'}) {
     for (int k = 0; k < n_layers; k++) {
@@ -35,11 +39,13 @@ TEST_CASE("Test XYZTensor allocation") {
         for (int i = 0; i < n_rows; i++) {
           // shouldn't seg fault when assigning
           // cast type all at once
-          REQUIRE_NOTHROW(default_constructor_test[component][k][j][i] = complex<double>(1., 2.));
-          // was the real part cast?
-          CHECK(default_constructor_test[component][k][j][i].real() == 1.);
-          // and the imaginary part?
-          CHECK(default_constructor_test[component][k][j][i].imag() == 2.);
+          REQUIRE_NOTHROW(complex_test[component][k][j][i] = complex<double>(1., 2.));
+          REQUIRE_NOTHROW(double_test[component][k][j][i] = 1.);
+          // check real/imag part casting
+          CHECK(complex_test[component][k][j][i].real() == 1.);
+          CHECK(complex_test[component][k][j][i].imag() == 2.);
+          // check double assignment was correct
+          CHECK(double_test[component][k][j][i] == 1.);
         }
       }
     }
@@ -50,10 +56,13 @@ TEST_CASE("Test XYZTensor allocation") {
   for (char component : {'x', 'y', 'z'}) {
     for (int k = 0; k < n_layers; k++) {
       for (int j = 0; j < n_cols; j++) {
-        free(default_constructor_test[component][k][j]);
+        free(complex_test[component][k][j]);
+        free(double_test[component][k][j]);
       }
-      free(default_constructor_test[component][k]);
+      free(complex_test[component][k]);
+      free(double_test[component][k]);
     }
-    free(default_constructor_test[component]);
+    free(complex_test[component]);
+    free(double_test[component]);
   }
 }
