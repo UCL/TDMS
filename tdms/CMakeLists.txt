@@ -136,6 +136,11 @@ install(TARGETS tdms)
 if (BUILD_TESTING)
     enable_testing()
 
+    # find all the array.h dataype tests
+    file(GLOB ARRAY_TEST_FILES
+        "${CMAKE_SOURCE_DIR}/tests/unit/array_tests/test_*.cpp"
+    )
+
     add_executable(tdms_tests
             tests/unit/test_fields.cpp
             tests/unit/test_BLi_vs_cubic_interpolation.cpp
@@ -144,12 +149,7 @@ if (BUILD_TESTING)
             tests/unit/test_interpolation_functions.cpp
             tests/unit/test_numerical_derivative.cpp
             tests/unit/test_openandorder.cpp
-            tests/unit/array_tests/test_Tensor3D.cpp
-            tests/unit/array_tests/test_XYZTensor3D.cpp
-            tests/unit/array_tests/test_XYZVectors.cpp
-            tests/unit/array_tests/test_Matrix.cpp
-            tests/unit/array_tests/test_Vector.cpp
-            tests/unit/array_tests/test_DispersiveMultiLayer.cpp)
+            ${ARRAY_TEST_FILES})
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
