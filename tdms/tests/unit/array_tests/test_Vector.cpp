@@ -17,14 +17,20 @@ TEST_CASE("Vector: allocation and deallocation") {
   REQUIRE(v_double.size() == 0);
 
   // create a MATLAB array to cast to
-  const int n_elements[1] = {8}; // MATLAB'S LOGIC IS BEYOND MY UNDERSTANDING, CAN'T have n_elements as an int, must be int*
-  mxArray *array = mxCreateNumericArray(1, (const mwSize *) n_elements, mxUINT8_CLASS, mxREAL);
-  REQUIRE( array != NULL );
+  const int n_elements = 8;
+  const int dims[2] = {1, n_elements};
+  mxArray *array = mxCreateNumericArray(2, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+  mxDouble *where_to_place_data = mxGetPr(array);
+  // data is just the integers starting from 0
+  for (int i = 0; i < n_elements; i++) { where_to_place_data[i] = (double) i; }
 
   // assign this MATLAB array to a vector
-  Vector<double> v_int(array);
-  REQUIRE(v_int.has_elements());
-  REQUIRE(v_int.size()==n_elements[0]);
+  Vector<double> v_from_matlab(array);
+  bool has_elements_and_right_size =
+          (v_from_matlab.has_elements() && v_from_matlab.size() == n_elements);
+  REQUIRE(has_elements_and_right_size);
+  // check that the data is the _right_ data too
+  for (int i = 0; i < n_elements; i++) { CHECK(v_from_matlab[i] == i); }
 
   // cleanup our MATLAB array
   mxDestroyArray(array);
