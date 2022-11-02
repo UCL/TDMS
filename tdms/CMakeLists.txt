@@ -137,7 +137,7 @@ if (BUILD_TESTING)
     enable_testing()
 
     # find all .cpp files in the unit tests directory (and subdirectories).
-    file(GLOB_RECURSE UNIT_TEST_SRC "${CMAKE_SOURCE_DIR}/tests/unit/*.cpp")
+    file(GLOB_RECURSE UNIT_TEST_SRC "${CMAKE_SOURCE_DIR}/tests/unit/test_*.cpp")
     add_executable(tdms_tests "${UNIT_TEST_SRC}")
 
     target_link_libraries(tdms_tests PRIVATE
