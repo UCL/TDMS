@@ -148,7 +148,8 @@ if (BUILD_TESTING)
             tests/unit/array_tests/test_XYZTensor3D.cpp
             tests/unit/array_tests/test_XYZVectors.cpp
             tests/unit/array_tests/test_Matrix.cpp
-            tests/unit/array_tests/test_Vector.cpp)
+            tests/unit/array_tests/test_Vector.cpp
+            tests/unit/array_tests/test_DispersiveMultiLayer.cpp)
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
