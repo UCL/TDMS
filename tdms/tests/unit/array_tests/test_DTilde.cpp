@@ -10,8 +10,6 @@
 
 using namespace std;
 
-const double tol = 1e-16;
-
 TEST_CASE("DTilde: allocation and deallocation") {
   SPDLOG_INFO("== Testing DTilde class");
   // no custom constructor
