@@ -32,5 +32,9 @@ TEST_CASE("DetectorSensitivityArrays: allocation and deallocation") {
         CHECK_NOTHROW(dsa.cm[i][j] = (double)i + IMAGINARY_UNIT * (double)j);
     }
   }
+  // we can call the fftw_plan execution, which should place the 2D FFT into dsa.v
+  // simply checking executation is sufficient, as fftw should cover whether the FFT is actually meaningful in what it puts out
+  REQUIRE_NOTHROW(fftw_execute(dsa.plan));
+
   // destructor will then clear the memory
 }
