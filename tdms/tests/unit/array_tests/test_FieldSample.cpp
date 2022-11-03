@@ -10,6 +10,8 @@
 
 using namespace std;
 
+const double tol = 1e-16;
+
 TEST_CASE("FieldSample: allocation and deallocation") {
   SPDLOG_INFO("== Testing FieldSample class");
 
@@ -37,13 +39,9 @@ TEST_CASE("FieldSample: allocation and deallocation") {
   mxArray *populated_struct = mxCreateStructArray(2, (const mwSize *) struct_dims, 4, fieldnames);
   // create vectors to place in the fields of the struct
   mxArray *i_vector = mxCreateNumericArray(2, (const mwSize *) vector_dims, mxINT32_CLASS, mxREAL);
-  mxSetField(populated_struct, 0, fieldnames[0], i_vector);
   mxArray *j_vector = mxCreateNumericArray(2, (const mwSize *) vector_dims, mxINT32_CLASS, mxREAL);
-  mxSetField(populated_struct, 0, fieldnames[1], j_vector);
   mxArray *k_vector = mxCreateNumericArray(2, (const mwSize *) vector_dims, mxINT32_CLASS, mxREAL);
-  mxSetField(populated_struct, 0, fieldnames[2], k_vector);
   mxArray *n_vector = mxCreateNumericArray(2, (const mwSize *) vector_dims, mxDOUBLE_CLASS, mxREAL);
-  mxSetField(populated_struct, 0, fieldnames[3], n_vector);
   // populate the vectors with some information
   mxDouble *place_i_data = mxGetPr(i_vector); //< 0,1,2,...
   mxDouble *place_j_data = mxGetPr(j_vector); //< number_of_vector_elements-1, -2, -3...
@@ -53,15 +51,27 @@ TEST_CASE("FieldSample: allocation and deallocation") {
     place_i_data[i] = i;
     place_j_data[i] = number_of_vector_elements - (i+1);
     place_k_data[i] = i%(number_of_vector_elements/2);
-    place_n_data[i] = 1./(double)(i+1);
+    place_n_data[i] = 1. / (double) (i + 1);
   }
+  // set the vectors to be the field values
+  mxSetField(populated_struct, 0, fieldnames[0], i_vector);
+  mxSetField(populated_struct, 0, fieldnames[1], j_vector);
+  mxSetField(populated_struct, 0, fieldnames[2], k_vector);
+  mxSetField(populated_struct, 0, fieldnames[3], n_vector);
   // we should be able to construct things now
   REQUIRE_NOTHROW(FieldSample(populated_struct));
   FieldSample fs(populated_struct);
   // check that the tensor attribute is the correct size
   const mwSize *dims = mxGetDimensions(fs.mx);
-  for(int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     CHECK(dims[i] == number_of_vector_elements);
+  }
+  // check that we did indeed copy the data across
+  for (int i = 0; i < 4; i++) {
+    CHECK(abs(fs.i[i] - i) < tol);
+    CHECK(abs(fs.j[i] - (number_of_vector_elements - (i+1))) < tol);
+    CHECK(abs(fs.k[i] - (i % (number_of_vector_elements / 2))) < tol);
+    CHECK(abs(fs.n[i] - 1. / (double) (i + 1)) < tol);
   }
   // cleanup
   mxDestroyArray(populated_struct);
