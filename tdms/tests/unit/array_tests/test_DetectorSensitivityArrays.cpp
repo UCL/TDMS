@@ -35,6 +35,7 @@ TEST_CASE("DetectorSensitivityArrays: allocation and deallocation") {
   // we can call the fftw_plan execution, which should place the 2D FFT into dsa.v
   // simply checking executation is sufficient, as fftw should cover whether the FFT is actually meaningful in what it puts out
   REQUIRE_NOTHROW(fftw_execute(dsa.plan));
+  // https://en.wikipedia.org/wiki/Multidimensional_transform#Multidimensional_Fourier_transform <- choose entries accordingly
 
   // destructor will then clear the memory
 }
