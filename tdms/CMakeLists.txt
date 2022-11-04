@@ -57,11 +57,9 @@ else()
     find_package(OpenMP REQUIRED)
 endif()
 
-# hdf5
-#ENABLE_LANGUAGE(C)
-find_package(HDF5 REQUIRED)
+# hdf5 ------------------------------------------------------------------------
+find_package(HDF5 REQUIRED COMPONENT CXX)
 include_directories(${HDF5_INCLUDE_DIR})
-#DISABLE_LANGUAGE(C)
 
 # spdlog ----------------------------------------------------------------------
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
@@ -124,6 +122,7 @@ endif()
 
 # Compile options -------------------------------------------------------------
 target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
+target_link_libraries(tdms ${HDF5_CXX_LIBRARIES})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(tdms PRIVATE /W4)
