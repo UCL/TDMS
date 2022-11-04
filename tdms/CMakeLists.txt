@@ -58,7 +58,7 @@ else()
 endif()
 
 # hdf5 ------------------------------------------------------------------------
-find_package(HDF5 REQUIRED COMPONENT CXX)
+find_package(HDF5 REQUIRED COMPONENTS CXX)
 include_directories(${HDF5_INCLUDE_DIR})
 
 # spdlog ----------------------------------------------------------------------
