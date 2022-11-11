@@ -48,7 +48,7 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
   for (char component : {'x', 'y', 'z'}) {
 
     auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
-    is_multilayer = mxGetDimensions(element)[0] != 1;
+    is_multilayer = mxGetDimensions(element)[0] != 1; // so this only matters when we check the 'z' component right? No point re-setting it each time when it's not used???
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
