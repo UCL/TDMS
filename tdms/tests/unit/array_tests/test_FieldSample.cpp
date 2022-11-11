@@ -12,8 +12,8 @@ using namespace std;
 
 const double tol = 1e-16;
 
-TEST_CASE("FieldSample: allocation and deallocation") {
-  SPDLOG_INFO("== Testing FieldSample class");
+TEST_CASE("FieldSample") {
+  SPDLOG_INFO("== FieldSample");
 
   // attempting to construct with an empty array should exit with default values
   const int empty_dims[2] = {0, 1};

@@ -12,8 +12,8 @@
 
 using namespace std;
 
-TEST_CASE("Test XYZTensor allocation") {
-  SPDLOG_INFO("== Testing XYZTensor3D allocation/deallocation");
+TEST_CASE("XYZTensor3D") {
+  SPDLOG_INFO("== XYZTensor3D");
   // dimensions for the test-tensor
   int n_layers = 4, n_cols = 8, n_rows = 16;
 

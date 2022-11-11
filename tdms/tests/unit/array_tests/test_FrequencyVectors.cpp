@@ -12,8 +12,8 @@ using namespace std;
 
 const double tol = 1e-16;
 
-TEST_CASE("FrequencyVectors: allocation and deallocation") {
-  SPDLOG_INFO("== Testing FrequencyVectors class");
+TEST_CASE("FrequencyVectors") {
+  SPDLOG_INFO("== FrequencyVectors");
   // there is no custom constructor for this class
   FrequencyVectors fv;
   // but the members should start as nullptrs

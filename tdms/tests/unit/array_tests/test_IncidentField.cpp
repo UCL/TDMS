@@ -12,8 +12,8 @@ using namespace std;
 
 const double tol = 1e-16;
 
-TEST_CASE("IncidentField: allocation and deallocation") {
-  SPDLOG_INFO("== Testing IncidentField class");
+TEST_CASE("IncidentField") {
+  SPDLOG_INFO("== IncidentField");
   // construction should fail if given an empty array
   const int empty_dims[2] = {0, 1};
   mxArray *empty_array =

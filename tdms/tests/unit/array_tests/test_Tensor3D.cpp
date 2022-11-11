@@ -11,8 +11,8 @@
 
 const double tol = 1e-16;
 
-TEST_CASE("Tensor3D: allocation and deallocation") {
-    SPDLOG_INFO("== Testing Tensor3D allocation/deallocation");
+TEST_CASE("Tensor3D") {
+    SPDLOG_INFO("== Tensor3D");
     // some mock-up array dimensions
     int n_layers = 4, n_cols = 8, n_rows = 16;
 
