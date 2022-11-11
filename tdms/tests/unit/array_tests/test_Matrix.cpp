@@ -152,7 +152,7 @@ TEST_CASE("Pupil: allocation and deallocation") {
 }
 
 TEST_CASE("EHVec: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Pupil allocation/deallocation");
+  SPDLOG_INFO("== Testing EHVec allocation/deallocation");
 
   // because we're storing fftw_complex variables, this class has a custom destructor but nothing else
   // as such, we should just be able to initialise it using allocate as per
