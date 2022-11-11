@@ -145,9 +145,9 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
       throw runtime_error("f_ex_vec should be a vector with N>0 elements");
     }
-    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
-
+    // compute the number of elements prior to displaying
     n = std::max(dims[0], dims[1]);
+    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << n << endl;
     vector = (double *) mxGetPr(ptr);
   }
 }
