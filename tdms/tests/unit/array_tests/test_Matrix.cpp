@@ -1,7 +1,7 @@
 /**
  * @file test_Matrix.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Tests for the Matrix class and its subclasses (Vertices, GratingStructure)
+ * @brief Tests for the Matrix class and its subclasses (Vertices, GratingStructure, Pupil)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -112,4 +112,41 @@ TEST_CASE("GratingStructure: allocation and deallocation") {
   */
   delete gs; // disassociate from MATLAB array and free malloced space
   mxDestroyArray(useful_array); // clear MATLAB array and free mxMalloc'd space
+}
+
+TEST_CASE("Pupil: allocation and deallocation") {
+  SPDLOG_INFO("== Testing Pupil allocation/deallocation");
+
+  // only default constructor exists, which doesn't even assign memory
+  Pupil p;
+  REQUIRE(!p.has_elements());
+
+  // we'll use these as the target dimensions
+  const int n_rows = 4, n_cols = 8;
+
+  // passing in an empty array to initialise() doesn't error, but also doesn't assign
+  // additionally, the rows and columns arguments aren't even used, so can be garbage
+  mxArray *empty_array = mxCreateNumericMatrix(0, n_cols, mxDOUBLE_CLASS, mxREAL);
+  p.initialise(empty_array, 1, 1);
+  REQUIRE(!p.has_elements()); // shouldn't have assigned any memory or pointers
+  mxDestroyArray(empty_array);
+
+  // wrong dimensions or wrong number of dimensions will cause an error, and also not assign
+  // wrong number of dimensions
+  const int dims_3d[3] = {n_rows, n_cols, 2};
+  mxArray *array_3d = mxCreateNumericArray(3, (mwSize *) dims_3d, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(p.initialise(array_3d, n_rows, n_cols), std::runtime_error);
+  CHECK(!p.has_elements());
+  mxDestroyArray(array_3d);
+  // wrong number of rows/cols
+  mxArray *array_wrong_dims = mxCreateNumericMatrix(2 * n_rows, n_cols + 1, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(p.initialise(array_wrong_dims, n_rows, n_cols), std::runtime_error);
+  CHECK(!p.has_elements());
+  mxDestroyArray(array_wrong_dims);
+
+  // correct size should successfully assign memory
+  mxArray *array_2d = mxCreateNumericMatrix(n_rows, n_cols, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_NOTHROW(p.initialise(array_2d, n_rows, n_cols));
+  REQUIRE(p.has_elements());
+  mxDestroyArray(array_2d); // need to manually cleanup our MATLAB array, since we are not preserving the data via MEX function
 }
