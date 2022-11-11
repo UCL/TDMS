@@ -1,7 +1,7 @@
 /**
  * @file test_Matrix.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Tests for the Matrix class and its subclasses (Vertices, GratingStructure, Pupil)
+ * @brief Tests for the Matrix class and its subclasses (Vertices, GratingStructure, Pupil, EHVec)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -149,4 +149,30 @@ TEST_CASE("Pupil: allocation and deallocation") {
   REQUIRE_NOTHROW(p.initialise(array_2d, n_rows, n_cols));
   REQUIRE(p.has_elements());
   mxDestroyArray(array_2d); // need to manually cleanup our MATLAB array, since we are not preserving the data via MEX function
+}
+
+TEST_CASE("EHVec: allocation and deallocation") {
+  SPDLOG_INFO("== Testing Pupil allocation/deallocation");
+
+  // because we're storing fftw_complex variables, this class has a custom destructor but nothing else
+  // as such, we should just be able to initialise it using allocate as per
+  const int n_rows = 4, n_cols = 8;
+  const int REAL = 0, IMAG = 1;
+  EHVec eh;
+  CHECK(!eh.has_elements());
+
+  // allocate memory
+  eh.allocate(n_rows, n_cols);
+  CHECK(eh.has_elements());
+
+  // check that we an assign fftw_complexes to the elements
+  eh[0][0][REAL] = 1.; eh[0][0][IMAG] = 0.;
+  eh[0][1][REAL] = 0.; eh[0][1][IMAG] = 1.;
+  fftw_complex fftw_unit {1.,0.};
+  fftw_complex fftw_imag_unit {0.,1.};
+
+  CHECK(eh[0][0][REAL] == fftw_unit[REAL]);
+  CHECK(eh[0][0][IMAG] == fftw_unit[IMAG]);
+  CHECK(eh[0][1][REAL] == fftw_imag_unit[REAL]);
+  CHECK(eh[0][1][IMAG] == fftw_imag_unit[IMAG]);
 }
