@@ -1,13 +1,17 @@
 /**
  * @file test_Vector.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for the Vector class and its subclasses (FieldComponentsVector)
+ * @brief Unit tests for the Vector class and its subclasses (FieldComponentsVector, FrequencyExtractVector)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include "arrays.h"
-#include "mat_io.h"
+#include "globals.h"
+
+using namespace tdms_math_constants;
+
+const double tol = 1e-16;
 
 TEST_CASE("Vector: allocation and deallocation") {
   SPDLOG_INFO("== Testing Vector allocation/deallocation");
@@ -88,4 +92,51 @@ TEST_CASE("FieldComponentsVector: allocation and deallocation") {
 
   // destroy what we created
   mxDestroyArray(fcv_struct_pointer_vert);
+}
+
+TEST_CASE("FrequencyExtractVector: allocation and deallocation") {
+  SPDLOG_INFO("== Testing FrequencyExtractVector allocation/deallocation");
+
+  const double omega_an = 1;
+  const int n_elements = 8;
+  // if passed in an empty pointer, creates a length-1 array with a single, predetermined element
+  mxArray *empty_array = mxCreateNumericMatrix(0, n_elements, mxDOUBLE_CLASS, mxREAL);
+  FrequencyExtractVector fev_empty(empty_array, omega_an);
+  CHECK(fev_empty.has_elements());
+  CHECK(fev_empty.size()==1);
+  CHECK(fev_empty[0] == omega_an / 2. / DCPI);
+  mxDestroyArray(empty_array);
+
+  // catch wrong-dimension inputs
+  // input is not a vector
+  mxArray *not_1D = mxCreateNumericMatrix(2, 4, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(FrequencyExtractVector(not_1D, omega_an), std::runtime_error);
+  mxDestroyArray(not_1D);
+  // input is 3D array
+  int dims_3d[3] = {1, n_elements, 3};
+  mxArray *too_many_dims = mxCreateNumericArray(3, (mwSize *) dims_3d, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(FrequencyExtractVector(too_many_dims, omega_an), std::runtime_error);
+  mxDestroyArray(too_many_dims);
+
+  // otherwise, it shouldn't matter whether we pass in a vertical or horizontal array in
+  mxArray *horz_array = mxCreateNumericMatrix(1, n_elements, mxDOUBLE_CLASS, mxREAL);
+  mxArray *vert_array = mxCreateNumericMatrix(n_elements, 1, mxDOUBLE_CLASS, mxREAL);
+  // insert some data into the arrays
+  double *horz_data_placement = (double *) mxGetPr(horz_array);
+  double *vert_data_placement = (double *) mxGetPr(vert_array);
+  for (int i = 0; i < n_elements; i++) {
+    horz_data_placement[i] = ((double) i / (double) (n_elements - 1)) * omega_an * DCPI;
+    vert_data_placement[i] = ((double) (n_elements - i) / (double) (n_elements - 1)) * omega_an * DCPI;
+  }
+  // create the arrays
+  FrequencyExtractVector fev_horz(horz_array, omega_an);
+  CHECK(fev_horz.size() == n_elements);
+  FrequencyExtractVector fev_vert(vert_array, omega_an);
+  CHECK(fev_vert.size() == n_elements);
+  // max should return the element at index n_elements-1 for horz and 0 for vert
+  CHECK(abs(fev_horz.max() - fev_horz[n_elements - 1]) < tol);
+  CHECK(abs(fev_vert.max() - fev_vert[0]) < tol);
+  // cleanup memory
+  mxDestroyArray(horz_array);
+  mxDestroyArray(vert_array);
 }
