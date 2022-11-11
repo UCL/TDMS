@@ -127,6 +127,8 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
 GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
+  // prevent double free when calling ~Matrix, superclass destructor
+  matrix = nullptr;
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
