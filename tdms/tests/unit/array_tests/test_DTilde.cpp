@@ -10,8 +10,8 @@
 
 using namespace std;
 
-TEST_CASE("DTilde: allocation and deallocation") {
-  SPDLOG_INFO("== Testing DTilde class");
+TEST_CASE("DTilde") {
+  SPDLOG_INFO("== DTilde");
   // no custom constructor
   DTilde dt;
   // check no information is contained in the DTilde object

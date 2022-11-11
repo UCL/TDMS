@@ -14,8 +14,8 @@ using namespace tdms_math_constants;
 
 const double tol = 1e-16;
 
-TEST_CASE("DetectorSensitivityArrays: allocation and deallocation") {
-  SPDLOG_INFO("== Testing DetectorSensitivityArrays class");
+TEST_CASE("DetectorSensitivityArrays") {
+  SPDLOG_INFO("== DetectorSensitivityArrays");
   // default constructor should set everything to nullptrs
   // destructor uses fftw destroy, which handles nullptrs itself
   DetectorSensitivityArrays empty_dsa;

@@ -11,8 +11,8 @@
 
 using namespace std;
 
-TEST_CASE("ComplexAmplitudeSample: allocation and deallocation") {
-  SPDLOG_INFO("== Testing ComplexAmplitudeSample class");
+TEST_CASE("ComplexAmplitudeSample") {
+  SPDLOG_INFO("== ComplexAmplitudeSample");
 
   // Constructor should just exit if recieving an empty struct
   const char *empty_fields[] = {};

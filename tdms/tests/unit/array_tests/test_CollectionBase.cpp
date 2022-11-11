@@ -1,7 +1,7 @@
 /**
  * @file test_CollectionBase.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for CollectionBase class and its subclasses ()
+ * @brief Unit tests for CollectionBase class and its subclasses (CCollection, DCollection)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -9,7 +9,7 @@
 #include "arrays.h"
 
 TEST_CASE("CCollection"){
-    SPDLOG_INFO("== Testing CCollection class");
+    SPDLOG_INFO("== CCollection");
 
     // we need to provide a struct array with either 6 or 9 fields
     // incorrect number of fields should throw an error
@@ -45,4 +45,29 @@ TEST_CASE("CCollection"){
     // cleanup MATLAB memory (these are recursive so elements{6,9} also destroyed)
     mxDestroyArray(struct_6);
     mxDestroyArray(struct_9);
+};
+
+TEST_CASE("DCollection") {
+  SPDLOG_INFO("== DCollection");
+
+  // we need to provide a struct array with either 6 or 9 fields
+  // incorrect number of fields should throw an error
+  const char *bad_fieldnames[] = {"1", "2", "3"};
+  mxArray *bad_struct = mxCreateStructMatrix(1, 1, 3, bad_fieldnames);
+  REQUIRE_THROWS_AS(CCollection(bad_struct), std::runtime_error);
+  mxDestroyArray(bad_struct);
+
+  // now create an array with the correct fieldnames
+  const char *fieldnames[] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
+  const int n_numeric_elements = 8;
+  mxArray *struct_6 = mxCreateStructMatrix(1, 1, 6, fieldnames);
+  mxArray *elements6[6];
+  for (int i = 0; i < 6; i++) {
+    elements6[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+    mxSetField(struct_6, 0, fieldnames[i], elements6[i]);
+  }
+  REQUIRE_NOTHROW(DCollection(struct_6));
+
+  // cleanup MATLAB memory (these are recursive so elements6 also destroyed)
+  mxDestroyArray(struct_6);
 };

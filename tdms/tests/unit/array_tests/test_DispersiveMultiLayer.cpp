@@ -10,8 +10,8 @@
 
 using namespace std;
 
-TEST_CASE("DispersiveMultiLayer: allocation and deallocation") {
-  SPDLOG_INFO("== Testing DispersiveMultiLayer class");
+TEST_CASE("DispersiveMultiLayer") {
+  SPDLOG_INFO("== DispersiveMultiLayer");
 
   // Constructor should throw runtime_error at not recieving struct
   // create a MATLAB pointer to something that isn't an array

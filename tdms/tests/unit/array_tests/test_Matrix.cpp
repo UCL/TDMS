@@ -8,8 +8,8 @@
 
 #include "arrays.h"
 
-TEST_CASE("Matrix: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Matrix allocation/deallocation");
+TEST_CASE("Matrix") {
+  SPDLOG_INFO("== Matrix");
 
   // mock-up dimensions
   int n_rows = 4, n_cols = 8;
@@ -36,8 +36,8 @@ TEST_CASE("Matrix: allocation and deallocation") {
   }
 }
 
-TEST_CASE("Vertices: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Vertices allocation/deallocation");
+TEST_CASE("Vertices") {
+  SPDLOG_INFO("== Vertices");
 
   // initialise the struct, it needs the fieldname "vertices"
   const int n_fields = 1;
@@ -63,8 +63,8 @@ TEST_CASE("Vertices: allocation and deallocation") {
   mxDestroyArray(struct_pointer);
 }
 
-TEST_CASE("GratingStructure: allocation and deallocation") {
-  SPDLOG_INFO("== Testing GratingStructure allocation/deallocation");
+TEST_CASE("GratingStructure") {
+  SPDLOG_INFO("== GratingStructure");
 
   // non-empty input must be a pointer to a 2D matlab array (of ints, although non-interleaved API does not grant us the luxury of enforcing this),
   // dimensions must be 2 by I_tot+1
@@ -114,8 +114,8 @@ TEST_CASE("GratingStructure: allocation and deallocation") {
   mxDestroyArray(useful_array); // clear MATLAB array and free mxMalloc'd space
 }
 
-TEST_CASE("Pupil: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Pupil allocation/deallocation");
+TEST_CASE("Pupil") {
+  SPDLOG_INFO("== Pupil");
 
   // only default constructor exists, which doesn't even assign memory
   Pupil p;
@@ -151,8 +151,8 @@ TEST_CASE("Pupil: allocation and deallocation") {
   mxDestroyArray(array_2d); // need to manually cleanup our MATLAB array, since we are not preserving the data via MEX function
 }
 
-TEST_CASE("EHVec: allocation and deallocation") {
-  SPDLOG_INFO("== Testing EHVec allocation/deallocation");
+TEST_CASE("EHVec") {
+  SPDLOG_INFO("== EHVec");
 
   // because we're storing fftw_complex variables, this class has a custom destructor but nothing else
   // as such, we should just be able to initialise it using allocate as per

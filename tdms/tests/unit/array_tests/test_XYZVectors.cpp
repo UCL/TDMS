@@ -14,8 +14,8 @@ using std::accumulate;
 
 const double tol = 1e-8;
 
-TEST_CASE("Test XYZVectors allocation") {
-  SPDLOG_INFO("== Testing XYZVectors allocation/deallocation");
+TEST_CASE("XYZVectors") {
+  SPDLOG_INFO("== XYZVectors");
   // dimensions for the test-tensor
   const int nx = 4, ny = 8, nz = 16;
 

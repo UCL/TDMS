@@ -13,8 +13,8 @@ using namespace tdms_math_constants;
 
 const double tol = 1e-16;
 
-TEST_CASE("Vector: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Vector allocation/deallocation");
+TEST_CASE("Vector") {
+  SPDLOG_INFO("== Vector");
   // default constructor should not assign any elements or pointers
   Vector<double> v_double;
   REQUIRE(!v_double.has_elements());
@@ -40,8 +40,8 @@ TEST_CASE("Vector: allocation and deallocation") {
   mxDestroyArray(array);
 }
 
-TEST_CASE("FieldComponentsVector: allocation and deallocation") {
-  SPDLOG_INFO("== Testing FieldComponentsVector allocation/deallocation");
+TEST_CASE("FieldComponentsVector") {
+  SPDLOG_INFO("== FieldComponentsVector");
 
   // FieldComponentsVector can be initialised with the default constructor, then have initialise() called to assign values from a pre-existing MATLAB array
   FieldComponentsVector v_horz;
@@ -94,8 +94,8 @@ TEST_CASE("FieldComponentsVector: allocation and deallocation") {
   mxDestroyArray(fcv_struct_pointer_vert);
 }
 
-TEST_CASE("FrequencyExtractVector: allocation and deallocation") {
-  SPDLOG_INFO("== Testing FrequencyExtractVector allocation/deallocation");
+TEST_CASE("FrequencyExtractVector") {
+  SPDLOG_INFO("== FrequencyExtractVector");
 
   const double omega_an = 1;
   const int n_elements = 8;
