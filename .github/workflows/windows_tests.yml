@@ -76,12 +76,6 @@ jobs:
         shell: bash
         run: |
           cmake --build . --config Release
-                
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() }}
-        with:
-          limit-access-to-actor: true
 
       - name: Copy TDMS exe
         working-directory: ${{runner.workspace}}/build
