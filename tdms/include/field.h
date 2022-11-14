@@ -11,7 +11,6 @@
 #include "simulation_parameters.h"
 #include "globals.h"
 
-
 /**
  * A generic grid entity. For example:
  *
