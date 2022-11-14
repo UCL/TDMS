@@ -9,8 +9,8 @@
 #include "arrays.h"
 #include "matlabio.h"
 
-TEST_CASE("Vector: allocation and deallocation") {
-  SPDLOG_INFO("== Testing Vector allocation/deallocation");
+TEST_CASE("Vector") {
+
   // default constructor should not assign any elements or pointers
   Vector<double> v_double;
   REQUIRE(!v_double.has_elements());
