@@ -7,17 +7,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-template<typename T>
-inline bool is_close(T a, T b) {
-
-  auto max_norm = max(abs(a), abs(b));
-
-  if (max_norm < 1E-30) {// Prevent dividing by zero
-    return true;
-  }
-
-  return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
-}
+#include "unit_test_utils.h"
 
 TEST_CASE("SplitFieldComponent: set component") {
 
