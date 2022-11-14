@@ -9,6 +9,7 @@ function(release_target)
             ${Matlab_MX_LIBRARY}
             ${Matlab_MAT_LIBRARY}
             ${LIBCXX_LIBRARY}
+            ${HDF5_CXX_LIBRARIES}
             OpenMP::OpenMP_CXX
             spdlog::spdlog
             )
@@ -44,6 +45,7 @@ function(test_target)
             ${Matlab_MX_LIBRARY}
             ${Matlab_MAT_LIBRARY}
             ${LIBCXX_LIBRARY}
+            ${HDF5_CXX_LIBRARIES}
             OpenMP::OpenMP_CXX
             spdlog::spdlog
             )
