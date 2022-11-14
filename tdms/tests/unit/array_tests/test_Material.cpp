@@ -37,3 +37,33 @@ TEST_CASE("CMaterial") {
   CMaterial cm(struct_9);
   mxDestroyArray(struct_9);
 }
+
+TEST_CASE("DMaterial") {
+  SPDLOG_INFO("== DMaterial");
+  // the constructor expects a struct of 9 fields
+  const char *fieldnames[] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
+  const int n_numeric_elements = 8;
+
+  // providing incorrect names or sizes results in an error
+  // bad fieldname
+  const char *wrong_fieldnames[] = {"Cax", "Day", "Daz", "Dbx", "Cby", "Dbz"};
+  mxArray *wrong_struct = mxCreateStructMatrix(1, 1, 6, wrong_fieldnames);
+  REQUIRE_THROWS_AS(DMaterial(wrong_struct), std::runtime_error);
+  mxDestroyArray(wrong_struct);
+  // bad number of fields
+  const char *too_many_names[] = {"1", "2", "3", "4", "5", "6", "7"};
+  mxArray *too_many_fields_struct = mxCreateStructMatrix(1, 1, 7, too_many_names);
+  REQUIRE_THROWS_AS(DMaterial(too_many_fields_struct), std::runtime_error);
+  mxDestroyArray(too_many_fields_struct);
+
+  // try and construct something meaningful
+  mxArray *struct_6 = mxCreateStructMatrix(1, 1, 6, fieldnames);
+  mxArray *elements6[6];
+  for (int i = 0; i < 6; i++) {
+    elements6[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+    mxSetField(struct_6, 0, fieldnames[i], elements6[i]);
+  }
+  // construction should succeed
+  DMaterial dm(struct_6);
+  mxDestroyArray(struct_6);
+}
