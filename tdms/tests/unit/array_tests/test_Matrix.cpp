@@ -46,7 +46,6 @@ TEST_CASE("Matrix") {
 }
 
 TEST_CASE("Vertices") {
-  SPDLOG_INFO("== Vertices");
 
   // initialise the struct, it needs the fieldname "vertices"
   const int n_fields = 1;
@@ -73,7 +72,6 @@ TEST_CASE("Vertices") {
 }
 
 TEST_CASE("GratingStructure") {
-  SPDLOG_INFO("== GratingStructure");
 
   // non-empty input must be a pointer to a 2D matlab array (of ints, although non-interleaved API does not grant us the luxury of enforcing this),
   // dimensions must be 2 by I_tot+1
@@ -124,7 +122,6 @@ TEST_CASE("GratingStructure") {
 }
 
 TEST_CASE("Pupil") {
-  SPDLOG_INFO("== Pupil");
 
   // only default constructor exists, which doesn't even assign memory
   Pupil p;
@@ -161,7 +158,6 @@ TEST_CASE("Pupil") {
 }
 
 TEST_CASE("EHVec") {
-  SPDLOG_INFO("== EHVec");
 
   // because we're storing fftw_complex variables, this class has a custom destructor but nothing else
   // as such, we should just be able to initialise it using allocate as per

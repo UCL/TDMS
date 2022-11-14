@@ -9,7 +9,6 @@
 #include "arrays.h"
 
 TEST_CASE("CCollection"){
-    SPDLOG_INFO("== CCollection");
 
     // we need to provide a struct array with either 6 or 9 fields
     // incorrect number of fields should throw an error
@@ -48,7 +47,6 @@ TEST_CASE("CCollection"){
 };
 
 TEST_CASE("DCollection") {
-  SPDLOG_INFO("== DCollection");
 
   // we need to provide a struct array with either 6 or 9 fields
   // incorrect number of fields should throw an error

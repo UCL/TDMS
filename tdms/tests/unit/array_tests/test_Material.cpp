@@ -9,7 +9,7 @@
 #include "arrays.h"
 
 TEST_CASE("CMaterial") {
-  SPDLOG_INFO("== CMaterial");
+
   // the constructor expects a struct of 9 fields
   const char *fieldnames[] = {"Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz"};
   const int n_numeric_elements = 8;
@@ -39,7 +39,7 @@ TEST_CASE("CMaterial") {
 }
 
 TEST_CASE("DMaterial") {
-  SPDLOG_INFO("== DMaterial");
+
   // the constructor expects a struct of 9 fields
   const char *fieldnames[] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
   const int n_numeric_elements = 8;
