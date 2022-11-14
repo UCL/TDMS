@@ -51,6 +51,7 @@ jobs:
         run: |
           conda install fftw --yes
           echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          conda install hdf5
 
       - name: Install Python dependencies
         shell: bash
@@ -74,6 +75,12 @@ jobs:
         shell: bash
         run: |
           cmake --build . --config Release
+                
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ failure() }}
+        with:
+          limit-access-to-actor: true
 
       - name: Copy TDMS exe
         working-directory: ${{runner.workspace}}/build
