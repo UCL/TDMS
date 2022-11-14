@@ -6,19 +6,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "unit_test_utils.h"
+
 // NOTE: MagneticSplitField and ElectricSplitField inherit these methods from SplitField, so we can use either here
-
-template<typename T>
-inline bool is_close(T a, T b) {
-
-  auto max_norm = max(abs(a), abs(b));
-
-  if (max_norm < 1E-30) {// Prevent dividing by zero
-    return true;
-  }
-
-  return abs(a - b) / max(abs(a), abs(b)) < 1E-10;
-}
 
 TEST_CASE("SplitField: allocate and zero") {
 

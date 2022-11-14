@@ -11,6 +11,7 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
+#include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
 
@@ -24,15 +25,6 @@ The maximum of this is then the max-slice error: keeping track of this ensures u
 
 All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over the range [-2,2].
 */
-
-// computes the Euclidean norm of a 1d-array (or pointer thereto)
-inline double euclidean(double *v, int end, int start = 0) {
-    double norm_val = 0.;
-    for (int i = start; i < end; i++) {
-        norm_val += v[i] * v[i];
-    }
-    return sqrt(norm_val);
-}
 
 // functional form for the {E,H}-field components
 inline double field_component(double t) {
