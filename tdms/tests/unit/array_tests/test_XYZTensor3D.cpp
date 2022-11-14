@@ -12,8 +12,8 @@
 
 using namespace std;
 
-TEST_CASE("XYZTensor3D") {
-  SPDLOG_INFO("== XYZTensor3D");
+TEST_CASE("XYZTensor") {
+
   // dimensions for the test-tensor
   int n_layers = 4, n_cols = 8, n_rows = 16;
 

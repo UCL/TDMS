@@ -14,7 +14,7 @@ using namespace tdms_math_constants;
 const double tol = 1e-16;
 
 TEST_CASE("Vector") {
-  SPDLOG_INFO("== Vector");
+
   // default constructor should not assign any elements or pointers
   Vector<double> v_double;
   REQUIRE(!v_double.has_elements());

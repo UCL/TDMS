@@ -15,7 +15,7 @@ using std::accumulate;
 const double tol = 1e-8;
 
 TEST_CASE("XYZVectors") {
-  SPDLOG_INFO("== XYZVectors");
+
   // dimensions for the test-tensor
   const int nx = 4, ny = 8, nz = 16;
 
@@ -35,6 +35,7 @@ TEST_CASE("XYZVectors") {
   REQUIRE(v.y != nullptr);
   v.set_ptr(AxialDirection::Z, z_vec);
   REQUIRE(v.z != nullptr);
+
   // and manipulating the components
   double x_tot = accumulate(v.x, v.x + nx, 0.);
   CHECK(abs(x_tot - 0.) <= tol);
