@@ -38,16 +38,16 @@ TEST_CASE("DispersiveMultiLayer: allocation and deallocation") {
   // these are the fieldnames that are expected
   SECTION("Successful construction") {
     const int n_fields = 9;
-    const char *fieldnames[n_fields] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
+    const char *fieldnames[n_fields] = {"alpha", "beta", "gamma", "kappa_x", "kappa_y",
                                         "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
     const int n_field_elements = 5;
     // build our struct
     const int dims[2] = {1, 1};
-    matlab_input = mxCreateStructArray(2, (const mwSize*) dims, n_fields, fieldnames);
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, n_fields, fieldnames);
     // build "data" for each of the fields, which is going to be the same array filled with consecutive integers
     const int array_size[2] = {1, n_field_elements};
     mxArray *field_array_ptrs[n_fields];
-    for(int i = 0; i < n_fields; i++) {
+    for (int i = 0; i < n_fields; i++) {
       field_array_ptrs[i] =
               mxCreateNumericArray(2, (const mwSize *) array_size, mxDOUBLE_CLASS, mxREAL);
       mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
