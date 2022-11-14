@@ -52,7 +52,7 @@ jobs:
           conda install fftw --yes
           echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           conda install hdf5
-          echo "HDF5DIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "HDF5_DIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Python dependencies
         shell: bash
