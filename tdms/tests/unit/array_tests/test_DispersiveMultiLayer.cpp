@@ -32,7 +32,7 @@ TEST_CASE("DispersiveMultiLayer: allocation and deallocation") {
   // For successful construction, we need to build a MATLAB struct with 9 fields
   // these are the fieldnames that are expected
   const int n_fields = 9;
-  const char *fieldnames[n_fields] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
+  const char *fieldnames[n_fields] = {"alpha", "beta", "gamma", "kappa_x", "kappa_y",
                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
   const int n_field_elements = 5;
   // build our struct
