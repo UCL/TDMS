@@ -2,12 +2,72 @@
 #include "hdf5_io.h"
 
 // std
+#include <iostream>
+#include <stdexcept>
 #include <string>
 
-// external libraries
+// external
 #include <H5Cpp.h>
+#include <H5Fpublic.h>
+#include <spdlog/spdlog.h>
 
-// own headers
+
+/**
+ * @brief Convert a HDF5FileMode to the #defined HDF5 file creation property.
+ * @note Internal function, only used in this file by HDF5File::_open.
+ */
+unsigned int convert_to_h5f_global(HDF5FileMode mode) {
+  switch (mode) {
+    case READONLY:
+      return H5F_ACC_RDONLY;
+    case READWRITE:
+      return H5F_ACC_RDWR;
+    case OVERWRITE:
+      return H5F_ACC_TRUNC;
+    default:
+      return std::numeric_limits<int>::max();
+  }
+}
+
+void HDF5File::_open() {
+  spdlog::trace("Opening file: {}, in mode: {}", filename_,
+                static_cast<int>(mode_));
+  file_ = new H5::H5File(filename_.c_str(), convert_to_h5f_global(mode_));
+  return;
+}
+
+HDF5File::~HDF5File() {
+  file_->close();
+  for (auto ds : datasets_) delete ds;
+  delete file_;
+}
+
+void HDF5File::write() {
+  for (int i = 0; i < 3; i++) {
+    std::cout << convert_to_h5f_global(static_cast<HDF5FileMode>(i))
+              << std::endl;
+  }
+  return;
+}
+void HDF5File::read() { return; }
+
+bool HDF5File::isOK(bool print_debug) {
+
+  if (print_debug) {
+    // debug information
+    spdlog::debug("File is named: {}", filename_);
+    spdlog::debug("File mode: {}", static_cast<int>(mode_));
+    spdlog::debug("Internal H5::H5File address: {:p}", (void *) file_);
+  }
+
+  // tests here
+  if (file_ == nullptr) return false;
+
+  if (file_->getFileSize() <= 0) return false;
+
+  // passed all tests: it's ok
+  return true;
+}
 
 
 #define MAX_NAME_LENGTH 32
@@ -26,7 +86,7 @@ typedef struct {
 } PersonalInformation;
 
 
-void test_hdf5() {
+void example_hdf5() {
 
   // Data to write
   PersonalInformation person_list[] = {{18, 'M', "Mary", 152.0},
