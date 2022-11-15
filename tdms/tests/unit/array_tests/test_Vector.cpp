@@ -41,7 +41,6 @@ TEST_CASE("Vector") {
 }
 
 TEST_CASE("FieldComponentsVector") {
-  SPDLOG_INFO("== FieldComponentsVector");
 
   // FieldComponentsVector can be initialised with the default constructor, then have initialise() called to assign values from a pre-existing MATLAB array
   FieldComponentsVector v_horz;
@@ -95,7 +94,6 @@ TEST_CASE("FieldComponentsVector") {
 }
 
 TEST_CASE("FrequencyExtractVector") {
-  SPDLOG_INFO("== FrequencyExtractVector");
 
   const double omega_an = 1;
   const int n_elements = 8;
