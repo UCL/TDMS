@@ -46,6 +46,7 @@ TEST_CASE("Matrix") {
 }
 
 TEST_CASE("Vertices") {
+  SPDLOG_INFO("== Vertices");
 
   // initialise the struct, it needs the fieldname "vertices"
   const int n_fields = 1;
@@ -54,12 +55,10 @@ TEST_CASE("Vertices") {
   mxArray *struct_pointer = mxCreateStructMatrix(1, 1, n_fields, fieldnames);
   mxArray *vertices_array = mxCreateNumericMatrix(n_vertex_elements, 3, mxINT32_CLASS, mxREAL);
   mxSetField(struct_pointer, 0, fieldnames[0], vertices_array);
-
   // create object
   Vertices v;
   // initialise
   v.initialise(struct_pointer);
-
   // we should have n_vertex_elements number of vertices stored
   REQUIRE(v.n_vertices() == n_vertex_elements);
   // what's more, we should have decremented all the elements of v from 0 to -1
@@ -74,89 +73,95 @@ TEST_CASE("Vertices") {
 }
 
 TEST_CASE("GratingStructure") {
+  SPDLOG_INFO("== GratingStructure");
 
-  mxArray *matlab_input;
   // non-empty input must be a pointer to a 2D matlab array (of ints, although non-interleaved API does not grant us the luxury of enforcing this),
   // dimensions must be 2 by I_tot+1
   const int I_tot = 4;
 
   // empty pointer input doesn't throw an error, but also doesn't initialise anything meaningful
-  SECTION("Empty array input") {
-    matlab_input = mxCreateNumericMatrix(0, 4, mxINT32_CLASS, mxREAL);
-    GratingStructure *gs;
-    REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, 4));
-    REQUIRE(!gs->has_elements());
-    delete gs;
-  }
+  mxArray *empty_array = mxCreateNumericMatrix(0, 4, mxINT32_CLASS, mxREAL);
+  GratingStructure *created_with_empty_ptr;
+  REQUIRE_NOTHROW(created_with_empty_ptr = new GratingStructure(empty_array, 4));
+  REQUIRE(!created_with_empty_ptr->has_elements());
+  // memory cleanup
+  delete created_with_empty_ptr;
+  mxDestroyArray(empty_array);
 
   // try sending in a 3D array instead
-  SECTION("Wrong dimensions (3D)") {
-    int dims_3d[3] = {2, I_tot + 1, 3};
-    matlab_input = mxCreateNumericArray(3, (mwSize *) dims_3d, mxINT32_CLASS, mxREAL);
-    REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
-  }
-  // try sending in 2D arrays with the wrong dimensions
-  SECTION("Wrong dimension (2D)") {
-    int dims_2d[2] = {3, I_tot};
-    matlab_input = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
-    REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
-  }
+  int dims_3d[3] = {2, I_tot+1, 3};
+  mxArray *array_3by3 = mxCreateNumericArray(3, (mwSize *) dims_3d, mxINT32_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(GratingStructure(array_3by3, I_tot), std::runtime_error);
+  mxDestroyArray(array_3by3);
 
-  SECTION("Expected input") {
-    int dims_2d[2] = {2, I_tot + 1};
-    matlab_input = mxCreateNumericMatrix(dims_2d[0], dims_2d[1], mxINT32_CLASS, mxREAL);
-    GratingStructure *gs;
-    REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, I_tot));
-    REQUIRE(gs->has_elements());
-    delete gs;
-  }
+  // try sending in 2D arrays with the wrong dimensions
+  // wrong dimension 1
+  int dims_2d[2] = {2, I_tot};
+  mxArray *array_2d_wrong_dim1 = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(GratingStructure(array_2d_wrong_dim1, I_tot), std::runtime_error);
+  // wrong dimension 0
+  dims_2d[0] = 3; dims_2d[1] = I_tot + 1;
+  mxArray *array_2d_wrong_dim0 = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(GratingStructure(array_2d_wrong_dim0, I_tot), std::runtime_error);
+  // memory cleanup
+  mxDestroyArray(array_2d_wrong_dim0);
+  mxDestroyArray(array_2d_wrong_dim1);
+
+  // now try sending in something that's actually useful
+  dims_2d[0] = 2; dims_2d[1] = I_tot + 1; // reassign, but better to be safe
+  mxArray *useful_array = mxCreateNumericMatrix(dims_2d[0], dims_2d[1], mxINT32_CLASS, mxREAL);
+  GratingStructure *gs;
+  REQUIRE_NOTHROW(gs = new GratingStructure(useful_array, I_tot));
+  REQUIRE(gs->has_elements());
 
   // memory cleanup
-  mxDestroyArray(matlab_input);
+  /* Disassociate the GratingStructure from the MATLAB array that it was cast to.
+  In iterator.cpp, this ensures that gs.matrix is freed and set to nullptr, but doesn't free the memory that matrix[j] was pointing to, since this is returned through the MEX function.
+  Since we are unit testing here, we have dynamically created this memory for the MATLAB array, and no longer require it, thus we also need to cleanup our MATLAB array manually.
+  */
+  delete gs; // disassociate from MATLAB array and free malloced space
+  mxDestroyArray(useful_array); // clear MATLAB array and free mxMalloc'd space
 }
 
 TEST_CASE("Pupil") {
+  SPDLOG_INFO("== Pupil");
 
   // only default constructor exists, which doesn't even assign memory
   Pupil p;
   REQUIRE(!p.has_elements());
+
   // we'll use these as the target dimensions
   const int n_rows = 4, n_cols = 8;
-  mxArray *matlab_input;
 
   // passing in an empty array to initialise() doesn't error, but also doesn't assign
   // additionally, the rows and columns arguments aren't even used, so can be garbage
-  SECTION("Empty input") {
-    matlab_input = mxCreateNumericMatrix(0, n_cols, mxDOUBLE_CLASS, mxREAL);
-    p.initialise(matlab_input, 1, 1);
-    REQUIRE(!p.has_elements());// shouldn't have assigned any memory or pointers
-  }
+  mxArray *empty_array = mxCreateNumericMatrix(0, n_cols, mxDOUBLE_CLASS, mxREAL);
+  p.initialise(empty_array, 1, 1);
+  REQUIRE(!p.has_elements()); // shouldn't have assigned any memory or pointers
+  mxDestroyArray(empty_array);
 
   // wrong dimensions or wrong number of dimensions will cause an error, and also not assign
-  SECTION("Wrong number of dimensions") {
-    const int dims_3d[3] = {n_rows, n_cols, 2};
-    matlab_input = mxCreateNumericArray(3, (mwSize *) dims_3d, mxDOUBLE_CLASS, mxREAL);
-    REQUIRE_THROWS_AS(p.initialise(matlab_input, n_rows, n_cols), std::runtime_error);
-    CHECK(!p.has_elements());
-  }
-  SECTION("Wrong number of rows/cols") {
-    matlab_input = mxCreateNumericMatrix(2 * n_rows, n_cols + 1, mxDOUBLE_CLASS, mxREAL);
-    REQUIRE_THROWS_AS(p.initialise(matlab_input, n_rows, n_cols), std::runtime_error);
-    CHECK(!p.has_elements());
-    mxDestroyArray(matlab_input);
-  }
+  // wrong number of dimensions
+  const int dims_3d[3] = {n_rows, n_cols, 2};
+  mxArray *array_3d = mxCreateNumericArray(3, (mwSize *) dims_3d, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(p.initialise(array_3d, n_rows, n_cols), std::runtime_error);
+  CHECK(!p.has_elements());
+  mxDestroyArray(array_3d);
+  // wrong number of rows/cols
+  mxArray *array_wrong_dims = mxCreateNumericMatrix(2 * n_rows, n_cols + 1, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_THROWS_AS(p.initialise(array_wrong_dims, n_rows, n_cols), std::runtime_error);
+  CHECK(!p.has_elements());
+  mxDestroyArray(array_wrong_dims);
 
   // correct size should successfully assign memory
-  SECTION("Expected input") {
-    matlab_input = mxCreateNumericMatrix(n_rows, n_cols, mxDOUBLE_CLASS, mxREAL);
-    REQUIRE_NOTHROW(p.initialise(matlab_input, n_rows, n_cols));
-    REQUIRE(p.has_elements());
-  }
-
-  mxDestroyArray(matlab_input);
+  mxArray *array_2d = mxCreateNumericMatrix(n_rows, n_cols, mxDOUBLE_CLASS, mxREAL);
+  REQUIRE_NOTHROW(p.initialise(array_2d, n_rows, n_cols));
+  REQUIRE(p.has_elements());
+  mxDestroyArray(array_2d); // need to manually cleanup our MATLAB array, since we are not preserving the data via MEX function
 }
 
 TEST_CASE("EHVec") {
+  SPDLOG_INFO("== EHVec");
 
   // because we're storing fftw_complex variables, this class has a custom destructor but nothing else
   // as such, we should just be able to initialise it using allocate as per
