@@ -76,49 +76,50 @@ TEST_CASE("GratingStructure") {
   // non-empty input must be a pointer to a 2D matlab array (of ints, although non-interleaved API does not grant us the luxury of enforcing this),
   // dimensions must be 2 by I_tot+1
   const int I_tot = 4;
+  mxArray *matlab_input;
 
   // empty pointer input doesn't throw an error, but also doesn't initialise anything meaningful
-  mxArray *empty_array = mxCreateNumericMatrix(0, 4, mxINT32_CLASS, mxREAL);
-  GratingStructure *created_with_empty_ptr;
-  REQUIRE_NOTHROW(created_with_empty_ptr = new GratingStructure(empty_array, 4));
-  REQUIRE(!created_with_empty_ptr->has_elements());
-  // memory cleanup
-  delete created_with_empty_ptr;
-  mxDestroyArray(empty_array);
+  SECTION("Empty input") {
+    matlab_input = mxCreateNumericMatrix(0, 4, mxINT32_CLASS, mxREAL);
+    GratingStructure *gs;
+    REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, 4));
+    REQUIRE(!gs->has_elements());
+    // memory cleanup
+    delete gs;
+  }
 
   // try sending in a 3D array instead
-  int dims_3d[3] = {2, I_tot+1, 3};
-  mxArray *array_3by3 = mxCreateNumericArray(3, (mwSize *) dims_3d, mxINT32_CLASS, mxREAL);
-  REQUIRE_THROWS_AS(GratingStructure(array_3by3, I_tot), std::runtime_error);
-  mxDestroyArray(array_3by3);
-
-  // try sending in 2D arrays with the wrong dimensions
-  // wrong dimension 1
-  int dims_2d[2] = {2, I_tot};
-  mxArray *array_2d_wrong_dim1 = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
-  REQUIRE_THROWS_AS(GratingStructure(array_2d_wrong_dim1, I_tot), std::runtime_error);
-  // wrong dimension 0
-  dims_2d[0] = 3; dims_2d[1] = I_tot + 1;
-  mxArray *array_2d_wrong_dim0 = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
-  REQUIRE_THROWS_AS(GratingStructure(array_2d_wrong_dim0, I_tot), std::runtime_error);
-  // memory cleanup
-  mxDestroyArray(array_2d_wrong_dim0);
-  mxDestroyArray(array_2d_wrong_dim1);
+  SECTION("Wrong number of dimensions (3D)") {
+    int dims_3d[3] = {2, I_tot + 1, 3};
+    matlab_input = mxCreateNumericArray(3, (mwSize *) dims_3d, mxINT32_CLASS, mxREAL);
+    REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
+  }
+  SECTION("Wrong dimension size") {
+    int dims_2d[2];
+    SECTION("(axis 0)") {
+      dims_2d[0] = 3;
+      dims_2d[1] = I_tot + 1;
+    }
+    SECTION("(axis 1)") {
+      dims_2d[0] = 2;
+      dims_2d[1] = I_tot;
+    }
+    matlab_input = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
+    REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
+  }
 
   // now try sending in something that's actually useful
-  dims_2d[0] = 2; dims_2d[1] = I_tot + 1; // reassign, but better to be safe
-  mxArray *useful_array = mxCreateNumericMatrix(dims_2d[0], dims_2d[1], mxINT32_CLASS, mxREAL);
-  GratingStructure *gs;
-  REQUIRE_NOTHROW(gs = new GratingStructure(useful_array, I_tot));
-  REQUIRE(gs->has_elements());
+  SECTION("Expected input") {
+    int dims_2d[2] = {2, I_tot + 1};
+    matlab_input = mxCreateNumericMatrix(dims_2d[0], dims_2d[1], mxINT32_CLASS, mxREAL);
+    GratingStructure *gs;
+    REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, I_tot));
+    REQUIRE(gs->has_elements());
+    // memory cleanup
+    delete gs;
+  }
 
-  // memory cleanup
-  /* Disassociate the GratingStructure from the MATLAB array that it was cast to.
-  In iterator.cpp, this ensures that gs.matrix is freed and set to nullptr, but doesn't free the memory that matrix[j] was pointing to, since this is returned through the MEX function.
-  Since we are unit testing here, we have dynamically created this memory for the MATLAB array, and no longer require it, thus we also need to cleanup our MATLAB array manually.
-  */
-  delete gs; // disassociate from MATLAB array and free malloced space
-  mxDestroyArray(useful_array); // clear MATLAB array and free mxMalloc'd space
+  mxDestroyArray(matlab_input);
 }
 
 TEST_CASE("Pupil") {
