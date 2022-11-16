@@ -22,30 +22,28 @@ TEST_CASE("Field: normalise_volume") {
 
   const int I_tot = 2, J_tot = 2, K_tot = 2;
   // create a field (note electric or magnetic should be sufficient here as we are testing base class method)
-  Field *F;
-  SECTION("ElectricField") { F = new ElectricField(I_tot, J_tot, K_tot); }
-  SECTION("MagneticField") { F = new MagneticField(I_tot, J_tot, K_tot); }
-  F->allocate_and_zero();
+  ElectricField F(I_tot, J_tot, K_tot);
+  F.allocate_and_zero();
 
   // set the angular norm to be 1 + i
-  F->angular_norm = 1. + IMAGINARY_UNIT * 1.;
+  F.angular_norm = 1. + IMAGINARY_UNIT * 1.;
   // set components
   for (int i = 0; i < I_tot; i++) {
     for (int j = 0; j < J_tot; j++) {
       for (int k = 0; k < K_tot; k++) {
         // set x component to be 1 + i, so should normalise to 1.
-        F->real.x[k][j][i] = 1.;
-        F->imag.x[k][j][i] = 1.;
+        F.real.x[k][j][i] = 1.;
+        F.imag.x[k][j][i] = 1.;
         // set y component to be 2, so should normalise to be 1 - i
-        F->real.y[k][j][i] = 2.;
-        F->imag.y[k][j][i] = 0.;
+        F.real.y[k][j][i] = 2.;
+        F.imag.y[k][j][i] = 0.;
         // keep z components as 0
       }
     }
   }
 
   // now normalise
-  F->normalise_volume();
+  F.normalise_volume();
   // check normalisation was correct
   bool x_normalised_correctly = true;
   bool y_normalised_correctly = true;
@@ -56,23 +54,21 @@ TEST_CASE("Field: normalise_volume") {
         // set x component to be 1 + i, so should normalise to 1.
         x_normalised_correctly =
                 (x_normalised_correctly &&
-                 (abs(F->real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F->imag.x[k][j][i] - 0.)) < tol));
+                 (abs(F.real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < tol));
         // set y component to be 2, so should normalise to be 1 - i
         y_normalised_correctly =
                 (y_normalised_correctly &&
-                 (abs(F->real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F->imag.y[k][j][i] + 1.)) < tol));
+                 (abs(F.real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < tol));
         // keep z components as 0
         z_normalised_correctly =
                 (z_normalised_correctly &&
-                 (abs(F->real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F->imag.z[k][j][i] - 0.)) < tol));
+                 (abs(F.real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < tol));
       }
     }
   }
   REQUIRE(x_normalised_correctly);
   REQUIRE(y_normalised_correctly);
   REQUIRE(z_normalised_correctly);
-
-  delete F;
 }
 
 TEST_CASE("ElectricField: angular norm addition") {
