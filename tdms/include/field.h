@@ -328,7 +328,9 @@ public:
  * Structure to hold a field and allow saving it to a file
  */
 class TDFieldExporter2D{
-
+private:
+  int nI = 0;
+  int nK = 0;
 public:
   mxArray* matlab_array = nullptr;
   double** array = nullptr;
@@ -337,7 +339,7 @@ public:
   /**
    * Allocate the arrays to hold the field
    */
-  void allocate(int nI, int nJ);
+  void allocate(int _nI, int _nK);
 
   /**
    * Export/save a field
