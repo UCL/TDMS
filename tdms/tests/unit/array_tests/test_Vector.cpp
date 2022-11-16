@@ -43,54 +43,35 @@ TEST_CASE("Vector") {
 TEST_CASE("FieldComponentsVector") {
 
   // FieldComponentsVector can be initialised with the default constructor, then have initialise() called to assign values from a pre-existing MATLAB array
-  FieldComponentsVector v_horz;
-  bool v_horz_ready = ((!v_horz.has_elements()) && (v_horz.size() == 0));
-  REQUIRE(v_horz_ready);
+  FieldComponentsVector fcv;
+  bool fcv_ready = ((!fcv.has_elements()) && (fcv.size() == 0));
+  REQUIRE(fcv_ready);
+
+  const int n_vector_elements = 8;
+  const char *fieldnames[1] = {"components"};
+  mxArray *matlab_input;
 
   // create a MATLAB struct with a "components" field to cast to
   // the constructor shouldn't care whether or not the components field contains an n*1 or 1*n vector either
   // struct with horizontal vector
-  const int n_fields_horz = 1;
-  const int n_vector_elements_horz = 8;
-  const int horz_struct_dims[2] = {1, 1};
-  const char *horz_struct_fieldnames[n_fields_horz] = {"components"};
-  mxArray *fcv_struct_pointer_horz = mxCreateStructArray(2, (const mwSize *) horz_struct_dims,
-                                                         n_fields_horz, horz_struct_fieldnames);
-  const int vector_dims_horz[2] = {1, n_vector_elements_horz};
-  mxArray *horz_vector =
-          mxCreateNumericArray(2, (const mwSize *) vector_dims_horz, mxINT16_CLASS, mxREAL);
-  mxSetField(fcv_struct_pointer_horz, 0, horz_struct_fieldnames[0], horz_vector);
-  // initialise
-  v_horz.initialise(fcv_struct_pointer_horz);
-  // in both cases, the number of elements should be n_vector_elements
-  REQUIRE(v_horz.size() == n_vector_elements_horz);
+  SECTION("Expected input") {
+    matlab_input = mxCreateStructMatrix(1, 1, 1, fieldnames);
+    mxArray *vector_array;
+    SECTION("(horz)") {
+      vector_array = mxCreateNumericMatrix(1, n_vector_elements, mxINT16_CLASS, mxREAL);
+    }
+    SECTION("(vert)") {
+      vector_array = mxCreateNumericMatrix(n_vector_elements, 1, mxINT16_CLASS, mxREAL);
+    }
+    mxSetField(matlab_input, 0, fieldnames[0], vector_array);
+    // initialise
+    REQUIRE_NOTHROW(fcv.initialise(matlab_input));
+    // number of elements should be n_vector_elements
+    REQUIRE(fcv.size() == n_vector_elements);
+  }
 
   // destroy what we created
-  mxDestroyArray(fcv_struct_pointer_horz);
-
-  // now do the same for a vertical array
-  FieldComponentsVector v_vert;
-  bool v_vert_ready = ((!v_vert.has_elements()) && (v_vert.size() == 0));
-  REQUIRE(v_vert_ready);
-
-  // struct with vertical vector
-  const int n_fields_vert = 1;
-  const int n_vector_elements_vert = 8;
-  const int vert_struct_dims[2] = {1, 1};
-  const char *vert_struct_fieldnames[n_fields_vert] = {"components"};
-  mxArray *fcv_struct_pointer_vert = mxCreateStructArray(2, (const mwSize *) vert_struct_dims,
-                                                         n_fields_vert, vert_struct_fieldnames);
-  const int vector_dims_vert[2] = {n_vector_elements_vert, 1};
-  mxArray *vert_vector =
-          mxCreateNumericArray(2, (const mwSize *) vector_dims_vert, mxINT16_CLASS, mxREAL);
-  mxSetField(fcv_struct_pointer_vert, 0, vert_struct_fieldnames[0], vert_vector);
-  // initialise
-  v_vert.initialise(fcv_struct_pointer_vert);
-  // in both cases, the number of elements should be n_vector_elements
-  REQUIRE(v_vert.size() == n_vector_elements_vert);
-
-  // destroy what we created
-  mxDestroyArray(fcv_struct_pointer_vert);
+  mxDestroyArray(matlab_input);
 }
 
 TEST_CASE("FrequencyExtractVector") {
