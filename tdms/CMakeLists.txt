@@ -136,19 +136,9 @@ install(TARGETS tdms)
 if (BUILD_TESTING)
     enable_testing()
 
-    add_executable(tdms_tests
-            tests/unit/test_fields.cpp
-            tests/unit/test_BLi_vs_cubic_interpolation.cpp
-            tests/unit/test_field_interpolation.cpp
-            tests/unit/test_interpolation_determination.cpp
-            tests/unit/test_interpolation_functions.cpp
-            tests/unit/test_numerical_derivative.cpp
-            tests/unit/test_openandorder.cpp
-            tests/unit/array_tests/test_Tensor3D.cpp
-            tests/unit/array_tests/test_XYZTensor3D.cpp
-            tests/unit/array_tests/test_XYZVectors.cpp
-            tests/unit/array_tests/test_Matrix.cpp
-            tests/unit/array_tests/test_Vector.cpp)
+    # find all .cpp files in the unit tests directory (and subdirectories).
+    file(GLOB_RECURSE UNIT_TEST_SRC "${CMAKE_SOURCE_DIR}/tests/unit/test_*.cpp")
+    add_executable(tdms_tests "${UNIT_TEST_SRC}")
 
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
