@@ -95,16 +95,16 @@ TEST_CASE("GratingStructure") {
     REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
   }
   SECTION("Wrong dimension size") {
-    int dims_2d[2];
+    int dimensions_2d[2];
     SECTION("(axis 0)") {
-      dims_2d[0] = 3;
-      dims_2d[1] = I_tot + 1;
+      dimensions_2d[0] = 3;
+      dimensions_2d[1] = I_tot + 1;
     }
     SECTION("(axis 1)") {
-      dims_2d[0] = 2;
-      dims_2d[1] = I_tot;
+      dimensions_2d[0] = 2;
+      dimensions_2d[1] = I_tot;
     }
-    matlab_input = mxCreateNumericArray(2, (mwSize *) dims_2d, mxINT32_CLASS, mxREAL);
+    matlab_input = mxCreateNumericArray(2, (mwSize *) dimensions_2d, mxINT32_CLASS, mxREAL);
     REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
   }
 

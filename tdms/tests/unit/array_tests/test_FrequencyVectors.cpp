@@ -44,8 +44,8 @@ TEST_CASE("FrequencyVectors") {
 
   // assignment will throw error if we attempt to provide a struct array that doesn't have two fields
   SECTION("Struct with too many inputs") {
-    const char *too_mny_names[3] = {"field1", "field2", "field3"};
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 3, too_mny_names);
+    const char *too_many_names[3] = {"field1", "field2", "field3"};
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 3, too_many_names);
     CHECK_THROWS_AS(fv.initialise(matlab_input), runtime_error);
   }
   SECTION("Struct with too few inputs") {
@@ -59,14 +59,14 @@ TEST_CASE("FrequencyVectors") {
   SECTION("Expected input") {
     const char *fieldnames[] = {"fx_vec", "fy_vec"};
     const int n_field_array_elements = 10;
-    const int field_array_dims[2] = {1, n_field_array_elements};
+    const int field_array_dimensions[2] = {1, n_field_array_elements};
     // create the struct
     matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 2, fieldnames);
     // create the data for the fields of our struct
     mxArray *field_array_ptrs[2];
     for (int i = 0; i < 2; i++) {
       field_array_ptrs[i] =
-              mxCreateNumericArray(2, (const mwSize *) field_array_dims, mxDOUBLE_CLASS, mxREAL);
+              mxCreateNumericArray(2, (const mwSize *) field_array_dimensions, mxDOUBLE_CLASS, mxREAL);
       mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
       // 0th field, fx_vec[i], will be 1/(i+1)
       // 1st field, fy_vec[i], will be -1/(i+1)

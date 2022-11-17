@@ -1,5 +1,6 @@
 #include "arrays.h"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 #include <utility>
 
@@ -147,7 +148,7 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     }
     // compute the number of elements prior to displaying
     n = std::max(dims[0], dims[1]);
-    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << n << endl;
+    spdlog::info("f_ex_vec has ndims={} N={}", n_dims, n);
     vector = (double *) mxGetPr(ptr);
   }
 }

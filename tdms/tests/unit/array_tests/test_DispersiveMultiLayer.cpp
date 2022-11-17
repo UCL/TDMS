@@ -29,8 +29,8 @@ TEST_CASE("DispersiveMultiLayer") {
   // create a MATLAB pointer to an empty struct
   SECTION("Empty struct input") {
     const char* empty_fields[] = {};
-    const int empty_dims[2] = {1,1};
-    matlab_input = mxCreateStructArray(2, (const mwSize *) empty_dims, 0, empty_fields);
+    const int empty_dimensions[2] = {1,1};
+    matlab_input = mxCreateStructArray(2, (const mwSize *) empty_dimensions, 0, empty_fields);
     CHECK_THROWS_AS(DispersiveMultiLayer(matlab_input), runtime_error);
   }
 
@@ -42,8 +42,8 @@ TEST_CASE("DispersiveMultiLayer") {
                                         "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
     const int n_field_elements = 5;
     // build our struct
-    const int dims[2] = {1, 1};
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, n_fields, fieldnames);
+    const int dimensions[2] = {1, 1};
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, n_fields, fieldnames);
     // build "data" for each of the fields, which is going to be the same array filled with consecutive integers
     const int array_size[2] = {1, n_field_elements};
     mxArray *field_array_ptrs[n_fields];
@@ -71,6 +71,6 @@ TEST_CASE("DispersiveMultiLayer") {
     }
   }
 
-  // cleanup MATLAB array
+  // tear down
   mxDestroyArray(matlab_input);
 }
