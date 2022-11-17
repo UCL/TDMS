@@ -86,6 +86,7 @@ $(document).ready(function(){initNavTree('classTDFieldExporter2D.html',''); init
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classTDFieldExporter2D-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TDFieldExporter2D Class Reference</div>  </div>
@@ -96,8 +97,8 @@ $(document).ready(function(){initNavTree('classTDFieldExporter2D.html',''); init
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f954ae98c2d1276439509aa22ca4a07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTDFieldExporter2D.html#a7f954ae98c2d1276439509aa22ca4a07">allocate</a> (int nI, int nJ)</td></tr>
-<tr class="separator:a7f954ae98c2d1276439509aa22ca4a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaca0a7fe472bdaed9faf0be6caaf82b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTDFieldExporter2D.html#aeaca0a7fe472bdaed9faf0be6caaf82b">allocate</a> (int _nI, int _nK)</td></tr>
+<tr class="separator:aeaca0a7fe472bdaed9faf0be6caaf82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc25ca6d93da4b602d87ea96d709fd7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTDFieldExporter2D.html#acc25ca6d93da4b602d87ea96d709fd7f">export_field</a> (<a class="el" href="classSplitField.html">SplitField</a> &amp;F, int stride, int iteration) const</td></tr>
 <tr class="separator:acc25ca6d93da4b602d87ea96d709fd7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -112,12 +113,21 @@ double **&#160;</td><td class="memItemRight" valign="bottom"><b>array</b> = null
 <tr class="memitem:ad5167cbbb905731caed9a379f023420a"><td class="memItemLeft" align="right" valign="top"><a id="ad5167cbbb905731caed9a379f023420a"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>folder_name</b> = nullptr</td></tr>
 <tr class="separator:ad5167cbbb905731caed9a379f023420a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a240fd149329efd01bf74b687daefbfeb"><td class="memItemLeft" align="right" valign="top"><a id="a240fd149329efd01bf74b687daefbfeb"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>nI</b> = 0</td></tr>
+<tr class="separator:a240fd149329efd01bf74b687daefbfeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f29ba4d89b45d59a70180cca9aa817"><td class="memItemLeft" align="right" valign="top"><a id="ae4f29ba4d89b45d59a70180cca9aa817"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>nK</b> = 0</td></tr>
+<tr class="separator:ae4f29ba4d89b45d59a70180cca9aa817"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Structure to hold a field and allow saving it to a file </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a7f954ae98c2d1276439509aa22ca4a07"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f954ae98c2d1276439509aa22ca4a07">&#9670;&nbsp;</a></span>allocate()</h2>
+<a id="aeaca0a7fe472bdaed9faf0be6caaf82b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaca0a7fe472bdaed9faf0be6caaf82b">&#9670;&nbsp;</a></span>allocate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -126,13 +136,13 @@ const char *&#160;</td><td class="memItemRight" valign="bottom"><b>folder_name</
           <td class="memname">void TDFieldExporter2D::allocate </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>nI</em>, </td>
+          <td class="paramname"><em>_nI</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>nJ</em>&#160;</td>
+          <td class="paramname"><em>_nK</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

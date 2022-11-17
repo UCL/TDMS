@@ -106,8 +106,8 @@ Collaboration diagram for Field:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top"><a id="a616a0a2e9edb5ee42374611c2eea777e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>normalise_volume</b> ()</td></tr>
+<tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">normalise_volume</a> ()</td></tr>
+<tr class="memdesc:a616a0a2e9edb5ee42374611c2eea777e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalises the field entries by divding by the angular norm.  <a href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">More...</a><br /></td></tr>
 <tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49946f632ba55deabf6bc8cd5f100225"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a49946f632ba55deabf6bc8cd5f100225">Field</a> ()=default</td></tr>
 <tr class="separator:a49946f632ba55deabf6bc8cd5f100225"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -347,6 +347,26 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 <dl class="section return"><dt>Returns</dt><dd>std::complex&lt;double&gt; The interpolated field value </dd></dl>
 
 <p>Implemented in <a class="el" href="classMagneticField.html#af3aed3a63c9ac03b979e0b8eaed9233a">MagneticField</a>, and <a class="el" href="classElectricField.html#a1711a154255c99927e5d048ac0176538">ElectricField</a>.</p>
+
+</div>
+</div>
+<a id="a616a0a2e9edb5ee42374611c2eea777e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a616a0a2e9edb5ee42374611c2eea777e">&#9670;&nbsp;</a></span>normalise_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::normalise_volume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalises the field entries by divding by the angular norm. </p>
+<p>Specifically, real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm </p>
 
 </div>
 </div>
