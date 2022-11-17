@@ -4,7 +4,6 @@
  */
 #include <complex>
 
-template<typename T>
 /**
  * @brief Determines if two numerical values are close by relative comparison.
  *
@@ -14,7 +13,8 @@ template<typename T>
  *
  * @param a,b Numerical values
  */
-inline bool is_close(T a, T b, double tol=1E-10, double close_to_zero_tol=1E-30) {
+template<typename T>
+inline bool is_close(T a, T b, double tol = 1E-10, double close_to_zero_tol = 1E-30) {
 
   auto max_norm = std::max(std::abs(a), std::abs(b));
 
@@ -25,7 +25,6 @@ inline bool is_close(T a, T b, double tol=1E-10, double close_to_zero_tol=1E-30)
   return std::abs(a - b) / std::max(std::abs(a), std::abs(b)) < tol;
 }
 
-template<typename T>
 /**
  * @brief Computes the Euclidean norm of the vector provided
  *
@@ -34,6 +33,7 @@ template<typename T>
  * @param start (Inclusive) start of buffer to read vector from
  * @return double Euclidean norm
  */
+template<typename T>
 inline double euclidean(T *v, int end, int start = 0) {
   double norm_val = 0.;
   for (int i = start; i < end; i++) { norm_val += std::norm(v[i]); }

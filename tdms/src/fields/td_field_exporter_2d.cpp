@@ -8,8 +8,8 @@ void TDFieldExporter2D::allocate(int _nI, int _nK) {
 
   nI = _nI;
   nK = _nK;
-  mwSize dims[2] = {_nI, _nK};
-  matlab_array = mxCreateNumericArray(2, (const mwSize *)dims, mxDOUBLE_CLASS, mxREAL);
+  mwSize dimensions[2] = {_nI, _nK};
+  matlab_array = mxCreateNumericArray(2, (const mwSize *)dimensions, mxDOUBLE_CLASS, mxREAL);
   array = cast_matlab_2D_array(mxGetPr((mxArray *) matlab_array), _nI, _nK);
 }
 

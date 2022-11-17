@@ -329,8 +329,8 @@ public:
  */
 class TDFieldExporter2D{
 private:
-  int nI = 0;
-  int nK = 0;
+  int nI = 0; //< Array size in the i direction
+  int nK = 0; //< Array size in the k direction
 public:
   mxArray* matlab_array = nullptr;
   double** array = nullptr;

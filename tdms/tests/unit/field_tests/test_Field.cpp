@@ -16,7 +16,7 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("Field: normalise_volume") {
 
@@ -54,15 +54,15 @@ TEST_CASE("Field: normalise_volume") {
         // set x component to be 1 + i, so should normalise to 1.
         x_normalised_correctly =
                 (x_normalised_correctly &&
-                 (abs(F.real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < tol));
+                 (abs(F.real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < TOLERANCE));
         // set y component to be 2, so should normalise to be 1 - i
         y_normalised_correctly =
                 (y_normalised_correctly &&
-                 (abs(F.real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < tol));
+                 (abs(F.real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < TOLERANCE));
         // keep z components as 0
         z_normalised_correctly =
                 (z_normalised_correctly &&
-                 (abs(F.real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < tol));
+                 (abs(F.real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < TOLERANCE));
       }
     }
   }
