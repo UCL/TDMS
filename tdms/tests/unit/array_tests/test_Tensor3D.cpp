@@ -8,8 +8,9 @@
 #include <spdlog/spdlog.h>
 
 #include "arrays.h"
+#include "unit_test_utils.h"
 
-const double TOLERANCE = 1e-16;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("Tensor3D: construction") {
 

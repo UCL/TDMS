@@ -8,10 +8,10 @@
 
 #include "arrays.h"
 #include "globals.h"
+#include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
-
-const double TOLERANCE = 1e-16;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("Vector") {
 
