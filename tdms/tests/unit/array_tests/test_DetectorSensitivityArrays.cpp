@@ -15,8 +15,6 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-const double tol = 1e-16;
-
 TEST_CASE("DetectorSensitivityArrays") {
 
   mxArray *matlab_input;

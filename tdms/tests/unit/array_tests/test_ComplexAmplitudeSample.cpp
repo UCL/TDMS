@@ -49,6 +49,6 @@ TEST_CASE("ComplexAmplitudeSample") {
     REQUIRE_NOTHROW(ComplexAmplitudeSample(matlab_input));
   }
 
-  // destroy what we created
+  // tear down
   mxDestroyArray(matlab_input);
 }
