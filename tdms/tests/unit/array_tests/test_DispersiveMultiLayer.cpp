@@ -59,15 +59,15 @@ TEST_CASE("DispersiveMultiLayer") {
     DispersiveMultiLayer dml(matlab_input);
     // now check that the data has been correctly assigned
     for (int i = 0; i < 5; i++) {
-      CHECK(dml.alpha[i] == Approx(i).epsilon(tol));
-      CHECK(dml.beta[i] == Approx(i).epsilon(tol));
-      CHECK(dml.gamma[i] == Approx(i).epsilon(tol));
-      CHECK(dml.kappa.x[i] == Approx(i).epsilon(tol));
-      CHECK(dml.kappa.y[i] == Approx(i).epsilon(tol));
-      CHECK(dml.kappa.z[i] == Approx(i).epsilon(tol));
-      CHECK(dml.sigma.x[i] == Approx(i).epsilon(tol));
-      CHECK(dml.sigma.y[i] == Approx(i).epsilon(tol));
-      CHECK(dml.sigma.z[i] == Approx(i).epsilon(tol));
+      CHECK(dml.alpha[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.beta[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.gamma[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.kappa.x[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.kappa.y[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.kappa.z[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.sigma.x[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.sigma.y[i] == Approx(i).epsilon(TOLERANCE));
+      CHECK(dml.sigma.z[i] == Approx(i).epsilon(TOLERANCE));
     }
   }
 

@@ -12,7 +12,7 @@
 
 using std::accumulate;
 
-const double tol = 1e-8;
+const double TOLERANCE = 1e-8;
 
 TEST_CASE("XYZVectors") {
 
@@ -38,14 +38,14 @@ TEST_CASE("XYZVectors") {
 
   // and manipulating the components
   double x_tot = accumulate(v.x, v.x + nx, 0.);
-  CHECK(abs(x_tot - 0.) <= tol);
+  CHECK(abs(x_tot - 0.) <= TOLERANCE);
   double y_tot = accumulate(v.y, v.y + ny, 0.);
-  CHECK(abs(y_tot - 3.) <= tol);
+  CHECK(abs(y_tot - 3.) <= TOLERANCE);
   double z_tot = accumulate(v.z, v.z + nz, 0.);
-  CHECK(abs(z_tot - 10.) <= tol);
+  CHECK(abs(z_tot - 10.) <= TOLERANCE);
 
   // in theory, we can also swap the components by reassigning the pointers
   v.set_ptr('x', z_vec);
   x_tot = accumulate(v.x, v.x + nz, 0.);
-  CHECK(abs(x_tot - 10.) <= tol);
+  CHECK(abs(x_tot - 10.) <= TOLERANCE);
 }

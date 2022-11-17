@@ -34,7 +34,7 @@ TEST_CASE("ComplexAmplitudeSample") {
   // For successful construction, we need to build a MATLAB struct with 2 fields
   // these are the fieldnames that are expected
   SECTION("Expected input") {
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, n_fields, fieldnames);
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, n_fields, fieldnames);
     // each entry is a numeric array, setup for vertices and components
     // copy code from Vertices and FieldComponentsVector once those tests have been added
     const int n_elements = 8;

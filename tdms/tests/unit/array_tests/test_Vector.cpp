@@ -112,7 +112,7 @@ TEST_CASE("FrequencyExtractVector") {
       }
         FrequencyExtractVector fev_horz(matlab_input, omega_an);
         CHECK(fev_horz.size() == n_elements);
-        CHECK(abs(fev_horz.max() - fev_horz[n_elements - 1]) < tol);
+        CHECK(abs(fev_horz.max() - fev_horz[n_elements - 1]) < TOLERANCE);
     }
     SECTION("(vert)") {
       matlab_input = mxCreateNumericMatrix(n_elements, 1, mxDOUBLE_CLASS, mxREAL);
