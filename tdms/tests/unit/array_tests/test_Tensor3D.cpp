@@ -9,7 +9,7 @@
 
 #include "arrays.h"
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("Tensor3D: construction") {
 
@@ -43,7 +43,7 @@ TEST_CASE("Tensor3D: construction") {
     REQUIRE(t3d->has_elements());
   }
 
-  // cleanup memory
+  // tear down
   delete t3d;
 }
 
@@ -60,13 +60,13 @@ TEST_CASE("Tensor3D: zero, frobenius") {
   for (int k = 0; k < n_layers; k++) {
     for (int j = 0; j < n_cols; j++) {
         for (int i = 0; i < n_rows; i++) {
-          allocated_and_zero = allocated_and_zero && (abs(t3d[k][j][i]) < tol);
+          allocated_and_zero = allocated_and_zero && (abs(t3d[k][j][i]) < TOLERANCE);
         }
     }
   }
   REQUIRE(allocated_and_zero);
   // frobenius norm should be zero too
-  REQUIRE(abs(t3d.frobenius()) < tol);
+  REQUIRE(abs(t3d.frobenius()) < TOLERANCE);
 
   // assign some values to this tensor. We'll go with =0 if i+j+k is even, and =1 if odd
   // this gives us 4*8*16/2 = 4^4 = 256 non-zero entries, which are 1, so the analytic norm is 16.
@@ -79,5 +79,5 @@ TEST_CASE("Tensor3D: zero, frobenius") {
   double target_fro = 16.;
 
   // check the frobenius norms align
-  REQUIRE(abs(t3d.frobenius() - target_fro) < tol);
+  REQUIRE(abs(t3d.frobenius() - target_fro) < TOLERANCE);
 }

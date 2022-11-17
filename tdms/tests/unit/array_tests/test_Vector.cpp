@@ -11,7 +11,7 @@
 
 using namespace tdms_math_constants;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("Vector") {
 
@@ -112,7 +112,7 @@ TEST_CASE("FrequencyExtractVector") {
       }
         FrequencyExtractVector fev_horz(matlab_input, omega_an);
         CHECK(fev_horz.size() == n_elements);
-        CHECK(abs(fev_horz.max() - fev_horz[n_elements - 1]) < tol);
+        CHECK(abs(fev_horz.max() - fev_horz[n_elements - 1]) < TOLERANCE);
     }
     SECTION("(vert)") {
       matlab_input = mxCreateNumericMatrix(n_elements, 1, mxDOUBLE_CLASS, mxREAL);
@@ -126,7 +126,7 @@ TEST_CASE("FrequencyExtractVector") {
       FrequencyExtractVector fev_vert(matlab_input, omega_an);
       CHECK(fev_vert.size() == n_elements);
       // max should return the element at index n_elements-1 for horz and 0 for vert
-      CHECK(abs(fev_vert.max() - fev_vert[0]) < tol);
+      CHECK(abs(fev_vert.max() - fev_vert[0]) < TOLERANCE);
     }
   }
 

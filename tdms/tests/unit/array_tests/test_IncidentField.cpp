@@ -10,7 +10,7 @@
 
 using namespace std;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("IncidentField") {
 
@@ -77,8 +77,8 @@ TEST_CASE("IncidentField") {
       for (int jj = 0; jj < n_cols; jj++) {
         for (int kk = 0; kk < n_layers; kk++) {
           bool element_set_correctly =
-                  (abs(i_field.x[kk][jj][ii] - 1. / ((double) (kk + jj + ii + 1))) < tol) &&
-                  (abs(i_field.y[kk][jj][ii] - 1. / ((double) (kk + jj + ii + 1))) < tol);
+                  (abs(i_field.x[kk][jj][ii] - 1. / ((double) (kk + jj + ii + 1))) < TOLERANCE) &&
+                  (abs(i_field.y[kk][jj][ii] - 1. / ((double) (kk + jj + ii + 1))) < TOLERANCE);
           CHECK(element_set_correctly);
         }
       }

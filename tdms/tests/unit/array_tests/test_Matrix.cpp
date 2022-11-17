@@ -67,7 +67,7 @@ TEST_CASE("Vertices") {
    }
   }
 
-  // destroy MATLAB object
+  // tear down - destroy MATLAB object
   mxDestroyArray(struct_pointer);
 }
 
@@ -90,8 +90,8 @@ TEST_CASE("GratingStructure") {
 
   // try sending in a 3D array instead
   SECTION("Wrong number of dimensions (3D)") {
-    int dims_3d[3] = {2, I_tot + 1, 3};
-    matlab_input = mxCreateNumericArray(3, (mwSize *) dims_3d, mxINT32_CLASS, mxREAL);
+    int dimensions_3d[3] = {2, I_tot + 1, 3};
+    matlab_input = mxCreateNumericArray(3, (mwSize *) dimensions_3d, mxINT32_CLASS, mxREAL);
     REQUIRE_THROWS_AS(GratingStructure(matlab_input, I_tot), std::runtime_error);
   }
   SECTION("Wrong dimension size") {
@@ -110,8 +110,8 @@ TEST_CASE("GratingStructure") {
 
   // now try sending in something that's actually useful
   SECTION("Expected input") {
-    int dims_2d[2] = {2, I_tot + 1};
-    matlab_input = mxCreateNumericMatrix(dims_2d[0], dims_2d[1], mxINT32_CLASS, mxREAL);
+    int dimensions_2d[2] = {2, I_tot + 1};
+    matlab_input = mxCreateNumericMatrix(dimensions_2d[0], dimensions_2d[1], mxINT32_CLASS, mxREAL);
     GratingStructure *gs;
     REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, I_tot));
     REQUIRE(gs->has_elements());
@@ -141,8 +141,8 @@ TEST_CASE("Pupil") {
 
   // wrong dimensions or wrong number of dimensions will cause an error, and also not assign
   SECTION("Wrong number of dimensions (3D)") {
-    const int dims_3d[3] = {n_rows, n_cols, 2};
-    matlab_input = mxCreateNumericArray(3, (mwSize *) dims_3d, mxDOUBLE_CLASS, mxREAL);
+    const int dimensions_3d[3] = {n_rows, n_cols, 2};
+    matlab_input = mxCreateNumericArray(3, (mwSize *) dimensions_3d, mxDOUBLE_CLASS, mxREAL);
     REQUIRE_THROWS_AS(p.initialise(matlab_input, n_rows, n_cols), std::runtime_error);
     CHECK(!p.has_elements());
   }
