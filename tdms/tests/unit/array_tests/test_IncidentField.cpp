@@ -10,7 +10,7 @@
 
 using namespace std;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("IncidentField") {
 

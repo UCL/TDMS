@@ -10,14 +10,14 @@
 
 using namespace std;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("FrequencyVectors") {
 
   // there is no custom constructor for this class
   FrequencyVectors fv;
   mxArray *matlab_input;
-  int dims[2] = {1, 1};
+  int dimensions[2] = {1, 1};
   // members should start unassigned
   bool not_assigned = (!fv.x.has_elements() && !fv.y.has_elements());
   REQUIRE(not_assigned);

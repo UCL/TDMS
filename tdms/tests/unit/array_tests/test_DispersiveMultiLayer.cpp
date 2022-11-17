@@ -12,7 +12,7 @@
 using namespace std;
 using Catch::Approx;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
 TEST_CASE("DispersiveMultiLayer") {
 

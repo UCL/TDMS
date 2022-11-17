@@ -14,14 +14,14 @@ using namespace std;
 TEST_CASE("ComplexAmplitudeSample") {
 
   mxArray *matlab_input;
-  int dims[2] = {1, 1};
+  int dimensions[2] = {1, 1};
   const int n_fields = 2;
   const char *fieldnames[n_fields] = {"vertices", "components"};
 
   // Constructor should just exit if recieving an empty struct
   SECTION("Empty input") {
-    dims[0] = 0;
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, n_fields, fieldnames);
+    dimensions[0] = 0;
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, n_fields, fieldnames);
     CHECK_NOTHROW(ComplexAmplitudeSample(matlab_input));
     ComplexAmplitudeSample empty_test(matlab_input);
     // n_vertices should return 0, since Vector has not been set so should default initialise to 0-vertex matrix

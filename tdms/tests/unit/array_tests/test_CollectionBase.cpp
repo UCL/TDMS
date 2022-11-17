@@ -10,6 +10,7 @@
 
 TEST_CASE("CCollection") {
 
+  // setup - an empty mxArray and the names of the field components
   mxArray *matlab_input;
   const int n_numeric_elements = 8;
   const char *fieldnames[] = {"Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz"};
@@ -45,7 +46,7 @@ TEST_CASE("CCollection") {
     REQUIRE(cc9.is_multilayer);
   }
 
-  // cleanup
+  // tear down
   mxDestroyArray(matlab_input);
 }
 
@@ -73,6 +74,6 @@ TEST_CASE("DCollection") {
     REQUIRE_NOTHROW(DCollection(matlab_input));
   }
 
-  // cleanup MATLAB memory
+  // tear down - cleanup MATLAB memory
   mxDestroyArray(matlab_input);
 };
