@@ -1,5 +1,6 @@
 #include "arrays.h"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 #include <utility>
 
@@ -48,7 +49,7 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
   for (char component : {'x', 'y', 'z'}) {
 
     auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
-    is_multilayer = mxGetDimensions(element)[0] != 1;
+    is_multilayer = mxGetDimensions(element)[0] != 1; // this only matters when we check the 'z' component right? No point re-setting it each time when it's not used? TODO: check this.
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -127,6 +128,8 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
 GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
+  // prevent double free when calling ~Matrix, superclass destructor
+  matrix = nullptr;
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
@@ -143,9 +146,9 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
       throw runtime_error("f_ex_vec should be a vector with N>0 elements");
     }
-    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
-
+    // compute the number of elements prior to displaying
     n = std::max(dims[0], dims[1]);
+    spdlog::info("f_ex_vec has ndims={} N={}", n_dims, n);
     vector = (double *) mxGetPr(ptr);
   }
 }

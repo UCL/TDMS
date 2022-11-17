@@ -10,13 +10,14 @@
 
 using namespace std;
 
-const double tol = 1e-16;
+const double TOLERANCE = 1e-16;
 
-TEST_CASE("FrequencyVectors: allocation and deallocation") {
+TEST_CASE("FrequencyVectors") {
 
+  // there is no custom constructor for this class
   FrequencyVectors fv;
   mxArray *matlab_input;
-  int dims[2] = {1, 1};
+  int dimensions[2] = {1, 1};
   // members should start unassigned
   bool not_assigned = (!fv.x.has_elements() && !fv.y.has_elements());
   REQUIRE(not_assigned);
@@ -24,8 +25,8 @@ TEST_CASE("FrequencyVectors: allocation and deallocation") {
   // initialise() method should exit without assignment if we pass in a pointer to an empty array
   // create empty array
   SECTION("Empty array input") {
-    dims[0] = 0;
-    matlab_input = mxCreateNumericArray(2, (const mwSize *) dims, mxUINT8_CLASS, mxREAL);
+    dimensions[0] = 0;
+    matlab_input = mxCreateNumericArray(2, (const mwSize *) dimensions, mxUINT8_CLASS, mxREAL);
     // attempt assignment
     fv.initialise(matlab_input);
     // should still be unassigned vectors
@@ -35,20 +36,21 @@ TEST_CASE("FrequencyVectors: allocation and deallocation") {
 
   // assignment will throw error if we attempt to provide a non-empty, non-struct array
   SECTION("Non-struct input") {
-  dims[0] = 2; dims[1] = 3;
-  matlab_input = mxCreateNumericArray(2, (const mwSize *) dims, mxUINT8_CLASS, mxREAL);
-  CHECK_THROWS_AS(fv.initialise(matlab_input), runtime_error);
+    dimensions[0] = 2;
+    dimensions[1] = 3;
+    matlab_input = mxCreateNumericArray(2, (const mwSize *) dimensions, mxUINT8_CLASS, mxREAL);
+    CHECK_THROWS_AS(fv.initialise(matlab_input), runtime_error);
   }
 
   // assignment will throw error if we attempt to provide a struct array that doesn't have two fields
   SECTION("Struct with too many inputs") {
-    const char *too_mny_names[3] = {"field1", "field2", "field3"};
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, 3, too_mny_names);
+    const char *too_many_names[3] = {"field1", "field2", "field3"};
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 3, too_many_names);
     CHECK_THROWS_AS(fv.initialise(matlab_input), runtime_error);
   }
   SECTION("Struct with too few inputs") {
     const char *too_few_names[1] = {"field1"};
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, 1, too_few_names);
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 1, too_few_names);
     CHECK_THROWS_AS(fv.initialise(matlab_input), runtime_error);
   }
 
@@ -57,14 +59,14 @@ TEST_CASE("FrequencyVectors: allocation and deallocation") {
   SECTION("Expected input") {
     const char *fieldnames[] = {"fx_vec", "fy_vec"};
     const int n_field_array_elements = 10;
-    const int field_array_dims[2] = {1, n_field_array_elements};
+    const int field_array_dimensions[2] = {1, n_field_array_elements};
     // create the struct
-    matlab_input = mxCreateStructArray(2, (const mwSize *) dims, 2, fieldnames);
+    matlab_input = mxCreateStructArray(2, (const mwSize *) dimensions, 2, fieldnames);
     // create the data for the fields of our struct
     mxArray *field_array_ptrs[2];
     for (int i = 0; i < 2; i++) {
       field_array_ptrs[i] =
-              mxCreateNumericArray(2, (const mwSize *) field_array_dims, mxDOUBLE_CLASS, mxREAL);
+              mxCreateNumericArray(2, (const mwSize *) field_array_dimensions, mxDOUBLE_CLASS, mxREAL);
       mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
       // 0th field, fx_vec[i], will be 1/(i+1)
       // 1st field, fy_vec[i], will be -1/(i+1)
@@ -83,8 +85,8 @@ TEST_CASE("FrequencyVectors: allocation and deallocation") {
     REQUIRE(assigned_and_correct_size);
     // and the values themselves are what we expect
     for (int i = 0; i < n_field_array_elements; i++) {
-      CHECK(abs(fv.x[i] - 1. / ((double) (i + 1))) < tol);
-      CHECK(abs(fv.y[i] + 1. / ((double) (i + 1))) < tol);
+      CHECK(abs(fv.x[i] - 1. / ((double) (i + 1))) < TOLERANCE);
+      CHECK(abs(fv.y[i] + 1. / ((double) (i + 1))) < TOLERANCE);
     }
   }
 

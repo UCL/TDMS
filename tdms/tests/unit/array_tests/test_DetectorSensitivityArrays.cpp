@@ -15,19 +15,18 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-const double tol = 1e-16;
-
 TEST_CASE("DetectorSensitivityArrays") {
+
+  mxArray *matlab_input;
+  DetectorSensitivityArrays dsa;
+  const int n_rows = 8, n_cols = 4;
 
   // default constructor should set everything to nullptrs
   // destructor uses fftw destroy, which handles nullptrs itself
-  DetectorSensitivityArrays empty_dsa;
-  bool all_are_nullptrs = (empty_dsa.cm==nullptr) && (empty_dsa.plan==nullptr) && (empty_dsa.v==nullptr);
+  bool all_are_nullptrs = (dsa.cm==nullptr) && (dsa.plan==nullptr) && (dsa.v==nullptr);
   REQUIRE(all_are_nullptrs);
 
   // now let's construct a non-trival object
-  DetectorSensitivityArrays dsa;
-  const int n_rows = 8, n_cols = 4;
   dsa.initialise(n_rows, n_cols);
   // we should be able to assign complex doubles to the elements of cm now
   // to test the plan executation, we'd need an analytic DFT to hand
