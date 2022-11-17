@@ -9,10 +9,10 @@
 
 #include "arrays.h"
 #include "globals.h"
+#include "unit_test_utils.h"
 
 using std::accumulate;
-
-const double TOLERANCE = 1e-8;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("XYZVectors") {
 

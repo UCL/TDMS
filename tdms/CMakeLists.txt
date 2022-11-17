@@ -138,8 +138,12 @@ if (BUILD_TESTING)
 
     # find all .cpp files in the unit tests directory (and subdirectories).
     file(GLOB_RECURSE UNIT_TEST_SRC "${CMAKE_SOURCE_DIR}/tests/unit/test_*.cpp")
+
     add_executable(tdms_tests "${UNIT_TEST_SRC}")
 
+    # add the additional include directories to the tdms_tests target
+    target_include_directories(tdms_tests PRIVATE "${CMAKE_SOURCE_DIR}/tests/include")
+    # link additional libraries for testing
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
             tdms_lib

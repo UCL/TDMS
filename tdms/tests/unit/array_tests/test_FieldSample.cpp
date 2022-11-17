@@ -7,10 +7,10 @@
 #include <spdlog/spdlog.h>
 
 #include "arrays.h"
+#include "unit_test_utils.h"
 
 using namespace std;
-
-const double TOLERANCE = 1e-16;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("FieldSample") {
 

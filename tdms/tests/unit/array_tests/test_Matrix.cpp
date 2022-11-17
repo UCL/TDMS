@@ -115,7 +115,7 @@ TEST_CASE("GratingStructure") {
     GratingStructure *gs;
     REQUIRE_NOTHROW(gs = new GratingStructure(matlab_input, I_tot));
     REQUIRE(gs->has_elements());
-    // memory cleanup
+    // tear down
     delete gs;
   }
 
