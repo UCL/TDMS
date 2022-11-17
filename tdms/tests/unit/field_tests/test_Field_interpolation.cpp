@@ -15,6 +15,10 @@
 
 using namespace tdms_math_constants;
 
+using tdms_tests::TOLERANCE;
+using tdms_tests::euclidean;
+using tdms_tests::is_close_or_better;
+
 /* Overview of Tests
 
 We will test the performance of BLi at interpolating a known field to the centre of each Yee cell, for both the E- and H- fields.
@@ -47,9 +51,6 @@ TEST_CASE("E-field interpolation check") {
   double Ey_fro_tol = 2.5021563893394754e-02, Ey_ms_tol = 1.6590813667643383e-03;
   double Ez_fro_tol = 2.5181324617226587e-02, Ez_ms_tol = 1.7507103927894884e-03;
 
-  // additional tolerance to allow for floating-point rounding imprecisions, etc
-  double acc_tol = 1e-12;
-
   // fake domain setup
   double x_lower = -2., y_lower = -2., z_lower = -2.;
   double extent_x = 4., extent_y = 4., extent_z = 4.;
@@ -58,7 +59,6 @@ TEST_CASE("E-field interpolation check") {
   // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
   int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]),
       Nz = round(extent_z / cellDims[2]);
-  SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
   // setup the "split" E-field components
   ElectricSplitField E_split(Nx, Ny, Nz);
@@ -213,20 +213,20 @@ TEST_CASE("E-field interpolation check") {
   }
 
   // check Frobenius errors are acceptable
-  CHECK(Ex_fro_err <= Ex_fro_tol + acc_tol);
-  CHECK(Ey_fro_err <= Ey_fro_tol + acc_tol);
-  CHECK(Ez_fro_err <= Ez_fro_tol + acc_tol);
-  CHECK(Ex_split_fro_err <= Ex_fro_tol + acc_tol);
-  CHECK(Ey_split_fro_err <= Ey_fro_tol + acc_tol);
-  CHECK(Ez_split_fro_err <= Ez_fro_tol + acc_tol);
+  CHECK(is_close_or_better(Ex_fro_err, Ex_fro_tol));
+  CHECK(is_close_or_better(Ey_fro_err, Ey_fro_tol));
+  CHECK(is_close_or_better(Ez_fro_err, Ez_fro_tol));
+  CHECK(is_close_or_better(Ex_split_fro_err, Ex_fro_tol));
+  CHECK(is_close_or_better(Ey_split_fro_err, Ey_fro_tol));
+  CHECK(is_close_or_better(Ez_split_fro_err, Ez_fro_tol));
 
   // check max-slice errors are acceptable
-  CHECK(Ex_ms_err <= Ex_ms_tol + acc_tol);
-  CHECK(Ey_ms_err <= Ey_ms_tol + acc_tol);
-  CHECK(Ez_ms_err <= Ez_ms_tol + acc_tol);
-  CHECK(Ex_split_ms_err <= Ex_ms_tol + acc_tol);
-  CHECK(Ey_split_ms_err <= Ey_ms_tol + acc_tol);
-  CHECK(Ez_split_ms_err <= Ez_ms_tol + acc_tol);
+  CHECK(is_close_or_better(Ex_ms_err, Ex_ms_tol));
+  CHECK(is_close_or_better(Ey_ms_err, Ey_ms_tol));
+  CHECK(is_close_or_better(Ez_ms_err, Ez_ms_tol));
+  CHECK(is_close_or_better(Ex_split_ms_err, Ex_ms_tol));
+  CHECK(is_close_or_better(Ey_split_ms_err, Ey_ms_tol));
+  CHECK(is_close_or_better(Ez_split_ms_err, Ez_ms_tol));
 
   // print information to the debugger/log
   SPDLOG_INFO(" Component | Frobenius err. : (  benchmark   ) | Max-slice err. : (  benchmark   )");
@@ -263,9 +263,6 @@ TEST_CASE("H-field interpolation check") {
   double Hy_fro_tol = 1.2622903101481411e-01;
   double Hz_fro_tol = 7.3136417157073502e-02;
 
-  // additional tolerance to allow for floating-point rounding imprecisions, etc
-  double acc_tol = 1e-12;
-
   // fake domain setup
   double x_lower = -2., y_lower = -2., z_lower = -2.;
   double extent_x = 4., extent_y = 4., extent_z = 4.;
@@ -274,7 +271,6 @@ TEST_CASE("H-field interpolation check") {
   // Note that due to the possibility that Nx/cellDims[0] computing something that is not quite an integer, we need to use round() to get an int safely
   int Nx = round(extent_x / cellDims[0]), Ny = round(extent_y / cellDims[1]),
       Nz = round(extent_z / cellDims[2]);
-  SPDLOG_INFO("(Nx, Ny, Nz) = ({},{},{})", Nx, Ny, Nz);
 
   // setup the "split" H-field components
   MagneticSplitField H_split(Nx, Ny, Nz);
@@ -380,12 +376,12 @@ TEST_CASE("H-field interpolation check") {
          Hz_split_fro_err = Hz_split_error.frobenius();
 
   // check Frobenius errors are acceptable
-  CHECK(Hx_fro_err <= Hx_fro_tol + acc_tol);
-  CHECK(Hy_fro_err <= Hy_fro_tol + acc_tol);
-  CHECK(Hz_fro_err <= Hz_fro_tol + acc_tol);
-  CHECK(Hx_split_fro_err <= Hx_fro_tol + acc_tol);
-  CHECK(Hy_split_fro_err <= Hy_fro_tol + acc_tol);
-  CHECK(Hz_split_fro_err <= Hz_fro_tol + acc_tol);
+  CHECK(is_close_or_better(Hx_fro_err, Hx_fro_tol));
+  CHECK(is_close_or_better(Hy_fro_err, Hy_fro_tol));
+  CHECK(is_close_or_better(Hz_fro_err, Hz_fro_tol));
+  CHECK(is_close_or_better(Hx_split_fro_err, Hx_fro_tol));
+  CHECK(is_close_or_better(Hy_split_fro_err, Hy_fro_tol));
+  CHECK(is_close_or_better(Hz_split_fro_err, Hz_fro_tol));
 
   // print information to the debugger/log
   SPDLOG_INFO(" Component | Frobenius err. : (  benchmark   )");

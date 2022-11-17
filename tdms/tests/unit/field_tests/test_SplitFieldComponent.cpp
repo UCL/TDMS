@@ -9,6 +9,8 @@
 
 #include "unit_test_utils.h"
 
+using tdms_tests::is_close;
+
 TEST_CASE("SplitFieldComponent: set component") {
 
   auto tmp = SplitFieldComponent();// initialisation != allocation

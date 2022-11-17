@@ -7,7 +7,6 @@
 #include "field.h"
 
 #include <complex>
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "globals.h"
@@ -16,7 +15,8 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-const double TOLERANCE = 1e-16;
+using tdms_tests::TOLERANCE;
+using tdms_tests::is_close;
 
 TEST_CASE("Field: normalise_volume") {
 

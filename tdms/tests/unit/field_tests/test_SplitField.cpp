@@ -8,6 +8,8 @@
 
 #include "unit_test_utils.h"
 
+using tdms_tests::is_close;
+
 // NOTE: MagneticSplitField and ElectricSplitField inherit these methods from SplitField, so we can use either here
 
 TEST_CASE("SplitField: allocate and zero") {
