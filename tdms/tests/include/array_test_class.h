@@ -111,6 +111,10 @@ protected:
    */
   virtual bool test_wrong_input_dimensions() { return false;}
   /**
+   * @brief Tests the behaviour of construction when passed an array of the incorrect type
+   */
+  virtual bool test_wrong_input_type() { return false;}
+  /**
    * @brief Tests the behaviour of construction when passed a struct with the wrong number of fields
    */
   virtual bool test_incorrect_number_of_fields() { return false;}
@@ -149,6 +153,10 @@ public:
       logging_string += "Incorrect dimension of input";
       test_executed = test_wrong_input_dimensions();
     }
+    SECTION("Incorrect type of input") {
+      logging_string += "Incorrect type of input";
+      test_executed = test_wrong_input_type();
+    }
     SECTION("Incorrect number of fields") {
       logging_string += "Incorrect number of fields";
       test_executed = test_incorrect_number_of_fields();
@@ -156,6 +164,10 @@ public:
     SECTION("Correct construction") {
       logging_string += "Correct construction";
       test_executed = test_correct_construction();
+    }
+    SECTION("initialise() method") {
+      logging_string += "initialise() method";
+      test_executed = test_initialise_method();
     }
 
     // suppress output if no test was run
@@ -212,4 +224,18 @@ private:
 
 public:
   std::string get_class_name() override { return "DetectorSensitivityArray";}
+};
+
+class DispersiveMultilayerTest : public AbstractArrayTest {
+private:
+  const int n_fields = 9;
+  const char *fieldnames[9] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
+                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
+
+  bool test_empty_construction() override;
+  bool test_wrong_input_type() override;
+  bool test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "DispersiveMultilayerTest"; }
 };
