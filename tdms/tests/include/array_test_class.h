@@ -20,6 +20,7 @@ class AbstractArrayTest {
 protected:
   int empty_dimensions[2] = {0, 1};            //< For initialising empty arrays
   int I_tot = 4, J_tot = 8, K_tot = 4;         //< For mimicing simulation grid dimensions
+  int n_rows = 4, n_cols = 8;//< For mimicing matrix dimensions
   int n_numeric_elements = 8; //< For standardising the number of elements we initialise MATLAB vectors with
   int dimensions_2d[2] = {1, 1};               //< For defining 2D MATLAB arrays
   int dimensions_3d[3] = {I_tot, J_tot, K_tot};//< For defining 3D MATLAB arrays
@@ -56,6 +57,18 @@ protected:
     matlab_input_assigned = true;
   }
   /**
+   * @brief Creates a MATLAB structure array
+   *
+   * @param n_dimensions Number of dimensions of the array.
+   * @param dimensions Array or vector, containing the number of elements in each axis of the array
+   * @param n_fields Number of fields
+   * @param fields Names of the fields
+   */
+  void create_struct_array(int n_dimensions, int *dimensions, int n_fields, const char *fields[]) {
+    matlab_input = mxCreateStructArray(n_dimensions, (const mwSize *) dimensions, n_fields, fields);
+    matlab_input_assigned = true;
+  }
+  /**
    * @brief Creates a 1-by-1 MATLAB structure array
    *
    * @param n_fields Number of fields
@@ -63,6 +76,9 @@ protected:
    */
   void create_1by1_struct(int n_fields, const char *fields[]) {
     create_struct_array(1, 1, n_fields, fields);
+  }
+  void create_empty_struct(int n_fields, const char *fields[]) {
+    create_struct_array(0, 1, n_fields, fields);
   }
   /**
    * @brief Creates a MATLAB numeric array
@@ -102,6 +118,10 @@ protected:
    * @brief Tests the behaviour of construction methods when passing the expected inputs
    */
   virtual bool test_correct_construction() { return false;}
+  /**
+   * @brief Tests the behaviour of the initialise method
+   */
+  virtual bool test_initialise_method() { return false;}
 
 public:
   AbstractArrayTest() = default;
@@ -167,11 +187,29 @@ class DCollectionTest : public AbstractArrayTest {
   private:
     const char *fieldnames[6] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
 
-    std::string class_being_tested = "DCollection";
-
     bool test_incorrect_number_of_fields() override;
     bool test_correct_construction() override;
 
   public:
     std::string get_class_name() override { return "DCollection"; }
+};
+
+class ComplexAmplitudeSampleTest : public AbstractArrayTest {
+private:
+  const char *fieldnames[2] = {"vertices", "components"};
+
+  bool test_empty_construction() override;
+  bool test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "ComplexAmplitudeSample"; }
+};
+
+class DetectorSensitivityArraysTest : public AbstractArrayTest {
+private:
+  bool test_correct_construction() override;
+  bool test_initialise_method() override;
+
+public:
+  std::string get_class_name() override { return "DetectorSensitivityArray";}
 };

@@ -4,28 +4,29 @@
  * @brief Unit tests for the DetectorSensitivityArrays class and its subclasses
  */
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 #include <fftw3.h>
+#include <spdlog/spdlog.h>
 
 #include <cmath>
 
+#include "array_test_class.h"
 #include "arrays.h"
 #include "globals.h"
 
 using namespace std;
 using namespace tdms_math_constants;
 
-TEST_CASE("DetectorSensitivityArrays") {
-
-  mxArray *matlab_input;
+bool DetectorSensitivityArraysTest::test_correct_construction() {
   DetectorSensitivityArrays dsa;
-  const int n_rows = 8, n_cols = 4;
-
   // default constructor should set everything to nullptrs
   // destructor uses fftw destroy, which handles nullptrs itself
-  bool all_are_nullptrs = (dsa.cm==nullptr) && (dsa.plan==nullptr) && (dsa.v==nullptr);
+  bool all_are_nullptrs = (dsa.cm == nullptr) && (dsa.plan == nullptr) && (dsa.v == nullptr);
   REQUIRE(all_are_nullptrs);
+  return true;
+}
 
+bool DetectorSensitivityArraysTest::test_initialise_method() {
+  DetectorSensitivityArrays dsa;
   // now let's construct a non-trival object
   dsa.initialise(n_rows, n_cols);
   // we should be able to assign complex doubles to the elements of cm now
@@ -40,4 +41,7 @@ TEST_CASE("DetectorSensitivityArrays") {
   // we can call the fftw_plan execution, which should place the 2D FFT into dsa.v
   // simply checking executation is sufficient, as fftw should cover whether the FFT is actually meaningful in what it puts out
   REQUIRE_NOTHROW(fftw_execute(dsa.plan));
+  return true;
 }
+
+TEST_CASE("DetectorSensitivityArrays") { DetectorSensitivityArraysTest().run_all_class_tests(); }

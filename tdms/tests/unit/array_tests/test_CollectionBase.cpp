@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 
 bool CCollectionTest::test_incorrect_number_of_fields() {
   create_1by1_struct(3, fieldnames);
@@ -58,10 +58,6 @@ bool DCollectionTest::test_correct_construction() {
   return true;
 }
 
-TEST_CASE("CCollection") {
-  CCollectionTest().run_all_class_tests();
-}
+TEST_CASE("CCollection") { CCollectionTest().run_all_class_tests(); }
 
-TEST_CASE("DCollection") {
-  DCollectionTest().run_all_class_tests();
-};
+TEST_CASE("DCollection") { DCollectionTest().run_all_class_tests(); };
