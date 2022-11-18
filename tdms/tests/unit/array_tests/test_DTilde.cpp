@@ -11,16 +11,15 @@
 
 using namespace std;
 
-bool DTildeTest::test_correct_construction() {
+void DTildeTest::test_correct_construction() {
   // check no information is contained in the DTilde object when declared with default constructor
   DTilde dt;
   bool no_information_stored =
           (dt.num_det_modes() == 0) && (!dt.x.has_elements()) && (!dt.y.has_elements());
   REQUIRE(no_information_stored);
-  return true;
 }
 
-bool DTildeTest::test_empty_construction() {
+void DTildeTest::test_empty_construction() {
   DTilde dt;
   bool no_information_stored;
   // initialise() method should exit without assignment
@@ -31,20 +30,18 @@ bool DTildeTest::test_empty_construction() {
   no_information_stored =
           (dt.num_det_modes() == 0) && (!dt.x.has_elements()) && (!dt.y.has_elements());
   REQUIRE(no_information_stored);
-  return true;
 }
 
-bool DTildeTest::test_wrong_input_type() {
+void DTildeTest::test_wrong_input_type() {
   DTilde dt;
   // initialise() will throw error if we attempt to provide a non-empty, non-struct array
   dimensions_2d[0] = 2;
   dimensions_2d[1] = 3;
   create_numeric_array(2, dimensions_2d, mxUINT8_CLASS);
   REQUIRE_THROWS_AS(dt.initialise(matlab_input, 0, 0), runtime_error);
-  return true;
 }
 
-bool DTildeTest::test_incorrect_number_of_fields() {
+void DTildeTest::test_incorrect_number_of_fields() {
   DTilde dt;
   // assignment will throw error if we attempt to provide a struct array that doesn't have two fields
   SECTION("Struct with too many fields") {
@@ -57,10 +54,9 @@ bool DTildeTest::test_incorrect_number_of_fields() {
     create_struct_array(2, dimensions_2d, 3, too_few_names);
     REQUIRE_THROWS_AS(dt.initialise(matlab_input, 0, 0), runtime_error);
   }
-  return true;
 }
 
-bool DTildeTest::test_initialise_method() {
+void DTildeTest::test_initialise_method() {
   DTilde dt;
   // otherwise, we need to provide a struct with two fields, Dx_tilde and Dy_tilde
   // these fields must contain (n_det_modes, n_rows, n_cols) arrays of doubles/complex
@@ -81,7 +77,6 @@ bool DTildeTest::test_initialise_method() {
   bool information_stored = (dt.num_det_modes() == target_n_det_modes) && (dt.x.has_elements()) &&
                             (dt.y.has_elements());
   CHECK(information_stored);
-  return true;
 }
 
 TEST_CASE("DTilde") {

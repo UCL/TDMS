@@ -9,13 +9,12 @@
 #include "array_test_class.h"
 #include "arrays.h"
 
-bool CCollectionTest::test_incorrect_number_of_fields() {
+void CCollectionTest::test_incorrect_number_of_fields() {
   create_1by1_struct(3, fieldnames);
   REQUIRE_THROWS_AS(CCollection(matlab_input), std::runtime_error);
-  return true;
 }
 
-bool CCollectionTest::test_correct_construction() {
+void CCollectionTest::test_correct_construction() {
   SECTION("(6 inputs)") {
     create_1by1_struct(6, fieldnames);
     mxArray *field_arrays[6];
@@ -38,16 +37,14 @@ bool CCollectionTest::test_correct_construction() {
     REQUIRE(cc9.is_disp_ml);
     REQUIRE(cc9.is_multilayer);
   }
-  return true;
 }
 
-bool DCollectionTest::test_incorrect_number_of_fields() {
+void DCollectionTest::test_incorrect_number_of_fields() {
   create_1by1_struct(3, fieldnames);
   REQUIRE_THROWS_AS(DCollection(matlab_input), std::runtime_error);
-  return true;
 }
 
-bool DCollectionTest::test_correct_construction() {
+void DCollectionTest::test_correct_construction() {
   create_1by1_struct(6, fieldnames);
   mxArray *elements6[6];
   for (int i = 0; i < 6; i++) {
@@ -55,7 +52,6 @@ bool DCollectionTest::test_correct_construction() {
     mxSetField(matlab_input, 0, fieldnames[i], elements6[i]);
   }
   REQUIRE_NOTHROW(DCollection(matlab_input));
-  return true;
 }
 
 TEST_CASE("CCollection") { CCollectionTest().run_all_class_tests(); }

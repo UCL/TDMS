@@ -15,20 +15,20 @@ using namespace std;
 using Catch::Approx;
 using tdms_tests::TOLERANCE;
 
-bool DispersiveMultilayerTest::test_empty_construction() {
+void DispersiveMultilayerTest::test_empty_construction() {
   // Constructor should error if recieving a struct with no fields
   create_1by1_struct(0, {});
   REQUIRE_THROWS_AS(DispersiveMultiLayer(matlab_input), runtime_error);
-  return true;
 }
-bool DispersiveMultilayerTest::test_wrong_input_type() {
+
+void DispersiveMultilayerTest::test_wrong_input_type() {
   // Constructor should throw runtime_error at not recieving struct
   dimensions_2d[0] = 2; dimensions_2d[1] = 3;
   create_numeric_array(2, dimensions_2d, mxUINT16_CLASS);
   REQUIRE_THROWS_AS(DispersiveMultiLayer(matlab_input), runtime_error);
-  return true;
 }
-bool DispersiveMultilayerTest::test_correct_construction() {
+
+void DispersiveMultilayerTest::test_correct_construction() {
   create_1by1_struct(n_fields, fieldnames);
   // build "data" for each of the fields, which is going to be the same array filled with consecutive integers
   const int array_size[2] = {1, n_numeric_elements};
@@ -55,7 +55,6 @@ bool DispersiveMultilayerTest::test_correct_construction() {
     CHECK(dml.sigma.y[i] == Approx(i).epsilon(TOLERANCE));
     CHECK(dml.sigma.z[i] == Approx(i).epsilon(TOLERANCE));
   }
-  return true;
 }
 
 TEST_CASE("DispersiveMultiLayer") {

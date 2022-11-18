@@ -99,34 +99,35 @@ protected:
   /* Test functions to be overriden by each class.
   These methods are designed to be overriden by the subclasses specific to each arrays.h class.
 
-  The default behaviour of each test_ method is to return false - this means that subclasses that skip over certain functionality (EG do not need to test the result of providing an empty MATLAB input) are skipped in when run_all_class_tests() is run, and do not bloat the log.
-  If overriden, a test_ method should return true, to indicate to run_all_class_tests() that this test did attempt to run (and might have failed).
+  The default behaviour of each test_ method is to set ran_a_test to false - this means that subclasses that skip over certain functionality (EG do not need to test the result of providing an empty MATLAB input) are skipped in when run_all_class_tests() is run, and do not bloat the log.
+  If overriden, a test_ method should not alter ran_a_test
   */
 
+  bool ran_a_test = true;
   /**
   * @brief Tests the behaviour of construction when passed an empty MATLAB array
   */
-  virtual bool test_empty_construction() { return false; }
+  virtual void test_empty_construction() { ran_a_test = false; }
   /**
    * @brief Tests the behaviour of construction when passed an array of the incorrect dimensions
    */
-  virtual bool test_wrong_input_dimensions() { return false; }
+  virtual void test_wrong_input_dimensions() { ran_a_test = false; }
   /**
    * @brief Tests the behaviour of construction when passed an array of the incorrect type
    */
-  virtual bool test_wrong_input_type() { return false; }
+  virtual void test_wrong_input_type() { ran_a_test = false; }
   /**
    * @brief Tests the behaviour of construction when passed a struct with the wrong number of fields
    */
-  virtual bool test_incorrect_number_of_fields() { return false; }
+  virtual void test_incorrect_number_of_fields() { ran_a_test = false; }
   /**
    * @brief Tests the behaviour of construction methods when passing the expected inputs
    */
-  virtual bool test_correct_construction() { return false; }
+  virtual void test_correct_construction() { ran_a_test = false; }
   /**
    * @brief Tests the behaviour of the initialise method
    */
-  virtual bool test_initialise_method() { return false; }
+  virtual void test_initialise_method() { ran_a_test = false; }
 
 public:
   AbstractArrayTest() = default;
@@ -142,37 +143,35 @@ public:
   void run_all_class_tests() {
     // String to print to the log
     std::string logging_string = get_class_name() + ": ";
-    // Skips over tests that do not need to be executed
-    bool test_executed;
 
     // run all tests
     SECTION("Empty construction") {
       logging_string += "Empty construction";
-      test_executed = test_empty_construction();
+      test_empty_construction();
     }
     SECTION("Incorrect dimension of input") {
       logging_string += "Incorrect dimension of input";
-      test_executed = test_wrong_input_dimensions();
+      test_wrong_input_dimensions();
     }
     SECTION("Incorrect type of input") {
       logging_string += "Incorrect type of input";
-      test_executed = test_wrong_input_type();
+      test_wrong_input_type();
     }
     SECTION("Incorrect number of fields") {
       logging_string += "Incorrect number of fields";
-      test_executed = test_incorrect_number_of_fields();
+      test_incorrect_number_of_fields();
     }
     SECTION("Correct construction") {
       logging_string += "Correct construction";
-      test_executed = test_correct_construction();
+      test_correct_construction();
     }
     SECTION("initialise() method") {
       logging_string += "initialise() method";
-      test_executed = test_initialise_method();
+      test_initialise_method();
     }
 
     // suppress output if no test was run
-    if (test_executed) {
+    if (ran_a_test) {
       // tear down is necessary if a test was run
       bool needed_to_destroy = destroy_matlab_input();
       if (needed_to_destroy) {

@@ -16,16 +16,15 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-bool DetectorSensitivityArraysTest::test_correct_construction() {
+void DetectorSensitivityArraysTest::test_correct_construction() {
   DetectorSensitivityArrays dsa;
   // default constructor should set everything to nullptrs
   // destructor uses fftw destroy, which handles nullptrs itself
   bool all_are_nullptrs = (dsa.cm == nullptr) && (dsa.plan == nullptr) && (dsa.v == nullptr);
   REQUIRE(all_are_nullptrs);
-  return true;
 }
 
-bool DetectorSensitivityArraysTest::test_initialise_method() {
+void DetectorSensitivityArraysTest::test_initialise_method() {
   DetectorSensitivityArrays dsa;
   // now let's construct a non-trival object
   dsa.initialise(n_rows, n_cols);
@@ -41,7 +40,6 @@ bool DetectorSensitivityArraysTest::test_initialise_method() {
   // we can call the fftw_plan execution, which should place the 2D FFT into dsa.v
   // simply checking executation is sufficient, as fftw should cover whether the FFT is actually meaningful in what it puts out
   REQUIRE_NOTHROW(fftw_execute(dsa.plan));
-  return true;
 }
 
 TEST_CASE("DetectorSensitivityArrays") { DetectorSensitivityArraysTest().run_all_class_tests(); }

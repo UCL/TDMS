@@ -12,7 +12,7 @@
 
 using namespace std;
 
-bool ComplexAmplitudeSampleTest::test_empty_construction() {
+void ComplexAmplitudeSampleTest::test_empty_construction() {
   create_empty_struct(2, fieldnames);
   CHECK_NOTHROW(ComplexAmplitudeSample(matlab_input));
   ComplexAmplitudeSample empty_test(matlab_input);
@@ -21,10 +21,9 @@ bool ComplexAmplitudeSampleTest::test_empty_construction() {
   CHECK(empty_test.n_vertices() == 0);
   CHECK(!empty_test.vertices.has_elements());
   CHECK(!empty_test.components.has_elements());
-  return true;
 }
 
-bool ComplexAmplitudeSampleTest::test_correct_construction() {
+void ComplexAmplitudeSampleTest::test_correct_construction() {
   create_struct_array(2, dimensions_2d, 2, fieldnames);
   // each entry is a numeric array, setup for vertices and components
   // array for "vertices" field
@@ -36,7 +35,6 @@ bool ComplexAmplitudeSampleTest::test_correct_construction() {
   mxSetField(matlab_input, 0, fieldnames[1], components_vector);
   // create an instance using this struct
   REQUIRE_NOTHROW(ComplexAmplitudeSample(matlab_input));
-  return true;
 }
 
 TEST_CASE("ComplexAmplitudeSample") { ComplexAmplitudeSampleTest().run_all_class_tests(); }

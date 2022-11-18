@@ -10,8 +10,8 @@ class CCollectionTest : public AbstractArrayTest {
   private:
     const char *fieldnames[9] = { "Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz" };
 
-    bool test_incorrect_number_of_fields() override;
-    bool test_correct_construction() override;
+    void test_incorrect_number_of_fields() override;
+    void test_correct_construction() override;
 
   public:
     std::string get_class_name() override {return "CCollection";}
@@ -21,8 +21,8 @@ class DCollectionTest : public AbstractArrayTest {
   private:
     const char *fieldnames[6] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
 
-    bool test_incorrect_number_of_fields() override;
-    bool test_correct_construction() override;
+    void test_incorrect_number_of_fields() override;
+    void test_correct_construction() override;
 
   public:
     std::string get_class_name() override { return "DCollection"; }
@@ -32,8 +32,8 @@ class ComplexAmplitudeSampleTest : public AbstractArrayTest {
 private:
   const char *fieldnames[2] = {"vertices", "components"};
 
-  bool test_empty_construction() override;
-  bool test_correct_construction() override;
+  void test_empty_construction() override;
+  void test_correct_construction() override;
 
 public:
   std::string get_class_name() override { return "ComplexAmplitudeSample"; }
@@ -41,8 +41,8 @@ public:
 
 class DetectorSensitivityArraysTest : public AbstractArrayTest {
 private:
-  bool test_correct_construction() override;
-  bool test_initialise_method() override;
+  void test_correct_construction() override;
+  void test_initialise_method() override;
 
 public:
   std::string get_class_name() override { return "DetectorSensitivityArray";}
@@ -54,9 +54,9 @@ private:
   const char *fieldnames[9] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
                                "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
 
-  bool test_empty_construction() override;
-  bool test_wrong_input_type() override;
-  bool test_correct_construction() override;
+  void test_empty_construction() override;
+  void test_wrong_input_type() override;
+  void test_correct_construction() override;
 
 public:
   std::string get_class_name() override { return "DispersiveMultilayerTest"; }
@@ -68,11 +68,11 @@ private:
   const int n_fields = 2;
   const char *fieldnames[2] = { "Dx_tilde", "Dy_tilde" };
 
-  bool test_empty_construction() override;
-  bool test_wrong_input_type() override;
-  bool test_incorrect_number_of_fields() override;
-  bool test_correct_construction() override;
-  bool test_initialise_method() override;
+  void test_empty_construction() override;
+  void test_wrong_input_type() override;
+  void test_incorrect_number_of_fields() override;
+  void test_correct_construction() override;
+  void test_initialise_method() override;
 
 public:
   std::string get_class_name() override { return ""; }
@@ -81,12 +81,12 @@ public:
 /*
 class : public AbstractArrayTest {
 private:
-  bool test_empty_construction() override;
-  bool test_wrong_input_dimensions() override;
-  bool test_wrong_input_type() override;
-  bool test_incorrect_number_of_fields() override;
-  bool test_correct_construction() override;
-  bool test_initialise_method() override;
+  void test_empty_construction() override;
+  void test_wrong_input_dimensions() override;
+  void test_wrong_input_type() override;
+  void test_incorrect_number_of_fields() override;
+  void test_correct_construction() override;
+  void test_initialise_method() override;
 
 public:
   std::string get_class_name() override { return ""; }
