@@ -221,6 +221,40 @@ public:
   std::string get_class_name() override { return "Tensor3D"; }
 };
 
+class VectorTest : public AbstractArrayTest {
+private:
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "Vector"; }
+};
+
+class FieldComponentsVectorTest : public AbstractArrayTest {
+private:
+  const int n_fields = 1;
+  const char *fieldnames[1] = {"components"};
+
+  void test_correct_construction() override;
+  void test_initialise_method() override;
+
+public:
+  std::string get_class_name() override { return "FieldComponentsVector"; }
+};
+
+class FrequencyExtractVectorTest : public AbstractArrayTest {
+private:
+  const double omega_an = 1.;
+
+  void test_empty_construction() override;
+  void test_wrong_input_dimensions() override;
+  void test_correct_construction() override;
+  // max() method
+  void test_other_methods() override;
+
+public:
+  std::string get_class_name() override { return "FrequencyExtractVector"; }
+};
+
 /*
 class : public AbstractArrayTest {
 private:
