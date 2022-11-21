@@ -41,6 +41,8 @@ public:
 
 class DetectorSensitivityArraysTest : public AbstractArrayTest {
 private:
+  int n_rows = 4, n_cols = 8;
+
   void test_correct_construction() override;
   void test_initialise_method() override;
 
@@ -106,6 +108,21 @@ private:
 
 public:
   std::string get_class_name() override { return ""; }
+};
+
+class IncidentFieldTest : public AbstractArrayTest {
+private:
+  const int n_rows = 6, n_cols = 4, n_layers = 5;
+  const int n_fields = 2;
+  const char *fieldnames[2] = {"exi", "eyi"};
+
+  void test_empty_construction() override;
+  void test_wrong_input_type() override;
+  void test_incorrect_number_of_fields() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "FieldSample"; }
 };
 /*
 class : public AbstractArrayTest {

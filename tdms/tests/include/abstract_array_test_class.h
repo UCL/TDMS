@@ -20,7 +20,6 @@ class AbstractArrayTest {
 protected:
   int empty_dimensions[2] = {0, 1};   //< For initialising empty arrays
   int I_tot = 4, J_tot = 8, K_tot = 4;//< For mimicing simulation grid dimensions
-  int n_rows = 4, n_cols = 8;         //< For mimicing matrix dimensions
   int n_numeric_elements =
           8;//< For standardising the number of elements we initialise MATLAB vectors with
   int dimensions_2d[2] = {1, 1};               //< For defining 2D MATLAB arrays
@@ -78,8 +77,12 @@ protected:
   void create_1by1_struct(int n_fields, const char *fields[]) {
     create_struct_array(1, 1, n_fields, fields);
   }
-  void create_empty_struct(int n_fields, const char *fields[]) {
-    create_struct_array(0, 1, n_fields, fields);
+  /**
+   * @brief Creates the MATLAB empty struct (no fields, 0 size)
+   *
+   */
+  void create_empty_struct() {
+    create_struct_array(0, 1, 0, {});
   }
   /**
    * @brief Creates a MATLAB numeric array

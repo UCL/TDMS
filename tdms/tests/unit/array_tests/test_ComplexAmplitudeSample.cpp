@@ -13,7 +13,7 @@
 using namespace std;
 
 void ComplexAmplitudeSampleTest::test_empty_construction() {
-  create_empty_struct(2, fieldnames);
+  create_empty_struct();
   CHECK_NOTHROW(ComplexAmplitudeSample(matlab_input));
   ComplexAmplitudeSample empty_test(matlab_input);
   // n_vertices should return 0, since Vector has not been set so should default initialise to 0-vertex matrix

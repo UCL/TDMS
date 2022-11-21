@@ -23,7 +23,7 @@ void DTildeTest::test_empty_construction() {
   DTilde dt;
   bool no_information_stored;
   // initialise() method should exit without assignment
-  create_empty_struct(0, {});
+  create_empty_struct();
   // attempt assignment (2nd and 3rd args don't matter)
   dt.initialise(matlab_input, 0, 0);
   // should still be unassigned vectors

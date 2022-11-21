@@ -15,7 +15,7 @@ using tdms_tests::TOLERANCE;
 
 void FieldSampleTest::test_empty_construction() {
   // should exit with default values
-  create_empty_struct(n_fields, fieldnames);
+  create_empty_struct();
   // attempt construction
   FieldSample empty_fs(matlab_input);
   // should still be unassigned vectors
