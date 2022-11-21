@@ -62,7 +62,7 @@ public:
   std::string get_class_name() override { return "DispersiveMultilayer"; }
 };
 
-// DTilde test methods check the performance of initialise, as this is the de-facto constructor
+// Test methods check the performance of initialise, as this is the de-facto constructor
 class DTildeTest : public AbstractArrayTest {
 private:
   const int n_fields = 2;
@@ -92,6 +92,21 @@ public:
   std::string get_class_name() override { return "FieldSample"; }
 };
 
+// Test methods check the performance of initialise, as this is the de-facto constructor
+class FrequencyVectorsTest : public AbstractArrayTest {
+private:
+  const int n_fields = 2;
+  const char *fieldnames[2] = {"fx_vec", "fy_vec"};
+
+  void test_empty_construction() override;
+  void test_wrong_input_type() override;
+  void test_incorrect_number_of_fields() override;
+  void test_correct_construction() override;
+  void test_initialise_method() override;
+
+public:
+  std::string get_class_name() override { return ""; }
+};
 /*
 class : public AbstractArrayTest {
 private:
