@@ -135,6 +135,10 @@ protected:
    * @brief Tests the behaviour of the initialise method
    */
   virtual void test_initialise_method() { ran_a_test = false; }
+  /**
+   * @brief Tests any other methods that the class may have
+   */
+  virtual void test_other_methods() { ran_a_test = false; }
 
 public:
   AbstractArrayTest() = default;
@@ -179,6 +183,10 @@ public:
     SECTION("initialise() method") {
       logging_string += "initialise() method";
       test_initialise_method();
+    }
+    SECTION("Testing class-specific methods") {
+      logging_string += "class specific method";
+      test_other_methods();
     }
 
     // suppress output if no test was run

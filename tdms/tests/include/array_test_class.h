@@ -107,7 +107,7 @@ private:
   void test_initialise_method() override;
 
 public:
-  std::string get_class_name() override { return ""; }
+  std::string get_class_name() override { return "FrequencyVectors"; }
 };
 
 class IncidentFieldTest : public AbstractArrayTest {
@@ -122,7 +122,7 @@ private:
   void test_correct_construction() override;
 
 public:
-  std::string get_class_name() override { return "FieldSample"; }
+  std::string get_class_name() override { return "IncidentField"; }
 };
 
 class CMaterialTest : public AbstractArrayTest {
@@ -153,6 +153,61 @@ public:
   std::string get_class_name() override { return "DMaterial"; }
 };
 
+class MatrixTest : public AbstractArrayTest {
+private:
+  const int n_rows = 4, n_cols = 8;
+
+  void test_correct_construction() override;
+  // allocate() must be tested
+  void test_other_methods() override;
+
+public:
+  std::string get_class_name() override { return "Matrix"; }
+};
+
+class VerticesTest : public AbstractArrayTest {
+private:
+  const int n_fields = 1;
+  const char *fieldnames[1] = {"vertices"};
+
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "Vertices"; }
+};
+
+class GratingStructureTest : public AbstractArrayTest {
+private:
+  void test_empty_construction() override;
+  void test_wrong_input_dimensions() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "GratingStructure"; }
+};
+
+class PupilTest : public AbstractArrayTest {
+private:
+  const int n_rows = 4, n_cols = 8;
+
+  void test_empty_construction() override;
+  void test_wrong_input_dimensions() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "Pupil"; }
+};
+
+class EHVecTest : public AbstractArrayTest {
+private:
+  const int n_rows = 4, n_cols = 8;
+
+  void test_other_methods() override;
+
+public:
+  std::string get_class_name() override { return "EHVec"; }
+};
+
 /*
 class : public AbstractArrayTest {
 private:
@@ -163,8 +218,9 @@ private:
   void test_incorrect_fieldname() override;
   void test_correct_construction() override;
   void test_initialise_method() override;
+  void test_other_methods() override;
 
 public:
-  std::string get_class_name() override { return ""; }
+  std::string get_class_name() override { return "SETME"; }
 };
 */
