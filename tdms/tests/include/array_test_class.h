@@ -1,12 +1,29 @@
 /**
  * @file array_test_class.h
  * @brief Defines the test classes for the objects in arrays.h
- */
+ *
+ *
+ * TEMPLATE FOR MAKING A NEW TEST ARRAY CLASS
+ * class : public AbstractArrayTest {
+ * private:
+ *   void test_empty_construction() override;
+ *   void test_wrong_input_dimensions() override;
+ *   void test_wrong_input_type() override;
+ *   void test_incorrect_number_of_fields() override;
+ *   void test_incorrect_fieldname() override;
+ *   void test_correct_construction() override;
+ *   void test_initialise_method() override;
+ *   void test_other_methods() override;
+ *
+ * public:
+ *   std::string get_class_name() override { return "SETME"; }
+ * };
+*/
 #pragma once
 
 #include "abstract_array_test_class.h"
 
-class CCollectionTest : public AbstractArrayTest {
+        class CCollectionTest : public AbstractArrayTest {
   private:
     const char *fieldnames[9] = { "Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz" };
 
@@ -255,19 +272,26 @@ public:
   std::string get_class_name() override { return "FrequencyExtractVector"; }
 };
 
-/*
-class : public AbstractArrayTest {
+class XYZTensor3DTest : public AbstractArrayTest {
 private:
-  void test_empty_construction() override;
-  void test_wrong_input_dimensions() override;
-  void test_wrong_input_type() override;
-  void test_incorrect_number_of_fields() override;
-  void test_incorrect_fieldname() override;
+  const int n_layers = 4, n_cols = 8, n_rows = 16;
+
   void test_correct_construction() override;
-  void test_initialise_method() override;
+  // allocate()
   void test_other_methods() override;
 
 public:
-  std::string get_class_name() override { return "SETME"; }
+  std::string get_class_name() override { return "XYZTensor3D"; }
 };
-*/
+
+class XYZVectorsTest : public AbstractArrayTest {
+private:
+  const int n_layers = 4, n_cols = 8, n_rows = 16;
+
+  void test_correct_construction() override;
+  // set_ptr()
+  void test_other_methods() override;
+
+public:
+  std::string get_class_name() override { return "XYZVectors"; }
+};
