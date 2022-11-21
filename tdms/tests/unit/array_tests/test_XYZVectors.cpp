@@ -15,6 +15,9 @@
 using std::accumulate;
 using tdms_tests::is_close;
 
+// MacOS doesn't allow these to be a const int attribute of the base class, so here they are
+const int n_layers = 4, n_cols = 8, n_rows = 16;
+
 void XYZVectorsTest::test_correct_construction() {
   XYZVectors v;
   // check that, although this has been declared, its members still point to nullptrs
