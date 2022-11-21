@@ -202,10 +202,23 @@ class EHVecTest : public AbstractArrayTest {
 private:
   const int n_rows = 4, n_cols = 8;
 
+  // allocate() needs testing
   void test_other_methods() override;
 
 public:
   std::string get_class_name() override { return "EHVec"; }
+};
+
+class Tensor3DTest : public AbstractArrayTest {
+private:
+  const int n_layers = 4, n_cols = 8, n_rows = 16;
+
+  void test_correct_construction() override;
+  // allocate() (and) zero(), frobenius()
+  void test_other_methods() override;
+
+public:
+  std::string get_class_name() override { return "Tensor3D"; }
 };
 
 /*
