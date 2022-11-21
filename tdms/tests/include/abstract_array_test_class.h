@@ -124,6 +124,10 @@ protected:
    */
   virtual void test_incorrect_number_of_fields() { ran_a_test = false; }
   /**
+   * @brief Tests the behaviour of construction methods when passed a struct with an incorrect fieldname
+   */
+  virtual void test_incorrect_fieldname() { ran_a_test = false; }
+  /**
    * @brief Tests the behaviour of construction methods when passing the expected inputs
    */
   virtual void test_correct_construction() { ran_a_test = false; }
@@ -163,6 +167,10 @@ public:
     SECTION("Incorrect number of fields") {
       logging_string += "Incorrect number of fields";
       test_incorrect_number_of_fields();
+    }
+    SECTION("Incorrect fieldname") {
+      logging_string += "Incorrect fieldname";
+      test_incorrect_fieldname();
     }
     SECTION("Correct construction") {
       logging_string += "Correct construction";

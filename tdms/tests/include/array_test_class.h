@@ -124,6 +124,35 @@ private:
 public:
   std::string get_class_name() override { return "FieldSample"; }
 };
+
+class CMaterialTest : public AbstractArrayTest {
+private:
+  const int n_fields = 9;
+  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz"};
+  const char *wrong_fieldnames[9] = {"Dax", "Cay", "Daz", "Cbx", "Dby", "Cbz", "Ccx", "Ccy", "Ccz"};
+
+  void test_incorrect_number_of_fields() override;
+  void test_incorrect_fieldname() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "CMaterial"; }
+};
+
+class DMaterialTest : public AbstractArrayTest {
+private:
+  const int n_fields = 6;
+  const char *fieldnames[6] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
+  const char *wrong_fieldnames[6] = {"Dax", "Cay", "Daz", "Cbx", "Dby", "Cbz"};
+
+  void test_incorrect_number_of_fields() override;
+  void test_incorrect_fieldname() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "DMaterial"; }
+};
+
 /*
 class : public AbstractArrayTest {
 private:
@@ -131,6 +160,7 @@ private:
   void test_wrong_input_dimensions() override;
   void test_wrong_input_type() override;
   void test_incorrect_number_of_fields() override;
+  void test_incorrect_fieldname() override;
   void test_correct_construction() override;
   void test_initialise_method() override;
 
