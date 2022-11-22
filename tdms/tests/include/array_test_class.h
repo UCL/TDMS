@@ -286,9 +286,9 @@ public:
 
 class XYZVectorsTest : public AbstractArrayTest {
 private:
-  constexpr int n_layers = 4;
-  constexpr int n_cols = 8;
-  constexpr int n_rows = 16;
+  static int n_layers = 4;
+  static int n_cols = 8;
+  static int n_rows = 16;
 
   void test_correct_construction() override;
   // set_ptr()
