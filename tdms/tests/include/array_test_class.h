@@ -286,6 +286,10 @@ public:
 
 class XYZVectorsTest : public AbstractArrayTest {
 private:
+  const int n_layers = 4;
+  const int n_cols = 8;
+  const int n_rows = 16;
+
   void test_correct_construction() override;
   // set_ptr()
   void test_other_methods() override;
