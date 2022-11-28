@@ -23,7 +23,7 @@
 
 #include "abstract_array_test_class.h"
 
-        class CCollectionTest : public AbstractArrayTest {
+class CCollectionTest : public AbstractArrayTest {
   private:
     const char *fieldnames[9] = { "Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz" };
 

@@ -79,7 +79,6 @@ protected:
   }
   /**
    * @brief Creates the MATLAB empty struct (no fields, 0 size)
-   *
    */
   void create_empty_struct() {
     create_struct_array(0, 1, 0, {});
@@ -146,7 +145,7 @@ public:
   /**
    * @brief Returns the name of the class, for logging purposes
    */
-  virtual std::string get_class_name() { return ""; }
+  virtual std::string get_class_name() = 0;
 
   /**
    * @brief Runs all the unit tests associated to this class
