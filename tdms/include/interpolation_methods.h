@@ -131,6 +131,7 @@ const InterpolationScheme CBLst = InterpolationScheme(CUBIC_INTERP_LAST);
  *
  * @param datapts_in_direction The number of datapoints available along this axis
  * @param interpolation_position Interpolation is to be performed to the midpoint of the datapoints indexed with (interpolation_position-1) and (interpolation_position)
+ * @param only_cubic If true, only use cubic schemes
  * @return const InterpolationScheme&
  */
-const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position);
+const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position, bool only_subic=false);

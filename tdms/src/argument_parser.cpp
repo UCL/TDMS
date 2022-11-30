@@ -87,6 +87,10 @@ bool ArgumentNamespace::finite_difference() const {
   return this->have_flag("-fd") || this->have_flag("--finite-difference");
 }
 
+bool ArgumentNamespace::no_band_limited_schemes() const {
+  return this->have_flag("-nbli") || this->have_flag("--no-band-limited");
+}
+
 const char* ArgumentNamespace::output_filename() {
 
   if (has_grid_filename()){
