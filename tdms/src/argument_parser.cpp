@@ -51,7 +51,8 @@ void ArgumentParser::print_help_message(){
                  "openandorder [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
-                 "--finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
+                 "-fd, --finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
+                 "-nbli, --no-band-limited:\tDo not use band-limited interpolation to determine field values at Yee cell centres."
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
