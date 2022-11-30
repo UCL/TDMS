@@ -6,8 +6,9 @@ Determines the error in interpolated values when using MATLAB's interp
 function and cubic interpolation methods, to be used as the benchmark for
 test_BLi_vs_cubic_interpolation.cpp.
 
-The function we use is a Cauchy distribution; f(x) = 1/(10x^2+1), over the
-range x\in[-2,2]
+The function we use is a Cauchy distribution multiplied by a sin wave;
+f(x) = sin(2\pi x) / (10x^2+1)
+over the range x\in[-2,2]
 
 Neither cubic nor BLi should be the superior interpolation method for all
 datapoint-separation  distances.
@@ -21,13 +22,19 @@ close all;
 r = 2;
 N = 4;
 % the spacing between datapoints, mimicing the Yee cell dimensions
-cell_Sizes = [0.25, 0.1, 0.05, 0.01];
+cell_Sizes = [1e-1, 5e-2, 1e-2, 5e-3, 1e-3, 5e-4];
+x_lower = -2.; % lower value of the range over which we shall test
+x_upper = 2.; % upper value of the range over which we shall test
+extent = x_upper - x_lower;
 
 % for each trial compute BLi and cubic errors
-for trial=1:4
+fprintf("Cellsize | (MAX error) BLi :     Cubic       |");
+% fprintf(" (Norm error) BLi :     Cubic      |");
+fprintf("   (RMSD) BLi    :      Cubic     |");
+fprintf(" %%pts BLi better\n");
+for trial=1:numel(cell_Sizes)
     cellSize = cell_Sizes(trial);
-    n_datapts = ceil(4/cellSize); % number of Yee cells
-    x_lower = -2.; % lower value of the range over which we shall test
+    n_datapts = ceil(extent/cellSize); % number of Yee cells
 
     cell_centres = zeros(1,n_datapts-1); % interpolation positions (Yee cell centres)
     field_pos = zeros(1,n_datapts); % data sample positions (field component associated to Yee cells)
@@ -52,24 +59,37 @@ for trial=1:4
     cubic_interp(n_datapts-1) = interp_cubic(field_samples(end-3:end),1);
 
     % compute errors
-    BLi_err = abs( BLi_interp - exact_vals );
+    BLi_err = BLi_interp - exact_vals;
     BLi_err_max = max(BLi_err);
-    BLi_err_norm = norm( BLi_interp - exact_vals );
-    cub_err = abs( cubic_interp - exact_vals );
+    BLi_err_norm = norm( BLi_err );
+    BLi_rmsd = rmsd(BLi_interp, exact_vals);
+    cub_err = cubic_interp - exact_vals;
     cub_err_max = max(cub_err);
-    cub_err_norm = norm( cubic_interp - exact_vals );
+    cub_err_norm = norm(cub_err);
+    cub_rmsd = rmsd(cubic_interp, exact_vals);
 
     BLi_was_better = ones(size(BLi_err));
-    BLi_was_better( cub_err < BLi_err ) = 0.;
+    BLi_was_better( abs(cub_err) < abs(BLi_err) ) = 0.;
 
-    fprintf(" ====== \n Cellsize %.3f : \n", cellSize);
-    fprintf("MAX Errors: \n");
-    fprintf("Cubic: \t %.8e\n", cub_err_max);
-    fprintf("BLi: \t %.8e\n", BLi_err_max);
-    fprintf("NORM Errors: \n");
-    fprintf("Cubic: \t %.8e\n", cub_err_norm);
-    fprintf("BLi: \t %.8e\n", BLi_err_norm);
-    fprintf("Pointwise, BLi was better at %d points.\n", sum(BLi_was_better));
+    fprintf("%.1e  |", cellSize);
+    fprintf("  %.8e : %.8e  |", BLi_err_max, cub_err_max);
+%    fprintf("  %.8e  : %.8e |", BLi_err_norm, cub_err_norm);
+    fprintf("  %.8e : %.8e |", BLi_rmsd, cub_rmsd);
+    fprintf(" %.2f%% \n", 100. * sum(BLi_was_better) / (n_datapts-1));
+
+    figure; hold on;
+    title(strcat("Interp values: ",num2str(cellSize)));
+    plot(cell_centres, BLi_interp);
+    plot(cell_centres, cubic_interp);
+    plot(cell_centres, exact_vals);
+    legend("BLi", "Cubic", "Exact");
+
+    figure; hold on;
+    title(strcat("Pt-wise errors: ",num2str(cellSize)));
+    plot(cell_centres, BLi_err);
+    plot(cell_centres, cub_err);
+    legend("BLi", "Cubic");
+
 end
 
 function [out] = interp_cubic(v, pos)
@@ -86,5 +106,16 @@ function [out] = interp_cubic(v, pos)
 end
 
 function [out] = BLi_vs_cubic_fn(x)
-    out = 1 ./ (10*x.^2 + 1);
+    out = sin(2*pi*x) ./ (10*(x.^2) + 1);
+end
+
+% Relative mean square error
+function [out] = rmsd(a, b)
+    mean_sq_a = mean(abs(a).^2);
+    mean_sq_b = mean(abs(b).^2);
+    if (mean_sq_a < 1e-16 && mean_sq_b < 1e-16)
+        out = 0.;
+    else
+        out = mean(abs(a-b).^2) / max(mean_sq_a, mean_sq_b);
+    end
 end
