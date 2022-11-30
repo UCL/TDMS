@@ -33,7 +33,7 @@ namespace tdms_tests {
       return true;
     }
 
-    return std::abs(a - b) / std::max(std::abs(a), std::abs(b)) < tol;
+    return std::abs(a - b) / max_norm < tol;
   }
 
   /**
@@ -102,6 +102,11 @@ namespace tdms_tests {
     double norm_val = 0.;
     for (int i = start; i < end; i++) { norm_val += std::norm(v[i]); }
     return std::sqrt(norm_val);
+  }
+
+  // returns the order of magnitude of the value x
+  inline int order_of_magnitude(double x) {
+    return floor(log10(x));
   }
 
   /**

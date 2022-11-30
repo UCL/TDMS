@@ -17,15 +17,7 @@
 
 using namespace std;
 using tdms_math_constants::DCPI;
-using tdms_tests::is_close_or_better;
-using tdms_tests::relative_mean_square_difference;
-
-// Computes the 2-norm of the vector v from buffer start to buffer end
-inline double norm(double *v, int end, int start = 0) {
-  double norm_val = 0.;
-  for (int i = start; i <= end; i++) { norm_val += v[i] * v[i]; }
-  return sqrt(norm_val);
-}
+using namespace tdms_tests;
 
 // function to interpolate
 inline double f_BLi_vs_Cubic(double x) { return sin(2. * DCPI * x) / ((10. * x * x) + 1.); }
@@ -156,8 +148,8 @@ TEST_CASE("Benchmark: BLi against cubic interpolation") {
     logging_string << "\n";
 
     // assert error is better or close
-    CHECK(is_close_or_better(BLi_RMSD[trial], MATLAB_BLi_RMSD[trial]));
-    CHECK(is_close_or_better(cub_RMSD[trial], MATLAB_cub_RMSD[trial]));
+    CHECK(is_close_or_better(BLi_RMSD[trial], MATLAB_BLi_RMSD[trial], 1e-8));
+    CHECK(is_close_or_better(cub_RMSD[trial], MATLAB_cub_RMSD[trial], 1e-6));
   }
 
   SPDLOG_INFO(logging_string.str());
