@@ -185,65 +185,54 @@ bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
     return (priority > s.get_priority());
 }
 
-const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position, bool only_cubic) {
-
-    // interpolation is impossible with fewer than 4 datapoints in a dimension
-    if (datapts_in_direction < 4) {
-        throw out_of_range("Error: domain axis has <4 datapoints, cubic and bandlimited interpolation impossible.\n");
+const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position,
+                                       PreferredInterpolationMethods interpolation_methods) {
+  // interpolation is impossible with fewer than 4 datapoints in a dimension
+  if (datapts_in_direction < 4) {
+    throw out_of_range("Error: domain axis has <4 datapoints, cubic and bandlimited interpolation "
+                       "impossible.\n");
+  } else if ((datapts_in_direction < 8) || (interpolation_methods == PreferredInterpolationMethods::Cubic)) {
+    // we are restricted to cubic interpolation
+    if (interpolation_position <= 0 || interpolation_position >= datapts_in_direction) {
+      throw out_of_range("Error: Cubic interpolation impossible to position " +
+                         to_string(interpolation_position) + "\n");
+    } else {
+      // determine cubic interpolation scheme to use
+      if (interpolation_position == 1) {
+        return CBFst;
+      } else if (interpolation_position == datapts_in_direction - 1) {
+        return CBLst;
+      } else {
+        return CBMid;
+      }
     }
-    else if ((datapts_in_direction < 8) || only_cubic) {
-        // we are restricted to cubic interpolation
-        if (interpolation_position <= 0 || interpolation_position >= datapts_in_direction) {
-            throw out_of_range("Error: Cubic interpolation impossible to position " + to_string(interpolation_position) + "\n");
-        }
-        else {
-            // determine cubic interpolation scheme to use
-            if (interpolation_position == 1) {
-                return CBFst;
-            }
-            else if (interpolation_position == datapts_in_direction - 1) {
-                return CBLst;
-            }
-            else {
-                return CBMid;
-            }
-        }
+  } else if (interpolation_position < 0 || interpolation_position > datapts_in_direction) {
+    // cannot interpolate to here using BLi, throw error
+    throw out_of_range("Error: BLi interpolation impossible to position " +
+                       to_string(interpolation_position) + "\n");
+  } else {
+    // safe to use BLi, figure out which scheme we need
+    if (interpolation_position == 0) {
+      return BL_TO_CELL_0;
+    } else if (interpolation_position == datapts_in_direction) {
+      return BL7;
+    } else if (interpolation_position == 1) {
+      return BL0;
+    } else if (interpolation_position == 2) {
+      return BL1;
+    } else if (interpolation_position == 3) {
+      return BL2;
+    } else if (interpolation_position == datapts_in_direction - 3) {
+      return BL4;
+    } else if (interpolation_position == datapts_in_direction - 2) {
+      return BL5;
+    } else if (interpolation_position == datapts_in_direction - 1) {
+      return BL6;
+    } else {
+      // we have 4 datapoints either side of where we want to interpolate to
+      return BL3;
     }
-    else if (interpolation_position < 0 || interpolation_position > datapts_in_direction) {
-        // cannot interpolate to here using BLi, throw error
-        throw out_of_range("Error: BLi interpolation impossible to position " + to_string(interpolation_position) + "\n");
-    }
-    else {
-        // safe to use BLi, figure out which scheme we need
-        if (interpolation_position == 0) {
-            return BL_TO_CELL_0;
-        }
-        else if (interpolation_position == datapts_in_direction) {
-            return BL7;
-        }
-        else if (interpolation_position == 1) {
-            return BL0;
-        }
-        else if (interpolation_position == 2) {
-            return BL1;
-        }
-        else if (interpolation_position == 3) {
-            return BL2;
-        }
-        else if (interpolation_position == datapts_in_direction - 3) {
-            return BL4;
-        }
-        else if (interpolation_position == datapts_in_direction - 2) {
-            return BL5;
-        }
-        else if (interpolation_position == datapts_in_direction - 1) {
-            return BL6;
-        }
-        else {
-            // we have 4 datapoints either side of where we want to interpolate to
-            return BL3;
-        }
-    }
-    // if we get to here we have, somehow, not returned a scheme. Raise an error
-    throw runtime_error("Error: could not identify scheme for unknown reasons, diagnose further.\n");
+  }
+  // if we get to here we have, somehow, not returned a scheme. Raise an error
+  throw runtime_error("Error: could not identify scheme for unknown reasons, diagnose further.\n");
 }
