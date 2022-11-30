@@ -25,18 +25,26 @@
  * NOTE: For storage purposes, this means that field values associated to cells are stored _to the left_.
  * That is, Grid(0,0,0) is associated to the cell (-1,-1,-1). This is contrary to the way values are associated to cells, where cell (0,0,0) is associated to the field values (0,0,0).
  */
-class Grid{
+class Grid {
+protected:
+  // the preferred interpolation methods (pim) for interpolating between the grid values, default is BandLimited
+  PreferredInterpolationMethods pim = BandLimited;
 
 public:
-    int I_tot = 0;
-    int J_tot = 0;
-    int K_tot = 0;
+  int I_tot = 0;
+  int J_tot = 0;
+  int K_tot = 0;
 
-    /**
+  /**
      * Maximum value out of I_tot, J_tot and K_tot
      * @return value
      */
-    int max_IJK_tot() const {return max(I_tot, J_tot, K_tot); };
+  int max_IJK_tot() const { return max(I_tot, J_tot, K_tot); };
+
+  /**
+   * @brief Set the preferred interpolation methods
+   */
+  void set_pim(PreferredInterpolationMethods _pim) { pim = _pim; };
 };
 
 class SplitFieldComponent: public Tensor3D<double>{
@@ -194,7 +202,6 @@ public:
  * at each (x, y, z) grid point
  */
 class Field : public Grid{
-
 public:
   double ft = 0.;  // TODO: an explanation of what this is
 

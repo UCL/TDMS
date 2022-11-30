@@ -74,6 +74,14 @@ public:
     bool finite_difference() const;
 
     /**
+     * @brief Check whether we were asked to use the cubic interpolation schemes over the BLi schemes (default is no)
+     *
+     * @return true if provided '-nbli' or '--no-band-limited'
+     * @return false otheriwse
+     */
+    bool no_band_limited_schemes() const;
+
+    /**
      * @brief Gets the input filename
      *
      * @return const char* the input filename
