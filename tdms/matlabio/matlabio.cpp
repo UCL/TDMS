@@ -62,7 +62,10 @@ void assert_is_struct_with_n_fields(const mxArray* ptr, int num, const std::stri
 mxArray* ptr_to_nd_array_in(const mxArray* ptr, int n, const std::string &name, const std::string &struct_name){
   auto element = mxGetField((mxArray *) ptr, 0, name.c_str());
 
-  if (mxGetNumberOfDimensions(element) != n) {
+  // mxGetField returns NULL if the field does not exist. Prevent SEG faults by catching and throwing
+  if (element == NULL) {
+    throw runtime_error("Field " + name + " does not exist in struct " + struct_name);
+  } else if (mxGetNumberOfDimensions(element) != n) {
     throw runtime_error("Incorrect dimension on " + struct_name + "." + name + ". Required " +
                         to_string(n) + "D");
   }

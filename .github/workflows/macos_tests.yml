@@ -50,6 +50,11 @@ jobs:
           brew unlink libomp
           brew link --force libomp
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
       - name: Install Python dependencies
         shell: bash
         run: |
@@ -67,8 +72,7 @@ jobs:
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
            -DBUILD_TESTING=${{ matrix.build_testing }} \
-           -DOMP_ROOT=$(brew --prefix libomp) \
-           -DDERIVATIVE_TYPE=${{ matrix.derivative_type }}
+           -DOMP_ROOT=$(brew --prefix libomp)
 
       - name: Build TDMS
         working-directory: ${{runner.workspace}}/build
