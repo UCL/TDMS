@@ -8,7 +8,7 @@ test_BLi_vs_cubic_interpolation.cpp.
 
 The function we use is a Cauchy distribution multiplied by a sin wave;
 f(x) = sin(2\pi x) / (10x^2+1)
-over the range x\in[-2,2]
+over the range x\in[-4,4]
 
 Neither cubic nor BLi should be the superior interpolation method for all
 datapoint-separation  distances.
@@ -22,16 +22,19 @@ close all;
 r = 2;
 N = 4;
 % the spacing between datapoints, mimicing the Yee cell dimensions
-cell_Sizes = [1e-1, 5e-2, 1e-2, 5e-3, 1e-3, 5e-4];
-x_lower = -2.; % lower value of the range over which we shall test
-x_upper = 2.; % upper value of the range over which we shall test
+cell_Sizes = [7.5e-1, 6.25e-1, 5e-1, 3.75e-1, 2.5e-1, 1e-1, 5e-2, 1e-2, 5e-3, 1e-3, 5e-4];
+x_lower = -4.; % lower value of the range over which we shall test
+x_upper = 4.; % upper value of the range over which we shall test
 extent = x_upper - x_lower;
+% make interpolation plots
+make_plots = 0;
 
 % for each trial compute BLi and cubic errors
 fprintf("Cellsize | (MAX error) BLi :     Cubic       |");
 % fprintf(" (Norm error) BLi :     Cubic      |");
 fprintf("   (RMSD) BLi    :      Cubic     |");
-fprintf(" %%pts BLi better\n");
+fprintf(" %%pts BLi better |\n");
+fprintf("|:-:|:-:|:-:|:-:|\n");
 for trial=1:numel(cell_Sizes)
     cellSize = cell_Sizes(trial);
     n_datapts = ceil(extent/cellSize); % number of Yee cells
@@ -71,24 +74,26 @@ for trial=1:numel(cell_Sizes)
     BLi_was_better = ones(size(BLi_err));
     BLi_was_better( abs(cub_err) < abs(BLi_err) ) = 0.;
 
-    fprintf("%.1e  |", cellSize);
+    fprintf("%.2e  |", cellSize);
     fprintf("  %.8e : %.8e  |", BLi_err_max, cub_err_max);
 %    fprintf("  %.8e  : %.8e |", BLi_err_norm, cub_err_norm);
     fprintf("  %.8e : %.8e |", BLi_rmsd, cub_rmsd);
-    fprintf(" %.2f%% \n", 100. * sum(BLi_was_better) / (n_datapts-1));
+    fprintf(" %.2f%% |\n", 100. * sum(BLi_was_better) / (n_datapts-1));
 
-    figure; hold on;
-    title(strcat("Interp values: ",num2str(cellSize)));
-    plot(cell_centres, BLi_interp);
-    plot(cell_centres, cubic_interp);
-    plot(cell_centres, exact_vals);
-    legend("BLi", "Cubic", "Exact");
+    if make_plots
+        figure; hold on;
+        title(strcat("Interp values: ",num2str(cellSize)));
+        plot(cell_centres, BLi_interp);
+        plot(cell_centres, cubic_interp);
+        plot(cell_centres, exact_vals);
+        legend("BLi", "Cubic", "Exact");
 
-    figure; hold on;
-    title(strcat("Pt-wise errors: ",num2str(cellSize)));
-    plot(cell_centres, BLi_err);
-    plot(cell_centres, cub_err);
-    legend("BLi", "Cubic");
+        figure; hold on;
+        title(strcat("Pt-wise errors: ",num2str(cellSize)));
+        plot(cell_centres, BLi_err);
+        plot(cell_centres, cub_err);
+        legend("BLi", "Cubic");
+    end
 
 end
 
