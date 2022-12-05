@@ -9,6 +9,10 @@
 #include <random>
 #include <string>
 
+#include "globals.h"
+
+using tdms_math_constants::DCPI;
+
 namespace tdms_tests {
 
   inline double TOLERANCE = 1e-16;//< Floating-point comparison tolerance
