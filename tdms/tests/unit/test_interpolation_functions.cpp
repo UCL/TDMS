@@ -20,6 +20,7 @@
 
 using namespace tdms_math_constants;
 using tdms_tests::is_close_or_better;
+using tdms_tests::euclidean;
 using Catch::Approx;
 using namespace std;
 
@@ -172,16 +173,24 @@ TEST_CASE("BLi: interpolation-coefficient sums match") {
  * - sin(2\pi x)                : range 0,1 : max. element-wise error (MATLAB) 2.63468327e-04
  * - pulse function             : range 0,1 : max. element-wise error (MATLAB) 4.87599933e-04
  * - complex function           : range 0,1 : max. element-wise error (MATLAB) 5.35317432e-04
+ *
+ * MATLAB norm-errors:
+ * constant function norm error: 2.81526454e-03
+ * sin function norm error:      1.85845330e-03
+ * pulse function norm error:    9.65609916e-04
+ * complex fn norm error:        2.08892374e-03
+ *
  * Error values produced from benchmark_test_interpolation_functions.m
- *
  * The complex function has real part sin(2\pi x) and its imaginary part is the pulse function.
- *
- * We will then compare the maximum of the pointwise error between the interpolated values and exact values to the same quantity computed via MATLAB's interp function, and determine whether the order of magnitude of the errors is the same.
  */
 
 // Hardcode MATLAB errors from benchmark_test_interpolation_functions.m
-inline const double const_fn_MATLAB_error = 2.82944733e-04, sin_MATLAB_error = 2.63468327e-04,
-                    pulse_MATLAB_error = 4.87599933e-04, complex_fn_MATLAB_error = 5.35317432e-04;
+inline const double ML_const_fn_max_pointwise_error = 2.82944733e-04,
+                    ML_sin_max_pointwise_error = 2.63468327e-04,
+                    ML_pulse_max_pointwise_error = 4.87599933e-04,
+                    ML_complex_fn_max_pointwise_error = 5.35317432e-04;
+inline const double ML_cont_fn_norm_error = 2.81526454e-03, ML_sin_norm_error = 1.85845330e-03,
+                    ML_pulse_norm_error = 9.65609916e-04, ML_complex_fn_norm_error = 2.08892374e-03;
 
 // Evalutes f(x) = 1, for consistency with test sectioning
 inline double constant_1(double x) { return 1.; }
@@ -224,18 +233,19 @@ TEST_CASE("BLi: MATLAB benchmarking") {
   int nSamples = 100;                           //< number of datapooints in this dimension
   double spacing = 1. / (double) (nSamples - 1);//< spacing between datapoints
   double xi[nSamples];                          //< coordinates of the samples
-  double xi5[nSamples];                         //< coordinates of the interpolation points
+  double xi5[nSamples - 1];                     //< coordinates of the interpolation points
   // setup cell centres (xi5) and data sample positions (xi)
-  for (int i = 0; i < nSamples; i++) {
+  for (int i = 0; i < nSamples - 1; i++) {
     xi[i] = ((double) i) * spacing;
-    if (i != nSamples - 1) {
-      xi5[i] = xi[i] + spacing / 2.;
-    }
+    xi5[i] = xi[i] + spacing / 2.;
   }
+  xi[nSamples - 1] = 1.;
 
   double f_errors[nSamples - 1];//< pointwise interpolation errors
   double max_error;             //< maximum pointwise interpolation error
+  double norm_error;            //< norm-error of interpolation
   double MATLAB_max_error;      //< MATLAB max-error benchmark
+  double MATLAB_norm_error;     //< MATLAB norm-error benchmark
 
   SECTION("Real-valued functions") {
     double f_data[nSamples];            //< function data at xi
@@ -245,25 +255,29 @@ TEST_CASE("BLi: MATLAB benchmarking") {
 
     SECTION("Constant function") {
       logging_string << "Constant function | ";
-      MATLAB_max_error = const_fn_MATLAB_error;
+      MATLAB_max_error = ML_const_fn_max_pointwise_error;
+      MATLAB_norm_error = ML_cont_fn_norm_error;
       analytic_function = &constant_1;
     }
     SECTION("sin(2 pi x)") {
       logging_string << "sin(2 pi x)       | ";
-      MATLAB_max_error = sin_MATLAB_error;
+      MATLAB_max_error = ML_sin_max_pointwise_error;
+      MATLAB_norm_error = ML_sin_norm_error;
       analytic_function = &s2pi;
     }
     SECTION("Pulse function") {
       logging_string << "pulse function    | ";
-      MATLAB_max_error = pulse_MATLAB_error;
+      MATLAB_max_error = ML_pulse_max_pointwise_error;
+      MATLAB_norm_error = ML_pulse_norm_error;
       analytic_function = &pulse;
     }
 
     // Setup sample points (xi), Yee cell centres (xi5), and function values at these points (sampled data & exact values)
-    for (int i = 0; i < nSamples; i++) {
+    for (int i = 0; i < nSamples - 1; i++) {
       f_data[i] = analytic_function(xi[i]);
-      if (i != nSamples - 1) { f_exact[i] = analytic_function(xi5[i]); }
+      f_exact[i] = analytic_function(xi5[i]);
     }
+    f_data[nSamples - 1] = analytic_function(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
       InterpolationScheme scheme = best_scheme(nSamples - 1, i);
@@ -278,13 +292,15 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     complex<double> f_interp[nSamples - 1];// interpolated values at xi5
 
     logging_string << "complex function   | ";
-    MATLAB_max_error = complex_fn_MATLAB_error;
+    MATLAB_max_error = ML_complex_fn_max_pointwise_error;
+    MATLAB_norm_error = ML_complex_fn_norm_error;
 
     // Setup sample points (xi), Yee cell centres (xi5), and function values at these points (sampled data & exact values)
-    for (int i = 0; i < nSamples; i++) {
+    for (int i = 0; i < nSamples - 1; i++) {
       f_data[i] = complex_fn(xi[i]);
-      if (i != nSamples - 1) { f_exact[i] = complex_fn(xi5[i]); }
+      f_exact[i] = complex_fn(xi5[i]);
     }
+    f_data[nSamples - 1] = complex_fn(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
       InterpolationScheme scheme = best_scheme(nSamples - 1, i);
@@ -294,12 +310,16 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     }
   }
 
-  // get maximum pointwise error
+  // Compare maximum pointwise error
   max_error = *max_element(f_errors, f_errors + nSamples - 1);
-  // compare worst pointwise error
   REQUIRE(is_close_or_better(max_error, MATLAB_max_error));
+  // Compare norm-errors
+  norm_error = euclidean(f_errors, nSamples - 2);
+  fprintf(stderr, "%.8e vs %.8e\n", norm_error, MATLAB_norm_error);
+  REQUIRE(is_close_or_better(norm_error, MATLAB_norm_error));
 
   // report test results
-  logging_string << "Error: " << max_error << " | Benchmark: " << MATLAB_max_error;
+  logging_string << "Max ptwise error: " << max_error << " (" << MATLAB_max_error << ") | ";
+  logging_string << "Norm error: " << norm_error << " (" << MATLAB_norm_error << ")";
   SPDLOG_INFO(logging_string.str());
 }
