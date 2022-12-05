@@ -9,7 +9,10 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include "unit_test_utils.h"
+
 using Catch::Approx;
+using tdms_tests::near_zero;
 
 // fftw_complex is typdef to a double[2] - first element is Re, second Im.
 const int REAL=0, IMAG=1;
@@ -38,13 +41,6 @@ TEST_CASE("Element-by-element multiplication of array of complex numbers") {
         REQUIRE(output[i][REAL] == expected[i][REAL]);
         REQUIRE(output[i][IMAG] == expected[i][IMAG]);
     }
-}
-
-/**
- * @brief Is x close to zero?
- */
-inline bool near_zero(const double& x){
-  return std::abs(x) < 1E-12;
 }
 
 /**
