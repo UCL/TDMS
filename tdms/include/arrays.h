@@ -13,19 +13,29 @@
 #include "cell_coordinate.h"
 #include "matlabio.h"
 #include "utils.h"
+#include "globals.h"
 
+template<typename T>
 class XYZTensor3D {
 public:
-  double ***x = nullptr;
-  double ***y = nullptr;
-  double ***z = nullptr;
+  T ***x = nullptr;
+  T ***y = nullptr;
+  T ***z = nullptr;
 
-  double*** operator[] (char c) const{
+  T*** operator[] (char c) const{
     switch (c) {
       case 'x': return x;
       case 'y': return y;
       case 'z': return z;
       default: throw std::runtime_error("Have no element " + to_string(c));
+    }
+  }
+  T*** operator[] (AxialDirection d) const{
+    switch (d) {
+      case AxialDirection::X: return x;
+      case AxialDirection::Y: return y;
+      case AxialDirection::Z: return z;
+      default: throw std::runtime_error("Have no element " + to_string(d));
     }
   }
 
@@ -34,7 +44,21 @@ public:
    *
    * @param I_total,J_total,K_total Dimensions of the tensor size to set
    */
-  void allocate(int I_total, int J_total, int K_total);
+  void allocate(int I_total, int J_total, int K_total) {
+    x = (T ***) malloc(K_total * sizeof(T **));
+    y = (T ***) malloc(K_total * sizeof(T **));
+    z = (T ***) malloc(K_total * sizeof(T **));
+    for (int k = 0; k < K_total; k++) {
+      x[k] = (T **) malloc(J_total * sizeof(T *));
+      y[k] = (T **) malloc(J_total * sizeof(T *));
+      z[k] = (T **) malloc(J_total * sizeof(T *));
+      for (int j = 0; j < J_total; j++) {
+        x[k][j] = (T *) malloc(I_total * sizeof(T));
+        y[k][j] = (T *) malloc(I_total * sizeof(T));
+        z[k][j] = (T *) malloc(I_total * sizeof(T));
+      }
+    }
+  }
 };
 
 class XYZVectors {
@@ -54,6 +78,12 @@ public:
    * @param ptr Pointer to assign
    */
   void set_ptr(char c, double* ptr);
+  /**
+   * Set the pointer for one of the vectors in this collection with a name of c
+   * @param d AxialDirection labeling the vector
+   * @param ptr Pointer to assign
+   */
+  void set_ptr(AxialDirection d, double *ptr);
 };
 
 // TODO: docstring
@@ -128,21 +158,42 @@ protected:
   T** matrix = nullptr;
 
 public:
-  inline T* operator[] (int value) const { return matrix[value]; }
+  /**
+   * @brief Construct a new Matrix object, without assigned elements
+   *
+   */
+  Matrix() = default;
+  /**
+   * @brief Construct a new Matrix object, providing the dimensions
+   *
+   * @param n_rows,n_cols Number of rows and columns in the matrix
+   * @param initial_value The initial value of the elements, defaults to 0 to avoid initalised but unassigned values
+   */
+  Matrix(int n_rows, int n_cols) {
+    allocate(n_rows, n_cols);
+  }
 
+  inline T* operator[] (int value) const { return matrix[value]; }
+  /**
+   * @brief Check whether this matrix has elements assigned
+   *
+   * @return true If this matrix has assigned elements
+   * @return false This matrix is currently unassigned
+   */
   bool has_elements(){ return matrix != nullptr; };
 
   /**
-   * Allocate the memory for this matrix. Must be defined in the header
+   * Allocate the memory for this matrix
+   *
    * @param n_rows Number of rows
    * @param n_cols Number of columns
    */
-  void allocate(int n_rows, int n_cols){
+  void allocate(int n_rows, int n_cols, T initial_value = 0){
     this->n_rows = n_rows;
     this->n_cols = n_cols;
 
     matrix = (T **) malloc(sizeof(T *) * n_rows);
-    for (int i = 0; i < n_rows; i++){
+    for (int i = 0; i < n_rows; i++) {
       matrix[i] = (T *) malloc(sizeof(T) * n_cols);
     }
   };
@@ -175,7 +226,15 @@ protected:
 public:
   Vector() = default;
 
-  explicit Vector(const mxArray *ptr);
+  explicit Vector(const mxArray *ptr) {
+    n = (int) mxGetNumberOfElements(ptr);
+    vector = (T *) malloc((unsigned) (n * sizeof(T)));
+
+    auto matlab_ptr = mxGetPr(ptr);
+    for (int i = 0; i < n; i++) { vector[i] = (T) matlab_ptr[i]; }
+  }
+
+  bool has_elements() { return vector != nullptr; }
 
   inline T operator[] (int value) const { return vector[value]; };
 
@@ -220,15 +279,26 @@ public:
 
   Tensor3D() = default;
 
-  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows);
+  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows) {
+    initialise(tensor, n_layers, n_cols, n_rows);
+  }
 
-  void initialise(T*** tensor, int n_layers, int n_cols, int n_rows);
+  void initialise(T*** _tensor, int _n_layers, int _n_cols, int _n_rows) {
+    tensor = _tensor;
+    n_layers = _n_layers;
+    n_cols = _n_cols;
+    n_rows = _n_rows;
+  }
 
   inline T **operator[](int value) const { return tensor[value]; };
 
   bool has_elements(){ return tensor != nullptr; };
 
-  void zero();
+  void zero() {
+    for (int k = 0; k < n_layers; k++)
+      for (int j = 0; j < n_cols; j++)
+        for (int i = 0; i < n_rows; i++) { tensor[k][j][i] = 0; }
+  }
 
   void allocate(int nK, int nJ, int nI){
     n_layers = nK, n_cols = nJ, n_rows = nI;
@@ -250,7 +320,15 @@ public:
    *
    * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
    */
-  double frobenius();
+  double frobenius() {
+    T norm_val = 0;
+    for (int i1 = 0; i1 < n_layers; i1++) {
+      for (int i2 = 0; i2 < n_cols; i2++) {
+        for (int i3 = 0; i3 < n_rows; i3++) { norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]); }
+      }
+    }
+    return sqrt(norm_val);
+  }
 
   ~Tensor3D(){
     if (tensor == nullptr) return;
@@ -265,7 +343,7 @@ public:
       }
       free(tensor);
     }
-  };
+  }
 };
 
 class DTilde{

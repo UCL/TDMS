@@ -12,7 +12,6 @@
 #include "simulation_parameters.h"
 #include "globals.h"
 
-
 /**
  * A generic grid entity. For example:
  *
@@ -205,9 +204,10 @@ public:
 
   std::complex<double> angular_norm = 0.;
 
-  // TODO: this is likely better as a set of complex arrays - use Tensor3d<std::complex<double>>
-  XYZTensor3D real;
-  XYZTensor3D imag;
+  // TODO: this is likely better as a set of complex arrays - use XYZTensor3D<std::complex<double>>
+  // This also makes implimenting normalise_volume, and the interpolation schemes, much easier...
+  XYZTensor3D<double> real;
+  XYZTensor3D<double> imag;
 
   /**
      * Upper (u) and lower (l) indices in the x,y,z directions. e.g.
@@ -216,7 +216,13 @@ public:
      */
   int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
 
-  // TODO: Docstring. Not implemented because I'm not sure what this does!
+  /**
+   * @brief Normalises the field entries by divding by the angular norm.
+   *
+   * Specifically,
+   * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm
+   *
+   */
   void normalise_volume();
 
   /**
@@ -413,7 +419,9 @@ public:
  * Structure to hold a field and allow saving it to a file
  */
 class TDFieldExporter2D{
-
+private:
+  int nI = 0; //< Array size in the i direction
+  int nK = 0; //< Array size in the k direction
 public:
   mxArray* matlab_array = nullptr;
   double** array = nullptr;
@@ -422,7 +430,7 @@ public:
   /**
    * Allocate the arrays to hold the field
    */
-  void allocate(int nI, int nJ);
+  void allocate(int _nI, int _nK);
 
   /**
    * Export/save a field

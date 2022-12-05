@@ -74,7 +74,7 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
   *y_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   *z_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   // allow memory to cast to our datatypes
-  XYZTensor3D real_out, imag_out;
+  XYZTensor3D<double> real_out, imag_out;
   real_out.x = cast_matlab_3D_array(mxGetPr(*x_out), outdims[0], outdims[1], outdims[2]);
   imag_out.x = cast_matlab_3D_array(mxGetPi(*x_out), outdims[0], outdims[1], outdims[2]);
   real_out.y = cast_matlab_3D_array(mxGetPr(*y_out), outdims[0], outdims[1], outdims[2]);
