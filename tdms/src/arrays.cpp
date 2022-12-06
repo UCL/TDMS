@@ -1,5 +1,6 @@
 #include "arrays.h"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 #include <utility>
 
@@ -9,28 +10,20 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-void XYZTensor3D::allocate(int I_total, int J_total, int K_total) {
-  x = (double ***) malloc(K_total * sizeof(double **));
-  y = (double ***) malloc(K_total * sizeof(double **));
-  z = (double ***) malloc(K_total * sizeof(double **));
-  for (int k = 0; k < K_total; k++) {
-    x[k] = (double **) malloc(J_total * sizeof(double *));
-    y[k] = (double **) malloc(J_total * sizeof(double *));
-    z[k] = (double **) malloc(J_total * sizeof(double *));
-    for (int j = 0; j < J_total; j++) {
-      x[k][j] = (double *) malloc(I_total * sizeof(double));
-      y[k][j] = (double *) malloc(I_total * sizeof(double));
-      z[k][j] = (double *) malloc(I_total * sizeof(double));
-    }
-  }
-}
-
 void XYZVectors::set_ptr(const char c, double* ptr){
   switch (c) {
     case 'x': {x = ptr; break;}
     case 'y': {y = ptr; break;}
     case 'z': {z = ptr; break;}
     default: throw std::runtime_error("Have no element " + to_string(c));
+  }
+}
+void XYZVectors::set_ptr(AxialDirection d, double* ptr){
+  switch (d) {
+    case AxialDirection::X: {x = ptr; break;}
+    case AxialDirection::Y: {y = ptr; break;}
+    case AxialDirection::Z: {z = ptr; break;}
+    default: throw std::runtime_error("Have no element " + to_string(d));
   }
 }
 
@@ -56,7 +49,7 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
   for (char component : {'x', 'y', 'z'}) {
 
     auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
-    is_multilayer = mxGetDimensions(element)[0] != 1;
+    is_multilayer = mxGetDimensions(element)[0] != 1; // this only matters when we check the 'z' component right? No point re-setting it each time when it's not used? TODO: check this.
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -135,17 +128,8 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
 GratingStructure::~GratingStructure() {
   free_cast_matlab_2D_array(matrix);
-}
-
-template <typename T>
-Vector<T>::Vector(const mxArray *ptr) {
-  n = (int)mxGetNumberOfElements(ptr);
-  vector = (T*) malloc((unsigned) (n * sizeof(T)));
-
-  auto matlab_ptr = mxGetPr(ptr);
-  for (int i = 0; i < n; i++){
-    vector[i] = (T) matlab_ptr[i];
-  }
+  // prevent double free when calling ~Matrix, superclass destructor
+  matrix = nullptr;
 }
 
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
@@ -162,9 +146,9 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
       throw runtime_error("f_ex_vec should be a vector with N>0 elements");
     }
-    cerr << "f_ex_vec has ndims=" << n_dims << " N=" << dims[0] << endl;
-
+    // compute the number of elements prior to displaying
     n = std::max(dims[0], dims[1]);
+    spdlog::info("f_ex_vec has ndims={} N={}", n_dims, n);
     vector = (double *) mxGetPr(ptr);
   }
 }
@@ -210,49 +194,6 @@ void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 Pupil::~Pupil() {
   free_cast_matlab_2D_array(matrix);
   matrix = nullptr;
-}
-
-template<typename T>
-Tensor3D<T>::Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows){
-  initialise(tensor, n_layers, n_cols, n_rows);
-}
-
-template<typename T>
-void Tensor3D<T>::initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows){
-  tensor = _tensor;
-  n_layers = _n_layers;
-  n_cols = _n_cols;
-  n_rows = _n_rows;
-}
-
-template<>
-void Tensor3D<double>::zero() {
-  for (int k = 0; k < n_layers; k++)
-    for (int j = 0; j < n_cols; j++)
-      for (int i = 0; i < n_rows; i++) {
-        tensor[k][j][i] = 0.0;
-      }
-}
-
-template<>
-double Tensor3D<double>::frobenius() {
-  double norm_val = 0.;
-  for (int i1 = 0; i1 < n_layers; i1++) {
-    for (int i2 = 0; i2 < n_cols; i2++) {
-      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += tensor[i1][i2][i3] * tensor[i1][i2][i3]; }
-    }
-  }
-  return sqrt(norm_val);
-}
-template<>
-double Tensor3D<complex<double>>::frobenius() {
-  double norm_val = 0.;
-  for (int i1 = 0; i1 < n_layers; i1++) {
-    for (int i2 = 0; i2 < n_cols; i2++) {
-      for (int i3 = 0; i3 < n_rows; i3++) { norm_val += norm(tensor[i1][i2][i3]); }
-    }
-  }
-  return sqrt(norm_val);
 }
 
 void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,
