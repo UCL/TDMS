@@ -232,23 +232,35 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], SolverMethod method) {
+void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[],
+                        SolverMethod solver_method,
+                        PreferredInterpolationMethods preferred_interpolation_methods) {
 
-  if (method == SolverMethod::FiniteDifference) {
+  if (solver_method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
   } else {
     spdlog::info("Using pseudospectral method (PSTD)");
+  }
+  if (preferred_interpolation_methods == PreferredInterpolationMethods::BandLimited) {
+    spdlog::info("Using band-limited interpolation where possible");
+  } else {
+    spdlog::info("Restricting to cubic interpolation");
   }
 
   auto params = SimulationParameters();
 
   auto E_s = ElectricSplitField();
+  E_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H_s = MagneticSplitField();
+  H_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto J_s = CurrentDensitySplitField();
 
   auto E = ElectricField();
+  E.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H = MagneticField();
+  H.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
+  E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
 
   double ***surface_EHr, ***surface_EHi;
   double rho;
@@ -281,7 +293,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   int Ni_tdf = 0, Nk_tdf = 0;
 
   int skip_tdf = 1;
-  if (method == SolverMethod::FiniteDifference) skip_tdf = 6;
+  if (solver_method == SolverMethod::FiniteDifference) skip_tdf = 6;
 
   // PSTD storage (not used if FD)
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
@@ -525,7 +537,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   CCoefficientMatrix ca_vec, cb_vec, cc_vec;
   EHVec eh_vec;
 
-  if (method == SolverMethod::PseudoSpectral) {
+  if (solver_method == SolverMethod::PseudoSpectral) {
     int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
     ca_vec.allocate(n_threads, max_IJK + 1);
     cb_vec.allocate(n_threads, max_IJK + 1);
@@ -557,7 +569,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     init_diff_shift_op(0.5, dk_h_x, N_h_x);
     init_diff_shift_op(0.5, dk_h_y, N_h_y);
     init_diff_shift_op(0.5, dk_h_z, N_h_z);
-  } // if (method == DerivativeMethod::PseudoSpectral)
+  } // if (solver_method == DerivativeMethod::PseudoSpectral)
 
   params.set_Np(f_ex_vec);
 
@@ -1358,7 +1370,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       array_ind = 0;
 
       if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.xy
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -1625,7 +1637,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.xy
-        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        } // if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
         /*
     if(is_disp){
     i=36;
@@ -1638,7 +1650,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
         //fprintf(stderr,"Pos 04:\n");
         //E_s.xz updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
           for (k = 1; k < K_tot; k++)
             for (j = 0; j < J_tot_p1_bound; j++)
@@ -1909,11 +1921,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.xz
-        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        } // if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
         //fprintf(stderr,"Pos 05:\n");
         //E_s.yx updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.yx
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -2167,11 +2179,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.yx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
         //fprintf(stderr,"Pos 06:\n");
         //E_s.yz updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, E_s.yz
 #pragma omp for
           for (k = 1; k < K_tot; k++)
@@ -2417,12 +2429,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.yz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }  //if(params.dimension==THREE || params.dimension==TE)
 
       //fprintf(stderr,"Pos 07:\n");
       if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
           //E_s.zx updates
           for (k = 0; k < K_tot; k++)
@@ -2680,7 +2692,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.zx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -2767,7 +2779,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       }
       //fprintf(stderr,"Pos 08:\n");
       if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.zy
 #pragma omp for
           //E_s.zy updates
@@ -3026,7 +3038,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.zy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -3523,7 +3535,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       n = omp_get_thread_num();
 
       if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
           //H_s.xz updates
@@ -3598,9 +3610,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
 
           //PSTD, H_s.xz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xy
 #pragma omp for
           //H_s.xy updates
@@ -3695,9 +3707,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         */
             }
           //PSTD, H_s.xy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yx
 #pragma omp for
           //H_s.yx updates
@@ -3778,7 +3790,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           //PSTD, H_s.yx
         }
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yz
 #pragma omp for
           //H_s.yz updates
@@ -3869,7 +3881,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, H_s.yz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
       else {
 
@@ -3950,7 +3962,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       }
 
       if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
           //H_s.zy update
@@ -4028,10 +4040,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, H_s.zy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zx
 #pragma omp for
           //H_s.zx update
@@ -4110,7 +4122,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
           }
 //PSTD, H_s.zx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
     }  //end parallel
     if (TIME_EXEC) { timer.click(); }
@@ -4727,7 +4739,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-  if (method == SolverMethod::PseudoSpectral) {
+  if (solver_method == SolverMethod::PseudoSpectral) {
     fftw_free(dk_e_x);
     fftw_free(dk_e_y);
     fftw_free(dk_e_z);

@@ -53,6 +53,7 @@ enum AxialDirection
 enum ModeOfRun    { Pass1 , Pass2 };
 enum RCSType      { parallel , perpendicular };
 enum SolverMethod { PseudoSpectral, FiniteDifference };
+enum PreferredInterpolationMethods { BandLimited, Cubic };
 
 // **************************************
 //			Mathematical Constants

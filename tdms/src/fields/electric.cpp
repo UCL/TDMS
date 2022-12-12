@@ -34,7 +34,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
   switch (d) {
     case X:
       // determine the interpolation scheme to use
-      scheme = &(best_scheme(I_tot, i));
+      scheme = &(best_scheme(I_tot, i, pim));
       // now fill the interpolation data
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -45,7 +45,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
       break;
     case Y:
       // determine the interpolation scheme to use
-      scheme = &(best_scheme(J_tot, j));
+      scheme = &(best_scheme(J_tot, j, pim));
 
       // now fill the interpolation data
       // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -57,7 +57,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
       break;
     case Z:
       // determine the interpolation scheme to use
-      scheme = &(best_scheme(K_tot, k));
+      scheme = &(best_scheme(K_tot, k, pim));
 
       // now fill the interpolation data
       // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -83,7 +83,7 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
 
   switch (d) {
     case X:
-      scheme = &(best_scheme(I_tot, i));
+      scheme = &(best_scheme(I_tot, i, pim));
       // now fill the interpolation data
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -94,7 +94,7 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
       return scheme->interpolate(interp_data);
       break;
     case Y:
-      scheme = &(best_scheme(J_tot, j));
+      scheme = &(best_scheme(J_tot, j, pim));
       // now fill the interpolation data
       // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -105,7 +105,7 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
       return scheme->interpolate(interp_data);
       break;
     case Z:
-      scheme = &(best_scheme(K_tot, k));
+      scheme = &(best_scheme(K_tot, k, pim));
       // now fill the interpolation data
       // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
