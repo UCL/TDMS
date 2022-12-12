@@ -8,51 +8,60 @@
 #include <complex.h>
 
 #include "arrays.h"
+#include "array_test_class.h"
 #include "globals.h"
+#include "unit_test_utils.h"
 
 using namespace std;
+using tdms_tests::is_close;
 
-TEST_CASE("XYZTensor") {
-
-  // dimensions for the test-tensor
-  const int n_layers = 4, n_cols = 8, n_rows = 16;
-
+void XYZTensor3DTest::test_correct_construction() {
   // try creating an XYZTensor3D using the default constructor
-  // use std::complex<double> as we'll be using this datatype in the MATLAB replacer
-  XYZTensor3D<complex<double>> complex_test;
+  XYZTensor3D<complex<double>> xyzt3d;
   // check that, although this has been declared, its members still point to nullptrs
   // we should be able to index this through AxialDirection
-  REQUIRE(complex_test[AxialDirection::X] == nullptr);
-  REQUIRE(complex_test[AxialDirection::Y] == nullptr);
-  REQUIRE(complex_test[AxialDirection::Z] == nullptr);
+  bool all_nullptrs = (xyzt3d[AxialDirection::X] == nullptr) &&
+                      (xyzt3d[AxialDirection::Y] == nullptr) &&
+                      (xyzt3d[AxialDirection::Z] == nullptr);
+  REQUIRE(all_nullptrs);
+}
 
-  // now try to allocate the components
-  complex_test.allocate(n_rows, n_cols, n_layers);
-  // we should be able to safely populate each of the XYZ tensors now
-  for (char component : {'x', 'y', 'z'}) {
-    for (int k = 0; k < n_layers; k++) {
-      for (int j = 0; j < n_cols; j++) {
-        for (int i = 0; i < n_rows; i++) {
-          // shouldn't seg fault when assigning
-          // cast type all at once
-          REQUIRE_NOTHROW(complex_test[component][k][j][i] = complex<double>(1., 2.));
-          // check real/imag part casting
-          CHECK(complex_test[component][k][j][i].real() == 1.);
-          CHECK(complex_test[component][k][j][i].imag() == 2.);
+void XYZTensor3DTest::test_other_methods() {
+  SECTION("allocate()") {
+    XYZTensor3D<complex<double>> xyzt3d;
+    // now try to allocate the components
+    xyzt3d.allocate(n_rows, n_cols, n_layers);
+    // we should be able to safely populate each of the XYZ tensors now
+    bool assignments_succeeded = true;
+    for (char component : {'x', 'y', 'z'}) {
+      for (int k = 0; k < n_layers; k++) {
+        for (int j = 0; j < n_cols; j++) {
+          for (int i = 0; i < n_rows; i++) {
+            // shouldn't seg fault when assigning
+            // cast type all at once
+            xyzt3d[component][k][j][i] = complex<double>((double) i * j, (double) i * k);
+            // check real/imag part casting
+            assignments_succeeded = assignments_succeeded &&
+                                    is_close(xyzt3d[component][k][j][i].real(), (double) i * j) &&
+                                    is_close(xyzt3d[component][k][j][i].imag(), (double) i * k);
+          }
         }
       }
     }
-  }
-  // at end, destructor should be called as appropriate
-  // but this class has no destructor --- it doesn't store the size of its arrays
-  // hence, manually deallocate here
-  for (char component : {'x', 'y', 'z'}) {
-    for (int k = 0; k < n_layers; k++) {
-      for (int j = 0; j < n_cols; j++) {
-        free(complex_test[component][k][j]);
+    REQUIRE(assignments_succeeded);
+    // at end, destructor should be called as appropriate
+    // but this class has no destructor --- it doesn't store the size of its arrays
+    // hence, manually deallocate here
+    for (char component : {'x', 'y', 'z'}) {
+      for (int k = 0; k < n_layers; k++) {
+        for (int j = 0; j < n_cols; j++) { free(xyzt3d[component][k][j]); }
+        free(xyzt3d[component][k]);
       }
-      free(complex_test[component][k]);
+      free(xyzt3d[component]);
     }
-    free(complex_test[component]);
   }
+}
+
+TEST_CASE("XYZTensor") {
+  XYZTensor3DTest().run_all_class_tests();
 }
