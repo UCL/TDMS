@@ -17,6 +17,7 @@ Results are printed out for each cell size to stdout.
 %}
 clear;
 close all;
+clc;
 
 % interp inputs
 r = 2;
@@ -111,7 +112,9 @@ function [out] = interp_cubic(v, pos)
 end
 
 function [out] = BLi_vs_cubic_fn(x)
-    out = sin(2*pi*x) ./ (10*(x.^2) + 1);
+    %out = sin(2*pi*x) ./ (10*(x.^2) + 1);
+    %out = sin(2*pi*x);
+    out = sin(2*pi*x) .* exp( -x.^2 );
 end
 
 % Relative mean square error
