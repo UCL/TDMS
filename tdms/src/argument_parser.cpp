@@ -52,7 +52,7 @@ void ArgumentParser::print_help_message(){
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
-                 "-nbli, --no-band-limited:\tDo not use band-limited interpolation to determine field values at Yee cell centres."
+                 "-c, --cubic-interpolation:\tUse cubic interpolation to determine field values at Yee cell centres, as opposed to band-limited interpolation.\n"
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
@@ -88,8 +88,8 @@ bool ArgumentNamespace::finite_difference() const {
   return this->have_flag("-fd") || this->have_flag("--finite-difference");
 }
 
-bool ArgumentNamespace::no_band_limited_schemes() const {
-  return this->have_flag("-nbli") || this->have_flag("--no-band-limited");
+bool ArgumentNamespace::cubic_interpolation() const {
+  return this->have_flag("-c") || this->have_flag("--cubic-interpolation");
 }
 
 const char* ArgumentNamespace::output_filename() {

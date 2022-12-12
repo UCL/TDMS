@@ -250,17 +250,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   auto params = SimulationParameters();
 
   auto E_s = ElectricSplitField();
-  E_s.set_pim(preferred_interpolation_methods);
+  E_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H_s = MagneticSplitField();
-  H_s.set_pim(preferred_interpolation_methods);
+  H_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto J_s = CurrentDensitySplitField();
 
   auto E = ElectricField();
-  E.set_pim(preferred_interpolation_methods);
+  E.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H = MagneticField();
-  H.set_pim(preferred_interpolation_methods);
+  H.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
-  E_copy.set_pim(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
+  E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
 
   double ***surface_EHr, ***surface_EHi;
   double rho;

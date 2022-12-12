@@ -66,7 +66,7 @@ int main(int nargs, char *argv[]){
     solver_method = SolverMethod::FiniteDifference;
   // decide whether to toggle off the band-limited interpolation methods
   PreferredInterpolationMethods preferred_interpolation_methods = BandLimited; // default
-  if (args.no_band_limited_schemes())
+  if (args.cubic_interpolation())
     preferred_interpolation_methods = Cubic;
 
   //now run the time propagation code

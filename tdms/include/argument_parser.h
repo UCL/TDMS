@@ -79,7 +79,7 @@ public:
      * @return true if provided '-nbli' or '--no-band-limited'
      * @return false otheriwse
      */
-    bool no_band_limited_schemes() const;
+    bool cubic_interpolation() const;
 
     /**
      * @brief Gets the input filename

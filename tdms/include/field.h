@@ -44,7 +44,7 @@ public:
   /**
    * @brief Set the preferred interpolation methods
    */
-  void set_pim(PreferredInterpolationMethods _pim) { pim = _pim; };
+  void set_preferred_interpolation_methods(PreferredInterpolationMethods _pim) { pim = _pim; };
 };
 
 class SplitFieldComponent: public Tensor3D<double>{
