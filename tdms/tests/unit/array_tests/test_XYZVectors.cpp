@@ -8,44 +8,59 @@
 #include <numeric>
 
 #include "arrays.h"
+#include "array_test_class.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
 using std::accumulate;
-using tdms_tests::TOLERANCE;
+using tdms_tests::is_close;
 
-TEST_CASE("XYZVectors") {
-
-  // dimensions for the test-tensor
-  const int nx = 4, ny = 8, nz = 16;
-
-  // try creating a XYZVector
+void XYZVectorsTest::test_correct_construction() {
   XYZVectors v;
   // check that, although this has been declared, its members still point to nullptrs
-  REQUIRE(v.x == nullptr);
-  REQUIRE(v.y == nullptr);
-  REQUIRE(v.z == nullptr);
+  bool are_nullptrs = (v.x == nullptr) && (v.y == nullptr) && (v.z == nullptr);
+  REQUIRE(are_nullptrs);
+}
 
-  // create some arrays to assign to the members
-  double x_vec[nx] = {0.}, y_vec[ny] = {2., 1.}, z_vec[nz] = {4., 3., 2., 1.};
-  // now let's try assigning
-  v.set_ptr(AxialDirection::X, x_vec);
-  REQUIRE(v.x != nullptr);
-  v.set_ptr(AxialDirection::Y, y_vec);
-  REQUIRE(v.y != nullptr);
-  v.set_ptr(AxialDirection::Z, z_vec);
-  REQUIRE(v.z != nullptr);
+void XYZVectorsTest::test_other_methods() {
+  XYZVectors v;
+  SECTION("set_ptr()") {
+    // create some arrays to assign to the members
+    double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.}, z_vec[n_layers] = {4., 3., 2., 1.};
+    // now let's try assigning
+    v.set_ptr(AxialDirection::X, x_vec);
+    v.set_ptr(AxialDirection::Y, y_vec);
+    v.set_ptr(AxialDirection::Z, z_vec);
+    bool are_not_nullptrs = (v.x != nullptr) && (v.y != nullptr) && (v.z != nullptr);
+    REQUIRE(are_not_nullptrs);
 
-  // and manipulating the components
-  double x_tot = accumulate(v.x, v.x + nx, 0.);
-  CHECK(abs(x_tot - 0.) <= TOLERANCE);
-  double y_tot = accumulate(v.y, v.y + ny, 0.);
-  CHECK(abs(y_tot - 3.) <= TOLERANCE);
-  double z_tot = accumulate(v.z, v.z + nz, 0.);
-  CHECK(abs(z_tot - 10.) <= TOLERANCE);
+    // and the components are what we expect
+    double x_tot = accumulate(v.x, v.x + n_rows, 0.);
+    double y_tot = accumulate(v.y, v.y + n_cols, 0.);
+    double z_tot = accumulate(v.z, v.z + n_layers, 0.);
+    bool correct_elements = true;
+    for (int i = 0; i < n_rows; i++) {
+      correct_elements = correct_elements && (is_close(v.x[i], x_vec[i]));
+    }
+    for (int j = 0; j < n_cols; j++) {
+      correct_elements = correct_elements && (is_close(v.y[j], y_vec[j]));
+    }
+    for (int k = 0; k < n_layers; k++) {
+      correct_elements = correct_elements && (is_close(v.z[k], z_vec[k]));
+    }
+    REQUIRE(correct_elements);
 
-  // in theory, we can also swap the components by reassigning the pointers
-  v.set_ptr('x', z_vec);
-  x_tot = accumulate(v.x, v.x + nz, 0.);
-  CHECK(abs(x_tot - 10.) <= TOLERANCE);
+    // in theory, we can also swap the components by reassigning the pointers
+    v.set_ptr('x', z_vec);
+    bool correct_swapped_elements = true;
+    for (int k = 0; k < n_layers; k++) {
+      correct_elements = correct_elements && (is_close(v.x[k], z_vec[k]));
+    }
+    REQUIRE(correct_elements);
+  }
+
+}
+
+TEST_CASE("XYZVectors") {
+  XYZVectorsTest().run_all_class_tests();
 }

@@ -11,25 +11,15 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-using namespace std;
+#include "unit_test_utils.h"
 
-// Computes the 2-norm of the vector v from buffer start to buffer end
-inline double norm(double *v, int end, int start = 0) {
-    double norm_val = 0.;
-    for (int i = start; i <= end; i++) {
-        norm_val += v[i] * v[i];
-    }
-    return sqrt(norm_val);
-}
+using namespace std;
+using tdms_tests::order_of_magnitude;
+using tdms_tests::euclidean;
 
 // function to interpolate
 inline double f_BLi_vs_Cubic(double x) {
     return 1. / ((10. * x * x) + 1.);
-}
-
-// computes order of magnitude of a double
-int orderOfMagnitude(double x) {
-    return floor(log10(x));
 }
 
 /**
@@ -129,8 +119,8 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
             cub_err[i] = abs(cub_interp[i] - exact_field_values[i]);
         }
         // compute square-norm error
-        BLi_norm_errs[trial] = norm(BLi_err, n_datapts - 2);
-        cub_norm_errs[trial] = norm(cub_err, n_datapts - 2);
+        BLi_norm_errs[trial] = euclidean(BLi_err, n_datapts - 2);
+        cub_norm_errs[trial] = euclidean(cub_err, n_datapts - 2);
 
         // value-testing commences: the better method should be superior, and the worse method should be worse.
         // assert this is the case for each cellSize we used.
@@ -138,7 +128,7 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
         SPDLOG_INFO("BLi err: {0:.8e} | Cubic err : {1:.8e} | Expected BLi to be better: {2:d}", BLi_norm_errs[trial], cub_norm_errs[trial], BLi_is_better[trial]);
 
         // in all cases, assert that the order of magnitude of error is what we expect, if we had used MATLAB
-        CHECK(orderOfMagnitude(BLi_norm_errs[trial]) == orderOfMagnitude(MATLAB_BLi_errs[trial]));
-        CHECK(orderOfMagnitude(cub_norm_errs[trial]) == orderOfMagnitude(MATLAB_cub_errs[trial]));
+        CHECK(order_of_magnitude(BLi_norm_errs[trial]) == order_of_magnitude(MATLAB_BLi_errs[trial]));
+        CHECK(order_of_magnitude(cub_norm_errs[trial]) == order_of_magnitude(MATLAB_cub_errs[trial]));
     }
 }
