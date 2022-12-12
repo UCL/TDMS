@@ -264,7 +264,7 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = analytic_function(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples - 1, i);
+      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
       f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
@@ -299,7 +299,6 @@ TEST_CASE("BLi: MATLAB benchmarking") {
   REQUIRE(is_close_or_better(max_error, MATLAB_max_error));
   // Compare norm-errors
   norm_error = euclidean(f_errors, nSamples - 2);
-  fprintf(stderr, "%.8e vs %.8e\n", norm_error, MATLAB_norm_error);
   REQUIRE(is_close_or_better(norm_error, MATLAB_norm_error));
 
   // report test results
