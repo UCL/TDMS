@@ -10,6 +10,7 @@
 
 #include <fftw3.h>
 
+#include "cell_coordinate.h"
 #include "matlabio.h"
 #include "utils.h"
 #include "globals.h"
@@ -289,7 +290,7 @@ public:
     n_rows = _n_rows;
   }
 
-  inline T** operator[] (int value) const { return tensor[value]; };
+  inline T **operator[](int value) const { return tensor[value]; };
 
   bool has_elements(){ return tensor != nullptr; };
 

@@ -1172,16 +1172,16 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                int i = fieldsample.i[it] + params.pml.Dxl - 1,
-                    j = fieldsample.j[jt] + params.pml.Dyl - 1,
-                    k = fieldsample.k[kt] + params.pml.Dzl - 1;
-                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-                if (j != 0) {
-                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+                CellCoordinate current_cell(fieldsample.i[it] + params.pml.Dxl - 1,
+                                            fieldsample.j[jt] + params.pml.Dyl - 1,
+                                            fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, current_cell);
+                if (current_cell.j() != 0) {
+                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, current_cell);
                 } else {
-                  Ey_temp = E_s.yx[k][0][i] + E_s.yz[k][0][i];
+                  Ey_temp = E_s.yx[current_cell] + E_s.yz[current_cell];
                 }
-                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, current_cell);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
@@ -4863,35 +4863,35 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
   {
 #pragma omp for
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      int i = surface_vertices[0][vindex], j = surface_vertices[1][vindex],
-          k = surface_vertices[2][vindex];
+      CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                  surface_vertices[2][vindex]);
       if (params.dimension == Dimension::THREE) {
         // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         if (J_tot != 0) {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         } else {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-          Ey = E.yx[k][j][i] + E.yz[k][j][i];
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.yx[current_cell] + E.yz[current_cell];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         }
       } else if (params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
         Ez = 0.;
         Hx = 0.;
         Hy = 0.;
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
       } else {
         Ex = 0.;
         Ey = 0.;
-        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
         Hz = 0.;
       }
       //    fprintf(stderr,"2nd interp donezn");
@@ -4937,7 +4937,7 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
                             ComplexAmplitudeSample &campssample, int n, double omega,
                             double dt, int Nt, int dimension, int J_tot, int intmethod) {
 
-  int vindex, i, j, k;
+  int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> cphaseTermE, cphaseTermH;
 
@@ -4949,42 +4949,41 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
 
 #pragma omp parallel default(none) \
         shared(E, H, EHr, EHi, campssample) \
-        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k) \
+        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex) \
         firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
   {
 #pragma omp for
     for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
-      i = campssample.vertices[0][vindex];
-      j = campssample.vertices[1][vindex];
-      k = campssample.vertices[2][vindex];
+      CellCoordinate current_cell(campssample.vertices[0][vindex], campssample.vertices[1][vindex],
+                                  campssample.vertices[2][vindex]);
 
       if (dimension == Dimension::THREE) {
         // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         if (J_tot != 0) {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-          Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         } else {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-          Ey = E.yx[k][j][i] + E.yz[k][j][i];
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.yx[current_cell] + E.yz[current_cell];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
         }
       } else if (dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        Ex = E.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Ey = E.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
         Ez = 0.;
         Hx = 0.;
         Hy = 0.;
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
       } else {
         Ex = 0.;
         Ey = 0.;
-        Ez = E.interpolate_to_centre_of(AxialDirection::Z, i, j, k);
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, i, j, k);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
         Hz = 0.;
       }
 

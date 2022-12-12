@@ -10,25 +10,24 @@ double ElectricField::phase(int n, double omega, double dt){
   return omega * ((double) n + 1) * dt;
 }
 
-void ElectricField::interpolate_transverse_electric_components(int i, int j, int k,
-                                                               complex<double> *x_at_centre,
-                                                               complex<double> *y_at_centre,
-                                                               complex<double> *z_at_centre) {
-  *x_at_centre = interpolate_to_centre_of(AxialDirection::X, i, j, k);
-  *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, i, j, k);
+void ElectricField::interpolate_transverse_electric_components(CellCoordinate cell, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
+  *x_at_centre = interpolate_to_centre_of(AxialDirection::X, cell);
+  *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, cell);
   *z_at_centre = complex<double>(0., 0.);
 }
-void ElectricField::interpolate_transverse_magnetic_components(int i, int j, int k,
-                                                               complex<double> *x_at_centre,
-                                                               complex<double> *y_at_centre,
-                                                               complex<double> *z_at_centre) {
+void ElectricField::interpolate_transverse_magnetic_components(CellCoordinate cell, complex<double> *x_at_centre,
+                                              complex<double> *y_at_centre,
+                                              complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
-  *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, i, j, k);
+  *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, cell);
 }
 
-complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
+complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
+  int i = cell.i(), j = cell.j(), k = cell.k();
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   complex<double> interp_data[8];
 
@@ -76,8 +75,9 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, int i,
   return scheme->interpolate(interp_data);
 }
 
-double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, int i, int j, int k) {
+double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
+  int i = cell.i(), j = cell.j(), k = cell.k();
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   double interp_data[8];
 

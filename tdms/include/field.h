@@ -6,6 +6,7 @@
 
 #include <complex>
 
+#include "cell_coordinate.h"
 #include "dimensions.h"
 #include "mat_io.h"
 #include "simulation_parameters.h"
@@ -44,6 +45,9 @@ public:
   int n_threads = 1;             // Number of threads this component was chunked with
   fftw_plan* plan_f = nullptr;  // Forward fftw plan
   fftw_plan* plan_b = nullptr;  // Backward fftw plan
+
+  double **operator[](int value) const { return tensor[value]; };
+  double operator[](CellCoordinate cell) const { return tensor[cell.k()][cell.j()][cell.i()]; }
 
   void initialise_from_matlab(double*** tensor, Dimensions &dims);
 
@@ -118,10 +122,10 @@ public:
    * @brief Interpolates a SplitField component to the centre of a Yee cell
    *
    * @param d SplitField component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
+   * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated field value
    */
-    virtual double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
+    virtual double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) = 0;
 };
 
 class ElectricSplitField: public SplitField{
@@ -142,10 +146,10 @@ public:
    * @brief Interpolates a split E-field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
+   * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 };
 
 class MagneticSplitField: public SplitField{
@@ -166,10 +170,10 @@ public:
    * @brief Interpolates a split E-field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
+   * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 };
 
 class CurrentDensitySplitField: public SplitField{
@@ -186,7 +190,7 @@ public:
     CurrentDensitySplitField(int I_total, int J_total, int K_total) :
             SplitField(I_total, J_total, K_total){};
 
-    double interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override { return 0.; };
+    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override { return 0.; };
 };
 
 /**
@@ -273,10 +277,10 @@ public:
    * @brief Interpolates a Field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
+   * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated field value
    */
-  virtual std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) = 0;
+  virtual std::complex<double> interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) = 0;
 
   /**
    * @brief Interpolates the Field over the range provided.
@@ -297,20 +301,20 @@ public:
   /**
    * @brief Interpolates the Field's transverse electric components to the centre of Yee cell i,j,k
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  virtual void interpolate_transverse_electric_components(int i, int j, int k,
+  virtual void interpolate_transverse_electric_components(CellCoordinate cell,
                                                           std::complex<double> *x_at_centre,
                                                           std::complex<double> *y_at_centre,
                                                           std::complex<double> *z_at_centre) = 0;
   /**
    * @brief Interpolates the Field's transverse magnetic components to the centre of Yee cell i,j,k
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  virtual void interpolate_transverse_magnetic_components(int i, int j, int k,
+  virtual void interpolate_transverse_magnetic_components(CellCoordinate cell,
                                                           std::complex<double> *x_at_centre,
                                                           std::complex<double> *y_at_centre,
                                                           std::complex<double> *z_at_centre) = 0;
@@ -339,28 +343,29 @@ public:
    * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated component value
    */
-  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 
   /**
    * @brief Interpolates the transverse electric components to the centre of Yee cell i,j,k.
    *
    * Ex and Ey are interpolated. Ez is set to a placeholder (default) value.
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_transverse_electric_components(int i, int j, int k, std::complex<double> *x_at_centre,
-                                 std::complex<double> *y_at_centre,
-                                 std::complex<double> *z_at_centre) override;
+  void interpolate_transverse_electric_components(CellCoordinate cell,
+                                                  std::complex<double> *x_at_centre,
+                                                  std::complex<double> *y_at_centre,
+                                                  std::complex<double> *z_at_centre) override;
   /**
    * @brief Interpolates the transverse magnetic components to the centre of Yee cell i,j,k.
    *
    * Ez is interpolated. Ex and Ey are set to a placeholder (default) values.
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_transverse_magnetic_components(int i, int j, int k,
+  void interpolate_transverse_magnetic_components(CellCoordinate cell,
                                                   std::complex<double> *x_at_centre,
                                                   std::complex<double> *y_at_centre,
                                                   std::complex<double> *z_at_centre) override;
@@ -379,20 +384,20 @@ public:
    * @brief Interpolates an H-field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
-   * @param i,j,k Index (i,j,k) of the Yee cell to interpolate to the centre of
+   * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return std::complex<double> The interpolated component value
    */
-  std::complex<double> interpolate_to_centre_of(AxialDirection d, int i, int j, int k) override;
+  std::complex<double> interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 
   /**
    * @brief Interpolates the transverse electric components to the centre of Yee cell i,j,k.
    *
    * Hz is interpolated. Hx and Hy are set to a placeholder (default) values.
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_transverse_electric_components(int i, int j, int k,
+  void interpolate_transverse_electric_components(CellCoordinate cell,
                                                   std::complex<double> *x_at_centre,
                                                   std::complex<double> *y_at_centre,
                                                   std::complex<double> *z_at_centre) override;
@@ -401,10 +406,10 @@ public:
    *
    * Hx and Hy are interpolated. Hz is set to a placeholder (default) value.
    *
-   * @param[in] i,j,k Yee cell index
+   * @param[in] cell Yee cell index
    * @param[out] x_at_centre,y_at_centre,z_at_centre Addresses to write interpolated values for the x,y,z components (respectively)
    */
-  void interpolate_transverse_magnetic_components(int i, int j, int k,
+  void interpolate_transverse_magnetic_components(CellCoordinate cell,
                                                   std::complex<double> *x_at_centre,
                                                   std::complex<double> *y_at_centre,
                                                   std::complex<double> *z_at_centre) override;
