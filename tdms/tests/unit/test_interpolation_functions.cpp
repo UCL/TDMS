@@ -287,7 +287,7 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = complex_fn(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples - 1, i);
+      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
       f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
