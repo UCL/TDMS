@@ -11,7 +11,7 @@
 ***
 ## Introduction
 
-TDMS (Time Domain Maxwell Solver) is a hybrid C++ and MATLAB for solving
+TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving
 Maxwell's equations to simulate light propagation through a medium. See the
 [pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
 further details.
@@ -20,19 +20,19 @@ further details.
 ***
 ## Compilation
 
-TDMS requires building against [FFTW](https://www.fftw.org/) and
+TDMS needs to be build against [FFTW](https://www.fftw.org/) and
 [MATLAB](https://www.mathworks.com/products/matlab.html), thus both need to be
 downloaded and installed prior to compiling TDMS. Install with
 
 ```bash
-cd tdms
-mkdir build; cd build
-cmake .. \
+$ cd tdms
+$ mkdir build; cd build
+$ cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \
 # -DBUILD_TESTING=ON
-make install
+$ make install
 ```
 where lines need to be commented in and the paths modified if cmake cannot
 (1) find MATLAB, (2) find FFTW or (3) install to the default install prefix.
@@ -60,7 +60,6 @@ where lines need to be commented in and the paths modified if cmake cannot
 
 
 ***
-
 ## Usage
 
 Once the executable has been compiled and installed, `tdms` should be in the `PATH`.
