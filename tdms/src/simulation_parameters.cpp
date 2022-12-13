@@ -43,10 +43,10 @@ void SimulationParameters::set_dimension(string mode_string) {
   }
 }
 
-void SimulationParameters::set_phasorinc(const double* vector) {
-  phasorinc.x = (int) vector[0];
-  phasorinc.y = (int) vector[1];
-  phasorinc.z = (int) vector[2];
+void SimulationParameters::set_spacing_stride(const double* vector) {
+  spacing_stride.x = (int) vector[0];
+  spacing_stride.y = (int) vector[1];
+  spacing_stride.z = (int) vector[2];
 }
 
 void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
