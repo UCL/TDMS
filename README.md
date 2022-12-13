@@ -94,7 +94,7 @@ tdms [options] infile outfile
 tdms [options] infile gridfile outfile
 Options:
 -h:	Display this help message
---finite-difference:	Use the finite-difference solver, instead of the pseudo-spectral method.
+-fd, --finite-difference:	Use the finite-difference solver, instead of the pseudo-spectral method.
 -q:	Quiet operation. Silence all logging
 -m:	Minimise output file size by not saving vertex and facet information
 ```
