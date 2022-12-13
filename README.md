@@ -30,7 +30,7 @@ mkdir build; cd build
 cmake .. \
 # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
-# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+# -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \
 # -DBUILD_TESTING=ON
 make install
 ```

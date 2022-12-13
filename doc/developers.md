@@ -99,7 +99,9 @@ spdlog::debug("Send help");
 ```
 
 ### Compiling on UCL's Myriad cluster
+
 <details>
+
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
@@ -134,6 +136,7 @@ spdlog::debug("Send help");
   CApath: none
   ```
   it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
+
 </details>
 
 
