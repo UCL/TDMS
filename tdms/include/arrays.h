@@ -91,6 +91,18 @@ protected:
   static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
 };
 
+/**
+ * @brief A class to encapsulate collection of algebraic terms in the
+ * discretized forms of Maxwells equations for E fields. The symbol chosen in
+ * the original reference is \f$C\f$.
+ *
+ * @details Algebraic terms \f$C_{a,b,c}\f$ defined in Section 4.2 of Munro, P,.
+ * "Application of numerical methods to high numerical aperture imaging", 2006,
+ * PhD thesis, Imperial College London.
+ *
+ * The definitions are equations 4.13, 4.14 (pp 82-3). Part of Maxwell's E-field
+ * equations in equations 4.7-9.
+ */
 class CCollectionBase {
 public:
   XYZVectors a;
@@ -98,7 +110,7 @@ public:
   XYZVectors c;
 };
 
-// TODO: docstring
+/*! @copydoc CCollectionBase */
 class CCollection : public CCollectionBase {
 private:
   void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
@@ -110,19 +122,31 @@ public:
   explicit CCollection(const mxArray *ptr);
 };
 
-// TODO: docstring
+/*! @copydoc CCollectionBase */
 class CMaterial : public CCollectionBase, MaterialCollection {
 public:
   explicit CMaterial(const mxArray *ptr);
 };
 
+/**
+ * @brief A class to encapsulate collection of algebraic terms in the
+ * discretized forms of Maxwells equations for H fields. The symbol chosen in
+ * the original reference is \f$D\f$.
+ *
+ * @details Algebraic terms \f$D_{a,b}\f$ defined in Section 4.2 of Munro, P,.
+ * "Application of numerical methods to high numerical aperture imaging", 2006,
+ * PhD thesis, Imperial College London.
+ *
+ * The definitions are equations 4.15, 4.16 (pp 82-3). Part of Maxwell's H-field
+ * equations in equations 4.10-12.
+ */
 class DCollectionBase {
 public:
   XYZVectors a;
   XYZVectors b;
 };
 
-// TODO: docstring
+/*! @copydoc DCollectionBase */
 class DCollection: public DCollectionBase{
 private:
   static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
@@ -131,7 +155,7 @@ public:
   explicit DCollection(const mxArray *ptr);
 };
 
-// TODO: docstring
+/*! @copydoc DCollectionBase */
 class DMaterial : public DCollectionBase, MaterialCollection {
 public:
   explicit DMaterial(const mxArray *ptr);
