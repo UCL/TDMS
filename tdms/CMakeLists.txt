@@ -102,6 +102,7 @@ set(SOURCES
     src/matrix_collection.cpp
     src/mesh_base.cpp
     src/numerical_derivative.cpp
+    src/openandorder.cpp
     src/shapes.cpp
     src/simulation_parameters.cpp
     src/source.cpp

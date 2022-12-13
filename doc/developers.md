@@ -139,8 +139,7 @@ spdlog::debug("Send help");
 
 ## Where's the main?
 
-The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
-The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
+The C++ `main` function is in main.cpp however the main algorithm code is execute_simulation() in iterator.cpp
 
 ## Testing
 
