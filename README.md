@@ -20,7 +20,7 @@ further details.
 ***
 ## Compilation
 
-TDMS needs to be build against [FFTW](https://www.fftw.org/) and
+TDMS needs to be built against [FFTW](https://www.fftw.org/) and
 [MATLAB](https://www.mathworks.com/products/matlab.html), thus both need to be
 downloaded and installed prior to compiling TDMS. Install with
 
