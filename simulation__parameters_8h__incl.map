@@ -1,0 +1,11 @@
+<map id="tdms/include/simulation_parameters.h" name="tdms/include/simulation_parameters.h">
+<area shape="rect" id="node1" title="Classes collecting parameters for the simulation." alt="" coords="381,5,559,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="535,244,594,271"/>
+<area shape="rect" id="node3" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="322,95,397,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="47,244,125,271"/>
+<area shape="rect" id="node5" title=" " alt="" coords="163,169,249,196"/>
+<area shape="rect" id="node6" title=" " alt="" coords="274,169,341,196"/>
+<area shape="rect" id="node7" title=" " alt="" coords="365,169,457,196"/>
+<area shape="rect" id="node8" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="533,169,596,196"/>
+<area shape="rect" id="node9" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="5,169,87,196"/>
+</map>

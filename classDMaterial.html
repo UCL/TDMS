@@ -90,15 +90,31 @@ $(document).ready(function(){initNavTree('classDMaterial.html',''); initResizabl
 <div class="title">DMaterial Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations for H fields. The symbol chosen in the original reference is <img class="formulaInl" alt="$D$" src="form_2.png"/>.  
+ <a href="classDMaterial.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="arrays_8h_source.html">arrays.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for DMaterial:</div>
 <div class="dyncontent">
 <div class="center"><img src="classDMaterial__inherit__graph.png" border="0" usemap="#aDMaterial_inherit__map" alt="Inheritance graph"/></div>
+<map name="aDMaterial_inherit__map" id="aDMaterial_inherit__map">
+<area shape="rect" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="107,80,193,107"/>
+<area shape="rect" href="classDCollectionBase.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="5,5,135,32"/>
+<area shape="rect" href="classMaterialCollection.html" title=" " alt="" coords="159,5,301,32"/>
+</map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for DMaterial:</div>
 <div class="dyncontent">
 <div class="center"><img src="classDMaterial__coll__graph.png" border="0" usemap="#aDMaterial_coll__map" alt="Collaboration graph"/></div>
+<map name="aDMaterial_coll__map" id="aDMaterial_coll__map">
+<area shape="rect" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="107,185,193,212"/>
+<area shape="rect" href="classDCollectionBase.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="5,109,135,136"/>
+<area shape="rect" href="classXYZVectors.html" title=" " alt="" coords="22,5,118,32"/>
+<area shape="rect" href="classMaterialCollection.html" title=" " alt="" coords="159,109,301,136"/>
+</map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -121,7 +137,11 @@ Additional Inherited Members</h2></td></tr>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>init_xyz_vectors</b> (const mxArray *ptr, <a class="el" href="classXYZVectors.html">XYZVectors</a> &amp;arrays, const std::string &amp;prefix)</td></tr>
 <tr class="separator:a3b9f5befec48ffd0040d74997e332f6f inherit pub_static_methods_classMaterialCollection"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations for H fields. The symbol chosen in the original reference is <img class="formulaInl" alt="$D$" src="form_2.png"/>. </p>
+<p>Algebraic terms <img class="formulaInl" alt="$D_{a,b}$" src="form_3.png"/> defined in Section 4.2 of Munro, P,. "Application of numerical methods to high numerical aperture imaging", 2006, PhD thesis, Imperial College London.</p>
+<p>The definitions are equations 4.15, 4.16 (pp 82-3). Part of Maxwell's H-field equations in equations 4.10-12. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
 <li>tdms/src/arrays.cpp</li>
 </ul>

@@ -56,10 +56,10 @@ var hierarchy =
       [ "MatFileMatrixCollection", "classMatFileMatrixCollection.html", null ]
     ] ],
     [ "PerfectlyMatchedLayer", "structPerfectlyMatchedLayer.html", null ],
-    [ "PhasorInc", "structPhasorInc.html", null ],
     [ "PlanarInterface", "structPlanarInterface.html", null ],
     [ "SimulationParameters", "classSimulationParameters.html", null ],
     [ "Source", "classSource.html", null ],
+    [ "SurfaceSpacingStride", "structSurfaceSpacingStride.html", null ],
     [ "TDFieldExporter2D", "classTDFieldExporter2D.html", null ],
     [ "Tensor3D< T >", "classTensor3D.html", null ],
     [ "Tensor3D< double >", "classTensor3D.html", [

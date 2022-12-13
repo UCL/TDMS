@@ -1,0 +1,6 @@
+<map id="tdms/include/interpolation_methods.h" name="tdms/include/interpolation_methods.h">
+<area shape="rect" id="node1" title="InterpScheme class methods and supporting functions." alt="" coords="282,5,475,47"/>
+<area shape="rect" id="node2" href="$test__BLi__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="5,95,235,136"/>
+<area shape="rect" id="node3" href="$test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="259,95,498,136"/>
+<area shape="rect" id="node4" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="522,95,729,136"/>
+</map>

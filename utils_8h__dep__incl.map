@@ -1,0 +1,12 @@
+<map id="tdms/include/utils.h" name="tdms/include/utils.h">
+<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="364,5,515,32"/>
+<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="290,80,453,107"/>
+<area shape="rect" id="node5" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="343,408,541,435"/>
+<area shape="rect" id="node3" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="5,326,175,353"/>
+<area shape="rect" id="node6" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="282,155,461,196"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="19,408,161,435"/>
+<area shape="rect" id="node7" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="191,244,341,271"/>
+<area shape="rect" id="node10" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="365,244,561,271"/>
+<area shape="rect" id="node8" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="199,319,343,360"/>
+<area shape="rect" id="node9" href="$interpolate_8h.html" title="Interpolation of field values within FDTD grid." alt="" coords="368,326,561,353"/>
+</map>

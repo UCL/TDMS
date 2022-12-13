@@ -2,7 +2,7 @@ var simulation__parameters_8h =
 [
     [ "PerfectlyMatchedLayer", "structPerfectlyMatchedLayer.html", "structPerfectlyMatchedLayer" ],
     [ "YeeCellDimensions", "structYeeCellDimensions.html", "structYeeCellDimensions" ],
-    [ "PhasorInc", "structPhasorInc.html", "structPhasorInc" ],
+    [ "SurfaceSpacingStride", "structSurfaceSpacingStride.html", "structSurfaceSpacingStride" ],
     [ "SimulationParameters", "classSimulationParameters.html", "classSimulationParameters" ],
     [ "Dimension", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dca", [
       [ "THREE", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaa1251fbf93888ad32fe0ae54d49bcef17", null ],

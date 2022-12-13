@@ -1,0 +1,8 @@
+<map id="tdms/include/field.h" name="tdms/include/field.h">
+<area shape="rect" id="node1" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="195,5,346,32"/>
+<area shape="rect" id="node2" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,80,149,121"/>
+<area shape="rect" id="node3" href="$interpolate_8h.html" title="Interpolation of field values within FDTD grid." alt="" coords="174,87,367,114"/>
+<area shape="rect" id="node4" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="391,87,561,114"/>
+<area shape="rect" id="node5" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="307,169,450,196"/>
+<area shape="rect" id="node6" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="474,169,673,196"/>
+</map>

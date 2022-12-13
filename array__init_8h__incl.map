@@ -1,0 +1,18 @@
+<map id="tdms/include/array_init.h" name="tdms/include/array_init.h">
+<area shape="rect" id="node1" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="213,5,357,47"/>
+<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="411,95,474,121"/>
+<area shape="rect" id="node5" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="175,244,254,271"/>
+<area shape="rect" id="node3" title=" " alt="" coords="839,393,918,420"/>
+<area shape="rect" id="node4" href="$dimensions_8h.html" title=" " alt="" coords="303,169,412,196"/>
+<area shape="rect" id="node9" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="437,169,622,196"/>
+<area shape="rect" id="node16" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="838,319,919,345"/>
+<area shape="rect" id="node6" title=" " alt="" coords="107,319,167,345"/>
+<area shape="rect" id="node7" title=" " alt="" coords="191,319,254,345"/>
+<area shape="rect" id="node8" title=" " alt="" coords="5,319,83,345"/>
+<area shape="rect" id="node10" title=" " alt="" coords="332,393,391,420"/>
+<area shape="rect" id="node11" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="508,244,583,271"/>
+<area shape="rect" id="node12" title=" " alt="" coords="519,319,606,345"/>
+<area shape="rect" id="node13" title=" " alt="" coords="631,319,697,345"/>
+<area shape="rect" id="node14" title=" " alt="" coords="722,319,814,345"/>
+<area shape="rect" id="node15" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="330,319,393,345"/>
+</map>
