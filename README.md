@@ -60,18 +60,48 @@ where lines need to be commented in and the paths modified if cmake cannot
 
 
 ***
+
 ## Usage
+
+Once the executable has been compiled and installed, `tdms` should be in the `PATH`.
+Check that installation worked with
+
+```bash
+$ tdms -h
+```
+
+You can invoke it directly or call it from a MATLAB script.
+We recommend that beginners with MATLAB installed start with the demonstration MATLAB script.
 
 #### To run the demonstration code
 
-Once the executable has been compiled, move into directory _examples/arc_01_,
+Move into directory [`examples/arc_01`](./examples/arc_01/),
 launch Matlab and run the Matlab script:
 
-_run_pstd_bscan.m_
+[`run_pstd_bscan.m`](./examples/arc_01/run_pstd_bscan.m)
 
 This script will generate the input to the executable, run the executable and
 display sample output.
 
+#### To run standalone
+
+You can also run `tdms` from the command line...
+
+```bash
+$ tdms --help
+Usage:
+tdms [options] infile outfile
+tdms [options] infile gridfile outfile
+Options:
+-h:	Display this help message
+--finite-difference:	Use the finite-difference solver, instead of the pseudo-spectral method.
+-q:	Quiet operation. Silence all logging
+-m:	Minimise output file size by not saving vertex and facet information
+```
+
+The basic workflow is with two arguments, an input file as specified by [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output file name to be created.
+
+You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
 
 #### Parallelism
 
@@ -80,9 +110,10 @@ number of threads can be set with the `OMP_NUM_THREADS` environment variable.
 For example, to use 4 threads, in a bash shell, use:
 
 ```bash
-export OMP_NUM_THREADS=4
+$ export OMP_NUM_THREADS=4
 ```
 
+Before calling the `tdms` executable.
 
 ## Contributing
 
