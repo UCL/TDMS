@@ -83,33 +83,10 @@ endif()
 
 
 # TDMS target -----------------------------------------------------------------
-set(SOURCES
-    src/fields/base.cpp
-    src/fields/electric.cpp
-    src/fields/magnetic.cpp
-    src/fields/split.cpp
-    src/fields/td_field_exporter_2d.cpp
-    src/argument_parser.cpp
-    src/array_init.cpp
-    src/arrays.cpp
-    src/dimensions.cpp
-    src/fdtd_grid_initialiser.cpp
-    src/grid_labels.cpp
-    src/interface.cpp
-    src/interpolate.cpp
-    src/iterator.cpp
-    src/interpolation_methods.cpp
-    src/matrix_collection.cpp
-    src/mesh_base.cpp
-    src/numerical_derivative.cpp
-    src/openandorder.cpp
-    src/shapes.cpp
-    src/simulation_parameters.cpp
-    src/source.cpp
-    src/timer.cpp
-    src/utils.cpp
-    matlabio/matlabio.cpp
-    )
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+# TODO: can delete this line when matlabio is removed.
+set(SOURCES ${SOURCES} matlabio/matlabio.cpp)
 
 if (BUILD_TESTING)
     test_target()
