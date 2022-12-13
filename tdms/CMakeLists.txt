@@ -81,9 +81,16 @@ else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
-
 # TDMS target -----------------------------------------------------------------
+
+# wildcard to find all *.cpp files in the src directory except for main.cpp
+# (which we don't want for the testing target)
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp")
+
+include(CMakePrintHelpers)
+cmake_print_variables(SOURCES)
+
 
 # TODO: can delete this line when matlabio is removed.
 set(SOURCES ${SOURCES} matlabio/matlabio.cpp)
