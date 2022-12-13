@@ -99,7 +99,9 @@ spdlog::debug("Send help");
 ```
 
 ### Compiling on UCL's Myriad cluster
+
 <details>
+
   > **Warning**
   > These instructions are a bit experimental. Please use with care (and report anything that's wrong here)!
 
@@ -134,13 +136,13 @@ spdlog::debug("Send help");
   CApath: none
   ```
   it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option `-DGIT_SSH=ON` to switch to `git clone` over ssh instead.
+
 </details>
 
 
 ## Where's the main?
 
-The C++ `main` function is in openandorder.cpp <!-- words with a dot in them are assumed to be files so this will hyperlink to openandorder.cpp iff *that* file is also documented. --> however this only really does file I/O and setup.
-The main FDTD algorithm code is in iterator.cpp <!-- won't be linked as an undocumented file doesn't exist for doxygen... this is fine, we can link to the real file in github.--> and classes included therein.
+The C++ `main` function is in main.cpp however the main algorithm code is execute_simulation() in iterator.cpp
 
 ## Testing
 

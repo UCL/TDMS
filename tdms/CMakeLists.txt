@@ -81,34 +81,15 @@ else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
-
 # TDMS target -----------------------------------------------------------------
-set(SOURCES
-    src/fields/base.cpp
-    src/fields/electric.cpp
-    src/fields/magnetic.cpp
-    src/fields/split.cpp
-    src/fields/td_field_exporter_2d.cpp
-    src/argument_parser.cpp
-    src/array_init.cpp
-    src/arrays.cpp
-    src/dimensions.cpp
-    src/fdtd_grid_initialiser.cpp
-    src/grid_labels.cpp
-    src/interface.cpp
-    src/interpolate.cpp
-    src/iterator.cpp
-    src/interpolation_methods.cpp
-    src/matrix_collection.cpp
-    src/mesh_base.cpp
-    src/numerical_derivative.cpp
-    src/shapes.cpp
-    src/simulation_parameters.cpp
-    src/source.cpp
-    src/timer.cpp
-    src/utils.cpp
-    matlabio/matlabio.cpp
-    )
+
+# wildcard to find all *.cpp files in the src directory except for main.cpp
+# (which we don't want for the testing target)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp")
+
+# TODO: can delete this line when matlabio is removed.
+set(SOURCES ${SOURCES} matlabio/matlabio.cpp)
 
 if (BUILD_TESTING)
     test_target()
