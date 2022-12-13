@@ -88,10 +88,6 @@ endif()
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp")
 
-include(CMakePrintHelpers)
-cmake_print_variables(SOURCES)
-
-
 # TODO: can delete this line when matlabio is removed.
 set(SOURCES ${SOURCES} matlabio/matlabio.cpp)
 
