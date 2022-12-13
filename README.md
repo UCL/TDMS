@@ -76,7 +76,7 @@ We recommend that beginners with MATLAB installed start with the demonstration M
 #### To run the demonstration code
 
 Move into directory [`examples/arc_01`](./examples/arc_01/),
-launch Matlab and run the Matlab script:
+launch MATLAB and run the MATLAB script:
 
 [`run_pstd_bscan.m`](./examples/arc_01/run_pstd_bscan.m)
 
