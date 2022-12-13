@@ -28,7 +28,7 @@ using namespace tdms_phys_constants;
 #define TIME_MAIN_LOOP true
 //threshold used to terminate the steady state iterations
 #define TOL 1e-6
-//parameter to control the with of the ramp when introducing the waveform in steady state mode
+//parameter to control the PreferredInterpolationMethodswith of the ramp when introducing the waveform in steady state mode
 #define ramp_width 4.
 
 /*This mex function will take in the following arguments and perform the
@@ -4569,8 +4569,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                E.K_tot - 2, Dimension::THREE);
       H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
                                H.K_tot - 2, Dimension::THREE);
-
-
     } else {
       // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
       E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,

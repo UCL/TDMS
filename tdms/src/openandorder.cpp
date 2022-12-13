@@ -65,9 +65,11 @@ int main(int nargs, char *argv[]){
   if (args.finite_difference())
     solver_method = SolverMethod::FiniteDifference;
   // decide whether to toggle off the band-limited interpolation methods
-  PreferredInterpolationMethods preferred_interpolation_methods = BandLimited; // default
-  if (args.cubic_interpolation())
-    preferred_interpolation_methods = Cubic;
+  PreferredInterpolationMethods preferred_interpolation_methods =
+          PreferredInterpolationMethods::BandLimited;// default
+  if (args.cubic_interpolation()) {
+    preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
+  }
 
   //now run the time propagation code
   execute_simulation(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, solver_method, preferred_interpolation_methods);

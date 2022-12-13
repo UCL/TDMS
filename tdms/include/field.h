@@ -29,7 +29,7 @@
 class Grid {
 protected:
   // the preferred interpolation methods (pim) for interpolating between the grid values, default is BandLimited
-  PreferredInterpolationMethods pim = BandLimited;
+  PreferredInterpolationMethods pim = PreferredInterpolationMethods::BandLimited;
 
 public:
   int I_tot = 0;

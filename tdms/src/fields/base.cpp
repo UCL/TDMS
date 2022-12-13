@@ -88,17 +88,18 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
   */
   if ((mode == THREE) && (j_upper < j_lower)) {
     // in a 2D simulation, interpolation can't occur in all 3 dimensions
-    // beyond that however, interpolation is the same
+    // beyond that however, interpolation methods can be called as usual
     for (int i = i_lower; i <= i_upper; i++) {
       for (int k = k_lower; k <= k_upper; k++) {
         CellCoordinate current_cell(i,0,k);
         complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell),
+                        y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell),
                         z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
         real_out.x[k - k_lower][0][i - i_lower] = x_at_centre.real();
         imag_out.x[k - k_lower][0][i - i_lower] = x_at_centre.imag();
         // y interpolation doesn't take place, so use placeholder values
-        real_out.y[k - k_lower][0][i - i_lower] = real.y[k][0][i];
-        imag_out.y[k - k_lower][0][i - i_lower] = imag.y[k][0][i];
+        real_out.y[k - k_lower][0][i - i_lower] = y_at_centre.real();
+        imag_out.y[k - k_lower][0][i - i_lower] = y_at_centre.imag();
         real_out.z[k - k_lower][0][i - i_lower] = z_at_centre.real();
         imag_out.z[k - k_lower][0][i - i_lower] = z_at_centre.imag();
       }
