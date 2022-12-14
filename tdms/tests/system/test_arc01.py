@@ -1,29 +1,37 @@
+import os
+from pathlib import Path
+
 from utils import HDF5File, download_data, run_tdms, work_in_zipped_dir
-from zip_file_config_object import ZipFileConfig
 
-# Config options for this test
-id = 1
-zenodo_link = "https://zenodo.org/record/6838866/files/arc_01.zip"
-other_spatial_object = "cyl"
-uses_fdtd = False
+ZIP_PATH = Path(os.path.dirname(os.path.abspath(__file__)), "data", "arc_01.zip")
 
-# Create the config object
-test_config = ZipFileConfig(id, zenodo_link, other_spatial_object, uses_fdtd)
-# Fetch data if it is not already available
-if not test_config.zip_path.exists():
-    download_data(test_config.zenodo_link, to=test_config.zip_path)
+if not ZIP_PATH.exists():
+    download_data("https://zenodo.org/record/6838866/files/arc_01.zip", to=ZIP_PATH)
 
 
-@work_in_zipped_dir(test_config.zip_path)
-def test_inputs_in_zip() -> None:
+@work_in_zipped_dir(ZIP_PATH)
+def test_fs():
     """
-    Tests both cubic and band-limited interpolation outputs computed from the relevent input files in this .zip folder, against the corresponding reference outputs in this .zip folder.
+    Ensure that the free space PSTD output matches the reference. Checks
+    that the output .mat file (with a HDF5 format) contains tensors with
+    relative mean square values within numerical precision of the reference.
     """
 
-    for test_case in test_config.generate_tdms_commands():
-        tdms_command = test_case[0]
-        run_tdms(*tdms_command.generate_tdms_command())
+    run_tdms("arc_01/pstd_fs_input.mat", "pstd_fs_output.mat")
 
-        reference = HDF5File(test_case[1])
-        assert HDF5File(tdms_command.output_file).matches(reference)
-    return
+    reference = HDF5File("arc_01/pstd_fs_reference_output.mat")
+    assert HDF5File("pstd_fs_output.mat").matches(reference)
+
+
+@work_in_zipped_dir(ZIP_PATH)
+def test_cyl():
+    """
+    Ensure that the cylinder PSTD output matches the reference. Checks
+    that the output .mat file (with a HDF5 format) contains tensors with
+    relative mean square values within numerical precision of the reference.
+    """
+
+    run_tdms("arc_01/pstd_cyl_input.mat", "pstd_cyl_output.mat")
+
+    reference = HDF5File("arc_01/pstd_cyl_reference_output.mat")
+    assert HDF5File("pstd_cyl_output.mat").matches(reference)
