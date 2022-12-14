@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import yaml
-from utils import HDF5File, run_tdms
+from utils import run_tdms
 
 # config files must provide this information
 required_fields = ["test_id", "tests"]
@@ -45,7 +45,7 @@ class TDMSSystemTest:
         for required_info in run_required_info:
             setattr(self, required_info, information[required_info])
         # attempt to extract optional fields, otherwise fill with default values
-        for optional_info, default_option in run_optional_info:
+        for optional_info, default_option in run_optional_info.items():
             if optional_info in information.keys():
                 # optional information provided
                 setattr(self, optional_info, information[optional_info])
@@ -54,7 +54,10 @@ class TDMSSystemTest:
                 setattr(self, optional_info, default_option)
         return
 
-    def get_output_file_name(self) -> None:
+    def get_reference_file_name(self) -> str:
+        return self.reference
+
+    def get_output_file_name(self) -> str:
         # output files generated from running tdms are named as below
         # these files are to be compared to self.reference
         return f"./{self.run_id}_output.mat"
@@ -75,26 +78,50 @@ class TDMSSystemTest:
         # return a list that can be passed to run_tdms with * expansion
         return tdms_call_options
 
-    def assert_output_matches_reference(self) -> None:
-        # load reference file
-        reference_file = HDF5File(self.reference)
-        # load output file
-        output_file = HDF5File(self.get_output_file_name())
-        # assert file contents match
-        assert output_file.matches(reference_file)
-        return
-
     def run(self) -> None:
         tdms_command_call = self.create_tdms_call_options()
         # unpack into arguments to run_tdms
         print(f"Calling tdms with arguments {tdms_command_call}")
         run_tdms(*tdms_command_call)
-        # assert the output matches the reference
-        self.assert_output_matches_reference()
         return
 
 
 class YAMLTestConfig:
+    """
+    Each test has a config file, config.yaml, at the top-level of the .zip folder.
+    This config file contains information about the tests that are to be run using the data and reference outputs contained in the folder.
+
+    Config file syntax is presently:
+    test_id: XX
+    tests:
+        test_name_no_spaces:
+            input_file: relative_path_to_input
+            reference: relative_path_to_reference_output
+            fdtd_solver: True/False [optional, default is False is absent]
+            cubic_interpolation: True/False [optional, default is False if absent]
+
+    You can define multiple tests using the usual yaml syntax. For example, arc_01.zip contains 4 tests which are a mixture of cubic and band-limited interpolation tests.
+
+    test_id: 01
+    tests:
+        fs_bli:
+            input_file: pstd_fs_input.mat
+            reference: pstd_fs_bli_reference.mat
+        fs_cubic:
+            input_file: pstd_fs_input.mat
+            reference: pstd_fs_cubic_reference.mat
+            cubic_interpolation: True
+        cyl_bli:
+            input_file: pstd_cyl_input.mat
+            reference: pstd_cyl_bli_reference.mat
+        cycl_cubic:
+            input_file: pstd_cyl_input.mat
+            reference: pstd_cyl_bli_reference.mat
+            cubic_interpolation: True
+
+    It is also possible to mix-and-match the fdtd_solver in a similar way.
+    """
+
     def __init__(self, config_file_path=Path("./config.yaml")) -> None:
         # get config information
         config = open_and_validate_config(config_file_path)
@@ -102,7 +129,7 @@ class YAMLTestConfig:
         # read test id
         self.test_id = config["test_id"]
         # read test information and create test runs
-        self.generate_test_list(config["tests"])
+        self.run_list = self.generate_test_list(config["tests"])
 
         return
 
@@ -110,8 +137,8 @@ class YAMLTestConfig:
         # check that all runs have the required information
         validate_run_information(runs)
         # unpack the test information
-        self.run_list = []
-        for run_name, run_info in runs.keys():
-            self.run_list.append(TDMSSystemTest(run_name, run_info))
+        run_list = []
+        for run_name, run_info in runs.items():
+            run_list.append(TDMSSystemTest(run_name, run_info))
 
-        return
+        return run_list

@@ -75,7 +75,7 @@ class HDF5File(dict):
 
         return array.reshape(shape)
 
-    def matches(self, other: "HDF5File", rtol=1e-10) -> bool:
+    def matches(self, other: "HDF5File", rtol=1e-10, return_message=False) -> bool:
         """
         Does this file match another? All arrays must be within a rtol
         to the other, where rtol is the relative difference between the two
@@ -90,21 +90,26 @@ class HDF5File(dict):
             other_value = other[key]
 
             if value.shape != other_value.shape:
-                print(
-                    f"Array shape in {key} was not the same. "
-                    f"{value.shape} ≠ {other_value.shape}"
-                )
-                return False  # Shapes did not match
+                # Shapes did not match
+                info_message = f"Array shape in {key} was not the same. {value.shape} ≠ {other_value.shape}"
+                if return_message:
+                    return False, info_message
+                else:
+                    return False
 
             r_ms_diff = relative_mean_squared_difference(value, other_value)
             if r_ms_diff > rtol:
-                print(
-                    f"{key} was not within {rtol} to the reference. "
-                    f"relative MSD = {r_ms_diff:.8f})"
-                )
-                return False
-
-        return True
+                # rms difference was too great
+                info_message = f"{key} was not within {rtol} to the reference. Relative MSD = {r_ms_diff:.8f}"
+                if return_message:
+                    return False, info_message
+                else:
+                    print(info_message)
+                    return False
+        if return_message:
+            return True, "No differences detected"
+        else:
+            return True
 
 
 def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
