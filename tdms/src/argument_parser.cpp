@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "globals.h"
+
 using namespace std;
 
 
@@ -14,6 +16,11 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 
   if (args.have_flag("-h")){
     print_help_message();
+    exit(0);
+  }
+
+  if (args.have_flag("-v") || args.have_flag("--version")) {
+    print_version();
     exit(0);
   }
 
@@ -51,9 +58,14 @@ void ArgumentParser::print_help_message(){
                  "tdms [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
+                 "-v, --version:\tDisplay tdms version information\n"
                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
+}
+
+void ArgumentParser::print_version() {
+  fprintf(stdout,"TDMS version: %s\n", tdms::VERSION.c_str());
 }
 
 ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {

@@ -5,6 +5,19 @@
 #pragma once
 
 #include <complex>
+#include <string>
+
+namespace tdms {
+
+// TDMS_VERSION might have been defined in CMake from git tags or the git
+// branch, if not then we assume it's a development version
+#ifdef TDMS_VERSION
+const std::string VERSION = std::string(TDMS_VERSION);
+#else
+const std::string VERSION = "development";
+#endif
+
+}
 
 // ******************
 //  Type Definitions

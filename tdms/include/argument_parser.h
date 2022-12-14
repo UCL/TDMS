@@ -116,6 +116,8 @@ class ArgumentParser {
 private:
     /** Prints the help message (all options).  */
     static void print_help_message();
+    /** Prints this software version. */
+    static void print_version();
 
 public:
     /**

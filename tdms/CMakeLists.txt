@@ -81,6 +81,17 @@ else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
+
+# TDMS version ----------------------------------------------------------------
+# if supplied via the cmake configuration (-DTDMS_VERSION=whatever_I_want) then
+# respect that, otherwise construct a version from a git tag or commit hash.
+if (NOT TDMS_VERSION)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_from_git.cmake)
+endif()
+add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
+message(STATUS "Compiling TDMS version: ${TDMS_VERSION}")
+
+
 # TDMS target -----------------------------------------------------------------
 
 # wildcard to find all *.cpp files in the src directory except for main.cpp
@@ -100,6 +111,8 @@ endif()
 
 # Compile options -------------------------------------------------------------
 target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
+add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
+#target_compile_definitions(tdms PRIVATE TDMS_VERSION="${TDMS_VERSION}")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(tdms PRIVATE /W4)
