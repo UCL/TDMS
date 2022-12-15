@@ -12,7 +12,11 @@ ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # all test cases and where to aquire their data
 TEST_URLS = {
-    "01": ZENODO_URL + "6838866/files/arc_01.zip"  # this is still the old data!
+    "01": ZENODO_URL + "fixme/arc_01.zip",
+    "02": ZENODO_URL + "fixme/arc_02.zip",
+    "03": ZENODO_URL + "fixme/arc_03.zip",
+    "09": ZENODO_URL + "fixme/arc_09.zip",
+    "10": ZENODO_URL + "fixme.arc_10.zip",
 }
 
 
@@ -45,7 +49,7 @@ def test_system(test_id, url) -> None:
     print(f"Running {test_id}", end=" | ")
 
     # the data should be at this location
-    ZIP_PATH = ZIP_DESTINATION / f"new_arc_{test_id}.zip"
+    ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
     # download data if not present
     if not ZIP_PATH.exists():
         print(f"Downloading from {url}")
