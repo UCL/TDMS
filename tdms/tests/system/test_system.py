@@ -6,7 +6,7 @@ from pytest_check import check
 from read_config import YAMLTestConfig
 from utils import HDF5File, download_data, work_in_zipped_dir
 
-ZENODO_URL = "https://sandbox.zenodo.org/record/1136250/files"
+ZENODO_URL = "https://sandbox.zenodo.org/record/1136678/files"
 # directory in which to store the downloaded zip files
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
@@ -50,7 +50,7 @@ def workflow() -> None:
 # run this for each key, value pair in the TEST_URLS (IE each test_id and zenodo url)
 @pytest.mark.parametrize("test_id, url", list(TEST_URLS.items()))
 def test_system(test_id, url) -> None:
-    print(f"Running {test_id}", end=" | ")
+    print(f"\nRunning {test_id}", end=" | ")
 
     # the data should be at this location
     ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
