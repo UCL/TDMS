@@ -88,8 +88,11 @@ endif()
 if (NOT TDMS_VERSION)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_from_git.cmake)
 endif()
-add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
-message(STATUS "Compiling TDMS version: ${TDMS_VERSION}")
+
+if (TDMS_VERSION)
+    add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
+    message(STATUS "Compiling TDMS version: ${TDMS_VERSION}")
+endif()
 
 
 # TDMS target -----------------------------------------------------------------
@@ -111,8 +114,6 @@ endif()
 
 # Compile options -------------------------------------------------------------
 target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
-add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
-#target_compile_definitions(tdms PRIVATE TDMS_VERSION="${TDMS_VERSION}")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(tdms PRIVATE /W4)

@@ -1,6 +1,19 @@
 find_package(Git)
 if(GIT_FOUND)
 
+	# Check we're in a git repo.
+	execute_process(OUTPUT_VARIABLE IS_REPO
+		COMMAND ${GIT_EXECUTABLE} rev-parse --is-inside-work-tree
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		ERROR_QUIET)
+
+	if (NOT IS_REPO)
+		message(WARNING
+		       	"No git repository found. You can safely ignore this warning if you're compiling from a tar of the source code.")
+		unset(TDMS_VERSION)
+		return()
+	endif()
+
 	# Get current branch name.
 	execute_process(OUTPUT_VARIABLE CURRENT_BRANCH
 		COMMAND ${GIT_EXECUTABLE} symbolic-ref --short HEAD
