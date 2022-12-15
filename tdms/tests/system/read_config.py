@@ -40,6 +40,14 @@ class TDMSSystemTest:
         # associate the command to the run name
         self.run_id = name
 
+        # check that the user has not provided any unexpected information
+        for info in information.keys():
+            if (info not in run_required_info) and (
+                info not in run_optional_info.keys()
+            ):
+                # we don't expect this information! Throw an error
+                raise RuntimeError(f"{self.run_id} got unexpected information: {info}")
+
         # extract the information about this run
         # all required fields have been validated, so they exist
         for required_info in run_required_info:

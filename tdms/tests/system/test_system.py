@@ -6,17 +6,21 @@ from pytest_check import check
 from read_config import YAMLTestConfig
 from utils import HDF5File, download_data, work_in_zipped_dir
 
-ZENODO_URL = "https://zenodo.org/record/"
+ZENODO_URL = "https://sandbox.zenodo.org/record/1136250/files"
 # directory in which to store the downloaded zip files
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # all test cases and where to aquire their data
 TEST_URLS = {
-    "01": ZENODO_URL + "fixme/arc_01.zip",
-    "02": ZENODO_URL + "fixme/arc_02.zip",
-    "03": ZENODO_URL + "fixme/arc_03.zip",
-    "09": ZENODO_URL + "fixme/arc_09.zip",
-    "10": ZENODO_URL + "fixme.arc_10.zip",
+    "01": ZENODO_URL + "/arc_01.zip",
+    "02": ZENODO_URL + "/arc_02.zip",
+    "03": ZENODO_URL + "/arc_03.zip",
+    "08": ZENODO_URL + "/arc_08.zip",
+    "09": ZENODO_URL + "/arc_09.zip",
+    "10": ZENODO_URL + "/arc_10.zip",
+    "12": ZENODO_URL + "/arc_12.zip",
+    "13": ZENODO_URL + "/arc_13.zip",
+    "example_fdtd": ZENODO_URL + "/arc_example_fdtd.zip",
 }
 
 
