@@ -873,8 +873,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
   //work out if we have conductive background
   bool is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
-  //work out if we have a dispersive background
-  if (params.is_disp_ml) params.is_disp_ml = is_dispersive_ml(ml, K_tot);
+  // work out if we have a dispersive background
+  if (params.is_disp_ml) params.is_disp_ml = ml.is_dispersive(K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, params.is_disp_ml: %d\n",is_disp,is_cond,params.is_disp_ml);
   //if we have dispersive materials we need to create additional field variables
   auto E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
@@ -5191,12 +5191,5 @@ bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot) {
   for (int k = 0; k < (K_tot + 1); k++)
     if (fabs(rho.z[k]) > 1e-15) return true;
 
-  return false;
-}
-
-/*work out if we have a dispersive background*/
-bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot) {
-  for (int i = 0; i < K_tot; i++)
-    if (fabs(ml.gamma[i]) > 1e-15) return true;
   return false;
 }

@@ -112,6 +112,16 @@ DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
   sigma.z = mxGetPr(ptr_to_matrix_in(ptr, "sigma_z", "dispersive_aux"));
 }
 
+bool DispersiveMultiLayer::is_dispersive(int K_tot, double near_zero_tolerance) {
+  for (int i = 0; i < K_tot; i++) {
+    if (fabs(gamma[i]) > 1e-15) {
+      // non-zero attenuation constant of a Yee cell implies media is dispersive
+      return true;
+    }
+  }
+  return false;
+}
+
 GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
   if (mxIsEmpty(ptr)) {

@@ -57,8 +57,6 @@ void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<dou
 
 bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
 
-bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
-
 void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
                             ComplexAmplitudeSample &campssample, int n, double omega, double dt, int Nt,
                             int dimension,int J_tot,int intmethod );

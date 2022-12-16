@@ -172,6 +172,16 @@ public:
 
 public:
   explicit DispersiveMultiLayer(const mxArray *ptr);
+
+  /**
+   * @brief Determines whether the (background) medium is dispersive
+   *
+   * @param K_tot Number of Yee cells in the z-direction (number of entries in this->gamma)
+   * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation) values
+   * @return true Background is dispersive
+   * @return false Background is not dispersive
+   */
+  bool is_dispersive(int K_tot, double near_zero_tolerance=1e-15);
 };
 
 template<typename T>
