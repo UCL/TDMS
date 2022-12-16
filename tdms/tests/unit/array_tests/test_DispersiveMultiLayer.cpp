@@ -73,10 +73,10 @@ void DispersiveMultilayerTest::test_other_methods() {
     // create DispersiveMultiLayer object
     DispersiveMultiLayer dml(matlab_input);
 
-    // all entries in gamma are 1. -> so a tolerance of 1.5 should flag the dml as dispersive
-    REQUIRE(dml.is_dispersive(n_numeric_elements, 1.5));
-    // yet a tolerance of 0.5 should not
-    REQUIRE(!dml.is_dispersive(n_numeric_elements, 0.5));
+    // all entries in gamma are 1. -> so a tolerance of 1.5 should flag the dml as not dispersive
+    REQUIRE(!dml.is_dispersive(n_numeric_elements, 1.5));
+    // yet a tolerance of 0.5 should flag it as dispersive
+    REQUIRE(dml.is_dispersive(n_numeric_elements, 0.5));
   }
 }
 
