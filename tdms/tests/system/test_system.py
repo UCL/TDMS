@@ -6,7 +6,9 @@ from pytest_check import check
 from read_config import YAMLTestConfig
 from utils import HDF5File, download_data, work_in_zipped_dir
 
-ZENODO_URL = "https://sandbox.zenodo.org/record/1136678/files"
+# Dataset is stored at https://zenodo.org/record/7440616/
+# ccaegra@ucl.ac.uk (William Graham, @willGraham01) has access.
+ZENODO_URL = "https://zenodo.org/record/7440616/files"
 # directory in which to store the downloaded zip files
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
