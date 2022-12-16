@@ -341,6 +341,20 @@ public:
    */
   void set_values_from(Field &other);
 
+  /**
+   * @brief Computes the maximum pointwise absolute difference of the other field to this one, divided by the largest absolute value of this field's components.
+   *
+   * Specifically, we compute and return the quantity
+   * $$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{ \max_{i,j,k}this[k][j][i] } $$
+   * This quantity is used to determine convergence of phasors.
+   *
+   * The other field must have the same dimensions as this field.
+   *
+   * @param other The other field
+   * @return double Maximum relative pointwise absolute difference
+   */
+  double max_pointwise_difference_over_max_element(Field &other);
+
   ~Field();
 };
 

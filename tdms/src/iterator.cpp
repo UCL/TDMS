@@ -1124,7 +1124,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
       dft_counter = 0;
 
-      double tol = checkPhasorConvergence(E, E_copy);
+      double tol = E.max_pointwise_difference_over_max_element(E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
@@ -5128,26 +5128,6 @@ double linearRamp(double t, double period, double rampwidth) {
   if (t > period * rampwidth) return 1.;
   else
     return t / (period * rampwidth);
-}
-
-double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
-
-  double max_abs = 0., max_abs_diff = 0.;
-
-  //find the largest maximum absolute value the largest difference (in absolute value) between phasors
-  for (char c : {'x', 'y', 'z'})
-    for (int k = 0; k < E.K_tot; k++)
-      for (int j = 0; j < E.J_tot; j++)
-        for (int i = 0; i < E.I_tot; i++){
-
-            auto E_ijk = E.real[c][k][j][i] + IMAGINARY_UNIT * E.imag[c][k][j][i];
-            auto E_copy_ijk = E_copy.real[c][k][j][i] + IMAGINARY_UNIT * E_copy.imag[c][k][j][i];
-
-            max_abs = max(max_abs, abs(E_ijk));  // max(max_abs, |Re(E_x) + i Im(E_x)|)
-            max_abs_diff = max(max_abs_diff, abs(E_ijk - E_copy_ijk));
-          }
-
-  return max_abs_diff / max_abs;
 }
 
 /*Load up the output grid labels*/
