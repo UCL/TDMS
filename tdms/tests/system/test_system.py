@@ -27,6 +27,12 @@ TEST_URLS = {
 
 
 def workflow() -> None:
+    """This is the workflow for a single zip file containing system tests:
+    - Extract all tests by reading the config file
+    - Run each system test specified in the config file
+    - Report failures / successes accordingly.
+    pytest-check is used to prevent automatic failure at the first test if the .zip file contains multiple tests.
+    """
     config_for_tests = YAMLTestConfig()
     system_tests_in_this_folder = config_for_tests.run_list
 
@@ -49,9 +55,13 @@ def workflow() -> None:
     return
 
 
-# run this for each key, value pair in the TEST_URLS (IE each test_id and zenodo url)
+# parameterise with each key, value in TEST_URLS (IE each test_id and zenodo url)
 @pytest.mark.parametrize("test_id, url", list(TEST_URLS.items()))
 def test_system(test_id, url) -> None:
+    """Fetches the system test data (from url) for test test_id and then calls workflow() on the downloaded data.
+
+    Download is skipped if test data is already present in a cached folder - manually delete this cache to force a redownload of the data.
+    """
     print(f"\nRunning {test_id}", end=" | ")
 
     # the data should be at this location
