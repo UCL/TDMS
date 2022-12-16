@@ -114,7 +114,7 @@ DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
 
 bool DispersiveMultiLayer::is_dispersive(int K_tot, double near_zero_tolerance) {
   for (int i = 0; i < K_tot; i++) {
-    if (fabs(gamma[i]) > 1e-15) {
+    if (fabs(gamma[i]) > near_zero_tolerance) {
       // non-zero attenuation constant of a Yee cell implies media is dispersive
       return true;
     }

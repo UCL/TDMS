@@ -60,14 +60,14 @@ void DispersiveMultilayerTest::test_correct_construction() {
 void DispersiveMultilayerTest::test_other_methods() {
   SECTION("is_dispersive()") {
     create_1by1_struct(n_fields, fieldnames);
-    // build "data" for each of the fields, which is going to be the same array filled with consecutive integers
+    // build "data" for each of the fields, just a constant array of 1s
     const int array_size[2] = {1, n_numeric_elements};
     mxArray *field_array_ptrs[n_fields];
     for (int i = 0; i < n_fields; i++) {
       field_array_ptrs[i] =
               mxCreateNumericArray(2, (const mwSize *) array_size, mxDOUBLE_CLASS, mxREAL);
       mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
-      for (int i = 0; i < n_numeric_elements; i++) { where_to_place_data[i] = (double) 1.; }
+      for (int i = 0; i < n_numeric_elements; i++) { where_to_place_data[i] = 1.; }
       mxSetField(matlab_input, 0, fieldnames[i], field_array_ptrs[i]);
     }
     // create DispersiveMultiLayer object
