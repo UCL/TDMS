@@ -293,7 +293,7 @@ private:
   const static int n_rows = 16;
 
   void test_correct_construction() override;
-  // set_ptr()
+  // set_ptr(), all_elements_less_than()
   void test_other_methods() override;
 
 public:
