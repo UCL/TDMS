@@ -537,9 +537,9 @@ void conciseCreateBoundary(int I0, int I1,int K0, int K1,
 }
 
 void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
-                                  PhasorInc &phasorinc, mxArray **vertices, mxArray ** facets){
+                                  SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray ** facets){
 
-  int dI = phasorinc.x, dJ = phasorinc.y, dK = phasorinc.z;
+  int dI = spacing_stride.x, dJ = spacing_stride.y, dK = spacing_stride.z;
   mxArray *triangles[6];
   mxArray *index_map;
   int ndims, ***index_map_int, nindices, **vertices_int, i, **facets_int, j,k, **triangles_int,ii,jj,kk;

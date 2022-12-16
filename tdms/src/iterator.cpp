@@ -423,7 +423,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   input_counter++;
   //fprintf(stderr,"Got   phasorsurface\n");
 
-  params.set_phasorinc(mxGetPr(prhs[input_counter++]));
+  params.set_spacing_stride(mxGetPr(prhs[input_counter++]));
   params.set_dimension(string_in(prhs[input_counter++], "dimension"));
 
   /*Get conductive_aux */
@@ -593,7 +593,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   params.phasorinc, &mx_surface_vertices,
+                                   params.spacing_stride, &mx_surface_vertices,
                                    &mx_surface_facets);
     //fprintf(stderr,"Qos 00a:\n");
     //we don't need the facets so destroy the matrix now to save memory
@@ -4636,7 +4636,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                             &mx_surface_facets);
     else
       conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   params.phasorinc, &dummy_vertex_list,
+                                   params.spacing_stride, &dummy_vertex_list,
                                    &mx_surface_facets);
     mxDestroyArray(dummy_vertex_list);
     mxArray *vertex_list;

@@ -47,8 +47,8 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 
 void ArgumentParser::print_help_message(){
   fprintf(stdout,"Usage:\n"
-                 "openandorder [options] infile outfile\n"
-                 "openandorder [options] infile gridfile outfile\n"
+                 "tdms [options] infile outfile\n"
+                 "tdms [options] infile gridfile outfile\n"
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"

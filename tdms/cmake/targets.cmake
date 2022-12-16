@@ -1,7 +1,7 @@
 function(release_target)
     add_executable(tdms)
 
-    target_sources(tdms PRIVATE ${SOURCES} src/openandorder.cpp)
+    target_sources(tdms PRIVATE ${SOURCES} src/main.cpp)
 
     target_link_libraries(tdms
             FFTW::Double
@@ -36,7 +36,7 @@ function(test_target)
 
     add_library(tdms_lib SHARED)
     target_sources(tdms_lib PUBLIC ${SOURCES})
-    add_executable(tdms "src/openandorder.cpp")
+    add_executable(tdms "src/main.cpp")
 
     target_link_libraries(tdms_lib LINK_PUBLIC
             FFTW::Double
