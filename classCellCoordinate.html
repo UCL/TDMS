@@ -94,11 +94,11 @@ $(document).ready(function(){initNavTree('classCellCoordinate.html',''); initRes
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa0131104f94bf6ede649a5bfc94988dd"><td class="memItemLeft" align="right" valign="top"><a id="aa0131104f94bf6ede649a5bfc94988dd"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CellCoordinate</b> (int i=0, int j=0, int k=0)</td></tr>
+<tr class="memitem:aa0131104f94bf6ede649a5bfc94988dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCellCoordinate.html#aa0131104f94bf6ede649a5bfc94988dd">CellCoordinate</a> (int i=0, int j=0, int k=0)</td></tr>
+<tr class="memdesc:aa0131104f94bf6ede649a5bfc94988dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Cell Coordinate object.  <a href="classCellCoordinate.html#aa0131104f94bf6ede649a5bfc94988dd">More...</a><br /></td></tr>
 <tr class="separator:aa0131104f94bf6ede649a5bfc94988dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeea8dbe33085f2d5f311ed2929881a58"><td class="memItemLeft" align="right" valign="top"><a id="aeea8dbe33085f2d5f311ed2929881a58"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CellCoordinate</b> (int *indices, int buffer_start=0)</td></tr>
+<tr class="memitem:aeea8dbe33085f2d5f311ed2929881a58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCellCoordinate.html#aeea8dbe33085f2d5f311ed2929881a58">CellCoordinate</a> (int *indices, int buffer_start=0)</td></tr>
+<tr class="memdesc:aeea8dbe33085f2d5f311ed2929881a58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Cell Coordinate object, passing in a contiguous block of memory.  <a href="classCellCoordinate.html#aeea8dbe33085f2d5f311ed2929881a58">More...</a><br /></td></tr>
 <tr class="separator:aeea8dbe33085f2d5f311ed2929881a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a48a155f28923f9eab94efda1c609c9"><td class="memItemLeft" align="right" valign="top"><a id="a1a48a155f28923f9eab94efda1c609c9"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>i</b> ()</td></tr>
@@ -122,6 +122,102 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>cell_j</b> = 0</td></t
 int&#160;</td><td class="memItemRight" valign="bottom"><b>cell_k</b> = 0</td></tr>
 <tr class="separator:a6f0836e9e2cb593f2ff0a4819459e6bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa0131104f94bf6ede649a5bfc94988dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0131104f94bf6ede649a5bfc94988dd">&#9670;&nbsp;</a></span>CellCoordinate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CellCoordinate::CellCoordinate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new Cell Coordinate object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i,j,k</td><td>The cell index to assign </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aeea8dbe33085f2d5f311ed2929881a58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea8dbe33085f2d5f311ed2929881a58">&#9670;&nbsp;</a></span>CellCoordinate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CellCoordinate::CellCoordinate </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>buffer_start</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a new Cell Coordinate object, passing in a contiguous block of memory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">indices</td><td>The indices of the cell index to assign, in the order i,j,k </td></tr>
+    <tr><td class="paramname">buffer_start</td><td>First index to read the indices from </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>tdms/include/<a class="el" href="cell__coordinate_8h_source.html">cell_coordinate.h</a></li>
 </ul>

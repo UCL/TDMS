@@ -22,6 +22,10 @@ var globals_8h =
       [ "Pass1", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a24553a2fdacf611cf1fb636d49cd3af7", null ],
       [ "Pass2", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a7dd0791ec75e1af594b61ed389686b9e", null ]
     ] ],
+    [ "PreferredInterpolationMethods", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6", [
+      [ "BandLimited", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6a457951a3c523f17bf4b0141e698ea04d", null ],
+      [ "Cubic", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6a7105ea83819b1af6af85747e20b462b4", null ]
+    ] ],
     [ "RCSType", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dc", [
       [ "parallel", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca906be981ba932a8b90590636ecab34bf", null ],
       [ "perpendicular", "globals_8h.html#a9ff9e016c2e85bd54df1d079f25068dca925a6f3e03e5ba73559d120ddc352c9b", null ]

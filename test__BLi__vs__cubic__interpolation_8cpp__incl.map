@@ -1,10 +1,11 @@
 <map id="tdms/tests/unit/test_BLi_vs_cubic_interpolation.cpp" name="tdms/tests/unit/test_BLi_vs_cubic_interpolation.cpp">
 <area shape="rect" id="node1" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="320,5,549,47"/>
 <area shape="rect" id="node2" href="$interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="5,95,187,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="211,95,296,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="321,95,383,121"/>
-<area shape="rect" id="node6" title=" " alt="" coords="408,95,627,121"/>
-<area shape="rect" id="node7" title=" " alt="" coords="651,95,775,121"/>
-<area shape="rect" id="node8" title=" " alt="" coords="799,95,926,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="57,169,135,196"/>
+<area shape="rect" id="node5" title=" " alt="" coords="211,95,296,121"/>
+<area shape="rect" id="node6" title=" " alt="" coords="321,95,383,121"/>
+<area shape="rect" id="node7" title=" " alt="" coords="408,95,627,121"/>
+<area shape="rect" id="node8" title=" " alt="" coords="651,95,775,121"/>
+<area shape="rect" id="node9" title=" " alt="" coords="799,95,926,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="57,244,135,271"/>
+<area shape="rect" id="node4" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="95,169,177,196"/>
 </map>

@@ -101,23 +101,24 @@ Include dependency graph for iterator.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="iterator_8h__incl.png" border="0" usemap="#atdms_2include_2iterator_8h" alt=""/></div>
 <map name="atdms_2include_2iterator_8h" id="atdms_2include_2iterator_8h">
-<area shape="rect" title="The main time propogation algorithm." alt="" coords="588,5,757,32"/>
-<area shape="rect" title=" " alt="" coords="880,379,959,405"/>
-<area shape="rect" href="arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="555,229,630,256"/>
-<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="551,80,613,107"/>
-<area shape="rect" href="grid__labels_8h.html" title="Class to hold the labels of a Yee cell." alt="" coords="319,80,424,107"/>
-<area shape="rect" title=" " alt="" coords="333,379,391,405"/>
-<area shape="rect" title=" " alt="" coords="637,304,724,331"/>
-<area shape="rect" title=" " alt="" coords="749,304,815,331"/>
-<area shape="rect" title=" " alt="" coords="469,304,561,331"/>
-<area shape="rect" href="utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="331,304,393,331"/>
-<area shape="rect" href="globals_8h.html" title="Type definitions and global constants." alt="" coords="840,304,921,331"/>
-<area shape="rect" href="dimensions_8h.html" title=" " alt="" coords="257,155,366,181"/>
-<area shape="rect" href="mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="176,229,255,256"/>
-<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="444,155,629,181"/>
-<area shape="rect" title=" " alt="" coords="195,304,255,331"/>
-<area shape="rect" title=" " alt="" coords="5,304,68,331"/>
-<area shape="rect" title=" " alt="" coords="93,304,170,331"/>
+<area shape="rect" title="The main time propogation algorithm." alt="" coords="841,5,1010,32"/>
+<area shape="rect" title=" " alt="" coords="651,379,730,405"/>
+<area shape="rect" href="arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="324,229,399,256"/>
+<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="778,80,841,107"/>
+<area shape="rect" href="grid__labels_8h.html" title="Class to hold the labels of a Yee cell." alt="" coords="931,80,1037,107"/>
+<area shape="rect" title=" " alt="" coords="27,379,85,405"/>
+<area shape="rect" title=" " alt="" coords="111,304,198,331"/>
+<area shape="rect" title=" " alt="" coords="223,304,289,331"/>
+<area shape="rect" href="cell__coordinate_8h.html" title="Class declaration for Yee cell coordinates." alt="" coords="639,304,772,331"/>
+<area shape="rect" title=" " alt="" coords="314,304,406,331"/>
+<area shape="rect" href="utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="25,304,87,331"/>
+<area shape="rect" href="globals_8h.html" title="Type definitions and global constants." alt="" coords="533,304,614,331"/>
+<area shape="rect" href="dimensions_8h.html" title=" " alt="" coords="897,155,1007,181"/>
+<area shape="rect" href="mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="918,229,997,256"/>
+<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="402,155,587,181"/>
+<area shape="rect" title=" " alt="" coords="847,304,907,331"/>
+<area shape="rect" title=" " alt="" coords="931,304,994,331"/>
+<area shape="rect" title=" " alt="" coords="1019,304,1096,331"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -135,10 +136,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a40d09cbffd4e57805780be487acf3a71"><td class="memItemLeft" align="right" valign="top"><a id="a40d09cbffd4e57805780be487acf3a71"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iterator_8h.html#a40d09cbffd4e57805780be487acf3a71">execute_simulation</a> (int, mxArray **, int, const mxArray **, SolverMethod)</td></tr>
-<tr class="memdesc:a40d09cbffd4e57805780be487acf3a71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the main simulation. Used to be the MATLAB mexFunction. <br /></td></tr>
-<tr class="separator:a40d09cbffd4e57805780be487acf3a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7a996db8f55052080fc763eb685c3f1"><td class="memItemLeft" align="right" valign="top"><a id="ae7a996db8f55052080fc763eb685c3f1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iterator_8h.html#ae7a996db8f55052080fc763eb685c3f1">execute_simulation</a> (int, mxArray **, int, const mxArray **, SolverMethod solver_method, PreferredInterpolationMethods preferred_interpolation_methods)</td></tr>
+<tr class="memdesc:ae7a996db8f55052080fc763eb685c3f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the main simulation. Used to be the MATLAB mexFunction. <br /></td></tr>
+<tr class="separator:ae7a996db8f55052080fc763eb685c3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c19682035b94fbf4442f786e89d7bde"><td class="memItemLeft" align="right" valign="top"><a id="a6c19682035b94fbf4442f786e89d7bde"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>extractPhasorsPlane</b> (double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs, double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs, <a class="el" href="classElectricSplitField.html">ElectricSplitField</a> &amp;E, <a class="el" href="classMagneticSplitField.html">MagneticSplitField</a> &amp;H, int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt)</td></tr>
 <tr class="separator:a6c19682035b94fbf4442f786e89d7bde"><td class="memSeparator" colspan="2">&#160;</td></tr>

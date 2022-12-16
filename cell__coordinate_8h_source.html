@@ -92,30 +92,44 @@ $(document).ready(function(){initNavTree('cell__coordinate_8h_source.html',''); 
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @author William Graham (ccaegra@ucl.ac.uk)</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * @brief Class declaration for Yee cell coordinates</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="classCellCoordinate.html">    7</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCellCoordinate.html">CellCoordinate</a> {</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="comment">// the indices of the Yee cell. Private so that they cannot be edited unintentionally</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keywordtype">int</span> cell_i = 0, cell_j = 0, cell_k = 0;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <a class="code" href="classCellCoordinate.html">CellCoordinate</a>(<span class="keywordtype">int</span> i = 0, <span class="keywordtype">int</span> j = 0, <span class="keywordtype">int</span> k = 0) {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    cell_i = i;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    cell_j = j;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    cell_k = k;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  };</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <a class="code" href="classCellCoordinate.html">CellCoordinate</a>(<span class="keywordtype">int</span> *indices, <span class="keywordtype">int</span> buffer_start = 0) {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    cell_i = indices[buffer_start];</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    cell_j = indices[buffer_start + 1];</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    cell_k = indices[buffer_start + 2];</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  };</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordtype">int</span> i() { <span class="keywordflow">return</span> cell_i; };   <span class="comment">//&lt; fetch i</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">int</span> j() { <span class="keywordflow">return</span> cell_j; };   <span class="comment">//&lt; fetch j</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">int</span> k() { <span class="keywordflow">return</span> cell_k; };   <span class="comment">//&lt; fetch k</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
-<div class="ttc" id="aclassCellCoordinate_html"><div class="ttname"><a href="classCellCoordinate.html">CellCoordinate</a></div><div class="ttdef"><b>Definition:</b> cell_coordinate.h:7</div></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classCellCoordinate.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCellCoordinate.html">CellCoordinate</a> {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="comment">// the indices of the Yee cell. Private so that they cannot be edited unintentionally</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordtype">int</span> cell_i = 0, cell_j = 0, cell_k = 0;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">public</span>:<span class="comment"></span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">  /**</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">   * @brief Construct a new Cell Coordinate object</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">   *</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">   * @param i,j,k The cell index to assign</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">   */</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classCellCoordinate.html#aa0131104f94bf6ede649a5bfc94988dd">   20</a></span>&#160;  <a class="code" href="classCellCoordinate.html#aa0131104f94bf6ede649a5bfc94988dd">CellCoordinate</a>(<span class="keywordtype">int</span> i = 0, <span class="keywordtype">int</span> j = 0, <span class="keywordtype">int</span> k = 0) {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    cell_i = i;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    cell_j = j;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    cell_k = k;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  };<span class="comment"></span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">  /**</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">   * @brief Construct a new Cell Coordinate object, passing in a contiguous block of memory</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">   *</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">   * @param indices The indices of the cell index to assign, in the order i,j,k</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">   * @param buffer_start First index to read the indices from</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">   */</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classCellCoordinate.html#aeea8dbe33085f2d5f311ed2929881a58">   31</a></span>&#160;  <a class="code" href="classCellCoordinate.html#aeea8dbe33085f2d5f311ed2929881a58">CellCoordinate</a>(<span class="keywordtype">int</span> *indices, <span class="keywordtype">int</span> buffer_start = 0) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    cell_i = indices[buffer_start];</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    cell_j = indices[buffer_start + 1];</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    cell_k = indices[buffer_start + 2];</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  };</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordtype">int</span> i() { <span class="keywordflow">return</span> cell_i; };   <span class="comment">//&lt; fetch i</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">int</span> j() { <span class="keywordflow">return</span> cell_j; };   <span class="comment">//&lt; fetch j</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">int</span> k() { <span class="keywordflow">return</span> cell_k; };   <span class="comment">//&lt; fetch k</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
+<div class="ttc" id="aclassCellCoordinate_html"><div class="ttname"><a href="classCellCoordinate.html">CellCoordinate</a></div><div class="ttdef"><b>Definition:</b> cell_coordinate.h:8</div></div>
+<div class="ttc" id="aclassCellCoordinate_html_aa0131104f94bf6ede649a5bfc94988dd"><div class="ttname"><a href="classCellCoordinate.html#aa0131104f94bf6ede649a5bfc94988dd">CellCoordinate::CellCoordinate</a></div><div class="ttdeci">CellCoordinate(int i=0, int j=0, int k=0)</div><div class="ttdoc">Construct a new Cell Coordinate object.</div><div class="ttdef"><b>Definition:</b> cell_coordinate.h:20</div></div>
+<div class="ttc" id="aclassCellCoordinate_html_aeea8dbe33085f2d5f311ed2929881a58"><div class="ttname"><a href="classCellCoordinate.html#aeea8dbe33085f2d5f311ed2929881a58">CellCoordinate::CellCoordinate</a></div><div class="ttdeci">CellCoordinate(int *indices, int buffer_start=0)</div><div class="ttdoc">Construct a new Cell Coordinate object, passing in a contiguous block of memory.</div><div class="ttdef"><b>Definition:</b> cell_coordinate.h:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -118,9 +118,9 @@ Collaboration diagram for ElectricSplitField:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab379644ec7a0c53fea9d86519aa1cba6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectricSplitField.html#ab379644ec7a0c53fea9d86519aa1cba6">ElectricSplitField</a> (int I_total, int J_total, int K_total)</td></tr>
 <tr class="separator:ab379644ec7a0c53fea9d86519aa1cba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afac29b4ce65f92d79ac2c818bbf368de"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectricSplitField.html#afac29b4ce65f92d79ac2c818bbf368de">interpolate_to_centre_of</a> (AxialDirection d, int i, int j, int k) override</td></tr>
-<tr class="memdesc:afac29b4ce65f92d79ac2c818bbf368de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a split E-field component to the centre of a Yee cell.  <a href="classElectricSplitField.html#afac29b4ce65f92d79ac2c818bbf368de">More...</a><br /></td></tr>
-<tr class="separator:afac29b4ce65f92d79ac2c818bbf368de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a470a3b6d0922dd6678560bbcf6a1fceb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectricSplitField.html#a470a3b6d0922dd6678560bbcf6a1fceb">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell) override</td></tr>
+<tr class="memdesc:a470a3b6d0922dd6678560bbcf6a1fceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a split E-field component to the centre of a Yee cell.  <a href="classElectricSplitField.html#a470a3b6d0922dd6678560bbcf6a1fceb">More...</a><br /></td></tr>
+<tr class="separator:a470a3b6d0922dd6678560bbcf6a1fceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSplitField"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSplitField')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSplitField.html">SplitField</a></td></tr>
 <tr class="memitem:a2bdcf6a2af5f99c6ec348b4d8e842418 inherit pub_methods_classSplitField"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSplitField.html#a2bdcf6a2af5f99c6ec348b4d8e842418">SplitField</a> ()=default</td></tr>
 <tr class="separator:a2bdcf6a2af5f99c6ec348b4d8e842418 inherit pub_methods_classSplitField"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +137,10 @@ Public Member Functions</h2></td></tr>
 <tr class="inherit_header pub_methods_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
 <tr class="memitem:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d">max_IJK_tot</a> () const</td></tr>
 <tr class="separator:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b6535bf88dece0c46c4ce472124c08 inherit pub_methods_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a58b6535bf88dece0c46c4ce472124c08"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGrid.html#a58b6535bf88dece0c46c4ce472124c08">set_preferred_interpolation_methods</a> (PreferredInterpolationMethods _pim)</td></tr>
+<tr class="memdesc:a58b6535bf88dece0c46c4ce472124c08 inherit pub_methods_classGrid"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the preferred interpolation methods. <br /></td></tr>
+<tr class="separator:a58b6535bf88dece0c46c4ce472124c08 inherit pub_methods_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -175,6 +179,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>J_tot</b> = 0</td></tr
 <tr class="memitem:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a7380bf9a24e5f50af087676009086af6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr>
 <tr class="separator:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGrid')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
+<tr class="memitem:a6e94f975157d7b93936a74e42745b4b6 inherit pro_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a6e94f975157d7b93936a74e42745b4b6"></a>
+PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"><b>pim</b> = PreferredInterpolationMethods::BandLimited</td></tr>
+<tr class="separator:a6e94f975157d7b93936a74e42745b4b6 inherit pro_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab379644ec7a0c53fea9d86519aa1cba6"></a>
@@ -221,8 +229,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afac29b4ce65f92d79ac2c818bbf368de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afac29b4ce65f92d79ac2c818bbf368de">&#9670;&nbsp;</a></span>interpolate_to_centre_of()</h2>
+<a id="a470a3b6d0922dd6678560bbcf6a1fceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a470a3b6d0922dd6678560bbcf6a1fceb">&#9670;&nbsp;</a></span>interpolate_to_centre_of()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -239,20 +247,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>k</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="classCellCoordinate.html">CellCoordinate</a>&#160;</td>
+          <td class="paramname"><em>cell</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -271,13 +267,13 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">d</td><td><a class="el" href="classField.html">Field</a> component to interpolate </td></tr>
-    <tr><td class="paramname">i,j,k</td><td>Index (i,j,k) of the Yee cell to interpolate to the centre of </td></tr>
+    <tr><td class="paramname">cell</td><td>Index (i,j,k) of the Yee cell to interpolate to the centre of </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>double The interpolated component value </dd></dl>
 
-<p>Implements <a class="el" href="classSplitField.html#a85568d40c79cdd842fe351a951bd00e3">SplitField</a>.</p>
+<p>Implements <a class="el" href="classSplitField.html#a1586fdfbc204001215769b754121fcae">SplitField</a>.</p>
 
 </div>
 </div>
