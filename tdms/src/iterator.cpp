@@ -4520,7 +4520,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   *mxGetPr((mxArray *) plhs[25]) = maxfield;
 
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    setGridLabels(input_grid_labels, output_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
+    output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
 
   auto interp_output_grid_labels = GridLabels();
@@ -4566,12 +4566,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     interp_output_grid_labels.z = mxGetPr((mxArray *) plhs[21]);
 
     if (params.dimension == THREE) {
-      //fprintf(stderr,"Pos 15a-1\n");
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
-                    E.J_tot - 2, 2, E.K_tot - 2);
-    } else
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
-                    E.J_tot - 2, 0, 0);
+      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                                2, E.K_tot - 2);
+    } else {
+      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                                0, 0);
+    }
     //fprintf(stderr,"Pos 15f\n");
   } else {
     mwSize *emptydims;
@@ -5129,17 +5129,6 @@ double linearRamp(double t, double period, double rampwidth) {
   else
     return t / (period * rampwidth);
 }
-
-/*Load up the output grid labels*/
-void setGridLabels(GridLabels &input_labels, GridLabels &output_labels, int i_l, int i_u, int j_l,
-                   int j_u, int k_l, int k_u) {
-  //fprintf(stderr,"Entered: setGridLabels\n");
-  //fprintf(stderr,"setGridLabels: %d,%d\n",j_u,j_l);
-  for (int i = i_l; i <= i_u; i++) { output_labels.x[i - i_l] = input_labels.x[i]; }
-  for (int j = j_l; j <= j_u; j++) { output_labels.y[j - j_l] = input_labels.y[j]; }
-  for (int k = k_l; k <= k_u; k++) { output_labels.z[k - k_l] = input_labels.z[k]; }
-}
-
 
 /* These functions are used by the dispersive component of the code*/
 

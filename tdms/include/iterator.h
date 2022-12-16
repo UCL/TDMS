@@ -31,9 +31,6 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
 
 double linearRamp(double t, double period, double rampwidth);
 
-void setGridLabels(GridLabels &input_labels, GridLabels &output_labels,
-                   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
-
 void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E, MagneticSplitField &H,
 			    int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
 
