@@ -127,6 +127,16 @@ public:
     void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
 
     /**
+     * @brief Fetches the largest (by absolute value) field value.
+     *
+     * Split field values are sums of the corresponding components, so this function returns the largest absolute value of the entries in
+     * (xy + xz), (yx + yz), (zx + zy)
+     *
+     * @return double Largest (by absolute value) field value
+     */
+    double largest_field_value();
+
+    /**
    * @brief Interpolates a SplitField component to the centre of a Yee cell
    *
    * @param d SplitField component to interpolate

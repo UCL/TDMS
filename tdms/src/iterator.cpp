@@ -274,7 +274,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   //these are used for boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
-  double maxfield = 0, tempfield;
+  double maxfield = 0.;
 
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
@@ -4425,25 +4425,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
     if ((((double) time(NULL)) - t0) > 1) {
 
-      maxfield = 0.;
-      for (k = 0; k < (K_tot + 1); k++) {
-        for (j = 0; j < (J_tot + 1); j++) {
-          for (i = 0; i < (I_tot + 1); i++) {
-            tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-          }
-        }
-      }
+      maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
 
       fprintf(stdout, "Iterating: %d %e\n", tind, maxfield);
       //fprintf(stderr,"Post-iter 1\n");
@@ -4528,25 +4510,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
   //now find the maximum absolute value of residual field in the grid
   // after resetting the maxfield value calculated in the main loop
-  maxfield = 0.0;
-  for (k = 0; k < (K_tot + 1); k++) {
-    for (j = 0; j < (J_tot + 1); j++) {
-      for (i = 0; i < (I_tot + 1); i++) {
-        tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-      }
-    }
-  }
+  maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
   //fprintf(stderr,"Pos 15\n");
   //noe set the output
   ndims = 2;
