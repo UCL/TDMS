@@ -37,9 +37,9 @@ void SimulationParameters::set_dimension(string mode_string) {
   if (s == "3") {
     dimension = Dimension::THREE;
   } else if (s == "TE") {
-    dimension = Dimension::TE;
+    dimension = Dimension::TRANSVERSE_ELECTRIC;
   } else {
-    dimension = Dimension::TM;
+    dimension = Dimension::TRANSVERSE_MAGNETIC;
   }
 }
 

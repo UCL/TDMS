@@ -12,7 +12,6 @@
 #include "array_init.h"
 #include "globals.h"
 #include "interface.h"
-#include "interpolate.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
@@ -29,7 +28,7 @@ using namespace tdms_phys_constants;
 #define TIME_MAIN_LOOP true
 //threshold used to terminate the steady state iterations
 #define TOL 1e-6
-//parameter to control the with of the ramp when introducing the waveform in steady state mode
+//parameter to control the PreferredInterpolationMethodswith of the ramp when introducing the waveform in steady state mode
 #define ramp_width 4.
 
 /*This mex function will take in the following arguments and perform the
@@ -233,23 +232,35 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], SolverMethod method) {
+void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[],
+                        SolverMethod solver_method,
+                        PreferredInterpolationMethods preferred_interpolation_methods) {
 
-  if (method == SolverMethod::FiniteDifference) {
+  if (solver_method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
   } else {
     spdlog::info("Using pseudospectral method (PSTD)");
+  }
+  if (preferred_interpolation_methods == PreferredInterpolationMethods::BandLimited) {
+    spdlog::info("Using band-limited interpolation where possible");
+  } else {
+    spdlog::info("Restricting to cubic interpolation");
   }
 
   auto params = SimulationParameters();
 
   auto E_s = ElectricSplitField();
+  E_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H_s = MagneticSplitField();
+  H_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto J_s = CurrentDensitySplitField();
 
   auto E = ElectricField();
+  E.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto H = MagneticField();
+  H.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
+  E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
 
   double ***surface_EHr, ***surface_EHi;
   double rho;
@@ -282,7 +293,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   int Ni_tdf = 0, Nk_tdf = 0;
 
   int skip_tdf = 1;
-  if (method == SolverMethod::FiniteDifference) skip_tdf = 6;
+  if (solver_method == SolverMethod::FiniteDifference) skip_tdf = 6;
 
   // PSTD storage (not used if FD)
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
@@ -526,7 +537,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   CCoefficientMatrix ca_vec, cb_vec, cc_vec;
   EHVec eh_vec;
 
-  if (method == SolverMethod::PseudoSpectral) {
+  if (solver_method == SolverMethod::PseudoSpectral) {
     int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
     ca_vec.allocate(n_threads, max_IJK + 1);
     cb_vec.allocate(n_threads, max_IJK + 1);
@@ -558,7 +569,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     init_diff_shift_op(0.5, dk_h_x, N_h_x);
     init_diff_shift_op(0.5, dk_h_y, N_h_y);
     init_diff_shift_op(0.5, dk_h_z, N_h_z);
-  } // if (method == DerivativeMethod::PseudoSpectral)
+  } // if (solver_method == DerivativeMethod::PseudoSpectral)
 
   params.set_Np(f_ex_vec);
 
@@ -1173,20 +1184,22 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           for (int kt = 0; kt < fieldsample.k.size(); kt++)
             for (int jt = 0; jt < fieldsample.j.size(); jt++)
               for (int it = 0; it < fieldsample.i.size(); it++) {
-                ////fprintf(stderr,"Pos fs 1\n");
-                interpolateTimeDomainFieldCentralEBandLimited(
-                        E_s.xy, E_s.xz, E_s.yx, E_s.yz, E_s.zx, E_s.zy,
-                        fieldsample.i[it] + params.pml.Dxl - 1,
-                        fieldsample.j[jt] + params.pml.Dyl - 1,
-                        fieldsample.k[kt] + params.pml.Dzl - 1, &Ex_temp, &Ey_temp, &Ez_temp);
-                //fprintf(stderr,"Pos fs 2\n");
+                CellCoordinate current_cell(fieldsample.i[it] + params.pml.Dxl - 1,
+                                            fieldsample.j[jt] + params.pml.Dyl - 1,
+                                            fieldsample.k[kt] + params.pml.Dzl - 1);
+                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, current_cell);
+                if (current_cell.j() != 0) {
+                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+                } else {
+                  Ey_temp = E_s.yx[current_cell] + E_s.yz[current_cell];
+                }
+                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, current_cell);
                 for (int nt = 0; nt < fieldsample.n.size(); nt++)
                   fieldsample[nt][kt][jt][it] =
                           fieldsample[nt][kt][jt][it] +
                           pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
                               fieldsample.n[nt] / 2.) /
                                   params.Nt;
-                //fprintf(stderr,"%d %d %d %d -> %d %d %d (%d) %d [%d %d]\n",nt,kt,jt,it,(int)fieldsample_vecs.n[nt], (int)fieldsample_vecs.i[it] + params.pml.Dxl - 1, (int)fieldsample_vecs.j[jt] + params.pml.Dyl - 1, params.pml.Dyl,(int)fieldsample_vecs.k[kt] + params.pml.Dzl - 1 , Nsteps, (int)fieldsample_vecs.n[nt] - 2);
               }
         }
     }
@@ -1356,8 +1369,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       Enp1 = 0.0;
       array_ind = 0;
 
-      if (params.dimension == THREE || params.dimension == TE) {
-        if (method == SolverMethod::FiniteDifference) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.xy
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -1624,7 +1637,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.xy
-        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        } // if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
         /*
     if(is_disp){
     i=36;
@@ -1637,7 +1650,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
         //fprintf(stderr,"Pos 04:\n");
         //E_s.xz updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
           for (k = 1; k < K_tot; k++)
             for (j = 0; j < J_tot_p1_bound; j++)
@@ -1908,11 +1921,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.xz
-        } // if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        } // if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
         //fprintf(stderr,"Pos 05:\n");
         //E_s.yx updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.yx
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -2166,11 +2179,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.yx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
         //fprintf(stderr,"Pos 06:\n");
         //E_s.yz updates
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, E_s.yz
 #pragma omp for
           for (k = 1; k < K_tot; k++)
@@ -2416,12 +2429,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.yz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }  //if(params.dimension==THREE || params.dimension==TE)
 
       //fprintf(stderr,"Pos 07:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
-        if (method == SolverMethod::FiniteDifference) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
           //E_s.zx updates
           for (k = 0; k < K_tot; k++)
@@ -2679,7 +2692,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.zx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -2765,8 +2778,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
       }
       //fprintf(stderr,"Pos 08:\n");
-      if (params.dimension == THREE || params.dimension == TE) {
-        if (method == SolverMethod::FiniteDifference) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.zy
 #pragma omp for
           //E_s.zy updates
@@ -3025,7 +3038,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, E_s.zy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
@@ -3126,7 +3139,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I0.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I0.index] =
                       E_s.zx[k][j][I0.index] -
                       C.b.x[array_ind] *
@@ -3173,7 +3186,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (I_tot + 1) * k + I1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zx[k][j][I1.index] =
                       E_s.zx[k][j][I1.index] +
                       C.b.x[array_ind] *
@@ -3219,7 +3232,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       for (k = (K0.index); k <= (K1.index); k++)
         for (i = (I0.index); i <= (I1.index); i++) {
           if (J0.apply) {//Perform across J0
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
 
               if (!params.is_multilayer) array_ind = J0.index;
               else
@@ -3271,7 +3284,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             else
               array_ind = (J_tot + 1) * k + J1.index;
 
-            if (k < (K1.index) || params.dimension == TM) {
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
               E_s.zy[k][(J1.index)][i] =
                       E_s.zy[k][(J1.index)][i] -
                       C.b.y[array_ind] *
@@ -3521,8 +3534,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     {
       n = omp_get_thread_num();
 
-      if (params.dimension == THREE || params.dimension == TE) {
-        if (method == SolverMethod::FiniteDifference) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xz
 #pragma omp for
           //H_s.xz updates
@@ -3597,9 +3610,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
 
           //PSTD, H_s.xz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.xy
 #pragma omp for
           //H_s.xy updates
@@ -3694,9 +3707,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         */
             }
           //PSTD, H_s.xy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yx
 #pragma omp for
           //H_s.yx updates
@@ -3777,7 +3790,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           //PSTD, H_s.yx
         }
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.yz
 #pragma omp for
           //H_s.yz updates
@@ -3868,7 +3881,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, H_s.yz
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
       else {
 
@@ -3948,8 +3961,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         }
       }
 
-      if (params.dimension == THREE || params.dimension == TE) {
-        if (method == SolverMethod::FiniteDifference) {
+      if (params.dimension == THREE || params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zy
 #pragma omp for
           //H_s.zy update
@@ -4027,10 +4040,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
               }
             }
           //PSTD, H_s.zy
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
 
 
-        if (method == SolverMethod::FiniteDifference) {
+        if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, H_s.zx
 #pragma omp for
           //H_s.zx update
@@ -4109,7 +4122,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
             }
           }
 //PSTD, H_s.zx
-        }// if (method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
+        }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
     }  //end parallel
     if (TIME_EXEC) { timer.click(); }
@@ -4134,7 +4147,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][0] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][0]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I0.index) - 1] =
                       H_s.yx[k][j][(I0.index) - 1] -
                       D.b.x[array_ind] *
@@ -4155,7 +4168,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][4] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.yx[k][j][(I1.index)] =
                       H_s.yx[k][j][(I1.index)] +
                       D.b.x[array_ind] *
@@ -4181,7 +4194,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][0] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][0]));
 
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J0.index) - 1][i] =
                       H_s.xy[k][(J0.index) - 1][i] +
                       D.b.y[array_ind] *
@@ -4202,7 +4215,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][4] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][4]));
-            if (k < (K1.index) || params.dimension == TM)
+            if (k < (K1.index) || params.dimension == Dimension::TRANSVERSE_MAGNETIC)
               H_s.xy[k][(J1.index)][i] =
                       H_s.xy[k][(J1.index)][i] -
                       D.b.y[array_ind] *
@@ -4552,30 +4565,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      fprintf(stderr, "mxInterpolateFieldCentralE: %d %d %d \n", E.I_tot - 2,
-              E.J_tot - 2, E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1a\n");
-      mxInterpolateFieldCentralE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-      //fprintf(stderr,"Pos 15_m1b\n");
-
-    } else if (params.dimension == TE)
-      mxInterpolateFieldCentralE_TE(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralE_TM(plhs[0], plhs[1], plhs[2], &plhs[13], &plhs[14], &plhs[15], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    if (params.dimension == THREE)
-      mxInterpolateFieldCentralH(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                 E.I_tot - 2, 2, E.J_tot - 2, 2,
-                                 E.K_tot - 2);
-    else if (params.dimension == TE)
-      mxInterpolateFieldCentralH_TE(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
-    else
-      mxInterpolateFieldCentralH_TM(plhs[3], plhs[4], plhs[5], &plhs[16], &plhs[17], &plhs[18], 2,
-                                    E.I_tot - 2, 2, E.J_tot - 2, 0, 0);
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
+                               E.K_tot - 2, Dimension::THREE);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+                               H.K_tot - 2, Dimension::THREE);
+    } else {
+      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
+      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+                               0, params.dimension);
+      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+                               0, params.dimension);
+    }
 
     //fprintf(stderr,"Pos 15a\n");
     //now set up the grid labels for the interpolated fields
@@ -4737,7 +4737,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-  if (method == SolverMethod::PseudoSpectral) {
+  if (solver_method == SolverMethod::PseudoSpectral) {
     fftw_free(dk_e_x);
     fftw_free(dk_e_y);
     fftw_free(dk_e_z);
@@ -4873,50 +4873,37 @@ void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricS
   {
 #pragma omp for
     for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralE(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(
-                  E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(
-                E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Ex, &Ey, &Ez);
-      //    fprintf(stderr,"1st interp donezn");
-      if (params.dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        } else if (params.interp_method == cubic)
-          interpolateTimeDomainFieldCentralH(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(
-                  H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                  surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else if (params.dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(
-                H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, surface_vertices[0][vindex],
-                surface_vertices[1][vindex], surface_vertices[2][vindex], &Hx, &Hy, &Hz);
+      CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                  surface_vertices[2][vindex]);
+      if (params.dimension == Dimension::THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.yx[current_cell] + E.yz[current_cell];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        }
+      } else if (params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = 0.;
+      }
       //    fprintf(stderr,"2nd interp donezn");
 
       /*Ex and Hx*/
@@ -4960,7 +4947,7 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
                             ComplexAmplitudeSample &campssample, int n, double omega,
                             double dt, int Nt, int dimension, int J_tot, int intmethod) {
 
-  int vindex, i, j, k;
+  int vindex;
   double Ex, Ey, Ez, Hx, Hy, Hz;
   complex<double> cphaseTermE, cphaseTermH;
 
@@ -4972,48 +4959,43 @@ void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, M
 
 #pragma omp parallel default(none) \
         shared(E, H, EHr, EHi, campssample) \
-        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex, i, j, k) \
+        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex) \
         firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
   {
 #pragma omp for
     for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
+      CellCoordinate current_cell(campssample.vertices[0][vindex], campssample.vertices[1][vindex],
+                                  campssample.vertices[2][vindex]);
 
-      i = campssample.vertices[0][vindex];
-      j = campssample.vertices[1][vindex];
-      k = campssample.vertices[2][vindex];
-
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralE_2Dy(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex,
-                                                 &Ey, &Ez);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                             &Ez);
-        else
-          interpolateTimeDomainFieldCentralEBandLimited(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k,
-                                                        &Ex, &Ey, &Ez);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralE_TE(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      else
-        interpolateTimeDomainFieldCentralE_TM(E.xy, E.xz, E.yx, E.yz, E.zx, E.zy, i, j, k, &Ex, &Ey,
-                                              &Ez);
-      if (dimension == THREE)
-        if (J_tot == 0) {
-          interpolateTimeDomainFieldCentralH_2Dy(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx,
-                                                 &Hy, &Hz);
-        } else if (intmethod == 1)
-          interpolateTimeDomainFieldCentralH(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                             &Hz);
-        else
-          interpolateTimeDomainFieldCentralHBandLimited(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k,
-                                                        &Hx, &Hy, &Hz);
-      else if (dimension == TE)
-        interpolateTimeDomainFieldCentralH_TE(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
-      else
-        interpolateTimeDomainFieldCentralH_TM(H.xy, H.xz, H.yx, H.yz, H.zx, H.zy, i, j, k, &Hx, &Hy,
-                                              &Hz);
+      if (dimension == Dimension::THREE) {
+        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        if (J_tot != 0) {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        } else {
+          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+          Ey = E.yx[current_cell] + E.yz[current_cell];
+          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        }
+      } else if (dimension == Dimension::TRANSVERSE_ELECTRIC) {
+        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Ez = 0.;
+        Hx = 0.;
+        Hy = 0.;
+        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+      } else {
+        Ex = 0.;
+        Ey = 0.;
+        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+        Hz = 0.;
+      }
 
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
       update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);

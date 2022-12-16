@@ -52,6 +52,7 @@ void ArgumentParser::print_help_message(){
                  "Options:\n"
                  "-h:\tDisplay this help message\n"
                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the pseudo-spectral method.\n"
+                 "-c, --cubic-interpolation:\tUse cubic interpolation to determine field values at Yee cell centres, as opposed to band-limited interpolation.\n"
                  "-q:\tQuiet operation. Silence all logging\n"
                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
@@ -85,6 +86,10 @@ bool ArgumentNamespace::have_flag(std::string const &flag) const {
 
 bool ArgumentNamespace::finite_difference() const {
   return this->have_flag("-fd") || this->have_flag("--finite-difference");
+}
+
+bool ArgumentNamespace::cubic_interpolation() const {
+  return this->have_flag("-c") || this->have_flag("--cubic-interpolation");
 }
 
 const char* ArgumentNamespace::output_filename() {

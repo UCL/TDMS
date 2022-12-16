@@ -49,18 +49,27 @@ int main(int nargs, char *argv[]){
   }
 
   // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod method = PseudoSpectral; // default
+  SolverMethod solver_method = PseudoSpectral; // default
   if (args.finite_difference())
-    method = SolverMethod::FiniteDifference;
+    solver_method = SolverMethod::FiniteDifference;
+
+  // decide whether to toggle off the band-limited interpolation methods
+  PreferredInterpolationMethods preferred_interpolation_methods =
+          PreferredInterpolationMethods::BandLimited;// default
+  if (args.cubic_interpolation()) {
+    preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
+  }
 
   //now run the time propagation code
-  execute_simulation(NOUTMATRICES_PASSED, (mxArray **)plhs, NMATRICES, (const mxArray **)matrixptrs, method);
+  execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
+                     (const mxArray **) matrixptrs, solver_method, preferred_interpolation_methods);
 
-  if( !args.have_flag("-m") ){ //prints vertices and facets
-    saveoutput(plhs, matricestosave_all, (char **)outputmatrices_all, NOUTMATRICES_WRITE_ALL, args.output_filename());
-  }
-  else{ // minimise the file size by not printing vertices and facets
-    saveoutput(plhs, matricestosave, (char **)outputmatrices, NOUTMATRICES_WRITE, args.output_filename());
+  if (!args.have_flag("-m")) {//prints vertices and facets
+    saveoutput(plhs, matricestosave_all, (char **) outputmatrices_all, NOUTMATRICES_WRITE_ALL,
+               args.output_filename());
+  } else {// minimise the file size by not printing vertices and facets
+    saveoutput(plhs, matricestosave, (char **) outputmatrices, NOUTMATRICES_WRITE,
+               args.output_filename());
   }
 
   return 0;

@@ -46,10 +46,6 @@ TEST_CASE("Cubic interpolation: exact for polynomials of degree <= 3") {
     double v1 = c0, v2 = c0, v3 = c0, v4 = c0;
     double v12 = c0, v23 = c0, v34 = c0;
 
-    // check old interp methods
-    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -69,10 +65,6 @@ TEST_CASE("Cubic interpolation: exact for polynomials of degree <= 3") {
     v23 += c1 * (x[2] + x[1]) / 2.;
     v34 += c1 * (x[3] + x[2]) / 2.;
 
-    // check old interp methods
-    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -92,10 +84,6 @@ TEST_CASE("Cubic interpolation: exact for polynomials of degree <= 3") {
     v23 += c2 * (x[2] + x[1]) * (x[2] + x[1]) / 4.;
     v34 += c2 * (x[3] + x[2]) * (x[3] + x[2]) / 4.;
 
-    // check old interp methods
-    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -115,10 +103,6 @@ TEST_CASE("Cubic interpolation: exact for polynomials of degree <= 3") {
     v23 += c3 * (x[2] + x[1]) * (x[2] + x[1]) * (x[2] + x[1]) / 8.;
     v34 += c3 * (x[3] + x[2]) * (x[3] + x[2]) * (x[3] + x[2]) / 8.;
 
-    // check old interp methods
-    CHECK(v12 == Approx(interp2(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v23 == Approx(interp1(v1, v2, v3, v4)).epsilon(tol));
-    CHECK(v34 == Approx(interp3(v1, v2, v3, v4)).epsilon(tol));
     // check Interp_scheme class method
     CHECK(v12 == Approx(CBFst.interpolate(interp_data)).epsilon(tol));
     CHECK(v23 == Approx(CBMid.interpolate(interp_data)).epsilon(tol));
@@ -280,7 +264,7 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = analytic_function(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples - 1, i);
+      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
       f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
@@ -303,7 +287,7 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = complex_fn(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples - 1, i);
+      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
       f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
@@ -315,7 +299,6 @@ TEST_CASE("BLi: MATLAB benchmarking") {
   REQUIRE(is_close_or_better(max_error, MATLAB_max_error));
   // Compare norm-errors
   norm_error = euclidean(f_errors, nSamples - 2);
-  fprintf(stderr, "%.8e vs %.8e\n", norm_error, MATLAB_norm_error);
   REQUIRE(is_close_or_better(norm_error, MATLAB_norm_error));
 
   // report test results

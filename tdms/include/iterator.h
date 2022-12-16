@@ -17,7 +17,8 @@
  * @brief Executes the main simulation.
  * Used to be the MATLAB mexFunction
  */
-void execute_simulation(int, mxArray**, int, const mxArray**, SolverMethod);
+void execute_simulation(int, mxArray **, int, const mxArray **, SolverMethod solver_method,
+                        PreferredInterpolationMethods preferred_interpolation_methods);
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs,
 			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
