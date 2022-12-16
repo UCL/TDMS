@@ -871,8 +871,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
   //work out if we have any disperive materials
   bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
-  //work out if we have conductive background
-  bool is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
+  //work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
+  bool is_cond = !(rho_cond.all_elements_less_than(1e-15, I_tot + 1, J_tot + 1, K_tot + 1));
   // work out if we have a dispersive background
   if (params.is_disp_ml) params.is_disp_ml = ml.is_dispersive(K_tot);
   //  fprintf(stderr,"is_disp:%d, is_cond%d, params.is_disp_ml: %d\n",is_disp,is_cond,params.is_disp_ml);
@@ -5179,17 +5179,4 @@ bool is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_t
     if (fabs(gamma[i] / dt) > 1e-15) { return 1; }
   }
   return 0;
-}
-
-/*work out if we have a conductive background*/
-bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot) {
-
-  for (int i = 0; i < (I_tot + 1); i++)
-    if (fabs(rho.x[i]) > 1e-15) return true;
-  for (int j = 0; j < (J_tot + 1); j++)
-    if (fabs(rho.y[j]) > 1e-15) return true;
-  for (int k = 0; k < (K_tot + 1); k++)
-    if (fabs(rho.z[k]) > 1e-15) return true;
-
-  return false;
 }

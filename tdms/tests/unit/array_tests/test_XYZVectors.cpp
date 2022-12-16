@@ -24,9 +24,10 @@ void XYZVectorsTest::test_correct_construction() {
 
 void XYZVectorsTest::test_other_methods() {
   XYZVectors v;
+  // create some arrays to assign to the members
+  double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.}, z_vec[n_layers] = {1., 2., 3., 4.};
+
   SECTION("set_ptr()") {
-    // create some arrays to assign to the members
-    double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.}, z_vec[n_layers] = {4., 3., 2., 1.};
     // now let's try assigning
     v.set_ptr(AxialDirection::X, x_vec);
     v.set_ptr(AxialDirection::Y, y_vec);
@@ -58,7 +59,19 @@ void XYZVectorsTest::test_other_methods() {
     }
     REQUIRE(correct_elements);
   }
-
+  SECTION("all_elements_less_than()") {
+    v.set_ptr(AxialDirection::X, x_vec);
+    v.set_ptr(AxialDirection::Y, y_vec);
+    v.set_ptr(AxialDirection::Z, z_vec);
+    // v.x: max element is 0, v.y: max is 2, v.z: max is 4
+    REQUIRE(v.all_elements_less_than(5., 1, 2, 4));
+    // v.x has no elements less than 0
+    REQUIRE(!v.all_elements_less_than(-1, 1, AxialDirection::X));
+    // v.y has all elements but the first less than 2
+    REQUIRE(v.all_elements_less_than(2., 1, AxialDirection::Y, 1));
+    // v.z has all elements except the last less than 4
+    REQUIRE(v.all_elements_less_than(4., 3, 'z'));
+  }
 }
 
 TEST_CASE("XYZVectors") {
