@@ -2,3 +2,4 @@ numpy
 pytest
 pytest-check
 h5py
+pyyaml
