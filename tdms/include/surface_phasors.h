@@ -18,7 +18,12 @@ private:
 
   mxArray *mx_surface_amplitudes = nullptr;//< Complex surface amplitudes
   int f_ex_vector_size = 0; //< Number of elements in the frequency extraction vector
-  double ***surface_EHr, ***surface_EHi;//< Storage for real and imag parts of mx_surface_amplitudes (these can be f_ex_vector_size * n_surface_vertices arrays of FullFieldSnapshots when MATLAB is removed!)
+
+  /* Storage for real and imag parts of mx_surface_amplitudes (these can be f_ex_vector_size * n_surface_vertices arrays of FullFieldSnapshots when MATLAB is removed!)
+
+  Arrays are index by [frequency_index][field component][vertex_id/number]. Frequency index corresponds to the frequencies at which the user has requested we extract the amplitudes.
+  */
+  double ***surface_EHr, ***surface_EHi;
 
 public:
   SurfacePhasors() = default;
@@ -63,12 +68,21 @@ public:
    */
   mxArray *get_mx_surface_amplitudes() { return mx_surface_amplitudes; };
 
-  void normalise_surface(int frequency_vector_index, complex<double> Enorm, complex<double> Hnorm);
+  /**
+   * @brief Normalise the surface amplitudes at frequency_vector_index by the E- and H-norms provided.
+   *
+   * E-field components in surface_EH are divided by the (complex) Enorm.
+   * H-field components in surface_EH are divided by the (complex) Hnorm.
+   *
+   * @param frequency_vector_index Frequency index, surface_EH{r,i}[frequency_vector_index] will be normalised
+   * @param Enorm,Hnorm The {E,H}-norm to normalise the {E,H}-components by
+   */
+  void normalise_surface(int frequency_index, std::complex<double> Enorm, std::complex<double> Hnorm);
 
   /**
-   * @brief Extract the phasor values at the vertices on the surface
+   * @brief Extract the phasor values at the vertices on the surface, for the given frequency index
    *
-   * @param frequency_vector_index The entries in surface_EH{r,i}[frequency_vector_index] will be written to
+   * @param frequency_index The entries in surface_EH{r,i}[frequency_index] will be written to
    * @param E,H The electric,magnetic field
    * @param n Current timestep index
    * @param omega Angular frequency
@@ -77,7 +91,7 @@ public:
    * @param params The parameters for this simulation
    * @param interpolate If true, perform interpolation on the fields when extracting phasors
    */
-  void extractPhasorsSurface(int frequency_vector_index, ElectricSplitField &E,
+  void extractPhasorsSurface(int frequency_index, ElectricSplitField &E,
                              MagneticSplitField &H, int n, double omega, int Nt, int J_tot,
                              SimulationParameters &params, bool interpolate = true);
 
@@ -97,11 +111,11 @@ public:
    * surface_EHr[frequency_vector_index][:][vertex_index] += F.real(),
    * surface_EHi[frequency_vector_index][:][vertex_index] += F.imag().
    *
-   * @param frequency_vector_index Frequency vector index (k) to assign to
+   * @param frequency_index Frequency vector index (k) to assign to
    * @param vertex_index Vertex index (i) to assign to
    * @param F Field values to assign
    */
-  void update_surface_EH(int frequency_vector_index, int vertex_index, FullFieldSnapshot F);
+  void update_surface_EH(int frequency_index, int vertex_index, FullFieldSnapshot F);
 
 
   ~SurfacePhasors();

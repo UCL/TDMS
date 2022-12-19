@@ -34,37 +34,33 @@ void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices, int _f_
                                      dims[2]);
 }
 
-void SurfacePhasors::normalise_surface(int frequency_vector_index, complex<double> Enorm, complex<double> Hnorm) {
-  double norm_r, norm_i, denom, temp_r, temp_i;
-//simplify!!!!
-  norm_r = real(Enorm);
-  norm_i = imag(Enorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
+void SurfacePhasors::normalise_surface(int frequency_index, complex<double> Enorm,
+                                       complex<double> Hnorm) {
 
+  complex<double> normalised_amplitude;
+
+  // E-field components
   for (int vindex = 0; vindex < n_surface_vertices; vindex++)
     for (int i = 0; i < 3; i++) {
-      temp_r = surface_EHr[frequency_vector_index][i][vindex];
-      temp_i = surface_EHi[frequency_vector_index][i][vindex];
-
-      surface_EHr[frequency_vector_index][i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-      surface_EHi[frequency_vector_index][i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
+      // again, if surface_EH was just one array of FullFieldSnapshots, we could use the multiply_by methods of that class rather than doing this awkward cast-then-recast. Alas, MATLAB woes
+      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex] +
+                                             surface_EHi[frequency_index][i][vindex]) /
+                             Enorm;
+      surface_EHr[frequency_index][i][vindex] = normalised_amplitude.real();
+      surface_EHi[frequency_index][i][vindex] = normalised_amplitude.imag();
     }
-
-  norm_r = real(Hnorm);
-  norm_i = imag(Hnorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
+  // H-field components
   for (int vindex = 0; vindex < n_surface_vertices; vindex++)
     for (int i = 3; i < 6; i++) {
-      temp_r = surface_EHr[frequency_vector_index][i][vindex];
-      temp_i = surface_EHi[frequency_vector_index][i][vindex];
-
-      surface_EHr[frequency_vector_index][i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-      surface_EHi[frequency_vector_index][i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
+      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex] +
+                                             surface_EHi[frequency_index][i][vindex]) /
+                             Hnorm;
+      surface_EHr[frequency_index][i][vindex] = normalised_amplitude.real();
+      surface_EHi[frequency_index][i][vindex] = normalised_amplitude.imag();
     }
 }
 
-void SurfacePhasors::extractPhasorsSurface(int frequency_vector_index,
+void SurfacePhasors::extractPhasorsSurface(int frequency_index,
                                            ElectricSplitField &E, MagneticSplitField &H, int n,
                                            double omega, int Nt, int J_tot,
                                            SimulationParameters &params, bool interpolate) {
@@ -114,7 +110,7 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_vector_index,
         F.multiply_H_by(cphaseTermH);
 
         // update the master arrays
-        update_surface_EH(frequency_vector_index, vindex, F);
+        update_surface_EH(frequency_index, vindex, F);
       }
     } else {
 #pragma omp for
@@ -133,7 +129,7 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_vector_index,
         F.multiply_H_by(cphaseTermH);
 
         // update the master arrays
-        update_surface_EH(frequency_vector_index, vindex, F);
+        update_surface_EH(frequency_index, vindex, F);
       }
     }//end parallel region
   }
@@ -157,26 +153,26 @@ void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
   }
 }
 
-void SurfacePhasors::update_surface_EH(int frequency_vector_index, int vertex_index,
+void SurfacePhasors::update_surface_EH(int frequency_index, int vertex_index,
                        FullFieldSnapshot F) {
   // Ex
-  surface_EHr[frequency_vector_index][0][vertex_index] += real(F.Ex);
-  surface_EHi[frequency_vector_index][0][vertex_index] += imag(F.Ex);
+  surface_EHr[frequency_index][0][vertex_index] += real(F.Ex);
+  surface_EHi[frequency_index][0][vertex_index] += imag(F.Ex);
   // Hx
-  surface_EHr[frequency_vector_index][3][vertex_index] += real(F.Hx);
-  surface_EHi[frequency_vector_index][3][vertex_index] += imag(F.Hx);
+  surface_EHr[frequency_index][3][vertex_index] += real(F.Hx);
+  surface_EHi[frequency_index][3][vertex_index] += imag(F.Hx);
   // Ey
-  surface_EHr[frequency_vector_index][1][vertex_index] += real(F.Ey);
-  surface_EHi[frequency_vector_index][1][vertex_index] += imag(F.Ey);
+  surface_EHr[frequency_index][1][vertex_index] += real(F.Ey);
+  surface_EHi[frequency_index][1][vertex_index] += imag(F.Ey);
   //Hy
-  surface_EHr[frequency_vector_index][4][vertex_index] += real(F.Hy);
-  surface_EHi[frequency_vector_index][4][vertex_index] += imag(F.Hy);
+  surface_EHr[frequency_index][4][vertex_index] += real(F.Hy);
+  surface_EHi[frequency_index][4][vertex_index] += imag(F.Hy);
   //Ez
-  surface_EHr[frequency_vector_index][2][vertex_index] += real(F.Ez);
-  surface_EHi[frequency_vector_index][2][vertex_index] += imag(F.Ez);
+  surface_EHr[frequency_index][2][vertex_index] += real(F.Ez);
+  surface_EHi[frequency_index][2][vertex_index] += imag(F.Ez);
   // Hz
-  surface_EHr[frequency_vector_index][5][vertex_index] += real(F.Hz);
-  surface_EHi[frequency_vector_index][5][vertex_index] += imag(F.Hz);
+  surface_EHr[frequency_index][5][vertex_index] += real(F.Hz);
+  surface_EHi[frequency_index][5][vertex_index] += imag(F.Hz);
 }
 
 SurfacePhasors::~SurfacePhasors() {
