@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "arrays.h"
 #include "field.h"
 #include "grid_labels.h"
 
@@ -48,18 +49,16 @@ public:
    * @param Nt The number of timesteps in a sinusoidal period
    * @param J_tot Number of cells in the y-direction
    * @param params The parameters for this simulation
+   * @param interpolate If true, perform interpolation on the fields when extracting phasors
    */
   void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E,
                              MagneticSplitField &H, int n, double omega, int Nt, int J_tot,
-                             SimulationParameters &params);
-
-  void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi,
-                                            ElectricSplitField &E, MagneticSplitField &H, int n,
-                                            double omega, int Nt, int J_tot,
-                                            SimulationParameters &params);
+                             SimulationParameters &params, bool interpolate = true);
 
   void create_vertex_list(GridLabels input_grid_labels);
 
 
   ~SurfacePhasors();
 };
+
+void update_surface_EH(double **surface_EHr, double **surface_EHi, int vindex, FullFieldSnapshot F);

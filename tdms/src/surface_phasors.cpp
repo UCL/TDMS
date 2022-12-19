@@ -26,10 +26,10 @@ void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices) {
 void SurfacePhasors::extractPhasorsSurface(double **surface_EHr, double **surface_EHi,
                                            ElectricSplitField &E, MagneticSplitField &H, int n,
                                            double omega, int Nt, int J_tot,
-                                           SimulationParameters &params) {
+                                           SimulationParameters &params, bool interpolate) {
   int vindex;
-  double Ex, Ey, Ez, Hx, Hy, Hz;
-  complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
+  FullFieldSnapshot F;
+  complex<double> phaseTermE, phaseTermH, cphaseTermE, cphaseTermH;
 
   phaseTermE = fmod(omega * ((double) n) * params.dt, 2 * DCPI);
   phaseTermH = fmod(omega * ((double) n + 0.5) * params.dt, 2 * DCPI);
@@ -38,163 +38,64 @@ void SurfacePhasors::extractPhasorsSurface(double **surface_EHr, double **surfac
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
 
   //loop over every vertex in the list
-#pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, phaseTermE, phaseTermH,       \
-                                             subResultE, subResultH, vindex)
+#pragma omp parallel default(shared) private(F, phaseTermE, phaseTermH, vindex)
   {
+    if (interpolate) {
 #pragma omp for
-    for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
-                                  surface_vertices[2][vindex]);
-      if (params.dimension == Dimension::THREE) {
-        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        if (J_tot != 0) {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        } else {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-          Ey = E.yx[current_cell] + E.yz[current_cell];
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+      for (vindex = 0; vindex < n_surface_vertices; vindex++) {
+        CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                    surface_vertices[2][vindex]);
+        switch (params.dimension) {
+          case Dimension::THREE:
+            F.Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+            F.Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+            F.Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+            F.Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+            F.Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+            F.Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+            break;
+          case Dimension::TRANSVERSE_ELECTRIC:
+            F.Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
+            F.Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+            F.Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+            break;
+          case Dimension::TRANSVERSE_MAGNETIC:
+            F.Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
+            F.Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
+            F.Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
+            break;
+          default:
+            throw runtime_error("Dimension was not recognised!");
+            break;
         }
-      } else if (params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Ez = 0.;
-        Hx = 0.;
-        Hy = 0.;
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-      } else {
-        Ex = 0.;
-        Ey = 0.;
-        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Hz = 0.;
+        // multiply by phase factors
+        F.multiply_E_by(cphaseTermE);
+        F.multiply_H_by(cphaseTermH);
+
+        // update the master arrays
+        update_surface_EH(surface_EHr, surface_EHi, vindex, F);
       }
-      //    fprintf(stderr,"2nd interp donezn");
-
-      /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
-      surface_EHi[0][vindex] = surface_EHi[0][vindex] + imag(subResultE);
-
-      surface_EHr[3][vindex] = surface_EHr[3][vindex] + real(subResultH);
-      surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
-
-      /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
-      surface_EHi[1][vindex] = surface_EHi[1][vindex] + imag(subResultE);
-
-      surface_EHr[4][vindex] = surface_EHr[4][vindex] + real(subResultH);
-      surface_EHi[4][vindex] = surface_EHi[4][vindex] + imag(subResultH);
-
-
-      /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
-      surface_EHi[2][vindex] = surface_EHi[2][vindex] + imag(subResultE);
-
-      surface_EHr[5][vindex] = surface_EHr[5][vindex] + real(subResultH);
-      surface_EHi[5][vindex] = surface_EHi[5][vindex] + imag(subResultH);
-    }
-  }//end parallel region
-}
-
-void SurfacePhasors::extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi,
-                                          ElectricSplitField &E, MagneticSplitField &H, int n,
-                                          double omega, int Nt, int J_tot,
-                                          SimulationParameters &params) {
-  int vindex;
-  double Ex, Ey, Ez, Hx, Hy, Hz;
-  complex<double> phaseTermE, phaseTermH, subResultE, subResultH, cphaseTermE, cphaseTermH;
-
-  phaseTermE = fmod(omega * ((double) n) * params.dt, 2 * DCPI);
-  phaseTermH = fmod(omega * ((double) n + 0.5) * params.dt, 2 * DCPI);
-
-  cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
-  cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-  //loop over every vertex in the list
-#pragma omp parallel default(shared) private(Ex, Ey, Ez, Hx, Hy, Hz, phaseTermE, phaseTermH,       \
-                                             subResultE, subResultH, vindex)
-  {
+    } else {
 #pragma omp for
-    for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-      //    fprintf(stderr,"vindex: %d: (%d %d %d)\n",vindex,surface_vertices[0][vindex],surface_vertices[1][vindex],surface_vertices[2][vindex]);
-      Ex = E.xy[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           E.xz[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
-      Ey = E.yx[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           E.yz[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
-      Ez = E.zx[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           E.zy[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
+      for (vindex = 0; vindex < n_surface_vertices; vindex++) {
+        CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                    surface_vertices[2][vindex]);
 
-      Hx = H.xy[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           H.xz[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
-      Hy = H.yx[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           H.yz[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
-      Hz = H.zx[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]] +
-           H.zy[surface_vertices[2][vindex]][surface_vertices[1][vindex]]
-               [surface_vertices[0][vindex]];
+        F.Ex = E.xy[current_cell] + E.xz[current_cell];
+        F.Ey = E.yx[current_cell] + E.yz[current_cell];
+        F.Ez = E.zx[current_cell] + E.zy[current_cell];
+        F.Hx = H.xy[current_cell] + H.xz[current_cell];
+        F.Hy = H.yx[current_cell] + H.yz[current_cell];
+        F.Hz = H.zx[current_cell] + H.zy[current_cell];
+        // multiply by phase factors
+        F.multiply_E_by(cphaseTermE);
+        F.multiply_H_by(cphaseTermH);
 
-      /*Ex and Hx*/
-      subResultH = Hx * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ex * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[0][vindex] = surface_EHr[0][vindex] + real(subResultE);
-      surface_EHi[0][vindex] = surface_EHi[0][vindex] + imag(subResultE);
-
-      surface_EHr[3][vindex] = surface_EHr[3][vindex] + real(subResultH);
-      surface_EHi[3][vindex] = surface_EHi[3][vindex] + imag(subResultH);
-
-      /*Ey and Hy*/
-      subResultH = Hy * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ey * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[1][vindex] = surface_EHr[1][vindex] + real(subResultE);
-      surface_EHi[1][vindex] = surface_EHi[1][vindex] + imag(subResultE);
-
-      surface_EHr[4][vindex] = surface_EHr[4][vindex] + real(subResultH);
-      surface_EHi[4][vindex] = surface_EHi[4][vindex] + imag(subResultH);
-
-
-      /*Ez and Hz*/
-      subResultH = Hz * cphaseTermH;//exp(phaseTermH * IMAGINARY_UNIT) * 1./((double) Nt);
-      subResultE = Ez * cphaseTermE;//exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-
-      //now update the master array
-      surface_EHr[2][vindex] = surface_EHr[2][vindex] + real(subResultE);
-      surface_EHi[2][vindex] = surface_EHi[2][vindex] + imag(subResultE);
-
-      surface_EHr[5][vindex] = surface_EHr[5][vindex] + real(subResultH);
-      surface_EHi[5][vindex] = surface_EHi[5][vindex] + imag(subResultH);
-    }
-  }//end parallel region
+        // update the master arrays
+        update_surface_EH(surface_EHr, surface_EHi, vindex, F);
+      }
+    }//end parallel region
+  }
 }
 
 void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
@@ -221,4 +122,25 @@ SurfacePhasors::~SurfacePhasors() {
 
   // free the vertices_list if it was created and allocated
   if (vertex_list_data_ptr) { free_cast_matlab_2D_array(vertex_list_data_ptr); }
+}
+
+void update_surface_EH(double **surface_EHr, double **surface_EHi, int vindex, FullFieldSnapshot F) {
+  // Ex
+  surface_EHr[0][vindex] += real(F.Ex);
+  surface_EHi[0][vindex] += imag(F.Ex);
+  // Hx
+  surface_EHr[3][vindex] += real(F.Hx);
+  surface_EHi[3][vindex] += imag(F.Hx);
+  // Ey
+  surface_EHr[1][vindex] += real(F.Ey);
+  surface_EHi[1][vindex] += imag(F.Ey);
+  //Hy
+  surface_EHr[4][vindex] += real(F.Hy);
+  surface_EHi[4][vindex] += imag(F.Hy);
+  //Ez
+  surface_EHr[2][vindex] += real(F.Ez);
+  surface_EHi[2][vindex] += imag(F.Ez);
+  // Hz
+  surface_EHr[5][vindex] += real(F.Hz);
+  surface_EHi[5][vindex] += imag(F.Hz);
 }

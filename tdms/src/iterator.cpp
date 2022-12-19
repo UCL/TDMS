@@ -1153,9 +1153,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            surface_phasors.extractPhasorsSurfaceNoInterpolation(
+            // do not interpolate when extracting
+            surface_phasors.extractPhasorsSurface(
                     surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, dft_counter,
-                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, J_tot, params);
+                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, J_tot, params, false);
           }
           dft_counter++;
         }
@@ -1215,9 +1216,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
           }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-              surface_phasors.extractPhasorsSurfaceNoInterpolation(
+            // do not interpolate when extracting
+              surface_phasors.extractPhasorsSurface(
                       surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
-                      params.Npe, J_tot, params);
+                      params.Npe, J_tot, params, false);
           }
       }
     }

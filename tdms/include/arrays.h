@@ -526,3 +526,29 @@ class EHVec: public Matrix<fftw_complex>{
 public:
   ~EHVec();
 };
+
+/**
+ * Container for storing snapshots of the full-field TODO: Array tests need to be added!
+ */
+class FullFieldSnapshot {
+public:
+  std::complex<double> Ex = 0.;
+  std::complex<double> Ey = 0.;
+  std::complex<double> Ez = 0.;
+  std::complex<double> Hx = 0.;
+  std::complex<double> Hy = 0.;
+  std::complex<double> Hz = 0.;
+
+  FullFieldSnapshot() = default;
+
+  void multiply_E_by(std::complex<double> factor) {
+    Ex *= factor;
+    Ey *= factor;
+    Ez *= factor;
+  }
+  void multiply_H_by(std::complex<double> factor) {
+    Hx *= factor;
+    Hy *= factor;
+    Hz *= factor;
+  }
+};
