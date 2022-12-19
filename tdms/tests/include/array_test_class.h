@@ -129,6 +129,14 @@ public:
   std::string get_class_name() override { return "FrequencyVectors"; }
 };
 
+class FullFieldSnapshotTest : public AbstractArrayTest {
+private:
+  // multiply_{E,H}_by()
+  void test_other_methods() override;
+
+  public : std::string get_class_name() override { return "FullFieldSnapshot"; }
+};
+
 class IncidentFieldTest : public AbstractArrayTest {
 private:
   const int n_rows = 6, n_cols = 4, n_layers = 5;

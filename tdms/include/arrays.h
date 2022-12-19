@@ -528,7 +528,7 @@ public:
 };
 
 /**
- * Container for storing snapshots of the full-field TODO: Array tests need to be added!
+ * Container for storing snapshots of the full-field
  */
 class FullFieldSnapshot {
 public:
