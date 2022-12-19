@@ -300,7 +300,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
   int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
 
-  const mwSize *dimptr_out;
   mwSize *dims;
   dims = (mwSize *) malloc(3 * sizeof(mwSize));
   mwSize *label_dims;
@@ -599,11 +598,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     //fprintf(stderr,"Qos 00a:\n");
     //we don't need the facets so destroy the matrix now to save memory
     mxDestroyArray(mx_surface_facets);
-    dimptr_out = mxGetDimensions(mx_surface_vertices);
+
     surface_phasors.set_from_matlab_array(mx_surface_vertices);
     //create space for the complex amplitudes E and H around the surface. These will be in a large complex
     //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
-    //the vertex with the same line as in surface_vertices
+    //the vertex with the same line as in surface_phasors.surface_vertices
     ndims = 3;
 
     dims[0] = surface_phasors.get_n_surface_vertices();
@@ -1133,8 +1132,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       spdlog::debug("Zeroed the phasors");
 
       if (params.exphasorssurface) {
-        initialiseDouble3DArray(surface_EHr, n_surface_vertices, 6, f_ex_vec.size());
-        initialiseDouble3DArray(surface_EHi, n_surface_vertices, 6, f_ex_vec.size());
+        initialiseDouble3DArray(surface_EHr, surface_phasors.get_n_surface_vertices(), 6, f_ex_vec.size());
+        initialiseDouble3DArray(surface_EHi, surface_phasors.get_n_surface_vertices(), 6, f_ex_vec.size());
         spdlog::debug("Zeroed the surface components");
       }
     }
@@ -1209,14 +1208,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
-                                  n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+              surface_phasors.extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
+                                                    tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
+                                                    J_tot, params);
+          }
         else
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++)
-            extractPhasorsSurfaceNoInterpolation(
-                    surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, surface_vertices,
-                    n_surface_vertices, tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe, J_tot, params);
+          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+              surface_phasors.extractPhasorsSurfaceNoInterpolation(
+                      surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
+                      params.Npe, J_tot, params);
+          }
       }
     }
 
@@ -4480,7 +4482,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   //fprintf(stderr,"Pos 13\n");
   if (params.run_mode == RunMode::complete && params.exphasorssurface)
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      normaliseSurface(surface_EHr[ifx], surface_EHi[ifx], surface_vertices, n_surface_vertices,
+      normaliseSurface(surface_EHr[ifx], surface_EHi[ifx], surface_phasors.get_n_surface_vertices(),
                        E_norm[ifx], H_norm[ifx]);
       //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
@@ -4602,27 +4604,16 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
                                    params.spacing_stride, &dummy_vertex_list,
                                    &mx_surface_facets);
     mxDestroyArray(dummy_vertex_list);
-    mxArray *vertex_list;
-    double **vertex_list_ptr;
-    ndims = 2;
-    dims[0] = n_surface_vertices;
-    dims[1] = 3;
-    vertex_list = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    vertex_list_ptr = cast_matlab_2D_array(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
 
-    //now populate the vertex list
-    for (i = 0; i < n_surface_vertices; i++) {
+    //now create and populate the vertex list
+    surface_phasors.create_vertex_list(input_grid_labels);
+    mxArray *vertex_list = surface_phasors.get_vertex_list();
 
-      vertex_list_ptr[0][i] = input_grid_labels.x[surface_vertices[0][i]];
-      vertex_list_ptr[1][i] = input_grid_labels.y[surface_vertices[1][i]];
-      vertex_list_ptr[2][i] = input_grid_labels.z[surface_vertices[2][i]];
-    }
     //assign outputs
     plhs[22] = vertex_list;
     plhs[23] = mx_surface_amplitudes;
     plhs[24] = mx_surface_facets;
 
-    free_cast_matlab_2D_array(vertex_list_ptr);
   } else {//still set outputs
     ndims = 2;
     dims[0] = 0;
@@ -4638,7 +4629,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   //fprintf(stderr,"Pos 17\n");
   /*Free the additional data structures used to cast the matlab arrays*/
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    free_cast_matlab_2D_array(surface_vertices);
     free_cast_matlab_3D_array(surface_EHr, f_ex_vec.size());
     free_cast_matlab_3D_array(surface_EHi, f_ex_vec.size());
 

@@ -196,3 +196,29 @@ void SurfacePhasors::extractPhasorsSurfaceNoInterpolation(double **surface_EHr, 
     }
   }//end parallel region
 }
+
+void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
+  // setup vertex list dimensions
+  mwSize dims[2];
+  dims[0] = n_surface_vertices;
+  dims[1] = 3;
+
+  // create vertex list and infer MATLAB data storage location
+  vertex_list = mxCreateNumericArray(2, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+  vertex_list_data_ptr = cast_matlab_2D_array(mxGetPr((mxArray *) vertex_list), dims[0], dims[1]);
+
+  //now populate the vertex list
+  for (int i = 0; i < n_surface_vertices; i++) {
+    vertex_list_data_ptr[0][i] = input_grid_labels.x[surface_vertices[0][i]];
+    vertex_list_data_ptr[1][i] = input_grid_labels.y[surface_vertices[1][i]];
+    vertex_list_data_ptr[2][i] = input_grid_labels.z[surface_vertices[2][i]];
+  }
+}
+
+SurfacePhasors::~SurfacePhasors() {
+  // free the surface_vertices array if it has been cast
+  if (surface_vertices) { free_cast_matlab_2D_array(surface_vertices); }
+
+  // free the vertices_list if it was created and allocated
+  if (vertex_list_data_ptr) { free_cast_matlab_2D_array(vertex_list_data_ptr); }
+}
