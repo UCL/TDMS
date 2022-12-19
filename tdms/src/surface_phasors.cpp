@@ -36,28 +36,29 @@ void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices, int _f_
 
 void SurfacePhasors::normalise_surface(int frequency_index, complex<double> Enorm,
                                        complex<double> Hnorm) {
-
   complex<double> normalised_amplitude;
 
   // E-field components
-  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
+  for (int vindex = 0; vindex < n_surface_vertices; vindex++) {
     for (int i = 0; i < 3; i++) {
       // again, if surface_EH was just one array of FullFieldSnapshots, we could use the multiply_by methods of that class rather than doing this awkward cast-then-recast. Alas, MATLAB woes
-      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex] +
+      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex],
                                              surface_EHi[frequency_index][i][vindex]) /
                              Enorm;
       surface_EHr[frequency_index][i][vindex] = normalised_amplitude.real();
       surface_EHi[frequency_index][i][vindex] = normalised_amplitude.imag();
     }
+  }
   // H-field components
-  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
+  for (int vindex = 0; vindex < n_surface_vertices; vindex++) {
     for (int i = 3; i < 6; i++) {
-      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex] +
+      normalised_amplitude = complex<double>(surface_EHr[frequency_index][i][vindex],
                                              surface_EHi[frequency_index][i][vindex]) /
                              Hnorm;
       surface_EHr[frequency_index][i][vindex] = normalised_amplitude.real();
       surface_EHi[frequency_index][i][vindex] = normalised_amplitude.imag();
     }
+  }
 }
 
 void SurfacePhasors::extractPhasorsSurface(int frequency_index,

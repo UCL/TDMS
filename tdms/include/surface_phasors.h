@@ -23,7 +23,7 @@ private:
 
   Arrays are index by [frequency_index][field component][vertex_id/number]. Frequency index corresponds to the frequencies at which the user has requested we extract the amplitudes.
   */
-  double ***surface_EHr, ***surface_EHi;
+  double ***surface_EHr = nullptr, ***surface_EHi = nullptr;
 
 public:
   SurfacePhasors() = default;
