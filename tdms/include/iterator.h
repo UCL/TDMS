@@ -37,9 +37,6 @@ void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double om
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
 
-void normaliseSurface(double **surface_EHr, double **surface_EHi, int n_surface_vertices,
-                      std::complex<double> Enorm, std::complex<double> Hnorm);
-
 void normaliseVertices( double **EHr, double **EHi, ComplexAmplitudeSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
 
 void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<double> &phase_term, double &value);

@@ -8,11 +8,12 @@ using namespace std;
 using tdms_math_constants::DCPI;
 using tdms_math_constants::IMAGINARY_UNIT;
 
-SurfacePhasors::SurfacePhasors(mxArray *mx_surface_vertices) {
-  set_from_matlab_array(mx_surface_vertices);
+SurfacePhasors::SurfacePhasors(mxArray *mx_surface_vertices, int _f_ex_vector_size) {
+  set_from_matlab_array(mx_surface_vertices, _f_ex_vector_size);
 }
 
-void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices) {
+void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices, int _f_ex_vector_size) {
+  f_ex_vector_size = _f_ex_vector_size;
   const mwSize *dimensions_pointer_out = mxGetDimensions(mx_surface_vertices);
 
   // set the number of vertices on the surface using the array dimensions
@@ -21,9 +22,49 @@ void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices) {
   //cast the vertex array as a 2-d integer array
   surface_vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) mx_surface_vertices),
                                           dimensions_pointer_out[0], dimensions_pointer_out[1]);
+
+  //create space for the complex amplitudes E and H around the surface. These will be in a large complex
+  //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
+  //the vertex with the same line as in surface_phasors.surface_vertices
+  mwSize dims[3] = {n_surface_vertices, 6, f_ex_vector_size};
+  mx_surface_amplitudes = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+  surface_EHr = cast_matlab_3D_array(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                     dims[2]);
+  surface_EHi = cast_matlab_3D_array(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
+                                     dims[2]);
 }
 
-void SurfacePhasors::extractPhasorsSurface(double **surface_EHr, double **surface_EHi,
+void SurfacePhasors::normalise_surface(int frequency_vector_index, complex<double> Enorm, complex<double> Hnorm) {
+  double norm_r, norm_i, denom, temp_r, temp_i;
+//simplify!!!!
+  norm_r = real(Enorm);
+  norm_i = imag(Enorm);
+  denom = norm_r * norm_r + norm_i * norm_i;
+
+  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
+    for (int i = 0; i < 3; i++) {
+      temp_r = surface_EHr[frequency_vector_index][i][vindex];
+      temp_i = surface_EHi[frequency_vector_index][i][vindex];
+
+      surface_EHr[frequency_vector_index][i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
+      surface_EHi[frequency_vector_index][i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
+    }
+
+  norm_r = real(Hnorm);
+  norm_i = imag(Hnorm);
+  denom = norm_r * norm_r + norm_i * norm_i;
+
+  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
+    for (int i = 3; i < 6; i++) {
+      temp_r = surface_EHr[frequency_vector_index][i][vindex];
+      temp_i = surface_EHi[frequency_vector_index][i][vindex];
+
+      surface_EHr[frequency_vector_index][i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
+      surface_EHi[frequency_vector_index][i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
+    }
+}
+
+void SurfacePhasors::extractPhasorsSurface(int frequency_vector_index,
                                            ElectricSplitField &E, MagneticSplitField &H, int n,
                                            double omega, int Nt, int J_tot,
                                            SimulationParameters &params, bool interpolate) {
@@ -73,7 +114,7 @@ void SurfacePhasors::extractPhasorsSurface(double **surface_EHr, double **surfac
         F.multiply_H_by(cphaseTermH);
 
         // update the master arrays
-        update_surface_EH(surface_EHr, surface_EHi, vindex, F);
+        update_surface_EH(frequency_vector_index, vindex, F);
       }
     } else {
 #pragma omp for
@@ -92,7 +133,7 @@ void SurfacePhasors::extractPhasorsSurface(double **surface_EHr, double **surfac
         F.multiply_H_by(cphaseTermH);
 
         // update the master arrays
-        update_surface_EH(surface_EHr, surface_EHi, vindex, F);
+        update_surface_EH(frequency_vector_index, vindex, F);
       }
     }//end parallel region
   }
@@ -116,31 +157,36 @@ void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
   }
 }
 
+void SurfacePhasors::update_surface_EH(int frequency_vector_index, int vertex_index,
+                       FullFieldSnapshot F) {
+  // Ex
+  surface_EHr[frequency_vector_index][0][vertex_index] += real(F.Ex);
+  surface_EHi[frequency_vector_index][0][vertex_index] += imag(F.Ex);
+  // Hx
+  surface_EHr[frequency_vector_index][3][vertex_index] += real(F.Hx);
+  surface_EHi[frequency_vector_index][3][vertex_index] += imag(F.Hx);
+  // Ey
+  surface_EHr[frequency_vector_index][1][vertex_index] += real(F.Ey);
+  surface_EHi[frequency_vector_index][1][vertex_index] += imag(F.Ey);
+  //Hy
+  surface_EHr[frequency_vector_index][4][vertex_index] += real(F.Hy);
+  surface_EHi[frequency_vector_index][4][vertex_index] += imag(F.Hy);
+  //Ez
+  surface_EHr[frequency_vector_index][2][vertex_index] += real(F.Ez);
+  surface_EHi[frequency_vector_index][2][vertex_index] += imag(F.Ez);
+  // Hz
+  surface_EHr[frequency_vector_index][5][vertex_index] += real(F.Hz);
+  surface_EHi[frequency_vector_index][5][vertex_index] += imag(F.Hz);
+}
+
 SurfacePhasors::~SurfacePhasors() {
   // free the surface_vertices array if it has been cast
   if (surface_vertices) { free_cast_matlab_2D_array(surface_vertices); }
 
   // free the vertices_list if it was created and allocated
   if (vertex_list_data_ptr) { free_cast_matlab_2D_array(vertex_list_data_ptr); }
-}
 
-void update_surface_EH(double **surface_EHr, double **surface_EHi, int vindex, FullFieldSnapshot F) {
-  // Ex
-  surface_EHr[0][vindex] += real(F.Ex);
-  surface_EHi[0][vindex] += imag(F.Ex);
-  // Hx
-  surface_EHr[3][vindex] += real(F.Hx);
-  surface_EHi[3][vindex] += imag(F.Hx);
-  // Ey
-  surface_EHr[1][vindex] += real(F.Ey);
-  surface_EHi[1][vindex] += imag(F.Ey);
-  //Hy
-  surface_EHr[4][vindex] += real(F.Hy);
-  surface_EHi[4][vindex] += imag(F.Hy);
-  //Ez
-  surface_EHr[2][vindex] += real(F.Ez);
-  surface_EHi[2][vindex] += imag(F.Ez);
-  // Hz
-  surface_EHr[5][vindex] += real(F.Hz);
-  surface_EHi[5][vindex] += imag(F.Hz);
+  // free the surfaceEH arrays if they were allocated
+  if (surface_EHr) { free_cast_matlab_3D_array(surface_EHr, f_ex_vector_size); }
+  if (surface_EHi) { free_cast_matlab_3D_array(surface_EHi, f_ex_vector_size); }
 }

@@ -263,7 +263,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
   E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
 
-  double ***surface_EHr, ***surface_EHi;
   double rho;
   double alpha_l, beta_l, gamma_l;
   double kappa_l, sigma_l;
@@ -305,7 +304,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   mwSize *label_dims;
   label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
   mxArray *dummy_array[3];
-  mxArray *mx_surface_vertices, *mx_surface_facets, *mx_surface_amplitudes;
+  mxArray *mx_surface_vertices, *mx_surface_facets;
   mxArray *mx_Idx, *mx_Idy;
   double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
   complex<double> **Idx, **Idy;
@@ -599,22 +598,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     //we don't need the facets so destroy the matrix now to save memory
     mxDestroyArray(mx_surface_facets);
 
-    surface_phasors.set_from_matlab_array(mx_surface_vertices);
-    //create space for the complex amplitudes E and H around the surface. These will be in a large complex
-    //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
-    //the vertex with the same line as in surface_phasors.surface_vertices
-    ndims = 3;
+    surface_phasors.set_from_matlab_array(mx_surface_vertices, f_ex_vec.size());
 
+    // NOT SURE IF THIS IS STILL NEEDED - might be needless with our new slass
+    ndims = 3;
     dims[0] = surface_phasors.get_n_surface_vertices();
     dims[1] = 6;//one for each component of field
     dims[2] = f_ex_vec.size();
 
-    mx_surface_amplitudes =
-            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    surface_EHr = cast_matlab_3D_array(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                       dims[2]);
-    surface_EHi = cast_matlab_3D_array(mxGetPi((mxArray *) mx_surface_amplitudes), dims[0], dims[1],
-                                       dims[2]);
     //now need to add a command to update the complex amplitudes
   } // if (params.exphasorssurface && params.run_mode == RunMode::complete)
 
@@ -1132,8 +1123,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       spdlog::debug("Zeroed the phasors");
 
       if (params.exphasorssurface) {
-        initialiseDouble3DArray(surface_EHr, surface_phasors.get_n_surface_vertices(), 6, f_ex_vec.size());
-        initialiseDouble3DArray(surface_EHi, surface_phasors.get_n_surface_vertices(), 6, f_ex_vec.size());
+        surface_phasors.zero_surface_EH();
         spdlog::debug("Zeroed the surface components");
       }
     }
@@ -1146,7 +1136,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            surface_phasors.extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
+            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
                                                   dft_counter, f_ex_vec[ifx] * 2 * DCPI, Nsteps,
                                                   J_tot, params);
           }
@@ -1154,8 +1144,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
-            surface_phasors.extractPhasorsSurface(
-                    surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, dft_counter,
+            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, dft_counter,
                     f_ex_vec[ifx] * 2 * DCPI, Nsteps, J_tot, params, false);
           }
           dft_counter++;
@@ -1210,15 +1199,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
       if ((tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-              surface_phasors.extractPhasorsSurface(surface_EHr[ifx], surface_EHi[ifx], E_s, H_s,
+              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
                                                     tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
                                                     J_tot, params);
           }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
-              surface_phasors.extractPhasorsSurface(
-                      surface_EHr[ifx], surface_EHi[ifx], E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
+              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
                       params.Npe, J_tot, params, false);
           }
       }
@@ -4484,8 +4472,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   //fprintf(stderr,"Pos 13\n");
   if (params.run_mode == RunMode::complete && params.exphasorssurface)
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      normaliseSurface(surface_EHr[ifx], surface_EHi[ifx], surface_phasors.get_n_surface_vertices(),
-                       E_norm[ifx], H_norm[ifx]);
+      surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
       //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
     }
 
@@ -4609,11 +4596,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
     //now create and populate the vertex list
     surface_phasors.create_vertex_list(input_grid_labels);
-    mxArray *vertex_list = surface_phasors.get_vertex_list();
 
     //assign outputs
-    plhs[22] = vertex_list;
-    plhs[23] = mx_surface_amplitudes;
+    plhs[22] = surface_phasors.get_vertex_list();
+    plhs[23] = surface_phasors.get_mx_surface_amplitudes();
     plhs[24] = mx_surface_facets;
 
   } else {//still set outputs
@@ -4631,9 +4617,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   //fprintf(stderr,"Pos 17\n");
   /*Free the additional data structures used to cast the matlab arrays*/
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    free_cast_matlab_3D_array(surface_EHr, f_ex_vec.size());
-    free_cast_matlab_3D_array(surface_EHi, f_ex_vec.size());
-
     mxDestroyArray(mx_surface_vertices);
   }
 
@@ -4713,7 +4696,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     mxDestroyArray(dummy_array[2]);
   }
 
-  //must destroy mx_surface_amplitudes
+  //must destroy surface_phasors.mx_surface_amplitudes
 }
 
 /*Sets the contents of the 3 dimensional double array to zero
@@ -4744,37 +4727,6 @@ void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim)
 void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim) {
   for (int j_var = 0; j_var < j_lim; j_var++)
     for (int i_var = 0; i_var < i_lim; i_var++) inArray[j_var][i_var] = 0.0;
-}
-
-void normaliseSurface(double **surface_EHr, double **surface_EHi, int n_surface_vertices,
-                      complex<double> Enorm, complex<double> Hnorm) {
-  double norm_r, norm_i, denom, temp_r, temp_i;
-
-  norm_r = real(Enorm);
-  norm_i = imag(Enorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
-  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
-    for (int i = 0; i < 3; i++) {
-      temp_r = surface_EHr[i][vindex];
-      temp_i = surface_EHi[i][vindex];
-
-      surface_EHr[i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-      surface_EHi[i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
-    }
-
-  norm_r = real(Hnorm);
-  norm_i = imag(Hnorm);
-  denom = norm_r * norm_r + norm_i * norm_i;
-
-  for (int vindex = 0; vindex < n_surface_vertices; vindex++)
-    for (int i = 3; i < 6; i++) {
-      temp_r = surface_EHr[i][vindex];
-      temp_i = surface_EHi[i][vindex];
-
-      surface_EHr[i][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-      surface_EHi[i][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
-    }
 }
 
 void normaliseVertices(double **EHr, double **EHi, ComplexAmplitudeSample &campssample, complex<double> Enorm, complex<double> Hnorm) {
