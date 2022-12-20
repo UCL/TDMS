@@ -70,7 +70,7 @@ void XYZVectorsTest::test_other_methods() {
     // v.y has all elements but the first less than 2
     REQUIRE(v.all_elements_less_than(2., 1, AxialDirection::Y, 1));
     // v.z has all elements except the last less than 4
-    REQUIRE(v.all_elements_less_than(4., 3, 'z'));
+    REQUIRE(v.all_elements_less_than(4., 3, AxialDirection::Z));
   }
 }
 
