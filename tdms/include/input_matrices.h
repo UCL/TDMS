@@ -32,9 +32,9 @@ private:
   void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual);
 
 public:
-    InputMatrices() = default;
+  InputMatrices() = default;
 
-    /**
+  /**
      * @brief Fetch a (pointer to a) MATLAB input matrix by index reference.
      *
      * Index-references can be computed through index_from_matrix_name. They are ordered in the same way as the names in tdms_matrix_names::matrixnames.
@@ -42,31 +42,39 @@ public:
      * @param index The index to fetch
      * @return const mxArray* Pointer to the corresponding MATLAB array
      */
-    const mxArray *operator[](int index) {return matrix_pointers[index]; }
-    /**
+  const mxArray *operator[](int index) { return matrix_pointers[index]; }
+  /**
      * @brief Fetch a (pointer to a) MATLAB input matrix by name.
      *
      * @param matrix_name Name of the matrix to fetch the pointer to
      * @return const mxArray* Pointer to the corresponding MATLAB array
      */
-    const mxArray *operator[](const char *matrix_name) { return matrix_pointers[index_from_matrix_name(matrix_name)]; }
+  const mxArray *operator[](const char *matrix_name) {
+    return matrix_pointers[index_from_matrix_name(matrix_name)];
+  }
 
-    /**
+  /**
      * @brief Set the pointer with the given index
      */
-    void set_matrix_pointer(int index, mxArray *new_ptr) { matrix_pointers[index] = new_ptr; }
-    /**
+  void set_matrix_pointer(int index, mxArray *new_ptr) { matrix_pointers[index] = new_ptr; }
+  /**
      * @brief Set the pointer to the named matrix
      */
-    void set_matrix_pointer(const char *matrix_name, mxArray *new_ptr) {
-      set_matrix_pointer(index_from_matrix_name(matrix_name), new_ptr);
-    }
+  void set_matrix_pointer(const char *matrix_name, mxArray *new_ptr) {
+    set_matrix_pointer(index_from_matrix_name(matrix_name), new_ptr);
+  }
 
   /**
    * @brief Open the input mat file, load the matrices, and setup pointers to the matrices
    *
    * @param mat_filename The MATLAB filename
-   * @param gridfile The additional gridfile, if provided
    */
-    void set_from_input_file(const char *mat_filename, const char *gridfile = "");
+  void set_from_input_file(const char *mat_filename);
+  /**
+   * @brief Open the input mat file, load the matrices, and setup pointers to the matrices
+   *
+   * @param mat_filename The MATLAB filename
+   * @param gridfile The additional gridfile
+   */
+  void set_from_input_file(const char *mat_filename, const char *gridfile);
 };

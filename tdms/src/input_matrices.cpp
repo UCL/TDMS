@@ -15,61 +15,71 @@ int index_from_matrix_name(const char *matrix_name) {
     for (int i = 0; i < NMATRICES; i++) {
         if(are_equal(matrix_name, matrixnames[i])) { return i; }
     }
-    throw runtime_error("Matrix name" + string(matrix_name) + " not found in array.");
+    throw runtime_error("Matrix name " + string(matrix_name) + " not found in matrixnames.");
 }
 
-void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile) {
-    MatrixCollection infile_expected;
+void InputMatrices::set_from_input_file(const char *mat_filename) {
+    MatrixCollection infile_expected((char **) matrixnames, NMATRICES);
     MatFileMatrixCollection infile_contains(mat_filename);
+    spdlog::info("Input file: " +string(mat_filename) + " | No gridfile supplied");
 
-    if ((gridfile != NULL) && (gridfile[0] == '\0')) {
-        // if we have been provided with a valid gridfile, unpack differently
-        spdlog::info("Unpacking gridfile: " + string(gridfile));
-
-        // first extract fdtdgrid from the gridfile provided
-        MatrixCollection gridfile_expected((char **) matrixnames_gridfile, 1);
-        MatFileMatrixCollection gridfile_contains(gridfile);
-        gridfile_contains.check_has_at_least_as_many_matrices_as(gridfile_expected);
-        // this is the matrix name we are searching for in the gridfile
-        char *fdtd_matrix_search_string = gridfile_expected.matrix_names[0];
-
-        // assign the fdtdgrid array
-        for (int j = 0; j < gridfile_contains.n_matrices; j++) {
-          // the gridfile might have multiple arrays saved in it, but we only want the fdtdgrid
-          auto current_matrix_name = gridfile_contains.matrix_names[j];
-
-          if (are_equal(current_matrix_name, fdtd_matrix_search_string)) {
-            auto pointer = matGetVariable(gridfile_contains.mat_file, current_matrix_name);
-
-            if (pointer == nullptr) {
-              throw runtime_error("Could not get pointer to " + string(current_matrix_name));
-            }
-            set_matrix_pointer("fdtdgrid", pointer);
-            break;
-          } else if (j == (gridfile_contains.n_matrices - 1)) {
-            // fdtdgrid matrix pointer NOT found
-            throw runtime_error("Couldn't find matrix " + string());
-          }
-
-          // now pick up the other matrix inputs from the usual input file
-          infile_expected = MatrixCollection((char **) matrixnames_infile, NMATRICES - 1);
-        }
-    } else {
-        // we only have the matrix file
-        spdlog::info("No gridfile supplied");
-        infile_expected = MatrixCollection((char **) matrixnames, NMATRICES);
-    }
     // check that the input file actually has enough matrices for what we're expecting
     infile_contains.check_has_at_least_as_many_matrices_as(infile_expected);
     // assign the pointers to the matrices
     assign_matrix_pointers(infile_expected, infile_contains);
 
     // Add fields to fdtdgrid
-    auto initialiser = fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
+    auto initialiser =
+            fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
     const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
-                                                    "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
+                                                   "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
 
     for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
+}
+void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile) {
+  MatrixCollection infile_expected((char **) matrixnames_infile, NMATRICES - 1);
+  MatFileMatrixCollection infile_contains(mat_filename);
+  spdlog::info("Input file: " + string(mat_filename) + " | Gridfile: " + string(gridfile));
+
+  // first extract fdtdgrid from the gridfile provided
+  MatrixCollection gridfile_expected((char **) matrixnames_gridfile, 1);
+  MatFileMatrixCollection gridfile_contains(gridfile);
+  gridfile_contains.check_has_at_least_as_many_matrices_as(gridfile_expected);
+  // this is the matrix name we are searching for in the gridfile
+  char *fdtd_matrix_search_string = gridfile_expected.matrix_names[0];
+
+  // assign the fdtdgrid array
+  for (int j = 0; j < gridfile_contains.n_matrices; j++) {
+    // the gridfile might have multiple arrays saved in it, but we only want the fdtdgrid
+    auto current_matrix_name = gridfile_contains.matrix_names[j];
+
+    if (are_equal(current_matrix_name, fdtd_matrix_search_string)) {
+      auto pointer = matGetVariable(gridfile_contains.mat_file, current_matrix_name);
+
+      if (pointer == nullptr) {
+        throw runtime_error("Could not get pointer to " + string(current_matrix_name));
+      }
+      set_matrix_pointer("fdtdgrid", pointer);
+      break;
+    } else if (j == (gridfile_contains.n_matrices - 1)) {
+      // fdtdgrid matrix pointer NOT found
+      throw runtime_error("Couldn't find matrix " + string(current_matrix_name));
+    }
+  }
+
+  // now pick up the other matrix inputs from the usual input file
+  // check that the input file actually has enough matrices for what we're expecting
+  infile_contains.check_has_at_least_as_many_matrices_as(infile_expected);
+  // assign the pointers to the matrices
+  assign_matrix_pointers(infile_expected, infile_contains);
+
+  // Add fields to fdtdgrid
+  auto initialiser =
+          fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
+  const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
+                                                  "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
+
+  for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
 }
 
 void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,

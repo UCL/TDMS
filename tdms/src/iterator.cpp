@@ -323,13 +323,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   //fprintf(stderr,"Got fdtdgrid\n");
 
   /*Get Cmaterials */
-  assert_is_struct(in_matrices["Cmaterials"], "Cmaterials");
-  auto Cmaterial = CMaterial(in_matrices["Cmaterials"]);
+  assert_is_struct(in_matrices["Cmaterial"], "Cmaterial");
+  auto Cmaterial = CMaterial(in_matrices["Cmaterial"]);
   //fprintf(stderr,"Got Cmaterials\n");
 
   /*Get Dmaterials */
-  assert_is_struct(in_matrices["Dmaterials"], "Dmaterials");
-  auto Dmaterial = DMaterial(in_matrices["Dmaterials"]);
+  assert_is_struct(in_matrices["Dmaterial"], "Dmaterial");
+  auto Dmaterial = DMaterial(in_matrices["Dmaterial"]);
   //fprintf(stderr,"Got Dmaterials\n");
 
   /*Get C */
