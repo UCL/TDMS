@@ -1124,7 +1124,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
 
       dft_counter = 0;
 
-      double tol = E.max_pointwise_difference_over_max_element(E_copy);
+      double tol = E.normalised_difference(E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);

@@ -353,7 +353,7 @@ public:
    * @param other The other field
    * @return double Maximum relative pointwise absolute difference
    */
-  double max_pointwise_difference_over_max_element(Field &other);
+  double normalised_difference(Field &other);
 
   ~Field();
 };

@@ -49,25 +49,6 @@ bool XYZVectors::all_elements_less_than(double comparison_value, int vector_leng
   }
   return true;
 }
-bool XYZVectors::all_elements_less_than(double comparison_value, int vector_length, char component,
-                                        int buffer_start) {
-  AxialDirection d;
-  switch (component) {
-    case 'x':
-      d = AxialDirection::X;
-      break;
-    case 'y':
-      d = AxialDirection::Y;
-      break;
-    case 'z':
-      d = AxialDirection::Z;
-      break;
-    default:
-      throw runtime_error("Error - component not recognised");
-      break;
-  }
-  return all_elements_less_than(comparison_value, vector_length, d, buffer_start);
-}
 bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny, int nz) {
   if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) { return false; }
   if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) { return false; }
