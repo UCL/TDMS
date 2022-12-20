@@ -8,8 +8,9 @@
  */
 #pragma once
 
-#include "mat_io.h"
 #include "argument_parser.h"
+#include "input_matrices.h"
+#include "mat_io.h"
 #include "matrix_collection.h"
 
 /**
@@ -17,10 +18,11 @@
  *
  * @param mat_filename The MATLAB filename
  * @param matrix_names names of the matrices in the MATLAB file
- * @param matrix_ptrs pointers to arrays in C++ that will be populated by the MATLAB matrices
+ * @param ordered_matrices Object storing the arrays in C++ that will be populated by the MATLAB matrices
  * @param n_matrices the number of matrices in the MATLAB file
  */
-void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices);
+void openandorder(const char *mat_filename, char **matrix_names, InputMatrices ordered_matrices,
+                  int n_matrices);
 
 /**
  * @brief Save the resultant matrices into a file with name outputfilename
@@ -47,6 +49,7 @@ void check_files_can_be_accessed(ArgumentNamespace &args);
  *
  * @param expected The names of the matrices in the MATLAB file.
  * @param actual The actual matrices in the MATLAB file.
- * @param pointers Pointers to the matrices.
+ * @param ordered_matrices Object that will store the pointers to the matrices.
  */
-void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual, const mxArray **pointers);
+void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual,
+                            InputMatrices ordered_matrices);

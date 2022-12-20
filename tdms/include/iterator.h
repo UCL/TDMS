@@ -12,12 +12,13 @@
 #include "arrays.h"
 #include "field.h"
 #include "grid_labels.h"
+#include "input_matrices.h"
 
 /**
  * @brief Executes the main simulation.
  * Used to be the MATLAB mexFunction
  */
-void execute_simulation(int, mxArray **, int, const mxArray **, SolverMethod solver_method,
+void execute_simulation(int, mxArray **, int, InputMatrices in_matrices, SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods);
 
 void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs,

@@ -17,34 +17,6 @@
 
 using namespace std;
 
-void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices){
-
-  auto expected = MatrixCollection(matrix_names, n_matrices);
-  auto actual = MatFileMatrixCollection(mat_filename);
-
-  actual.check_has_at_least_as_many_matrices_as(expected);
-
-  assign_matrix_pointers(expected, actual, matrix_ptrs);
-
-  //fprintf(stderr, "Got all %d matrices\n",nmatrices);
-  //fprintf(stderr, "%d\n",mxGetFieldNumber( (mxArray *)matrixptrs[0], "I_tot"));
-
-  if (!are_equal(matrix_names[0], "fdtdgrid")){
-    return;
-  }
-
-  // Add fields to fdtdgrid
-  auto initialiser = fdtdGridInitialiser(matrix_ptrs[0], mat_filename);
-  const vector<string> fdtdgrid_element_names = {
-          "Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
-          "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"
-  };
-
-  for(const auto& name : fdtdgrid_element_names){
-    initialiser.add_tensor(name);
-  }
-}
-
 void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename){
 
   auto outfile = matOpen(outputfilename, "w7.3");
@@ -73,30 +45,4 @@ void check_files_can_be_accessed(ArgumentNamespace &args){
   }
 
   assert_can_open_file(args.output_filename(), "a+");
-}
-
-void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual, const mxArray **pointers){
-
-  for(int i=0; i < expected.n_matrices; i++){
-    auto expected_matrix_name = expected.matrix_names[i];
-
-    for(int j=0; j < actual.n_matrices; j++){
-      auto actual_matrix_name = actual.matrix_names[j];
-
-      if(are_equal(actual_matrix_name, expected_matrix_name)){
-        //fprintf(stderr,"Got %s/%s (%d)\n",mat_matrixnames[j],matrixnames[i],j);
-        auto pointer = matGetVariable(actual.mat_file, actual_matrix_name);
-
-        if(pointer == nullptr){
-          throw runtime_error("Could not get pointer to "+string(actual_matrix_name));
-        }
-
-        pointers[i] = pointer;
-        break;
-      }
-      else if(j==(actual.n_matrices - 1)){  //matrix pointer NOT found
-        throw runtime_error("Couldn't find matrix "+string(expected_matrix_name));
-      }
-    }// j
-  }// i
 }
