@@ -13,11 +13,19 @@
 There are two cases to consider, when the fdtdgrid matrix is specified in a separate mat file
 and when it is in the same file as the other matrices.
 */
-
-const char *matrixnames[] = {"fdtdgrid","Cmaterial","Dmaterial","C","D","freespace","disp_params","delta","interface","Isource","Jsource","Ksource","grid_labels","omega_an","to_l","hwhm","Dxl","Dxu","Dyl","Dyu","Dzl","Dzu","Nt","dt","tind","sourcemode","runmode","exphasorsvolume","exphasorssurface","intphasorssurface","phasorsurface","phasorinc","dimension","conductive_aux","dispersive_aux","structure","f_ex_vec","exdetintegral","f_vec","Pupil","D_tilde","k_det_obs_global","air_interface","intmatprops","intmethod","tdfield","tdfdir","fieldsample","campssample"};
-const char *matrixnames_infile[] = {"Cmaterial","Dmaterial","C","D","freespace","disp_params","delta","interface","Isource","Jsource","Ksource","grid_labels","omega_an","to_l","hwhm","Dxl","Dxu","Dyl","Dyu","Dzl","Dzu","Nt","dt","tind","sourcemode","runmode","exphasorsvolume","exphasorssurface","intphasorssurface","phasorsurface","phasorinc","dimension","conductive_aux","dispersive_aux","structure","f_ex_vec","exdetintegral","f_vec","Pupil","D_tilde","k_det_obs_global","air_interface","intmatprops","intmethod","tdfield","tdfdir","fieldsample","campssample"};
-const char *matrixnames_gridfile[] = {"fdtdgrid"};
-const char *outputmatrices_all[] = {"Ex_out","Ey_out","Ez_out","Hx_out","Hy_out","Hz_out","x_out","y_out","z_out","Ex_i","Ey_i","Ez_i","Hx_i","Hy_i","Hz_i","x_i","y_i","z_i","vertices","camplitudes","facets","maxresfield","Id","fieldsample","campssample"};
-const char *outputmatrices[] = {"Ex_out","Ey_out","Ez_out","Hx_out","Hy_out","Hz_out","x_out","y_out","z_out","Ex_i","Ey_i","Ez_i","Hx_i","Hy_i","Hz_i","x_i","y_i","z_i","camplitudes","maxresfield","Id","fieldsample","campssample"};
-int  matricestosave_all[]   = {0,1,2,3,4,5,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
-int  matricestosave[]   = {0,1,2,3,4,5,10,11,12,13,14,15,16,17,18,19,20,21,23,25,26,27,28};
+namespace tdms_matrix_names {
+    // all matrices that we could expect to get from an input file
+    extern const char *matrixnames[NMATRICES];
+    // matricies we expect to get from an input file if also provided a gridfile
+    extern const char *matrixnames_infile[NMATRICES-1];
+    // matrices we expect to obtain from a separate gridfile
+    extern const char *matrixnames_gridfile[1];
+    // oall output matrices we might want to write
+    extern const char *outputmatrices_all[NOUTMATRICES_WRITE_ALL];
+    // output matrices we want to write in a compressed (-m) output
+    extern const char *outputmatrices[NOUTMATRICES_WRITE];
+    // indices of the matrices to save when saving a complete system
+    extern int matricestosave_all[NOUTMATRICES_WRITE_ALL];
+    // indices of the matrices to save when saving a compressed output
+    extern int matricestosave[NOUTMATRICES_WRITE];
+}

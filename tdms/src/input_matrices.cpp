@@ -6,10 +6,10 @@
 #include <spdlog/spdlog.h>
 
 #include "fdtd_grid_initialiser.h"
-#include "openandorder.h"
 #include "utils.h"
 
 using namespace std;
+using namespace tdms_matrix_names;
 
 int index_from_matrix_name(const char *matrix_name) {
     for (int i = 0; i < NMATRICES; i++) {
@@ -18,7 +18,7 @@ int index_from_matrix_name(const char *matrix_name) {
     throw runtime_error("Matrix name" + string(matrix_name) + " not found in array.");
 }
 
-void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile = "") {
+void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile) {
     MatrixCollection infile_expected;
     MatFileMatrixCollection infile_contains(mat_filename);
 

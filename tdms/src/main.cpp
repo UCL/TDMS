@@ -10,6 +10,8 @@
 #include "iterator.h"
 #include "mat_io.h"
 
+using namespace tdms_matrix_names;
+
 int main(int nargs, char *argv[]){
 
   // Set the logging level with a compile-time define for debugging
