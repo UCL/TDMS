@@ -543,7 +543,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     dims[1] = E.J_tot;
     dims[2] = E.K_tot;
 
-    fprintf(stderr, "dims:(%d,%d,%d)\n", dims[0], dims[1], dims[2]);
+    spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
     plhs[0] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
     plhs[1] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
@@ -4333,11 +4333,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
         }
       }
 
-      fprintf(stdout, "Iterating: %d %e\n", tind, maxfield);
-      //fprintf(stderr,"Post-iter 1\n");
-      //     fprintf(stdout,"Iterating: %d\n",tind);
+      spdlog::info("Iterating: tind = {0:d}, maxfield = {1:e}", tind, maxfield);
       t0 = double(time(NULL));
-      //fprintf(stderr,"Post-iter 2\n");
     }
     //fprintf(stderr,"Post-iter 3\n");
     if ((params.source_mode == SourceMode::steadystate) && (tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&

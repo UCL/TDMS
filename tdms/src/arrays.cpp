@@ -247,7 +247,7 @@ void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 void IncidentField::set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name){
 
   if (mxIsEmpty(mxGetField(ptr, 0, name.c_str()))) {
-    cerr << name+" not present" << endl;
+    spdlog::info("{} not present", name);
     return;
   }
 
@@ -344,7 +344,7 @@ void Vertices::initialise(const mxArray *ptr) {
 ComplexAmplitudeSample::ComplexAmplitudeSample(const mxArray *ptr) {
 
   if (mxIsEmpty(ptr)){
-    cerr << "campssample is empty" << endl;
+    spdlog::info("campssample is empty");
     return;
   }
 
