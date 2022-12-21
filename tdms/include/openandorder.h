@@ -20,7 +20,9 @@
  * @param matrix_ptrs pointers to arrays in C++ that will be populated by the MATLAB matrices
  * @param n_matrices the number of matrices in the MATLAB file
  */
-void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices);
+void openandorder(const char *mat_filename,
+                  const std::vector<std::string>& matrix_names,
+                  const mxArray **matrix_ptrs, int n_matrices);
 
 /**
  * @brief Save the resultant matrices into a file with name outputfilename
@@ -32,7 +34,8 @@ void openandorder(const char *mat_filename, char **matrix_names, const mxArray *
  * @param nmatrices the number of matrices to save
  * @param outputfilename name of the output file
  */
-void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename);
+void saveoutput(mxArray **plhs, const int *matricestosave,
+                const std::vector<std::string>& matrixnames, int nmatrices, const char *outputfilename);
 
 /**
  * @brief Check that all input and output files can be accessed

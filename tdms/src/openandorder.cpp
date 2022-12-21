@@ -45,7 +45,9 @@ void openandorder(const char *mat_filename, char **matrix_names, const mxArray *
   }
 }
 
-void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename){
+void saveoutput(mxArray **plhs, const int *matricestosave,
+                const std::vector<std::string>& matrixnames, int nmatrices,
+                const char *outputfilename){
 
   auto outfile = matOpen(outputfilename, "w7.3");
   if (outfile == nullptr){
@@ -54,12 +56,12 @@ void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], 
 
   //now iterate through the matrices, set names and add to matfile
   for(int i=0; i<nmatrices; i++){
-    auto mpv_out = matPutVariable(outfile, matrixnames[i], (mxArray *)plhs[matricestosave[i]]);
+    auto mpv_out = matPutVariable(outfile, matrixnames[i].c_str(), (mxArray *)plhs[matricestosave[i]]);
 
     if(mpv_out){
       auto fp = matGetFp(outfile);
       fprintf(stderr, "Could not write array %s to %s (%d,%d,%d)\n",
-              matrixnames[i], outputfilename, mpv_out, feof(fp), ferror(fp));
+              matrixnames[i].c_str(), outputfilename, mpv_out, feof(fp), ferror(fp));
     }
   }
 
