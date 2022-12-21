@@ -27,6 +27,35 @@ void XYZVectors::set_ptr(AxialDirection d, double* ptr){
   }
 }
 
+bool XYZVectors::all_elements_less_than(double comparison_value, int vector_length,
+                                        AxialDirection component, int buffer_start) {
+  double *component_pointer;
+  switch (component) {
+    case AxialDirection::X:
+      component_pointer = x;
+      break;
+    case AxialDirection::Y:
+      component_pointer = y;
+      break;
+    case AxialDirection::Z:
+      component_pointer = z;
+      break;
+    default:
+      throw runtime_error("Error - component not recognised");
+      break;
+  }
+  for (int index = buffer_start; index < vector_length; index++) {
+    if (component_pointer[buffer_start + index] > comparison_value) { return false; }
+  }
+  return true;
+}
+bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny, int nz) {
+  if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) { return false; }
+  if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) { return false; }
+  if (!all_elements_less_than(comparison_value, nz, AxialDirection::Z)) { return false; }
+  return true;
+}
+
 CMaterial::CMaterial(const mxArray *ptr) {
 
   assert_num_fields_equals(9, ptr, "Cmaterials");
@@ -110,6 +139,16 @@ DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
   sigma.x = mxGetPr(ptr_to_matrix_in(ptr, "sigma_x", "dispersive_aux"));
   sigma.y = mxGetPr(ptr_to_matrix_in(ptr, "sigma_y", "dispersive_aux"));
   sigma.z = mxGetPr(ptr_to_matrix_in(ptr, "sigma_z", "dispersive_aux"));
+}
+
+bool DispersiveMultiLayer::is_dispersive(int K_tot, double near_zero_tolerance) {
+  for (int i = 0; i < K_tot; i++) {
+    if (fabs(gamma[i]) > near_zero_tolerance) {
+      // non-zero attenuation constant of a Yee cell implies media is dispersive
+      return true;
+    }
+  }
+  return false;
 }
 
 GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {

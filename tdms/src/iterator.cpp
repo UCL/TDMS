@@ -274,7 +274,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   //these are used for boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
-  double maxfield = 0, tempfield;
+  double maxfield = 0.;
 
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
   double refind;
@@ -361,7 +361,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   rho_cond.y = mxGetPr(ptr_to_vector_in(in_matrices["conductive_aux"], "rho_y", "conductive_aux"));
   rho_cond.z = mxGetPr(ptr_to_vector_in(in_matrices["conductive_aux"], "rho_z", "conductive_aux"));
   /*Get dispersive_aux*/
-  auto ml = DispersiveMultiLayer(in_matrices["dispersive_aux"]);
+  auto matched_layer = DispersiveMultiLayer(in_matrices["dispersive_aux"]);
   /*Get structure and update params accordingly*/
   auto structure = GratingStructure(in_matrices["structure"], I_tot);
   params.is_structure = structure.has_elements();
@@ -759,11 +759,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   //work out if we have any disperive materials
   bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
-  //work out if we have conductive background
-  bool is_cond = is_conductive(rho_cond, I_tot, J_tot, K_tot);
-  //work out if we have a dispersive background
-  if (params.is_disp_ml) params.is_disp_ml = is_dispersive_ml(ml, K_tot);
-  //  fprintf(stderr,"is_disp:%d, is_cond%d, params.is_disp_ml: %d\n",is_disp,is_cond,params.is_disp_ml);
+  //work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
+  bool is_conductive = !(rho_cond.all_elements_less_than(1e-15, I_tot + 1, J_tot + 1, K_tot + 1));
+  // work out if we have a dispersive background
+  if (params.is_disp_ml) params.is_disp_ml = matched_layer.is_dispersive(K_tot);
+  //  fprintf(stderr,"is_disp:%d, is_conductive%d, params.is_disp_ml: %d\n",is_disp,is_conductive,params.is_disp_ml);
   //if we have dispersive materials we need to create additional field variables
   auto E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
   auto J_nm1 = CurrentDensitySplitField(I_tot, J_tot, K_tot);
@@ -775,7 +775,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }
   //fprintf(stderr,"Pre 14\n");
   auto J_c = CurrentDensitySplitField(I_tot, J_tot, K_tot);
-  if (is_cond) { J_c.allocate_and_zero(); }
+  if (is_conductive) { J_c.allocate_and_zero(); }
   /*end dispersive*/
 
   plhs[27] = fieldsample.mx;
@@ -1012,7 +1012,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
       dft_counter = 0;
 
-      double tol = checkPhasorConvergence(E, E_copy);
+      double tol = E.normalised_difference(E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
@@ -1316,7 +1316,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.y[array_ind];
+                  if (is_conductive) rho = rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1326,20 +1326,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.y[array_ind];
-                  kappa_l = ml.kappa.y[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.y[array_ind];
+                  kappa_l = matched_layer.kappa.y[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][j][i + 1]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][j][i + 1]) {
@@ -1347,9 +1347,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][j][i + 1] - 1];
                       gamma_l += gamma[materials[k][j][i + 1] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -1364,7 +1364,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * params.delta.dy *
                                   ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
@@ -1377,7 +1377,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
-                if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
+                if (is_conductive && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
 
                 E_s.xy[k][j][i] = Enp1;
               }
@@ -1440,7 +1440,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.y[array_ind];
+                  if (is_conductive) rho = rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1450,20 +1450,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.y[array_ind];
-                  kappa_l = ml.kappa.y[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.y[array_ind];
+                  kappa_l = matched_layer.kappa.y[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][j][i + 1]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][j][i + 1]) {
@@ -1471,9 +1471,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][j][i + 1] - 1];
                       gamma_l += gamma[materials[k][j][i + 1] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -1488,7 +1488,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * params.delta.dy *
                                   ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dy * J_c.xy[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
@@ -1501,7 +1501,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
-                if (is_cond && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
+                if (is_conductive && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + E_s.xy[k][j][i]); }
 
                 eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
                 eh_vec[n][j][1] = 0.;
@@ -1590,7 +1590,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.z[k_loc];
+                  if (is_conductive) rho = rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1600,20 +1600,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.z[k_loc];
-                  kappa_l = ml.kappa.z[k_loc];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.z[k_loc];
+                  kappa_l = matched_layer.kappa.z[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][j][i + 1]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][j][i + 1]) {
@@ -1621,9 +1621,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][j][i + 1] - 1];
                       gamma_l += gamma[materials[k][j][i + 1] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -1631,7 +1631,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   }
                 }
                 /*if( materials[k][j][i] || materials[k][j][i+1])
-      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);
+      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
       if(tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 Enp1 = Ca * E_s.xz[k][j][i] + Cb * (H_s.yx[k - 1][j][i] + H_s.yz[k - 1][j][i] -
@@ -1640,7 +1640,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * params.delta.dz *
                                   ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
@@ -1650,7 +1650,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_s.xz[k][j][i] = Jnp1;
                 }
 
-                if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
+                if (is_conductive && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
 
                 E_s.xz[k][j][i] = Enp1;
               }
@@ -1707,7 +1707,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.z[k_loc];
+                  if (is_conductive) rho = rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1717,20 +1717,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.z[k_loc];
-                  kappa_l = ml.kappa.z[k_loc];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.z[k_loc];
+                  kappa_l = matched_layer.kappa.z[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][j][i + 1]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][j][i + 1]) {
@@ -1738,9 +1738,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][j][i + 1] - 1];
                       gamma_l += gamma[materials[k][j][i + 1] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -1748,7 +1748,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   }
                 }
                 /*if( materials[k][j][i] || materials[k][j][i+1])
-      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);
+      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
       if(tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
@@ -1756,7 +1756,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * params.delta.dz *
                                   ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dz * J_c.xz[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
@@ -1766,7 +1766,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_s.xz[k][j][i] = Jnp1;
                 }
 
-                if (is_cond && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
+                if (is_conductive && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + E_s.xz[k][j][i]); }
 
                 eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
                 eh_vec[n][k][1] = 0.;
@@ -1871,7 +1871,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.x[array_ind];
+                  if (is_conductive) rho = rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1881,20 +1881,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.x[array_ind];
-                  kappa_l = ml.kappa.x[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.x[array_ind];
+                  kappa_l = matched_layer.kappa.x[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][min(J_tot, j + 1)][i]) {
@@ -1902,9 +1902,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
                       gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -1919,7 +1919,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * params.delta.dx *
                                   ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
@@ -1928,7 +1928,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
                   J_s.yx[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
+                if (is_conductive && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
 
                 E_s.yx[k][j][i] = Enp1;
               }
@@ -1990,7 +1990,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.x[array_ind];
+                  if (is_conductive) rho = rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2000,20 +2000,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.x[array_ind];
-                  kappa_l = ml.kappa.x[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.x[array_ind];
+                  kappa_l = matched_layer.kappa.x[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][min(J_tot, j + 1)][i]) {
@@ -2021,9 +2021,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
                       gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -2037,7 +2037,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * params.delta.dx *
                                   ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dx * J_c.yx[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
@@ -2046,7 +2046,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
                   J_s.yx[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
+                if (is_conductive && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + E_s.yx[k][j][i]); }
 
                 eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
                 eh_vec[n][i][1] = 0.;
@@ -2124,7 +2124,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.z[k_loc];
+                  if (is_conductive) rho = rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -2134,20 +2134,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.z[k_loc];
-                  kappa_l = ml.kappa.z[k_loc];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.z[k_loc];
+                  kappa_l = matched_layer.kappa.z[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][min(J_tot, j + 1)][i]) {
@@ -2155,9 +2155,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
                       gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -2172,7 +2172,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * params.delta.dz *
                                   ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
 
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
@@ -2182,7 +2182,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
                   J_s.yz[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
+                if (is_conductive && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
 
                 E_s.yz[k][j][i] = Enp1;
               }
@@ -2239,7 +2239,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.z[k_loc];
+                  if (is_conductive) rho = rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -2249,20 +2249,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.z[k_loc];
-                  kappa_l = ml.kappa.z[k_loc];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.z[k_loc];
+                  kappa_l = matched_layer.kappa.z[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k][min(J_tot, j + 1)][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k][min(J_tot, j + 1)][i]) {
@@ -2270,9 +2270,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k][min(J_tot, j + 1)][i] - 1];
                       gamma_l += gamma[materials[k][min(J_tot, j + 1)][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -2286,7 +2286,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * params.delta.dz *
                                   ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dz * J_c.yz[k][j][i];
 
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
@@ -2296,7 +2296,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
                   J_s.yz[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
+                if (is_conductive && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + E_s.yz[k][j][i]); }
 
                 eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
                 eh_vec[n][k][1] = 0.;
@@ -2380,7 +2380,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.x[array_ind];
+                  if (is_conductive) rho = rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2390,20 +2390,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.x[array_ind];
-                  kappa_l = ml.kappa.x[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.x[array_ind];
+                  kappa_l = matched_layer.kappa.x[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k + 1][j][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k + 1][j][i]) {
@@ -2411,9 +2411,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k + 1][j][i] - 1];
                       gamma_l += gamma[materials[k + 1][j][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
 
                     alpha_l = alpha_l / 2.;
@@ -2423,14 +2423,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 }
 
                 /*if( materials[k][j][i] || materials[k][j][i+1])
-        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);*/
+        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 Enp1 = Ca * E_s.zx[k][j][i] + Cb * (H_s.yx[k][j][i] + H_s.yz[k][j][i] -
                                                     H_s.yx[k][j][i - 1] - H_s.yz[k][j][i - 1]);
                 if ((is_disp || params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * params.delta.dx *
                                   ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
@@ -2439,7 +2439,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
                   J_s.zx[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
+                if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
                 E_s.zx[k][j][i] = Enp1;
               }
@@ -2501,7 +2501,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_cond) rho = rho_cond.x[array_ind];
+                  if (is_conductive) rho = rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2511,20 +2511,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.x[array_ind];
-                  kappa_l = ml.kappa.x[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.x[array_ind];
+                  kappa_l = matched_layer.kappa.x[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k + 1][j][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k + 1][j][i]) {
@@ -2532,9 +2532,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k + 1][j][i] - 1];
                       gamma_l += gamma[materials[k + 1][j][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
 
                     alpha_l = alpha_l / 2.;
@@ -2544,13 +2544,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 }
 
                 /*if( materials[k][j][i] || materials[k][j][i+1])
-        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_cond:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_cond,rho,is_disp,params.is_disp_ml);*/
+        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
                 if ((is_disp || params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * params.delta.dx *
                                   ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
                          kappa_l * gamma_l / (2. * params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
@@ -2559,7 +2559,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
                   J_s.zx[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
+                if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
                 eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
                 eh_vec[n][i][1] = 0.;
@@ -2610,7 +2610,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 if (params.is_disp_ml) Cc = C.c.x[array_ind];
                 else
                   Cc = 0.;
-                if (is_cond) rho = rho_cond.x[i];
+                if (is_conductive) rho = rho_cond.x[i];
               } else {
                 rho = 0.;
                 Ca = Cmaterial.a.x[materials[k][j][i] - 1];
@@ -2626,11 +2626,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
 
               if (is_disp || params.is_disp_ml) {
-                sigma_l = ml.sigma.x[array_ind];
-                kappa_l = ml.kappa.x[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
+                sigma_l = matched_layer.sigma.x[array_ind];
+                kappa_l = matched_layer.kappa.x[array_ind];
+                alpha_l = matched_layer.alpha[k_loc];
+                beta_l = matched_layer.beta[k_loc];
+                gamma_l = matched_layer.gamma[k_loc];
 
                 if (materials[k][j][i]) {
                   alpha_l = alpha[materials[k][j][i] - 1];
@@ -2638,9 +2638,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   gamma_l = gamma[materials[k][j][i] - 1];
 
                 } else {
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                 }
               }
 
@@ -2650,7 +2650,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 Enp1 += Cc * E_nm1.zx[k][j][i] -
                         1. / 2. * Cb * params.delta.dx *
                                 ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
+              if (is_conductive && rho) Enp1 += Cb * params.delta.dx * J_c.zx[k][j][i];
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
@@ -2660,7 +2660,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
                 J_s.zx[k][j][i] = Jnp1;
               }
-              if (is_cond && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
+              if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + E_s.zx[k][j][i]); }
 
               E_s.zx[k][j][i] = Enp1;
             }
@@ -2726,7 +2726,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0;
-                  if (is_cond) rho = rho_cond.y[array_ind];
+                  if (is_conductive) rho = rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2736,20 +2736,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.y[array_ind];
-                  kappa_l = ml.kappa.y[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.y[array_ind];
+                  kappa_l = matched_layer.kappa.y[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k + 1][j][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k + 1][j][i]) {
@@ -2757,9 +2757,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k + 1][j][i] - 1];
                       gamma_l += gamma[materials[k + 1][j][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -2774,7 +2774,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * params.delta.dy *
                                   ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
 
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
@@ -2785,7 +2785,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
                   J_s.zy[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
+                if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
                 E_s.zy[k][j][i] = Enp1;
               }
           //FDTD, E_s.zy
@@ -2847,7 +2847,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   if (params.is_disp_ml) Cc = C.c.y[array_ind];
                   else
                     Cc = 0;
-                  if (is_cond) rho = rho_cond.y[array_ind];
+                  if (is_conductive) rho = rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2857,20 +2857,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 sigma_l = 0.;
 
                 if (is_disp || params.is_disp_ml) {
-                  sigma_l = ml.sigma.y[array_ind];
-                  kappa_l = ml.kappa.y[array_ind];
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  sigma_l = matched_layer.sigma.y[array_ind];
+                  kappa_l = matched_layer.kappa.y[array_ind];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                   if (materials[k][j][i] || materials[k + 1][j][i]) {
                     if (materials[k][j][i]) {
                       alpha_l = alpha[materials[k][j][i] - 1];
                       beta_l = beta[materials[k][j][i] - 1];
                       gamma_l = gamma[materials[k][j][i] - 1];
                     } else {
-                      alpha_l = ml.alpha[k_loc];
-                      beta_l = ml.beta[k_loc];
-                      gamma_l = ml.gamma[k_loc];
+                      alpha_l = matched_layer.alpha[k_loc];
+                      beta_l = matched_layer.beta[k_loc];
+                      gamma_l = matched_layer.gamma[k_loc];
                     }
 
                     if (materials[k + 1][j][i]) {
@@ -2878,9 +2878,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       beta_l += beta[materials[k + 1][j][i] - 1];
                       gamma_l += gamma[materials[k + 1][j][i] - 1];
                     } else {
-                      alpha_l += ml.alpha[k_loc];
-                      beta_l += ml.beta[k_loc];
-                      gamma_l += ml.gamma[k_loc];
+                      alpha_l += matched_layer.alpha[k_loc];
+                      beta_l += matched_layer.beta[k_loc];
+                      gamma_l += matched_layer.gamma[k_loc];
                     }
                     alpha_l = alpha_l / 2.;
                     beta_l = beta_l / 2.;
@@ -2894,7 +2894,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Enp1 += Cc * E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * params.delta.dy *
                                   ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-                if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
+                if (is_conductive && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
 
                 if ((is_disp || params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
@@ -2905,7 +2905,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
                   J_s.zy[k][j][i] = Jnp1;
                 }
-                if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
+                if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
 
                 eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
                 eh_vec[n][j][1] = 0.;
@@ -2955,7 +2955,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 if (params.is_disp_ml) Cc = C.c.y[array_ind];
                 else
                   Cc = 0.;
-                if (is_cond) rho = rho_cond.y[array_ind];
+                if (is_conductive) rho = rho_cond.y[array_ind];
               } else {
                 rho = 0.;
                 Ca = Cmaterial.a.y[materials[k][j][i] - 1];
@@ -2970,20 +2970,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
               sigma_l = 0.;
 
               if (is_disp || params.is_disp_ml) {
-                kappa_l = ml.kappa.y[array_ind];
-                sigma_l = ml.sigma.y[array_ind];
-                alpha_l = ml.alpha[k_loc];
-                beta_l = ml.beta[k_loc];
-                gamma_l = ml.gamma[k_loc];
+                kappa_l = matched_layer.kappa.y[array_ind];
+                sigma_l = matched_layer.sigma.y[array_ind];
+                alpha_l = matched_layer.alpha[k_loc];
+                beta_l = matched_layer.beta[k_loc];
+                gamma_l = matched_layer.gamma[k_loc];
 
                 if (!materials[k][j][i]) {
                   alpha_l = 0.;
                   beta_l = 0.;
                   gamma_l = 0.;
                 } else {
-                  alpha_l = ml.alpha[k_loc];
-                  beta_l = ml.beta[k_loc];
-                  gamma_l = ml.gamma[k_loc];
+                  alpha_l = matched_layer.alpha[k_loc];
+                  beta_l = matched_layer.beta[k_loc];
+                  gamma_l = matched_layer.gamma[k_loc];
                 }
               }
 
@@ -2994,7 +2994,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 Enp1 += Cc * E_nm1.zy[k][j][i] -
                         1. / 2. * Cb * params.delta.dy *
                                 ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-              if (is_cond && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
+              if (is_conductive && rho) Enp1 += Cb * params.delta.dy * J_c.zy[k][j][i];
 
               if ((is_disp || params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
@@ -3005,7 +3005,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
                 J_s.zy[k][j][i] = Jnp1;
               }
-              if (is_cond && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
+              if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + E_s.zy[k][j][i]); }
 
               E_s.zy[k][j][i] = Enp1;
             }
@@ -3034,7 +3034,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][2] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][2]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.zx[k][j][I0.index] +=
                         rho_cond.x[array_ind] * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3042,7 +3042,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][2]));
               if (params.is_disp_ml)
                 J_s.zx[k][j][I0.index] +=
-                        ml.kappa.x[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
+                        matched_layer.kappa.x[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][2] +
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][2]));
@@ -3054,7 +3054,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][3] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][3]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.yx[k][j][I0.index] -=
                         rho_cond.x[array_ind] * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3062,7 +3062,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][3]));
               if (params.is_disp_ml)
                 J_s.yx[k][j][I0.index] -=
-                        ml.kappa.x[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
+                        matched_layer.kappa.x[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][3] +
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][3]));
@@ -3081,7 +3081,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][6] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][6]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.zx[k][j][I1.index] -=
                         rho_cond.x[array_ind] * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3089,7 +3089,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][6]));
               if (params.is_disp_ml)
                 J_s.zx[k][j][I1.index] -=
-                        ml.kappa.x[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
+                        matched_layer.kappa.x[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][6] +
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][6]));
@@ -3101,7 +3101,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Isource.real[k - (K0.index)][j - (J0.index)][7] +
                                     IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][7]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.yx[k][j][I1.index] +=
                         rho_cond.x[array_ind] * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3109,7 +3109,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][7]));
               if (params.is_disp_ml)
                 J_s.yx[k][j][I1.index] +=
-                        ml.kappa.x[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
+                        matched_layer.kappa.x[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Isource.real[k - (K0.index)][j - (J0.index)][7] +
                               IMAGINARY_UNIT * Isource.imag[k - (K0.index)][j - (J0.index)][7]));
@@ -3132,7 +3132,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][2] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][2]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.zy[k][(J0.index)][i] -=
                         rho_cond.y[array_ind] * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3140,7 +3140,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][2]));
               if (params.is_disp_ml)
                 J_s.zy[k][(J0.index)][i] -=
-                        ml.kappa.y[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
+                        matched_layer.kappa.y[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][2] +
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][2]));
@@ -3152,7 +3152,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][3] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][3]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.xy[k][(J0.index)][i] +=
                         rho_cond.y[array_ind] * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3160,7 +3160,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][3]));
               if (params.is_disp_ml)
                 J_s.xy[k][(J0.index)][i] +=
-                        ml.kappa.y[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
+                        matched_layer.kappa.y[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][3] +
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][3]));
@@ -3179,7 +3179,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][6] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][6]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.zy[k][(J1.index)][i] +=
                         rho_cond.y[array_ind] * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3187,7 +3187,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][6]));
               if (params.is_disp_ml)
                 J_s.zy[k][(J1.index)][i] -=
-                        ml.kappa.y[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
+                        matched_layer.kappa.y[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][6] +
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][6]));
@@ -3199,7 +3199,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Jsource.real[k - (K0.index)][i - (I0.index)][7] +
                                     IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][7]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.xy[k][(J1.index)][i] -=
                         rho_cond.y[array_ind] * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
@@ -3207,7 +3207,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][7]));
               if (params.is_disp_ml)
                 J_s.xy[k][(J1.index)][i] +=
-                        ml.kappa.y[array_ind] * ml.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
+                        matched_layer.kappa.y[array_ind] * matched_layer.gamma[k] / (2. * params.dt) * C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (Jsource.real[k - (K0.index)][i - (I0.index)][7] +
                               IMAGINARY_UNIT * Jsource.imag[k - (K0.index)][i - (I0.index)][7]));
@@ -3225,7 +3225,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                                     IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.yz[(K0.index)][j][i] +=
                         rho_cond.z[(K0.index)] * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
@@ -3233,7 +3233,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]));
               if (params.is_disp_ml)
                 J_s.yz[(K0.index)][j][i] -=
-                        ml.kappa.z[(K0.index)] * ml.gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
+                        matched_layer.kappa.z[(K0.index)] * matched_layer.gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]));
@@ -3245,7 +3245,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                                     IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.xz[(K0.index)][j][i] -=
                         rho_cond.z[(K0.index)] * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
@@ -3253,7 +3253,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]));
               if (params.is_disp_ml)
                 J_s.xz[(K0.index)][j][i] +=
-                        ml.kappa.z[(K0.index)] * ml.gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
+                        matched_layer.kappa.z[(K0.index)] * matched_layer.gamma[k] / (2. * params.dt) * C.b.z[K0.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]));
@@ -3267,7 +3267,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Ksource.real[j - (J0.index)][i - (I0.index)][6] +
                                     IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][6]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.yz[(K1.index)][j][i] -=
                         rho_cond.z[(K1.index)] * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
@@ -3275,7 +3275,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][6]));
               if (params.is_disp_ml)
                 J_s.yz[(K1.index)][j][i] +=
-                        ml.kappa.z[(K1.index)] * ml.gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
+                        matched_layer.kappa.z[(K1.index)] * matched_layer.gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][6] +
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][6]));
@@ -3287,7 +3287,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               real(commonAmplitude * commonPhase *
                                    (Ksource.real[j - (J0.index)][i - (I0.index)][7] +
                                     IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][7]));
-              if (is_cond)
+              if (is_conductive)
                 J_c.xz[(K1.index)][j][i] +=
                         rho_cond.z[(K1.index)] * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
@@ -3295,7 +3295,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][7]));
               if (params.is_disp_ml)
                 J_s.xz[(K1.index)][j][i] -=
-                        ml.kappa.z[(K1.index)] * ml.gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
+                        matched_layer.kappa.z[(K1.index)] * matched_layer.gamma[k] / (2. * params.dt) * C.b.z[K1.index] *
                         real(commonAmplitude * commonPhase *
                              (Ksource.real[j - (J0.index)][i - (I0.index)][7] +
                               IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][7]));
@@ -3318,7 +3318,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           exp(-1.0 * DCPI *
                               pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
           //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-          if (is_cond)
+          if (is_conductive)
             J_c.yz[K0.index][j][i] +=
                     rho_cond.z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
@@ -3328,13 +3328,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
           //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
           if (params.is_disp_ml) {
             J_s.yz[K0.index][j][i] -=
-                    ml.kappa.z[K0.index] * ml.gamma[K0.index] / (2. * params.dt) *
+                    matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
                           IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][2]) *
                          (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
                     exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-            //J_s.yz[(int)K0[0]][j][i] -= ml.kappa.z[(int)K0[0]]*ml.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+            //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
           }
         }
       } else
@@ -3354,7 +3354,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                             exp(-1.0 * DCPI *
                                 pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
             //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-            if (is_cond)
+            if (is_conductive)
               J_c.yz[K0.index][j][i] +=
                       rho_cond.z[K0.index] * C.b.z[K0.index] *
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
@@ -3365,14 +3365,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
             //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
             if (params.is_disp_ml) {
               J_s.yz[K0.index][j][i] -=
-                      ml.kappa.z[K0.index] * ml.gamma[K0.index] / (2. * params.dt) *
+                      matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
                       C.b.z[K0.index] *
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                             IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                            (-1.0 * IMAGINARY_UNIT) *
                            exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
                       exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-              //J_s.yz[(int)K0[0]][j][i] -= ml.kappa.z[(int)K0[0]]*ml.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+              //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
             }
           }
       for (j = 0; j < (J_tot + 1); j++)
@@ -3387,7 +3387,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           exp(-1.0 * DCPI *
                               pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
           //E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
-          if (is_cond)
+          if (is_conductive)
             J_c.xz[K0.index][j][i] -=
                     rho_cond.z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
@@ -3397,13 +3397,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
           //J_c.xz[(int)K0[0]][j][i] -= rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
           if (params.is_disp_ml)
             J_s.xz[K0.index][j][i] +=
-                    ml.kappa.z[K0.index] * ml.gamma[K0.index] / (2. * params.dt) *
+                    matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                           IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
                          (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2 * DCPI))) *
                     exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //J_s.xz[(int)K0[0]][j][i] += ml.kappa.z[(int)K0[0]]*ml.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
+          //J_s.xz[(int)K0[0]][j][i] += matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
         }
       //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
       H.ft = real((-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
@@ -4313,25 +4313,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     if ((((double) time(NULL)) - t0) > 1) {
 
-      maxfield = 0.;
-      for (k = 0; k < (K_tot + 1); k++) {
-        for (j = 0; j < (J_tot + 1); j++) {
-          for (i = 0; i < (I_tot + 1); i++) {
-            tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-            tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
-            if (maxfield < tempfield) { maxfield = tempfield; }
-          }
-        }
-      }
+      maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
 
       spdlog::info("Iterating: tind = {0:d}, maxfield = {1:e}", tind, maxfield);
       t0 = double(time(NULL));
@@ -4413,25 +4395,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   //now find the maximum absolute value of residual field in the grid
   // after resetting the maxfield value calculated in the main loop
-  maxfield = 0.0;
-  for (k = 0; k < (K_tot + 1); k++) {
-    for (j = 0; j < (J_tot + 1); j++) {
-      for (i = 0; i < (I_tot + 1); i++) {
-        tempfield = fabs(E_s.xy[k][j][i] + E_s.xz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(E_s.yx[k][j][i] + E_s.yz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(E_s.zx[k][j][i] + E_s.zy[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.xy[k][j][i] + H_s.xz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.yx[k][j][i] + H_s.yz[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-        tempfield = fabs(H_s.zx[k][j][i] + H_s.zy[k][j][i]);
-        if (maxfield < tempfield) { maxfield = tempfield; }
-      }
-    }
-  }
+  maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
   //fprintf(stderr,"Pos 15\n");
   //noe set the output
   ndims = 2;
@@ -4441,7 +4405,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   *mxGetPr((mxArray *) plhs[25]) = maxfield;
 
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    setGridLabels(input_grid_labels, output_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
+    output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
 
   auto interp_output_grid_labels = GridLabels();
@@ -4487,12 +4451,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     interp_output_grid_labels.z = mxGetPr((mxArray *) plhs[21]);
 
     if (params.dimension == THREE) {
-      //fprintf(stderr,"Pos 15a-1\n");
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
-                    E.J_tot - 2, 2, E.K_tot - 2);
-    } else
-      setGridLabels(output_grid_labels, interp_output_grid_labels, 2, E.I_tot - 2, 2,
-                    E.J_tot - 2, 0, 0);
+      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                                2, E.K_tot - 2);
+    } else {
+      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
+                                                0, 0);
+    }
     //fprintf(stderr,"Pos 15f\n");
   } else {
     mwSize *emptydims;
@@ -5051,37 +5015,6 @@ double linearRamp(double t, double period, double rampwidth) {
     return t / (period * rampwidth);
 }
 
-double checkPhasorConvergence(ElectricField &E, ElectricField &E_copy) {
-
-  double max_abs = 0., max_abs_diff = 0.;
-
-  //find the largest maximum absolute value the largest difference (in absolute value) between phasors
-  for (char c : {'x', 'y', 'z'})
-    for (int k = 0; k < E.K_tot; k++)
-      for (int j = 0; j < E.J_tot; j++)
-        for (int i = 0; i < E.I_tot; i++){
-
-            auto E_ijk = E.real[c][k][j][i] + IMAGINARY_UNIT * E.imag[c][k][j][i];
-            auto E_copy_ijk = E_copy.real[c][k][j][i] + IMAGINARY_UNIT * E_copy.imag[c][k][j][i];
-
-            max_abs = max(max_abs, abs(E_ijk));  // max(max_abs, |Re(E_x) + i Im(E_x)|)
-            max_abs_diff = max(max_abs_diff, abs(E_ijk - E_copy_ijk));
-          }
-
-  return max_abs_diff / max_abs;
-}
-
-/*Load up the output grid labels*/
-void setGridLabels(GridLabels &input_labels, GridLabels &output_labels, int i_l, int i_u, int j_l,
-                   int j_u, int k_l, int k_u) {
-  //fprintf(stderr,"Entered: setGridLabels\n");
-  //fprintf(stderr,"setGridLabels: %d,%d\n",j_u,j_l);
-  for (int i = i_l; i <= i_u; i++) { output_labels.x[i - i_l] = input_labels.x[i]; }
-  for (int j = j_l; j <= j_u; j++) { output_labels.y[j - j_l] = input_labels.y[j]; }
-  for (int k = k_l; k <= k_u; k++) { output_labels.z[k - k_l] = input_labels.z[k]; }
-}
-
-
 /* These functions are used by the dispersive component of the code*/
 
 /*Work out if there are any non-zero alpha values*/
@@ -5100,24 +5033,4 @@ bool is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_t
     if (fabs(gamma[i] / dt) > 1e-15) { return 1; }
   }
   return 0;
-}
-
-/*work out if we have a conductive background*/
-bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot) {
-
-  for (int i = 0; i < (I_tot + 1); i++)
-    if (fabs(rho.x[i]) > 1e-15) return true;
-  for (int j = 0; j < (J_tot + 1); j++)
-    if (fabs(rho.y[j]) > 1e-15) return true;
-  for (int k = 0; k < (K_tot + 1); k++)
-    if (fabs(rho.z[k]) > 1e-15) return true;
-
-  return false;
-}
-
-/*work out if we have a dispersive background*/
-bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot) {
-  for (int i = 0; i < K_tot; i++)
-    if (fabs(ml.gamma[i]) > 1e-15) return true;
-  return false;
 }

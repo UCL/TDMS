@@ -75,3 +75,20 @@ void SplitField::initialise_fftw_plan(int n_threads, EHVec &eh_vec) {
   zx.initialise_fftw_plan(n_threads, n_x, eh_vec);
   zy.initialise_fftw_plan(n_threads, n_y, eh_vec);
 }
+
+double SplitField::largest_field_value() {
+  double largest_value = 0.;
+  for (int k = 0; k < (K_tot + 1); k++) {
+    for (int j = 0; j < (J_tot + 1); j++) {
+      for (int i = 0; i < (I_tot + 1); i++) {
+        double x_field = fabs(xy[k][j][i] + xz[k][j][i]);
+        double y_field = fabs(yx[k][j][i] + yz[k][j][i]);
+        double z_field = fabs(zx[k][j][i] + zy[k][j][i]);
+        if (largest_value < x_field) { largest_value = x_field; }
+        if (largest_value < y_field) { largest_value = y_field; }
+        if (largest_value < z_field) { largest_value = z_field; }
+      }
+    }
+  }
+  return largest_value;
+}
