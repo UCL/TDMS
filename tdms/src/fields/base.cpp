@@ -141,7 +141,7 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
   interpolate_over_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot, mode);
 }
 
-double Field::max_pointwise_difference_over_max_element(Field &other) {
+double Field::normalised_difference(Field &other) {
   if (other.I_tot != I_tot || other.J_tot != J_tot || other.K_tot != K_tot) {
     throw runtime_error("Cannot compare the values of fields with different sizes");
   }

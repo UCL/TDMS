@@ -127,7 +127,7 @@ public:
     void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
 
     /**
-     * @brief Fetches the largest (by absolute value) field value.
+     * @brief Fetches the largest absolute value of the field.
      *
      * Split field values are sums of the corresponding components, so this function returns the largest absolute value of the entries in
      * (xy + xz), (yx + yz), (zx + zy)
@@ -345,7 +345,7 @@ public:
    * @brief Computes the maximum pointwise absolute difference of the other field to this one, divided by the largest absolute value of this field's components.
    *
    * Specifically, we compute and return the quantity
-   * $$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{ \max_{i,j,k}this[k][j][i] } $$
+   * \f$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{ \max_{i,j,k}this[k][j][i] } \f$
    * This quantity is used to determine convergence of phasors.
    *
    * The other field must have the same dimensions as this field.
@@ -353,7 +353,7 @@ public:
    * @param other The other field
    * @return double Maximum relative pointwise absolute difference
    */
-  double max_pointwise_difference_over_max_element(Field &other);
+  double normalised_difference(Field &other);
 
   ~Field();
 };

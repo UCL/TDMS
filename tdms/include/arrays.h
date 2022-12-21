@@ -97,8 +97,6 @@ public:
    */
   bool all_elements_less_than(double comparison_value, int vector_length,
                                  AxialDirection component, int buffer_start = 0);
-  bool all_elements_less_than(double comparison_value, int vector_length, char component,
-                                 int buffer_start = 0);
   /**
    * @brief Determines whether all elements in the x, y, AND z vectors are less than a given value.
    *
