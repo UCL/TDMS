@@ -316,126 +316,57 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
+  // unpack all simulation parameters from the input matrices
+  params.unpack_from_input_matrices(in_matrices);
+
   /*Get fdtdgrid */
-  assert_is_struct(in_matrices["fdtdgrid"], "fdtdgrid");
   init_grid_arrays(in_matrices["fdtdgrid"], E_s, H_s, materials);
   int I_tot = E_s.I_tot, J_tot = E_s.J_tot, K_tot = E_s.K_tot;
-  //fprintf(stderr,"Got fdtdgrid\n");
-
   /*Get Cmaterials */
-  assert_is_struct(in_matrices["Cmaterial"], "Cmaterial");
-  auto Cmaterial = CMaterial(in_matrices["Cmaterial"]);
-  //fprintf(stderr,"Got Cmaterials\n");
-
+  CMaterial Cmaterial(in_matrices["Cmaterial"]);
   /*Get Dmaterials */
-  assert_is_struct(in_matrices["Dmaterial"], "Dmaterial");
-  auto Dmaterial = DMaterial(in_matrices["Dmaterial"]);
-  //fprintf(stderr,"Got Dmaterials\n");
-
+  DMaterial Dmaterial(in_matrices["Dmaterial"]);
   /*Get C */
-  assert_is_struct(in_matrices["C"], "C");
-  auto C = CCollection(in_matrices["C"]);
-  params.is_disp_ml = C.is_disp_ml;
-  params.is_multilayer = C.is_multilayer;
-  //fprintf(stderr,"Got C\n");
-
+  CCollection C(in_matrices["C"]);
   /*Get D */
-  assert_is_struct(in_matrices["D"], "D");
-  auto D = DCollection(in_matrices["D"]);
-  //fprintf(stderr,"Got D\n");
-
+  DCollection D(in_matrices["D"]);
   /*Get freespace*/  // Cby Cbz Dbx Dby Dbz are unused
-  assert_is_struct_with_n_fields(in_matrices["freespace"], 6, "freespace");
   auto freespace_Cbx = mxGetPr(ptr_to_vector_in(in_matrices["freespace"], "Cbx", "freespace"));
-  //fprintf(stderr,"Got freespace\n");
-
   /*Get disp_params */
-  assert_is_struct_with_n_fields(in_matrices["disp_params"], 3, "disp_params");
   auto alpha = mxGetPr(ptr_to_vector_or_empty_in(in_matrices["disp_params"], "alpha", "disp_params"));
   auto beta  = mxGetPr(ptr_to_vector_or_empty_in(in_matrices["disp_params"], "beta",  "disp_params"));
   auto gamma = mxGetPr(ptr_to_vector_or_empty_in(in_matrices["disp_params"], "gamma", "disp_params"));
-  //fprintf(stderr,"Got disp_params\n");
-
-  /*Get delta params*/
-  assert_is_struct_with_n_fields(in_matrices["delta"], 3, "delta");
-  params.delta.dx = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "x", "delta"));
-  params.delta.dy = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "y", "delta"));
-  params.delta.dz = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "z", "delta"));
-  //fprintf(stderr,"Got delta params\n");
-
   /*Get interface*/
-  assert_is_struct_with_n_fields(in_matrices["interface"], 6, "interface");
   auto I0 = InterfaceComponent(in_matrices["interface"], "I0");
   auto I1 = InterfaceComponent(in_matrices["interface"], "I1");
   auto J0 = InterfaceComponent(in_matrices["interface"], "J0");
   auto J1 = InterfaceComponent(in_matrices["interface"], "J1");
   auto K0 = InterfaceComponent(in_matrices["interface"], "K0");
   auto K1 = InterfaceComponent(in_matrices["interface"], "K1");
-  //fprintf(stderr,"Got interface\n");
 
   auto Isource = Source(in_matrices["Isource"], J1.index - J0.index + 1, K1.index - K0.index + 1, "Isource");
   auto Jsource = Source(in_matrices["Jsource"], I1.index - I0.index + 1, K1.index - K0.index + 1, "Jsource");
   auto Ksource = Source(in_matrices["Ksource"], I1.index - I0.index + 1, J1.index - J0.index + 1, "Ksource");
 
   /*Get grid_labels*/
-  assert_is_struct_with_n_fields(in_matrices["grid_labels"], 3, "grid_labels");
   auto input_grid_labels = GridLabels(in_matrices["grid_labels"]);
-  //fprintf(stderr,"Got   grid_labels\n");
-
-  params.omega_an = double_in(in_matrices["omega_an"], "omega_an");
-  params.to_l = double_in(in_matrices["to_l"], "to_l");
-  params.hwhm = double_in(in_matrices["hwhm"], "hwhm");
-  params.pml.Dxl = int_cast_from_double_in(in_matrices["Dxl"], "Dxl");
-  params.pml.Dxu = int_cast_from_double_in(in_matrices["Dxu"], "Dxu");
-  params.pml.Dyl = int_cast_from_double_in(in_matrices["Dyl"], "Dyl");
-  params.pml.Dyu = int_cast_from_double_in(in_matrices["Dyu"], "Dyu");
-  params.pml.Dzl = int_cast_from_double_in(in_matrices["Dzl"], "Dzl");
-  params.pml.Dzu = int_cast_from_double_in(in_matrices["Dzu"], "Dzu");
-
-  params.Nt = int_cast_from_double_in(in_matrices["Nt"], "Nt");
-  params.dt = double_in(in_matrices["dt"], "dt");
-  params.start_tind = int_cast_from_double_in(in_matrices["tind"], "tind");
-
-  params.set_source_mode(string_in(in_matrices["sourcemode"], "sourcemode"));
-  params.set_run_mode(string_in(in_matrices["runmode"], "runmode"));
-
-  params.exphasorsvolume = bool_cast_from_double_in(in_matrices["exphasorsvolume"], "exphasorsvolume");
-  params.exphasorssurface =
-          bool_cast_from_double_in(in_matrices["exphasorssurface"], "exphasorssurface");
-  params.intphasorssurface =
-          bool_cast_from_double_in(in_matrices["intphasorssurface"], "intphasorssurface");
-
   /*Get phasorsurface*/
   auto cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     cuboid.initialise(in_matrices["phasorsurface"], J_tot);
   }
-  //fprintf(stderr,"Got   phasorsurface\n");
-
-  params.set_spacing_stride(mxGetPr(in_matrices["phasorinc"]));
-  params.set_dimension(string_in(in_matrices["dimension"], "dimension"));
-
   /*Get conductive_aux */
-  assert_is_struct_with_n_fields(in_matrices["conductive_aux"], 3, "conductive_aux");
   auto rho_cond = XYZVectors();
   rho_cond.x = mxGetPr(ptr_to_vector_in(in_matrices["conductive_aux"], "rho_x", "conductive_aux"));
   rho_cond.y = mxGetPr(ptr_to_vector_in(in_matrices["conductive_aux"], "rho_y", "conductive_aux"));
   rho_cond.z = mxGetPr(ptr_to_vector_in(in_matrices["conductive_aux"], "rho_z", "conductive_aux"));
-
   /*Get dispersive_aux*/
   auto ml = DispersiveMultiLayer(in_matrices["dispersive_aux"]);
-
-  /*Get structure*/
+  /*Get structure and update params accordingly*/
   auto structure = GratingStructure(in_matrices["structure"], I_tot);
   params.is_structure = structure.has_elements();
-
   /*Get f_ex_vec*/
   auto f_ex_vec = FrequencyExtractVector(in_matrices["f_ex_vec"], params.omega_an);
-
-  /*Get exdetintegral*/
-  if (!mxIsEmpty(in_matrices["exdetintegral"])) {
-    params.exdetintegral = bool_cast_from_double_in(in_matrices["exdetintegral"], "exdetintegral");
-  }
 
   auto f_vec = FrequencyVectors();
   auto pupil = Pupil();
@@ -453,31 +384,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     params.z_obs = input_grid_labels.z[params.k_det_obs];
   }
 
-  /*Get air_interface*/
-  if (!mxIsEmpty(in_matrices["air_interface"])) {
-    params.air_interface_present = true;
-    params.air_interface = double_in(in_matrices["air_interface"], "air_interface");
-    //fprintf(stderr, "air_interface: %e\nz_obs: %e\n", params.air_interface, params.z_obs);
-  }
-
-  params.interp_mat_props = bool_cast_from_double_in(in_matrices["intmatprops"], "intmatprops");
-
-  /*Get intmethod*/
-  if (!mxIsEmpty(in_matrices["intmethod"])) {
-    params.interp_method = InterpolationMethod(int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
-  }
-  fprintf(stderr, "intmethod=%d\n", params.interp_method);
-
   /*Get tdfield*/
   auto Ei = IncidentField(in_matrices["tdfield"]);
-  params.exi_present = Ei.x.has_elements();
-  params.eyi_present = Ei.y.has_elements();
-
   /*Get tdfdir*/
   auto ex_td_field_exporter = TDFieldExporter2D();
 
   if (mxIsChar(in_matrices["tdfdir"])) {
-
     ex_td_field_exporter.folder_name = string_in(in_matrices["tdfdir"], "tdfdir").c_str();
 
     for (k = 0; k < K_tot; k++)
@@ -548,8 +460,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     init_diff_shift_op(0.5, dk_h_y, N_h_y);
     init_diff_shift_op(0.5, dk_h_z, N_h_z);
   } // if (solver_method == DerivativeMethod::PseudoSpectral)
-
-  params.set_Np(f_ex_vec);
 
   //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm

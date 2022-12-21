@@ -31,6 +31,12 @@ private:
    */
   void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual);
 
+  /**
+   * @brief Validates that the MATLAB arrays that we are pointing to are of the type that we expect.
+   *
+   */
+  void validate_assigned_pointers();
+
 public:
   InputMatrices() = default;
 

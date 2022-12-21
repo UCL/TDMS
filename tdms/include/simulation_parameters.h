@@ -7,6 +7,7 @@
 #include <string>
 
 #include "arrays.h"
+#include "input_matrices.h"
 
 struct PerfectlyMatchedLayer {
   int Dxl = 0;  // Thickness of lower pml in the x direction
@@ -114,4 +115,6 @@ public:
     void set_spacing_stride(const double* vector);
 
     void set_Np(FrequencyExtractVector &f_ex_vec);
+
+    void unpack_from_input_matrices(InputMatrices in_matrices);
 };

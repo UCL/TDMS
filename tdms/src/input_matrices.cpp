@@ -7,6 +7,7 @@
 
 #include "fdtd_grid_initialiser.h"
 #include "utils.h"
+#include "matlabio.h"
 
 using namespace std;
 using namespace tdms_matrix_names;
@@ -19,22 +20,25 @@ int index_from_matrix_name(const char *matrix_name) {
 }
 
 void InputMatrices::set_from_input_file(const char *mat_filename) {
-    MatrixCollection infile_expected((char **) matrixnames, NMATRICES);
-    MatFileMatrixCollection infile_contains(mat_filename);
-    spdlog::info("Input file: " +string(mat_filename) + " | No gridfile supplied");
+  MatrixCollection infile_expected((char **) matrixnames, NMATRICES);
+  MatFileMatrixCollection infile_contains(mat_filename);
+  spdlog::info("Input file: " + string(mat_filename) + " | No gridfile supplied");
 
-    // check that the input file actually has enough matrices for what we're expecting
-    infile_contains.check_has_at_least_as_many_matrices_as(infile_expected);
-    // assign the pointers to the matrices
-    assign_matrix_pointers(infile_expected, infile_contains);
+  // check that the input file actually has enough matrices for what we're expecting
+  infile_contains.check_has_at_least_as_many_matrices_as(infile_expected);
+  // assign the pointers to the matrices
+  assign_matrix_pointers(infile_expected, infile_contains);
 
-    // Add fields to fdtdgrid
-    auto initialiser =
-            fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
-    const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
-                                                   "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
+  // Add fields to fdtdgrid
+  auto initialiser =
+          fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
+  const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
+                                                  "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
 
-    for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
+  for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
+
+  // validate the input arguments
+  validate_assigned_pointers();
 }
 void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile) {
   MatrixCollection infile_expected((char **) matrixnames_infile, NMATRICES - 1);
@@ -80,6 +84,9 @@ void InputMatrices::set_from_input_file(const char *mat_filename, const char *gr
                                                   "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
 
   for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
+
+  // validate the input arguments
+  validate_assigned_pointers();
 }
 
 void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,
@@ -108,4 +115,26 @@ void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,
           }
         }
     }
+}
+
+void InputMatrices::validate_assigned_pointers() {
+  // certain arrays must be structure arrays
+  assert_is_struct(matrix_pointers[index_from_matrix_name("fdtdgrid")], "fdtdgrid");
+  assert_is_struct(matrix_pointers[index_from_matrix_name("Cmaterial")], "Cmaterial");
+  assert_is_struct(matrix_pointers[index_from_matrix_name("Dmaterial")], "Dmaterial");
+  assert_is_struct(matrix_pointers[index_from_matrix_name("C")], "C");
+  assert_is_struct(matrix_pointers[index_from_matrix_name("D")], "D");
+
+  // other arrays must contain a specific number of fieldnames
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("freespace")], 6,
+                                  "freespace");
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("disp_params")], 6,
+                                  "disp_params");
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("delta")], 3, "delta");
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("interface")], 6,
+                                  "interface");
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("grid_labels")], 3,
+                                  "grid_labels");
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("conductive_aux")], 3,
+                                  "conductive_aux");
 }
