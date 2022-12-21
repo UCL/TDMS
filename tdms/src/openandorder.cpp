@@ -17,9 +17,11 @@
 
 using namespace std;
 
-void openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices){
+void openandorder(const char *mat_filename,
+                  const std::vector<std::string>& matrix_names,
+                  const mxArray **matrix_ptrs, int n_matrices){
 
-  auto expected = MatrixCollection(matrix_names, n_matrices);
+  auto expected = MatrixCollection(matrix_names);
   auto actual = MatFileMatrixCollection(mat_filename);
 
   actual.check_has_at_least_as_many_matrices_as(expected);
@@ -29,7 +31,7 @@ void openandorder(const char *mat_filename, char **matrix_names, const mxArray *
   //fprintf(stderr, "Got all %d matrices\n",nmatrices);
   //fprintf(stderr, "%d\n",mxGetFieldNumber( (mxArray *)matrixptrs[0], "I_tot"));
 
-  if (!are_equal(matrix_names[0], "fdtdgrid")){
+  if (matrix_names[0] != "fdtdgrid"){
     return;
   }
 
@@ -85,9 +87,9 @@ void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection 
     for(int j=0; j < actual.n_matrices; j++){
       auto actual_matrix_name = actual.matrix_names[j];
 
-      if(are_equal(actual_matrix_name, expected_matrix_name)){
+      if(actual_matrix_name == expected_matrix_name){
         //fprintf(stderr,"Got %s/%s (%d)\n",mat_matrixnames[j],matrixnames[i],j);
-        auto pointer = matGetVariable(actual.mat_file, actual_matrix_name);
+        auto pointer = matGetVariable(actual.mat_file, actual_matrix_name.c_str());
 
         if(pointer == nullptr){
           throw runtime_error("Could not get pointer to "+string(actual_matrix_name));
