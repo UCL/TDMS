@@ -128,7 +128,7 @@ void InputMatrices::validate_assigned_pointers() {
   // other arrays must contain a specific number of fieldnames
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("freespace")], 6,
                                   "freespace");
-  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("disp_params")], 6,
+  assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("disp_params")], 3,
                                   "disp_params");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("delta")], 3, "delta");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("interface")], 6,

@@ -31,7 +31,7 @@ using namespace tdms_phys_constants;
 //parameter to control the PreferredInterpolationMethodswith of the ramp when introducing the waveform in steady state mode
 #define ramp_width 4.
 
-/*This mex function will take in the following arguments and perform the
+/*This function will take in the following arguments and perform the
  entire simulation
 
   fdtdgrid
@@ -310,7 +310,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
 
-  spdlog::info("Using {} OMP threads\n", omp_get_max_threads());
+  spdlog::info("Using {} OMP threads", omp_get_max_threads());
 
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
 
@@ -397,7 +397,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     for (i = 0; i < I_tot; i++)
       if ((i % skip_tdf) == 0) Ni_tdf++;
-    fprintf(stderr, "Ni_tdf=%d, Nk_tdf=%d\n", Ni_tdf, Nk_tdf);
+    spdlog::info("Ni_tdf = {0:d}, Nk_tdf = {1:d}", Ni_tdf, Nk_tdf);
 
     if (!are_equal(ex_td_field_exporter.folder_name, "")){
       params.has_tdfdir = true;
@@ -411,7 +411,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * params.delta.dx) / EPSILON0);
-  fprintf(stderr, "refind=%e\n", refind);
+  spdlog::info("refind = {0:e}", refind);
 
   /*Setup temporary storage for detector sensitivity evaluation*/
   auto Ex_t = DetectorSensitivityArrays();

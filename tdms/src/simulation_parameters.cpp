@@ -60,8 +60,8 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
   for (unsigned int tind = start_tind; tind < Nt; tind++){
     if ((tind - start_tind) % Np == 0) Npe++;
   }
-  string logger_message = "Np = " + to_string(Np) + " Nt = " + to_string(Nt) + " Npe = " + to_string(Npe) + " f_max = " + to_string(f_max) + " Npraw = " + to_string(2.5 * dt * f_max);
-  spdlog::info(logger_message);
+  spdlog::info("Np = {}, Nt = {}, Npe = {}, f_max = {}, Npraw = {}", Np, Nt, Npe, f_max,
+               2.5 * dt * f_max);
 }
 
 void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices) {
