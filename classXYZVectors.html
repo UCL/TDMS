@@ -100,6 +100,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8640f5a6e25c968f91aa2efdf386d11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae36d5df3549485b7a7e572dc06f33c12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZVectors.html#ae36d5df3549485b7a7e572dc06f33c12">set_ptr</a> (AxialDirection d, double *ptr)</td></tr>
 <tr class="separator:ae36d5df3549485b7a7e572dc06f33c12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa287eaabafc6ea39232f8f8ec5643b67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZVectors.html#aa287eaabafc6ea39232f8f8ec5643b67">all_elements_less_than</a> (double comparison_value, int vector_length, AxialDirection component, int buffer_start=0)</td></tr>
+<tr class="memdesc:aa287eaabafc6ea39232f8f8ec5643b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether all elements in the x, y, or z vector are less than a given value.  <a href="classXYZVectors.html#aa287eaabafc6ea39232f8f8ec5643b67">More...</a><br /></td></tr>
+<tr class="separator:aa287eaabafc6ea39232f8f8ec5643b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21f3dea194e7b148d9220bbf16eb8921"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXYZVectors.html#a21f3dea194e7b148d9220bbf16eb8921">all_elements_less_than</a> (double comparison_value, int nx, int ny, int nz)</td></tr>
+<tr class="memdesc:a21f3dea194e7b148d9220bbf16eb8921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether all elements in the x, y, AND z vectors are less than a given value.  <a href="classXYZVectors.html#a21f3dea194e7b148d9220bbf16eb8921">More...</a><br /></td></tr>
+<tr class="separator:a21f3dea194e7b148d9220bbf16eb8921"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -141,6 +147,112 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr</
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a21f3dea194e7b148d9220bbf16eb8921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21f3dea194e7b148d9220bbf16eb8921">&#9670;&nbsp;</a></span>all_elements_less_than() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XYZVectors::all_elements_less_than </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>comparison_value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines whether all elements in the x, y, AND z vectors are less than a given value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comparison_value</td><td>Value to compare elements to </td></tr>
+    <tr><td class="paramname">nx,ny,nz</td><td>Number of elements in the nx, ny, and nz vectors respectively </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true All elements are less than the comparison_value </dd>
+<dd>
+false At least one element is not less than the comparison_value </dd></dl>
+
+</div>
+</div>
+<a id="aa287eaabafc6ea39232f8f8ec5643b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa287eaabafc6ea39232f8f8ec5643b67">&#9670;&nbsp;</a></span>all_elements_less_than() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XYZVectors::all_elements_less_than </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>comparison_value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vector_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">AxialDirection&#160;</td>
+          <td class="paramname"><em>component</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>buffer_start</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines whether all elements in the x, y, or z vector are less than a given value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comparison_value</td><td>Value to compare elements to </td></tr>
+    <tr><td class="paramname">vector_length</td><td>Number of elements to compare against </td></tr>
+    <tr><td class="paramname">component</td><td><a class="el" href="classVector.html">Vector</a> to compare elements against; x, y, or z </td></tr>
+    <tr><td class="paramname">buffer_start</td><td>Only compare elements between buffer_start (inclusive) and buffer_start+vector_length-1 (inclusive) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true All elements are less than the comparison_value </dd>
+<dd>
+false At least one element is not less than the comparison_value </dd></dl>
+
+</div>
+</div>
 <a id="ae36d5df3549485b7a7e572dc06f33c12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae36d5df3549485b7a7e572dc06f33c12">&#9670;&nbsp;</a></span>set_ptr() <span class="overload">[1/2]</span></h2>
 

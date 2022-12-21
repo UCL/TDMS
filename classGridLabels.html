@@ -99,6 +99,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a30316cfe6ceac764c1b46e39e3276bb1"><td class="memItemLeft" align="right" valign="top"><a id="a30316cfe6ceac764c1b46e39e3276bb1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>GridLabels</b> (const mxArray *ptr)</td></tr>
 <tr class="separator:a30316cfe6ceac764c1b46e39e3276bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9d7b1b72ec83fa595f3019d18c2f59c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridLabels.html#af9d7b1b72ec83fa595f3019d18c2f59c">initialise_from</a> (<a class="el" href="classGridLabels.html">GridLabels</a> &amp;labels_to_copy_from, int i_l, int i_u, int j_l, int j_u, int k_l, int k_u)</td></tr>
+<tr class="memdesc:af9d7b1b72ec83fa595f3019d18c2f59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set values by copying from another <a class="el" href="classGridLabels.html">GridLabels</a> object.  <a href="classGridLabels.html#af9d7b1b72ec83fa595f3019d18c2f59c">More...</a><br /></td></tr>
+<tr class="separator:af9d7b1b72ec83fa595f3019d18c2f59c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -114,7 +117,76 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><b>z</b> = nullptr</
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classGrid.html">Grid</a> labels hold the cartesian labels of Yee cell, in the x, y and z directions </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="af9d7b1b72ec83fa595f3019d18c2f59c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9d7b1b72ec83fa595f3019d18c2f59c">&#9670;&nbsp;</a></span>initialise_from()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GridLabels::initialise_from </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGridLabels.html">GridLabels</a> &amp;&#160;</td>
+          <td class="paramname"><em>labels_to_copy_from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i_u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j_u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k_u</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set values by copying from another <a class="el" href="classGridLabels.html">GridLabels</a> object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other_labels</td><td>The <a class="el" href="classGridLabels.html">GridLabels</a> object to copy values from </td></tr>
+    <tr><td class="paramname">i_l,j_l,k_l</td><td>The first item to copy from the x, y, z attributes (respectively) </td></tr>
+    <tr><td class="paramname">i_u,j_u,k_u</td><td>The final (inclusive) item to copy from the x, y, z attributes (respectively) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="grid__labels_8h_source.html">grid_labels.h</a></li>
 <li>tdms/src/grid_labels.cpp</li>
 </ul>

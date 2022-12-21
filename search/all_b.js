@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['openandorder_105',['openandorder',['../openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0',1,'openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices):&#160;openandorder.cpp'],['../openandorder_8cpp.html#ad88c648b60cb6276f260a53934cd27d0',1,'openandorder(const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices):&#160;openandorder.cpp']]],
-  ['openandorder_2ecpp_106',['openandorder.cpp',['../openandorder_8cpp.html',1,'']]],
-  ['openandorder_2eh_107',['openandorder.h',['../openandorder_8h.html',1,'']]],
-  ['output_5ffilename_108',['output_filename',['../classArgumentNamespace.html#a818341ac39c53db017b552800c51f771',1,'ArgumentNamespace']]]
+  ['normalise_5fvolume_106',['normalise_volume',['../classField.html#a616a0a2e9edb5ee42374611c2eea777e',1,'Field']]],
+  ['normalised_5fdifference_107',['normalised_difference',['../classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a',1,'Field']]],
+  ['num_5fnonzero_5fcoeffs_108',['num_nonzero_coeffs',['../classInterpolationScheme.html#a66152c3e66f87d9be1af1972dec74f77',1,'InterpolationScheme']]],
+  ['numerical_5fderivative_2eh_109',['numerical_derivative.h',['../numerical__derivative_8h.html',1,'']]]
 ];

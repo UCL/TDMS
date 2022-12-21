@@ -7,6 +7,7 @@ var classSplitField =
     [ "delta_n", "classSplitField.html#afffac2d108cda24d123971f0b93dbc1e", null ],
     [ "initialise_fftw_plan", "classSplitField.html#a792343b412146ee62ea9bdeb77b2bbac", null ],
     [ "interpolate_to_centre_of", "classSplitField.html#a1586fdfbc204001215769b754121fcae", null ],
+    [ "largest_field_value", "classSplitField.html#a4c5281f8e2245cc187d488a92dfa6258", null ],
     [ "zero", "classSplitField.html#a6367b936f626e63bcfe7eeff3ca01a54", null ],
     [ "xy", "classSplitField.html#af1b03f0edae0a1089db41a3710157840", null ],
     [ "xz", "classSplitField.html#aaa622b8e9536e7bd472ff24c49b6f590", null ],

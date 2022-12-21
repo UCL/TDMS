@@ -158,6 +158,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_over_rang
 <tr class="separator:a85319f6f980824a51d089c7373d3d05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">set_values_from</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
 <tr class="separator:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa04cd96b3b916e16b6dbb4cdc98aa1a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a">normalised_difference</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
+<tr class="memdesc:aaa04cd96b3b916e16b6dbb4cdc98aa1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the maximum pointwise absolute difference of the other field to this one, divided by the largest absolute value of this field's components.  <a href="classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a">More...</a><br /></td></tr>
+<tr class="separator:aaa04cd96b3b916e16b6dbb4cdc98aa1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
 <tr class="memitem:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d">max_IJK_tot</a> () const</td></tr>
 <tr class="separator:a7a3654bcfe6992aa6f79135a4e92383d inherit pub_methods_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -595,6 +598,35 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
 
 <p>Normalises the field entries by divding by the angular norm. </p>
 <p>Specifically, real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm </p>
+
+</div>
+</div>
+<a id="aaa04cd96b3b916e16b6dbb4cdc98aa1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa04cd96b3b916e16b6dbb4cdc98aa1a">&#9670;&nbsp;</a></span>normalised_difference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Field::normalised_difference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classField.html">Field</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the maximum pointwise absolute difference of the other field to this one, divided by the largest absolute value of this field's components. </p>
+<p>Specifically, we compute and return the quantity <img class="formulaInl" alt="$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{ \max_{i,j,k}this[k][j][i] } $" src="form_5.png"/> This quantity is used to determine convergence of phasors.</p>
+<p>The other field must have the same dimensions as this field.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>The other field </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double Maximum relative pointwise absolute difference </dd></dl>
 
 </div>
 </div>

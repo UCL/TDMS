@@ -106,6 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ba675269d9dacb31a237393c9f22686"><td class="memItemLeft" align="right" valign="top"><a id="a5ba675269d9dacb31a237393c9f22686"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DispersiveMultiLayer</b> (const mxArray *ptr)</td></tr>
 <tr class="separator:a5ba675269d9dacb31a237393c9f22686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626cafc6fa2adc83e0e96e09ee1b2eb5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDispersiveMultiLayer.html#a626cafc6fa2adc83e0e96e09ee1b2eb5">is_dispersive</a> (int K_tot, double near_zero_tolerance=1e-15)</td></tr>
+<tr class="memdesc:a626cafc6fa2adc83e0e96e09ee1b2eb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the (background) medium is dispersive.  <a href="classDispersiveMultiLayer.html#a626cafc6fa2adc83e0e96e09ee1b2eb5">More...</a><br /></td></tr>
+<tr class="separator:a626cafc6fa2adc83e0e96e09ee1b2eb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -125,6 +128,47 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><b>gamma</b> = nullp
 <a class="el" href="classXYZVectors.html">XYZVectors</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sigma</b></td></tr>
 <tr class="separator:ad907719dc81e9c9a2ee5526becd18201"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a626cafc6fa2adc83e0e96e09ee1b2eb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626cafc6fa2adc83e0e96e09ee1b2eb5">&#9670;&nbsp;</a></span>is_dispersive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool DispersiveMultiLayer::is_dispersive </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>K_tot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>near_zero_tolerance</em> = <code>1e-15</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines whether the (background) medium is dispersive. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">K_tot</td><td>Number of Yee cells in the z-direction (number of entries in this-&gt;gamma) </td></tr>
+    <tr><td class="paramname">near_zero_tolerance</td><td>Tolerance for non-zero gamma (attenuation) values </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true Background is dispersive </dd>
+<dd>
+false Background is not dispersive </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
 <li>tdms/src/arrays.cpp</li>

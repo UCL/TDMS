@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['normalise_5fvolume_297',['normalise_volume',['../classField.html#a616a0a2e9edb5ee42374611c2eea777e',1,'Field']]],
-  ['num_5fnonzero_5fcoeffs_298',['num_nonzero_coeffs',['../classInterpolationScheme.html#a66152c3e66f87d9be1af1972dec74f77',1,'InterpolationScheme']]]
+  ['magneticsplitfield_302',['MagneticSplitField',['../classMagneticSplitField.html#a44ba8ba444cfa073d72e7e30758546a8',1,'MagneticSplitField']]],
+  ['matrix_303',['Matrix',['../classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234',1,'Matrix::Matrix()=default'],['../classMatrix.html#a8eb2069811295ea871b8f0a690aa734f',1,'Matrix::Matrix(int n_rows, int n_cols)']]],
+  ['matrixcollection_304',['MatrixCollection',['../classMatrixCollection.html#a360ed9543774d09c45cd8a6fe3cbac39',1,'MatrixCollection::MatrixCollection()=default'],['../classMatrixCollection.html#afc5ace59f1a484e35cc6b3fb33da0f08',1,'MatrixCollection::MatrixCollection(char **names, int number)']]],
+  ['max_5fijk_5ftot_305',['max_IJK_tot',['../classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d',1,'Grid']]]
 ];

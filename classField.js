@@ -12,6 +12,7 @@ var classField =
     [ "interpolate_transverse_electric_components", "classField.html#ace2a629c5fc9141735862d022040a92c", null ],
     [ "interpolate_transverse_magnetic_components", "classField.html#a85319f6f980824a51d089c7373d3d05f", null ],
     [ "normalise_volume", "classField.html#a616a0a2e9edb5ee42374611c2eea777e", null ],
+    [ "normalised_difference", "classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a", null ],
     [ "phase", "classField.html#a865cfb4be5000462a8a4f94a40934695", null ],
     [ "phasor_norm", "classField.html#a787899ca782f76307f96ca13a763417e", null ],
     [ "set_phasors", "classField.html#a88c2e1c843986da2cce6a54379466bbb", null ],
