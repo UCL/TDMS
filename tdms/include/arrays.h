@@ -532,20 +532,28 @@ public:
  */
 class FullFieldSnapshot {
 public:
-  std::complex<double> Ex = 0.;
-  std::complex<double> Ey = 0.;
-  std::complex<double> Ez = 0.;
-  std::complex<double> Hx = 0.;
-  std::complex<double> Hy = 0.;
-  std::complex<double> Hz = 0.;
+  std::complex<double> Ex = 0.; //< x-component of the electric field
+  std::complex<double> Ey = 0.; //< y-component of the electric field
+  std::complex<double> Ez = 0.; //< z-component of the electric field
+  std::complex<double> Hx = 0.; //< x-component of the magnetic field
+  std::complex<double> Hy = 0.; //< y-component of the magnetic field
+  std::complex<double> Hz = 0.; //< z-component of the magnetic field
 
   FullFieldSnapshot() = default;
 
+  /**
+   * @brief Multiplies the electric field components by `factor`.
+   * @param factor to scale the field by
+   */
   void multiply_E_by(std::complex<double> factor) {
     Ex *= factor;
     Ey *= factor;
     Ez *= factor;
   }
+  /**
+   * @brief Multiplies the magnetic field components by `factor`.
+   * @param factor to scale the field by
+   */
   void multiply_H_by(std::complex<double> factor) {
     Hx *= factor;
     Hy *= factor;
