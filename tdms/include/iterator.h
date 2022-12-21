@@ -31,11 +31,6 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
 
 double linearRamp(double t, double period, double rampwidth);
 
-double checkPhasorConvergence(ElectricField &A, ElectricField &B);
-
-void setGridLabels(GridLabels &input_labels, GridLabels &output_labels,
-                   int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
-
 void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E, MagneticSplitField &H,
 			    int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
 
@@ -54,10 +49,6 @@ void normaliseSurface( double **surface_EHr, double **surface_EHi ,
 void normaliseVertices( double **EHr, double **EHi, ComplexAmplitudeSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
 
 void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<double> &phase_term, double &value);
-
-bool is_conductive(const XYZVectors &rho, int I_tot, int J_tot, int K_tot);
-
-bool is_dispersive_ml(const DispersiveMultiLayer &ml, int K_tot);
 
 void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
                             ComplexAmplitudeSample &campssample, int n, double omega, double dt, int Nt,

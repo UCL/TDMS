@@ -76,6 +76,8 @@ private:
   void test_empty_construction() override;
   void test_wrong_input_type() override;
   void test_correct_construction() override;
+  // test: is_dispersive()
+  void test_other_methods() override;
 
 public:
   std::string get_class_name() override { return "DispersiveMultilayer"; }
@@ -291,7 +293,7 @@ private:
   const static int n_rows = 16;
 
   void test_correct_construction() override;
-  // set_ptr()
+  // set_ptr(), all_elements_less_than()
   void test_other_methods() override;
 
 public:

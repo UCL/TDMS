@@ -127,6 +127,16 @@ public:
     void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
 
     /**
+     * @brief Fetches the largest absolute value of the field.
+     *
+     * Split field values are sums of the corresponding components, so this function returns the largest absolute value of the entries in
+     * (xy + xz), (yx + yz), (zx + zy)
+     *
+     * @return double Largest (by absolute value) field value
+     */
+    double largest_field_value();
+
+    /**
    * @brief Interpolates a SplitField component to the centre of a Yee cell
    *
    * @param d SplitField component to interpolate
@@ -330,6 +340,20 @@ public:
    * Set the values of all components in this field from another, equally sized field
    */
   void set_values_from(Field &other);
+
+  /**
+   * @brief Computes the maximum pointwise absolute difference of the other field to this one, divided by the largest absolute value of this field's components.
+   *
+   * Specifically, we compute and return the quantity
+   * \f$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{ \max_{i,j,k}this[k][j][i] } \f$
+   * This quantity is used to determine convergence of phasors.
+   *
+   * The other field must have the same dimensions as this field.
+   *
+   * @param other The other field
+   * @return double Maximum relative pointwise absolute difference
+   */
+  double normalised_difference(Field &other);
 
   ~Field();
 };

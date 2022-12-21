@@ -84,6 +84,28 @@ public:
    * @param ptr Pointer to assign
    */
   void set_ptr(AxialDirection d, double *ptr);
+
+  /**
+   * @brief Determines whether all elements in the x, y, or z vector are less than a given value.
+   *
+   * @param comparison_value Value to compare elements to
+   * @param vector_length Number of elements to compare against
+   * @param component Vector to compare elements against; x, y, or z
+   * @param buffer_start Only compare elements between buffer_start (inclusive) and buffer_start+vector_length-1 (inclusive)
+   * @return true All elements are less than the comparison_value
+   * @return false At least one element is not less than the comparison_value
+   */
+  bool all_elements_less_than(double comparison_value, int vector_length,
+                                 AxialDirection component, int buffer_start = 0);
+  /**
+   * @brief Determines whether all elements in the x, y, AND z vectors are less than a given value.
+   *
+   * @param comparison_value Value to compare elements to
+   * @param nx,ny,nz Number of elements in the nx, ny, and nz vectors respectively
+   * @return true All elements are less than the comparison_value
+   * @return false At least one element is not less than the comparison_value
+   */
+  bool all_elements_less_than(double comparison_value, int nx, int ny, int nz);
 };
 
 // TODO: docstring
@@ -172,6 +194,16 @@ public:
 
 public:
   explicit DispersiveMultiLayer(const mxArray *ptr);
+
+  /**
+   * @brief Determines whether the (background) medium is dispersive
+   *
+   * @param K_tot Number of Yee cells in the z-direction (number of entries in this->gamma)
+   * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation) values
+   * @return true Background is dispersive
+   * @return false Background is not dispersive
+   */
+  bool is_dispersive(int K_tot, double near_zero_tolerance=1e-15);
 };
 
 template<typename T>

@@ -137,8 +137,32 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
   }
 }
 void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
-                            Dimension mode) {
+                                   Dimension mode) {
   interpolate_over_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot, mode);
+}
+
+double Field::normalised_difference(Field &other) {
+  if (other.I_tot != I_tot || other.J_tot != J_tot || other.K_tot != K_tot) {
+    throw runtime_error("Cannot compare the values of fields with different sizes");
+  }
+
+  double max_abs = 0., max_abs_diff = 0.;
+  for (char c : {'x', 'y', 'z'})
+    for (int k = 0; k < K_tot; k++)
+      for (int j = 0; j < J_tot; j++)
+        for (int i = 0; i < I_tot; i++) {
+
+          complex<double> field_value = real[c][k][j][i] + IMAGINARY_UNIT * imag[c][k][j][i],
+                          other_field_value =
+                                  other.real[c][k][j][i] + IMAGINARY_UNIT * other.imag[c][k][j][i];
+
+          // update the denominator (this field's max absolute value)
+          max_abs = max(max_abs, abs(field_value));
+          // update the numerator (maximum absolute difference between field entries)
+          max_abs_diff = max(max_abs_diff, abs(field_value - other_field_value));
+        }
+  // return the ratio
+  return max_abs_diff / max_abs;
 }
 
 Field::~Field() {
