@@ -1,7 +1,7 @@
 /**
  * @file test_FullFieldSnapshot.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for CollectionBase class and its subclasses (CCollection, DCollection)
+ * @brief Unit tests for FullFieldSnapshot class
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>

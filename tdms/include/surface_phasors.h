@@ -8,6 +8,16 @@
 #include "field.h"
 #include "grid_labels.h"
 
+/**
+ * @brief A class that handles the extraction of the phasors on the user-specified surface.
+ *
+ * This class stores:
+ * - The number of vertices on the surface,
+ * - Their indicies in the global indexing convention,
+ * - The data (phasors) at each of these vertices,
+ * - A pointer to the output array
+ *
+ */
 class SurfacePhasors {
 private:
   int **surface_vertices = nullptr;//< Pointer to the vertices on the surface
