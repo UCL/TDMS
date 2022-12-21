@@ -76,6 +76,12 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_index,
   cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
 
   //loop over every vertex in the list
+  /* Loop over every vertex in the surface.
+
+  Since the value of the phasors at each vertex is entirely determined from the previously calculated fields,
+  these computations can be done in parallel as the computation of the phasors is independent of one another.
+  Ergo, we use a parallel loop.
+  */
 #pragma omp parallel default(shared) private(F, phaseTermE, phaseTermH, vindex)
   {
     if (interpolate) {
@@ -156,24 +162,11 @@ void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
 
 void SurfacePhasors::update_surface_EH(int frequency_index, int vertex_index,
                        FullFieldSnapshot F) {
-  // Ex
-  surface_EHr[frequency_index][0][vertex_index] += real(F.Ex);
-  surface_EHi[frequency_index][0][vertex_index] += imag(F.Ex);
-  // Hx
-  surface_EHr[frequency_index][3][vertex_index] += real(F.Hx);
-  surface_EHi[frequency_index][3][vertex_index] += imag(F.Hx);
-  // Ey
-  surface_EHr[frequency_index][1][vertex_index] += real(F.Ey);
-  surface_EHi[frequency_index][1][vertex_index] += imag(F.Ey);
-  //Hy
-  surface_EHr[frequency_index][4][vertex_index] += real(F.Hy);
-  surface_EHi[frequency_index][4][vertex_index] += imag(F.Hy);
-  //Ez
-  surface_EHr[frequency_index][2][vertex_index] += real(F.Ez);
-  surface_EHi[frequency_index][2][vertex_index] += imag(F.Ez);
-  // Hz
-  surface_EHr[frequency_index][5][vertex_index] += real(F.Hz);
-  surface_EHi[frequency_index][5][vertex_index] += imag(F.Hz);
+  // FullFieldSnapshot uses the same indexing scheme as surface_EH{r,i} do, so we can just loop
+  for(int component = 0; component < 6; component++) {
+    surface_EHr[frequency_index][component][vertex_index] += real(F[component]);
+    surface_EHi[frequency_index][component][vertex_index] += imag(F[component]);
+  }
 }
 
 SurfacePhasors::~SurfacePhasors() {

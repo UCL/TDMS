@@ -540,6 +540,43 @@ public:
   FullFieldSnapshot() = default;
 
   /**
+   * @brief Return the component of the field corresponding to the index provided.
+   *
+   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.
+   * This is the indexing order that other storage containers use.
+   *
+   * Throws an error if provided an index <0 or >5.
+   *
+   * @param index Field component index to fetch
+   * @return std::complex<double> The field component
+   */
+  std::complex<double> operator[](int index) {
+    switch(index) {
+      case 0:
+        return Ex;
+        break;
+      case 1:
+        return Ey;
+        break;
+      case 2:
+        return Ez;
+        break;
+      case 3:
+        return Hx;
+        break;
+      case 4:
+        return Hy;
+        break;
+      case 5:
+        return Hz;
+        break;
+      default:
+        throw runtime_error("Index " + std::to_string(index) + " does not correspond to a field component.");
+        break;
+    }
+  }
+
+  /**
    * @brief Multiplies the electric field components by `factor`.
    * @param factor to scale the field by
    */
