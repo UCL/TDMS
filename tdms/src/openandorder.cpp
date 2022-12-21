@@ -31,7 +31,7 @@ void openandorder(const char *mat_filename,
   //fprintf(stderr, "Got all %d matrices\n",nmatrices);
   //fprintf(stderr, "%d\n",mxGetFieldNumber( (mxArray *)matrixptrs[0], "I_tot"));
 
-  if (matrix_names[0] != "fdtdgrid"){
+  if (matrix_names.back() != "fdtdgrid"){
     return;
   }
 
