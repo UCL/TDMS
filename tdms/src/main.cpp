@@ -22,16 +22,16 @@ int main(int nargs, char *argv[]){
   #endif
 
   mxArray *plhs[NOUTMATRICES_PASSED];
-  InputMatrices matrixptrs;
+  InputMatrices matrix_inputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
   check_files_can_be_accessed(args);
 
   //now it is safe to use matlab routines to open the file and order the matrices
   if (!args.has_grid_filename()) {
-    matrixptrs.set_from_input_file(args.input_filename());
+    matrix_inputs.set_from_input_file(args.input_filename());
   } else {
-    matrixptrs.set_from_input_file(args.input_filename(), args.grid_filename());
+    matrix_inputs.set_from_input_file(args.input_filename(), args.grid_filename());
   }
 
   // decide which derivative method to use (PSTD or FDTD)
@@ -48,7 +48,7 @@ int main(int nargs, char *argv[]){
 
   //now run the time propagation code
   execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
-                     matrixptrs, solver_method, preferred_interpolation_methods);
+                     matrix_inputs, solver_method, preferred_interpolation_methods);
 
   if (!args.have_flag("-m")) {//prints vertices and facets
     saveoutput(plhs, matricestosave_all, (char **) outputmatrices_all, NOUTMATRICES_WRITE_ALL,

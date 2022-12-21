@@ -33,7 +33,6 @@ private:
 
   /**
    * @brief Validates that the MATLAB arrays that we are pointing to are of the type that we expect.
-   *
    */
   void validate_assigned_pointers();
 
@@ -41,31 +40,41 @@ public:
   InputMatrices() = default;
 
   /**
-     * @brief Fetch a (pointer to a) MATLAB input matrix by index reference.
-     *
-     * Index-references can be computed through index_from_matrix_name. They are ordered in the same way as the names in tdms_matrix_names::matrixnames.
-     *
-     * @param index The index to fetch
-     * @return const mxArray* Pointer to the corresponding MATLAB array
-     */
+   * @brief Fetch a (pointer to a) MATLAB input matrix by index reference.
+   *
+   * Index-references can be computed through index_from_matrix_name. They are ordered in the same way as the names in tdms_matrix_names::matrixnames.
+   *
+   * @param index The index to fetch
+   * @return const mxArray* Pointer to the corresponding MATLAB array
+   */
   const mxArray *operator[](int index) { return matrix_pointers[index]; }
   /**
-     * @brief Fetch a (pointer to a) MATLAB input matrix by name.
-     *
-     * @param matrix_name Name of the matrix to fetch the pointer to
-     * @return const mxArray* Pointer to the corresponding MATLAB array
-     */
+   * @brief Fetch a (pointer to a) MATLAB input matrix by name.
+   *
+   * @param matrix_name Name of the matrix to fetch the pointer to
+   * @return const mxArray* Pointer to the corresponding MATLAB array
+   */
   const mxArray *operator[](const char *matrix_name) {
     return matrix_pointers[index_from_matrix_name(matrix_name)];
   }
 
   /**
-     * @brief Set the pointer with the given index
-     */
+   * @brief Set the matrix pointer with the given index.
+   *
+   * Not recommended unless you're certain you are setting the correct array pointer! Use the overload which takes the array name as an input if you are uncertain you are setting the correct pointer.
+   *
+   * This function mainly sees use during destruction (and output writing) when we just want to iterate over all the matrices that we are dealing with.
+   *
+   * @param index The index in matrix_pointers to set
+   * @param new_ptr The address we want to assign
+   */
   void set_matrix_pointer(int index, mxArray *new_ptr) { matrix_pointers[index] = new_ptr; }
   /**
-     * @brief Set the pointer to the named matrix
-     */
+   * @brief Set the pointer to the named matrix
+   *
+   * @param matrix_name The name of the matrix that we want to set the pointer to
+   * @param new_ptr The address we want to assign
+   */
   void set_matrix_pointer(const char *matrix_name, mxArray *new_ptr) {
     set_matrix_pointer(index_from_matrix_name(matrix_name), new_ptr);
   }

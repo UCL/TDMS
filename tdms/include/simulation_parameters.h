@@ -9,21 +9,24 @@
 #include "arrays.h"
 #include "input_matrices.h"
 
+// Stores the thickness in each axial direction of the Perfectly Matched Layer (pml)
 struct PerfectlyMatchedLayer {
-  int Dxl = 0;  // Thickness of lower pml in the x direction
-  int Dxu = 0;  //              upper
-  int Dyl = 0;
-  int Dyu = 0;
-  int Dzl = 0;
-  int Dzu = 0;
+  int Dxl = 0;//< Thickness of lower pml in the x direction
+  int Dxu = 0;//< Thickness of upper pml in the x direction
+  int Dyl = 0;//< Thickness of lower pml in the y direction
+  int Dyu = 0;//< Thickness of upper pml in the y direction
+  int Dzl = 0;//< Thickness of lower pml in the z direction
+  int Dzu = 0;//< Thickness of upper pml in the z direction
 };
 
+// The x,y,z lengths of the cuboidal Yee cells
 struct YeeCellDimensions {
-  double dx = 0.;
-  double dy = 0.;
-  double dz = 0.;
+  double dx = 0.;//< Yee cell width in the x direction
+  double dy = 0.;//< Yee cell width in the y direction
+  double dz = 0.;//< Yee cell width in the z direction
 };
 
+// Tracks whether the light source is pulsed or the simulation is at steady state
 enum SourceMode{
   steadystate,
   pulsed
@@ -34,12 +37,13 @@ enum RunMode{
   analyse
 };
 
-enum Dimension{
-  THREE,                    //< Full dimensionality - compute all H and E components
-  TRANSVERSE_ELECTRIC,      //< Transverse electric - only compute Ex, Ey, and Hz components
-  TRANSVERSE_MAGNETIC       //< Transverse magnetic - only compute Hx, Hy, and Ez components
+enum Dimension {
+  THREE,              //< Full dimensionality - compute all H and E components
+  TRANSVERSE_ELECTRIC,//< Transverse electric - only compute Ex, Ey, and Hz components
+  TRANSVERSE_MAGNETIC //< Transverse magnetic - only compute Hx, Hy, and Ez components
 };
 
+// TODO: Reconcile this with the interpolation method toggle! This is already something we can read in from the input file
 enum InterpolationMethod{
   null,
   cubic,
@@ -70,6 +74,14 @@ enum FieldComponents{
   Hz
 };
 
+/**
+ * @brief Class storing the various constants and behaviour flags for one executation of the tdms executable.
+ *
+ * Stores physical constants like the angular frequency, and Yee cell dimensions.
+ * Stores flags like whether the material is dispersive, or whether we want to extract phasors on a predefined surface.
+ * Stores numerical method constants like number of timesteps, length of timesteps.
+ *
+ */
 class SimulationParameters{
 
 public:
@@ -116,5 +128,10 @@ public:
 
     void set_Np(FrequencyExtractVector &f_ex_vec);
 
+    /**
+     * @brief Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.
+     *
+     * @param in_matrices The input arrays from the input file(s) to tdms
+     */
     void unpack_from_input_matrices(InputMatrices in_matrices);
 };

@@ -10,8 +10,9 @@
 #define NOUTMATRICES_PASSED 31    //< number of output matrices passed by mexFunction
 
 /*
-There are two cases to consider, when the fdtdgrid matrix is specified in a separate mat file
-and when it is in the same file as the other matrices.
+These are the names of the arrays that we expect to recieve from the input file (and posibly gridfile) that is passed to tdms on the command line.
+In the case where we are given an input file and a gridfile, the array names we expect to recieve from each is also recorded.
+In the case where the -m (compressed output) flag is passed, we do not save all the possible output arrays and so have a complete list of outputs and a shortened list of those which are saved when using -m.
 */
 namespace tdms_matrix_names {
     // all matrices that we could expect to get from an input file
