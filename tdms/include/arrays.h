@@ -571,7 +571,7 @@ public:
         return Hz;
         break;
       default:
-        throw runtime_error("Index " + std::to_string(index) + " does not correspond to a field component.");
+        throw std::runtime_error("Index " + std::to_string(index) + " does not correspond to a field component.");
         break;
     }
   }
