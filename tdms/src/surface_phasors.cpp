@@ -23,9 +23,9 @@ void SurfacePhasors::set_from_matlab_array(mxArray *mx_surface_vertices, int _f_
   surface_vertices = cast_matlab_2D_array((int *) mxGetPr((mxArray *) mx_surface_vertices),
                                           dimensions_pointer_out[0], dimensions_pointer_out[1]);
 
-  //create space for the complex amplitudes E and H around the surface. These will be in a large complex
-  //array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
-  //the vertex with the same line as in surface_phasors.surface_vertices
+  // Create space for the complex amplitudes E and H around the surface. These will be in a large complex
+  // array with each line being of the form Re(Ex) Im(Ex) Re(Ey) ... Im(Hz). Each line corresponds to the
+  // the vertex with the same line as in surface_phasors.surface_vertices.
   mwSize dims[3] = {n_surface_vertices, 6, f_ex_vector_size};
   mx_surface_amplitudes = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
   surface_EHr = cast_matlab_3D_array(mxGetPr((mxArray *) mx_surface_amplitudes), dims[0], dims[1],

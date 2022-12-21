@@ -1,6 +1,6 @@
 /**
  * @file surface_phasors.h
- * @brief
+ * @brief Contains a class that handles the complex amplitude extraction.
  */
 #pragma once
 
@@ -44,7 +44,7 @@ public:
    */
   void zero_surface_EH() {
     for (int k = 0; k < f_ex_vector_size; k++) {
-      for(int j = 0; j < 6; j++) {
+      for(int j = 0; j < 6; j++) { // 6 field components: Ex, y, z, and Hx, y, z
         for (int i = 0; i < n_surface_vertices; i++) {
           surface_EHr[k][j][i] = 0.;
           surface_EHi[k][j][i] = 0.;
@@ -54,17 +54,17 @@ public:
   }
 
   /**
-   * @brief Get the n surface vertices object
+   * @brief Get the number of surface vertices
    */
   int get_n_surface_vertices() { return n_surface_vertices; };
 
   /**
-   * @brief Get the vertex list object
+   * @brief Get the list of vertices
    */
   mxArray *get_vertex_list() { return vertex_list; };
 
   /**
-   * @brief Get the mx_surface_amplitudes object
+   * @brief Get the array of complex surface amplitudes
    */
   mxArray *get_mx_surface_amplitudes() { return mx_surface_amplitudes; };
 
