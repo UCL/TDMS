@@ -32,6 +32,7 @@ var annotated_dup =
     [ "Grid", "classGrid.html", "classGrid" ],
     [ "GridLabels", "classGridLabels.html", "classGridLabels" ],
     [ "IncidentField", "classIncidentField.html", "classIncidentField" ],
+    [ "InputMatrices", "classInputMatrices.html", "classInputMatrices" ],
     [ "InterfaceComponent", "classInterfaceComponent.html", "classInterfaceComponent" ],
     [ "InterpolationScheme", "classInterpolationScheme.html", "classInterpolationScheme" ],
     [ "MagneticField", "classMagneticField.html", "classMagneticField" ],

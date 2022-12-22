@@ -92,25 +92,30 @@ $(document).ready(function(){initNavTree('openandorder_8h.html',''); initResizab
 
 <p>Launch TDMS and file IO.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="mat__io_8h_source.html">mat_io.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &quot;<a class="el" href="argument__parser_8h_source.html">argument_parser.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="input__matrices_8h_source.html">input_matrices.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="mat__io_8h_source.html">mat_io.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="matrix__collection_8h_source.html">matrix_collection.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for openandorder.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="openandorder_8h__incl.png" border="0" usemap="#atdms_2include_2openandorder_8h" alt=""/></div>
 <map name="atdms_2include_2openandorder_8h" id="atdms_2include_2openandorder_8h">
-<area shape="rect" title="Launch TDMS and file IO." alt="" coords="75,5,286,32"/>
-<area shape="rect" href="mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="81,155,160,181"/>
-<area shape="rect" href="argument__parser_8h.html" title="Parse the command line options." alt="" coords="278,80,422,107"/>
-<area shape="rect" href="matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="107,80,254,107"/>
-<area shape="rect" title=" " alt="" coords="5,229,65,256"/>
-<area shape="rect" title=" " alt="" coords="89,229,152,256"/>
-<area shape="rect" title=" " alt="" coords="177,229,254,256"/>
-<area shape="rect" title=" " alt="" coords="235,155,294,181"/>
-<area shape="rect" title=" " alt="" coords="319,155,381,181"/>
-<area shape="rect" href="globals_8h.html" title="Type definitions and global constants." alt="" coords="405,155,487,181"/>
-<area shape="rect" title=" " alt="" coords="407,229,485,256"/>
+<area shape="rect" title="Launch TDMS and file IO." alt="" coords="401,5,612,32"/>
+<area shape="rect" title=" " alt="" coords="201,229,263,256"/>
+<area shape="rect" title=" " alt="" coords="427,229,485,256"/>
+<area shape="rect" href="argument__parser_8h.html" title="Parse the command line options." alt="" coords="23,155,167,181"/>
+<area shape="rect" href="input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="493,80,624,107"/>
+<area shape="rect" href="mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="578,229,657,256"/>
+<area shape="rect" href="matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="383,155,529,181"/>
+<area shape="rect" href="globals_8h.html" title="Type definitions and global constants." alt="" coords="54,229,135,256"/>
+<area shape="rect" title=" " alt="" coords="55,304,134,331"/>
+<area shape="rect" href="input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="191,155,358,181"/>
+<area shape="rect" title=" " alt="" coords="502,304,562,331"/>
+<area shape="rect" title=" " alt="" coords="586,304,649,331"/>
+<area shape="rect" title=" " alt="" coords="673,304,751,331"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -128,67 +133,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad88c648b60cb6276f260a53934cd27d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0">openandorder</a> (const char *mat_filename, char **matrix_names, const mxArray **matrix_ptrs, int n_matrices)</td></tr>
-<tr class="memdesc:ad88c648b60cb6276f260a53934cd27d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the input mat file and check they are as expected.  <a href="openandorder_8h.html#ad88c648b60cb6276f260a53934cd27d0">More...</a><br /></td></tr>
-<tr class="separator:ad88c648b60cb6276f260a53934cd27d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad746947a84d8389f4254306e2a635283"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="openandorder_8h.html#ad746947a84d8389f4254306e2a635283">saveoutput</a> (mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename)</td></tr>
-<tr class="memdesc:ad746947a84d8389f4254306e2a635283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the resultant matrices into a file with name outputfilename Throws a runtime error if the output file name cannot be opened.  <a href="openandorder_8h.html#ad746947a84d8389f4254306e2a635283">More...</a><br /></td></tr>
-<tr class="separator:ad746947a84d8389f4254306e2a635283"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92481b53a1527a3cf3aa480f4a7327fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="openandorder_8h.html#a92481b53a1527a3cf3aa480f4a7327fd">saveoutput</a> (mxArray **plhs, const int *_matricestosave, const std::vector&lt; std::string &gt; &amp;matrixnames, int nmatrices, const char *outputfilename)</td></tr>
+<tr class="memdesc:a92481b53a1527a3cf3aa480f4a7327fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the resultant matrices into a file with name outputfilename Throws a runtime error if the output file name cannot be opened.  <a href="openandorder_8h.html#a92481b53a1527a3cf3aa480f4a7327fd">More...</a><br /></td></tr>
+<tr class="separator:a92481b53a1527a3cf3aa480f4a7327fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a295bc76eea60fd4b94444926f34e2203"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="openandorder_8h.html#a295bc76eea60fd4b94444926f34e2203">check_files_can_be_accessed</a> (<a class="el" href="classArgumentNamespace.html">ArgumentNamespace</a> &amp;args)</td></tr>
 <tr class="memdesc:a295bc76eea60fd4b94444926f34e2203"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that all input and output files can be accessed.  <a href="openandorder_8h.html#a295bc76eea60fd4b94444926f34e2203">More...</a><br /></td></tr>
 <tr class="separator:a295bc76eea60fd4b94444926f34e2203"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea58649d1a7e45683251385357bfd2c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0">assign_matrix_pointers</a> (<a class="el" href="classMatrixCollection.html">MatrixCollection</a> &amp;expected, <a class="el" href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a> &amp;actual, const mxArray **pointers)</td></tr>
-<tr class="memdesc:aea58649d1a7e45683251385357bfd2c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the matrix names and assign the pointer to each matrix into the appropriate entry of pointers.  <a href="openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0">More...</a><br /></td></tr>
-<tr class="separator:aea58649d1a7e45683251385357bfd2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Launch TDMS and file IO. </p>
 <p>Code for processing command line arguments, opening input files, passing matrices to the mexFunction and writing the output to the specified output file. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="aea58649d1a7e45683251385357bfd2c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea58649d1a7e45683251385357bfd2c0">&#9670;&nbsp;</a></span>assign_matrix_pointers()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void assign_matrix_pointers </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classMatrixCollection.html">MatrixCollection</a> &amp;&#160;</td>
-          <td class="paramname"><em>expected</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classMatFileMatrixCollection.html">MatFileMatrixCollection</a> &amp;&#160;</td>
-          <td class="paramname"><em>actual</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const mxArray **&#160;</td>
-          <td class="paramname"><em>pointers</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Iterate through the matrix names and assign the pointer to each matrix into the appropriate entry of pointers. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">expected</td><td>The names of the matrices in the MATLAB file. </td></tr>
-    <tr><td class="paramname">actual</td><td>The actual matrices in the MATLAB file. </td></tr>
-    <tr><td class="paramname">pointers</td><td>Pointers to the matrices. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a295bc76eea60fd4b94444926f34e2203"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a295bc76eea60fd4b94444926f34e2203">&#9670;&nbsp;</a></span>check_files_can_be_accessed()</h2>
 
@@ -215,59 +170,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad88c648b60cb6276f260a53934cd27d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad88c648b60cb6276f260a53934cd27d0">&#9670;&nbsp;</a></span>openandorder()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void openandorder </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>mat_filename</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char **&#160;</td>
-          <td class="paramname"><em>matrix_names</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const mxArray **&#160;</td>
-          <td class="paramname"><em>matrix_ptrs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n_matrices</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Open the input mat file and check they are as expected. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">mat_filename</td><td>The MATLAB filename </td></tr>
-    <tr><td class="paramname">matrix_names</td><td>names of the matrices in the MATLAB file </td></tr>
-    <tr><td class="paramname">matrix_ptrs</td><td>pointers to arrays in C++ that will be populated by the MATLAB matrices </td></tr>
-    <tr><td class="paramname">n_matrices</td><td>the number of matrices in the MATLAB file </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad746947a84d8389f4254306e2a635283"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad746947a84d8389f4254306e2a635283">&#9670;&nbsp;</a></span>saveoutput()</h2>
+<a id="a92481b53a1527a3cf3aa480f4a7327fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92481b53a1527a3cf3aa480f4a7327fd">&#9670;&nbsp;</a></span>saveoutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -282,13 +186,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int *&#160;</td>
-          <td class="paramname"><em>matricestosave</em>, </td>
+          <td class="paramname"><em>_matricestosave</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>matrixnames</em>[], </td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>matrixnames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -314,8 +218,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">plhs</td><td>the matrices themselves </td></tr>
-    <tr><td class="paramname">matricestosave</td><td>the indexes of the matrices to save </td></tr>
-    <tr><td class="paramname">matrixnames</td><td>names of the matrices to save </td></tr>
+    <tr><td class="paramname">_matricestosave</td><td>the indexes of the matrices to save </td></tr>
+    <tr><td class="paramname">_matrixnames</td><td>names of the matrices to save </td></tr>
     <tr><td class="paramname">nmatrices</td><td>the number of matrices to save </td></tr>
     <tr><td class="paramname">outputfilename</td><td>name of the output file </td></tr>
   </table>

@@ -6,6 +6,7 @@ var classSimulationParameters =
     [ "set_run_mode", "classSimulationParameters.html#a53cf1622c7241589d5bbdec8e9bce381", null ],
     [ "set_source_mode", "classSimulationParameters.html#a9e53406a8ec8ebc8b359c829a3a6bb89", null ],
     [ "set_spacing_stride", "classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d", null ],
+    [ "unpack_from_input_matrices", "classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b", null ],
     [ "air_interface", "classSimulationParameters.html#a7424744418c09d3991646f3f1d9c238e", null ],
     [ "air_interface_present", "classSimulationParameters.html#ac5bca090e0a1d2c206b6dc82f1475c54", null ],
     [ "delta", "classSimulationParameters.html#ad0bffaf734c1228c2a309ffea89e9e65", null ],

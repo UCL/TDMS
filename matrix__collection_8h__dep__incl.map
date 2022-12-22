@@ -1,6 +1,13 @@
 <map id="tdms/include/matrix_collection.h" name="tdms/include/matrix_collection.h">
-<area shape="rect" id="node1" title="A collection of named MATLAB matrices." alt="" coords="97,5,251,47"/>
-<area shape="rect" id="node2" href="$openandorder_8h.html" title="Launch TDMS and file IO." alt="" coords="69,95,279,121"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,169,148,196"/>
-<area shape="rect" id="node4" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="172,169,371,196"/>
+<area shape="rect" id="node1" title="A collection of named MATLAB matrices." alt="" coords="148,5,301,47"/>
+<area shape="rect" id="node2" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="224,95,367,136"/>
+<area shape="rect" id="node6" href="$openandorder_8h.html" title="Launch TDMS and file IO." alt="" coords="47,191,258,218"/>
+<area shape="rect" id="node3" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="193,355,363,382"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="228,437,371,464"/>
+<area shape="rect" id="node7" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="333,184,511,225"/>
+<area shape="rect" id="node5" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="5,437,204,464"/>
+<area shape="rect" id="node8" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="344,273,495,300"/>
+<area shape="rect" id="node11" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="519,273,715,300"/>
+<area shape="rect" id="node9" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="387,348,531,389"/>
+<area shape="rect" id="node10" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="556,348,715,389"/>
 </map>

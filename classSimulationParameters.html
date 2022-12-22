@@ -91,12 +91,17 @@ $(document).ready(function(){initNavTree('classSimulationParameters.html',''); i
 <div class="title">SimulationParameters Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Class storing the various constants and behaviour flags for one executation of the tdms executable.  
+ <a href="classSimulationParameters.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for SimulationParameters:</div>
 <div class="dyncontent">
 <div class="center"><img src="classSimulationParameters__coll__graph.png" border="0" usemap="#aSimulationParameters_coll__map" alt="Collaboration graph"/></div>
 <map name="aSimulationParameters_coll__map" id="aSimulationParameters_coll__map">
-<area shape="rect" title=" " alt="" coords="193,95,359,121"/>
+<area shape="rect" title="Class storing the various constants and behaviour flags for one executation of the tdms executable." alt="" coords="193,95,359,121"/>
 <area shape="rect" href="structSurfaceSpacingStride.html" title=" " alt="" coords="5,5,165,32"/>
 <area shape="rect" href="structPerfectlyMatchedLayer.html" title=" " alt="" coords="190,5,362,32"/>
 <area shape="rect" href="structYeeCellDimensions.html" title=" " alt="" coords="387,5,533,32"/>
@@ -114,12 +119,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_source_mode</b> (
 <tr class="memitem:a0553bebfaa4facd6333cc2ae1e6385d7"><td class="memItemLeft" align="right" valign="top"><a id="a0553bebfaa4facd6333cc2ae1e6385d7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_dimension</b> (std::string mode_string)</td></tr>
 <tr class="separator:a0553bebfaa4facd6333cc2ae1e6385d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="memItemLeft" align="right" valign="top"><a id="a3f5aca819aabeede1fdc3ca60e41d13d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_spacing_stride</b> (const double *vector)</td></tr>
+<tr class="memitem:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">set_spacing_stride</a> (const double *vector)</td></tr>
+<tr class="memdesc:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the surface spacing stride. The x, y, z step size for extracting phasors (in matlab this is called 'phasorinc')  <a href="classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">More...</a><br /></td></tr>
 <tr class="separator:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memItemLeft" align="right" valign="top"><a id="a329f77bf60b70aae7c7e744a56dcc3fb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_Np</b> (<a class="el" href="classFrequencyExtractVector.html">FrequencyExtractVector</a> &amp;f_ex_vec)</td></tr>
 <tr class="separator:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05d8c16f873435e51e8e32ff48fe353b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b">unpack_from_input_matrices</a> (<a class="el" href="classInputMatrices.html">InputMatrices</a> in_matrices)</td></tr>
+<tr class="memdesc:a05d8c16f873435e51e8e32ff48fe353b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.  <a href="classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b">More...</a><br /></td></tr>
+<tr class="separator:a05d8c16f873435e51e8e32ff48fe353b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -214,6 +222,62 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>eyi_present</b> = fal
 <a class="el" href="structYeeCellDimensions.html">YeeCellDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>delta</b></td></tr>
 <tr class="separator:ad0bffaf734c1228c2a309ffea89e9e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Class storing the various constants and behaviour flags for one executation of the tdms executable. </p>
+<p>Stores physical constants like the angular frequency, and Yee cell dimensions. Stores flags like whether the material is dispersive, or whether we want to extract phasors on a predefined surface. Stores numerical method constants like number of timesteps, length of timesteps. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3f5aca819aabeede1fdc3ca60e41d13d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5aca819aabeede1fdc3ca60e41d13d">&#9670;&nbsp;</a></span>set_spacing_stride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationParameters::set_spacing_stride </td>
+          <td>(</td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>vector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the surface spacing stride. The x, y, z step size for extracting phasors (in matlab this is called 'phasorinc') </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vector</td><td>the x, y, z steps (i.e. x = 2 means extract from every 2nd Yee cell.) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a05d8c16f873435e51e8e32ff48fe353b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05d8c16f873435e51e8e32ff48fe353b">&#9670;&nbsp;</a></span>unpack_from_input_matrices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationParameters::unpack_from_input_matrices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classInputMatrices.html">InputMatrices</a>&#160;</td>
+          <td class="paramname"><em>in_matrices</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unpacks all simulation parameters and flags from the matrix inputs the executable recieved. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_matrices</td><td>The input arrays from the input file(s) to tdms </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="simulation__parameters_8h_source.html">simulation_parameters.h</a></li>
 <li>tdms/src/simulation_parameters.cpp</li>

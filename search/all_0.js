@@ -11,5 +11,5 @@ var searchData=
   ['array_5finit_2eh_8',['array_init.h',['../array__init_8h.html',1,'']]],
   ['arrays_2eh_9',['arrays.h',['../arrays_8h.html',1,'']]],
   ['assert_5fcan_5fopen_5ffile_10',['assert_can_open_file',['../utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849',1,'utils.cpp']]],
-  ['assign_5fmatrix_5fpointers_11',['assign_matrix_pointers',['../openandorder_8h.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp'],['../openandorder_8cpp.html#aea58649d1a7e45683251385357bfd2c0',1,'assign_matrix_pointers(MatrixCollection &amp;expected, MatFileMatrixCollection &amp;actual, const mxArray **pointers):&#160;openandorder.cpp']]]
+  ['assign_5fmatrix_5fpointers_11',['assign_matrix_pointers',['../classInputMatrices.html#aad41dccef8b206fd95b3d77d67ef0e0d',1,'InputMatrices']]]
 ];
