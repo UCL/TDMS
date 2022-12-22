@@ -3,6 +3,8 @@
 #include <string>
 #include <stdexcept>
 
+#include <spdlog/spdlog.h>
+
 #include "mat_io.h"
 
 using namespace std;
@@ -15,14 +17,15 @@ MatFileMatrixCollection::MatFileMatrixCollection(const char *filename){
   }
 
   int tmp_n;
-  matrix_names = matGetDir(mat_file, &tmp_n);
+  char **matlab_file_contents = matGetDir(mat_file, &tmp_n);
+  matrix_names = vector<string>(matlab_file_contents, matlab_file_contents+tmp_n);
   n_matrices = tmp_n;
 }
 
-MatrixCollection::MatrixCollection(char **names, int number) {
+MatrixCollection::MatrixCollection(vector<string> names) {
 
   matrix_names = names;
-  n_matrices = number;
+  n_matrices = names.size();
 }
 
 void MatrixCollection::check_has_at_least_as_many_matrices_as(MatrixCollection &other) {
@@ -35,9 +38,8 @@ void MatrixCollection::check_has_at_least_as_many_matrices_as(MatrixCollection &
 }
 
 MatFileMatrixCollection::~MatFileMatrixCollection() {
-
   if (mat_file != nullptr){
     matClose(mat_file);
   }
-  mxFree(matrix_names);
+  matrix_names.clear();
 }

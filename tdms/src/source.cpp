@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "matlabio.h"
 #include "dimensions.h"
@@ -12,7 +13,7 @@ using namespace std;
 Source::Source(const mxArray *ptr, int dim1, int dim2, const std::string &name){
 
   if (mxIsEmpty(ptr)) {
-    cerr << name << " is empty" << endl;
+    spdlog::info("{} is empty", name);
   } else {
     auto dims = Dimensions(ptr);
 

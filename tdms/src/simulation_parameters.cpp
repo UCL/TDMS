@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <spdlog/spdlog.h>
+
 using namespace std;
 
 SimulationParameters::SimulationParameters() = default;
@@ -58,6 +60,73 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
   for (unsigned int tind = start_tind; tind < Nt; tind++){
     if ((tind - start_tind) % Np == 0) Npe++;
   }
-  cerr << "Np=" << Np << " Nt=" << Nt << " Npe=" << Npe
-       <<  " f_max=" << f_max << " Npraw=" << 2.5 * dt * f_max << endl;
+  spdlog::info("Np = {}, Nt = {}, Npe = {}, f_max = {}, Npraw = {}", Np, Nt, Npe, f_max,
+               2.5 * dt * f_max);
+}
+
+void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices) {
+  // determine if we have a dispersive medium or multilayer
+  CCollection C(in_matrices["C"]);
+  is_disp_ml = C.is_disp_ml;
+  is_multilayer = C.is_multilayer;
+
+  // set delta params
+  delta.dx = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "x", "delta"));
+  delta.dy = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "y", "delta"));
+  delta.dz = *mxGetPr(ptr_to_vector_in(in_matrices["delta"], "z", "delta"));
+
+  // unpack constants for the simulation
+  omega_an = double_in(in_matrices["omega_an"], "omega_an");
+  to_l = double_in(in_matrices["to_l"], "to_l");
+  hwhm = double_in(in_matrices["hwhm"], "hwhm");
+  pml.Dxl = int_cast_from_double_in(in_matrices["Dxl"], "Dxl");
+  pml.Dxu = int_cast_from_double_in(in_matrices["Dxu"], "Dxu");
+  pml.Dyl = int_cast_from_double_in(in_matrices["Dyl"], "Dyl");
+  pml.Dyu = int_cast_from_double_in(in_matrices["Dyu"], "Dyu");
+  pml.Dzl = int_cast_from_double_in(in_matrices["Dzl"], "Dzl");
+  pml.Dzu = int_cast_from_double_in(in_matrices["Dzu"], "Dzu");
+  Nt = int_cast_from_double_in(in_matrices["Nt"], "Nt");
+  dt = double_in(in_matrices["dt"], "dt");
+  start_tind = int_cast_from_double_in(in_matrices["tind"], "tind");
+
+  // set the source and run mode
+  set_source_mode(string_in(in_matrices["sourcemode"], "sourcemode"));
+  set_run_mode(string_in(in_matrices["runmode"], "runmode"));
+
+  // determine additional behaviour of this call to tdms
+  exphasorsvolume = bool_cast_from_double_in(in_matrices["exphasorsvolume"], "exphasorsvolume");
+  exphasorssurface = bool_cast_from_double_in(in_matrices["exphasorssurface"], "exphasorssurface");
+  intphasorssurface =
+          bool_cast_from_double_in(in_matrices["intphasorssurface"], "intphasorssurface");
+  interp_mat_props = bool_cast_from_double_in(in_matrices["intmatprops"], "intmatprops");
+
+  // set the stride and dimension of the simulation
+  set_spacing_stride(mxGetPr(in_matrices["phasorinc"]));
+  set_dimension(string_in(in_matrices["dimension"], "dimension"));
+
+  // get exdetintegral if it is present
+  if (!mxIsEmpty(in_matrices["exdetintegral"])) {
+    exdetintegral = bool_cast_from_double_in(in_matrices["exdetintegral"], "exdetintegral");
+  }
+
+  // get air interface
+  if (!mxIsEmpty(in_matrices["air_interface"])) {
+    air_interface_present = true;
+    air_interface = double_in(in_matrices["air_interface"], "air_interface");
+  }
+
+  // get intmethod
+  if (!mxIsEmpty(in_matrices["intmethod"])) {
+    interp_method = InterpolationMethod(int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
+  }
+  spdlog::info("intmethod = " + to_string(interp_method));
+
+  // get the time-domain field
+  IncidentField Ei(in_matrices["tdfield"]);
+  exi_present = Ei.x.has_elements();
+  eyi_present = Ei.y.has_elements();
+
+  // set_Np
+  FrequencyExtractVector f_ex_vec(in_matrices["f_ex_vec"], omega_an);
+  set_Np(f_ex_vec);
 }
