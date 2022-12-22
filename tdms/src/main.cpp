@@ -2,6 +2,9 @@
  * @file main.cpp
  * @brief The main function. Launches TDMS.
  */
+#include <vector>
+#include <string>
+
 #include <spdlog/spdlog.h>
 
 #include "openandorder.h"
@@ -14,7 +17,7 @@ using namespace tdms_matrix_names;
 
 int main(int nargs, char *argv[]){
 
-  // Set the logging level with a compile-time define for debugging
+  // Set the logging level with a compile-time #define for debugging
   #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
     spdlog::set_level(spdlog::level::debug);
   #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
@@ -46,15 +49,15 @@ int main(int nargs, char *argv[]){
     preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
   }
 
-  //now run the time propagation code
+  // now run the time propagation code
   execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
                      matrix_inputs, solver_method, preferred_interpolation_methods);
 
   if (!args.have_flag("-m")) {//prints vertices and facets
-    saveoutput(plhs, matricestosave_all, (char **) outputmatrices_all, NOUTMATRICES_WRITE_ALL,
+    saveoutput(plhs, matricestosave_all, outputmatrices_all, NOUTMATRICES_WRITE_ALL,
                args.output_filename());
   } else {// minimise the file size by not printing vertices and facets
-    saveoutput(plhs, matricestosave, (char **) outputmatrices, NOUTMATRICES_WRITE,
+    saveoutput(plhs, matricestosave, outputmatrices, NOUTMATRICES_WRITE,
                args.output_filename());
   }
 

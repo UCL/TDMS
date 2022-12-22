@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#include <vector>
+#include <string>
+
 #define NMATRICES 49              //< number of input matrices
 #define NOUTMATRICES_WRITE 23     //< number of output matrices to be written to output file
 #define NOUTMATRICES_WRITE_ALL 25 //< number of output matrices to be written to output file
@@ -15,18 +18,18 @@ In the case where we are given an input file and a gridfile, the array names we 
 In the case where the -m (compressed output) flag is passed, we do not save all the possible output arrays and so have a complete list of outputs and a shortened list of those which are saved when using -m.
 */
 namespace tdms_matrix_names {
-    // all matrices that we could expect to get from an input file
-    extern const char *matrixnames[NMATRICES];
-    // matricies we expect to get from an input file if also provided a gridfile
-    extern const char *matrixnames_infile[NMATRICES-1];
+    // all matrices that we could expect to get from an input file with a separate gridfile
+    extern const std::vector<std::string> matrixnames_infile;
+    // matrices we expect to get from an input file that also contains grid information
+    extern const std::vector<std::string> matrixnames_input_with_grid;
     // matrices we expect to obtain from a separate gridfile
-    extern const char *matrixnames_gridfile[1];
+    extern const std::vector<std::string> matrixnames_gridfile;
     // oall output matrices we might want to write
-    extern const char *outputmatrices_all[NOUTMATRICES_WRITE_ALL];
+    extern const std::vector<std::string> outputmatrices_all;
     // output matrices we want to write in a compressed (-m) output
-    extern const char *outputmatrices[NOUTMATRICES_WRITE];
+    extern const std::vector<std::string> outputmatrices;
     // indices of the matrices to save when saving a complete system
-    extern int matricestosave_all[NOUTMATRICES_WRITE_ALL];
+    extern const int matricestosave_all[NOUTMATRICES_WRITE_ALL];
     // indices of the matrices to save when saving a compressed output
-    extern int matricestosave[NOUTMATRICES_WRITE];
+    extern const int matricestosave[NOUTMATRICES_WRITE];
 }

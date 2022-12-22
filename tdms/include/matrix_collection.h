@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#include <vector>
+#include <string>
+
 #include "mat_io.h"
 
 /**
@@ -13,7 +16,7 @@ class MatrixCollection {
 
 public:
     int n_matrices = 0;            //< The number of matrices in the collection
-    char** matrix_names = nullptr; //< The names of the matrices
+    std::vector<std::string> matrix_names; //< The names of the matrices
 
     /** @brief Construct a new Matrix Collection object */
     MatrixCollection() = default;
@@ -24,7 +27,7 @@ public:
      * @param names of the matrices
      * @param number of matrices in the collection
      */
-    explicit MatrixCollection(char **names, int number);
+    explicit MatrixCollection(std::vector<std::string> names);
 
     /**
      * @brief Check we have as many or more matrices than another

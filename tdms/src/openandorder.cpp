@@ -11,13 +11,17 @@
 #include <cstdio>
 #include <stdexcept>
 
+#include <spdlog/spdlog.h>
+
 #include "utils.h"
 #include "fdtd_grid_initialiser.h"
 #include "iterator.h"
 
 using namespace std;
 
-void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], int nmatrices, const char *outputfilename){
+void saveoutput(mxArray **plhs, const int *_matricestosave,
+                const std::vector<std::string> &matrixnames, int nmatrices,
+                const char *outputfilename) {
 
   auto outfile = matOpen(outputfilename, "w7.3");
   if (outfile == nullptr){
@@ -26,12 +30,11 @@ void saveoutput(mxArray **plhs, const int *matricestosave, char *matrixnames[], 
 
   //now iterate through the matrices, set names and add to matfile
   for(int i=0; i<nmatrices; i++){
-    auto mpv_out = matPutVariable(outfile, matrixnames[i], (mxArray *)plhs[matricestosave[i]]);
+    auto mpv_out = matPutVariable(outfile, matrixnames[i].c_str(), (mxArray *)plhs[_matricestosave[i]]);
 
     if(mpv_out){
       auto fp = matGetFp(outfile);
-      fprintf(stderr, "Could not write array %s to %s (%d,%d,%d)\n",
-              matrixnames[i], outputfilename, mpv_out, feof(fp), ferror(fp));
+      spdlog::info("Could not write array {0:s} to {1:s} ({2:d},{3:d},{4:d})", matrixnames[i].c_str(), outputfilename, mpv_out, feof(fp), ferror(fp));
     }
   }
 

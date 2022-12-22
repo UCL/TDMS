@@ -4,17 +4,11 @@
  */
 #pragma once
 
+#include <string>
+
 #include "input_output_names.h"
 #include "mat_io.h"
 #include "matrix_collection.h"
-
-/**
- * @brief Fetches the index of matrix_name in the tdms_matrix_names::matrixnames array
- *
- * @param matrix_name The matrix name to locate
- * @return int The corresponding index
- */
-int index_from_matrix_name(const char *matrix_name);
 
 class InputMatrices {
 private:
@@ -39,6 +33,15 @@ private:
 public:
   InputMatrices() = default;
 
+
+  /**
+   * @brief Fetches the index of matrix_name in the tdms_matrix_names::matrixnames array
+   *
+   * @param matrix_name The matrix name to locate
+   * @return int The corresponding index
+   */
+  int index_from_matrix_name(const std::string &matrix_name);
+
   /**
    * @brief Fetch a (pointer to a) MATLAB input matrix by index reference.
    *
@@ -54,7 +57,7 @@ public:
    * @param matrix_name Name of the matrix to fetch the pointer to
    * @return const mxArray* Pointer to the corresponding MATLAB array
    */
-  const mxArray *operator[](const char *matrix_name) {
+  const mxArray *operator[](const std::string &matrix_name) {
     return matrix_pointers[index_from_matrix_name(matrix_name)];
   }
 
@@ -75,7 +78,7 @@ public:
    * @param matrix_name The name of the matrix that we want to set the pointer to
    * @param new_ptr The address we want to assign
    */
-  void set_matrix_pointer(const char *matrix_name, mxArray *new_ptr) {
+  void set_matrix_pointer(const std::string &matrix_name, mxArray *new_ptr) {
     set_matrix_pointer(index_from_matrix_name(matrix_name), new_ptr);
   }
 

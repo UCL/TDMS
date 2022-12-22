@@ -8,6 +8,9 @@
  */
 #pragma once
 
+#include <vector>
+#include <string>
+
 #include "argument_parser.h"
 #include "input_matrices.h"
 #include "mat_io.h"
@@ -23,7 +26,7 @@
  * @param nmatrices the number of matrices to save
  * @param outputfilename name of the output file
  */
-void saveoutput(mxArray **plhs, const int *_matricestosave, char *_matrixnames[], int nmatrices, const char *outputfilename);
+void saveoutput(mxArray **plhs, const int *_matricestosave, const std::vector<std::string> &matrixnames, int nmatrices, const char *outputfilename);
 
 /**
  * @brief Check that all input and output files can be accessed

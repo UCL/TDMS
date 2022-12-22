@@ -12,15 +12,17 @@
 using namespace std;
 using namespace tdms_matrix_names;
 
-int index_from_matrix_name(const char *matrix_name) {
-    for (int i = 0; i < NMATRICES; i++) {
-        if(are_equal(matrix_name, matrixnames[i])) { return i; }
-    }
-    throw runtime_error("Matrix name " + string(matrix_name) + " not found in matrixnames.");
+int InputMatrices::index_from_matrix_name(const string &matrix_name) {
+  auto position = find(matrixnames_input_with_grid.begin(), matrixnames_input_with_grid.end(), matrix_name);
+  if (position == matrixnames_input_with_grid.end()) {
+    // could not find the matrix name in the list of expected input matrices
+    throw runtime_error(matrix_name + " not found in matrixnames_input_with_grid");
+  }
+  return distance(matrixnames_input_with_grid.begin(), position);
 }
 
 void InputMatrices::set_from_input_file(const char *mat_filename) {
-  MatrixCollection infile_expected((char **) matrixnames, NMATRICES);
+  MatrixCollection infile_expected(matrixnames_input_with_grid);
   MatFileMatrixCollection infile_contains(mat_filename);
   spdlog::info("Input file: " + string(mat_filename) + " | No gridfile supplied");
 
@@ -41,35 +43,29 @@ void InputMatrices::set_from_input_file(const char *mat_filename) {
   validate_assigned_pointers();
 }
 void InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile) {
-  MatrixCollection infile_expected((char **) matrixnames_infile, NMATRICES - 1);
+  MatrixCollection infile_expected(matrixnames_infile);
   MatFileMatrixCollection infile_contains(mat_filename);
   spdlog::info("Input file: " + string(mat_filename) + " | Gridfile: " + string(gridfile));
 
   // first extract fdtdgrid from the gridfile provided
-  MatrixCollection gridfile_expected((char **) matrixnames_gridfile, 1);
+  MatrixCollection gridfile_expected(matrixnames_gridfile);
   MatFileMatrixCollection gridfile_contains(gridfile);
   gridfile_contains.check_has_at_least_as_many_matrices_as(gridfile_expected);
+
   // this is the matrix name we are searching for in the gridfile
-  char *fdtd_matrix_search_string = gridfile_expected.matrix_names[0];
-
-  // assign the fdtdgrid array
-  for (int j = 0; j < gridfile_contains.n_matrices; j++) {
-    // the gridfile might have multiple arrays saved in it, but we only want the fdtdgrid
-    auto current_matrix_name = gridfile_contains.matrix_names[j];
-
-    if (are_equal(current_matrix_name, fdtd_matrix_search_string)) {
-      auto pointer = matGetVariable(gridfile_contains.mat_file, current_matrix_name);
-
-      if (pointer == nullptr) {
-        throw runtime_error("Could not get pointer to " + string(current_matrix_name));
-      }
-      set_matrix_pointer("fdtdgrid", pointer);
-      break;
-    } else if (j == (gridfile_contains.n_matrices - 1)) {
-      // fdtdgrid matrix pointer NOT found
-      throw runtime_error("Couldn't find matrix " + string(current_matrix_name));
-    }
+  string fdtd_matrix_search_string = gridfile_expected.matrix_names[0];
+  // check that the gridfile actually contains the fdtdgrid
+  auto position = find(gridfile_contains.matrix_names.begin(), gridfile_contains.matrix_names.end(),
+                       fdtd_matrix_search_string);
+  if (position == matrixnames_input_with_grid.end()) {
+    throw runtime_error(fdtd_matrix_search_string + " not found in gridfile");
   }
+  // attempt to set the pointer
+  auto pointer = matGetVariable(gridfile_contains.mat_file, fdtd_matrix_search_string.c_str());
+  if (pointer == nullptr) {
+    throw runtime_error("Could not get pointer to " + fdtd_matrix_search_string);
+  }
+  set_matrix_pointer("fdtdgrid", pointer);
 
   // now pick up the other matrix inputs from the usual input file
   // check that the input file actually has enough matrices for what we're expecting
@@ -91,30 +87,21 @@ void InputMatrices::set_from_input_file(const char *mat_filename, const char *gr
 
 void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,
                                            MatFileMatrixCollection &actual) {
-    // for each matrix we expect to recieve
-    for (int i = 0; i < expected.n_matrices; i++) {
-        auto expected_matrix_name = expected.matrix_names[i];
-        // look for this name in the input file
-        for (int j = 0; j < actual.n_matrices; j++) {
-          auto actual_matrix_name = actual.matrix_names[j];
-
-          if (are_equal(actual_matrix_name, expected_matrix_name)) {
-            // if you find the name, get the pointer to the corresponding array
-            auto pointer = matGetVariable(actual.mat_file, actual_matrix_name);
-
-            if (pointer == nullptr) {
-              // error if we recieve a bad pointer
-              throw runtime_error("Could not get pointer to " + string(actual_matrix_name));
-            }
-            // assign the pointer to the list of pointers
-            set_matrix_pointer(actual_matrix_name, pointer);
-            break;
-          } else if (j == (actual.n_matrices - 1)) {
-            //matrix pointer NOT found
-            throw runtime_error("Couldn't find matrix " + string(expected_matrix_name));
-          }
-        }
+  // for each matrix we expect to recieve
+  for(string &expected_matrix : expected.matrix_names) {
+    // look for this matrix name in the input file, throw an error if it is not present
+    auto position = find(actual.matrix_names.begin(), actual.matrix_names.end(), expected_matrix);
+    if (position == actual.matrix_names.end()) {
+      throw runtime_error(expected_matrix + " not found in input file");
     }
+    // if it's present, attempt to set the corresponding pointer
+    auto pointer = matGetVariable(actual.mat_file, expected_matrix.c_str());
+    if (pointer == nullptr) {
+      throw runtime_error("Could not get pointer to " + expected_matrix);
+    } else {
+      set_matrix_pointer(expected_matrix, pointer);
+    }
+  }
 }
 
 void InputMatrices::validate_assigned_pointers() {
