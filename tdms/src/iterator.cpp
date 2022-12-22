@@ -962,7 +962,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     update the E field will have advanced one time step.
 
     The interpretation of time is slightly complicated in the following. In what follows
-    IMAGINARY_UNIT write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
+    I write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
     electric (tind*dt) and magnetic ( (tind+1/2)*dt ) fields.
 
     Times before                Operation         Times after
@@ -1049,37 +1049,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
     }
+
     /*extract fieldsample*/
     if (fieldsample.all_vectors_are_non_empty()) {
-      //if( (tind-params.start_tind) % params.Np == 0){
-      double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
-
-#pragma omp parallel default(shared) private(Ex_temp, Ey_temp, Ez_temp)
-        {
-#pragma omp for
-          for (int kt = 0; kt < fieldsample.k.size(); kt++)
-            for (int jt = 0; jt < fieldsample.j.size(); jt++)
-              for (int it = 0; it < fieldsample.i.size(); it++) {
-                CellCoordinate current_cell(fieldsample.i[it] + params.pml.Dxl - 1,
-                                            fieldsample.j[jt] + params.pml.Dyl - 1,
-                                            fieldsample.k[kt] + params.pml.Dzl - 1);
-                Ex_temp = E_s.interpolate_to_centre_of(AxialDirection::X, current_cell);
-                if (current_cell.j() != 0) {
-                  Ey_temp = E_s.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-                } else {
-                  Ey_temp = E_s.yx[current_cell] + E_s.yz[current_cell];
-                }
-                Ez_temp = E_s.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-                for (int nt = 0; nt < fieldsample.n.size(); nt++)
-                  fieldsample[nt][kt][jt][it] =
-                          fieldsample[nt][kt][jt][it] +
-                          pow(Ex_temp * Ex_temp + Ey_temp * Ey_temp + Ez_temp * Ez_temp,
-                              fieldsample.n[nt] / 2.) /
-                                  params.Nt;
-              }
-        }
+      fieldsample.extract(E_s, params.pml, params.Nt);
     }
-
     /*end extract fieldsample*/
 
     //fprintf(stderr,"Pos 02:\n");

@@ -11,7 +11,9 @@
 #include <fftw3.h>
 
 #include "cell_coordinate.h"
+#include "field.h"
 #include "matlabio.h"
+#include "simulation_parameters.h"
 #include "utils.h"
 #include "globals.h"
 
@@ -447,6 +449,15 @@ public:
   };
 
   inline double*** operator[] (int value) const { return tensor[value]; };
+
+  /**
+   * @brief Extract the (Electric) field values at the vertices
+   *
+   * @param E_split Values of the electric (split) field
+   * @param pml A description of the perfectly matched layer being used in this simulation
+   * @param n_simulation_timesteps The (total) number of timesteps in this simulation
+   */
+  void extract(ElectricSplitField E_split, PerfectlyMatchedLayer pml, int n_simulation_timesteps);
 
   ~FieldSample();
 };
