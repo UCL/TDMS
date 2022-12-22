@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "fieldsample.h"
 #include "unit_test_utils.h"
 
 using namespace std;

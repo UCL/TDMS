@@ -10,6 +10,7 @@
 #include "mesh_base.h"
 #include "numerical_derivative.h"
 #include "array_init.h"
+#include "fieldsample.h"
 #include "globals.h"
 #include "interface.h"
 #include "matlabio.h"
