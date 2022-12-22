@@ -13,7 +13,8 @@ var searchData=
   ['complex_5fvector_23',['complex_vector',['../structcomplex__vector.html',1,'']]],
   ['complexamplitudesample_24',['ComplexAmplitudeSample',['../classComplexAmplitudeSample.html',1,'']]],
   ['concisetriangulatecuboid_25',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
-  ['cubic_5finterpolation_26',['cubic_interpolation',['../classArgumentNamespace.html#aedbab63bb61218f7a39f1d60c0c258ac',1,'ArgumentNamespace']]],
-  ['cuboid_27',['Cuboid',['../classCuboid.html',1,'']]],
-  ['currentdensitysplitfield_28',['CurrentDensitySplitField',['../classCurrentDensitySplitField.html',1,'CurrentDensitySplitField'],['../classCurrentDensitySplitField.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
+  ['create_5fvertex_5flist_26',['create_vertex_list',['../classSurfacePhasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
+  ['cubic_5finterpolation_27',['cubic_interpolation',['../classArgumentNamespace.html#aedbab63bb61218f7a39f1d60c0c258ac',1,'ArgumentNamespace']]],
+  ['cuboid_28',['Cuboid',['../classCuboid.html',1,'']]],
+  ['currentdensitysplitfield_29',['CurrentDensitySplitField',['../classCurrentDensitySplitField.html',1,'CurrentDensitySplitField'],['../classCurrentDensitySplitField.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
 ];

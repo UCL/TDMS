@@ -31,7 +31,8 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "ComplexAmplitudeSample", "classComplexAmplitudeSample.html", "classComplexAmplitudeSample" ],
       [ "DetectorSensitivityArrays", "classDetectorSensitivityArrays.html", "classDetectorSensitivityArrays" ],
       [ "CCoefficientMatrix", "classCCoefficientMatrix.html", null ],
-      [ "EHVec", "classEHVec.html", "classEHVec" ]
+      [ "EHVec", "classEHVec.html", "classEHVec" ],
+      [ "FullFieldSnapshot", "classFullFieldSnapshot.html", "classFullFieldSnapshot" ]
     ] ],
     [ "cell_coordinate.h", "cell__coordinate_8h.html", [
       [ "CellCoordinate", "classCellCoordinate.html", "classCellCoordinate" ]
@@ -75,6 +76,9 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     [ "simulation_parameters.h", "simulation__parameters_8h.html", "simulation__parameters_8h" ],
     [ "source.h", "source_8h.html", [
       [ "Source", "classSource.html", "classSource" ]
+    ] ],
+    [ "surface_phasors.h", "surface__phasors_8h.html", [
+      [ "SurfacePhasors", "classSurfacePhasors.html", "classSurfacePhasors" ]
     ] ],
     [ "timer.h", "timer_8h.html", [
       [ "Timer", "classTimer.html", "classTimer" ]

@@ -1,6 +1,7 @@
 <map id="tdms/include/grid_labels.h" name="tdms/include/grid_labels.h">
-<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="77,5,271,32"/>
-<area shape="rect" id="node2" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="89,80,259,107"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,155,148,181"/>
-<area shape="rect" id="node4" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="172,155,371,181"/>
+<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="171,5,364,32"/>
+<area shape="rect" id="node2" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="89,87,259,114"/>
+<area shape="rect" id="node5" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="283,80,441,121"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,169,148,196"/>
+<area shape="rect" id="node4" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="172,169,371,196"/>
 </map>

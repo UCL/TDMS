@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['value_5fof_5fattribute_325',['value_of_attribute',['../classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429',1,'fdtdGridInitialiser']]]
+  ['update_5fsurface_5feh_354',['update_surface_EH',['../classSurfacePhasors.html#ae4b5f4f6c42b194c9256bf2c5f93e53b',1,'SurfacePhasors']]]
 ];

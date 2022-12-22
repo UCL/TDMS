@@ -1,11 +1,12 @@
 <map id="tdms/include/utils.h" name="tdms/include/utils.h">
-<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="244,5,395,32"/>
-<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="170,80,333,107"/>
-<area shape="rect" id="node5" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="283,408,481,435"/>
+<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="412,5,563,32"/>
+<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="347,80,510,107"/>
+<area shape="rect" id="node5" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="325,408,524,435"/>
 <area shape="rect" id="node3" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="5,326,175,353"/>
-<area shape="rect" id="node6" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="162,155,341,196"/>
+<area shape="rect" id="node6" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="305,155,483,196"/>
+<area shape="rect" id="node9" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="379,319,537,360"/>
 <area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="19,408,161,435"/>
-<area shape="rect" id="node7" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="71,244,221,271"/>
-<area shape="rect" id="node9" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="245,244,441,271"/>
+<area shape="rect" id="node7" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="121,244,272,271"/>
+<area shape="rect" id="node10" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="296,244,492,271"/>
 <area shape="rect" id="node8" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="199,319,343,360"/>
 </map>

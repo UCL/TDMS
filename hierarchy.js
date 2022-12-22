@@ -21,6 +21,7 @@ var hierarchy =
     [ "fdtdGridInitialiser", "classfdtdGridInitialiser.html", null ],
     [ "FieldSample", "classFieldSample.html", null ],
     [ "FrequencyVectors", "classFrequencyVectors.html", null ],
+    [ "FullFieldSnapshot", "classFullFieldSnapshot.html", null ],
     [ "Grid", "classGrid.html", [
       [ "Field", "classField.html", [
         [ "ElectricField", "classElectricField.html", null ],
@@ -59,6 +60,7 @@ var hierarchy =
     [ "PlanarInterface", "structPlanarInterface.html", null ],
     [ "SimulationParameters", "classSimulationParameters.html", null ],
     [ "Source", "classSource.html", null ],
+    [ "SurfacePhasors", "classSurfacePhasors.html", null ],
     [ "SurfaceSpacingStride", "structSurfaceSpacingStride.html", null ],
     [ "TDFieldExporter2D", "classTDFieldExporter2D.html", null ],
     [ "Tensor3D< T >", "classTensor3D.html", null ],
