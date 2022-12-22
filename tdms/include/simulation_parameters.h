@@ -124,6 +124,11 @@ public:
 
     void set_dimension(std::string mode_string);
 
+    /**
+     * @brief Set the surface spacing stride.
+     * The x, y, z step size for extracting phasors (in matlab this is called 'phasorinc')
+     * @param vector the x, y, z steps (i.e. x = 2 means extract from every 2nd Yee cell.)
+     */
     void set_spacing_stride(const double* vector);
 
     void set_Np(FrequencyExtractVector &f_ex_vec);
