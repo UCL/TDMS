@@ -19,17 +19,133 @@ In the case where the -m (compressed output) flag is passed, we do not save all 
 */
 namespace tdms_matrix_names {
     // all matrices that we could expect to get from an input file with a separate gridfile
-    extern const std::vector<std::string> matrixnames_infile;
+    const std::vector<std::string> matrixnames_infile = {"Cmaterial",
+                                                         "Dmaterial",
+                                                         "C",
+                                                         "D",
+                                                         "freespace",
+                                                         "disp_params",
+                                                         "delta",
+                                                         "interface",
+                                                         "Isource",
+                                                         "Jsource",
+                                                         "Ksource",
+                                                         "grid_labels",
+                                                         "omega_an",
+                                                         "to_l",
+                                                         "hwhm",
+                                                         "Dxl",
+                                                         "Dxu",
+                                                         "Dyl",
+                                                         "Dyu",
+                                                         "Dzl",
+                                                         "Dzu",
+                                                         "Nt",
+                                                         "dt",
+                                                         "tind",
+                                                         "sourcemode",
+                                                         "runmode",
+                                                         "exphasorsvolume",
+                                                         "exphasorssurface",
+                                                         "intphasorssurface",
+                                                         "phasorsurface",
+                                                         "phasorinc",
+                                                         "dimension",
+                                                         "conductive_aux",
+                                                         "dispersive_aux",
+                                                         "structure",
+                                                         "f_ex_vec",
+                                                         "exdetintegral",
+                                                         "f_vec",
+                                                         "Pupil",
+                                                         "D_tilde",
+                                                         "k_det_obs_global",
+                                                         "air_interface",
+                                                         "intmatprops",
+                                                         "intmethod",
+                                                         "tdfield",
+                                                         "tdfdir",
+                                                         "fieldsample",
+                                                         "campssample"};
     // matrices we expect to get from an input file that also contains grid information
-    extern const std::vector<std::string> matrixnames_input_with_grid;
+    const std::vector<std::string> matrixnames_input_with_grid = {"fdtdgrid",
+                                                                  "Cmaterial",
+                                                                  "Dmaterial",
+                                                                  "C",
+                                                                  "D",
+                                                                  "freespace",
+                                                                  "disp_params",
+                                                                  "delta",
+                                                                  "interface",
+                                                                  "Isource",
+                                                                  "Jsource",
+                                                                  "Ksource",
+                                                                  "grid_labels",
+                                                                  "omega_an",
+                                                                  "to_l",
+                                                                  "hwhm",
+                                                                  "Dxl",
+                                                                  "Dxu",
+                                                                  "Dyl",
+                                                                  "Dyu",
+                                                                  "Dzl",
+                                                                  "Dzu",
+                                                                  "Nt",
+                                                                  "dt",
+                                                                  "tind",
+                                                                  "sourcemode",
+                                                                  "runmode",
+                                                                  "exphasorsvolume",
+                                                                  "exphasorssurface",
+                                                                  "intphasorssurface",
+                                                                  "phasorsurface",
+                                                                  "phasorinc",
+                                                                  "dimension",
+                                                                  "conductive_aux",
+                                                                  "dispersive_aux",
+                                                                  "structure",
+                                                                  "f_ex_vec",
+                                                                  "exdetintegral",
+                                                                  "f_vec",
+                                                                  "Pupil",
+                                                                  "D_tilde",
+                                                                  "k_det_obs_global",
+                                                                  "air_interface",
+                                                                  "intmatprops",
+                                                                  "intmethod",
+                                                                  "tdfield",
+                                                                  "tdfdir",
+                                                                  "fieldsample",
+                                                                  "campssample"};
     // matrices we expect to obtain from a separate gridfile
-    extern const std::vector<std::string> matrixnames_gridfile;
+    const std::vector<std::string> matrixnames_gridfile = {"fdtdgrid"};
     // oall output matrices we might want to write
-    extern const std::vector<std::string> outputmatrices_all;
+    const std::vector<std::string> outputmatrices_all = {
+            "Ex_out", "Ey_out",      "Ez_out", "Hx_out",      "Hy_out",
+            "Hz_out", "x_out",       "y_out",  "z_out",       "Ex_i",
+            "Ey_i",   "Ez_i",        "Hx_i",   "Hy_i",        "Hz_i",
+            "x_i",    "y_i",         "z_i",    "vertices",    "camplitudes",
+            "facets", "maxresfield", "Id",     "fieldsample", "campssample"};
     // output matrices we want to write in a compressed (-m) output
-    extern const std::vector<std::string> outputmatrices;
+    const std::vector<std::string> outputmatrices = {
+            "Ex_out",      "Ey_out",      "Ez_out", "Hx_out",      "Hy_out",     "Hz_out",
+            "x_out",       "y_out",       "z_out",  "Ex_i",        "Ey_i",       "Ez_i",
+            "Hx_i",        "Hy_i",        "Hz_i",   "x_i",         "y_i",        "z_i",
+            "camplitudes", "maxresfield", "Id",     "fieldsample", "campssample"};
     // indices of the matrices to save when saving a complete system
-    extern const int matricestosave_all[NOUTMATRICES_WRITE_ALL];
+    const int matricestosave_all[NOUTMATRICES_WRITE_ALL] = {
+        0,   1,  2,  3,  4,  5,
+        10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21,
+        22, 23, 24, 25, 26, 27,
+        28
+    };
     // indices of the matrices to save when saving a compressed output
-    extern const int matricestosave[NOUTMATRICES_WRITE];
+    const int matricestosave[NOUTMATRICES_WRITE] = {
+        0,   1,  2,  3,  4,  5,
+        10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21,
+            23,     25, 26, 27,
+        28
+    };
 }
