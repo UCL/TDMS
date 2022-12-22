@@ -31,20 +31,11 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
 
 double linearRamp(double t, double period, double rampwidth);
 
-void extractPhasorsSurface(double **surface_EHr, double **surface_EHi, ElectricSplitField &E, MagneticSplitField &H,
-			    int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
-
-void extractPhasorsSurfaceNoInterpolation(double **surface_EHr, double **surface_EHi, ElectricSplitField &E, MagneticSplitField &H,
-					   int **surface_vertices, int n_surface_vertices, int n, double omega, int Nt, int J_tot, SimulationParameters &params);
-
 bool is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot, int J_tot, int K_tot);
 
 void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
-
-void normaliseSurface( double **surface_EHr, double **surface_EHi ,
-		       int **surface_vertices, int n_surface_vertices,  std::complex<double> Enorm , std::complex<double> Hnorm );
 
 void normaliseVertices( double **EHr, double **EHi, ComplexAmplitudeSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
 
