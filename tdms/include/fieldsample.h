@@ -37,7 +37,7 @@ public:
    * @param pml A description of the perfectly matched layer being used in this simulation
    * @param n_simulation_timesteps The (total) number of timesteps in this simulation
    */
-  void extract(ElectricSplitField E_split, PerfectlyMatchedLayer pml, int n_simulation_timesteps);
+  void extract(ElectricSplitField &E_split, PerfectlyMatchedLayer &pml, int n_simulation_timesteps);
 
   ~FieldSample();
 };

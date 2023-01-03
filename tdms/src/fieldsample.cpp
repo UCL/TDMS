@@ -21,7 +21,7 @@ FieldSample::FieldSample(const mxArray *ptr) {
   }
 }
 
-void FieldSample::extract(ElectricSplitField E_split, PerfectlyMatchedLayer pml,
+void FieldSample::extract(ElectricSplitField &E_split, PerfectlyMatchedLayer &pml,
                           int n_simulation_timesteps) {
   double Ex_temp = 0., Ey_temp = 0., Ez_temp = 0.;
 
