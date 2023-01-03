@@ -17,6 +17,7 @@
 #include "shapes.h"
 #include "source.h"
 #include "surface_phasors.h"
+#include "vertex_phasors.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -284,8 +285,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   double lambda_an_t;
 
   uint8_t ***materials;
-  double ***camplitudesR, ***camplitudesI;
-  mxArray *mx_camplitudes;
 
   int i, j, k, n, k_loc, ndims, K;
   int Nsteps = 0, dft_counter = 0;
@@ -407,7 +406,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   /*Got tdfdir*/
 
   auto fieldsample = FieldSample(in_matrices["fieldsample"]);
-  auto campssample = ComplexAmplitudeSample(in_matrices["campssample"]);
+  VertexPhasors vertex_phasors(in_matrices["campssample"]);
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * params.delta.dx) / EPSILON0);
@@ -489,7 +488,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     surface_phasors.set_from_matlab_array(mx_surface_vertices, f_ex_vec.size());
 
-    // NOT SURE IF THIS IS STILL NEEDED - might be needless with our new slass
+    // NOT SURE IF THIS IS STILL NEEDED - might be needless with our new class
     ndims = 3;
     dims[0] = surface_phasors.get_n_surface_vertices();
     dims[1] = 6;//one for each component of field
@@ -769,24 +768,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   plhs[27] = fieldsample.mx;
 
-  if (campssample.n_vertices() > 0) {
-    ndims = 3;
-    dims[0] = campssample.n_vertices();
-    dims[1] = campssample.components.size();
-    dims[2] = f_ex_vec.size();
-    mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
-    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
+  vertex_phasors.setup_camplitude_arrays(f_ex_vec.size());
+  plhs[28] = vertex_phasors.get_mx_camplitudes();
 
-  } else {
-    ndims = 3;
-    dims[0] = 0;
-    dims[1] = 0;
-    dims[2] = 0;
-    mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-  }
-  plhs[28] = mx_camplitudes;
-  //fprintf(stderr,"Pre 15\n");
   /*end of setup the output array for the sampled field*/
 
 
@@ -982,7 +966,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   double time_E;
   double time_H;
   t0 = (double) time(NULL);
-  //    fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
+  //fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
 
   spdlog::debug("Starting main loop");
@@ -1027,14 +1011,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
                                                   dft_counter, f_ex_vec[ifx] * 2 * DCPI, Nsteps,
-                                                  J_tot, params);
+                                                  params);
           }
           dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
             surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, dft_counter,
-                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, J_tot, params, false);
+                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, params, false);
           }
           dft_counter++;
         }
@@ -1064,31 +1048,26 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
               surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
                                                     tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
-                                                    J_tot, params);
+                                                    params);
           }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
               surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
-                      params.Npe, J_tot, params, false);
+                      params.Npe, params, false);
           }
       }
     }
 
-    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && (campssample.n_vertices() > 0)) {
+    if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete &&
+        (vertex_phasors.there_are_vertices_to_extract_at()) &&
+        ((tind - params.start_tind) % params.Np == 0)) {
       //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
-      if ((tind - params.start_tind) % params.Np == 0) {
-        //	fprintf(stderr,"loc 02\n");
-        if (campssample.n_vertices() > 0) {
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorsVertices(camplitudesR[ifx], camplitudesI[ifx], E_s, H_s, campssample,
-                                   tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe, params.dimension,
-                                   J_tot, params.interp_method);
+            vertex_phasors.extractPhasorsVertices(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI, params);
           }
-        }
-      }
     }
 
     //fprintf(stderr,"Pos 02a:\n");
@@ -4193,7 +4172,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     }
     if (TIME_EXEC) { timer.click(); }
 
-    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || (campssample.n_vertices() > 0)) {
+    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || vertex_phasors.there_are_vertices_to_extract_at()) {
       if (params.source_mode == SourceMode::steadystate) {
 	/*
 	  Each time a new acquisition period of harmonic illumination begins, all complex amplitudes
@@ -4333,13 +4312,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   if (params.run_mode == RunMode::complete && params.exphasorssurface)
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
-      //fprintf(stderr,"E_norm[%d]: %e %e\n",ifx,real(E_norm[ifx]),imag(E_norm[ifx]));
+      spdlog::info("E_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
-
-  if (params.run_mode == RunMode::complete && (campssample.n_vertices() > 0))
+  if (params.run_mode == RunMode::complete && vertex_phasors.there_are_vertices_to_extract_at())
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      normaliseVertices(camplitudesR[ifx], camplitudesI[ifx], campssample, E_norm[ifx], H_norm[ifx]);
-      fprintf(stderr, "E_norm[%d]: %e %e\n", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+      vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
+      spdlog::info("E_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
 
 
@@ -4475,16 +4453,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   /*End of FDTD iteration*/
 
   //fprintf(stderr,"Pos 17\n");
-  /*Free the additional data structures used to cast the matlab arrays*/
+  /* Free the additional data structures used to cast the matlab arrays*/
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     mxDestroyArray(mx_surface_vertices);
+    // ~SurfacePhasors cleans up remaining surface phasor arrays, except the data which we return in plhs[23]
   }
-
-  if (campssample.n_vertices() > 0) {
-    free_cast_matlab_3D_array(camplitudesR, f_ex_vec.size());
-    free_cast_matlab_3D_array(camplitudesI, f_ex_vec.size());
-  }
-
+  // ~VertexPhasors cleans up the vertex phasors arrays, except the data which we return in plhs[28]
   if (params.exdetintegral) {
     free_cast_matlab_2D_array(Idx_re);
     free_cast_matlab_2D_array(Idx_im);
@@ -4589,109 +4563,12 @@ void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim) {
     for (int i_var = 0; i_var < i_lim; i_var++) inArray[j_var][i_var] = 0.0;
 }
 
-void normaliseVertices(double **EHr, double **EHi, ComplexAmplitudeSample &campssample, complex<double> Enorm, complex<double> Hnorm) {
-
-  for (int i = 0; i < 6; i++) {
-
-    auto norm = i < 3 ? Enorm : Hnorm;
-    double norm_r = real(norm);
-    double norm_i = imag(norm);
-    double denom = norm_r * norm_r + norm_i * norm_i;
-
-    auto ii = campssample.components.index(i + 1);
-    if (ii >= 0) {
-      for (int vindex = 0; vindex < campssample.n_vertices(); vindex++){
-
-        double temp_r = EHr[ii][vindex];
-        double temp_i = EHi[ii][vindex];
-
-        EHr[ii][vindex] = (norm_r * temp_r + norm_i * temp_i) / denom;
-        EHi[ii][vindex] = (norm_r * temp_i - norm_i * temp_r) / denom;
-      }
-    }
-  }
-}
-
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
   *Enorm += ft * exp(fmod(omega * ((double) (n + 1)) * dt, 2 * DCPI) * IMAGINARY_UNIT) * 1. / ((double) Nt);
 }
 
 void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt) {
   *Hnorm += ft * exp(fmod(omega * ((double) n + 0.5) * dt, 2 * DCPI) * IMAGINARY_UNIT) * 1. / ((double) Nt);
-}
-
-void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
-                            ComplexAmplitudeSample &campssample, int n, double omega,
-                            double dt, int Nt, int dimension, int J_tot, int intmethod) {
-
-  int vindex;
-  double Ex, Ey, Ez, Hx, Hy, Hz;
-  complex<double> cphaseTermE, cphaseTermH;
-
-  auto phaseTermE = fmod(omega * ((double) n) * dt, 2 * DCPI);
-  auto phaseTermH = fmod(omega * ((double) n + 0.5) * dt, 2 * DCPI);
-
-  cphaseTermH = exp(phaseTermH * IMAGINARY_UNIT) * 1. / ((double) Nt);
-  cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-#pragma omp parallel default(none) \
-        shared(E, H, EHr, EHi, campssample) \
-        private(Ex, Ey, Ez, Hx, Hy, Hz, vindex) \
-        firstprivate(cphaseTermH, cphaseTermE, dimension, J_tot, intmethod)
-  {
-#pragma omp for
-    for (vindex = 0; vindex < campssample.n_vertices(); vindex++) {   // loop over every vertex
-      CellCoordinate current_cell(campssample.vertices[0][vindex], campssample.vertices[1][vindex],
-                                  campssample.vertices[2][vindex]);
-
-      if (dimension == Dimension::THREE) {
-        // these should adapt to use 2/1D interpolation depending on whether the y-direction is available (hence no J_tot check)
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        if (J_tot != 0) {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-          Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        } else {
-          Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-          Ey = E.yx[current_cell] + E.yz[current_cell];
-          Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        }
-      } else if (dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Ey = E.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Ez = 0.;
-        Hx = 0.;
-        Hy = 0.;
-        Hz = H.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-      } else {
-        Ex = 0.;
-        Ey = 0.;
-        Ez = E.interpolate_to_centre_of(AxialDirection::Z, current_cell);
-        Hx = H.interpolate_to_centre_of(AxialDirection::X, current_cell);
-        Hy = H.interpolate_to_centre_of(AxialDirection::Y, current_cell);
-        Hz = 0.;
-      }
-
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ex), cphaseTermE, Ex);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hx), cphaseTermH, Hx);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ey), cphaseTermE, Ey);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hy), cphaseTermH, Hy);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Ez), cphaseTermE, Ez);
-      update_EH(EHr, EHi, vindex, campssample.components.index(FieldComponents::Hz), cphaseTermH, Hz);
-    }
-  }//end parallel region
-}
-
-
-void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> &phase_term, double &value){
-
-  if (idx >= 0) {
-    auto tmp = value * phase_term; //exp(phaseTermE * IMAGINARY_UNIT) * 1./((double) Nt);
-    EHr[idx][vindex] += real(tmp);
-    EHi[idx][vindex] += imag(tmp);
-  }
 }
 
 void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs,

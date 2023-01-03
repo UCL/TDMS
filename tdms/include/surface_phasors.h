@@ -102,7 +102,7 @@ public:
    * @param interpolate If true, perform interpolation on the fields when extracting phasors
    */
   void extractPhasorsSurface(int frequency_index, ElectricSplitField &E,
-                             MagneticSplitField &H, int n, double omega, int Nt, int J_tot,
+                             MagneticSplitField &H, int n, double omega, int Nt,
                              SimulationParameters &params, bool interpolate = true);
 
   /**
