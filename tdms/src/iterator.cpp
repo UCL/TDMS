@@ -2,7 +2,6 @@
 
 #include <complex>
 #include <algorithm>
-#include <ctime>
 
 #include <omp.h>
 #include <spdlog/spdlog.h>
@@ -268,7 +267,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   double rho;
   double alpha_l, beta_l, gamma_l;
   double kappa_l, sigma_l;
-  double t0;
 
   double Ca, Cb, Cc;     //used by interpolation scheme
   //the C and D vars for free space and pml
@@ -965,7 +963,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   //fprintf(stderr,"Pre 24\n");
   double time_E;
   double time_H;
-  t0 = (double) time(NULL);
   //fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
 
@@ -4254,15 +4251,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
         }
       }
     }
-    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL); }
 
-    if ((((double) time(NULL)) - t0) > 1) {
-
-      maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
-
-      spdlog::info("Iterating: tind = {0:d}, maxfield = {1:e}", tind, maxfield);
-      t0 = double(time(NULL));
-    }
+    iteration_controller.log_update(E_s, H_s, tind);
     //fprintf(stderr,"Post-iter 3\n");
     if ((params.source_mode == SourceMode::steadystate) && (tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&
         params.exphasorsvolume) {
