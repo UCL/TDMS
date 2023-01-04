@@ -13,12 +13,12 @@
 #include "fieldsample.h"
 #include "globals.h"
 #include "interface.h"
+#include "iterator_main_loop.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
-#include "timer.h"
 #include "utils.h"
 
 using namespace std;
@@ -969,17 +969,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   //fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
   //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
 
+  IteratorMainLoop iteration_controller;
   spdlog::debug("Starting main loop");
-  auto main_loop_timer = Timer();
 
-  if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
+  if (TIME_MAIN_LOOP) { iteration_controller.start_timer(IterationTimers::MAIN); }
 
   for (unsigned int tind = params.start_tind; tind < params.Nt; tind++) {
     //fprintf(stderr,"Pos 00:\n");
     time_E = ((double) (tind + 1)) * params.dt;
     time_H = time_E - params.dt / 2.;
     //Extract phasors
-    auto timer = Timer();
+    iteration_controller.start_timer(IterationTimers::INTERNAL);
     if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete)
         && (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
 
@@ -1025,13 +1025,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
       }
 
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
-      if (TIME_EXEC) { timer.click(); }
+      if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
       if ((tind - params.start_tind) % params.Np == 0) {
         E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
         H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
       }
-      if (TIME_EXEC) { timer.click(); }
+      if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
       //fprintf(stderr,"Pos 01b:\n");
     }
 
@@ -1185,7 +1185,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     int array_ind = 0;
     //fprintf(stderr,"I_tot=%d, J_tot=%d, K_tot=%d\n",I_tot,J_tot,K_tot);
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
     //fprintf(stderr,"Dimension = %d\n",params.dimension);
     /*
       for(k=0;k<(K_tot+1);k++)
@@ -2957,7 +2957,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
       }
     }//end of parallel section
     //fprintf(stderr,"Pos 09:\n");
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
     /********************/
 
     //update terms for self consistency across scattered/total interface - E updates##
@@ -3358,7 +3358,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     //fprintf(stderr,"Pos 10:\n");
 
     //end of source terms
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
     /********************/
     //begin parallel
@@ -3958,7 +3958,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
     }  //end parallel
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
@@ -4170,7 +4170,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
              exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
       //fprintf(stderr,"Pos 11j\n");
     }
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
     if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || vertex_phasors.there_are_vertices_to_extract_at()) {
       if (params.source_mode == SourceMode::steadystate) {
@@ -4254,7 +4254,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
         }
       }
     }
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
     if ((((double) time(NULL)) - t0) > 1) {
 
@@ -4295,9 +4295,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }//end of main iteration loop
   if (TIME_MAIN_LOOP) {
     //fprintf(stderr,"Post-iter 7\n");
-    main_loop_timer.end();
+    iteration_controller.end_timer(IterationTimers::MAIN);
     //fprintf(stderr,"Post-iter 8\n");
-    fprintf(stdout, "# Time elasped in main loop: %e\n", main_loop_timer.delta_seconds());
+    spdlog::info("Time (seconds) ellapsed in main loop: {0:e}", iteration_controller.time_ellapsed_by(IterationTimers::MAIN));
     //fprintf(stderr,"Post-iter 9\n");
   }
   //save state of fdtdgrid

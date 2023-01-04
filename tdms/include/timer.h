@@ -2,6 +2,7 @@
  * @file timer.h
  * @brief Class wrapper for timing with OpenMP's wall timing.
  */
+#pragma once
 
 /**
  * @brief Stopwatch class.
