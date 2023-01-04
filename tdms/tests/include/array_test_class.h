@@ -45,17 +45,6 @@ class DCollectionTest : public AbstractArrayTest {
     std::string get_class_name() override { return "DCollection"; }
 };
 
-class ComplexAmplitudeSampleTest : public AbstractArrayTest {
-private:
-  const char *fieldnames[2] = {"vertices", "components"};
-
-  void test_empty_construction() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "ComplexAmplitudeSample"; }
-};
-
 class DetectorSensitivityArraysTest : public AbstractArrayTest {
 private:
   int n_rows = 4, n_cols = 8;
@@ -280,6 +269,17 @@ private:
 
 public:
   std::string get_class_name() override { return "FrequencyExtractVector"; }
+};
+
+class VertexPhasorsTest : public AbstractArrayTest {
+private:
+  const char *fieldnames[2] = {"vertices", "components"};
+
+  void test_empty_construction() override;
+  void test_correct_construction() override;
+
+public:
+  std::string get_class_name() override { return "VertexPhasors"; }
 };
 
 class XYZTensor3DTest : public AbstractArrayTest {

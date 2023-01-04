@@ -351,18 +351,6 @@ void Vertices::initialise(const mxArray *ptr) {
     }
 }
 
-ComplexAmplitudeSample::ComplexAmplitudeSample(const mxArray *ptr) {
-
-  if (mxIsEmpty(ptr)){
-    spdlog::info("campssample is empty");
-    return;
-  }
-
-  assert_is_struct_with_n_fields(ptr, 2, "campssample");
-  vertices.initialise(ptr);
-  components.initialise(ptr);
-}
-
 void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {
 
   v = (fftw_complex *) fftw_malloc(n_rows * n_cols * sizeof(fftw_complex));

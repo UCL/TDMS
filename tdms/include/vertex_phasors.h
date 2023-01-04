@@ -10,7 +10,11 @@
 #include "field.h"
 #include "grid_labels.h"
 
-//Check if ComplexAmplitudeSample in array.h is redundant or not after making this class
+/**
+ * Class container for handling complex amplitude samples at the vertices, and their extraction.
+ *
+ * Abbreviated to CAmpSample in MATLAB code
+ */
 class VertexPhasors {
 private:
   /* n_vertices()-by-3 int array.
@@ -55,6 +59,8 @@ public:
   int n_vertices() { return vertices.n_vertices(); }
   // Returns true/false based on whether there are/aren't vertices to extract at
   bool there_are_vertices_to_extract_at() { return (n_vertices() > 0); }
+  // Returns true/false based on whether there are/aren't elements in BOTH the vertices and components arrays
+  bool there_are_elements_in_arrays() { return (vertices.has_elements() && components.has_elements()); }
 
   /**
    * @brief Normalise the surface amplitudes at frequency_vector_index by the E- and H-norms provided.

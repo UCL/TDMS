@@ -463,20 +463,6 @@ public:
   };
 };
 
-/**
- * Complex amplitude samples. Abbreviated to CAmpSample in MATLAB code
- */
-class ComplexAmplitudeSample {
-
-public:
-  Vertices vertices;                 // N x 3 matrix of indices to sample
-  FieldComponentsVector components;  //
-
-  explicit ComplexAmplitudeSample(const mxArray *ptr);
-
-  int n_vertices(){ return vertices.n_vertices(); }
-};
-
 class DetectorSensitivityArrays{
 public:
   fftw_complex* v = nullptr;            // Flat fftw vector
