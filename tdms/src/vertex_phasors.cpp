@@ -120,6 +120,7 @@ void VertexPhasors::update_vertex_camplitudes(int frequency_index, int vertex_in
   for(int component_id = FieldComponents::Ex; component_id <= FieldComponents::Hz; component_id++) {
       int idx = components.index(component_id);
       // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes Ex->Hz with 0->5 (FullFieldSnapshot)
+      // this is not an ideal fix, but it is the simplist so long as we remember the correspondence above
       int cpp_component_index = component_id - 1;
       if (idx >= 0) {
           // this component has been requested for extraction
