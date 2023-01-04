@@ -284,8 +284,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   uint8_t ***materials;
 
+  IteratorMainLoop iteration_controller;
+
   int i, j, k, n, k_loc, ndims, K;
-  int Nsteps = 0, dft_counter = 0;
   SurfacePhasors surface_phasors;
   int Ni_tdf = 0, Nk_tdf = 0;
 
@@ -786,21 +787,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   //fprintf(stderr,"Pre 16\n");
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
     fprintf(stderr, "Changing dt from %.10e to %.10e\n", dt_old, params.dt);
-  Nsteps = (int) lround(Nsteps_tmp);
+  iteration_controller.Nsteps = (int) lround(Nsteps_tmp);
   //fprintf(stderr,"Pre 17\n");
-  //Nsteps = (int)(floor(3*2.*DCPI/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
-  dft_counter = 0;
+  //iteration_controller.Nsteps = (int)(floor(3*2.*DCPI/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
   //fprintf(stderr,"Pre 18\n");
-  /*params.Nt should be an integer number of Nsteps in the case of steady-state operation*/
+  /*params.Nt should be an integer number of iteration_controller.Nsteps in the case of steady-state operation*/
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
-    if (params.Nt / Nsteps * Nsteps != params.Nt) {
+    if (params.Nt / iteration_controller.Nsteps * iteration_controller.Nsteps != params.Nt) {
       fprintf(stderr, "Changing the value of Nt from %d to", params.Nt);
-      params.Nt = params.Nt / Nsteps * Nsteps;
+      params.Nt = params.Nt / iteration_controller.Nsteps * iteration_controller.Nsteps;
       fprintf(stderr, " %d for correct phasor extraction\n", params.Nt);
     }
   //fprintf(stderr,"Pre 19\n");
 
-  if ((params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate)) printf("Nsteps: %d \n", Nsteps);
+  if ((params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate)) printf("iteration_controller.Nsteps: %d \n", iteration_controller.Nsteps);
 
   /*An optimization step in the 2D (J_tot==0) case, try to work out if we have either
     of TE or TM, ie, not both*/
@@ -939,48 +939,21 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   /*Start of FDTD iteration*/
   //open a file for logging the times
-  /*The times of the E and H fields at the point where update equations are applied.
-    time_H is actually the time of the H field when the E field consistency update is
-    applied and vice versa. time_E > time_H below since after the E field consistency
-    update the E field will have advanced one time step.
 
-    The interpretation of time is slightly complicated in the following. In what follows
-    I write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
-    electric (tind*dt) and magnetic ( (tind+1/2)*dt ) fields.
-
-    Times before                Operation         Times after
-    (tind*dt,(tind+1/2)*dt)     Extract phasors   (tind*dt,(tind+1/2)*dt)
-    (tind*dt,(tind+1/2)*dt)     E field update    ( (tind+1)*dt,(tind+1/2)*dt)
-    ((tind+1)*dt,(tind+1/2)*dt) H field update    ( (tind+1)*dt,(tind+3/2)*dt)
-    ((tind+1)*dt,(tind+3/2)*dt) Normalisation extraction
-
-    We note that the extractPhasorENorm uses (tind+1)*dt and extractPhasorHNorm uses
-    (tind+1/2)*dt to perform the update equation in the DFT. This seems incorrect
-    at first but we note that they take the terms fte and fth as inputs respectively.
-    When one notes that fte is calculated using time_E and fth using time_H we see
-    that this indexing is correct, ie, time_E = (tind+1)*dt and time_H = (tind+1/2)*dt.
-  */
-  //fprintf(stderr,"Pre 24\n");
-  double time_E;
-  double time_H;
-  //fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
-  //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
-
-  IteratorMainLoop iteration_controller;
   spdlog::debug("Starting main loop");
 
   if (TIME_MAIN_LOOP) { iteration_controller.start_timer(IterationTimers::MAIN); }
 
-  for (unsigned int tind = params.start_tind; tind < params.Nt; tind++) {
-    //fprintf(stderr,"Pos 00:\n");
-    time_E = ((double) (tind + 1)) * params.dt;
-    time_H = time_E - params.dt / 2.;
+  for (iteration_controller.tind = params.start_tind; iteration_controller.tind < params.Nt; iteration_controller.tind++) {
+    // Update the "time" the fields are currently at
+    iteration_controller.update_field_times_to_current_iteration(params.dt);
+
     //Extract phasors
     iteration_controller.start_timer(IterationTimers::INTERNAL);
-    if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete)
+    if ((iteration_controller.dft_counter == iteration_controller.Nsteps) && (params.run_mode == RunMode::complete)
         && (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
 
-      dft_counter = 0;
+      iteration_controller.dft_counter = 0;
 
       double tol = E.normalised_difference(E_copy);
       if (tol < TOL) break; //required accuracy obtained
@@ -1000,33 +973,33 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     if ((params.source_mode == SourceMode::steadystate) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
 
-      E.set_phasors(E_s, dft_counter - 1, params.omega_an, params.dt, Nsteps);
-      H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
+      E.set_phasors(E_s, iteration_controller.dft_counter - 1, params.omega_an, params.dt, iteration_controller.Nsteps);
+      H.set_phasors(H_s, iteration_controller.dft_counter, params.omega_an, params.dt, iteration_controller.Nsteps);
 
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
-                                                  dft_counter, f_ex_vec[ifx] * 2 * DCPI, Nsteps,
+                                                  iteration_controller.dft_counter, f_ex_vec[ifx] * 2 * DCPI, iteration_controller.Nsteps,
                                                   params);
           }
-          dft_counter++;
+          iteration_controller.dft_counter++;
         } else {
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
-            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, dft_counter,
-                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, params, false);
+            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, iteration_controller.dft_counter,
+                    f_ex_vec[ifx] * 2 * DCPI, iteration_controller.Nsteps, params, false);
           }
-          dft_counter++;
+          iteration_controller.dft_counter++;
         }
       }
 
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
       if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
 
-      if ((tind - params.start_tind) % params.Np == 0) {
-        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
-        H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
+      if ((iteration_controller.tind - params.start_tind) % params.Np == 0) {
+        E.set_phasors(E_s, iteration_controller.tind - 1, params.omega_an, params.dt, params.Npe);
+        H.set_phasors(H_s, iteration_controller.tind, params.omega_an, params.dt, params.Npe);
       }
       if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
       //fprintf(stderr,"Pos 01b:\n");
@@ -1040,17 +1013,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
-      if ((tind - params.start_tind) % params.Np == 0) {
+      if ((iteration_controller.tind - params.start_tind) % params.Np == 0) {
         if (params.intphasorssurface)
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
               surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
-                                                    tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
+                                                    iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
                                                     params);
           }
         else
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
             // do not interpolate when extracting
-              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
+              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI,
                       params.Npe, params, false);
           }
       }
@@ -1058,18 +1031,18 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete &&
         (vertex_phasors.there_are_vertices_to_extract_at()) &&
-        ((tind - params.start_tind) % params.Np == 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
+        ((iteration_controller.tind - params.start_tind) % params.Np == 0)) {
+      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",iteration_controller.tind,params.start_tind,params.Np);
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            vertex_phasors.extractPhasorsVertices(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI, params);
+            vertex_phasors.extractPhasorsVertices(ifx, E_s, H_s, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params);
           }
     }
 
     //fprintf(stderr,"Pos 02a:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
-      if ((tind - params.start_tind) % params.Np == 0) {
+      if ((iteration_controller.tind - params.start_tind) % params.Np == 0) {
         spdlog::debug("Setting Ex_t, Ey_t");
 
         //First need to sum up the Ex and Ey values on a plane ready for FFT, remember that Ex_t and
@@ -1143,7 +1116,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                   Idxt += Ex_t.cm[j][i] * kprop;
                   Idyt += Ey_t.cm[j][i] * kprop;
                 }
-              phaseTermE = fmod(f_ex_vec[ifx] * 2. * DCPI * ((double) tind) * params.dt, 2 * DCPI);
+              phaseTermE = fmod(f_ex_vec[ifx] * 2. * DCPI * ((double) iteration_controller.tind) * params.dt, 2 * DCPI);
               cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) params.Npe);
 
               Idx[ifx][im] += Idxt * cphaseTermE;
@@ -1160,7 +1133,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
       if (params.dimension == THREE) {
         extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
                             iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s, H_s,
-                            I_tot, J_tot, K0.index + 1, tind, params.omega_an, params.dt,
+                            I_tot, J_tot, K0.index + 1, iteration_controller.tind, params.omega_an, params.dt,
                             params.Nt);//extract the phasors just above the line
       }
     //fprintf(stderr,"Pos 02c:\n");
@@ -1224,7 +1197,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
                 //use the average of material parameters between nodes
                 if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,iteration_controller.tind);
                   rho = 0.;
                   if (!materials[k][j][i]) {
                     Ca = C.a.y[array_ind];
@@ -1348,7 +1321,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
                 //use the average of material parameters between nodes
                 if (materials[k][j][i] || materials[k][j][i + 1]) {
-                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
+                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,iteration_controller.tind);
                   rho = 0.;
                   if (!materials[k][j][i]) {
                     Ca = C.a.y[array_ind];
@@ -1574,7 +1547,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 }
                 /*if( materials[k][j][i] || materials[k][j][i+1])
       fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
-      if(tind==0)
+      if(iteration_controller.tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 Enp1 = Ca * E_s.xz[k][j][i] + Cb * (H_s.yx[k - 1][j][i] + H_s.yz[k - 1][j][i] -
                                                     H_s.yx[k][j][i] - H_s.yz[k][j][i]);
@@ -1691,7 +1664,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 }
                 /*if( materials[k][j][i] || materials[k][j][i+1])
       fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
-      if(tind==0)
+      if(iteration_controller.tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
                 if ((is_disp || params.is_disp_ml) && gamma_l)
@@ -1719,7 +1692,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
               eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
               eh_vec[n][k][1] = 0.;
               /*
-    if (tind==1 & i==25 & j==25){
+    if (iteration_controller.tind==1 & i==25 & j==25){
     for(k=0;k<N_e_z;k++)
     fprintf(stdout,"%e ",dk_e_z[k][0]);
     fprintf(stdout,"\n\n");
@@ -1736,7 +1709,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
               first_derivative(eh_vec[n], eh_vec[n], dk_e_z, N_e_z, E_s.xz.plan_f[n],
                                E_s.xz.plan_b[n]);
               /*
-    if (tind==1 & i==25 & j==25){
+    if (iteration_controller.tind==1 & i==25 & j==25){
     fprintf(stdout,"\n\n");
     for(k=0;k<N_e_z;k++)
     fprintf(stdout,"%e ",eh_vec[k][0]);
@@ -2959,8 +2932,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     //update terms for self consistency across scattered/total interface - E updates##
     if (params.source_mode == SourceMode::steadystate) {//steadystate
-      complex<double> commonPhase = exp(-IMAGINARY_UNIT * fmod(params.omega_an * time_H, 2. * DCPI));
-      double commonAmplitude = linearRamp(time_H, 1. / (params.omega_an / (2 * DCPI)), ramp_width);
+      complex<double> commonPhase = exp(-IMAGINARY_UNIT * fmod(params.omega_an * iteration_controller.time_H, 2. * DCPI));
+      double commonAmplitude = linearRamp(iteration_controller.time_H, 1. / (params.omega_an / (2 * DCPI)), ramp_width);
       for (k = (K0.index); k <= (K1.index); k++)
         for (j = (J0.index); j <= (J1.index); j++) {
           if (I0.apply) {//Perform across I0
@@ -3256,27 +3229,27 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           real((Ksource.real[0][i - (I0.index)][2] +
                                 IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][2]) *
                                (-1.0 * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
+                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
                           exp(-1.0 * DCPI *
-                              pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                              pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+          //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
           if (is_conductive)
             J_c.yz[K0.index][j][i] +=
                     rho_cond.z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
                           IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][2]) *
-                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
-                    exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
+                    exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+          //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
           if (params.is_disp_ml) {
             J_s.yz[K0.index][j][i] -=
                     matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[0][i - (I0.index)][2] +
                           IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][2]) *
-                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
-                    exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-            //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
+                    exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+            //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
           }
         }
       } else
@@ -3284,7 +3257,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
           for (i = 0; i < (I_tot + 1); i++) {
             /*
         if(i==41 & j==41)
-        fprintf(stderr,"C.b.z = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, params.to_l=%.10e, params.delta.dz/LIGHT_V/2=%.10e, hwhm = %.10e, dE=%.10e\n",C.b.z[(int)K0[0]],Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2],Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2],time_H,params.to_l,params.delta.dz/LIGHT_V/2,params.hwhm,C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l + params.delta.dz/LIGHT_V/2.)/(params.hwhm),2)));
+        fprintf(stderr,"C.b.z = %.10e, Re(K) = %.10e, Im(K) = %.10e, iteration_controller.time_H= %.10e, params.to_l=%.10e, params.delta.dz/LIGHT_V/2=%.10e, hwhm = %.10e, dE=%.10e\n",C.b.z[(int)K0[0]],Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2],Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2],iteration_controller.time_H,params.to_l,params.delta.dz/LIGHT_V/2,params.hwhm,C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l + params.delta.dz/LIGHT_V/2.)/(params.hwhm),2)));
       */
             E_s.yz[K0.index][j][i] =
                     E_s.yz[K0.index][j][i] -
@@ -3292,19 +3265,19 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                                   IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                                  (-1.0 * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
+                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
                             exp(-1.0 * DCPI *
-                                pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-            //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                                pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+            //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
             if (is_conductive)
               J_c.yz[K0.index][j][i] +=
                       rho_cond.z[K0.index] * C.b.z[K0.index] *
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                             IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                            (-1.0 * IMAGINARY_UNIT) *
-                           exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
-                      exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-            //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                           exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
+                      exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+            //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
             if (params.is_disp_ml) {
               J_s.yz[K0.index][j][i] -=
                       matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
@@ -3312,9 +3285,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       real((Ksource.real[j - (J0.index)][i - (I0.index)][2] +
                             IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][2]) *
                            (-1.0 * IMAGINARY_UNIT) *
-                           exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
-                      exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-              //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+                           exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
+                      exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+              //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
             }
           }
       for (j = 0; j < (J_tot + 1); j++)
@@ -3325,32 +3298,32 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                                 IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
                                (-1.0 * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2 * DCPI))) *
+                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2 * DCPI))) *
                           exp(-1.0 * DCPI *
-                              pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
+                              pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+          //E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2 ));
           if (is_conductive)
             J_c.xz[K0.index][j][i] -=
                     rho_cond.z[K0.index] * C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                           IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
-                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2 * DCPI))) *
-                    exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //J_c.xz[(int)K0[0]][j][i] -= rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
+                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2 * DCPI))) *
+                    exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+          //J_c.xz[(int)K0[0]][j][i] -= rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2 ));
           if (params.is_disp_ml)
             J_s.xz[K0.index][j][i] +=
                     matched_layer.kappa.z[K0.index] * matched_layer.gamma[K0.index] / (2. * params.dt) *
                     C.b.z[K0.index] *
                     real((Ksource.real[j - (J0.index)][i - (I0.index)][3] +
                           IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][3]) *
-                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2 * DCPI))) *
-                    exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-          //J_s.xz[(int)K0[0]][j][i] += matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
+                         (-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2 * DCPI))) *
+                    exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+          //J_s.xz[(int)K0[0]][j][i] += matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2 ));
         }
-      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-      H.ft = real((-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
-             exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
-      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
+      H.ft = real((-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_H - params.to_l), 2. * DCPI))) *
+             exp(-1.0 * DCPI * pow((iteration_controller.time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
+      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(iteration_controller.time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((iteration_controller.time_H - params.to_l)/(params.hwhm),2));
     }
     //fprintf(stderr,"Pos 10:\n");
 
@@ -3521,7 +3494,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
               /*
     if( i==12 && k==24){
-    fprintf(stdout,"tind: %d\n",tind);
+    fprintf(stdout,"iteration_controller.tind: %d\n",iteration_controller.tind);
     fprintf(stdout,"Da: ");
     for(j=0;j<J_tot;j++)
     fprintf(stdout,"%e ",ca_vec[n][j]);
@@ -3639,13 +3612,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                       k_loc = params.pml.Dzl + 1;
                   }
                 if (!materials[k][j][i]) {
-                  /*if(tind==0)
+                  /*if(iteration_controller.tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                   H_s.yz[k][j][i] = D.a.z[k_loc] * H_s.yz[k][j][i] +
                                     D.b.z[k_loc] * (E_s.xy[k][j][i] + E_s.xz[k][j][i] -
                                                     E_s.xy[k + 1][j][i] - E_s.xz[k + 1][j][i]);
                 } else {
-                  /*if(tind==0)
+                  /*if(iteration_controller.tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                   H_s.yz[k][j][i] = Dmaterial.a.z[materials[k][j][i] - 1] * H_s.yz[k][j][i] +
                                     Dmaterial.b.z[materials[k][j][i] - 1] *
@@ -3676,13 +3649,13 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                 if (!materials[k][j][i]) {
                   ca_vec[n][k] = D.a.z[k_loc];
                   cb_vec[n][k] = D.b.z[k_loc];
-                  /*if(tind==0)
+                  /*if(iteration_controller.tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                   //H_s.yz[k][j][i] = D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 } else {
                   ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
                   cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
-                  /*if(tind==0)
+                  /*if(iteration_controller.tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                   //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 }
@@ -3960,8 +3933,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
     if (params.source_mode == SourceMode::steadystate) {//steadystate
-      complex<double> commonPhase = exp(-IMAGINARY_UNIT * fmod(params.omega_an * time_E, 2. * DCPI));
-      double commonAmplitude = linearRamp(time_E, 1. / (params.omega_an / (2 * DCPI)), ramp_width);
+      complex<double> commonPhase = exp(-IMAGINARY_UNIT * fmod(params.omega_an * iteration_controller.time_E, 2. * DCPI));
+      double commonAmplitude = linearRamp(iteration_controller.time_E, 1. / (params.omega_an / (2 * DCPI)), ramp_width);
       for (k = (K0.index); k <= (K1.index); k++)
         for (j = (J0.index); j <= (J1.index); j++) {
           if (I0.apply) {//Perform across I0
@@ -4103,12 +4076,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           real((Ksource.real[0][i - (I0.index)][1] +
                                 IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][1]) *
                                (-1. * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
-                          exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
+                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_E - params.to_l), 2 * DCPI))) *
+                          exp(-1. * DCPI * pow((iteration_controller.time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
           if (params.eyi_present)
             H_s.xz[(K0.index) - 1][j][i] =
-                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
+                    H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[iteration_controller.tind][j][i];
         }
         //fprintf(stderr,"Pos 11e\n");
         for (i = 0; i < I_tot; i++) {
@@ -4118,14 +4091,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                           real((Ksource.real[0][i - (I0.index)][0] +
                                 IMAGINARY_UNIT * Ksource.imag[0][i - (I0.index)][0]) *
                                (-1. * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
-                          exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
+                               exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_E - params.to_l), 2 * DCPI))) *
+                          exp(-1. * DCPI * pow((iteration_controller.time_E - params.to_l) / (params.hwhm), 2.));
           //broadband source term
           if (params.exi_present)
             H_s.yz[(K0.index) - 1][j][i] =
-                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
+                    H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[iteration_controller.tind][j][i];
           //if(i==511)
-          //  fprintf(stdout,"%e\n",D.b.z[((int)K0[0])-1]*exi[tind][j][i]);
+          //  fprintf(stdout,"%e\n",D.b.z[((int)K0[0])-1]*exi[iteration_controller.tind][j][i]);
         }
         //fprintf(stderr,"Pos 11f\n");
       } else {
@@ -4138,12 +4111,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][1] +
                                   IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][1]) *
                                  (-1. * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
-                            exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
+                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_E - params.to_l), 2 * DCPI))) *
+                            exp(-1. * DCPI * pow((iteration_controller.time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
             if (params.eyi_present)
               H_s.xz[(K0.index) - 1][j][i] =
-                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[tind][j][i];
+                      H_s.xz[(K0.index) - 1][j][i] - D.b.z[(K0.index) - 1] * Ei.y[iteration_controller.tind][j][i];
           }
         //fprintf(stderr,"Pos 11h\n");
         for (j = 0; j < (J_tot + 1); j++)
@@ -4154,17 +4127,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                             real((Ksource.real[j - (J0.index)][i - (I0.index)][0] +
                                   IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][0]) *
                                  (-1. * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
-                            exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
+                                 exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_E - params.to_l), 2 * DCPI))) *
+                            exp(-1. * DCPI * pow((iteration_controller.time_E - params.to_l) / (params.hwhm), 2.));
             //broadband source term
             if (params.exi_present)
               H_s.yz[(K0.index) - 1][j][i] =
-                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[tind][j][i];
+                      H_s.yz[(K0.index) - 1][j][i] + D.b.z[(K0.index) - 1] * Ei.x[iteration_controller.tind][j][i];
           }
         //fprintf(stderr,"Pos 11i\n");
       }
-      E.ft = real((-1. * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
-             exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
+      E.ft = real((-1. * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (iteration_controller.time_E - params.to_l), 2 * DCPI))) *
+             exp(-1. * DCPI * pow((iteration_controller.time_E - params.to_l) / (params.hwhm), 2.));
       //fprintf(stderr,"Pos 11j\n");
     }
     if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL);; }
@@ -4184,7 +4157,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     However, the normalisation factors are reset to 0 here.
 	 */
 
-      if( (tind % Nsteps) == 0 ){
+      if( (iteration_controller.tind % iteration_controller.Nsteps) == 0 ){
         E.angular_norm = 0.0;
         H.angular_norm = 0.0;
 
@@ -4196,66 +4169,66 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
 	/*In the calls below, the following two lines of code are equivalent up to numerical precision:
 
-	  E.add_to_angular_norm(fte, tind, Nsteps, params);
-	  E.add_to_angular_norm(fte, tind % Nsteps, Nsteps, params);
+	  E.add_to_angular_norm(fte, iteration_controller.tind, iteration_controller.Nsteps, params);
+	  E.add_to_angular_norm(fte, iteration_controller.tind % iteration_controller.Nsteps, iteration_controller.Nsteps, params);
 
 	  To understand why, first consult the lines of code above:
 
 	  Nsteps_tmp = ceil(2.*DCPI/omega_an[0]/dt[0]*3);
 	  dt[0] = 2.*DCPI/omega_an[0]*3/Nsteps_tmp;
-	  Nsteps = (int)lround(Nsteps_tmp);
+	  iteration_controller.Nsteps = (int)lround(Nsteps_tmp);
 
-	  Where dt and Nsteps are set. The reason for the factor of 3 is that we will perform complex
+	  Where dt and iteration_controller.Nsteps are set. The reason for the factor of 3 is that we will perform complex
 	  amplitude extraction over 3 fundamental periods of the monochromatic source. We can then make
 	  the following statement:
 
-	  T/dt*3=1/(f*dt)*3=Nsteps
+	  T/dt*3=1/(f*dt)*3=iteration_controller.Nsteps
 
 	  where T and f (omega=2*pi*f) are the period and frequency of the monochromatic source, respectively.
 
-	  Then consider the argument of the exponentional function on phasor_norm, called by add_to_angular_norm, where tind=n is used:
+	  Then consider the argument of the exponentional function on phasor_norm, called by add_to_angular_norm, where iteration_controller.tind=n is used:
 
 	  i*omega*((double) (n+1))*dt (where fmod(.,2*DCPI) is ignored since this will not affect the result)
 
 	  The argument of this function simplifies to:
 
-	  i*omega*(tind+1)*dt=i*2*pi*f*(tind+1)*dt=i*2*pi*(tind+1)*3/Nsteps (using f*dt=3/Nsteps)
+	  i*omega*(iteration_controller.tind+1)*dt=i*2*pi*f*(iteration_controller.tind+1)*dt=i*2*pi*(iteration_controller.tind+1)*3/iteration_controller.Nsteps (using f*dt=3/iteration_controller.Nsteps)
 
-	  Then, without loss of generallity, let tind = p*Nsteps + q, substituting into the above
+	  Then, without loss of generallity, let iteration_controller.tind = p*iteration_controller.Nsteps + q, substituting into the above
 
-	  i*2*pi*(tind+1)*3/Nsteps = i*2*pi*(p*Nsteps + q)*3/Nsteps = i*2*pi*3*p + i*2*pi*q*3/Nsteps
+	  i*2*pi*(iteration_controller.tind+1)*3/iteration_controller.Nsteps = i*2*pi*(p*iteration_controller.Nsteps + q)*3/iteration_controller.Nsteps = i*2*pi*3*p + i*2*pi*q*3/iteration_controller.Nsteps
 
-	  In which case exp(i*2*pi*3*p + i*2*pi*q*3/Nsteps) = exp(i*2*pi*q*3/Nsteps)
+	  In which case exp(i*2*pi*3*p + i*2*pi*q*3/iteration_controller.Nsteps) = exp(i*2*pi*q*3/iteration_controller.Nsteps)
 
-	  If instead we use tind % Nsteps=n, we see that n=q, leading to the same exponential function as
+	  If instead we use iteration_controller.tind % iteration_controller.Nsteps=n, we see that n=q, leading to the same exponential function as
 	  above. So the two cases are equivalent.
 	 */
 
-        E.add_to_angular_norm(tind, Nsteps, params);
-        H.add_to_angular_norm(tind, Nsteps, params);
+        E.add_to_angular_norm(iteration_controller.tind, iteration_controller.Nsteps, params);
+        H.add_to_angular_norm(iteration_controller.tind, iteration_controller.Nsteps, params);
 
         for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-          extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
-          extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
+          extractPhasorENorm(&E_norm[ifx], E.ft, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, iteration_controller.Nsteps);
+          extractPhasorHNorm(&H_norm[ifx], H.ft, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, iteration_controller.Nsteps);
         }
       } else {
-        if ((tind - params.start_tind) % params.Np == 0) {
+        if ((iteration_controller.tind - params.start_tind) % params.Np == 0) {
 
-          E.add_to_angular_norm(tind, params.Npe, params);
-          H.add_to_angular_norm(tind, params.Npe, params);
+          E.add_to_angular_norm(iteration_controller.tind, params.Npe, params);
+          H.add_to_angular_norm(iteration_controller.tind, params.Npe, params);
 
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
-            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
+            extractPhasorENorm(&E_norm[ifx], E.ft, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
+            extractPhasorHNorm(&H_norm[ifx], H.ft, iteration_controller.tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
           }
         }
       }
     }
     if (TIME_EXEC) { iteration_controller.click_timer(IterationTimers::INTERNAL); }
 
-    iteration_controller.log_update(E_s, H_s, tind);
+    iteration_controller.log_update(E_s, H_s, iteration_controller.tind);
     //fprintf(stderr,"Post-iter 3\n");
-    if ((params.source_mode == SourceMode::steadystate) && (tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&
+    if ((params.source_mode == SourceMode::steadystate) && (iteration_controller.tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&
         params.exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
       E.set_values_from(E_copy);
@@ -4264,17 +4237,17 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     fflush(stdout);
     //fprintf(stderr,"Post-iter 5\n");
     //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
-    if (params.has_tdfdir && (tind % params.Np) == 0) {
+    if (params.has_tdfdir && (iteration_controller.tind % params.Np) == 0) {
       fprintf(stderr,"Saving field\n");
-      ex_td_field_exporter.export_field(E_s, skip_tdf, tind);
+      ex_td_field_exporter.export_field(E_s, skip_tdf, iteration_controller.tind);
     }
     //fprintf(stderr,"Post-iter 6\n");
     /*write out fdtdgrid to a file*/
     /*
      MATFile *toutfile;
      char toutputfilename[100];
-     if(tind % params.Np == 0){
-     //if(tind <= 1000){
+     if(iteration_controller.tind % params.Np == 0){
+     //if(iteration_controller.tind <= 1000){
        sprintf(toutputfilename,"tdata/fdtdgrid_%04d.mat",tind);
        toutfile = matOpen(toutputfilename, "w");
        matPutVariable(toutfile, "fdtdgrid", (mxArray *)in_matrices[0]);

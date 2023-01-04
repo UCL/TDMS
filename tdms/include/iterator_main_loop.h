@@ -21,8 +21,41 @@ private:
   void unrecognised_timer() { throw std::runtime_error("Didn't recognise that timer!"); }
 
 public:
-  int dft_counter = 0;
-  int Nsteps = 0;
+  int dft_counter = 0;//< Number of DFTs that have been performed since last phasor convergence check
+  int Nsteps = 0;//< Number of DFTs after which we should check for phasor convergence
+  unsigned int tind = 0;//< Current iteration number
+
+  /*The times of the E and H fields at the point where update equations are applied.
+    time_H is actually the time of the H field when the E field consistency update is
+    applied and vice versa. time_E > time_H below since after the E field consistency
+    update the E field will have advanced one time step.
+
+    The interpretation of time is slightly complicated in the following. In what follows
+    I write (tind*dt,(tind+1/2)*dt) to mean the time at which we currently know the
+    electric (tind*dt) and magnetic ( (tind+1/2)*dt ) fields.
+
+    Times before                Operation         Times after
+    (tind*dt,(tind+1/2)*dt)     Extract phasors   (tind*dt,(tind+1/2)*dt)
+    (tind*dt,(tind+1/2)*dt)     E field update    ( (tind+1)*dt,(tind+1/2)*dt)
+    ((tind+1)*dt,(tind+1/2)*dt) H field update    ( (tind+1)*dt,(tind+3/2)*dt)
+    ((tind+1)*dt,(tind+3/2)*dt) Normalisation extraction
+
+    We note that the extractPhasorENorm uses (tind+1)*dt and extractPhasorHNorm uses
+    (tind+1/2)*dt to perform the update equation in the DFT. This seems incorrect
+    at first but we note that they take the terms fte and fth as inputs respectively.
+    When one notes that fte is calculated using time_E and fth using time_H we see
+    that this indexing is correct, ie, time_E = (tind+1)*dt and time_H = (tind+1/2)*dt.
+  */
+  double time_E = 0., time_H = 0.;
+  /**
+   * @brief Sets time_E and time_H according to the current iteration and timestep dt
+   *
+   * @param dt The simulation timestep
+   */
+  void update_field_times_to_current_iteration(double dt) {
+    time_E = ((double) (tind + 1)) * dt;
+    time_H = time_E - dt / 2.;
+  }
 
   void start_timer(IterationTimers timer) {
     switch (timer) {
