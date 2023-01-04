@@ -342,7 +342,7 @@ void Vertices::initialise(const mxArray *ptr) {
     throw runtime_error("Second dimension in campssample.vertices must be 3");
   }
 
-  cerr << "found vertices (" << n_vertices << " x 3)\n";
+  spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
   matrix = cast_matlab_2D_array((int *)mxGetPr(element), n_vertices, n_cols);
 
   for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
