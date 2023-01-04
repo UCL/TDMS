@@ -97,7 +97,6 @@ public:
    * @param n Current timestep index
    * @param omega Angular frequency
    * @param Nt The number of timesteps in a sinusoidal period
-   * @param J_tot Number of cells in the y-direction
    * @param params The parameters for this simulation
    * @param interpolate If true, perform interpolation on the fields when extracting phasors
    */
@@ -126,7 +125,6 @@ public:
    * @param F Field values to assign
    */
   void update_surface_EH(int frequency_index, int vertex_index, FullFieldSnapshot F);
-
 
   ~SurfacePhasors();
 };
