@@ -119,10 +119,12 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
 void VertexPhasors::update_vertex_camplitudes(int frequency_index, int vertex_index, FullFieldSnapshot F) {
   for(int component_id = FieldComponents::Ex; component_id <= FieldComponents::Hz; component_id++) {
       int idx = components.index(component_id);
+      // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes Ex->Hz with 0->5 (FullFieldSnapshot)
+      int cpp_component_index = component_id - 1;
       if (idx >= 0) {
           // this component has been requested for extraction
-          camplitudesR[frequency_index][idx][vertex_index] += real(F[component_id]);
-          camplitudesI[frequency_index][idx][vertex_index] += imag(F[component_id]);
+          camplitudesR[frequency_index][idx][vertex_index] += real(F[cpp_component_index]);
+          camplitudesI[frequency_index][idx][vertex_index] += imag(F[cpp_component_index]);
       }
   }
 }

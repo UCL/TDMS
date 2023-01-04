@@ -4309,17 +4309,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }
 
   //fprintf(stderr,"Pos 13\n");
-  if (params.run_mode == RunMode::complete && params.exphasorssurface)
+  if (params.run_mode == RunMode::complete && params.exphasorssurface) {
+    spdlog::info("Surface phasors");
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("E_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
-  if (params.run_mode == RunMode::complete && vertex_phasors.there_are_vertices_to_extract_at())
+  }
+  if (params.run_mode == RunMode::complete && vertex_phasors.there_are_vertices_to_extract_at()) {
+    spdlog::info("Vertex phasors");
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
       vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("E_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
-
+  }
 
   //fprintf(stderr,"Pos 14\n");
   if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
