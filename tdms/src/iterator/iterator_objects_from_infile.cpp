@@ -1,7 +1,5 @@
 #include "iterator_objects_from_infile.h"
 
-#include <spdlog/spdlog.h>
-
 // For ptr_to_vector_in, ptr_to_vector_or_empty_in, int_cast_from_double_in
 #include "matlabio.h"
 // for init_grid_arrays

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include "matrix.h"
 
 #include "arrays.h"
@@ -60,6 +62,10 @@ public:
 
   Iterator_IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
                                         SolverMethod solver_method);
+
+  ~Iterator_IndependentObjectsFromInfile() {
+    spdlog::info("Destroying Iterator_IndependentObjectsFromInfile");
+  }
 };
 
 class Iterator_ObjectsFromInfile : public Iterator_IndependentObjectsFromInfile {
@@ -75,4 +81,6 @@ public:
     /* DECLARE VARIABLES _DERIVED_ FROM VARIABLES OBTAINED FROM THE INPUT FILE */
 
     Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file, SolverMethod solver_method);
+
+    ~Iterator_ObjectsFromInfile() { spdlog::info("Destroying Iterator_ObjectsFromInfile"); }
 };
