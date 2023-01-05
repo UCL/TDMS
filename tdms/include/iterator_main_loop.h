@@ -5,13 +5,14 @@
 
 #include <spdlog/spdlog.h>
 
+#include "iterator_loop_variables.h"
 #include "field.h"
 #include "simulation_parameters.h"
 #include "timer.h"
 
 enum class IterationTimers { MAIN, INTERNAL };
 
-class IteratorMainLoop {
+class IteratorMainLoop : public IteratorMainLoopVariables {
 private:
   Timer main_loop_timer;//< Timer for the main iteration loops
   Timer internal_timer;//< Timer for tasks that are internal to one iteration
@@ -118,5 +119,7 @@ public:
    * @param tind Current iteration number
    */
   void log_update(ElectricSplitField &E_split, MagneticSplitField &H_split, int tind);
+
+  void run_main_loop();
 
 };
