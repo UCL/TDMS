@@ -1,12 +1,14 @@
 #include "iterator_objects_from_infile.h"
 
+#include <stdexcept>
+
 // For ptr_to_vector_in, ptr_to_vector_or_empty_in, int_cast_from_double_in
 #include "matlabio.h"
 // for init_grid_arrays
 #include "array_init.h"
 
 Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
-        InputMatrices matrices_from_input_file, SolverMethod solver_method)
+        InputMatrices matrices_from_input_file, SolverMethod _solver_method)
     :// initalizer list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
@@ -24,8 +26,14 @@ Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
       vertex_phasors(matrices_from_input_file["campssample"])   // get vertex_phasors
 {
   // set skip_tdf based on the solver method
-  skip_tdf = 1;
-  if (solver_method == SolverMethod::FiniteDifference) { skip_tdf = 6; }
+  solver_method = _solver_method;
+  if (solver_method == SolverMethod::FiniteDifference) {
+    skip_tdf = 6;
+  } else if (solver_method == SolverMethod::PseudoSpectral) {
+    skip_tdf = 1;
+  } else {
+    throw std::runtime_error("Solver method not recognised!");
+  }
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -106,9 +114,9 @@ Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
 }
 
 Iterator_ObjectsFromInfile::Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                                       SolverMethod solver_method)
+                                                       SolverMethod _solver_method)
     : // build the independent objects first
-      Iterator_IndependentObjectsFromInfile(matrices_from_input_file, solver_method),
+      Iterator_IndependentObjectsFromInfile(matrices_from_input_file, _solver_method),
       // Source has no default constructor, and we need information from the Iterator_IndependentObjectsFromInfile first
       Isource(matrices_from_input_file["Isource"], J1.index - J0.index + 1, K1.index - K0.index + 1,
               "Isource"),

@@ -16,6 +16,14 @@
 #include "source.h"
 #include "vertex_phasors.h"
 
+/**
+ * @brief Class that constructs C++ arrays from an InputMatrices object and the SolverMethod enum.
+ *
+ * Arrays that are constructed by this class are independent of one another and other setup parameters - they can simply be read from the InputMatrices object.
+ *
+ * The Iterator_ObjectsFromInfile class handles the additional matrices in InputMatrices that are inter-dependent.
+ *
+ */
 class Iterator_IndependentObjectsFromInfile {
 private:
   //Set the I_tot, J_tot, K_tot from the corresponding members of E_s
@@ -28,6 +36,7 @@ public:
     /* VARIABLES NEEDED IN THE MAIN LOOP,
         DERIVED FROM THE INPUT-FILE OR COMMAND-LINE */
 
+  SolverMethod solver_method;               //< Either PSTD (default) or FDTD, the solver method
   int skip_tdf;                             //< Either 1 if we are using PSTD, or 6 if using FDTD
   SimulationParameters params;              //< The parameters for this simulation
   ElectricSplitField E_s;                   //< The split electric-field values
@@ -61,13 +70,20 @@ public:
   int I_tot, J_tot, K_tot;//< total number of Yee cells in the x,y,z directions respectively
 
   Iterator_IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                        SolverMethod solver_method);
+                                        SolverMethod _solver_method);
 
   ~Iterator_IndependentObjectsFromInfile() {
     spdlog::info("Destroying Iterator_IndependentObjectsFromInfile");
   }
 };
 
+/**
+ * @brief Class that handles the creation of C++ arrays from the matrices passed in an InputMatrices object, but also handling interdependencies between inputs from this file.
+ *
+ * The Sources, GratingStructure, and FrequencyExtractVector can only be initalised after the other arrays in the input file have been parsed.
+ *
+ * As such, this object inherits the setup of Iterator_IndependentObjectsFromInfile, and then constructs the aforementioned arrays using a combination of information from the input file and previously mentioned setup.
+ */
 class Iterator_ObjectsFromInfile : public Iterator_IndependentObjectsFromInfile {
 public:
     /* DECLARE VARIABLES NEEDED IN THE MAIN LOOP, DERIVED FROM INPUT FILE / COMMAND-LINE */
@@ -76,11 +92,7 @@ public:
     GratingStructure structure;//< TODO
     FrequencyExtractVector f_ex_vec;//< Vector of frequencies to extract field & phasors at
 
-    /* DECLARE VARIABLES NOT NEEDED IN THE MAIN LOOP, DERIVED FROM INPUT FILE */
-
-    /* DECLARE VARIABLES _DERIVED_ FROM VARIABLES OBTAINED FROM THE INPUT FILE */
-
-    Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file, SolverMethod solver_method);
+    Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file, SolverMethod _solver_method);
 
     ~Iterator_ObjectsFromInfile() { spdlog::info("Destroying Iterator_ObjectsFromInfile"); }
 };
