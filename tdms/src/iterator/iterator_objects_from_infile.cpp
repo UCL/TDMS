@@ -113,6 +113,10 @@ Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
   }
 }
 
+Iterator_IndependentObjectsFromInfile::~Iterator_IndependentObjectsFromInfile() {
+  spdlog::info("Destroying Iterator_IndependentObjectsFromInfile");
+}
+
 Iterator_ObjectsFromInfile::Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file,
                                                        SolverMethod _solver_method)
     : // build the independent objects first
@@ -132,4 +136,20 @@ Iterator_ObjectsFromInfile::Iterator_ObjectsFromInfile(InputMatrices matrices_fr
 {
   // Update params according to structure's values
   params.is_structure = structure.has_elements();
+}
+
+Iterator_ObjectsFromInfile::~Iterator_ObjectsFromInfile() {
+  spdlog::info("Destroying Iterator_ObjectsFromInfile");
+  if (I0.apply || I1.apply) {
+    free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
+  }
+  if (J0.apply || J1.apply) {
+    free_cast_matlab_3D_array(Jsource.imag, (K1.index - K0.index + 1));
+    free_cast_matlab_3D_array(Jsource.real, (K1.index - K0.index + 1));
+  }
+  if (K0.apply || K1.apply) {
+    free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
+    free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
+  }
 }

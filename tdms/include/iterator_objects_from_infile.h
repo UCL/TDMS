@@ -72,9 +72,7 @@ public:
   Iterator_IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
                                         SolverMethod _solver_method);
 
-  ~Iterator_IndependentObjectsFromInfile() {
-    spdlog::info("Destroying Iterator_IndependentObjectsFromInfile");
-  }
+  ~Iterator_IndependentObjectsFromInfile();
 };
 
 /**
@@ -94,5 +92,5 @@ public:
 
     Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file, SolverMethod _solver_method);
 
-    ~Iterator_ObjectsFromInfile() { spdlog::info("Destroying Iterator_ObjectsFromInfile"); }
+    ~Iterator_ObjectsFromInfile();
 };

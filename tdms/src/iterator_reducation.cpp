@@ -4006,6 +4006,8 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     // ~SurfacePhasors cleans up remaining surface phasor arrays, except the data which we return in plhs[23]
   }
   // ~VertexPhasors cleans up the vertex phasors arrays, except the data which we return in plhs[28]
+
+  // some smart AF cleanup is going to be needed here...
   if (params.exdetintegral) {
     free_cast_matlab_2D_array(Idx_re);
     free_cast_matlab_2D_array(Idx_im);
@@ -4028,18 +4030,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }
 
   //fprintf(stderr,"Pos 20\n");
-  if (I0.apply || I1.apply) {
-    free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
-    free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
-  }
-  if (J0.apply || J1.apply) {
-    free_cast_matlab_3D_array(Jsource.imag, (K1.index - K0.index + 1));
-    free_cast_matlab_3D_array(Jsource.real, (K1.index - K0.index + 1));
-  }
-  if (K0.apply || K1.apply) {
-    free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
-    free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
-  }
 
   free_cast_matlab_2D_array(iwave_lEx_Rbs);
   free_cast_matlab_2D_array(iwave_lEx_Ibs);
@@ -4056,26 +4046,6 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-  if (solver_method == SolverMethod::PseudoSpectral) {
-    fftw_free(dk_e_x);
-    fftw_free(dk_e_y);
-    fftw_free(dk_e_z);
-
-    fftw_free(dk_h_x);
-    fftw_free(dk_h_y);
-    fftw_free(dk_h_z);
-  }
-
-  free(E_norm);
-  free(H_norm);
-  free(dims);
-  free(label_dims);
-
-  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
-    mxDestroyArray(dummy_array[0]);
-    mxDestroyArray(dummy_array[1]);
-    mxDestroyArray(dummy_array[2]);
-  }
 
   //must destroy surface_phasors.mx_surface_amplitudes
 }
