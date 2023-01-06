@@ -209,7 +209,7 @@ using namespace std;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_matrices,
+void execute_simulation_2(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_matrices,
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
   // SETUP SIMULATION AND REPORT CONFIG OPTIONS

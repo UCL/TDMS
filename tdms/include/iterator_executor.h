@@ -2,7 +2,9 @@
  * @file iterator_executor.h
  * @brief Class that runs the TDMS simulation and returns the desired outputs
  */
-#pragma once;
+#pragma once
+
+#include <spdlog/spdlog.h>
 
 #include "iterator_loop_variables.h"
 #include "iterator_timers.h"
