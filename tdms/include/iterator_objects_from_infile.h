@@ -1,3 +1,7 @@
+/**
+ * @file iterator_objects_from_infile.h
+ * @brief Classes that unpack variables from the input files the TDMS executable recieves and initalise fields.h and array.h datatypes to store this data.
+ */
 #pragma once
 
 #include <spdlog/spdlog.h>

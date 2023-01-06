@@ -12,8 +12,7 @@
 #include "fieldsample.h"
 #include "globals.h"
 #include "interface.h"
-#include "iterator_loop_variables.h"
-#include "iterator_main_loop.h"
+#include "iterator_executor.h"
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
@@ -253,12 +252,9 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }
 
   // declare the variables to be used in the main loop, and read in the information from the input files and command-line
-  Iterator_LoopVariables main_loop_variables(in_matrices, solver_method, preferred_interpolation_methods);
+  Iterator_Executor main_loop(in_matrices, solver_method, preferred_interpolation_methods);
 
   double maxfield = 0.;
-
-  // prepare the main loop timers and variable trackers
-  IteratorMainLoop iteration_controller;
 
   mxArray *mx_surface_facets;//< surface_facets RECYCLED after the main loop for the outputs, but isn't actually needed at this scope for the setup and main loop
 
@@ -270,40 +266,14 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
   // link loop variables to the output pointers in plhs
-  main_loop_variables.link_fields_and_labels(plhs);
-  main_loop_variables.link_id(plhs);
-  main_loop_variables.link_fdtd_phasor_arrays(plhs);
-  main_loop_variables.link_fieldsample(plhs);
-  main_loop_variables.link_vertex_phasors(plhs);
+  main_loop.link_fields_and_labels(plhs);
+  main_loop.link_id(plhs);
+  main_loop.link_fdtd_phasor_arrays(plhs);
+  main_loop.link_fieldsample(plhs);
+  main_loop.link_vertex_phasors(plhs);
 
-  /*set up the parameters for the phasor convergence procedure*/
-  /*First we set dt so that an integer number of time periods fits within a sinusoidal period
-   */
-  double Nsteps_tmp = 0.0;
-  double dt_old;
-  if (params.source_mode == SourceMode::steadystate) {
-    dt_old = params.dt;
-    Nsteps_tmp = ceil(2. * DCPI / params.omega_an / params.dt * 3);
-    params.dt = 2. * DCPI / params.omega_an * 3 / Nsteps_tmp;
-  }
-
-  //fprintf(stderr,"Pre 16\n");
-  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
-    fprintf(stderr, "Changing dt from %.10e to %.10e\n", dt_old, params.dt);
-  iteration_controller.Nsteps = (int) lround(Nsteps_tmp);
-  //fprintf(stderr,"Pre 17\n");
-  //iteration_controller.Nsteps = (int)(floor(3*2.*DCPI/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
-  //fprintf(stderr,"Pre 18\n");
-  /*params.Nt should be an integer number of iteration_controller.Nsteps in the case of steady-state operation*/
-  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
-    if (params.Nt / iteration_controller.Nsteps * iteration_controller.Nsteps != params.Nt) {
-      fprintf(stderr, "Changing the value of Nt from %d to", params.Nt);
-      params.Nt = params.Nt / iteration_controller.Nsteps * iteration_controller.Nsteps;
-      fprintf(stderr, " %d for correct phasor extraction\n", params.Nt);
-    }
-  //fprintf(stderr,"Pre 19\n");
-
-  if ((params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate)) printf("iteration_controller.Nsteps: %d \n", iteration_controller.Nsteps);
+  // Perpare the parameters used in the phasor convergence procedure
+  main_loop.prepare_phasor_convergence_proceedure();
 
   /*An optimization step in the 2D (J_tot==0) case, try to work out if we have either
     of TE or TM, ie, not both*/

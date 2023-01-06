@@ -1,3 +1,7 @@
+/**
+ * @file iterator_loop_variables.h
+ * @brief Defines classes that handle the pre-main loop variable declarations and their setup.
+ */
 #pragma once
 
 #include <complex>
