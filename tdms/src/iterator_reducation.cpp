@@ -1,37 +1,12 @@
 #include "iterator.h"
 
-#include <complex>
-#include <algorithm>
-
 #include <omp.h>
 #include <spdlog/spdlog.h>
 
-#include "mesh_base.h"
-#include "numerical_derivative.h"
-#include "array_init.h"
-#include "fieldsample.h"
-#include "globals.h"
-#include "interface.h"
-#include "iterator_executor.h"
-#include "matlabio.h"
-#include "shapes.h"
-#include "source.h"
-#include "surface_phasors.h"
-#include "vertex_phasors.h"
-#include "utils.h"
+#include "iterator_class.h"
+#include "matrix.h"
 
 using namespace std;
-using namespace tdms_math_constants;
-using namespace tdms_phys_constants;
-
-//whether of not to time execution
-#define TIME_EXEC false
-//time main loop
-#define TIME_MAIN_LOOP true
-//threshold used to terminate the steady state iterations
-#define TOL 1e-6
-//parameter to control the PreferredInterpolationMethodswith of the ramp when introducing the waveform in steady state mode
-#define ramp_width 4.
 
 /*This function will take in the following arguments and perform the
  entire simulation
@@ -237,33 +212,18 @@ using namespace tdms_phys_constants;
 void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_matrices,
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
-
-  // determine the solver method we are using
-  if (solver_method == SolverMethod::FiniteDifference) {
-    spdlog::info("Using finite-difference method (FDTD)");
-  } else {
-    spdlog::info("Using pseudospectral method (PSTD)");
-  }
-  // determine the interpolation methods that we are meant to be using
-  if (preferred_interpolation_methods == PreferredInterpolationMethods::BandLimited) {
-    spdlog::info("Using band-limited interpolation where possible");
-  } else {
-    spdlog::info("Restricting to cubic interpolation");
-  }
-
-  // declare the variables to be used in the main loop, and read in the information from the input files and command-line
-  Iterator_Executor main_loop(in_matrices, solver_method, preferred_interpolation_methods);
-
-  double maxfield = 0.;
-
-  mxArray *mx_surface_facets;//< surface_facets RECYCLED after the main loop for the outputs, but isn't actually needed at this scope for the setup and main loop
+  // SETUP SIMULATION AND REPORT CONFIG OPTIONS
+  spdlog::info("== Setting up simulation ==\n");
 
   // report number of threads that will be used
-  spdlog::info("Using {} OMP threads", omp_get_max_threads());
+  spdlog::info("Using {0:d} OMP threads", omp_get_max_threads());
 
-  // validate that we recieve the correct number of inputs and outputs to this function
+  // validate that we recieved the correct number of inputs and outputs to this function
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
+
+  // read in the information from the input files and command-line, and setup the variables to be used in the main loop
+  Iterator main_loop(in_matrices, solver_method, preferred_interpolation_methods);
 
   // link loop variables to the output pointers in plhs
   main_loop.link_fields_and_labels(plhs);
@@ -278,164 +238,74 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   // Perform the j-loop optimisation, if possible
   main_loop.optimise_loops_if_possible();
 
-  /*Start of FDTD iteration*/
-  spdlog::debug("Starting main loop");
+  // [MAIN LOOP] RUN TDMS SIMULATION
+
+  spdlog::debug("== Starting main loop ==\n");
   main_loop.run_main_loop();
 
- //save state of fdtdgrid
+  // POST-LOOP PROCESSING
 
-  //fprintf(stderr,"Pos 12\n");
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    E.normalise_volume();
-    H.normalise_volume();
-  }
+  // normalise the phasors in the volume (if we are extracting them)
+  main_loop.normalise_field_volumes();
+  // normalise the phasors on the surface wrt the {E,H}-phasor-norms
+  main_loop.normalise_surface_phasors();
+  // normalise the phasors at the user-requested vertices
+  main_loop.normalise_vertex_phasors();
+  // normalise the Id output array data
+  main_loop.normalise_Id_arrays();
 
-  //fprintf(stderr,"Pos 13\n");
-  if (params.run_mode == RunMode::complete && params.exphasorssurface) {
-    spdlog::info("Surface phasors");
-    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
-    }
-  }
-  if (params.run_mode == RunMode::complete && vertex_phasors.there_are_vertices_to_extract_at()) {
-    spdlog::info("Vertex phasors");
-    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
-    }
-  }
+  // OUTPUT ASSIGNMENT
 
-  //fprintf(stderr,"Pos 14\n");
-  if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
-    for (int im = 0; im < D_tilde.num_det_modes(); im++)
-      for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-        Idx[ifx][im] = Idx[ifx][im] / E_norm[ifx];
-        Idy[ifx][im] = Idy[ifx][im] / E_norm[ifx];
-
-        Idx_re[ifx][im] = real(Idx[ifx][im]);
-        Idx_im[ifx][im] = imag(Idx[ifx][im]);
-
-        Idy_re[ifx][im] = real(Idy[ifx][im]);
-        Idy_im[ifx][im] = imag(Idy[ifx][im]);
-      }
-  }
-
-  //now find the maximum absolute value of residual field in the grid
-  // after resetting the maxfield value calculated in the main loop
-  maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
-  //fprintf(stderr,"Pos 15\n");
-  //noe set the output
-  ndims = 2;
-  dims[0] = 1;
-  dims[1] = 1;
+  // find the maximum absolute value of residual field in the grid
+  double maxfield = main_loop.compute_max_split_field_value();
+  // place this in the output
+  int ndims = 2;
+  int dims[2] = {1, 1};
   plhs[25] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
   *mxGetPr((mxArray *) plhs[25]) = maxfield;
 
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
-  }
+  // write the interpolated fields and the corresponding gridlabels
+  if (main_loop.params.run_mode == RunMode::complete && main_loop.params.exphasorsvolume) {
+    // do some writing - STILL NEED TO CLEANUP
+    main_loop.initialise_output_labels_from_input_labels();
 
-  auto interp_output_grid_labels = GridLabels();
+    // now interpolate over the extracted phasors
+    main_loop.interpolate_field_values(plhs);
 
-  //fprintf(stderr,"Pos 15_m1\n");
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    //now interpolate over the extracted phasors
-    if (params.dimension == THREE) {
-      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
-                               E.K_tot - 2, Dimension::THREE);
-      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
-                               H.K_tot - 2, Dimension::THREE);
-    } else {
-      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
-      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
-                               0, params.dimension);
-      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
-                               0, params.dimension);
-    }
+    //now set up the output grid labels for the interpolated fields
+    int Ex_label_dims[2] = {1, main_loop.E.I_tot - 3};
+    plhs[19] = mxCreateNumericArray(2, (const mwSize *) Ex_label_dims, mxDOUBLE_CLASS, mxREAL);
 
-    //fprintf(stderr,"Pos 15a\n");
-    //now set up the grid labels for the interpolated fields
-    label_dims[0] = 1;
-    label_dims[1] = E.I_tot - 3;
-    plhs[19] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//x
-    //fprintf(stderr,"Pos 15b\n");
-    label_dims[0] = 1;
-    label_dims[1] = E.J_tot - 3;
-    if (label_dims[1] < 1) label_dims[1] = 1;
-    //fprintf(stderr,"creating plhs[20]: %d,%d\n",label_dims[0],label_dims[1]);
-    plhs[20] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//y
-    //fprintf(stderr,"Pos 15c\n");
-    label_dims[0] = 1;
-    if (params.dimension == THREE) label_dims[1] = E.K_tot - 3;
-    else
-      label_dims[1] = 1;
-    //fprintf(stderr,"Pos 15d\n");
-    plhs[21] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//z
-    //fprintf(stderr,"Pos 15e\n");
+    int Ey_label_dims[2] = {1, max(1, main_loop.E.J_tot - 3)};
+    plhs[20] = mxCreateNumericArray(2, (const mwSize *) Ey_label_dims, mxDOUBLE_CLASS, mxREAL);
 
-    interp_output_grid_labels.x = mxGetPr((mxArray *) plhs[19]);
-    interp_output_grid_labels.y = mxGetPr((mxArray *) plhs[20]);
-    interp_output_grid_labels.z = mxGetPr((mxArray *) plhs[21]);
+    int Ez_label_dims[2] = {1, 1};
+    if (main_loop.params.dimension == Dimension::THREE) { Ez_label_dims[1] = main_loop.E.K_tot - 3; }
+    plhs[21] = mxCreateNumericArray(2, (const mwSize *) Ez_label_dims, mxDOUBLE_CLASS, mxREAL);
 
-    if (params.dimension == THREE) {
-      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                                2, E.K_tot - 2);
-    } else {
-      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                                0, 0);
-    }
-    //fprintf(stderr,"Pos 15f\n");
+    // write the interpolated coordinates to the output
+    main_loop.write_interpolated_gridlabels(plhs);
   } else {
-    mwSize *emptydims;
-    emptydims = (mwSize *) malloc(2 * sizeof(mwSize));
-    int emptyloop;
-    emptydims[0] = 0;
-    emptydims[1] = 0;
-    for (emptyloop = 13; emptyloop <= 18; emptyloop++)
+    // we do not want to write the interpolated fields, set output to be empty arrays
+    int emptydims[2] = {0, 0};
+    for (int emptyloop = 13; emptyloop <= 21; emptyloop++) {
       plhs[emptyloop] =
               mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxCOMPLEX);
-    for (emptyloop = 19; emptyloop <= 21; emptyloop++)
-      plhs[emptyloop] =
-              mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxCOMPLEX);
-    free(emptydims);
+    }
   }
 
-
-  //fprintf(stderr,"Pos 16\n");
-  /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
-    these vertices and a list of facets*/
-  if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    //first regenerate the mesh since we threw away the facet list before iterating
-    mxArray *dummy_vertex_list;
-    if (J_tot == 0)
-      conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5], &dummy_vertex_list,
-                            &mx_surface_facets);
-    else
-      conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
-                                   params.spacing_stride, &dummy_vertex_list,
-                                   &mx_surface_facets);
-    mxDestroyArray(dummy_vertex_list);
-
-    //now create and populate the vertex list
-    surface_phasors.create_vertex_list(input_grid_labels);
-
-    //assign outputs
-    plhs[22] = surface_phasors.get_vertex_list();
-    plhs[23] = surface_phasors.get_mx_surface_amplitudes();
-    plhs[24] = mx_surface_facets;
-
-  } else {//still set outputs
-    ndims = 2;
-    dims[0] = 0;
-    dims[1] = 0;
-    plhs[22] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    plhs[23] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    plhs[24] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+  // Now export 3 matrices: a vertex list, a matrix of complex amplitudes at these vertices, and a list of facets
+  if (main_loop.params.exphasorssurface && main_loop.params.run_mode == RunMode::complete) {
+    main_loop.regenerate_mesh_for_facets(plhs);
+  } else {
+    // set outputs as empty arrays, user did not request this information
+    int emptydims[2] = {0, 0};
+    plhs[22] = mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxREAL);
+    plhs[23] = mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxREAL);
+    plhs[24] = mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxREAL);
   }
 
+  // END OUTPUT PROCESSING AND WRITING
 
-  /*End of FDTD iteration*/
-
-  // tear down is now handled entirely by ~Iterator_LoopVariables
+  // ~Iterator now handles tear down and cleanup. plhs is returned to main(). plhs pointers are preserved, intermediate pointers to the data location of the saved arrays should be cleaned up by ~Iterator. Hanging MATLAB memory should be free'd by the appropriate classes going out of scope.
 }

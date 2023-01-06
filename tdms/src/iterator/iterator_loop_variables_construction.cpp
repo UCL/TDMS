@@ -5,6 +5,7 @@
 #include "iterator_loop_variables.h"
 
 #include <omp.h>
+#include <spdlog/spdlog.h>
 
 #include "numerical_derivative.h"
 #include "mesh_base.h"
@@ -100,6 +101,13 @@ void Iterator_LoopVariables::setup_PSTD_exclusive_variables() {
 }
 
 void Iterator_LoopVariables::set_interpolation_method(PreferredInterpolationMethods pim) {
+  // display information about which interpolation methods we are using
+  if (pim == PreferredInterpolationMethods::BandLimited) {
+    spdlog::info("Using band-limited interpolation where possible");
+  } else {
+    spdlog::info("Restricting to cubic interpolation");
+  }
+  // set the interpolation methods
   E_s.set_preferred_interpolation_methods(pim);
   H_s.set_preferred_interpolation_methods(pim);
   E.set_preferred_interpolation_methods(pim);

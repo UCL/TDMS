@@ -1,5 +1,7 @@
 #include "iterator_loop_variables.h"
 
+#include <spdlog/spdlog.h>
+
 // For mxGetPr, mxGetPi
 #include "matrix.h"
 // For cast_matlab_2D_array

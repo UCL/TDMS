@@ -1,5 +1,6 @@
 #include "iterator_objects_from_infile.h"
 
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 
 // For ptr_to_vector_in, ptr_to_vector_or_empty_in, int_cast_from_double_in
@@ -28,8 +29,10 @@ Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
   // set skip_tdf based on the solver method
   solver_method = _solver_method;
   if (solver_method == SolverMethod::FiniteDifference) {
+    spdlog::info("Using finite-difference method (FDTD)");
     skip_tdf = 6;
   } else if (solver_method == SolverMethod::PseudoSpectral) {
+    spdlog::info("Using pseudospectral method (PSTD)");
     skip_tdf = 1;
   } else {
     throw std::runtime_error("Solver method not recognised!");
