@@ -85,6 +85,7 @@ private:
     }
   }
 
+    // TODO: Docstring!
   void extract_phasors_in_plane();
 
 public:
