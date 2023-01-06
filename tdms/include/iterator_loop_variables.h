@@ -45,26 +45,12 @@ public:
   int J_tot_p1_bound, J_tot_bound;
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
-  double phaseTermE;
-  std::complex<double> cphaseTermE;
-  double lambda_an_t;
 
-  double Enp1, Jnp1;//< the C and D vars for free space and pml
-  double Ca, Cb, Cc;//< used by the interpolation scheme
-
-  double rho;
-  double alpha_l, beta_l, gamma_l;
-  double kappa_l, sigma_l;
-
-  int i, j, k;
-  int n, k_loc;
   int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
-
-  std::complex<double> Idxt, Idyt, kprop;
 };
 
 // Handles all the variables declared before the main iterator loop, and their initalisation if appropriate
-class Iterator_LoopVariables : public Iterator_ObjectsFromInfile, Iterator_PreLoopDeclarations {
+class Iterator_LoopVariables : public Iterator_ObjectsFromInfile, public Iterator_PreLoopDeclarations {
 private:
   /**
    * @brief  Set the interpolation method for each of the fields we are interpolating

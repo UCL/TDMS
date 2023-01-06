@@ -47,5 +47,44 @@ void Iterator_Executor::prepare_phasor_convergence_proceedure() {
     // display Nsteps
     spdlog::info("Using Nsteps = {0:d}", Nsteps);
   }
+}
 
+void Iterator_Executor::optimise_loops_if_possible(double non_zero_tol) {
+  bool ksource_nz[4];//< "k source non-zero"
+  for (int icomp = 0; icomp < 4; icomp++) { ksource_nz[icomp] = false; }
+
+  if (J_tot == 0) {
+    for (int icomp = 0; icomp < 4; icomp++)
+      for (int ki = 0; ki < (I_tot + 1); ki++) {
+        ksource_nz[icomp] = ksource_nz[icomp] ||
+                            (fabs(Ksource.imag[0][ki - (I0.index)][icomp]) > non_zero_tol) ||
+                            (fabs(Ksource.real[0][ki - (I0.index)][icomp]) > non_zero_tol);
+      }
+  }
+  /* We now know the following information:
+    Ey and Hx receive an input from the source condition only if ksource_nz[2] or ksource_nz[1]
+    are non-zero.
+    Ex and Hy receive an input from the source condition only if ksource_nz[3] or ksource_nz[0]
+    are non-zero.
+
+    Thus we can set the variables J_tot_p1_bound, J_tot_bound accordingly for the 3D, 2D-TE, and 2D-TM simulations.
+  */
+
+  J_tot_bound = J_tot;
+  J_tot_p1_bound = J_tot + 1;
+  // If in a 2D simulation, adjust the values accordingly
+  if (J_tot == 0) {
+    // TE case
+    if (ksource_nz[2] || ksource_nz[1] || params.eyi_present) {
+      J_tot_bound = 1;
+    } else {
+      J_tot_bound = 0;
+    }
+    // TM case
+    if (ksource_nz[3] || ksource_nz[0] || params.exi_present) {
+      J_tot_p1_bound = 1;
+    } else {
+      J_tot_p1_bound = 0;
+    }
+  }
 }
