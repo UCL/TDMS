@@ -12,7 +12,6 @@
 #include "fieldsample.h"
 #include "globals.h"
 #include "interface.h"
-#include "iterator_intermediate_matlab_variables.h"
 #include "iterator_loop_variables.h"
 #include "iterator_main_loop.h"
 #include "matlabio.h"
@@ -240,59 +239,42 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
 
+  // determine the solver method we are using
   if (solver_method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
   } else {
     spdlog::info("Using pseudospectral method (PSTD)");
   }
+  // determine the interpolation methods that we are meant to be using
   if (preferred_interpolation_methods == PreferredInterpolationMethods::BandLimited) {
     spdlog::info("Using band-limited interpolation where possible");
   } else {
     spdlog::info("Restricting to cubic interpolation");
   }
 
+  // declare the variables to be used in the main loop, and read in the information from the input files and command-line
   Iterator_LoopVariables main_loop_variables(in_matrices, solver_method, preferred_interpolation_methods);
 
   double maxfield = 0.;
 
+  // prepare the main loop timers and variable trackers
   IteratorMainLoop iteration_controller;
 
-  // mwSize *dims;
-  // dims = (mwSize *) malloc(3 * sizeof(mwSize));
-  // mwSize *label_dims;
-  // label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
   mxArray *mx_surface_facets;//< surface_facets RECYCLED after the main loop for the outputs, but isn't actually needed at this scope for the setup and main loop
 
-  Iterator_IntermediateMATLABVariables iMVars;
-
+  // report number of threads that will be used
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
 
+  // validate that we recieve the correct number of inputs and outputs to this function
   if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
-
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
+  // link loop variables to the output pointers in plhs
   main_loop_variables.link_fields_and_labels(plhs);
-  //plhs[13] -> plhs[15] are the interpolated electric field values
-  //plhs[16] -> plhs[18] are the interpolated magnetic field values
-
   main_loop_variables.link_id(plhs);
-
-  /*Now set up the phasor arrays for storing the fdtd version of the input fields,
-    these will be used in a boot strapping procedure. Calculated over a complete
-    xy-plane. */
   main_loop_variables.link_fdtd_phasor_arrays(plhs);
-
-  /*start dispersive*/
-  // we call setup_dispersive_properties in the constructor
-  /*end dispersive*/
-
-  plhs[27] = fieldsample.mx;
-
-  vertex_phasors.setup_camplitude_arrays(f_ex_vec.size());
-  plhs[28] = vertex_phasors.get_mx_camplitudes();
-
-  /*end of setup the output array for the sampled field*/
-
+  main_loop_variables.link_fieldsample(plhs);
+  main_loop_variables.link_vertex_phasors(plhs);
 
   /*set up the parameters for the phasor convergence procedure*/
   /*First we set dt so that an integer number of time periods fits within a sinusoidal period

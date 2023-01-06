@@ -233,3 +233,12 @@ void Iterator_LoopVariables::link_fdtd_phasor_arrays(mxArray *output_pointers[])
   zero_cast_array(iwave_lHy_Rbs, dims_ex_hy[0], dims_ex_hy[1]);
   zero_cast_array(iwave_lHy_Ibs, dims_ex_hy[0], dims_ex_hy[1]);
 }
+
+void Iterator_LoopVariables::link_fieldsample(mxArray *output_pointers[]) {
+  output_pointers[27] = fieldsample.mx;
+}
+
+void Iterator_LoopVariables::link_vertex_phasors(mxArray *output_pointers[]) {
+  vertex_phasors.setup_camplitude_arrays(f_ex_vec.size());
+  output_pointers[28] = vertex_phasors.get_mx_camplitudes();
+}

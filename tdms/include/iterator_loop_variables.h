@@ -145,16 +145,14 @@ public:
    * @param output_pointers The array of output pointers to assign to
    */
   void link_fields_and_labels(mxArray *output_pointers[]);
-
   /**
    * @brief Sets the pointers for the output Id object and allocates the appropriate class members
    *
    * @param output_pointers The array of output pointers to assign to
    */
   void link_id(mxArray *output_pointers[]);
-
   /**
-   * @brief Setup the phasor arrays for storing the fdtd version of the input fields.
+   * @brief Setup the phasor arrays for storing the fdtd version of the input fields, and link to the outputs.
    *
    * These will be used in a boot strapping procedure. Calculated over a complete
     xy-plane.
@@ -162,6 +160,18 @@ public:
    * @param output_pointers The array of output pointers to assign to
    */
   void link_fdtd_phasor_arrays(mxArray *output_pointers[]);
+  /**
+   * @brief Link the fieldsample object to the simulation output
+   *
+   * @param output_pointers The array of output pointers to assign to
+   */
+  void link_fieldsample(mxArray *output_pointers[]);
+  /**
+   * @brief Link the vertex_phasors object to the simulation output
+   *
+   * @param output_pointers The array of output pointers to assign to
+   */
+  void link_vertex_phasors(mxArray *output_pointers[]);
 
   ~Iterator_LoopVariables();
 };
