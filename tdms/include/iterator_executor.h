@@ -123,9 +123,7 @@ public:
   Iterator_Executor(InputMatrices matrices_from_input_file, SolverMethod _solver_method,
                     PreferredInterpolationMethods interpolation_method)
       : Iterator_LoopVariables(matrices_from_input_file, _solver_method, interpolation_method),
-        Iterator_Timers() {
-    spdlog::info("Building Iterator_Executor object...");
-  }
+        Iterator_Timers() {}
 
   /**
    * @brief Print the current iteration number and max-field information, if it has been long enough since we last printed this information.

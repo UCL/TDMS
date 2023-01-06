@@ -50,8 +50,10 @@ int main(int nargs, char *argv[]){
   }
 
   // now run the time propagation code
+  spdlog::info("\n==== Executing simulation ==== \n");
   execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
                      matrix_inputs, solver_method, preferred_interpolation_methods);
+  spdlog::info("\n==== Recieved output data from the simulation ====\n");
 
   if (!args.have_flag("-m")) {//prints vertices and facets
     saveoutput(plhs, matricestosave_all, outputmatrices_all, NOUTMATRICES_WRITE_ALL,

@@ -4,6 +4,8 @@
  */
 #include "iterator_loop_variables.h"
 
+#include <spdlog/spdlog.h>
+
 void Iterator_LoopVariables::free_Id_memory() {
   free_cast_matlab_2D_array(Idx_re);
   free_cast_matlab_2D_array(Idx_im);
@@ -43,6 +45,7 @@ Iterator_LoopVariables::~Iterator_LoopVariables() {
 
   This is now slightly out of order with how C++ will call superclass destructors after this one, but by construction none of the superclasses should ever be touching the same memory, whilst simultaneously taking care of their own.
   */
+  spdlog::info("Destroying Iterator_LoopVariables");
 
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     mxFree(mx_surface_vertices);

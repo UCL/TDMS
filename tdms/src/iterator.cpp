@@ -12,7 +12,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
   // SETUP SIMULATION AND REPORT CONFIG OPTIONS
-  spdlog::info("== Setting up simulation ==\n");
+  spdlog::info("\n== Setting up simulation ==\n");
 
   // report number of threads that will be used
   spdlog::info("Using {0:d} OMP threads", omp_get_max_threads());
@@ -22,9 +22,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
   // read in the information from the input files and command-line, and setup the variables to be used in the main loop
+  spdlog::info("Setting up loop variables");
   Iterator main_loop(in_matrices, solver_method, preferred_interpolation_methods);
 
   // link loop variables to the output pointers in plhs
+  spdlog::info("Linking to output pointers [pre-main-loop]");
   main_loop.link_fields_and_labels(plhs);
   main_loop.link_id(plhs);
   main_loop.link_fdtd_phasor_arrays(plhs);
@@ -32,17 +34,20 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   main_loop.link_vertex_phasors(plhs);
 
   // Perpare the parameters used in the phasor convergence procedure
+  spdlog::info("Preparing phasor convergence proceedure");
   main_loop.prepare_phasor_convergence_proceedure();
 
   // Perform the j-loop optimisation, if possible
+  spdlog::info("Optimising j-loop");
   main_loop.optimise_loops_if_possible();
 
   // [MAIN LOOP] RUN TDMS SIMULATION
+  spdlog::info("\n== Starting main loop ==\n");
 
-  spdlog::debug("== Starting main loop ==\n");
   main_loop.run_main_loop();
 
   // POST-LOOP PROCESSING
+  spdlog::info("\n== Processing outputs ==\n");
 
   // normalise the phasors in the volume (if we are extracting them)
   main_loop.normalise_field_volumes();
@@ -54,6 +59,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   main_loop.normalise_Id_arrays();
 
   // OUTPUT ASSIGNMENT
+  spdlog::info("\n== Assigning outputs ==\n");
 
   // find the maximum absolute value of residual field in the grid
   double maxfield = main_loop.compute_max_split_field_value();
@@ -105,6 +111,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   }
 
   // END OUTPUT PROCESSING AND WRITING
+  spdlog::info("End simulation, beginning tear-down");
 
   // ~Iterator now handles tear down and cleanup. plhs is returned to main(). plhs pointers are preserved, intermediate pointers to the data location of the saved arrays should be cleaned up by ~Iterator. Hanging MATLAB memory should be free'd by the appropriate classes going out of scope.
 }

@@ -44,8 +44,8 @@ Iterator_LoopVariables::Iterator_LoopVariables(InputMatrices matrices_from_input
   }
 
   // initialise the {E,H}_norm variables to an array of zeros
-  auto E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
-  auto H_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
+  E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
+  H_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
   for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
     E_norm[ifx] = 0.;
     H_norm[ifx] = 0.;
