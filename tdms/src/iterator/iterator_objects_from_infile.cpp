@@ -115,6 +115,12 @@ Iterator_IndependentObjectsFromInfile::Iterator_IndependentObjectsFromInfile(
 
 Iterator_IndependentObjectsFromInfile::~Iterator_IndependentObjectsFromInfile() {
   spdlog::info("Destroying Iterator_IndependentObjectsFromInfile");
+
+  if (params.dimension == THREE) {
+    free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
+  } else {
+    free_cast_matlab_3D_array(materials, 0);
+  }
 }
 
 Iterator_ObjectsFromInfile::Iterator_ObjectsFromInfile(InputMatrices matrices_from_input_file,

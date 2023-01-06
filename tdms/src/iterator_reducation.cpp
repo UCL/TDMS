@@ -271,78 +271,19 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
-  // I_LoopVariable beings handling from here
-  main_loop_variables.link_fields_and_labels_to_output_pointers(plhs);
+  main_loop_variables.link_fields_and_labels(plhs);
   //plhs[13] -> plhs[15] are the interpolated electric field values
   //plhs[16] -> plhs[18] are the interpolated magnetic field values
 
-  main_loop_variables.link_id_to_output_pointers(plhs, iMVars);
+  main_loop_variables.link_id(plhs);
 
   /*Now set up the phasor arrays for storing the fdtd version of the input fields,
     these will be used in a boot strapping procedure. Calculated over a complete
     xy-plane. */
-
-  // TO HERE WITH REDUCTION
-
-  ndims = 2;
-  dims[0] = I_tot;
-  dims[1] = J_tot + 1;
-  plhs[6] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//x electric field source phasor - boot strapping
-  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
-  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEx_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEx_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot + 1;
-  dims[1] = J_tot;
-  plhs[7] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//y electric field source phasor - boot strapping
-  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
-  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEy_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEy_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot + 1;
-  dims[1] = J_tot;
-  plhs[8] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//x magnetic field source phasor - boot strapping
-
-  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
-  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHx_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHx_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot;
-  dims[1] = J_tot + 1;
-  plhs[9] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//y magnetic field source phasor - boot strapping
-  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
-  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHy_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHy_Ibs, dims[0], dims[1]);
+  main_loop_variables.link_fdtd_phasor_arrays(plhs);
 
   /*start dispersive*/
-
-  //work out if we have any disperive materials
-  bool is_disp = is_dispersive(materials, gamma, params.dt, I_tot, J_tot, K_tot);
-  //work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
-  bool is_conductive = !(rho_cond.all_elements_less_than(1e-15, I_tot + 1, J_tot + 1, K_tot + 1));
-  // work out if we have a dispersive background
-  if (params.is_disp_ml) params.is_disp_ml = matched_layer.is_dispersive(K_tot);
-  //  fprintf(stderr,"is_disp:%d, is_conductive%d, params.is_disp_ml: %d\n",is_disp,is_conductive,params.is_disp_ml);
-  //if we have dispersive materials we need to create additional field variables
-  auto E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
-  auto J_nm1 = CurrentDensitySplitField(I_tot, J_tot, K_tot);
-
-  if (is_disp || params.is_disp_ml) {
-    E_nm1.allocate_and_zero();
-    J_nm1.allocate_and_zero();
-    J_s.allocate_and_zero();
-  }
-  //fprintf(stderr,"Pre 14\n");
-  auto J_c = CurrentDensitySplitField(I_tot, J_tot, K_tot);
-  if (is_conductive) { J_c.allocate_and_zero(); }
+  // we call setup_dispersive_properties in the constructor
   /*end dispersive*/
 
   plhs[27] = fieldsample.mx;
@@ -3999,55 +3940,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   /*End of FDTD iteration*/
 
-  //fprintf(stderr,"Pos 17\n");
-  /* Free the additional data structures used to cast the matlab arrays*/
-  if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    mxDestroyArray(mx_surface_vertices);
-    // ~SurfacePhasors cleans up remaining surface phasor arrays, except the data which we return in plhs[23]
-  }
-  // ~VertexPhasors cleans up the vertex phasors arrays, except the data which we return in plhs[28]
-
-  // some smart AF cleanup is going to be needed here...
-  if (params.exdetintegral) {
-    free_cast_matlab_2D_array(Idx_re);
-    free_cast_matlab_2D_array(Idx_im);
-    free_cast_matlab_2D_array(Idy_re);
-    free_cast_matlab_2D_array(Idy_im);
-    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      free(Idx[ifx]);
-      free(Idy[ifx]);
-    }
-    free(Idx);
-    free(Idy);
-    /*
-      for(int j=0;j<(J_tot-params.pml.Dyl-params.pml.Dyu);j++){
-      free(Ex_t.cm[j]);free(Ey_t.cm[j]);
-      }
-      //fprintf(stderr,"Position 9\n");
-      free(Ex_t_cm);free(Ey_t_cm);
-      //fprintf(stderr,"Position 10\n");
-    */
-  }
-
-  //fprintf(stderr,"Pos 20\n");
-
-  free_cast_matlab_2D_array(iwave_lEx_Rbs);
-  free_cast_matlab_2D_array(iwave_lEx_Ibs);
-  free_cast_matlab_2D_array(iwave_lEy_Rbs);
-  free_cast_matlab_2D_array(iwave_lEy_Ibs);
-
-  free_cast_matlab_2D_array(iwave_lHx_Rbs);
-  free_cast_matlab_2D_array(iwave_lHx_Ibs);
-  free_cast_matlab_2D_array(iwave_lHy_Rbs);
-  free_cast_matlab_2D_array(iwave_lHy_Ibs);
-
-  if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
-  else
-    free_cast_matlab_3D_array(materials, 0);
-    /*Free the additional memory which was allocated to store integers which were passed as doubles*/
-
-
-  //must destroy surface_phasors.mx_surface_amplitudes
+  // tear down is now handled entirely by ~Iterator_LoopVariables
 }
 
 /*Sets the contents of the 3 dimensional double array to zero

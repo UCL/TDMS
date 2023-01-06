@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Iterator_LoopVariables::link_fields_and_labels_to_output_pointers(mxArray *output_pointers[]) {
+void Iterator_LoopVariables::link_fields_and_labels(mxArray *output_pointers[]) {
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     // dimensions of the output arrays for the field and gridlabels
     int ndims = 3;
@@ -136,7 +136,7 @@ void Iterator_LoopVariables::link_fields_and_labels_to_output_pointers(mxArray *
   }
 }
 
-void Iterator_LoopVariables::link_id_to_output_pointers(mxArray *output_pointers[], Iterator_IntermediateMATLABVariables &iMVars) {
+void Iterator_LoopVariables::link_id(mxArray *output_pointers[]) {
   if (params.exdetintegral && params.run_mode == RunMode::complete) {
     int ndims = 2;
     int dims[2] = {1, 1};
@@ -148,13 +148,13 @@ void Iterator_LoopVariables::link_id_to_output_pointers(mxArray *output_pointers
     dims[0] = D_tilde.num_det_modes();
     dims[1] = f_ex_vec.size();
 
-    iMVars.mx_Idx = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    iMVars.Idx_re = cast_matlab_2D_array(mxGetPr(iMVars.mx_Idx), dims[0], dims[1]);
-    iMVars.Idx_im = cast_matlab_2D_array(mxGetPi(iMVars.mx_Idx), dims[0], dims[1]);
+    mx_Idx = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    Idx_re = cast_matlab_2D_array(mxGetPr(mx_Idx), dims[0], dims[1]);
+    Idx_im = cast_matlab_2D_array(mxGetPi(mx_Idx), dims[0], dims[1]);
 
-    iMVars.mx_Idy = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    iMVars.Idy_re = cast_matlab_2D_array(mxGetPr(iMVars.mx_Idy), dims[0], dims[1]);
-    iMVars.Idy_im = cast_matlab_2D_array(mxGetPi(iMVars.mx_Idy), dims[0], dims[1]);
+    mx_Idy = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    Idy_re = cast_matlab_2D_array(mxGetPr(mx_Idy), dims[0], dims[1]);
+    Idy_im = cast_matlab_2D_array(mxGetPi(mx_Idy), dims[0], dims[1]);
 
     Idx = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
     Idy = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
@@ -170,19 +170,66 @@ void Iterator_LoopVariables::link_id_to_output_pointers(mxArray *output_pointers
 
     for (int im = 0; im < dims[0]; im++) {
       for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-        iMVars.Idx_re[ifx][im] = 0.;
-        iMVars.Idx_im[ifx][im] = 0.;
-        iMVars.Idy_re[ifx][im] = 0.;
-        iMVars.Idy_im[ifx][im] = 0.;
+        Idx_re[ifx][im] = 0.;
+        Idx_im[ifx][im] = 0.;
+        Idy_re[ifx][im] = 0.;
+        Idy_im[ifx][im] = 0.;
       }
     }
 
-    mxSetField(output_pointers[26], 0, "Idx", iMVars.mx_Idx);
-    mxSetField(output_pointers[26], 0, "Idy", iMVars.mx_Idy);
+    mxSetField(output_pointers[26], 0, "Idx", mx_Idx);
+    mxSetField(output_pointers[26], 0, "Idy", mx_Idy);
   } else {
     int ndims = 2;
     int dims[2] = {0, 0};
     output_pointers[26] =
             mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
   }
+}
+
+void Iterator_LoopVariables::link_fdtd_phasor_arrays(mxArray *output_pointers[]) {
+  const int ndims = 2;
+  int dims_ex_hy[2] = {I_tot, J_tot + 1};
+  int dims_ey_hx[2] = {I_tot + 1, J_tot};
+
+  // x electric field source phasor - boot strapping
+  output_pointers[6] =
+          mxCreateNumericArray(ndims, (const mwSize *) dims_ex_hy, mxDOUBLE_CLASS, mxCOMPLEX);
+  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) output_pointers[6]), dims_ex_hy[0],
+                                       dims_ex_hy[1]);
+  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) output_pointers[6]), dims_ex_hy[0],
+                                       dims_ex_hy[1]);
+  zero_cast_array(iwave_lEx_Rbs, dims_ex_hy[0], dims_ex_hy[1]);
+  zero_cast_array(iwave_lEx_Ibs, dims_ex_hy[0], dims_ex_hy[1]);
+
+  // y electric field source phasor - boot strapping
+  output_pointers[7] =
+          mxCreateNumericArray(ndims, (const mwSize *) dims_ey_hx, mxDOUBLE_CLASS, mxCOMPLEX);
+  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) output_pointers[7]), dims_ey_hx[0],
+                                       dims_ey_hx[1]);
+  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) output_pointers[7]), dims_ey_hx[0],
+                                       dims_ey_hx[1]);
+  zero_cast_array(iwave_lEy_Rbs, dims_ey_hx[0], dims_ey_hx[1]);
+  zero_cast_array(iwave_lEy_Ibs, dims_ey_hx[0], dims_ey_hx[1]);
+
+  // x magnetic field source phasor - boot strapping
+  output_pointers[8] =
+          mxCreateNumericArray(ndims, (const mwSize *) dims_ey_hx, mxDOUBLE_CLASS, mxCOMPLEX);
+
+  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) output_pointers[8]), dims_ey_hx[0],
+                                       dims_ey_hx[1]);
+  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) output_pointers[8]), dims_ey_hx[0],
+                                       dims_ey_hx[1]);
+  zero_cast_array(iwave_lHx_Rbs, dims_ey_hx[0], dims_ey_hx[1]);
+  zero_cast_array(iwave_lHx_Ibs, dims_ey_hx[0], dims_ey_hx[1]);
+
+  // y magnetic field source phasor - boot strapping
+  output_pointers[9] =
+          mxCreateNumericArray(ndims, (const mwSize *) dims_ex_hy, mxDOUBLE_CLASS, mxCOMPLEX);
+  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) output_pointers[9]), dims_ex_hy[0],
+                                       dims_ex_hy[1]);
+  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) output_pointers[9]), dims_ex_hy[0],
+                                       dims_ex_hy[1]);
+  zero_cast_array(iwave_lHy_Rbs, dims_ex_hy[0], dims_ex_hy[1]);
+  zero_cast_array(iwave_lHy_Ibs, dims_ex_hy[0], dims_ex_hy[1]);
 }

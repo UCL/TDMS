@@ -53,6 +53,9 @@ Iterator_LoopVariables::Iterator_LoopVariables(InputMatrices matrices_from_input
 
   // Now set up the dimensions for the (field) phasor arrays, E and H.
   setup_field_dimensions();
+
+  // Setup dispersive properties and the related arrays
+  setup_dispersive_properties();
 }
 
 void Iterator_LoopVariables::setup_PSTD_exclusive_variables() {
@@ -138,6 +141,45 @@ void Iterator_LoopVariables::setup_field_dimensions() {
   E.K_tot = H.K_tot = E.ku - E.kl + 1;
 }
 
+void Iterator_LoopVariables::setup_dispersive_properties() {
+  // determine whether or not we have a dispersive medium
+  is_disp = is_dispersive();
+  // work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
+  is_conductive = !(rho_cond.all_elements_less_than(1e-15, I_tot + 1, J_tot + 1, K_tot + 1));
+  // work out if we have a dispersive background
+  if (params.is_disp_ml) {
+    params.is_disp_ml = matched_layer.is_dispersive(K_tot);
+  }
+
+  // prepare additional field variables for dispersive media
+  E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
+  J_nm1 = CurrentDensitySplitField(I_tot, J_tot, K_tot);
+  J_c = CurrentDensitySplitField(I_tot, J_tot, K_tot);
+  // if we have a dispersive material we will need to write to the additional fields, so assign the memory to them and zero the entries
+  if (is_disp || params.is_disp_ml) {
+    E_nm1.allocate_and_zero();
+    J_nm1.allocate_and_zero();
+    J_s.allocate_and_zero();
+  }
+  // if we have a conductive material we will also need the conductivity/current-density of each cell
+  if (is_conductive) { J_c.allocate_and_zero(); }
+}
+
+bool Iterator_LoopVariables::is_dispersive(double non_zero_tol) {
+  int max_mat = 0;
+  // determine the number of entries in gamma, by examining the materials array
+  for (int k = 0; k < (K_tot + 1); k++)
+    for (int j = 0; j < (J_tot + 1); j++)
+      for (int i = 0; i < (I_tot + 1); i++) {
+        if (materials[k][j][i] > max_mat) max_mat = materials[k][j][i];
+      }
+  // now see if there are any non-zero attenuation constants
+  for (int i = 0; i < max_mat; i++) {
+    if (fabs(gamma[i] / params.dt) > non_zero_tol) { return true; }
+  }
+  return false;
+}
+
 void Iterator_LoopVariables::zero_field_arrays() {
   E.zero();
   H.zero();
@@ -145,9 +187,76 @@ void Iterator_LoopVariables::zero_field_arrays() {
   if (params.source_mode == SourceMode::steadystate) { E_copy.zero(); }
 }
 
+void Iterator_LoopVariables::zero_cast_array(double **cast_array, int n_dim1, int n_dim2) {
+  for(int d1 = 0; d1 < n_dim1; d1++) {
+    for(int d2 = 0; d2 < n_dim2; d2++) {
+      cast_array[d2][d1] = 0.;
+    }
+  }
+}
+
+void Iterator_LoopVariables::free_Id_memory() {
+  free_cast_matlab_2D_array(Idx_re);
+  free_cast_matlab_2D_array(Idx_im);
+  free_cast_matlab_2D_array(Idy_re);
+  free_cast_matlab_2D_array(Idy_im);
+  for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+    free(Idx[ifx]);
+    free(Idy[ifx]);
+  }
+  free(Idx);
+  free(Idy);
+}
+
+void Iterator_LoopVariables::free_iwave_memory() {
+  free_cast_matlab_2D_array(iwave_lEx_Rbs);
+  free_cast_matlab_2D_array(iwave_lEx_Ibs);
+  free_cast_matlab_2D_array(iwave_lEy_Rbs);
+  free_cast_matlab_2D_array(iwave_lEy_Ibs);
+  free_cast_matlab_2D_array(iwave_lHx_Rbs);
+  free_cast_matlab_2D_array(iwave_lHx_Ibs);
+  free_cast_matlab_2D_array(iwave_lHy_Rbs);
+  free_cast_matlab_2D_array(iwave_lHy_Ibs);
+}
+
 Iterator_LoopVariables::~Iterator_LoopVariables() {
-  // if we used the psuedo-spectral method, we need to delete the malloc'd fftw space for the derivative-shift operators
+  /* ORIGINAL TEAR-DOWN ORDER WAS:
+  - mxFree(mx_surface_vertices) (if params.exphasorssurface && complete run mode)
+  - ~SurfacePhasors (if params.exphasorssurface && complete run mode)
+  - ~VertexPhasors
+  - Id-related variable cleanup (free_Id_memory)
+  - {I,J,K}-source tear-down (happens in ~Iterator_ObjectsFromInfile now)
+  - iwave variables (always cleared)
+  - free_cast materials (~Iterator_IndependentObjectsFromInfile handles this)
+  - free PSTD memory allocation
+  - free {E,H}-norm, and dims and label_dims. The later two are no longer assigned by malloc so we don't need it here
+  - free E_copy_data_placeholders (if steadystate and complete run mode)
+
+  This is now slightly out of order with how C++ will call superclass destructors after this one, but by construction none of the superclasses should ever be touching the same memory, whilst simultaneously taking care of their own.
+  */
+
+  if (params.exphasorssurface && params.run_mode == RunMode::complete) {
+    mxFree(mx_surface_vertices);
+    // ~SurfacePhasors object will clean up the remaining surface-phasor memory
+  }
+  // ~VertexPhasors will clean up vertex phasor memory
+
+  // free C++ memory that was cast to the Id output, but is no longer needed
+  if (params.exdetintegral) {
+    // We have cast the Id variables to a MATLAB array, and must free the memory
+    free_Id_memory();
+  }
+
+  // {I,J,K}-source are now torn down by ~Iterator_ObjectsFromInfile
+
+  // free the iwave variables (under all circumstances)
+  free_iwave_memory();
+
+  // materials torn down by ~Iterator_IndependentObjectsFromInfile
+
+  // free PSTD-unique memory, if we used the PSTD method
   if (solver_method == SolverMethod::PseudoSpectral) {
+    // if we used the psuedo-spectral method, we need to delete the malloc'd fftw space for the derivative-shift operators
     fftw_free(dk_e_x);
     fftw_free(dk_e_y);
     fftw_free(dk_e_z);
@@ -160,7 +269,7 @@ Iterator_LoopVariables::~Iterator_LoopVariables() {
   free(E_norm);
   free(H_norm);
 
-  // free E_copy_data_placeholders if we were running a steady-state simulation
+  // free E_copy_data_placeholders, which we were using to record the previous phasor state to check convergence,  if we were running a steady-state simulation
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
     mxDestroyArray(E_copy_data_placeholders[0]);
     mxDestroyArray(E_copy_data_placeholders[1]);
