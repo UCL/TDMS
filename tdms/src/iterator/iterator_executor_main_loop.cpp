@@ -28,9 +28,9 @@ void Iterator_Executor::run_main_loop() {
 
   complex<double> Idxt, Idyt, kprop;
 
-  double phaseTermE;               //< phase term (local to thread)
-  std::complex<double> cphaseTermE;//< phase term (local to thread)
-  double lambda_an_t;              //< wavelength in air (local to thread)
+  double phaseTermE;          //< phase term (local to thread)
+  complex<double> cphaseTermE;//< phase term (local to thread)
+  double lambda_an_t;         //< wavelength in air (local to thread)
 
   if (TIME_MAIN_LOOP) { start_timer(IterationTimers::MAIN); }
 
@@ -38,29 +38,14 @@ void Iterator_Executor::run_main_loop() {
     // Update the "time" the fields are currently at
     update_field_times_to_current_iteration(params.dt);
 
-    //Extract phasors
     start_timer(IterationTimers::INTERNAL);
-    if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete) &&
-        (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
 
-      dft_counter = 0;
-
-      double tol = E.normalised_difference(E_copy);
-      if (tol < TOL) break;//required accuracy obtained
-
-      spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
-      E_copy.set_values_from(E);
-
-      E.zero();
-      H.zero();
-      spdlog::debug("Zeroed the phasors");
-
-      if (params.exphasorssurface) {
-        surface_phasors.zero_surface_EH();
-        spdlog::debug("Zeroed the surface components");
-      }
+    // Check for convergence: break loop if reached, otherwise next iteration will be automatically setup during phasors_have converged()
+    if (phasors_have_converged()) {
+        break;
     }
 
+    // Extract phasors
     if ((params.source_mode == SourceMode::steadystate) && (params.run_mode == RunMode::complete) &&
         params.exphasorsvolume) {
 
@@ -102,11 +87,10 @@ void Iterator_Executor::run_main_loop() {
       //fprintf(stderr,"Pos 01b:\n");
     }
 
-    /*extract fieldsample*/
+    // Extract fieldsample
     if (fieldsample.all_vectors_are_non_empty()) {
       fieldsample.extract(E_s, params.pml, params.Nt);
     }
-    /*end extract fieldsample*/
 
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete &&

@@ -67,6 +67,16 @@ private:
   }
 
   /**
+   * @brief Determine whether the main loop should be terminated due to phasor convergence being achieved.
+   *
+   * If convergence has not been achieved, setup the next iteration accordingly before exiting this method.
+   *
+   * @return true Phasor convergence achieved - terminate main loop immediately.
+   * @return false Phasor convergence has not been achieved - setup the next iteration before returning.
+   */
+  bool Iterator_Executor::phasors_have_converged();
+
+  /**
    * @brief Extract the phasor norm of the {E,H}-field at the given frequency to {E,H}_norms
    *
    * @param frequency_index Index of the frequency to extract at

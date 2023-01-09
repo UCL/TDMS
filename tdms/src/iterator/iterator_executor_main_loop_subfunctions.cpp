@@ -7,6 +7,32 @@
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using namespace std;
 
+bool Iterator_Executor::phasors_have_converged() {
+  if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete) &&
+      (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
+
+    dft_counter = 0;
+
+    double tol = E.normalised_difference(E_copy);
+    if (tol < TOL) { return true; } //required accuracy obtained
+
+    // if we get to here we need to setup the next iteration, as we have not converged
+    spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
+    E_copy.set_values_from(E);
+
+    E.zero();
+    H.zero();
+    spdlog::debug("Zeroed the phasors");
+
+    if (params.exphasorssurface) {
+      surface_phasors.zero_surface_EH();
+      spdlog::debug("Zeroed the surface components");
+    }
+  }
+  // return false unless we exit early due to convergence
+  return false;
+}
+
 void Iterator_Executor::extract_E_phasor_norm(int frequency_index, int Nt) {
   double omega = f_ex_vec[frequency_index] * 2 * DCPI;
   complex<double> phase_factor =
