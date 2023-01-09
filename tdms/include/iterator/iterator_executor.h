@@ -1,6 +1,6 @@
 /**
  * @file iterator_executor.h
- * @brief Class that runs the TDMS simulation and returns the desired outputs
+ * @brief Declares the Iterator_Executor class, and the methods that impliment the execution of the main loop that updates the TDMS simulation. Contains the run_main_loop method.
  */
 #pragma once
 
@@ -23,8 +23,7 @@
  *
  * Variables needed for the main loop are handled by inheriting from Iterator_LoopVariables.
  *
- * Timing is controlled by inheritence from Iterator_Logger
- *
+ * Timing is controlled by inheritence from Iterator_Logger.
  */
 class Iterator_Executor : public Iterator_LoopVariables, public Iterator_Timers {
 private:

@@ -1,6 +1,6 @@
 /**
  * @file iterator_timer.h
- * @brief Class handles timing during the main simulation loop and performance timing
+ * @brief Declares the class that handles the timing of the main loop and subprocesses of the main loop.
  */
 #pragma once
 
@@ -72,6 +72,7 @@ public:
         break;
       default:
         unrecognised_timer();
+        // return garbage just to make the compiler happy - the statement above will error so we'll never get here anyway
         return -1.;
         break;
     }

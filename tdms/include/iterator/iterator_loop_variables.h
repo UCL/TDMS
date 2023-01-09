@@ -1,6 +1,6 @@
 /**
  * @file iterator_loop_variables.h
- * @brief Defines classes that handle the pre-main loop variable declarations and their setup.
+ * @brief Declares the classes that store all variables that will be needed during and after the main loop. Also declares methods for setting up said variables using the values imported from the input file, and executing pre-loop optimiation steps.
  */
 #pragma once
 
@@ -49,11 +49,21 @@ public:
   int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
 };
 
-// Handles all the variables declared before the main iterator loop, and their initalisation if appropriate
+/* Class that handles all variables whose scope needs to extend beyond the main iteration loop.
+
+Such variables can have multiple sources:
+- They can be taken from the input file (hence the inheritence of Iterator_ObjectsFromInfile)
+- They may originate in the main loop, but are also required after the main loop concludes
+- They are derived from objects that came in the input file, and need to be initialised before the first iteration
+
+Objects in the later two categories are those declared in the Iterator_PreLoopDeclarations class, which we inherit. These variables do not require any special tear-down beyond that which the base class impliments.
+
+This class primarily exists to organise the pre-loop setting of variables into methods, and to distinguish this functionality from the during- or post-main-loop functionality. It also provides a clear overview of which variables are relevent during and after the main loop execution.
+*/
 class Iterator_LoopVariables : public Iterator_ObjectsFromInfile, public Iterator_PreLoopDeclarations {
 private:
   /**
-   * @brief  Set the interpolation method for each of the fields we are interpolating
+   * @brief Set the interpolation method for each of the fields we are interpolating
    *
    * @param pim The interpolation method to use
    */
@@ -91,7 +101,6 @@ private:
 
 protected:
   /* INTERMEDIATE MATLAB VARIABLES/POINTERS */
-  /* MATLAB DANGER ZONE: Some pointers are created via malloc-like commands, but are linked to would-be outputs. These are destroyed when their parent arrays are destroyed via mxFree, however this can't be done by this class since we need to pass back the output data before we delete it. Need to check that mxFree is called on plhs after writing outputs! */
 
   mxArray *E_copy_data_placeholders
           [3];//< Placeholder pointers to the data in the copy of the E-field that checks phasor convergence
@@ -111,7 +120,7 @@ protected:
   // Frees any non-output-required memory assigned to the Id variables
   void free_Id_memory();
 
-  //these are used for fdtd boot strapping. There is currently no way of exporting this.
+  // These are used for fdtd boot strapping. There is currently no way of exporting this.
   double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
           **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
 

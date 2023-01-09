@@ -52,7 +52,7 @@ public:
   double *alpha, *beta, *gamma;             //< dispersion parameters
   InterfaceComponent I0, I1, J0, J1, K0, K1;//< user-defined interface components
   Cuboid cuboid;                            //< user-defined surface to extract phasors over
-  XYZVectors rho_cond;                      // < conductive aux
+  XYZVectors rho_cond;                      //< conductive aux
   DispersiveMultiLayer matched_layer;       //< dispersive aux
   IncidentField Ei;                         //< time-domain field
   FrequencyVectors f_vec;                   //< frequency vector
