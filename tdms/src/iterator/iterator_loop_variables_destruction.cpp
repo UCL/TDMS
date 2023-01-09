@@ -48,7 +48,7 @@ Iterator_LoopVariables::~Iterator_LoopVariables() {
   spdlog::info("Destroying Iterator_LoopVariables");
 
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    mxFree(mx_surface_vertices);
+    mxDestroyArray(mx_surface_vertices);
     // ~SurfacePhasors object will clean up the remaining surface-phasor memory
   }
   // ~VertexPhasors will clean up vertex phasor memory

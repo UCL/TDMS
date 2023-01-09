@@ -12,7 +12,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
   // SETUP SIMULATION AND REPORT CONFIG OPTIONS
-  spdlog::info("\n== Setting up simulation ==\n");
+  spdlog::info("\n== Setting up simulation ==");
 
   // report number of threads that will be used
   spdlog::info("Using {0:d} OMP threads", omp_get_max_threads());
@@ -42,12 +42,12 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   main_loop.optimise_loops_if_possible();
 
   // [MAIN LOOP] RUN TDMS SIMULATION
-  spdlog::info("\n== Starting main loop ==\n");
+  spdlog::info("\n== Starting main loop ==");
 
   main_loop.run_main_loop();
 
   // POST-LOOP PROCESSING
-  spdlog::info("\n== Processing outputs ==\n");
+  spdlog::info("\n== Processing outputs ==");
 
   // normalise the phasors in the volume (if we are extracting them)
   main_loop.normalise_field_volumes();
@@ -59,7 +59,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
   main_loop.normalise_Id_arrays();
 
   // OUTPUT ASSIGNMENT
-  spdlog::info("\n== Assigning outputs ==\n");
+  spdlog::info("\n== Assigning outputs ==");
 
   // find the maximum absolute value of residual field in the grid
   double maxfield = main_loop.compute_max_split_field_value();

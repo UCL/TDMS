@@ -129,7 +129,7 @@ void Iterator_LoopVariables::setup_surface_mesh() {
   // we don't need the facets so destroy the matrix now to save memory
   mxDestroyArray(temporary_surface_facets);
 
-    // now setup the object that handles the surface phasors
+  // now setup the object that handles the surface phasors
   surface_phasors.set_from_matlab_array(mx_surface_vertices, f_ex_vec.size());
   // LEFTOVER comment - unsure of origin and author? (Predates refactor iterator [1/N] (PR #64, 1f4207e25)
   //now need to add a command to update the complex amplitudes

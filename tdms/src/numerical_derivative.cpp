@@ -30,7 +30,7 @@ void init_diff_shift_op(double delta, fftw_complex *Dk, int N){
 
   spdlog::debug("init_diff_shift_op, delta={}", delta);
 
-  //define an
+  //define an -> malloc BAD! Use std::vector<double> here instead! NOTE: It's possible for N to be 0 here though, (when J_tot is 0 causes N_e_y to be zero for example, so need to be careful (this is probably why malloc originally used))
   auto *an = (double *)malloc(sizeof(double) * N);
   if( (N % 2) == 0){//even case
     for(int i=0;i<=(N/2);i++)
