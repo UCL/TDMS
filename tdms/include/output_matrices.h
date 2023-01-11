@@ -44,6 +44,12 @@ private:
       throw runtime_error("Reassigning output pointer will cause memory leak - aborting.");
     }
   }
+  /*! @copydoc error_on_memory_assigned */
+  void error_on_memory_assigned(std::string matrix_name) {
+    if (memory_already_assigned(matrix_name)) {
+      throw runtime_error("Reassigning output pointer will cause memory leak - aborting.");
+    }
+  }
   /**
    * @brief Assign the output matrices provided as empty arrays.
    *
@@ -101,12 +107,16 @@ public:
   /**
    * @brief Create MATLAB memory for the field and gridlabel outputs, and assign the relevent pointers to access this data.
    *
-   * In order to avoid over-zealous memory creation, we check that pointers have not already been assigned before array creation.
-   *
    * @param empty_allocation If true, empty arrays will be allocated
    * @param I_tot,J_tot,K_tot The dimensions of the field components (corresponding gridlabel dimensions will be inferred)
    */
   void allocate_field_and_labels_memory(bool empty_allocation, int I_tot = 0, int J_tot = 0, int K_tot = 0);
+  /**
+   * @brief Create MATLAB memory for the Id structure array, and assign the relevant pointers to access this data.
+   *
+   * @param empty_allocation If true, empty arrays will be allocated
+   */
+  void allocate_Id_memory(bool empty_allocation);
 
   /**
    * @brief Save the output matrices to the output file

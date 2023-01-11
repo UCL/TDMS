@@ -81,6 +81,21 @@ void OutputMatrices::allocate_field_and_labels_memory(bool empty_allocation, int
   }
 }
 
+void OutputMatrices::allocate_Id_memory(bool empty_allocation) {
+  // avoid memory leaks
+  error_on_memory_assigned("Id");
+
+  // create output by reserving memory
+  if (empty_allocation) {
+    assign_empty_matrix({"Id"});
+  } else {
+    // create a structure array with two fields
+    int dims[2] = {1, 1};
+    const char *fieldnames[] = {"Idx", "Idy"};
+    matrix_pointers[index_from_matrix_name("Id")] = mxCreateStructArray(2, (const mwSize *) dims, 2, fieldnames);
+  }
+}
+
 void OutputMatrices::save_outputs(string output_file_name, bool compressed_output) {
   MATFile *output_file = matOpen(output_file_name.c_str(), "w7.3");
 

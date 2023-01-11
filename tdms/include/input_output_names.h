@@ -119,7 +119,7 @@ namespace tdms_matrix_names {
                                                                   "campssample"};
     // matrices we expect to obtain from a separate gridfile
     const std::vector<std::string> matrixnames_gridfile = {"fdtdgrid"};
-    // oall output matrices we might want to write
+    // all output matrices we might want to write
     const std::vector<std::string> outputmatrices_all = {
             "Ex_out", "Ey_out",      "Ez_out", "Hx_out",      "Hy_out",
             "Hz_out", "x_out",       "y_out",  "z_out",       "Ex_i",

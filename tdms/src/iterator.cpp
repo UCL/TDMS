@@ -597,8 +597,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   }
   //fprintf(stderr,"Pre 10\n");
   //fprintf(stderr,"Qos 05:\n");
-  //plhs[13] -> plhs[15] are the interpolated electric field values
-  //plhs[16] -> plhs[18] are the interpolated magnetic field values
 
   //initialise arrays
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
@@ -606,13 +604,11 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     H.zero();
   }
   //fprintf(stderr,"Pre 11\n");
-  if (params.exdetintegral && params.run_mode == RunMode::complete) {
-    ndims = 2;
-    dims[0] = 1;
-    dims[1] = 1;
-    const char *fieldnames[] = {"Idx", "Idy"};
-    plhs[26] = mxCreateStructArray(ndims, (const mwSize *) dims, 2, fieldnames);
+  // we might not need to assign memory for the Id output
+  bool need_Id_memory = (params.exdetintegral && params.run_mode == RunMode::complete);
+  outputs.allocate_Id_memory(!need_Id_memory);
 
+  if (need_Id_memory) {
     ndims = 2;
     dims[0] = D_tilde.num_det_modes();
     dims[1] = f_ex_vec.size();
@@ -646,14 +642,8 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
       }
     }
 
-    mxSetField(plhs[26], 0, "Idx", mx_Idx);
-    mxSetField(plhs[26], 0, "Idy", mx_Idy);
-  } else {
-    ndims = 2;
-    dims[0] = 0;
-    dims[1] = 0;
-
-    plhs[26] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    mxSetField(outputs["Id"], 0, "Idx", mx_Idx);
+    mxSetField(outputs["Id"], 0, "Idy", mx_Idy);
   }
   //fprintf(stderr,"Pre 12\n");
   if (params.run_mode == RunMode::complete && params.source_mode == SourceMode::steadystate && params.exphasorsvolume) {
