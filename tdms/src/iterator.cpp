@@ -660,38 +660,41 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   ndims = 2;
   dims[0] = I_tot;
   dims[1] = J_tot + 1;
-  plhs[6] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+  // I have a theory that these variables (previously plhs[6->9]) are not actually written to as outputs, and thus don't need to be saved into plhs/outputs
+  mxArray *plhs_stand_in[4] = {nullptr};
+
+  plhs_stand_in[0] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x electric field source phasor - boot strapping
-  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[6]), dims[0], dims[1]);
-  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[6]), dims[0], dims[1]);
+  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[0]), dims[0], dims[1]);
+  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[0]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEx_Ibs, dims[0], dims[1]);
 
   dims[0] = I_tot + 1;
   dims[1] = J_tot;
-  plhs[7] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+  plhs_stand_in[1] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y electric field source phasor - boot strapping
-  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[7]), dims[0], dims[1]);
-  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[7]), dims[0], dims[1]);
+  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[1]), dims[0], dims[1]);
+  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[1]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lEy_Ibs, dims[0], dims[1]);
 
   dims[0] = I_tot + 1;
   dims[1] = J_tot;
-  plhs[8] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+  plhs_stand_in[2] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//x magnetic field source phasor - boot strapping
 
-  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[8]), dims[0], dims[1]);
-  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[8]), dims[0], dims[1]);
+  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[2]), dims[0], dims[1]);
+  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[2]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHx_Ibs, dims[0], dims[1]);
 
   dims[0] = I_tot;
   dims[1] = J_tot + 1;
-  plhs[9] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+  plhs_stand_in[3] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
                                  mxCOMPLEX);//y magnetic field source phasor - boot strapping
-  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs[9]), dims[0], dims[1]);
-  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs[9]), dims[0], dims[1]);
+  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[3]), dims[0], dims[1]);
+  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[3]), dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Rbs, dims[0], dims[1]);
   initialiseDouble2DArray(iwave_lHy_Ibs, dims[0], dims[1]);
 
@@ -718,28 +721,19 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   if (is_conductive) { J_c.allocate_and_zero(); }
   /*end dispersive*/
 
-  plhs[27] = fieldsample.mx;
+  outputs["fieldsample"] = fieldsample.mx;
 
+  outputs.allocate_campssample_memory(campssample.n_vertices(), campssample.components.size(), f_ex_vec.size());
   if (campssample.n_vertices() > 0) {
     ndims = 3;
     dims[0] = campssample.n_vertices();
     dims[1] = campssample.components.size();
     dims[2] = f_ex_vec.size();
-    mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
-    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
-
-  } else {
-    ndims = 3;
-    dims[0] = 0;
-    dims[1] = 0;
-    dims[2] = 0;
-    mx_camplitudes = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    camplitudesR = cast_matlab_3D_array(mxGetPr(outputs["campssample"]), dims[0], dims[1], dims[2]);
+    camplitudesI = cast_matlab_3D_array(mxGetPi(outputs["campssample"]), dims[0], dims[1], dims[2]);
   }
-  plhs[28] = mx_camplitudes;
   //fprintf(stderr,"Pre 15\n");
   /*end of setup the output array for the sampled field*/
-
 
   /*set up the parameters for the phasor convergence procedure*/
   /*First we set dt so that an integer number of time periods fits within a sinusoidal period
@@ -4339,12 +4333,8 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   // after resetting the maxfield value calculated in the main loop
   maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
   //fprintf(stderr,"Pos 15\n");
-  //noe set the output
-  ndims = 2;
-  dims[0] = 1;
-  dims[1] = 1;
-  plhs[25] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-  *mxGetPr((mxArray *) plhs[25]) = maxfield;
+  //now set the output
+  outputs.set_maxresfield(maxfield, false);
 
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
     output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
@@ -4353,44 +4343,29 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   auto interp_output_grid_labels = GridLabels();
 
   //fprintf(stderr,"Pos 15_m1\n");
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
+  // if we do not need to interpolate, we do not need to allocate memory to the interpolation-related outputs
+  bool need_to_interpolate = (params.run_mode == RunMode::complete && params.exphasorsvolume);
+  // setup interpolated grid memory (if required)
+  outputs.allocate_interpolation_memory(!need_to_interpolate, E, H, params.dimension);
+  // now interpolate if we need to
+  if (need_to_interpolate) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
+      E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
                                E.K_tot - 2, Dimension::THREE);
-      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
+      H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
                                H.K_tot - 2, Dimension::THREE);
     } else {
       // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
-      E.interpolate_over_range(&plhs[13], &plhs[14], &plhs[15], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+      E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
                                0, params.dimension);
-      H.interpolate_over_range(&plhs[16], &plhs[17], &plhs[18], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+      H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
                                0, params.dimension);
     }
 
-    //fprintf(stderr,"Pos 15a\n");
-    //now set up the grid labels for the interpolated fields
-    label_dims[0] = 1;
-    label_dims[1] = E.I_tot - 3;
-    plhs[19] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//x
-    //fprintf(stderr,"Pos 15b\n");
-    label_dims[0] = 1;
-    label_dims[1] = E.J_tot - 3;
-    if (label_dims[1] < 1) label_dims[1] = 1;
-    //fprintf(stderr,"creating plhs[20]: %d,%d\n",label_dims[0],label_dims[1]);
-    plhs[20] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//y
-    //fprintf(stderr,"Pos 15c\n");
-    label_dims[0] = 1;
-    if (params.dimension == THREE) label_dims[1] = E.K_tot - 3;
-    else
-      label_dims[1] = 1;
-    //fprintf(stderr,"Pos 15d\n");
-    plhs[21] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//z
-    //fprintf(stderr,"Pos 15e\n");
-
-    interp_output_grid_labels.x = mxGetPr((mxArray *) plhs[19]);
-    interp_output_grid_labels.y = mxGetPr((mxArray *) plhs[20]);
-    interp_output_grid_labels.z = mxGetPr((mxArray *) plhs[21]);
+    interp_output_grid_labels.x = mxGetPr((mxArray *) outputs["x_i"]);
+    interp_output_grid_labels.y = mxGetPr((mxArray *) outputs["y_i"]);
+    interp_output_grid_labels.z = mxGetPr((mxArray *) outputs["z_i"]);
 
     if (params.dimension == THREE) {
       interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
@@ -4399,27 +4374,14 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
       interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
                                                 0, 0);
     }
-    //fprintf(stderr,"Pos 15f\n");
-  } else {
-    mwSize *emptydims;
-    emptydims = (mwSize *) malloc(2 * sizeof(mwSize));
-    int emptyloop;
-    emptydims[0] = 0;
-    emptydims[1] = 0;
-    for (emptyloop = 13; emptyloop <= 18; emptyloop++)
-      plhs[emptyloop] =
-              mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxCOMPLEX);
-    for (emptyloop = 19; emptyloop <= 21; emptyloop++)
-      plhs[emptyloop] =
-              mxCreateNumericArray(2, (const mwSize *) emptydims, mxDOUBLE_CLASS, mxCOMPLEX);
-    free(emptydims);
   }
-
 
   //fprintf(stderr,"Pos 16\n");
   /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
     these vertices and a list of facets*/
-  if (params.exphasorssurface && params.run_mode == RunMode::complete) {
+  // if we need to extract the phasors, we will need to allocate memory in the output
+  bool extracting_phasors = (params.exphasorssurface && params.run_mode == RunMode::complete);
+  if (extracting_phasors) {
     //first regenerate the mesh since we threw away the facet list before iterating
     mxArray *dummy_vertex_list;
     if (J_tot == 0)
@@ -4433,21 +4395,9 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
 
     //now create and populate the vertex list
     surface_phasors.create_vertex_list(input_grid_labels);
-
-    //assign outputs
-    plhs[22] = surface_phasors.get_vertex_list();
-    plhs[23] = surface_phasors.get_mx_surface_amplitudes();
-    plhs[24] = mx_surface_facets;
-
-  } else {//still set outputs
-    ndims = 2;
-    dims[0] = 0;
-    dims[1] = 0;
-    plhs[22] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    plhs[23] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    plhs[24] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
   }
-
+  // assign to the output
+  outputs.allocate_extracted_phasor_memory(!extracting_phasors, surface_phasors, mx_surface_facets);
 
   /*End of FDTD iteration*/
 
@@ -4506,6 +4456,8 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   free_cast_matlab_2D_array(iwave_lHx_Ibs);
   free_cast_matlab_2D_array(iwave_lHy_Rbs);
   free_cast_matlab_2D_array(iwave_lHy_Ibs);
+
+  for(i = 0; i < 4; i++) { mxDestroyArray(plhs_stand_in[i]); }
 
   if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
   else

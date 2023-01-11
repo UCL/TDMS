@@ -55,7 +55,7 @@ complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int
          * 1./((double) Nt);
 }
 
-void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out, int i_lower,
                                    int i_upper, int j_lower, int j_upper, int k_lower, int k_upper,
                                    Dimension mode) {
   // prepare output dimensions
@@ -68,19 +68,14 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
       outdims[1] = 1;
     }
   }
-
-  // create the memory for the outputs
-  *x_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
-  *y_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
-  *z_out = mxCreateNumericArray(ndims, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
   // allow memory to cast to our datatypes
   XYZTensor3D<double> real_out, imag_out;
-  real_out.x = cast_matlab_3D_array(mxGetPr(*x_out), outdims[0], outdims[1], outdims[2]);
-  imag_out.x = cast_matlab_3D_array(mxGetPi(*x_out), outdims[0], outdims[1], outdims[2]);
-  real_out.y = cast_matlab_3D_array(mxGetPr(*y_out), outdims[0], outdims[1], outdims[2]);
-  imag_out.y = cast_matlab_3D_array(mxGetPi(*y_out), outdims[0], outdims[1], outdims[2]);
-  real_out.z = cast_matlab_3D_array(mxGetPr(*z_out), outdims[0], outdims[1], outdims[2]);
-  imag_out.z = cast_matlab_3D_array(mxGetPi(*z_out), outdims[0], outdims[1], outdims[2]);
+  real_out.x = cast_matlab_3D_array(mxGetPr(x_out), outdims[0], outdims[1], outdims[2]);
+  imag_out.x = cast_matlab_3D_array(mxGetPi(x_out), outdims[0], outdims[1], outdims[2]);
+  real_out.y = cast_matlab_3D_array(mxGetPr(y_out), outdims[0], outdims[1], outdims[2]);
+  imag_out.y = cast_matlab_3D_array(mxGetPi(y_out), outdims[0], outdims[1], outdims[2]);
+  real_out.z = cast_matlab_3D_array(mxGetPr(z_out), outdims[0], outdims[1], outdims[2]);
+  imag_out.z = cast_matlab_3D_array(mxGetPi(z_out), outdims[0], outdims[1], outdims[2]);
 
   /* If we are not interpolating _all_ components, we need to use E- and H-field specific methods.
   Also (in full-field 3D simulations only) we need to check whether j_upper<j_lower as this indicates that the simulation is 2D and the y-axis doesn't exist!
@@ -136,7 +131,7 @@ void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z
     }
   }
 }
-void Field::interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out,
                                    Dimension mode) {
   interpolate_over_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot, mode);
 }

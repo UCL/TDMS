@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "input_output_names.h"
+#include "field.h"
 #include "mat_io.h"
 #include "matrix_collection.h"
+#include "simulation_parameters.h"
+#include "surface_phasors.h"
 
 class OutputMatrices {
 private:
@@ -103,20 +106,44 @@ public:
   void set_matrix_pointer(const std::string &matrix_name, mxArray *new_ptr) {
     set_matrix_pointer(index_from_matrix_name(matrix_name), new_ptr);
   }
+  /**
+   * @brief Set the maxresfield object. If memory has not been reserved yet, it can be assigned here.
+   *
+   * @param maxfield Value to write to output memory
+   * @param overwrite_existing If true, overwrite existing value (do not assign new memory). Otherwise, create new memory for the maxresfield output.
+   */
+  void set_maxresfield(double maxfield, bool overwrite_existing);
 
   /**
-   * @brief Create MATLAB memory for the field and gridlabel outputs, and assign the relevent pointers to access this data.
+   * @brief Create MATLAB memory for the field and gridlabel outputs.
    *
    * @param empty_allocation If true, empty arrays will be allocated
    * @param I_tot,J_tot,K_tot The dimensions of the field components (corresponding gridlabel dimensions will be inferred)
    */
   void allocate_field_and_labels_memory(bool empty_allocation, int I_tot = 0, int J_tot = 0, int K_tot = 0);
   /**
-   * @brief Create MATLAB memory for the Id structure array, and assign the relevant pointers to access this data.
+   * @brief Create MATLAB memory for the Id structure array.
    *
    * @param empty_allocation If true, empty arrays will be allocated
    */
   void allocate_Id_memory(bool empty_allocation);
+  /**
+   * @brief Create MATLAB memory for the campssample array.
+   *
+   * @param n_vertices Number of vertices we are extracting at. If this is 0, then allocate the empty array
+   * @param n_components Number of amplitude components we are extracting
+   * @param n_frequencies Number of frequencies we are extracting at
+   */
+  void allocate_campssample_memory(int n_vertices, int n_components, int n_frequencies);
+  /**
+   * @brief Creat MATLAB memory for the gridlabels for the interpolated fields
+   *
+   * @param empty_allocation If true, empty arrays will be allocated
+   * @param E,H The {electric,magnetic} field that will be interpolated
+   * @param simulation_dimension Whether we are running a 3D, TE, or TM simulation
+   */
+  void allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension = THREE);
+  void allocate_extracted_phasor_memory(bool empty_allocation, SurfacePhasors &surface_phasors, mxArray *mx_surface_facets);
 
   /**
    * @brief Save the output matrices to the output file
