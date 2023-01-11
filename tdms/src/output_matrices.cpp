@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include "input_output_names.h"
+#include "matrix.h"
 #include "utils.h"
 
 using namespace tdms_matrix_names;
@@ -147,25 +148,46 @@ void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, Electr
     error_on_memory_assigned(interpolated_gridlabels_names);
 
     // interpolated field memory needs to be assigned
+    int i_upper, i_lower, j_upper, j_lower, k_upper, k_lower;
+    int outdims[3] = {0, 0, 0};
+
     // E-field memory assignment
-    int i_upper = E.I_tot - 2, i_lower = 2;
-    int j_upper = E.J_tot - 2, j_lower = 2;
-    int k_upper = E.K_tot - 2, k_lower = 2;
-    int outdims[3] = {i_upper - i_lower + 1, j_upper - j_lower + 1, 1};
-    if (simulation_dimension == THREE) { outdims[2] = max(1, k_upper - k_lower + 1); }
+    i_upper = E.I_tot - 2, i_lower = 2;
+    j_upper = E.J_tot - 2, j_lower = 2;
+    if (simulation_dimension == THREE) {
+      k_upper = E.K_tot - 2;
+      k_lower = 2;
+    } else {
+      k_upper = 0;
+      k_lower = 0;
+    }
+    outdims[0] = i_upper - i_lower + 1;
+    outdims[1] = j_upper - j_lower + 1;
+    if (simulation_dimension == THREE) {
+      outdims[2] = k_upper - k_lower + 1;
+      outdims[1] = max(1, j_upper - j_lower + 1);
+    }
     for(string matrix : interpolated_E_field_names) {
-      matrix_pointers[index_from_matrix_name(matrix)] =
-              mxCreateNumericArray(3, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
+      matrix_pointers[index_from_matrix_name(matrix)] = mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
     // H-field memory assignment
-    int i_upper = H.I_tot - 2, i_lower = 2;
-    int j_upper = H.J_tot - 2, j_lower = 2;
-    int k_upper = H.K_tot - 2, k_lower = 2;
-    int outdims[3] = {i_upper - i_lower + 1, j_upper - j_lower + 1, 1};
-    if (simulation_dimension == THREE) { outdims[2] = max(1, k_upper - k_lower + 1); }
-    for (string matrix : interpolated_E_field_names) {
-      matrix_pointers[index_from_matrix_name(matrix)] =
-              mxCreateNumericArray(3, (const mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
+    i_upper = H.I_tot - 2, i_lower = 2;
+    j_upper = H.J_tot - 2, j_lower = 2;
+    if (simulation_dimension == THREE) {
+      k_upper = H.K_tot - 2;
+      k_lower = 2;
+    } else {
+      k_upper = 0;
+      k_lower = 0;
+    }
+    outdims[0] = i_upper - i_lower + 1;
+    outdims[1] = j_upper - j_lower + 1;
+    if (simulation_dimension == THREE) {
+      outdims[2] = k_upper - k_lower + 1;
+      outdims[1] = max(1, j_upper - j_lower + 1);
+    }
+    for (string matrix : interpolated_H_field_names) {
+      matrix_pointers[index_from_matrix_name(matrix)] = mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
 
     // interpolated gridlabels memory needs to be assigned

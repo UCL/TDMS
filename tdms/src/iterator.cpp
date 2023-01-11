@@ -284,7 +284,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
 
   uint8_t ***materials;
   double ***camplitudesR, ***camplitudesI;
-  mxArray *mx_camplitudes;
 
   int i, j, k, n, k_loc, ndims, K;
   int Nsteps = 0, dft_counter = 0;
@@ -534,8 +533,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     dims[0] = E.I_tot;
     dims[1] = E.J_tot;
     dims[2] = E.K_tot;
-
-    spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
     E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
     E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
@@ -4342,7 +4339,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
 
   auto interp_output_grid_labels = GridLabels();
 
-  //fprintf(stderr,"Pos 15_m1\n");
   // if we do not need to interpolate, we do not need to allocate memory to the interpolation-related outputs
   bool need_to_interpolate = (params.run_mode == RunMode::complete && params.exphasorsvolume);
   // setup interpolated grid memory (if required)
@@ -4363,9 +4359,9 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
                                0, params.dimension);
     }
 
-    interp_output_grid_labels.x = mxGetPr((mxArray *) outputs["x_i"]);
-    interp_output_grid_labels.y = mxGetPr((mxArray *) outputs["y_i"]);
-    interp_output_grid_labels.z = mxGetPr((mxArray *) outputs["z_i"]);
+    interp_output_grid_labels.x = mxGetPr(outputs["x_i"]);
+    interp_output_grid_labels.y = mxGetPr(outputs["y_i"]);
+    interp_output_grid_labels.z = mxGetPr(outputs["z_i"]);
 
     if (params.dimension == THREE) {
       interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
@@ -4376,7 +4372,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     }
   }
 
-  //fprintf(stderr,"Pos 16\n");
   /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
     these vertices and a list of facets*/
   // if we need to extract the phasors, we will need to allocate memory in the output
@@ -4484,7 +4479,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     mxDestroyArray(dummy_array[1]);
     mxDestroyArray(dummy_array[2]);
   }
-
   //must destroy surface_phasors.mx_surface_amplitudes
 }
 

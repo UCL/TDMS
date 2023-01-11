@@ -4,12 +4,13 @@
  */
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "input_output_names.h"
 #include "field.h"
-#include "mat_io.h"
+#include "matrix.h"
 #include "matrix_collection.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
@@ -44,13 +45,13 @@ private:
    */
   void error_on_memory_assigned(std::vector<std::string> matrix_names) {
     if (memory_already_assigned(matrix_names)) {
-      throw runtime_error("Reassigning output pointer will cause memory leak - aborting.");
+      throw std::runtime_error("Reassigning output pointer will cause memory leak - aborting.");
     }
   }
   /*! @copydoc error_on_memory_assigned */
   void error_on_memory_assigned(std::string matrix_name) {
     if (memory_already_assigned(matrix_name)) {
-      throw runtime_error("Reassigning output pointer will cause memory leak - aborting.");
+      throw std::runtime_error("Reassigning output pointer will cause memory leak - aborting.");
     }
   }
   /**
