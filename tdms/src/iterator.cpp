@@ -233,7 +233,7 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_matrices,
+void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatrices in_matrices,
                         SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods) {
 
@@ -524,7 +524,11 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
       dims[2] = K_tot - params.pml.Dzu - params.pml.Dzl - 3 + 1;*/
   auto output_grid_labels = GridLabels();
 
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
+  // whether we need the E,H and gridlabels fields initilised at all
+  bool need_EH_memory = (params.run_mode == RunMode::complete && params.exphasorsvolume);
+  outputs.allocate_field_and_labels_memory(!need_EH_memory, E.I_tot, E.J_tot, E.K_tot);
+
+  if (need_EH_memory) {
     ndims = 3;
 
     dims[0] = E.I_tot;
@@ -533,31 +537,23 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
     spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
-    plhs[0] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
-    plhs[1] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
-    plhs[2] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
+    E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
 
-    plhs[3] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hx
-    plhs[4] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hy
-    plhs[5] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hz
+    E.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[0]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
 
-    E.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[1]), E.I_tot, E.J_tot, E.K_tot);
+    H.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
 
-    E.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[2]), E.I_tot, E.J_tot, E.K_tot);
+    H.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
 
-    H.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[3]), H.I_tot, H.J_tot, H.K_tot);
-
-    H.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[4]), H.I_tot, H.J_tot, H.K_tot);
-
-    H.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) plhs[5]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
     //fprintf(stderr,"Pre 05\n");
     //fprintf(stderr,"Qos 02:\n");
     //these will ultimately be copies of the phasors used to test convergence
@@ -594,44 +590,10 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
     //fprintf(stderr,"Qos 04:\n");
 
     //now construct the grid labels
-    label_dims[0] = 1;
-    label_dims[1] = dims[0];
-    plhs[10] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//x
-    output_grid_labels.x = mxGetPr((mxArray *) plhs[10]);
-
-    label_dims[0] = 1;
-    label_dims[1] = dims[1];
-    //fprintf(stderr,"plhs[11]: %d,%d\n",label_dims[0],label_dims[1] );
-    plhs[11] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//y
-    output_grid_labels.y = mxGetPr((mxArray *) plhs[11]);
-
-    label_dims[0] = 1;
-    label_dims[1] = dims[2];
-    plhs[12] = mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);//y
-    output_grid_labels.z = mxGetPr((mxArray *) plhs[12]);
+    output_grid_labels.x = mxGetPr((mxArray *) outputs["x_out"]);
+    output_grid_labels.y = mxGetPr((mxArray *) outputs["y_out"]);
+    output_grid_labels.z = mxGetPr((mxArray *) outputs["z_out"]);
     //fprintf(stderr,"Pre 08\n");
-  } else {
-    //initialise to empty matrices
-    //fprintf(stderr,"Pre 09\n");
-    ndims = 2;
-
-    dims[0] = 0;
-    dims[1] = 0;
-
-    plhs[0] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
-    plhs[1] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
-    plhs[2] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
-
-    plhs[3] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hx
-    plhs[4] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hy
-    plhs[5] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Hz
-
-    plhs[10] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                    mxCOMPLEX);//x_grid_labels_out
-    plhs[11] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                    mxCOMPLEX);//y_grid_labels_out
-    plhs[12] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                    mxCOMPLEX);//z_grid_labels_out
   }
   //fprintf(stderr,"Pre 10\n");
   //fprintf(stderr,"Qos 05:\n");

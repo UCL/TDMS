@@ -20,12 +20,19 @@ int OutputMatrices::index_from_matrix_name(const std::string &matrix_name) {
   return distance(outputmatrices_all.begin(), position);
 }
 
-bool OutputMatrices::memory_already_assigned(std::vector<std::string> matrix_names) {
+bool OutputMatrices::memory_already_assigned(vector<string> matrix_names) {
   for(string &matrix_name : matrix_names) {
     if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) {
       spdlog::info(matrix_name + " is already assigned!");
       return true;
     }
+  }
+  return false;
+}
+bool OutputMatrices::memory_already_assigned(string matrix_name) {
+  if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) {
+    spdlog::info(matrix_name + " is already assigned!");
+    return true;
   }
   return false;
 }
@@ -44,7 +51,7 @@ void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, 
 
 void OutputMatrices::allocate_field_and_labels_memory(bool empty_allocation, int I_tot, int J_tot, int K_tot) {
   // matrices we will be assigning in this allocation method
-  vector<string> matrices_to_assign = { "Ex_out", "Ey_out", "Ez_out", "Hx_out", "Hy_out", "Hz_out", "x_out", "y_out", "z_out"};
+  vector<string> matrices_to_assign = { "Ex_out", "Ey_out", "Ez_out", "Hx_out", "Hy_out", "Hz_out", "x_out", "y_out", "z_out" };
   // avoid memory leaks
   error_on_memory_assigned(matrices_to_assign);
 
@@ -101,4 +108,15 @@ void OutputMatrices::save_outputs(string output_file_name, bool compressed_outpu
 
   // close matfile
   matClose(output_file);
+}
+
+OutputMatrices::~OutputMatrices() {
+  // search through all possible output matrices
+  for(string matrix_name : outputmatrices_all) {
+    // check for allocated memory
+    if(memory_already_assigned(matrix_name)) {
+      // destroy MATLAB structure recursively
+      mxDestroyArray(matrix_pointers[index_from_matrix_name(matrix_name)]);
+    }
+  }
 }

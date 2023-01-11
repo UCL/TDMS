@@ -12,6 +12,7 @@
 #include "input_matrices.h"
 #include "iterator.h"
 #include "mat_io.h"
+#include "output_matrices.h"
 
 using namespace tdms_matrix_names;
 
@@ -26,6 +27,7 @@ int main(int nargs, char *argv[]){
 
   mxArray *plhs[NOUTMATRICES_PASSED];
   InputMatrices matrix_inputs;
+  OutputMatrices outputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
   check_files_can_be_accessed(args);
@@ -50,7 +52,7 @@ int main(int nargs, char *argv[]){
   }
 
   // now run the time propagation code
-  execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
+  execute_simulation(NOUTMATRICES_PASSED, outputs, NMATRICES,
                      matrix_inputs, solver_method, preferred_interpolation_methods);
 
   if (!args.have_flag("-m")) {//prints vertices and facets

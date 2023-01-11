@@ -30,6 +30,8 @@ private:
    * @param matrix_names List of output matrices to check.
    */
   bool memory_already_assigned(std::vector<std::string> matrix_names);
+  /*! @copydoc memory_already_assigned */
+  bool memory_already_assigned(std::string matrix_name);
   /**
    * @brief Throw an error if the matrix_pointer corresponding to any one of the matrix names passed already points to allocated memory.
    *
@@ -113,4 +115,6 @@ public:
    * @param compressed_output If true, write compressed output (do not write facets and vertices)
    */
   void save_outputs(std::string output_file_name, bool compressed_output = false);
+
+  ~OutputMatrices();
 };
