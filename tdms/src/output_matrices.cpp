@@ -82,7 +82,7 @@ void OutputMatrices::allocate_field_and_labels_memory(bool empty_allocation, int
 }
 
 void OutputMatrices::save_outputs(string output_file_name, bool compressed_output) {
-  auto output_file = matOpen(output_file_name.c_str(), "w7.3");
+  MATFile *output_file = matOpen(output_file_name.c_str(), "w7.3");
 
   // check output file was opened successfully
   if (output_file == nullptr) {
@@ -98,9 +98,11 @@ void OutputMatrices::save_outputs(string output_file_name, bool compressed_outpu
   }
   // iterate through the matrices we want to save, setting names and placing them into the matfile
   for(string matrix_to_write : output_matrices_requested) {
-    auto mpv_out = matPutVariable(output_file, matrix_to_write.c_str(), (mxArray *) operator[](matrix_to_write));
-    if (mpv_out) {
-        auto fp = matGetFp(output_file);
+    // returns 0 if successful and non-zero if an error occured
+    int mpv_out = matPutVariable(output_file, matrix_to_write.c_str(), matrix_pointers[index_from_matrix_name(matrix_to_write)]);
+    if (mpv_out != 0) {
+        // print error information
+        FILE *fp = matGetFp(output_file);
         spdlog::info("Could not write array {0:s} to {1:s} ({2:d},{3:d},{4:d})",
                      matrix_to_write.c_str(), output_file_name, mpv_out, feof(fp), ferror(fp));
     }
