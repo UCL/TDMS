@@ -4,8 +4,9 @@
 
 #include <spdlog/spdlog.h>
 
-using namespace std;
+#include "utils.h"
 
+using namespace std;
 
 ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
   spdlog::debug("Parsing {} command line arguments", n_args);
@@ -135,6 +136,13 @@ vector<string> ArgumentNamespace::input_filenames() {
   }
 
   return filenames;
+}
+
+void ArgumentNamespace::check_files_can_be_accessed() {
+  // check input files can be read from
+  for (const auto &filename : input_filenames()) { assert_can_open_file(filename.c_str(), "r"); }
+  // check output file can be written to
+  assert_can_open_file(output_filename(), "a+");
 }
 
 bool ArgumentNamespace::have_correct_number_of_filenames() const {

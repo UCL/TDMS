@@ -7,7 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "openandorder.h"
+#include "argument_parser.h"
 #include "input_output_names.h"
 #include "input_matrices.h"
 #include "iterator.h"
@@ -29,7 +29,7 @@ int main(int nargs, char *argv[]){
   OutputMatrices outputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
-  check_files_can_be_accessed(args);
+  args.check_files_can_be_accessed();
 
   //now it is safe to use matlab routines to open the file and order the matrices
   if (!args.has_grid_filename()) {
