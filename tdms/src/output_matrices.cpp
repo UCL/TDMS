@@ -24,7 +24,6 @@ int OutputMatrices::index_from_matrix_name(const std::string &matrix_name) {
 bool OutputMatrices::memory_already_assigned(vector<string> matrix_names) {
   for(string &matrix_name : matrix_names) {
     if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) {
-      spdlog::info(matrix_name + " is already assigned!");
       return true;
     }
   }
@@ -32,21 +31,20 @@ bool OutputMatrices::memory_already_assigned(vector<string> matrix_names) {
 }
 bool OutputMatrices::memory_already_assigned(string matrix_name) {
   if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) {
-    spdlog::info(matrix_name + " is already assigned!");
     return true;
   }
   return false;
 }
 
 void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, mxClassID data_type,
-                                         mxComplexity complexity) {
+                                         mxComplexity complexity, int ndims) {
   // avoid memory leaks
   error_on_memory_assigned(matrix_names);
   // assign the empty array to all the matrix_names
-  int dims[2] = {0, 0};
+  vector<int> dims(ndims, 0);
   for (std::string matrix : matrix_names) {
     matrix_pointers[index_from_matrix_name(matrix)] =
-            mxCreateNumericArray(2, (const mwSize *) dims, data_type, complexity);
+            mxCreateNumericArray(ndims, (const mwSize *) dims.data(), data_type, complexity);
   }
 }
 
@@ -119,7 +117,7 @@ void OutputMatrices::allocate_Id_memory(bool empty_allocation) {
 
 void OutputMatrices::allocate_campssample_memory(int n_vertices, int n_components,
                                                  int n_frequencies) {
-  if (n_vertices <= 0) { assign_empty_matrix({"campssample"}); }
+  if (n_vertices <= 0) { assign_empty_matrix({"campssample"}, mxDOUBLE_CLASS, mxCOMPLEX, 3); }
   else {
     // avoid memory leaks
     error_on_memory_assigned("campssample");

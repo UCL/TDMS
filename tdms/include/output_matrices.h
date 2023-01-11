@@ -62,8 +62,9 @@ private:
    * @param matrix_names The list of matrix names to set to be empty.
    * @param data_type The data type to assign to the empty array (needed for compatability issues)
    * @param is_complex Whether the data is complex (mxCOMPLEX) or real (mxREAL)
+   * @param ndims Number of dimensions in the empty array to assign
    */
-  void assign_empty_matrix(std::vector<std::string> matrix_names, mxClassID data_type = mxDOUBLE_CLASS, mxComplexity complexity = mxCOMPLEX);
+  void assign_empty_matrix(std::vector<std::string> matrix_names, mxClassID data_type = mxDOUBLE_CLASS, mxComplexity complexity = mxCOMPLEX, int ndims = 2);
 
 public:
   OutputMatrices() = default;
