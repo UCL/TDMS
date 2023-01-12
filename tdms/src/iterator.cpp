@@ -4452,7 +4452,7 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   free_cast_matlab_2D_array(iwave_lHy_Rbs);
   free_cast_matlab_2D_array(iwave_lHy_Ibs);
 
-  for(i = 0; i < 4; i++) { mxDestroyArray(plhs_stand_in[i]); }
+  for(i = 0; i < 4; i++) { mxDestroyArray(plhs_stand_in[i]); } //< TIDY THIS UP! OUTPUT_MATRICES DOESN'T NEED AS MANY POINTERS AS IT DOES, NOR DO THE LISTS OF NAMES IN INPUT_OUTPUT_MATRICES.H.
 
   if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
   else
