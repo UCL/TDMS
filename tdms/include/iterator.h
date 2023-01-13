@@ -22,10 +22,12 @@
 void execute_simulation(int, OutputMatrices &outputs, int, InputMatrices in_matrices, SolverMethod solver_method,
                         PreferredInterpolationMethods preferred_interpolation_methods);
 
-void extractPhasorsPlane( double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs, double **iwave_lEy_Ibs,
-			  double **iwave_lHx_Rbs, double **iwave_lHx_Ibs, double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
-        ElectricSplitField &E, MagneticSplitField &H,
-			  int I_tot, int J_tot, int K1, int n, double omega, double dt, int Nt);
+void extractPhasorsPlane(Matrix<std::complex<double>> &iwave_lEx_bs,
+                         Matrix<std::complex<double>> &iwave_lEy_bs,
+                         Matrix<std::complex<double>> &iwave_lHx_bs,
+                         Matrix<std::complex<double>> &iwave_lHy_bs, ElectricSplitField &E,
+                         MagneticSplitField &H, int I_tot, int J_tot, int K1, int n, double omega,
+                         double dt, int Nt);
 
 void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim);
 
