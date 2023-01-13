@@ -271,9 +271,7 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   double Ca, Cb, Cc;     //used by interpolation scheme
   //the C and D vars for free space and pml
   double Enp1, Jnp1;
-  //these are used for boot strapping. There is currently no way of exporting this.
-  double **iwave_lEx_Rbs, **iwave_lEy_Rbs, **iwave_lHx_Rbs, **iwave_lHy_Rbs, **iwave_lEx_Ibs,
-          **iwave_lEy_Ibs, **iwave_lHx_Ibs, **iwave_lHy_Ibs;
+
   double maxfield = 0.;
 
   //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
@@ -654,46 +652,17 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     these will be used in a boot strapping procedure. Calculated over a complete
     xy-plane. */
 
-  ndims = 2;
-  dims[0] = I_tot;
-  dims[1] = J_tot + 1;
-  // I have a theory that these variables (previously plhs[6->9]) are not actually written to as outputs, and thus don't need to be saved into plhs/outputs
-  mxArray *plhs_stand_in[4] = {nullptr};
+  // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused...
+  Matrix<complex<double>> iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs;
 
-  plhs_stand_in[0] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//x electric field source phasor - boot strapping
-  iwave_lEx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[0]), dims[0], dims[1]);
-  iwave_lEx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[0]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEx_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEx_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot + 1;
-  dims[1] = J_tot;
-  plhs_stand_in[1] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//y electric field source phasor - boot strapping
-  iwave_lEy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[1]), dims[0], dims[1]);
-  iwave_lEy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[1]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEy_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lEy_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot + 1;
-  dims[1] = J_tot;
-  plhs_stand_in[2] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//x magnetic field source phasor - boot strapping
-
-  iwave_lHx_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[2]), dims[0], dims[1]);
-  iwave_lHx_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[2]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHx_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHx_Ibs, dims[0], dims[1]);
-
-  dims[0] = I_tot;
-  dims[1] = J_tot + 1;
-  plhs_stand_in[3] = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
-                                 mxCOMPLEX);//y magnetic field source phasor - boot strapping
-  iwave_lHy_Rbs = cast_matlab_2D_array(mxGetPr((mxArray *) plhs_stand_in[3]), dims[0], dims[1]);
-  iwave_lHy_Ibs = cast_matlab_2D_array(mxGetPi((mxArray *) plhs_stand_in[3]), dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHy_Rbs, dims[0], dims[1]);
-  initialiseDouble2DArray(iwave_lHy_Ibs, dims[0], dims[1]);
+  //x electric field source phasor - boot strapping
+  iwave_lEx_bs.allocate(I_tot, J_tot + 1);
+  //y electric field source phasor - boot strapping
+  iwave_lEy_bs.allocate(I_tot + 1, J_tot);
+  //x magnetic field source phasor - boot strapping
+  iwave_lHx_bs.allocate(I_tot + 1, J_tot);
+  //y magnetic field source phasor - boot strapping
+  iwave_lHy_bs.allocate(I_tot, J_tot + 1);
 
   /*start dispersive*/
 
@@ -1150,10 +1119,9 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     //fprintf(stderr,"Pos 02b:\n");
     if (params.run_mode == RunMode::complete)
       if (params.dimension == THREE) {
-        extractPhasorsPlane(iwave_lEx_Rbs, iwave_lEx_Ibs, iwave_lEy_Rbs, iwave_lEy_Ibs,
-                            iwave_lHx_Rbs, iwave_lHx_Ibs, iwave_lHy_Rbs, iwave_lHy_Ibs, E_s, H_s,
-                            I_tot, J_tot, K0.index + 1, tind, params.omega_an, params.dt,
-                            params.Nt);//extract the phasors just above the line
+        //extract the phasors just above the line
+        extractPhasorsPlane(iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs, E_s, H_s, I_tot,
+                            J_tot, K0.index + 1, tind, params.omega_an, params.dt, params.Nt);
       }
     //fprintf(stderr,"Pos 02c:\n");
 
@@ -4442,18 +4410,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
     free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
   }
 
-  free_cast_matlab_2D_array(iwave_lEx_Rbs);
-  free_cast_matlab_2D_array(iwave_lEx_Ibs);
-  free_cast_matlab_2D_array(iwave_lEy_Rbs);
-  free_cast_matlab_2D_array(iwave_lEy_Ibs);
-
-  free_cast_matlab_2D_array(iwave_lHx_Rbs);
-  free_cast_matlab_2D_array(iwave_lHx_Ibs);
-  free_cast_matlab_2D_array(iwave_lHy_Rbs);
-  free_cast_matlab_2D_array(iwave_lHy_Ibs);
-
-  for(i = 0; i < 4; i++) { mxDestroyArray(plhs_stand_in[i]); } //< TIDY THIS UP! OUTPUT_MATRICES DOESN'T NEED AS MANY POINTERS AS IT DOES, NOR DO THE LISTS OF NAMES IN INPUT_OUTPUT_MATRICES.H.
-
   if (params.dimension == THREE) free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
   else
     free_cast_matlab_3D_array(materials, 0);
@@ -4617,51 +4573,35 @@ void update_EH(double **EHr, double **EHi, int vindex, int idx, complex<double> 
   }
 }
 
-void extractPhasorsPlane(double **iwave_lEx_Rbs, double **iwave_lEx_Ibs, double **iwave_lEy_Rbs,
-                         double **iwave_lEy_Ibs, double **iwave_lHx_Rbs, double **iwave_lHx_Ibs,
-                         double **iwave_lHy_Rbs, double **iwave_lHy_Ibs,
-                         ElectricSplitField &E, MagneticSplitField &H, int I_tot, int J_tot, int K1, int n,
-                         double omega, double dt, int Nt) {
+void extractPhasorsPlane(Matrix<complex<double>> &iwave_lEx_bs, Matrix<complex<double>> &iwave_lEy_bs,
+                         Matrix<complex<double>> &iwave_lHx_bs, Matrix<complex<double>> &iwave_lHy_bs,
+                         ElectricSplitField &E, MagneticSplitField &H, int I_tot, int J_tot, int K1,
+                         int n, double omega, double dt, int Nt) {
 
-  complex<double> phaseTerm = 0., subResult = 0.;
+  complex<double> phaseTerm = fmod(omega * ((double) n) * dt, 2 * DCPI);
 
-
-  phaseTerm = fmod(omega * ((double) n) * dt, 2 * DCPI);
-  int i, j;
-
-  for (j = 0; j < J_tot; j++)
-    for (i = 0; i < (I_tot + 1); i++) {
-
-
+  for (int j = 0; j < J_tot; j++) {
+    for (int i = 0; i < (I_tot + 1); i++) {
+      complex<double> subResult = 0.;
       //Eyz
       subResult = (E.yz[K1][j][i] + E.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-      iwave_lEy_Rbs[j][i] = iwave_lEy_Rbs[j][i] + real(subResult);
-      iwave_lEy_Ibs[j][i] = iwave_lEy_Ibs[j][i] + imag(subResult);
-
+      iwave_lEy_bs[j][i] += subResult;
       //Hxz
       subResult = (H.xz[K1 - 1][j][i] + H.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-      iwave_lHx_Rbs[j][i] = iwave_lHx_Rbs[j][i] + real(subResult);
-      iwave_lHx_Ibs[j][i] = iwave_lHx_Ibs[j][i] + imag(subResult);
+      iwave_lHx_bs[j][i] += subResult;
     }
-
-  for (j = 0; j < (J_tot + 1); j++)
-    for (i = 0; i < I_tot; i++) {
-
-
+  }
+  for (int j = 0; j < (J_tot + 1); j++) {
+    for (int i = 0; i < I_tot; i++) {
+      complex<double> subResult = 0.;
       //Exz
       subResult = (E.xz[K1][j][i] + E.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-      iwave_lEx_Rbs[j][i] = iwave_lEx_Rbs[j][i] + real(subResult);
-      iwave_lEx_Ibs[j][i] = iwave_lEx_Ibs[j][i] + imag(subResult);
-
+      iwave_lEx_bs[j][i] += subResult;
       //Hyz
       subResult = (H.yz[K1 - 1][j][i] + H.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-
-      iwave_lHy_Rbs[j][i] = iwave_lHy_Rbs[j][i] + real(subResult);
-      iwave_lHy_Ibs[j][i] = iwave_lHy_Ibs[j][i] + imag(subResult);
+      iwave_lHy_bs[j][i] += subResult;
     }
+  }
 }
 
 /*Implements a linear ramp which has the properties:
