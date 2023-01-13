@@ -306,35 +306,6 @@ IncidentField::IncidentField(const mxArray *ptr){
   set_component(y, ptr, "eyi");
 }
 
-FieldSample::FieldSample(const mxArray *ptr){
-
-  if (mxIsEmpty(ptr)){
-    return;
-  }
-
-  assert_is_struct_with_n_fields(ptr, 4, "fieldsample");
-  i = Vector<int>(ptr_to_vector_or_empty_in(ptr, "i", "fieldsample"));
-  j = Vector<int>(ptr_to_vector_or_empty_in(ptr, "j", "fieldsample"));
-  k = Vector<int>(ptr_to_vector_or_empty_in(ptr, "k", "fieldsample"));
-  n = Vector<double>(ptr_to_vector_or_empty_in(ptr, "n", "fieldsample"));
-
-  int n_dims = 4;
-  if (all_vectors_are_non_empty()){
-    int dims[4] = {i.size(), j.size(), k.size(), n.size()};
-    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-    tensor = cast_matlab_4D_array(mxGetPr(mx), i.size(), j.size(), k.size(), n.size());
-  } else {
-    int dims[4] = {0, 0, 0, 0};
-    mx = mxCreateNumericArray(n_dims, (const mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
-  }
-}
-
-FieldSample::~FieldSample() {
-  if (all_vectors_are_non_empty()) {
-    free_cast_matlab_4D_array(tensor, k.size(), n.size());
-  }
-}
-
 void FieldComponentsVector::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "components", "campssample");
@@ -371,25 +342,13 @@ void Vertices::initialise(const mxArray *ptr) {
     throw runtime_error("Second dimension in campssample.vertices must be 3");
   }
 
-  cerr << "found vertices (" << n_vertices << " x 3)\n";
+  spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
   matrix = cast_matlab_2D_array((int *)mxGetPr(element), n_vertices, n_cols);
 
   for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
     for (int k = 0; k < n_cols; k++) {
       matrix[k][j] -= 1;
     }
-}
-
-ComplexAmplitudeSample::ComplexAmplitudeSample(const mxArray *ptr) {
-
-  if (mxIsEmpty(ptr)){
-    spdlog::info("campssample is empty");
-    return;
-  }
-
-  assert_is_struct_with_n_fields(ptr, 2, "campssample");
-  vertices.initialise(ptr);
-  components.initialise(ptr);
 }
 
 void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {

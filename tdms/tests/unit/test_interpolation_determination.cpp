@@ -91,7 +91,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_id == N-1 : Use CUBIC_LAST
   */
   SECTION("Interpolation scheme selection: forced cubic interpolation") {
-    SPDLOG_INFO("");
+    SPDLOG_INFO("Interpolation scheme selection: Forced cubic interpolation");
     N = 6;
     REQUIRE_THROWS_AS(best_scheme(N, 0), out_of_range);
     all_schemes_correct =
