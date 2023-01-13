@@ -138,13 +138,20 @@ public:
    */
   void allocate_campssample_memory(int n_vertices, int n_components, int n_frequencies);
   /**
-   * @brief Creat MATLAB memory for the gridlabels for the interpolated fields
+   * @brief Create MATLAB memory for the gridlabels for the interpolated fields
    *
    * @param empty_allocation If true, empty arrays will be allocated
    * @param E,H The {electric,magnetic} field that will be interpolated
    * @param simulation_dimension Whether we are running a 3D, TE, or TM simulation
    */
   void allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension = THREE);
+  /**
+   * @brief Create MATLAB memory for the (surface) phasor outputs
+   *
+   * @param empty_allocation If true, empty arrays will be allocated
+   * @param surface_phasors The surface phasor object handling phasor extraction
+   * @param mx_surface_facets The surface facets to write out
+   */
   void allocate_extracted_phasor_memory(bool empty_allocation, SurfacePhasors &surface_phasors, mxArray *mx_surface_facets);
 
   /**
