@@ -39,7 +39,7 @@ void VertexPhasors::normalise_vertices(int frequency_index, complex<double> Enor
   }
 }
 
-void VertexPhasors::setup_camplitude_arrays(int _f_ex_vector_size) {
+void VertexPhasors::setup_complex_amplitude_arrays(int _f_ex_vector_size) {
   // store the size of the frequency extraction vector
   f_ex_vector_size = _f_ex_vector_size;
 

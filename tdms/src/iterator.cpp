@@ -768,7 +768,7 @@ void execute_simulation(int nlhs, mxArray *plhs[], int nrhs, InputMatrices in_ma
 
   plhs[27] = fieldsample.mx;
 
-  vertex_phasors.setup_camplitude_arrays(f_ex_vec.size());
+  vertex_phasors.setup_complex_amplitude_arrays(f_ex_vec.size());
   plhs[28] = vertex_phasors.get_mx_camplitudes();
 
   /*end of setup the output array for the sampled field*/

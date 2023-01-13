@@ -53,7 +53,7 @@ public:
    *
    * @param _f_ex_vector_size The number of frequencies at which we need to extract phasors
    */
-  void setup_camplitude_arrays(int _f_ex_vector_size);
+  void setup_complex_amplitude_arrays(int _f_ex_vector_size);
 
   // Fetch the number of vertices at which we are extracting phasors
   int n_vertices() { return vertices.n_vertices(); }
