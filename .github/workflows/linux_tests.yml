@@ -38,13 +38,13 @@ jobs:
           path: ${{ github.workspace }}/tdms/tests/system/data
           key: test_data
 
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.3
+
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install libfftw3-dev libgomp1 python3
-
-      - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v1.2.3
 
       - name: Install Python dependencies
         shell: bash
