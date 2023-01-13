@@ -132,20 +132,4 @@ namespace tdms_matrix_names {
             "x_out",       "y_out",       "z_out",  "Ex_i",        "Ey_i",       "Ez_i",
             "Hx_i",        "Hy_i",        "Hz_i",   "x_i",         "y_i",        "z_i",
             "camplitudes", "maxresfield", "Id",     "fieldsample", "campssample"};
-    // indices of the matrices to save when saving a complete system
-    const int matricestosave_all[NOUTMATRICES_WRITE_ALL] = {
-        0,   1,  2,  3,  4,  5,
-        10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21,
-        22, 23, 24, 25, 26, 27,
-        28
-    };
-    // indices of the matrices to save when saving a compressed output
-    const int matricestosave[NOUTMATRICES_WRITE] = {
-        0,   1,  2,  3,  4,  5,
-        10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21,
-            23,     25, 26, 27,
-        28
-    };
 }

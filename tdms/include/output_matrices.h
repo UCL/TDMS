@@ -18,7 +18,7 @@
 class OutputMatrices {
 private:
   // Pointers to arrays in C++ that will be populated by pointers to the output data
-  mxArray *matrix_pointers[NOUTMATRICES_PASSED] = {nullptr};
+  mxArray *matrix_pointers[NOUTMATRICES_WRITE_ALL] = {nullptr};
 
   /**
    * @brief Fetches the index of matrix_name in the tdms_matrix_names::matrixnames array
