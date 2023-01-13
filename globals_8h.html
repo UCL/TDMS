@@ -110,23 +110,27 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="globals_8h__dep__incl.png" border="0" usemap="#atdms_2include_2globals_8hdep" alt=""/></div>
 <map name="atdms_2include_2globals_8hdep" id="atdms_2include_2globals_8hdep">
-<area shape="rect" title="Type definitions and global constants." alt="" coords="428,5,597,32"/>
-<area shape="rect" href="argument__parser_8h.html" title="Parse the command line options." alt="" coords="573,259,746,300"/>
-<area shape="rect" href="arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="115,87,278,114"/>
-<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="387,266,537,293"/>
-<area shape="rect" href="interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="660,80,853,121"/>
-<area shape="rect" href="test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="1067,169,1273,211"/>
-<area shape="rect" href="openandorder_8h.html" title="Launch TDMS and file IO." alt="" coords="554,355,765,382"/>
-<area shape="rect" href="test__openandorder_8cpp.html" title="Tests of the argument parsing and file I/O." alt="" coords="789,348,938,389"/>
-<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="299,437,441,464"/>
-<area shape="rect" href="openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="512,437,711,464"/>
-<area shape="rect" href="iterator_8h.html" title="The main time propogation algorithm." alt="" coords="192,355,361,382"/>
-<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="175,169,354,211"/>
-<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="5,348,164,389"/>
-<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="167,266,363,293"/>
-<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="386,348,530,389"/>
-<area shape="rect" href="test__BLi__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="550,169,779,211"/>
-<area shape="rect" href="test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="804,169,1043,211"/>
+<area shape="rect" title="Type definitions and global constants." alt="" coords="1178,5,1347,32"/>
+<area shape="rect" href="argument__parser_8h.html" title="Parse the command line options." alt="" coords="228,259,401,300"/>
+<area shape="rect" href="arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="1069,87,1232,114"/>
+<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="690,266,841,293"/>
+<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="1240,437,1389,479"/>
+<area shape="rect" href="interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="1519,80,1713,121"/>
+<area shape="rect" href="test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="1926,169,2133,211"/>
+<area shape="rect" href="openandorder_8h.html" title="Launch TDMS and file IO." alt="" coords="5,355,216,382"/>
+<area shape="rect" href="test__openandorder_8cpp.html" title="Tests of the argument parsing and file I/O." alt="" coords="240,348,389,389"/>
+<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="331,445,474,471"/>
+<area shape="rect" href="openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="61,445,259,471"/>
+<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="777,355,975,382"/>
+<area shape="rect" href="iterator_8h.html" title="The main time propogation algorithm." alt="" coords="414,355,583,382"/>
+<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="999,348,1158,389"/>
+<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="1183,348,1335,389"/>
+<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="895,169,1073,211"/>
+<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="608,348,752,389"/>
+<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="801,437,951,479"/>
+<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="917,266,1113,293"/>
+<area shape="rect" href="test__BLi__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="1409,169,1639,211"/>
+<area shape="rect" href="test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="1663,169,1902,211"/>
 </map>
 </div>
 </div>
@@ -182,6 +186,17 @@ Enumerations</h2></td></tr>
 , <b>Z</b> = 'z'
  }</td></tr>
 <tr class="separator:a5879680973bb58d228b0c6b21849b91b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5808a87728ffa9d8e3fe1b4f2e39736"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a> { <br />
+&#160;&#160;<b>Ex</b> = 1
+, <b>Ey</b>
+, <b>Ez</b>
+, <b>Hx</b>
+, <br />
+&#160;&#160;<b>Hy</b>
+, <b>Hz</b>
+<br />
+ }</td></tr>
+<tr class="separator:ad5808a87728ffa9d8e3fe1b4f2e39736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48254810c9a3cb3db453e76473e8bd75"><td class="memItemLeft" align="right" valign="top"><a id="a48254810c9a3cb3db453e76473e8bd75"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ModeOfRun</b> { <b>Pass1</b>
 , <b>Pass2</b>
  }</td></tr>
@@ -222,7 +237,23 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><b>tdms_phys_con
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Type definitions and global constants. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ad5808a87728ffa9d8e3fe1b4f2e39736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5808a87728ffa9d8e3fe1b4f2e39736">&#9670;&nbsp;</a></span>FieldComponents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enum defining a mapping to integers used in the MATLAB initialisation </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

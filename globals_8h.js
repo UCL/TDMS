@@ -18,6 +18,14 @@ var globals_8h =
       [ "Y", "globals_8h.html#a5879680973bb58d228b0c6b21849b91ba5596231eabd6cf29050967d5ac83ad84", null ],
       [ "Z", "globals_8h.html#a5879680973bb58d228b0c6b21849b91baa70478ce277ffc322f8e1e3418e07355", null ]
     ] ],
+    [ "FieldComponents", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736", [
+      [ "Ex", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a9498420f987a58d92c85d24db7dbbd68", null ],
+      [ "Ey", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a1e36d69c654454fd89cd363782e22de5", null ],
+      [ "Ez", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a071a675b7c762c52066edb32604612dc", null ],
+      [ "Hx", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a4716e899686aff8bf7099120f73dc3ce", null ],
+      [ "Hy", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a1f0458a53eb8162e3010bf46ff2642c8", null ],
+      [ "Hz", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a43b850ae3da15898c866e455699adf10", null ]
+    ] ],
     [ "ModeOfRun", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75", [
       [ "Pass1", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a24553a2fdacf611cf1fb636d49cd3af7", null ],
       [ "Pass2", "globals_8h.html#a48254810c9a3cb3db453e76473e8bd75a7dd0791ec75e1af594b61ed389686b9e", null ]

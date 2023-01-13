@@ -9,14 +9,6 @@ var simulation__parameters_8h =
       [ "TRANSVERSE_ELECTRIC", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaaf165474b57a2587fc707350aef7b687d", null ],
       [ "TRANSVERSE_MAGNETIC", "simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dcaa3bb6315f793dfa33b6d2262a18d96fa2", null ]
     ] ],
-    [ "FieldComponents", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736", [
-      [ "Ex", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a9498420f987a58d92c85d24db7dbbd68", null ],
-      [ "Ey", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a1e36d69c654454fd89cd363782e22de5", null ],
-      [ "Ez", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a071a675b7c762c52066edb32604612dc", null ],
-      [ "Hx", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a4716e899686aff8bf7099120f73dc3ce", null ],
-      [ "Hy", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a1f0458a53eb8162e3010bf46ff2642c8", null ],
-      [ "Hz", "simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a43b850ae3da15898c866e455699adf10", null ]
-    ] ],
     [ "InterpolationMethod", "simulation__parameters_8h.html#aa0081e804011c551ea0f4a596a64b284", [
       [ "null", "simulation__parameters_8h.html#aa0081e804011c551ea0f4a596a64b284af9a713ed26dee661a259730e650987e4", null ],
       [ "cubic", "simulation__parameters_8h.html#aa0081e804011c551ea0f4a596a64b284acbf80121500507c24dac0e575046c210", null ],

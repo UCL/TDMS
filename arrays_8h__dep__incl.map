@@ -1,11 +1,15 @@
 <map id="tdms/include/arrays.h" name="tdms/include/arrays.h">
-<area shape="rect" id="node1" title="Classes describing arrays, vertices etc." alt="" coords="311,5,474,32"/>
-<area shape="rect" id="node2" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="89,251,259,278"/>
-<area shape="rect" id="node5" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="303,80,482,121"/>
-<area shape="rect" id="node8" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="496,244,655,285"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,333,148,360"/>
-<area shape="rect" id="node4" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="172,333,371,360"/>
-<area shape="rect" id="node6" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="212,169,363,196"/>
-<area shape="rect" id="node9" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="387,169,583,196"/>
-<area shape="rect" id="node7" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="283,244,427,285"/>
+<area shape="rect" id="node1" title="Classes describing arrays, vertices etc." alt="" coords="503,5,666,32"/>
+<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="411,169,561,196"/>
+<area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,251,204,278"/>
+<area shape="rect" id="node6" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="397,251,567,278"/>
+<area shape="rect" id="node9" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="591,244,749,285"/>
+<area shape="rect" id="node10" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="774,244,926,285"/>
+<area shape="rect" id="node12" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="295,80,474,121"/>
+<area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="229,244,373,285"/>
+<area shape="rect" id="node5" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="30,333,179,375"/>
+<area shape="rect" id="node7" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="301,341,444,367"/>
+<area shape="rect" id="node8" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="468,341,667,367"/>
+<area shape="rect" id="node11" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="775,333,925,375"/>
+<area shape="rect" id="node13" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="139,169,335,196"/>
 </map>

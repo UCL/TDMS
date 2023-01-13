@@ -4,7 +4,7 @@ var classSurfacePhasors =
     [ "SurfacePhasors", "classSurfacePhasors.html#a25568be5d58f1826077f0e6dbde6a57c", null ],
     [ "~SurfacePhasors", "classSurfacePhasors.html#a1d51934bc421abad2a5ac169b6da1546", null ],
     [ "create_vertex_list", "classSurfacePhasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70", null ],
-    [ "extractPhasorsSurface", "classSurfacePhasors.html#a7fd5224c8826b850f9df008f8ca3184e", null ],
+    [ "extractPhasorsSurface", "classSurfacePhasors.html#a698362f4563916176d7aea5579723afc", null ],
     [ "get_mx_surface_amplitudes", "classSurfacePhasors.html#afa16cf5a7cf2c8a373edeec4f0540119", null ],
     [ "get_n_surface_vertices", "classSurfacePhasors.html#a27092b12c7b1e09f092309629dba5f98", null ],
     [ "get_vertex_list", "classSurfacePhasors.html#ae3634fed0c4c238d2115ae51afad6e49", null ],

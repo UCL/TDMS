@@ -149,94 +149,80 @@ $(document).ready(function(){initNavTree('simulation__parameters_8h_source.html'
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">int</span> y = 1;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">int</span> z = 1;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> * Enum defining a mapping to integers used in the MATLAB initialisation</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">   68</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a>{</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  Ex = 1,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  Ey,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  Ez,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  Hx,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  Hy,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  Hz</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"> * @brief Class storing the various constants and behaviour flags for one executation of the tdms executable.</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> * Stores physical constants like the angular frequency, and Yee cell dimensions.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"> * Stores flags like whether the material is dispersive, or whether we want to extract phasors on a predefined surface.</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment"> * Stores numerical method constants like number of timesteps, length of timesteps.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classSimulationParameters.html">   85</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSimulationParameters.html">SimulationParameters</a>{</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="classSimulationParameters.html">SimulationParameters</a>();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">double</span>       omega_an      = 0.0;       <span class="comment">//&lt; Angular ω</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Nt            = 0;         <span class="comment">//&lt; Number of simulation steps</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Np            = 0;         <span class="comment">//&lt; Number of times to extract the phasors</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Npe           = 0;         <span class="comment">//&lt; Extract the phasors every this number of iterations</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> start_tind    = 0;         <span class="comment">//&lt; Starting iteration number for the time steps</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">double</span>       dt            = 0.0;       <span class="comment">//&lt; Time step</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span>         has_tdfdir    = <span class="keyword">false</span>;     <span class="comment">//&lt; Is the tdfdir (time domain field directory) defined?</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">bool</span>         is_multilayer = <span class="keyword">false</span>;     <span class="comment">//&lt; Is this simulation of a multilayer?</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span>         is_disp_ml    = <span class="keyword">false</span>;     <span class="comment">//&lt; Is the material dispersive?</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">double</span>       to_l          = 0.0;       <span class="comment">//&lt; Time delay of pulse</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">double</span>       hwhm          = 0.0;       <span class="comment">//&lt; Half width at half max of pulse</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a> pml;              <span class="comment">//&lt; Perfectly matched layer struct with size attributes</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">bool</span>         exphasorsvolume = <span class="keyword">false</span>;   <span class="comment">//&lt; Should phasors be extracted in the whole volume?</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">bool</span>         exphasorssurface = <span class="keyword">false</span>;  <span class="comment">//&lt; Should phasors be extracted on a surface?</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordtype">bool</span>         intphasorssurface = <span class="keyword">false</span>; <span class="comment">//&lt; Should phasors be extracted/interpolated?</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    RunMode      run_mode     = complete;   <span class="comment">//&lt; Run mode</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    SourceMode   source_mode  = pulsed;     <span class="comment">//&lt; Source mode</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    Dimension    dimension    = THREE;      <span class="comment">//&lt; Dimensions to calculate in</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">bool</span>         is_structure = <span class="keyword">false</span>;      <span class="comment">//&lt; Has a grating structure been defined?</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">bool</span>         exdetintegral = <span class="keyword">false</span>;     <span class="comment">//&lt; TODO: detector sensitivity evaluation ?</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">int</span>          k_det_obs    = 0;          <span class="comment">//&lt; TODO: no idea what this is?!</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordtype">double</span>       z_obs        = 0.0;        <span class="comment">//&lt; Value of the input grid_labels_z at k_det_obs</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordtype">bool</span>         air_interface_present = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordtype">double</span>       air_interface = 0.0;       <span class="comment">//&lt; TODO: what is this?!</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordtype">bool</span>         interp_mat_props = <span class="keyword">false</span>;  <span class="comment">//&lt; Should the material properties be interpolated?</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    InterpolationMethod interp_method = cubic; <span class="comment">//&lt; Type of surface field interpolation to do</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordtype">bool</span>         exi_present = <span class="keyword">false</span>;       <span class="comment">//&lt; Is the time dependent x incident field present?</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">bool</span>         eyi_present = <span class="keyword">false</span>;       <span class="comment">//&lt; Is the time dependent y incident field present?</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <a class="code" href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a> spacing_stride;    <span class="comment">//&lt; Surface stride for extracting phasors (in matlab this is called &#39;phasorinc&#39;)</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <a class="code" href="structYeeCellDimensions.html">YeeCellDimensions</a> delta;                <span class="comment">//&lt; Yee cell dimensions (dx, dy, dz)</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"> * @brief Class storing the various constants and behaviour flags for one executation of the tdms executable.</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"> * Stores physical constants like the angular frequency, and Yee cell dimensions.</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment"> * Stores flags like whether the material is dispersive, or whether we want to extract phasors on a predefined surface.</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"> * Stores numerical method constants like number of timesteps, length of timesteps.</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classSimulationParameters.html">   72</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSimulationParameters.html">SimulationParameters</a>{</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <a class="code" href="classSimulationParameters.html">SimulationParameters</a>();</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">double</span>       omega_an      = 0.0;       <span class="comment">//&lt; Angular ω</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Nt            = 0;         <span class="comment">//&lt; Number of simulation steps</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Np            = 0;         <span class="comment">//&lt; Number of times to extract the phasors</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Npe           = 0;         <span class="comment">//&lt; Extract the phasors every this number of iterations</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> start_tind    = 0;         <span class="comment">//&lt; Starting iteration number for the time steps</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">double</span>       dt            = 0.0;       <span class="comment">//&lt; Time step</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span>         has_tdfdir    = <span class="keyword">false</span>;     <span class="comment">//&lt; Is the tdfdir (time domain field directory) defined?</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">bool</span>         is_multilayer = <span class="keyword">false</span>;     <span class="comment">//&lt; Is this simulation of a multilayer?</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">bool</span>         is_disp_ml    = <span class="keyword">false</span>;     <span class="comment">//&lt; Is the material dispersive?</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">double</span>       to_l          = 0.0;       <span class="comment">//&lt; Time delay of pulse</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">double</span>       hwhm          = 0.0;       <span class="comment">//&lt; Half width at half max of pulse</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a> pml;              <span class="comment">//&lt; Perfectly matched layer struct with size attributes</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">bool</span>         exphasorsvolume = <span class="keyword">false</span>;   <span class="comment">//&lt; Should phasors be extracted in the whole volume?</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">bool</span>         exphasorssurface = <span class="keyword">false</span>;  <span class="comment">//&lt; Should phasors be extracted on a surface?</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">bool</span>         intphasorssurface = <span class="keyword">false</span>; <span class="comment">//&lt; Should phasors be extracted/interpolated?</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    RunMode      run_mode     = complete;   <span class="comment">//&lt; Run mode</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    SourceMode   source_mode  = pulsed;     <span class="comment">//&lt; Source mode</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    Dimension    dimension    = THREE;      <span class="comment">//&lt; Dimensions to calculate in</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span>         is_structure = <span class="keyword">false</span>;      <span class="comment">//&lt; Has a grating structure been defined?</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span>         exdetintegral = <span class="keyword">false</span>;     <span class="comment">//&lt; TODO: detector sensitivity evaluation ?</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">int</span>          k_det_obs    = 0;          <span class="comment">//&lt; TODO: no idea what this is?!</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">double</span>       z_obs        = 0.0;        <span class="comment">//&lt; Value of the input grid_labels_z at k_det_obs</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">bool</span>         air_interface_present = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">double</span>       air_interface = 0.0;       <span class="comment">//&lt; TODO: what is this?!</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">bool</span>         interp_mat_props = <span class="keyword">false</span>;  <span class="comment">//&lt; Should the material properties be interpolated?</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    InterpolationMethod interp_method = cubic; <span class="comment">//&lt; Type of surface field interpolation to do</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">bool</span>         exi_present = <span class="keyword">false</span>;       <span class="comment">//&lt; Is the time dependent x incident field present?</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordtype">bool</span>         eyi_present = <span class="keyword">false</span>;       <span class="comment">//&lt; Is the time dependent y incident field present?</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <a class="code" href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a> spacing_stride;    <span class="comment">//&lt; Surface stride for extracting phasors (in matlab this is called &#39;phasorinc&#39;)</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <a class="code" href="structYeeCellDimensions.html">YeeCellDimensions</a> delta;                <span class="comment">//&lt; Yee cell dimensions (dx, dy, dz)</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span> set_run_mode(std::string mode_string);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">void</span> set_source_mode(std::string mode_string);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordtype">void</span> set_dimension(std::string mode_string);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">    /**</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">     * @brief Set the surface spacing stride.</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">     * The x, y, z step size for extracting phasors (in matlab this is called &#39;phasorinc&#39;)</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">     * @param vector the x, y, z steps (i.e. x = 2 means extract from every 2nd Yee cell.)</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">set_spacing_stride</a>(<span class="keyword">const</span> <span class="keywordtype">double</span>* vector);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordtype">void</span> set_run_mode(std::string mode_string);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordtype">void</span> set_source_mode(std::string mode_string);</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordtype">void</span> set_dimension(std::string mode_string);</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">    /**</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment">     * @brief Set the surface spacing stride.</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment">     * The x, y, z step size for extracting phasors (in matlab this is called &#39;phasorinc&#39;)</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment">     * @param vector the x, y, z steps (i.e. x = 2 means extract from every 2nd Yee cell.)</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">set_spacing_stride</a>(<span class="keyword">const</span> <span class="keywordtype">double</span>* vector);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordtype">void</span> set_Np(<a class="code" href="classFrequencyExtractVector.html">FrequencyExtractVector</a> &amp;f_ex_vec);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="comment">    /**</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="comment">     * @brief Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">     * @param in_matrices The input arrays from the input file(s) to tdms</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b">unpack_from_input_matrices</a>(<a class="code" href="classInputMatrices.html">InputMatrices</a> in_matrices);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;};</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordtype">void</span> set_Np(<a class="code" href="classFrequencyExtractVector.html">FrequencyExtractVector</a> &amp;f_ex_vec);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">    /**</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">     * @brief Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">     * @param in_matrices The input arrays from the input file(s) to tdms</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b">unpack_from_input_matrices</a>(<a class="code" href="classInputMatrices.html">InputMatrices</a> in_matrices);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;};</div>
 <div class="ttc" id="aarrays_8h_html"><div class="ttname"><a href="arrays_8h.html">arrays.h</a></div><div class="ttdoc">Classes describing arrays, vertices etc.</div></div>
 <div class="ttc" id="aclassFrequencyExtractVector_html"><div class="ttname"><a href="classFrequencyExtractVector.html">FrequencyExtractVector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:300</div></div>
 <div class="ttc" id="aclassInputMatrices_html"><div class="ttname"><a href="classInputMatrices.html">InputMatrices</a></div><div class="ttdef"><b>Definition:</b> input_matrices.h:13</div></div>
-<div class="ttc" id="aclassSimulationParameters_html"><div class="ttname"><a href="classSimulationParameters.html">SimulationParameters</a></div><div class="ttdoc">Class storing the various constants and behaviour flags for one executation of the tdms executable.</div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:85</div></div>
+<div class="ttc" id="aclassSimulationParameters_html"><div class="ttname"><a href="classSimulationParameters.html">SimulationParameters</a></div><div class="ttdoc">Class storing the various constants and behaviour flags for one executation of the tdms executable.</div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:72</div></div>
 <div class="ttc" id="aclassSimulationParameters_html_a05d8c16f873435e51e8e32ff48fe353b"><div class="ttname"><a href="classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b">SimulationParameters::unpack_from_input_matrices</a></div><div class="ttdeci">void unpack_from_input_matrices(InputMatrices in_matrices)</div><div class="ttdoc">Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.</div><div class="ttdef"><b>Definition:</b> simulation_parameters.cpp:67</div></div>
 <div class="ttc" id="aclassSimulationParameters_html_a3f5aca819aabeede1fdc3ca60e41d13d"><div class="ttname"><a href="classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">SimulationParameters::set_spacing_stride</a></div><div class="ttdeci">void set_spacing_stride(const double *vector)</div><div class="ttdoc">Set the surface spacing stride. The x, y, z step size for extracting phasors (in matlab this is calle...</div><div class="ttdef"><b>Definition:</b> simulation_parameters.cpp:48</div></div>
 <div class="ttc" id="ainput__matrices_8h_html"><div class="ttname"><a href="input__matrices_8h.html">input_matrices.h</a></div><div class="ttdoc">Class handling the input matrices that are read in from the input file.</div></div>
-<div class="ttc" id="asimulation__parameters_8h_html_ad5808a87728ffa9d8e3fe1b4f2e39736"><div class="ttname"><a href="simulation__parameters_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736">FieldComponents</a></div><div class="ttdeci">FieldComponents</div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:68</div></div>
 <div class="ttc" id="astructPerfectlyMatchedLayer_html"><div class="ttname"><a href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:13</div></div>
 <div class="ttc" id="astructSurfaceSpacingStride_html"><div class="ttname"><a href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:58</div></div>
 <div class="ttc" id="astructYeeCellDimensions_html"><div class="ttname"><a href="structYeeCellDimensions.html">YeeCellDimensions</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:23</div></div>

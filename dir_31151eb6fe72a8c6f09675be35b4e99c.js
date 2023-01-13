@@ -25,10 +25,8 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "Tensor3D", "classTensor3D.html", "classTensor3D" ],
       [ "DTilde", "classDTilde.html", "classDTilde" ],
       [ "IncidentField", "classIncidentField.html", "classIncidentField" ],
-      [ "FieldSample", "classFieldSample.html", "classFieldSample" ],
       [ "FieldComponentsVector", "classFieldComponentsVector.html", "classFieldComponentsVector" ],
       [ "Vertices", "classVertices.html", "classVertices" ],
-      [ "ComplexAmplitudeSample", "classComplexAmplitudeSample.html", "classComplexAmplitudeSample" ],
       [ "DetectorSensitivityArrays", "classDetectorSensitivityArrays.html", "classDetectorSensitivityArrays" ],
       [ "CCoefficientMatrix", "classCCoefficientMatrix.html", null ],
       [ "EHVec", "classEHVec.html", "classEHVec" ],
@@ -54,6 +52,9 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "ElectricField", "classElectricField.html", "classElectricField" ],
       [ "MagneticField", "classMagneticField.html", "classMagneticField" ],
       [ "TDFieldExporter2D", "classTDFieldExporter2D.html", "classTDFieldExporter2D" ]
+    ] ],
+    [ "fieldsample.h", "fieldsample_8h.html", [
+      [ "FieldSample", "classFieldSample.html", "classFieldSample" ]
     ] ],
     [ "globals.h", "globals_8h.html", "globals_8h" ],
     [ "grid_labels.h", "grid__labels_8h.html", [
@@ -87,5 +88,8 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     [ "timer.h", "timer_8h.html", [
       [ "Timer", "classTimer.html", "classTimer" ]
     ] ],
-    [ "utils.h", "utils_8h.html", "utils_8h" ]
+    [ "utils.h", "utils_8h.html", "utils_8h" ],
+    [ "vertex_phasors.h", "vertex__phasors_8h.html", [
+      [ "VertexPhasors", "classVertexPhasors.html", "classVertexPhasors" ]
+    ] ]
 ];

@@ -108,12 +108,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a35bda0eed23ec2e33f93194c71091851"><td class="memItemLeft" align="right" valign="top"><a id="a35bda0eed23ec2e33f93194c71091851"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>FieldSample</b> (const mxArray *ptr)</td></tr>
 <tr class="separator:a35bda0eed23ec2e33f93194c71091851"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6043f347fa1b5cf0f78d81d92a42ab3d"><td class="memItemLeft" align="right" valign="top"><a id="a6043f347fa1b5cf0f78d81d92a42ab3d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>all_vectors_are_non_empty</b> () const</td></tr>
+<tr class="memitem:a6043f347fa1b5cf0f78d81d92a42ab3d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFieldSample.html#a6043f347fa1b5cf0f78d81d92a42ab3d">all_vectors_are_non_empty</a> () const</td></tr>
 <tr class="separator:a6043f347fa1b5cf0f78d81d92a42ab3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a869b8f1f595edb5c2fd63eaca15ea2b3"><td class="memItemLeft" align="right" valign="top"><a id="a869b8f1f595edb5c2fd63eaca15ea2b3"></a>
 double ***&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int value) const</td></tr>
 <tr class="separator:a869b8f1f595edb5c2fd63eaca15ea2b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3eac231b85e434098bbd2d4a5814d36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFieldSample.html#ab3eac231b85e434098bbd2d4a5814d36">extract</a> (<a class="el" href="classElectricSplitField.html">ElectricSplitField</a> &amp;E_split, <a class="el" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a> &amp;pml, int n_simulation_timesteps)</td></tr>
+<tr class="memdesc:ab3eac231b85e434098bbd2d4a5814d36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the (Electric) field values at the vertices.  <a href="classFieldSample.html#ab3eac231b85e434098bbd2d4a5814d36">More...</a><br /></td></tr>
+<tr class="separator:ab3eac231b85e434098bbd2d4a5814d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -139,9 +141,80 @@ Private Attributes</h2></td></tr>
 double ****&#160;</td><td class="memItemRight" valign="bottom"><b>tensor</b> = nullptr</td></tr>
 <tr class="separator:a0accfe8ad7bb09c6502d82fddeab5aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6043f347fa1b5cf0f78d81d92a42ab3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6043f347fa1b5cf0f78d81d92a42ab3d">&#9670;&nbsp;</a></span>all_vectors_are_non_empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool FieldSample::all_vectors_are_non_empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if all vectors in this instance are non-empty (have size &gt; 0) </p>
+
+</div>
+</div>
+<a id="ab3eac231b85e434098bbd2d4a5814d36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3eac231b85e434098bbd2d4a5814d36">&#9670;&nbsp;</a></span>extract()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FieldSample::extract </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classElectricSplitField.html">ElectricSplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>E_split</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>pml</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_simulation_timesteps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract the (Electric) field values at the vertices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">E_split</td><td>Values of the electric (split) field </td></tr>
+    <tr><td class="paramname">pml</td><td>A description of the perfectly matched layer being used in this simulation </td></tr>
+    <tr><td class="paramname">n_simulation_timesteps</td><td>The (total) number of timesteps in this simulation </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
-<li>tdms/src/arrays.cpp</li>
+<li>tdms/include/<a class="el" href="fieldsample_8h_source.html">fieldsample.h</a></li>
+<li>tdms/src/fieldsample.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

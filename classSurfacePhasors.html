@@ -125,9 +125,9 @@ mxArray *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 <tr class="memitem:a8948023a7248add2e5fcb6a961bc9db6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurfacePhasors.html#a8948023a7248add2e5fcb6a961bc9db6">normalise_surface</a> (int frequency_index, std::complex&lt; double &gt; Enorm, std::complex&lt; double &gt; Hnorm)</td></tr>
 <tr class="memdesc:a8948023a7248add2e5fcb6a961bc9db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalise the surface amplitudes at frequency_vector_index by the E- and H-norms provided.  <a href="classSurfacePhasors.html#a8948023a7248add2e5fcb6a961bc9db6">More...</a><br /></td></tr>
 <tr class="separator:a8948023a7248add2e5fcb6a961bc9db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd5224c8826b850f9df008f8ca3184e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurfacePhasors.html#a7fd5224c8826b850f9df008f8ca3184e">extractPhasorsSurface</a> (int frequency_index, <a class="el" href="classElectricSplitField.html">ElectricSplitField</a> &amp;E, <a class="el" href="classMagneticSplitField.html">MagneticSplitField</a> &amp;H, int n, double omega, int Nt, int J_tot, <a class="el" href="classSimulationParameters.html">SimulationParameters</a> &amp;params, bool interpolate=true)</td></tr>
-<tr class="memdesc:a7fd5224c8826b850f9df008f8ca3184e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the phasor values at the vertices on the surface, for the given frequency index.  <a href="classSurfacePhasors.html#a7fd5224c8826b850f9df008f8ca3184e">More...</a><br /></td></tr>
-<tr class="separator:a7fd5224c8826b850f9df008f8ca3184e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698362f4563916176d7aea5579723afc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurfacePhasors.html#a698362f4563916176d7aea5579723afc">extractPhasorsSurface</a> (int frequency_index, <a class="el" href="classElectricSplitField.html">ElectricSplitField</a> &amp;E, <a class="el" href="classMagneticSplitField.html">MagneticSplitField</a> &amp;H, int n, double omega, int Nt, <a class="el" href="classSimulationParameters.html">SimulationParameters</a> &amp;params, bool interpolate=true)</td></tr>
+<tr class="memdesc:a698362f4563916176d7aea5579723afc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the phasor values at the vertices on the surface, for the given frequency index.  <a href="classSurfacePhasors.html#a698362f4563916176d7aea5579723afc">More...</a><br /></td></tr>
+<tr class="separator:a698362f4563916176d7aea5579723afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f1b6c74e2e2bb7db03a391df8ae0e70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSurfacePhasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70">create_vertex_list</a> (<a class="el" href="classGridLabels.html">GridLabels</a> input_grid_labels)</td></tr>
 <tr class="memdesc:a1f1b6c74e2e2bb7db03a391df8ae0e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pulls the <a class="el" href="classGridLabels.html">GridLabels</a> information of vertices on the surface into vertex_list, a continuous block of memory.  <a href="classSurfacePhasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70">More...</a><br /></td></tr>
 <tr class="separator:a1f1b6c74e2e2bb7db03a391df8ae0e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -198,8 +198,8 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>surface_EHi</b>
 
 </div>
 </div>
-<a id="a7fd5224c8826b850f9df008f8ca3184e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fd5224c8826b850f9df008f8ca3184e">&#9670;&nbsp;</a></span>extractPhasorsSurface()</h2>
+<a id="a698362f4563916176d7aea5579723afc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698362f4563916176d7aea5579723afc">&#9670;&nbsp;</a></span>extractPhasorsSurface()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,12 +243,6 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>surface_EHi</b>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>J_tot</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype"><a class="el" href="classSimulationParameters.html">SimulationParameters</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
@@ -274,7 +268,6 @@ double ***&#160;</td><td class="memItemRight" valign="bottom"><b>surface_EHi</b>
     <tr><td class="paramname">n</td><td>Current timestep index </td></tr>
     <tr><td class="paramname">omega</td><td>Angular frequency </td></tr>
     <tr><td class="paramname">Nt</td><td>The number of timesteps in a sinusoidal period </td></tr>
-    <tr><td class="paramname">J_tot</td><td>Number of cells in the y-direction </td></tr>
     <tr><td class="paramname">params</td><td>The parameters for this simulation </td></tr>
     <tr><td class="paramname">interpolate</td><td>If true, perform interpolation on the fields when extracting phasors </td></tr>
   </table>
