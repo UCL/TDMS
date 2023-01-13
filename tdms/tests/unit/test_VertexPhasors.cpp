@@ -43,7 +43,7 @@ void VertexPhasorsTest::test_correct_construction() {
   // check that we are flagged as having elements to extract at
   CHECK(vp.there_are_vertices_to_extract_at());
   // attempt to initialise camplitude{R,I} arrays
-  vp.setup_camplitude_arrays(f_ex_vec_size);
+  vp.setup_complex_amplitude_arrays(f_ex_vec_size);
 }
 
 TEST_CASE("VertexPhasors") { VertexPhasorsTest().run_all_class_tests(); }
