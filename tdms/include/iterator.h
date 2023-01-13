@@ -40,11 +40,3 @@ bool is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_to
 void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);
-
-void normaliseVertices( double **EHr, double **EHi, ComplexAmplitudeSample &campssample, std::complex<double> Enorm , std::complex<double> Hnorm );
-
-void update_EH(double **EHr, double **EHi, int vindex, int idx, std::complex<double> &phase_term, double &value);
-
-void extractPhasorsVertices(double **EHr, double **EHi, ElectricSplitField &E, MagneticSplitField &H,
-                            ComplexAmplitudeSample &campssample, int n, double omega, double dt, int Nt,
-                            int dimension,int J_tot,int intmethod );

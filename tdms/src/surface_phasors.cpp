@@ -63,7 +63,7 @@ void SurfacePhasors::normalise_surface(int frequency_index, complex<double> Enor
 
 void SurfacePhasors::extractPhasorsSurface(int frequency_index,
                                            ElectricSplitField &E, MagneticSplitField &H, int n,
-                                           double omega, int Nt, int J_tot,
+                                           double omega, int Nt,
                                            SimulationParameters &params, bool interpolate) {
   int vindex;
   FullFieldSnapshot F;

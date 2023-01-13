@@ -6,6 +6,7 @@
 
 #include <complex>
 
+#include "arrays.h"
 #include "cell_coordinate.h"
 #include "dimensions.h"
 #include "mat_io.h"
