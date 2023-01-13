@@ -19,8 +19,8 @@
  * @brief Executes the main simulation.
  * Used to be the MATLAB mexFunction
  */
-void execute_simulation(int, OutputMatrices &outputs, int, InputMatrices in_matrices, SolverMethod solver_method,
-                        PreferredInterpolationMethods preferred_interpolation_methods);
+OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver_method,
+                                  PreferredInterpolationMethods preferred_interpolation_methods);
 
 void extractPhasorsPlane(Matrix<std::complex<double>> &iwave_lEx_bs,
                          Matrix<std::complex<double>> &iwave_lEy_bs,

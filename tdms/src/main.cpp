@@ -26,7 +26,6 @@ int main(int nargs, char *argv[]){
   #endif
 
   InputMatrices matrix_inputs;
-  OutputMatrices outputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
   args.check_files_can_be_accessed();
@@ -51,8 +50,8 @@ int main(int nargs, char *argv[]){
   }
 
   // now run the time propagation code
-  execute_simulation(NOUTMATRICES_PASSED, outputs, NMATRICES,
-                     matrix_inputs, solver_method, preferred_interpolation_methods);
+  OutputMatrices outputs =
+          execute_simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
 
   // save the outputs, possibly in compressed format
   outputs.save_outputs(args.output_filename(), args.have_flag("-m"));

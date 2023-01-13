@@ -233,9 +233,10 @@ using namespace tdms_phys_constants;
   campssample.components - numerical array of up to six elements which defines which field components
                            will be sampled, 1 means Ex, 2 Ey etc.
 */
-void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatrices in_matrices,
-                        SolverMethod solver_method,
-                        PreferredInterpolationMethods preferred_interpolation_methods) {
+OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver_method,
+                                  PreferredInterpolationMethods preferred_interpolation_methods) {
+  // declare the to-be output
+  OutputMatrices outputs;
 
   if (solver_method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
@@ -307,10 +308,6 @@ void execute_simulation(int nlhs, OutputMatrices &outputs, int nrhs, InputMatric
   complex<double> Idxt, Idyt, kprop;
 
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
-
-  if (nrhs != 49) { throw runtime_error("Expected 49 inputs. Had " + to_string(nrhs)); }
-
-  if (nlhs != 31) { throw runtime_error("31 outputs required. Had " + to_string(nlhs)); }
 
   // unpack all simulation parameters from the input matrices
   params.unpack_from_input_matrices(in_matrices);
