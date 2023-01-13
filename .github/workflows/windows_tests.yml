@@ -38,7 +38,7 @@ jobs:
           key: test_data
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v1.2.3
+        uses: matlab-actions/setup-matlab@v2-beta
 
       - name: Install miniconda
         uses: conda-incubator/setup-miniconda@v2
