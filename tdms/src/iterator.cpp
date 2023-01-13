@@ -649,7 +649,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     these will be used in a boot strapping procedure. Calculated over a complete
     xy-plane. */
 
-  // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused...
+  // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
   Matrix<complex<double>> iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs;
 
   //x electric field source phasor - boot strapping
@@ -4433,6 +4433,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     mxDestroyArray(dummy_array[2]);
   }
   //must destroy surface_phasors.mx_surface_amplitudes
+
+  return outputs;
 }
 
 /*Sets the contents of the 3 dimensional double array to zero
@@ -4582,10 +4584,10 @@ void extractPhasorsPlane(Matrix<complex<double>> &iwave_lEx_bs, Matrix<complex<d
       complex<double> subResult = 0.;
       //Eyz
       subResult = (E.yz[K1][j][i] + E.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lEy_bs[j][i] += subResult;
+      iwave_lEy_bs[i][j] += subResult;
       //Hxz
       subResult = (H.xz[K1 - 1][j][i] + H.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lHx_bs[j][i] += subResult;
+      iwave_lHx_bs[i][j] += subResult;
     }
   }
   for (int j = 0; j < (J_tot + 1); j++) {
@@ -4593,10 +4595,10 @@ void extractPhasorsPlane(Matrix<complex<double>> &iwave_lEx_bs, Matrix<complex<d
       complex<double> subResult = 0.;
       //Exz
       subResult = (E.xz[K1][j][i] + E.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lEx_bs[j][i] += subResult;
+      iwave_lEx_bs[i][j] += subResult;
       //Hyz
       subResult = (H.yz[K1 - 1][j][i] + H.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lHy_bs[j][i] += subResult;
+      iwave_lHy_bs[i][j] += subResult;
     }
   }
 }
