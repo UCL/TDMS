@@ -29,12 +29,6 @@ bool OutputMatrices::memory_already_assigned(vector<string> matrix_names) {
   }
   return false;
 }
-bool OutputMatrices::memory_already_assigned(string matrix_name) {
-  if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) {
-    return true;
-  }
-  return false;
-}
 
 void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, mxClassID data_type,
                                          mxComplexity complexity, int ndims) {
@@ -50,13 +44,13 @@ void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, 
 
 void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   if (overwrite_existing) {
-    if (!memory_already_assigned("maxresfield")) {
+    if (!memory_already_assigned({"maxresfield"})) {
       throw runtime_error("Error: maxresfield has no allocated memory, but a write was attempted");
     }
     // overwrite the value currently at maxresfield
   } else {
     // avoid memory leaks
-    error_on_memory_assigned("maxresfield");
+    error_on_memory_assigned({"maxresfield"});
     // create and allocate new memory
     int dims[2] = {1, 1};
     matrix_pointers[index_from_matrix_name("maxresfield")] =
@@ -106,7 +100,7 @@ void OutputMatrices::allocate_Id_memory(bool empty_allocation) {
     assign_empty_matrix({"Id"});
   } else {
     // avoid memory leaks
-    error_on_memory_assigned("Id");
+    error_on_memory_assigned({"Id"});
 
     // create a structure array with two fields
     int dims[2] = {1, 1};
@@ -120,7 +114,7 @@ void OutputMatrices::allocate_campssample_memory(int n_vertices, int n_component
   if (n_vertices <= 0) { assign_empty_matrix({"campssample"}, mxDOUBLE_CLASS, mxCOMPLEX, 3); }
   else {
     // avoid memory leaks
-    error_on_memory_assigned("campssample");
+    error_on_memory_assigned({"campssample"});
 
     // allocate appropriate memory
     int dims[3] = {n_vertices, n_components, n_frequencies};
@@ -262,7 +256,7 @@ OutputMatrices::~OutputMatrices() {
   // search through all possible output matrices
   for(string matrix_name : outputmatrices_all) {
     // check for allocated memory
-    if(memory_already_assigned(matrix_name)) {
+    if(memory_already_assigned({matrix_name})) {
       // destroy MATLAB structure recursively
       mxDestroyArray(matrix_pointers[index_from_matrix_name(matrix_name)]);
     }
