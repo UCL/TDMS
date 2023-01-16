@@ -42,6 +42,22 @@ void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, 
   }
 }
 
+void OutputMatrices::setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies) {
+  // setup from the input provided
+  vertex_phasors.set_from(vp_ptr);
+
+  // avoid memory leaks
+  error_on_memory_assigned({"campssample"});
+
+  // assign memory if we have been asked to extract phasors at specific vertices
+  if (vertex_phasors.there_are_vertices_to_extract_at()) {
+    vertex_phasors.setup_complex_amplitude_arrays(n_frequencies);
+    matrix_pointers[index_from_matrix_name("campssample")] = vertex_phasors.get_mx_camplitudes();
+  } else {
+    assign_empty_matrix({"campssample"}, mxDOUBLE_CLASS, mxCOMPLEX, 3);
+  }
+}
+
 void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   if (overwrite_existing) {
     if (!memory_already_assigned({"maxresfield"})) {

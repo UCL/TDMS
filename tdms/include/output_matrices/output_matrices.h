@@ -13,6 +13,7 @@
 #include "matrix.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
+#include "vertex_phasors.h"
 #include "id_variables.h"
 
 class OutputMatrices {
@@ -65,6 +66,16 @@ public:
   OutputMatrices() = default;
 
   /**
+   * @brief Fetch a (pointer to a) MATLAB output matrix by name.
+   *
+   * @param matrix_name Name of the matrix to fetch the pointer to
+   * @return mxArray* Pointer to the corresponding MATLAB array
+   */
+  mxArray *&operator[](const std::string &matrix_name) {
+    return matrix_pointers[index_from_matrix_name(matrix_name)];
+  }
+
+  /**
    * @brief Record the number of Yee cells in each axial direction from the split-electric field that was input.
    *
    * @param E_s Split electric field input
@@ -104,15 +115,15 @@ public:
     return IJKDims(E.I_tot, E.J_tot, E.K_tot);
   }
 
+  VertexPhasors vertex_phasors;
+
   /**
-   * @brief Fetch a (pointer to a) MATLAB output matrix by name.
+   * @brief Setup the object that will handle extraction of the phasors at the vertices
    *
-   * @param matrix_name Name of the matrix to fetch the pointer to
-   * @return mxArray* Pointer to the corresponding MATLAB array
+   * @param vp_ptr Pointer to the input array containing vertex data
+   * @param n_frequencies The number of frequencies we are extracting at
    */
-  mxArray* &operator[](const std::string &matrix_name) {
-    return matrix_pointers[index_from_matrix_name(matrix_name)];
-  }
+  void setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies);
 
   /**
    * @brief Set the maxresfield object. If memory has not been reserved yet, it can be assigned here.

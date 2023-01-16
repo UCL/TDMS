@@ -402,7 +402,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   /*Got tdfdir*/
 
   auto fieldsample = FieldSample(in_matrices["fieldsample"]);
-  VertexPhasors vertex_phasors(in_matrices["campssample"]);
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * params.delta.dx) / EPSILON0);
@@ -585,8 +584,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   outputs["fieldsample"] = fieldsample.mx;
 
-  vertex_phasors.setup_complex_amplitude_arrays(f_ex_vec.size());
-  outputs["campssample"] = vertex_phasors.get_mx_camplitudes();
+  outputs.setup_vertex_phasors(in_matrices["campssample"], f_ex_vec.size());
 
   /*end of setup the output array for the sampled field*/
 
@@ -876,13 +874,13 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     }
 
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete &&
-        (vertex_phasors.there_are_vertices_to_extract_at()) &&
+        (outputs.vertex_phasors.there_are_vertices_to_extract_at()) &&
         ((tind - params.start_tind) % params.Np == 0)) {
       //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
           //fprintf(stderr,"loc 03\n");
           //	  fprintf(stderr,"EPV 01\n");
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            vertex_phasors.extractPhasorsVertices(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI, params);
+            outputs.vertex_phasors.extractPhasorsVertices(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI, params);
           }
     }
 
@@ -3987,7 +3985,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     }
     if (TIME_EXEC) { timer.click(); }
 
-    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || vertex_phasors.there_are_vertices_to_extract_at()) {
+    if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
       if (params.source_mode == SourceMode::steadystate) {
 	/*
 	  Each time a new acquisition period of harmonic illumination begins, all complex amplitudes
@@ -4131,10 +4129,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
   }
-  if (params.run_mode == RunMode::complete && vertex_phasors.there_are_vertices_to_extract_at()) {
+  if (params.run_mode == RunMode::complete && outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
     spdlog::info("Vertex phasors");
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
+      outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
       spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
   }
