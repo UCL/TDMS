@@ -57,7 +57,7 @@ public:
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
-  IJKTotal IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
+  IJKDims IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
 
   IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
                                         SolverMethod _solver_method);

@@ -21,5 +21,5 @@ private:
 public:
   SimulationManager(InputMatrices inputs, SolverMethod _solver_method);
 
-  IJKTotal n_Yee_cells() { return infile_data.IJK_tot; }
+  IJKDims n_Yee_cells() { return infile_data.IJK_tot; }
 };

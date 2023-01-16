@@ -16,9 +16,9 @@ class FDTDBootstrapper {
       Matrix<std::complex<double>> Ex, Ey, Hx, Hy;
     public:
       FDTDBootstrapper() = default;
-      FDTDBootstrapper(IJKTotal IJK_tot) { allocate_memory(IJK_tot); }
+      FDTDBootstrapper(IJKDims IJK_tot) { allocate_memory(IJK_tot); }
 
-      void allocate_memory(IJKTotal IJK_tot);
+      void allocate_memory(IJKDims IJK_tot);
 
-      void extract_phasors_in_plane(ElectricSplitField &E_s, MagneticSplitField &H_s, IJKTotal IJK_tot, int K1, int tind, SimulationParameters params);
+      void extract_phasors_in_plane(ElectricSplitField &E_s, MagneticSplitField &H_s, IJKDims IJK_tot, int K1, int tind, SimulationParameters params);
 };

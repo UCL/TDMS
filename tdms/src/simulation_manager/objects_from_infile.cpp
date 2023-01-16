@@ -44,7 +44,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // get the fdtd grid
   init_grid_arrays(matrices_from_input_file["fdtdgrid"], E_s, H_s, materials);
   // set the {IJK}_tot variables using the split-field information we just unpacked
-  IJK_tot = IJKTotal(E_s.I_tot, E_s.J_tot, E_s.K_tot);
+  IJK_tot = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
 
   // Get freespace - Cby Cbz Dbx Dby Dbz are unused
   freespace_Cbx =
