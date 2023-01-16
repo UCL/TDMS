@@ -116,6 +116,16 @@ public:
     return IJKDims(E.I_tot, E.J_tot, E.K_tot);
   }
 
+  SurfacePhasors surface_phasors;
+
+  /**
+   * @brief Create MATLAB memory for the surface phasor outputs
+   *
+   * @param empty_allocation If true, empty arrays will be allocated
+   * @param mx_surface_facets The surface facets to write out
+   */
+  void assign_surface_phasor_outputs(bool empty_allocation, mxArray *mx_surface_facets);
+
   VertexPhasors vertex_phasors;
 
   /**
@@ -143,14 +153,6 @@ public:
   void set_maxresfield(double maxfield, bool overwrite_existing);
 
   /**
-   * @brief Create MATLAB memory for the campssample array.
-   *
-   * @param n_vertices Number of vertices we are extracting at. If this is 0, then allocate the empty array
-   * @param n_components Number of amplitude components we are extracting
-   * @param n_frequencies Number of frequencies we are extracting at
-   */
-  void allocate_campssample_memory(int n_vertices, int n_components, int n_frequencies);
-  /**
    * @brief Create MATLAB memory for the gridlabels for the interpolated fields
    *
    * @param empty_allocation If true, empty arrays will be allocated
@@ -158,14 +160,7 @@ public:
    * @param simulation_dimension Whether we are running a 3D, TE, or TM simulation
    */
   void allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension = THREE);
-  /**
-   * @brief Create MATLAB memory for the (surface) phasor outputs
-   *
-   * @param empty_allocation If true, empty arrays will be allocated
-   * @param surface_phasors The surface phasor object handling phasor extraction
-   * @param mx_surface_facets The surface facets to write out
-   */
-  void allocate_extracted_phasor_memory(bool empty_allocation, SurfacePhasors &surface_phasors, mxArray *mx_surface_facets);
+
 
   /**
    * @brief Save the output matrices to the output file

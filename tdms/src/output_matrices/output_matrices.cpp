@@ -191,19 +191,6 @@ void OutputMatrices::setup_Id(bool empty_allocation, int n_frequencies, int n_de
   }
 }
 
-void OutputMatrices::allocate_campssample_memory(int n_vertices, int n_components,
-                                                 int n_frequencies) {
-  if (n_vertices <= 0) { assign_empty_matrix({"campssample"}, mxDOUBLE_CLASS, mxCOMPLEX, 3); }
-  else {
-    // avoid memory leaks
-    error_on_memory_assigned({"campssample"});
-
-    // allocate appropriate memory
-    int dims[3] = {n_vertices, n_components, n_frequencies};
-    matrix_pointers[index_from_matrix_name("campssample")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-  }
-}
-
 void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension) {
   // output names that we will be allocating here
   vector<string> interpolated_gridlabels_names = {"x_i", "y_i", "z_i"};
@@ -284,8 +271,7 @@ void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, Electr
   }
 }
 
-void OutputMatrices::allocate_extracted_phasor_memory(bool empty_allocation,
-                                                      SurfacePhasors &surface_phasors, mxArray *mx_surface_facets) {
+void OutputMatrices::assign_surface_phasor_outputs(bool empty_allocation, mxArray *mx_surface_facets) {
   // output names that we will be assigning to
   vector<string> phasor_matrices = {"vertices", "camplitudes", "facets"};
 

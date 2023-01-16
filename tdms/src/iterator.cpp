@@ -290,7 +290,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   int i, j, k, n, k_loc, ndims, K;
   int Nsteps = 0, dft_counter = 0;
-  SurfacePhasors surface_phasors;
   int Ni_tdf = 0, Nk_tdf = 0;
 
   int skip_tdf = 1;
@@ -480,16 +479,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     //we don't need the facets so destroy the matrix now to save memory
     mxDestroyArray(mx_surface_facets);
 
-    surface_phasors.set_from_matlab_array(mx_surface_vertices, f_ex_vec.size());
-
-    // NOT SURE IF THIS IS STILL NEEDED - might be needless with our new class
-    ndims = 3;
-    dims[0] = surface_phasors.get_n_surface_vertices();
-    dims[1] = 6;//one for each component of field
-    dims[2] = f_ex_vec.size();
-
-    //now need to add a command to update the complex amplitudes
-  } // if (params.exphasorssurface && params.run_mode == RunMode::complete)
+    outputs.surface_phasors.set_from_matlab_array(mx_surface_vertices, f_ex_vec.size());
+  }
 
   //fprintf(stderr,"Pre 03\n");
   /*Now set up the phasor array, we will have 3 complex output arrays for Ex, Ey and Ez.
@@ -808,7 +799,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       spdlog::debug("Zeroed the phasors");
 
       if (params.exphasorssurface) {
-        surface_phasors.zero_surface_EH();
+        outputs.surface_phasors.zero_surface_EH();
         spdlog::debug("Zeroed the surface components");
       }
     }
@@ -819,21 +810,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       outputs.H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
 
       if (params.exphasorssurface) {
-        if (params.intphasorssurface) {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
-                                                  dft_counter, f_ex_vec[ifx] * 2 * DCPI, Nsteps,
-                                                  params);
-          }
-          dft_counter++;
-        } else {
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            // do not interpolate when extracting
-            surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, dft_counter,
-                    f_ex_vec[ifx] * 2 * DCPI, Nsteps, params, false);
-          }
-          dft_counter++;
+        for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+          outputs.surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, dft_counter,
+                                                        f_ex_vec[ifx] * 2 * DCPI, Nsteps, params,
+                                                        params.intphasorssurface);
         }
+        dft_counter++;
       }
 
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
@@ -856,18 +838,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     //fprintf(stderr,"Pos 02:\n");
     if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exphasorssurface) {
       if ((tind - params.start_tind) % params.Np == 0) {
-        if (params.intphasorssurface)
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s,
-                                                    tind, f_ex_vec[ifx] * 2 * DCPI, params.Npe,
-                                                    params);
-          }
-        else
-          for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            // do not interpolate when extracting
-              surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, tind, f_ex_vec[ifx] * 2 * DCPI,
-                      params.Npe, params, false);
-          }
+        for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
+          outputs.surface_phasors.extractPhasorsSurface(ifx, E_s, H_s, tind,
+                                                        f_ex_vec[ifx] * 2 * DCPI, params.Npe,
+                                                        params, params.intphasorssurface);
+        }
       }
     }
 
@@ -4123,7 +4098,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   if (params.run_mode == RunMode::complete && params.exphasorssurface) {
     spdlog::info("Surface phasors");
     for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
+      outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
       spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
     }
   }
@@ -4209,10 +4184,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     mxDestroyArray(dummy_vertex_list);
 
     //now create and populate the vertex list
-    surface_phasors.create_vertex_list(input_grid_labels);
+    outputs.surface_phasors.create_vertex_list(input_grid_labels);
   }
   // assign to the output
-  outputs.allocate_extracted_phasor_memory(!extracting_phasors, surface_phasors, mx_surface_facets);
+  outputs.assign_surface_phasor_outputs(!extracting_phasors, mx_surface_facets);
 
   /*End of FDTD iteration*/
 
