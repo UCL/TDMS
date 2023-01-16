@@ -12,6 +12,7 @@
 #include "field.h"
 #include "matrix.h"
 #include "simulation_parameters.h"
+#include "fieldsample.h"
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
 #include "id_variables.h"
@@ -124,6 +125,14 @@ public:
    * @param n_frequencies The number of frequencies we are extracting at
    */
   void setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies);
+
+  FieldSample fieldsample;
+  /**
+   * @brief Setup the object that handles extraction of the field values at the sample positions
+   *
+   * @param fieldsample_input_data Pointer to the input array containing sample positions
+   */
+  void setup_fieldsample(const mxArray *fieldsample_input_data);
 
   /**
    * @brief Set the maxresfield object. If memory has not been reserved yet, it can be assigned here.

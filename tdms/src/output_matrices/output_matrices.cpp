@@ -58,6 +58,11 @@ void OutputMatrices::setup_vertex_phasors(const mxArray *vp_ptr, int n_frequenci
   }
 }
 
+void OutputMatrices::setup_fieldsample(const mxArray *fieldsample_input_data) {
+  fieldsample.set_from(fieldsample_input_data);
+  matrix_pointers[index_from_matrix_name("fieldsample")] = fieldsample.mx;
+}
+
 void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   if (overwrite_existing) {
     if (!memory_already_assigned({"maxresfield"})) {

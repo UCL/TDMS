@@ -401,7 +401,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   }
   /*Got tdfdir*/
 
-  auto fieldsample = FieldSample(in_matrices["fieldsample"]);
 
   /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
   refind = sqrt(1. / (freespace_Cbx[0] / params.dt * params.delta.dx) / EPSILON0);
@@ -582,8 +581,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   if (is_conductive) { J_c.allocate_and_zero(); }
   /*end dispersive*/
 
-  outputs["fieldsample"] = fieldsample.mx;
-
+  outputs.setup_fieldsample(in_matrices["fieldsample"]);
   outputs.setup_vertex_phasors(in_matrices["campssample"], f_ex_vec.size());
 
   /*end of setup the output array for the sampled field*/
@@ -850,8 +848,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     }
 
     /*extract fieldsample*/
-    if (fieldsample.all_vectors_are_non_empty()) {
-      fieldsample.extract(E_s, params.pml, params.Nt);
+    if (outputs.fieldsample.all_vectors_are_non_empty()) {
+      outputs.fieldsample.extract(E_s, params.pml, params.Nt);
     }
     /*end extract fieldsample*/
 

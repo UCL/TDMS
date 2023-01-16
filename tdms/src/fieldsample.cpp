@@ -1,6 +1,6 @@
 #include "fieldsample.h"
 
-FieldSample::FieldSample(const mxArray *ptr) {
+void FieldSample::set_from(const mxArray *ptr) {
 
   if (mxIsEmpty(ptr)) { return; }
 

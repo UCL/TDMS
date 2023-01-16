@@ -46,7 +46,7 @@ public:
   VertexPhasors(const mxArray *ptr) { set_from(ptr); }
 
   /**
-   * @brief Setup the vertex phasors object using data from an input file
+   * @brief Setup using data from an input file
    *
    * @param ptr Pointer to the struct containing the list of vertices and components to extract phasors at/for
    */
