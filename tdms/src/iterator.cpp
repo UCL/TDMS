@@ -19,6 +19,7 @@
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
 #include "objects_from_infile.h"
+#include "output_matrices.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -501,7 +502,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     see page III.80 for explanation of the following. This has been extended so that interpolation
     is done at the end of the FDTD run and also to handle the case of when there is no PML in place
     more appropriatley*/
-  outputs.setup_EH_and_gridlabels(params);
+  outputs.setup_EH_and_gridlabels(params, input_grid_labels);
 
   // We need to test for convergence under the following conditions. As such, we need to initialise the array that will ultimately be copies of the phasors at the previous iteration, to test convergence against
   if (params.run_mode == RunMode::complete && params.exphasorsvolume &&
@@ -511,30 +512,32 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     int dummy_dims[3] = {IJK.I_tot(), IJK.J_tot(), IJK.K_tot()};
     // allocate memory space for this array
     dummy_array[0] =
-            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
+            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
     dummy_array[1] =
-            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
+            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
     dummy_array[2] =
-            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
+            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
 
-    E_copy.real.x =
-            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
-    E_copy.imag.x =
-            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+    E_copy.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+    E_copy.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
 
-    E_copy.real.y =
-            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
-    E_copy.imag.y =
-            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+    E_copy.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+    E_copy.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
 
-    E_copy.real.z =
-            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
-    E_copy.imag.z =
-            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+    E_copy.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+    E_copy.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
 
     E_copy.I_tot = IJK.I_tot();
     E_copy.J_tot = IJK.J_tot();
     E_copy.K_tot = IJK.K_tot();
+
+    E_copy.zero();
   }// if (params.source_mode == SourceMode::steadystate)
   //fprintf(stderr,"Pre 07\n");
   //this will be a copy of the phasors which are extracted from the previous cycle
@@ -581,10 +584,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     mxSetField(outputs["Id"], 0, "Idx", mx_Idx);
     mxSetField(outputs["Id"], 0, "Idy", mx_Idy);
   }
-  //fprintf(stderr,"Pre 12\n");
-  if (params.run_mode == RunMode::complete && params.source_mode == SourceMode::steadystate && params.exphasorsvolume) {
-    E_copy.zero();
-  }
+
   //fprintf(stderr,"Pre 13\n");
   /*This is just for efficiency */
   K = K_tot - params.pml.Dxl - params.pml.Dxu;

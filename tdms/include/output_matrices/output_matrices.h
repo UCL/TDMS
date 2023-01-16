@@ -72,7 +72,7 @@ public:
 
   void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels);
 
-  void set_E_s_dimensions(ElectricSplitField E_s) {
+  void set_E_s_dimensions(ElectricSplitField &E_s) {
     E_s_dimensions = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
   }
   IJKDims get_E_dimensions() {

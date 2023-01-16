@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include <algorithm>
+#include "utils.h"
 
 /**
  * @brief Provides a container for the (i,j,k) index of a Yee cell
@@ -47,16 +47,19 @@ public:
  * @brief Container for the {I,J,K}_tot variables, detailing the number of Yee cells in each of the axial direction.
  */
 class IJKDims {
-  private:
-    int I = 0, J = 0, K = 0;
-  public:
-    IJKDims(int _I = 0, int _J = 0, int _K = 0) {
-      I = _I; J = _J; K = _K;
-    }
+private:
+  int I = 0, J = 0, K = 0;
 
-    int max_tot() { return std::max(I_tot, J_tot, K_tot); }
+public:
+  IJKDims(int _I = 0, int _J = 0, int _K = 0) {
+    I = _I;
+    J = _J;
+    K = _K;
+  }
 
-    int I_tot() { return I; };//< fetch I_tot
-    int J_tot() { return J; };//< fetch J_tot
-    int K_tot() { return K; };//< fetch K_tot
+  int max_IJK() { return max(I, J, K); }
+
+  int I_tot() { return I; };//< fetch I_tot
+  int J_tot() { return J; };//< fetch J_tot
+  int K_tot() { return K; };//< fetch K_tot
 };

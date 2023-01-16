@@ -5,7 +5,7 @@
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
-#include <complex.h>
+#include <complex>
 
 #include "arrays.h"
 #include "array_test_class.h"

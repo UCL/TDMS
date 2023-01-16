@@ -108,8 +108,6 @@ void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLa
     matrix_pointers[index_from_matrix_name("z_out")] = mxCreateNumericArray(2, (const mwSize *) label_dims_z, mxDOUBLE_CLASS, mxREAL);
 
     // cast E, H, and gridlabel members to the MATLAB structures
-    int dims[3] = {E.I_tot, E.J_tot, E.K_tot};
-
     E.real.x = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Ex_out")]),
                                     E.I_tot, E.J_tot, E.K_tot);
     E.imag.x = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Ex_out")]),

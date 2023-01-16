@@ -29,6 +29,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
 
 # and the  include directories for the project
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include/simulation_manager)
+include_directories(${CMAKE_SOURCE_DIR}/include/output_matrices)
 include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
 
 
