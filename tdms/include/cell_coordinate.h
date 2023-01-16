@@ -5,9 +5,13 @@
  */
 #pragma once
 
-class CellCoordinate {
+#include <algorithm>
 
-private:
+/**
+ * @brief Provides a container for the (i,j,k) index of a Yee cell
+ */
+class CellCoordinate {
+protected:
   // the indices of the Yee cell. Private so that they cannot be edited unintentionally
   int cell_i = 0, cell_j = 0, cell_k = 0;
 
@@ -37,4 +41,18 @@ public:
   int i() { return cell_i; };   //< fetch i
   int j() { return cell_j; };   //< fetch j
   int k() { return cell_k; };   //< fetch k
+};
+
+/**
+ * @brief Container for the {I,J,K}_tot variables, detailing the number of Yee cells in each of the axial direction.
+ */
+class IJKTotal : public CellCoordinate {
+  public:
+    IJKTotal(int I = 0, int J = 0, int K = 0) : CellCoordinate(I, J, K) {};
+
+    int max_tot() { return std::max(cell_i, cell_j, cell_k); }
+
+    int I_tot() { return i(); };//< fetch I_tot
+    int J_tot() { return j(); };//< fetch J_tot
+    int K_tot() { return k(); };//< fetch K_tot
 };
