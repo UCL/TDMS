@@ -11,9 +11,9 @@
 #include "input_output_names.h"
 #include "field.h"
 #include "matrix.h"
-#include "matrix_collection.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
+#include "id_variables.h"
 
 class OutputMatrices {
 private:
@@ -59,18 +59,26 @@ private:
    */
   void assign_empty_matrix(std::vector<std::string> matrix_names, mxClassID data_type = mxDOUBLE_CLASS, mxComplexity complexity = mxCOMPLEX, int ndims = 2);
 
+  IJKDims E_s_dimensions;//< Number of Yee cells in the simulation, dictated by the E_s split-field
+
 public:
   OutputMatrices() = default;
 
-  /**
-   * @brief Fetch a (pointer to a) MATLAB output matrix by index reference.
-   *
-   * Index-references can be computed through index_from_matrix_name. They are ordered in the same way as the names in tdms_matrix_names::matrixnames.
-   *
-   * @param index The index to fetch
-   * @return mxArray* Pointer to the corresponding MATLAB array
-   */
-  mxArray* &operator[](int index) { return matrix_pointers[index]; }
+  IDVariables ID;
+
+  ElectricField E;
+  MagneticField H;
+  GridLabels output_grid_labels;
+
+  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels);
+
+  void set_E_s_dimensions(ElectricSplitField E_s) {
+    E_s_dimensions = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
+  }
+  IJKDims get_E_dimensions() {
+    return IJKDims(E.I_tot, E.J_tot, E.K_tot);
+  }
+
   /**
    * @brief Fetch a (pointer to a) MATLAB output matrix by name.
    *
@@ -89,13 +97,6 @@ public:
    */
   void set_maxresfield(double maxfield, bool overwrite_existing);
 
-  /**
-   * @brief Create MATLAB memory for the field and gridlabel outputs.
-   *
-   * @param empty_allocation If true, empty arrays will be allocated
-   * @param I_tot,J_tot,K_tot The dimensions of the field components (corresponding gridlabel dimensions will be inferred)
-   */
-  void allocate_field_and_labels_memory(bool empty_allocation, int I_tot = 0, int J_tot = 0, int K_tot = 0);
   /**
    * @brief Create MATLAB memory for the Id structure array.
    *

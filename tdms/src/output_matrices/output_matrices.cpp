@@ -60,37 +60,97 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   *mxGetPr(matrix_pointers[index_from_matrix_name("maxresfield")]) = maxfield;
 }
 
-void OutputMatrices::allocate_field_and_labels_memory(bool empty_allocation, int I_tot, int J_tot,
-                                                      int K_tot) {
-  // matrices we will be assigning in this allocation method
-  vector<string> matrices_to_assign = { "Ex_out", "Ey_out", "Ez_out", "Hx_out", "Hy_out", "Hz_out", "x_out", "y_out", "z_out" };
+void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels) {
+  // the dimensions of the fields
+  E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
+  E.iu = H.iu =
+          (params.pml.Dxu) ? E_s_dimensions.I_tot() - params.pml.Dxu - 1 : E_s_dimensions.I_tot();
+  E.jl = H.jl = (params.pml.Dyl) ? params.pml.Dyl + 2 : 0;
+  E.ju = H.ju =
+          (params.pml.Dyu) ? E_s_dimensions.J_tot() - params.pml.Dyu - 1 : E_s_dimensions.J_tot();
+  E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
+  E.ku = H.ku =
+          (params.pml.Dzu) ? E_s_dimensions.K_tot() - params.pml.Dzu - 1 : E_s_dimensions.K_tot();
+  // upper/lower limits of cell extraction
+  E.I_tot = H.I_tot = E.iu - E.il + 1;
+  E.J_tot = H.J_tot = E.ju - E.jl + 1;
+  E.K_tot = H.K_tot = E.ku - E.kl + 1;
 
-  // create output by reserving memory
-  if (empty_allocation) {
-    // assign empty matrices if this was requested
-    assign_empty_matrix(matrices_to_assign);
+  // depending on the simulation, we might not need to assign this memory
+  bool need_EH_memory = (params.run_mode == RunMode::complete && params.exphasorsvolume);
+  // field matrices we will be assigning
+  vector<string> field_matrices = {"Ex_out", "Ey_out", "Ez_out", "Hx_out", "Hy_out", "Hz_out"};
+  // gridlabels matrices we will be assigning
+  vector<string> grid_matrices = {"x_out", "y_out", "z_out"};
+  if (!need_EH_memory) {
+    // assign empty matrices
+    assign_empty_matrix(field_matrices);
+    assign_empty_matrix(grid_matrices);
   } else {
     // avoid memory leaks
-    error_on_memory_assigned(matrices_to_assign);
+    error_on_memory_assigned(field_matrices);
+    error_on_memory_assigned(grid_matrices);
 
     // initialise to actual, proper arrays
-    int dims[3] = {I_tot, J_tot, K_tot};
+    int dims[3] = {E.I_tot, E.J_tot, E.K_tot};
     spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
     // create MATLAB data storage for the field-component outputs
-    matrix_pointers[index_from_matrix_name("Ex_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    matrix_pointers[index_from_matrix_name("Ey_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    matrix_pointers[index_from_matrix_name("Ez_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    matrix_pointers[index_from_matrix_name("Hx_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    matrix_pointers[index_from_matrix_name("Hy_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    matrix_pointers[index_from_matrix_name("Hz_out")] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    for(string matrix : field_matrices) {
+      matrix_pointers[index_from_matrix_name(matrix)] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    }
     // create MATLAB data storage for the gridlabel outputs
-    int label_dims_x[2] = {1, I_tot};
-    int label_dims_y[2] = {1, J_tot};
-    int label_dims_z[2] = {1, K_tot};
+    int label_dims_x[2] = {1, E.I_tot};
+    int label_dims_y[2] = {1, E.J_tot};
+    int label_dims_z[2] = {1, E.K_tot};
     matrix_pointers[index_from_matrix_name("x_out")] = mxCreateNumericArray(2, (const mwSize *) label_dims_x, mxDOUBLE_CLASS, mxREAL);
     matrix_pointers[index_from_matrix_name("y_out")] = mxCreateNumericArray(2, (const mwSize *) label_dims_y, mxDOUBLE_CLASS, mxREAL);
     matrix_pointers[index_from_matrix_name("z_out")] = mxCreateNumericArray(2, (const mwSize *) label_dims_z, mxDOUBLE_CLASS, mxREAL);
+
+    // cast E, H, and gridlabel members to the MATLAB structures
+    int dims[3] = {E.I_tot, E.J_tot, E.K_tot};
+
+    E.real.x = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Ex_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+    E.imag.x = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Ex_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+
+    E.real.y = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Ey_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+    E.imag.y = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Ey_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+
+    E.real.z = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Ez_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+    E.imag.z = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Ez_out")]),
+                                    E.I_tot, E.J_tot, E.K_tot);
+
+    H.real.x = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Hx_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+    H.imag.x = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Hx_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+
+    H.real.y = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Hy_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+    H.imag.y = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Hy_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+
+    H.real.z = cast_matlab_3D_array(mxGetPr(matrix_pointers[index_from_matrix_name("Hz_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+    H.imag.z = cast_matlab_3D_array(mxGetPi(matrix_pointers[index_from_matrix_name("Hz_out")]),
+                                    H.I_tot, H.J_tot, H.K_tot);
+
+    //now construct the grid labels
+    output_grid_labels.x = mxGetPr(matrix_pointers[index_from_matrix_name("x_out")]);
+    output_grid_labels.y = mxGetPr(matrix_pointers[index_from_matrix_name("y_out")]);
+    output_grid_labels.z = mxGetPr(matrix_pointers[index_from_matrix_name("z_out")]);
+
+    //initialise field arrays
+    E.zero();
+    H.zero();
+
+    // initialise the gridlabels from the input grid labels (essentially shave off the PML labels)
+    output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
   }
 }
 

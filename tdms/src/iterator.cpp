@@ -18,6 +18,7 @@
 #include "source.h"
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
+#include "objects_from_infile.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -240,6 +241,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   // declare the to-be output
   OutputMatrices outputs;
 
+  // this will later be a member of simulation_elements
+  //ObjectsFromInfile inputs(in_matrices, solver_method);
+
   if (solver_method == SolverMethod::FiniteDifference) {
     spdlog::info("Using finite-difference method (FDTD)");
   } else {
@@ -259,10 +263,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   H_s.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto J_s = CurrentDensitySplitField();
 
-  auto E = ElectricField();
-  E.set_preferred_interpolation_methods(preferred_interpolation_methods);
-  auto H = MagneticField();
-  H.set_preferred_interpolation_methods(preferred_interpolation_methods);
+  outputs.E.set_preferred_interpolation_methods(preferred_interpolation_methods);
+  outputs.H.set_preferred_interpolation_methods(preferred_interpolation_methods);
   auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
   E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
 
@@ -316,6 +318,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   /*Get fdtdgrid */
   init_grid_arrays(in_matrices["fdtdgrid"], E_s, H_s, materials);
   int I_tot = E_s.I_tot, J_tot = E_s.J_tot, K_tot = E_s.K_tot;
+  outputs.set_E_s_dimensions(E_s);
   /*Get Cmaterials */
   CMaterial Cmaterial(in_matrices["Cmaterial"]);
   /*Get Dmaterials */
@@ -498,104 +501,44 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     see page III.80 for explanation of the following. This has been extended so that interpolation
     is done at the end of the FDTD run and also to handle the case of when there is no PML in place
     more appropriatley*/
-  E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
-  E.iu = H.iu = (params.pml.Dxu) ? I_tot - params.pml.Dxu - 1 : I_tot;
-  E.jl = H.jl = (params.pml.Dyl) ? params.pml.Dyl + 2 : 0;
-  E.ju = H.ju = (params.pml.Dyu) ? J_tot - params.pml.Dyu - 1 : J_tot;
-  E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
-  E.ku = H.ku = (params.pml.Dzu) ? K_tot - params.pml.Dzu - 1 : K_tot;
+  outputs.setup_EH_and_gridlabels(params);
 
-  E.I_tot = H.I_tot = E.iu - E.il + 1;
-  E.J_tot = H.J_tot = E.ju - E.jl + 1;
-  E.K_tot = H.K_tot = E.ku - E.kl + 1;
+  // We need to test for convergence under the following conditions. As such, we need to initialise the array that will ultimately be copies of the phasors at the previous iteration, to test convergence against
+  if (params.run_mode == RunMode::complete && params.exphasorsvolume &&
+      params.source_mode == SourceMode::steadystate) {
+    // fetch the E-field dimensions from the output object
+    IJKDims IJK = outputs.get_E_dimensions();
+    int dummy_dims[3] = {IJK.I_tot(), IJK.J_tot(), IJK.K_tot()};
+    // allocate memory space for this array
+    dummy_array[0] =
+            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
+    dummy_array[1] =
+            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
+    dummy_array[2] =
+            mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
 
-  //fprintf(stderr,"Pre 04\n");
-  //fprintf(stderr,"pind_ju: %d, pind_jl: %d, J_tot: %d\n",pind_ju,pind_jl,J_tot);
+    E_copy.real.x =
+            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
+    E_copy.imag.x =
+            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
 
-  //fprintf(stderr,"Qos 01:\n");
+    E_copy.real.y =
+            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
+    E_copy.imag.y =
+            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
 
-  /*  dims[0] = I_tot - params.pml.Dxu - params.pml.Dxl - 3 + 1;
-      dims[1] = J_tot - params.pml.Dyu - params.pml.Dyl - 3 + 1;
-      dims[2] = K_tot - params.pml.Dzu - params.pml.Dzl - 3 + 1;*/
-  auto output_grid_labels = GridLabels();
+    E_copy.real.z =
+            cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
+    E_copy.imag.z =
+            cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
 
-  // whether we need the E,H and gridlabels fields initilised at all
-  bool need_EH_memory = (params.run_mode == RunMode::complete && params.exphasorsvolume);
-  outputs.allocate_field_and_labels_memory(!need_EH_memory, E.I_tot, E.J_tot, E.K_tot);
+    E_copy.I_tot = IJK.I_tot();
+    E_copy.J_tot = IJK.J_tot();
+    E_copy.K_tot = IJK.K_tot();
+  }// if (params.source_mode == SourceMode::steadystate)
+  //fprintf(stderr,"Pre 07\n");
+  //this will be a copy of the phasors which are extracted from the previous cycle
 
-  if (need_EH_memory) {
-    ndims = 3;
-
-    dims[0] = E.I_tot;
-    dims[1] = E.J_tot;
-    dims[2] = E.K_tot;
-
-    E.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
-
-    E.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
-
-    E.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
-
-    H.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
-
-    H.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
-
-    H.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) outputs["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) outputs["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
-    //fprintf(stderr,"Pre 05\n");
-    //fprintf(stderr,"Qos 02:\n");
-    //these will ultimately be copies of the phasors used to test convergence
-    if (params.source_mode == SourceMode::steadystate) {
-      dummy_array[0] =
-              mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
-      dummy_array[1] =
-              mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
-      dummy_array[2] =
-              mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
-
-      E_copy.real.x =
-              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
-      E_copy.imag.x =
-              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dims[0], dims[1], dims[2]);
-
-      E_copy.real.y =
-              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
-      E_copy.imag.y =
-              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dims[0], dims[1], dims[2]);
-
-      E_copy.real.z =
-              cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
-      E_copy.imag.z =
-              cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dims[0], dims[1], dims[2]);
-
-      E_copy.I_tot = E.I_tot;
-      E_copy.J_tot = E.J_tot;
-      E_copy.K_tot = E.K_tot;
-    } // if (params.source_mode == SourceMode::steadystate)
-    //fprintf(stderr,"Pre 07\n");
-    //this will be a copy of the phasors which are extracted from the previous cycle
-
-    //fprintf(stderr,"Qos 04:\n");
-
-    //now construct the grid labels
-    output_grid_labels.x = mxGetPr((mxArray *) outputs["x_out"]);
-    output_grid_labels.y = mxGetPr((mxArray *) outputs["y_out"]);
-    output_grid_labels.z = mxGetPr((mxArray *) outputs["z_out"]);
-    //fprintf(stderr,"Pre 08\n");
-  }
-  //fprintf(stderr,"Pre 10\n");
-  //fprintf(stderr,"Qos 05:\n");
-
-  //initialise arrays
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    E.zero();
-    H.zero();
-  }
   //fprintf(stderr,"Pre 11\n");
   // we might not need to assign memory for the Id output
   bool need_Id_memory = (params.exdetintegral && params.run_mode == RunMode::complete);
@@ -903,14 +846,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
       dft_counter = 0;
 
-      double tol = E.normalised_difference(E_copy);
+      double tol = outputs.E.normalised_difference(E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
-      E_copy.set_values_from(E);
+      E_copy.set_values_from(outputs.E);
 
-      E.zero();
-      H.zero();
+      outputs.E.zero();
+      outputs.H.zero();
       spdlog::debug("Zeroed the phasors");
 
       if (params.exphasorssurface) {
@@ -921,8 +864,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
     if ((params.source_mode == SourceMode::steadystate) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
 
-      E.set_phasors(E_s, dft_counter - 1, params.omega_an, params.dt, Nsteps);
-      H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
+      outputs.E.set_phasors(E_s, dft_counter - 1, params.omega_an, params.dt, Nsteps);
+      outputs.H.set_phasors(H_s, dft_counter, params.omega_an, params.dt, Nsteps);
 
       if (params.exphasorssurface) {
         if (params.intphasorssurface) {
@@ -946,8 +889,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       if (TIME_EXEC) { timer.click(); }
 
       if ((tind - params.start_tind) % params.Np == 0) {
-        E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
-        H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
+        outputs.E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
+        outputs.H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
       }
       if (TIME_EXEC) { timer.click(); }
       //fprintf(stderr,"Pos 01b:\n");
@@ -3164,7 +3107,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
             }
           }
         }
-      H.ft = real(commonAmplitude * commonPhase);
+      outputs.H.ft = real(commonAmplitude * commonPhase);
     } else if (params.source_mode == SourceMode::pulsed) {//pulsed
 
       if (J_tot == 0) {
@@ -3268,7 +3211,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
           //J_s.xz[(int)K0[0]][j][i] += matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
         }
       //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-      H.ft = real((-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
+      outputs.H.ft = real((-1.0 * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_H - params.to_l), 2. * DCPI))) *
              exp(-1.0 * DCPI * pow((time_H - params.to_l + params.delta.dz / LIGHT_V / 2.) / (params.hwhm), 2));
       //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
     }
@@ -4010,7 +3953,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                                     IMAGINARY_UNIT * Ksource.imag[j - (J0.index)][i - (I0.index)][5]));
           }
         }
-      E.ft = real(commonAmplitude * commonPhase);
+      outputs.E.ft = real(commonAmplitude * commonPhase);
     } else if (params.source_mode == 1) {//pulsed
       //fprintf(stderr,"Pos 11c\n");
       if (J_tot == 0) {
@@ -4083,7 +4026,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
           }
         //fprintf(stderr,"Pos 11i\n");
       }
-      E.ft = real((-1. * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
+      outputs.E.ft = real((-1. * IMAGINARY_UNIT) * exp(-IMAGINARY_UNIT * fmod(params.omega_an * (time_E - params.to_l), 2 * DCPI))) *
              exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
       //fprintf(stderr,"Pos 11j\n");
     }
@@ -4105,8 +4048,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 	 */
 
       if( (tind % Nsteps) == 0 ){
-        E.angular_norm = 0.0;
-        H.angular_norm = 0.0;
+        outputs.E.angular_norm = 0.0;
+        outputs.H.angular_norm = 0.0;
 
         for(int ifx=0; ifx<f_ex_vec.size(); ifx++){
           E_norm[ifx] = 0.;
@@ -4151,22 +4094,22 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 	  above. So the two cases are equivalent.
 	 */
 
-        E.add_to_angular_norm(tind, Nsteps, params);
-        H.add_to_angular_norm(tind, Nsteps, params);
+        outputs.E.add_to_angular_norm(tind, Nsteps, params);
+        outputs.H.add_to_angular_norm(tind, Nsteps, params);
 
         for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-          extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
-          extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
+          extractPhasorENorm(&E_norm[ifx], outputs.E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
+          extractPhasorHNorm(&H_norm[ifx], outputs.H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, Nsteps);
         }
       } else {
         if ((tind - params.start_tind) % params.Np == 0) {
 
-          E.add_to_angular_norm(tind, params.Npe, params);
-          H.add_to_angular_norm(tind, params.Npe, params);
+          outputs.E.add_to_angular_norm(tind, params.Npe, params);
+          outputs.H.add_to_angular_norm(tind, params.Npe, params);
 
           for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-            extractPhasorENorm(&E_norm[ifx], E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
-            extractPhasorHNorm(&H_norm[ifx], H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
+            extractPhasorENorm(&E_norm[ifx], outputs.E.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
+            extractPhasorHNorm(&H_norm[ifx], outputs.H.ft, tind, f_ex_vec[ifx] * 2 * DCPI, params.dt, params.Npe);
           }
         }
       }
@@ -4184,7 +4127,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     if ((params.source_mode == SourceMode::steadystate) && (tind == (params.Nt - 1)) && (params.run_mode == RunMode::complete) &&
         params.exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
-      E.set_values_from(E_copy);
+      outputs.E.set_values_from(E_copy);
     }
     //fprintf(stderr,"Post-iter 4\n");
     fflush(stdout);
@@ -4221,8 +4164,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   //fprintf(stderr,"Pos 12\n");
   if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    E.normalise_volume();
-    H.normalise_volume();
+    outputs.E.normalise_volume();
+    outputs.H.normalise_volume();
   }
 
   //fprintf(stderr,"Pos 13\n");
@@ -4263,29 +4206,25 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   //now set the output
   outputs.set_maxresfield(maxfield, false);
 
-  if (params.run_mode == RunMode::complete && params.exphasorsvolume) {
-    output_grid_labels.initialise_from(input_grid_labels, E.il, E.iu, E.jl, E.ju, E.kl, E.ku);
-  }
-
   auto interp_output_grid_labels = GridLabels();
 
   // if we do not need to interpolate, we do not need to allocate memory to the interpolation-related outputs
   bool need_to_interpolate = (params.run_mode == RunMode::complete && params.exphasorsvolume);
   // setup interpolated grid memory (if required)
-  outputs.allocate_interpolation_memory(!need_to_interpolate, E, H, params.dimension);
+  outputs.allocate_interpolation_memory(!need_to_interpolate, outputs.E, outputs.H, params.dimension);
   // now interpolate if we need to
   if (need_to_interpolate) {
     //now interpolate over the extracted phasors
     if (params.dimension == THREE) {
-      E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, E.I_tot - 2, 2, E.J_tot - 2, 2,
-                               E.K_tot - 2, Dimension::THREE);
-      H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, H.I_tot - 2, 2, H.J_tot - 2, 2,
-                               H.K_tot - 2, Dimension::THREE);
+      outputs.E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, outputs.E.I_tot - 2, 2, outputs.E.J_tot - 2, 2,
+                               outputs.E.K_tot - 2, Dimension::THREE);
+      outputs.H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, outputs.H.I_tot - 2, 2, outputs.H.J_tot - 2, 2,
+                               outputs.H.K_tot - 2, Dimension::THREE);
     } else {
       // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
-      E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, E.I_tot - 2, 2, E.J_tot - 2, 0,
+      outputs.E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, outputs.E.I_tot - 2, 2, outputs.E.J_tot - 2, 0,
                                0, params.dimension);
-      H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, H.I_tot - 2, 2, H.J_tot - 2, 0,
+      outputs.H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, outputs.H.I_tot - 2, 2, outputs.H.J_tot - 2, 0,
                                0, params.dimension);
     }
 
@@ -4294,11 +4233,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     interp_output_grid_labels.z = mxGetPr(outputs["z_i"]);
 
     if (params.dimension == THREE) {
-      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                                2, E.K_tot - 2);
+      interp_output_grid_labels.initialise_from(outputs.output_grid_labels, 2, outputs.E.I_tot - 2,
+                                                2, outputs.E.J_tot - 2, 2, outputs.E.K_tot - 2);
     } else {
-      interp_output_grid_labels.initialise_from(output_grid_labels, 2, E.I_tot - 2, 2, E.J_tot - 2,
-                                                0, 0);
+      interp_output_grid_labels.initialise_from(outputs.output_grid_labels, 2, outputs.E.I_tot - 2,
+                                                2, outputs.E.J_tot - 2, 0, 0);
     }
   }
 
