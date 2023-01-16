@@ -64,17 +64,42 @@ private:
 public:
   OutputMatrices() = default;
 
-  IDVariables ID;
-
-  ElectricField E;
-  MagneticField H;
-  GridLabels output_grid_labels;
-
-  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels);
-
+  /**
+   * @brief Record the number of Yee cells in each axial direction from the split-electric field that was input.
+   *
+   * @param E_s Split electric field input
+   */
   void set_E_s_dimensions(ElectricSplitField &E_s) {
     E_s_dimensions = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
   }
+
+  IDVariables ID;
+
+  /**
+   * @brief Create MATLAB memory for the Id structure array.
+   *
+   * @param empty_allocation If true, empty arrays will be allocated
+   * @param n_frequencies Number of frequencies that we're extracting at
+   * @param n_det_modes D_tilde.num_det_modes()
+   */
+  void setup_Id(bool empty_allocation, int n_frequencies, int n_det_modes);
+
+  ElectricField E;//< Electric field and phasors at the Yee cell positions
+  MagneticField H;//< Magnetic field and phasors at the Yee cell positions
+  GridLabels output_grid_labels;//< Co-ordinates (spatial positions) of the field values
+
+  /**
+   * @brief Set the up E, H, and output_grid_labels outputs
+   *
+   * @param params The simulation parameters for this run
+   * @param input_grid_labels The grid labels obtained from the input file
+   */
+  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels);
+  /**
+   * @brief Get the dimensions of the electric (and magnetic) field.
+   *
+   * @return IJKDims The dimensions of the electric (and magnetic) field
+   */
   IJKDims get_E_dimensions() {
     return IJKDims(E.I_tot, E.J_tot, E.K_tot);
   }
@@ -97,12 +122,6 @@ public:
    */
   void set_maxresfield(double maxfield, bool overwrite_existing);
 
-  /**
-   * @brief Create MATLAB memory for the Id structure array.
-   *
-   * @param empty_allocation If true, empty arrays will be allocated
-   */
-  void allocate_Id_memory(bool empty_allocation);
   /**
    * @brief Create MATLAB memory for the campssample array.
    *

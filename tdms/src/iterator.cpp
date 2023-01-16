@@ -306,9 +306,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
   mxArray *dummy_array[3];
   mxArray *mx_surface_vertices, *mx_surface_facets;
-  mxArray *mx_Idx, *mx_Idy;
-  double **Idx_re, **Idx_im, **Idy_re, **Idy_im;
-  complex<double> **Idx, **Idy;
   complex<double> Idxt, Idyt, kprop;
 
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
@@ -538,54 +535,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     E_copy.K_tot = IJK.K_tot();
 
     E_copy.zero();
-  }// if (params.source_mode == SourceMode::steadystate)
-  //fprintf(stderr,"Pre 07\n");
-  //this will be a copy of the phasors which are extracted from the previous cycle
-
-  //fprintf(stderr,"Pre 11\n");
-  // we might not need to assign memory for the Id output
-  bool need_Id_memory = (params.exdetintegral && params.run_mode == RunMode::complete);
-  outputs.allocate_Id_memory(!need_Id_memory);
-
-  if (need_Id_memory) {
-    ndims = 2;
-    dims[0] = D_tilde.num_det_modes();
-    dims[1] = f_ex_vec.size();
-
-    mx_Idx = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idx_re = cast_matlab_2D_array(mxGetPr(mx_Idx), dims[0], dims[1]);
-    Idx_im = cast_matlab_2D_array(mxGetPi(mx_Idx), dims[0], dims[1]);
-
-    mx_Idy = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    Idy_re = cast_matlab_2D_array(mxGetPr(mx_Idy), dims[0], dims[1]);
-    Idy_im = cast_matlab_2D_array(mxGetPi(mx_Idy), dims[0], dims[1]);
-
-    Idx = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
-    Idy = (complex<double> **) malloc(sizeof(complex<double> *) * f_ex_vec.size());
-
-    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      Idx[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * dims[0]);
-      Idy[ifx] = (complex<double> *) malloc(sizeof(complex<double>) * dims[0]);
-      for (int im = 0; im < dims[0]; im++) {
-        Idx[ifx][im] = 0.;
-        Idy[ifx][im] = 0.;
-      }
-    }
-
-    for (int im = 0; im < dims[0]; im++) {
-      for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-        Idx_re[ifx][im] = 0.;
-        Idx_im[ifx][im] = 0.;
-        Idy_re[ifx][im] = 0.;
-        Idy_im[ifx][im] = 0.;
-      }
-    }
-
-    mxSetField(outputs["Id"], 0, "Idx", mx_Idx);
-    mxSetField(outputs["Id"], 0, "Idy", mx_Idy);
   }
 
-  //fprintf(stderr,"Pre 13\n");
+  // Setup the ID output
+  bool need_Id_memory = (params.exdetintegral && params.run_mode == RunMode::complete);
+  outputs.setup_Id(!need_Id_memory, f_ex_vec.size(), D_tilde.num_det_modes());
+
   /*This is just for efficiency */
   K = K_tot - params.pml.Dxl - params.pml.Dxu;
 
@@ -1010,8 +965,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               phaseTermE = fmod(f_ex_vec[ifx] * 2. * DCPI * ((double) tind) * params.dt, 2 * DCPI);
               cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) params.Npe);
 
-              Idx[ifx][im] += Idxt * cphaseTermE;
-              Idy[ifx][im] += Idyt * cphaseTermE;
+              outputs.ID.x[ifx][im] += Idxt * cphaseTermE;
+              outputs.ID.y[ifx][im] += Idyt * cphaseTermE;
 
             }//end of loop on frequencies
           }  //end of pragma omp parallel
@@ -4188,14 +4143,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   if (params.source_mode == SourceMode::pulsed && params.run_mode == RunMode::complete && params.exdetintegral) {
     for (int im = 0; im < D_tilde.num_det_modes(); im++)
       for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-        Idx[ifx][im] = Idx[ifx][im] / E_norm[ifx];
-        Idy[ifx][im] = Idy[ifx][im] / E_norm[ifx];
+        outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / E_norm[ifx];
+        outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / E_norm[ifx];
 
-        Idx_re[ifx][im] = real(Idx[ifx][im]);
-        Idx_im[ifx][im] = imag(Idx[ifx][im]);
+        outputs.ID.x_real[ifx][im] = real(outputs.ID.x[ifx][im]);
+        outputs.ID.x_imag[ifx][im] = imag(outputs.ID.x[ifx][im]);
 
-        Idy_re[ifx][im] = real(Idy[ifx][im]);
-        Idy_im[ifx][im] = imag(Idy[ifx][im]);
+        outputs.ID.y_real[ifx][im] = real(outputs.ID.y[ifx][im]);
+        outputs.ID.y_imag[ifx][im] = imag(outputs.ID.y[ifx][im]);
       }
   }
 
@@ -4272,26 +4227,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     // ~SurfacePhasors cleans up remaining surface phasor arrays, except the data which we return in plhs[23]
   }
   // ~VertexPhasors cleans up the vertex phasors arrays, except the data which we return in plhs[28]
-  if (params.exdetintegral) {
-    free_cast_matlab_2D_array(Idx_re);
-    free_cast_matlab_2D_array(Idx_im);
-    free_cast_matlab_2D_array(Idy_re);
-    free_cast_matlab_2D_array(Idy_im);
-    for (int ifx = 0; ifx < f_ex_vec.size(); ifx++) {
-      free(Idx[ifx]);
-      free(Idy[ifx]);
-    }
-    free(Idx);
-    free(Idy);
-    /*
-      for(int j=0;j<(J_tot-params.pml.Dyl-params.pml.Dyu);j++){
-      free(Ex_t.cm[j]);free(Ey_t.cm[j]);
-      }
-      //fprintf(stderr,"Position 9\n");
-      free(Ex_t_cm);free(Ey_t_cm);
-      //fprintf(stderr,"Position 10\n");
-    */
-  }
 
   //fprintf(stderr,"Pos 20\n");
   if (I0.apply || I1.apply) {

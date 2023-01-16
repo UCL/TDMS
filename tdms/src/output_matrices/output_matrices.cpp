@@ -152,7 +152,7 @@ void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLa
   }
 }
 
-void OutputMatrices::allocate_Id_memory(bool empty_allocation) {
+void OutputMatrices::setup_Id(bool empty_allocation, int n_frequencies, int n_det_modes) {
   // create output by reserving memory
   if (empty_allocation) {
     assign_empty_matrix({"Id"});
@@ -164,6 +164,9 @@ void OutputMatrices::allocate_Id_memory(bool empty_allocation) {
     int dims[2] = {1, 1};
     const char *fieldnames[] = {"Idx", "Idy"};
     matrix_pointers[index_from_matrix_name("Id")] = mxCreateStructArray(2, (const mwSize *) dims, 2, fieldnames);
+
+    // setup the IDVariables member so we can later write data to it
+    ID.link_to_pointer(matrix_pointers[index_from_matrix_name("Id")], n_frequencies, n_det_modes);
   }
 }
 
