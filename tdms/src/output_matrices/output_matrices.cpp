@@ -68,7 +68,10 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   *mxGetPr(output_arrays["maxresfield"]) = maxfield;
 }
 
-void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels) {
+void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels, PreferredInterpolationMethods pim) {
+  // set the interpolation methods
+  set_interpolation_methods(pim);
+
   // the dimensions of the fields
   E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
   E.iu = H.iu = (params.pml.Dxu) ? n_Yee_cells.I_tot() - params.pml.Dxu - 1 : n_Yee_cells.I_tot();

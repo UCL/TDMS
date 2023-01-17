@@ -8,35 +8,27 @@
 // for init_grid_arrays
 #include "array_init.h"
 
-IndependentObjectsFromInfile::IndependentObjectsFromInfile(
-        InputMatrices matrices_from_input_file, SolverMethod _solver_method)
+IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
+                                                           SolverMethod _solver_method,
+                                                           PreferredInterpolationMethods _pim)
     :// initalizer list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C
       D(matrices_from_input_file["D"]),                // get D
-      I0(matrices_from_input_file["interface"], "I0"), // get the interface
+      I0(matrices_from_input_file["interface"], "I0"), // get the interface(s)
       I1(matrices_from_input_file["interface"], "I1"),
       J0(matrices_from_input_file["interface"], "J0"),
       J1(matrices_from_input_file["interface"], "J1"),
       K0(matrices_from_input_file["interface"], "K0"),
       K1(matrices_from_input_file["interface"], "K1"),
       matched_layer(matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
-      Ei(matrices_from_input_file["tdfield"]),                  // get tdfield
-      fieldsample(matrices_from_input_file["fieldsample"]),     // get fieldsample
-      vertex_phasors(matrices_from_input_file["campssample"])   // get vertex_phasors
+      Ei(matrices_from_input_file["tdfield"])                   // get tdfield
 {
-  // set skip_tdf based on the solver method
-  solver_method = _solver_method;
-  if (solver_method == SolverMethod::FiniteDifference) {
-    spdlog::info("Using finite-difference method (FDTD)");
-    skip_tdf = 6;
-  } else if (solver_method == SolverMethod::PseudoSpectral) {
-    spdlog::info("Using pseudospectral method (PSTD)");
-    skip_tdf = 1;
-  } else {
-    throw std::runtime_error("Solver method not recognised!");
-  }
+  // set solver method
+  set_solver_method(_solver_method);
+  // set interpolation methods
+  set_interpolation_method(_pim);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -125,9 +117,10 @@ IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
 }
 
 ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                                       SolverMethod _solver_method)
-    : // build the independent objects first
-      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method),
+                                     SolverMethod _solver_method,
+                                     PreferredInterpolationMethods _pim)
+    :// build the independent objects first
+      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method, _pim),
       // Source has no default constructor, and we need information from the Iterator_IndependentObjectsFromInfile first
       Isource(matrices_from_input_file["Isource"], J1.index - J0.index + 1, K1.index - K0.index + 1,
               "Isource"),
@@ -139,8 +132,7 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
       structure(matrices_from_input_file["structure"], IJK_tot.I_tot()),
       // Get f_ex_vec, the vector of frequencies to extract the field at.
       // Need params.omega from Iterator_IndependentObjectsFromInfile
-      f_ex_vec(matrices_from_input_file["f_ex_vec"], params.omega_an)
-{
+      f_ex_vec(matrices_from_input_file["f_ex_vec"], params.omega_an) {
   // Update params according to structure's values
   params.is_structure = structure.has_elements();
 }

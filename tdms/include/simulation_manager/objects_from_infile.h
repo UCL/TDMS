@@ -29,27 +29,37 @@
  */
 class IndependentObjectsFromInfile {
 public:
-  SolverMethod solver_method;               //< Either PSTD (default) or FDTD, the solver method
-  int skip_tdf;                             //< Either 1 if we are using PSTD, or 6 if using FDTD
-  SimulationParameters params;              //< The parameters for this simulation
-  ElectricSplitField E_s;                   //< The split electric-field values
-  MagneticSplitField H_s;                   //< The split magnetic-field values
-  uint8_t ***materials;                     //< TODO
-  CMaterial Cmaterial;                      //< TODO
-  DMaterial Dmaterial;                      //< TODO
-  CCollection C;                            //< TODO
-  DCollection D;                            //< TODO
-  double *freespace_Cbx;                    //< freespace constants
-  double *alpha, *beta, *gamma;             //< dispersion parameters
+  SolverMethod solver_method;//< Either PSTD (default) or FDTD, the solver method
+  int skip_tdf;                //< Either 1 if we are using PSTD, or 6 if using FDTD
+  PreferredInterpolationMethods interpolation_methods =
+          BandLimited;         //< Either band_limited or cubic, the preferred interpolation methods
+
+  SimulationParameters params; //< The parameters for this simulation
+
+  ElectricSplitField E_s;      //< The split electric-field values
+  MagneticSplitField H_s;      //< The split magnetic-field values
+
+  uint8_t ***materials;        //< TODO
+  CMaterial Cmaterial;         //< TODO
+  DMaterial Dmaterial;         //< TODO
+  CCollection C;               //< TODO
+  DCollection D;               //< TODO
+
+  double *freespace_Cbx;       //< freespace constants
+  double *alpha, *beta, *gamma;//< dispersion parameters
+
   InterfaceComponent I0, I1, J0, J1, K0, K1;//< user-defined interface components
   Cuboid cuboid;                            //< user-defined surface to extract phasors over
+
   XYZVectors rho_cond;                      //< conductive aux
   DispersiveMultiLayer matched_layer;       //< dispersive aux
+
   IncidentField Ei;                         //< time-domain field
+
   FrequencyVectors f_vec;                   //< frequency vector
   Pupil pupil;                              //< TODO
   DTilde D_tilde;                           //< TODO
-  TDFieldExporter2D ex_td_field_exporter;//< two-dimensional field exporter
+  TDFieldExporter2D ex_td_field_exporter;   //< two-dimensional field exporter
 
   GridLabels input_grid_labels;//< cartesian labels of the Yee cells
 
@@ -57,8 +67,36 @@ public:
 
   IJKDims IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
 
-  IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                        SolverMethod _solver_method);
+  IndependentObjectsFromInfile(
+          InputMatrices matrices_from_input_file,
+          SolverMethod _solver_method = SolverMethod::PseudoSpectral,
+          PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
+
+  // Set the solver method (FDTD / PSTD) and update dependent variables
+  void set_solver_method(SolverMethod _sm) {
+    solver_method = _sm;
+    if (solver_method == SolverMethod::FiniteDifference) {
+      spdlog::info("Using finite-difference method (FDTD)");
+      skip_tdf = 6;
+    } else if (solver_method == SolverMethod::PseudoSpectral) {
+      spdlog::info("Using pseudospectral method (PSTD)");
+      skip_tdf = 1;
+    } else {
+      throw std::runtime_error("Solver method not recognised!");
+    }
+  }
+
+  // Set the preferred method of interpolation, and update the fields about this change
+  void set_interpolation_method(PreferredInterpolationMethods _pim) {
+    interpolation_methods = _pim;
+    E_s.set_preferred_interpolation_methods(interpolation_methods);
+    H_s.set_preferred_interpolation_methods(interpolation_methods);
+    if (interpolation_methods == PreferredInterpolationMethods::BandLimited) {
+      spdlog::info("Using band-limited interpolation where possible");
+    } else {
+      spdlog::info("Restricting to cubic interpolation");
+    }
+  }
 
   ~IndependentObjectsFromInfile();
 };
@@ -76,7 +114,10 @@ public:
     GratingStructure structure;//< TODO
     FrequencyExtractVector f_ex_vec;//< Vector of frequencies to extract field & phasors at
 
-    ObjectsFromInfile(InputMatrices matrices_from_input_file, SolverMethod _solver_method);
+    ObjectsFromInfile(
+            InputMatrices matrices_from_input_file,
+            SolverMethod _solver_method = SolverMethod::PseudoSpectral,
+            PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
 
     ~ObjectsFromInfile();
 };

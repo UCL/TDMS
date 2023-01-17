@@ -78,8 +78,9 @@ public:
    *
    * @param params The simulation parameters for this run
    * @param input_grid_labels The grid labels obtained from the input file
+   * @param pim The interpolation methods to use on the field values
    */
-  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels);
+  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels, PreferredInterpolationMethods pim);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
@@ -87,6 +88,11 @@ public:
    */
   IJKDims get_E_dimensions() {
     return IJKDims(E.I_tot, E.J_tot, E.K_tot);
+  }
+  // set the interpolation method for the E and H fields
+  void set_interpolation_methods(PreferredInterpolationMethods pim) {
+    E.set_preferred_interpolation_methods(pim);
+    H.set_preferred_interpolation_methods(pim);
   }
 
   SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface

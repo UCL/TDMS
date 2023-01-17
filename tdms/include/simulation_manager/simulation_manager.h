@@ -13,6 +13,7 @@
 
 class SimulationManager {
 private:
+  SimulationParameters params;//< The parameters for this simulation
   ObjectsFromInfile infile_data;
   LoopTimers timers;
   PSTDVariables pstd;
