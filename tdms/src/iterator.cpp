@@ -589,8 +589,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   }
 
   //fprintf(stderr,"Pre 16\n");
-  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
-    fprintf(stderr, "Changing dt from %.10e to %.10e\n", dt_old, params.dt);
+  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
+    spdlog::info("Changed dt to {0:.10e} (was {1:.10e})", params.dt, dt_old);
+  }
   Nsteps = (int) lround(Nsteps_tmp);
   //fprintf(stderr,"Pre 17\n");
   //Nsteps = (int)(floor(3*2.*DCPI/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
@@ -599,13 +600,15 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   /*params.Nt should be an integer number of Nsteps in the case of steady-state operation*/
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete)
     if (params.Nt / Nsteps * Nsteps != params.Nt) {
-      fprintf(stderr, "Changing the value of Nt from %d to", params.Nt);
+      int old_Nt = params.Nt;//< For logging purposes, holds the Nt value that had to be changed
       params.Nt = params.Nt / Nsteps * Nsteps;
-      fprintf(stderr, " %d for correct phasor extraction\n", params.Nt);
+      spdlog::info("Changing the value of Nt to {0:d} (was {1:d})", params.Nt, old_Nt);
     }
   //fprintf(stderr,"Pre 19\n");
 
-  if ((params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate)) printf("Nsteps: %d \n", Nsteps);
+  if ((params.run_mode == RunMode::complete) && (params.source_mode == SourceMode::steadystate)) {
+    spdlog::info("Nsteps: {0:d}", Nsteps);
+  }
 
   /*An optimization step in the 2D (J_tot==0) case, try to work out if we have either
     of TE or TM, ie, not both*/
