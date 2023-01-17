@@ -18,12 +18,12 @@ private:
   bool variables_allocated = false;
 
 public:
-  CCoefficientMatrix ca_vec, cb_vec, cc_vec;
+  CCoefficientMatrix ca, cb, cc;
 
-  // The number of complex fourier coefficients in the derivative-shift operator, for each field component ( N_e_x = # coeffs for Ex, for example)
-  int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-  // The coefficients of the PSTD derivative shift operator, for each field component ( dk_e_x = coeffs for Ex, for example )
-  fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
+  // The number of complex fourier coefficients in the derivative-shift operator, for each field component ( N_ex = # coeffs for Ex, for example)
+  int N_ex, N_ey, N_ez, N_hx, N_hy, N_hz;
+  // The coefficients of the PSTD derivative shift operator, for each field component ( dk_ex = coeffs for Ex, for example )
+  fftw_complex *dk_ex, *dk_ey, *dk_ez, *dk_hx, *dk_hy, *dk_hz;
 
   PSTDVariables() = default;
   PSTDVariables(IJKDims IJK_tot) { set_using_dimensions(IJK_tot); }

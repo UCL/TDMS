@@ -19,6 +19,7 @@
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
 #include "objects_from_infile.h"
+#include "pstd_variables.h"
 #include "output_matrices.h"
 #include "timer.h"
 #include "utils.h"
@@ -242,6 +243,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   // declare the to-be output
   OutputMatrices outputs;
 
+  // PSTD storage (to be a member of the simulation manager later)
+  PSTDVariables PSTD;
+
   // this will later be a member of simulation_elements
   //ObjectsFromInfile inputs(in_matrices, solver_method);
 
@@ -295,14 +299,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   int skip_tdf = 1;
   if (solver_method == SolverMethod::FiniteDifference) skip_tdf = 6;
 
-  // PSTD storage (not used if FD)
-  fftw_complex *dk_e_x, *dk_e_y, *dk_e_z, *dk_h_x, *dk_h_y, *dk_h_z;
-  int N_e_x, N_e_y, N_e_z, N_h_x, N_h_y, N_h_z;
-
-  mwSize *dims;
-  dims = (mwSize *) malloc(3 * sizeof(mwSize));
-  mwSize *label_dims;
-  label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
   mxArray *E_copy_MATLAB_data[3];
   mxArray *mx_surface_vertices, *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
@@ -314,8 +310,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   /*Get fdtdgrid */
   init_grid_arrays(in_matrices["fdtdgrid"], E_s, H_s, materials);
-  int I_tot = E_s.I_tot, J_tot = E_s.J_tot, K_tot = E_s.K_tot;
-  outputs.set_E_s_dimensions(E_s);
+  // get the number of Yee cells in each axial direction
+  IJKDims IJK_tot(E_s.I_tot, E_s.J_tot, E_s.K_tot);
+  outputs.set_n_Yee_cells(IJK_tot);
+  int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
   /*Get Cmaterials */
   CMaterial Cmaterial(in_matrices["Cmaterial"]);
   /*Get Dmaterials */
@@ -416,44 +414,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     Ey_t.initialise(n1, n0);
   }
 
-  CCoefficientMatrix ca_vec, cb_vec, cc_vec;
+  // setup PSTD variables, and any dependencies there might be
+  PSTD.set_using_dimensions(IJK_tot);
   EHVec eh_vec;
-
   if (solver_method == SolverMethod::PseudoSpectral) {
-    int max_IJK = E_s.max_IJK_tot(), n_threads = omp_get_max_threads();
-    ca_vec.allocate(n_threads, max_IJK + 1);
-    cb_vec.allocate(n_threads, max_IJK + 1);
-    cc_vec.allocate(n_threads, max_IJK + 1);
+    int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
     eh_vec.allocate(n_threads, max_IJK + 1);
 
     E_s.initialise_fftw_plan(n_threads, eh_vec);
     H_s.initialise_fftw_plan(n_threads, eh_vec);
+  }
 
-    N_e_x = I_tot - 1 + 1;
-    N_e_y = J_tot - 1 + 1;
-    N_e_z = K_tot - 1 + 1;
-    N_h_x = I_tot + 1;
-    N_h_y = J_tot + 1;
-    N_h_z = K_tot + 1;
-
-    dk_e_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_x));
-    dk_e_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_y));
-    dk_e_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_e_z));
-
-    dk_h_x = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_x));
-    dk_h_y = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_y));
-    dk_h_z = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * (N_h_z));
-
-    init_diff_shift_op(-0.5, dk_e_x, N_e_x);
-    init_diff_shift_op(-0.5, dk_e_y, N_e_y);
-    init_diff_shift_op(-0.5, dk_e_z, N_e_z);
-
-    init_diff_shift_op(0.5, dk_h_x, N_h_x);
-    init_diff_shift_op(0.5, dk_h_y, N_h_y);
-    init_diff_shift_op(0.5, dk_h_z, N_h_z);
-  } // if (solver_method == DerivativeMethod::PseudoSpectral)
-
-  //fprintf(stderr,"Pre 01\n");
   //initialise E_norm and H_norm
   auto E_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
   auto H_norm = (complex<double> *) malloc(f_ex_vec.size() * sizeof(complex<double>));
@@ -985,7 +956,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
 #pragma omp parallel default(shared) private(i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,\
                                              beta_l, gamma_l, kappa_l, sigma_l, Enp1,              \
-                                             Jnp1)//,ca_vec,cb_vec,cc_vec,eh_vec)
+                                             Jnp1)//,ca_vec,cb_vec,PSTD.cc,eh_vec)
     {
       n = omp_get_thread_num();
       Enp1 = 0.0;
@@ -1239,22 +1210,22 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
                 eh_vec[n][j][1] = 0.;
-                ca_vec[n][j - 1] = Ca;
-                cb_vec[n][j - 1] = Cb;
+                PSTD.ca[n][j - 1] = Ca;
+                PSTD.cb[n][j - 1] = Cb;
               }
               if (J_tot > 1) {
                 j = 0;
                 eh_vec[n][j][0] = H_s.zy[k][j][i] + H_s.zx[k][j][i];
                 eh_vec[n][j][1] = 0.;
-                first_derivative(eh_vec[n], eh_vec[n], dk_e_y, N_e_y, E_s.xy.plan_f[n],
+                first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey, E_s.xy.plan_f[n],
                                  E_s.xy.plan_b[n]);
 
 
                 //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,n,omp_get_num_threads());
 
                 for (j = 1; j < J_tot; j++) {
-                  E_s.xy[k][j][i] = ca_vec[n][j - 1] * E_s.xy[k][j][i] +
-                                    cb_vec[n][j - 1] * eh_vec[n][j][0] / ((double) N_e_y);
+                  E_s.xy[k][j][i] = PSTD.ca[n][j - 1] * E_s.xy[k][j][i] +
+                                    PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
                 }
               }
             }
@@ -1504,42 +1475,19 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
                 eh_vec[n][k][1] = 0.;
-                ca_vec[n][k - 1] = Ca;
-                cb_vec[n][k - 1] = Cb;
+                PSTD.ca[n][k - 1] = Ca;
+                PSTD.cb[n][k - 1] = Cb;
               }
               k = 0;
               eh_vec[n][k][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
               eh_vec[n][k][1] = 0.;
-              /*
-    if (tind==1 & i==25 & j==25){
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",dk_e_z[k][0]);
-    fprintf(stdout,"\n\n");
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",dk_e_z[k][1]);
-    fprintf(stdout,"\n\n");
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[n][k][0]);
-    fprintf(stdout,"\n\n");
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[n][k][1]);
-    }
-        */
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_z, N_e_z, E_s.xz.plan_f[n],
+
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez, E_s.xz.plan_f[n],
                                E_s.xz.plan_b[n]);
-              /*
-    if (tind==1 & i==25 & j==25){
-    fprintf(stdout,"\n\n");
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[k][0]);
-    fprintf(stdout,"\n\n");
-    for(k=0;k<N_e_z;k++)
-    fprintf(stdout,"%e ",eh_vec[k][1]);
-    }
-        */
+
               for (k = 1; k < K_tot; k++) {
-                E_s.xz[k][j][i] = ca_vec[n][k - 1] * E_s.xz[k][j][i] -
-                                  cb_vec[n][k - 1] * eh_vec[n][k][0] / ((double) N_e_z);
+                E_s.xz[k][j][i] = PSTD.ca[n][k - 1] * E_s.xz[k][j][i] -
+                                  PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
               }
             }
           //PSTD, E_s.xz
@@ -1784,19 +1732,19 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
                 eh_vec[n][i][1] = 0.;
-                ca_vec[n][i - 1] = Ca;
-                cb_vec[n][i - 1] = Cb;
+                PSTD.ca[n][i - 1] = Ca;
+                PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
               eh_vec[n][i][0] = H_s.zx[k][j][i] + H_s.zy[k][j][i];
               eh_vec[n][i][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_x, N_e_x, E_s.yx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex, E_s.yx.plan_f[n],
                                E_s.yx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
-                E_s.yx[k][j][i] = ca_vec[n][i - 1] * E_s.yx[k][j][i] -
-                                  cb_vec[n][i - 1] * eh_vec[n][i][0] / ((double) N_e_x);
+                E_s.yx[k][j][i] = PSTD.ca[n][i - 1] * E_s.yx[k][j][i] -
+                                  PSTD.cb[n][i - 1] * eh_vec[n][i][0] / ((double) PSTD.N_ex);
                 //E_s.yx[k][j][i] = Enp1;
               }
             }
@@ -2034,19 +1982,19 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
                 eh_vec[n][k][1] = 0.;
-                ca_vec[n][k - 1] = Ca;
-                cb_vec[n][k - 1] = Cb;
+                PSTD.ca[n][k - 1] = Ca;
+                PSTD.cb[n][k - 1] = Cb;
               }
               k = 0;
               eh_vec[n][k][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
               eh_vec[n][k][1] = 0.;
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_z, N_e_z, E_s.yz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez, E_s.yz.plan_f[n],
                                E_s.yz.plan_b[n]);
 
 
               for (k = 1; k < K_tot; k++) {
-                E_s.yz[k][j][i] = ca_vec[n][k - 1] * E_s.yz[k][j][i] +
-                                  cb_vec[n][k - 1] * eh_vec[n][k][0] / ((double) N_e_z);
+                E_s.yz[k][j][i] = PSTD.ca[n][k - 1] * E_s.yz[k][j][i] +
+                                  PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
                 //E_s.yz[k][j][i] = Enp1;
               }
             }
@@ -2297,19 +2245,19 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
                 eh_vec[n][i][1] = 0.;
-                ca_vec[n][i - 1] = Ca;
-                cb_vec[n][i - 1] = Cb;
+                PSTD.ca[n][i - 1] = Ca;
+                PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
               eh_vec[n][i][0] = H_s.yx[k][j][i] + H_s.yz[k][j][i];
               eh_vec[n][i][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_e_x, N_e_x, E_s.zx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex, E_s.zx.plan_f[n],
                                E_s.zx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
-                E_s.zx[k][j][i] = ca_vec[n][i - 1] * E_s.zx[k][j][i] +
-                                  cb_vec[n][i - 1] * eh_vec[n][i][0] / ((double) N_e_x);
+                E_s.zx[k][j][i] = PSTD.ca[n][i - 1] * E_s.zx[k][j][i] +
+                                  PSTD.cb[n][i - 1] * eh_vec[n][i][0] / ((double) PSTD.N_ex);
                 //E_s.zx[k][j][i] = Enp1;
               }
             }
@@ -2643,19 +2591,19 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
                 eh_vec[n][j][1] = 0.;
-                ca_vec[n][j - 1] = Ca;
-                cb_vec[n][j - 1] = Cb;
+                PSTD.ca[n][j - 1] = Ca;
+                PSTD.cb[n][j - 1] = Cb;
               }
               if (J_tot > 1) {
                 j = 0;
                 eh_vec[n][j][0] = H_s.xy[k][j][i] + H_s.xz[k][j][i];
                 eh_vec[n][j][1] = 0.;
-                first_derivative(eh_vec[n], eh_vec[n], dk_e_y, N_e_y, E_s.zy.plan_f[n],
+                first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey, E_s.zy.plan_f[n],
                                  E_s.zy.plan_b[n]);
               }
               for (j = 1; j < J_tot; j++) {
-                E_s.zy[k][j][i] = ca_vec[n][j - 1] * E_s.zy[k][j][i] -
-                                  cb_vec[n][j - 1] * eh_vec[n][j][0] / ((double) N_e_y);
+                E_s.zy[k][j][i] = PSTD.ca[n][j - 1] * E_s.zy[k][j][i] -
+                                  PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
                 //E_s.zy[k][j][i] = Enp1;
               }
             }
@@ -3152,7 +3100,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     /********************/
     //begin parallel
 #pragma omp parallel default(shared) private(i, j, k, n, k_loc,                                    \
-                                             array_ind)//,ca_vec,cb_vec,cc_vec,eh_vec)
+                                             array_ind)//,ca_vec,cb_vec,PSTD.cc,eh_vec)
     {
       n = omp_get_thread_num();
 
@@ -3206,12 +3154,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   }
 
                 if (!materials[k][j][i]) {
-                  ca_vec[n][k] = D.a.z[k_loc];
-                  cb_vec[n][k] = D.b.z[k_loc];
+                  PSTD.ca[n][k] = D.a.z[k_loc];
+                  PSTD.cb[n][k] = D.b.z[k_loc];
                   //H_s.xz[k][j][i] = D.a.z[k_loc]*H_s.xz[k][j][i]+D.b.z[k_loc]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
                 } else {
-                  ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                  cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                  PSTD.ca[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                  PSTD.cb[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
                   //H_s.xz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
                 }
 
@@ -3222,12 +3170,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               eh_vec[n][k][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
               eh_vec[n][k][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_h_z, N_h_z, H_s.xz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz, H_s.xz.plan_f[n],
                                H_s.xz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
-                H_s.xz[k][j][i] = ca_vec[n][k] * H_s.xz[k][j][i] +
-                                  cb_vec[n][k] * eh_vec[n][k][0] / ((double) N_h_z);
+                H_s.xz[k][j][i] = PSTD.ca[n][k] * H_s.xz[k][j][i] +
+                                  PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
 
@@ -3287,12 +3235,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!materials[k][j][i]) {
-                  ca_vec[n][j] = D.a.y[array_ind];
-                  cb_vec[n][j] = D.b.y[array_ind];
+                  PSTD.ca[n][j] = D.a.y[array_ind];
+                  PSTD.cb[n][j] = D.b.y[array_ind];
                   //		H_s.xy[k][j][i] = D.a.y[array_ind]*H_s.xy[k][j][i]+D.b.y[array_ind]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
                 } else {
-                  ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                  cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                  PSTD.ca[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                  PSTD.cb[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
                   //		H_s.xy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
                 }
 
@@ -3303,12 +3251,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               eh_vec[n][j][0] = E_s.zy[k][j][i] + E_s.zx[k][j][i];
               eh_vec[n][j][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.xy.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy, H_s.xy.plan_f[n],
                                H_s.xy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
-                H_s.xy[k][j][i] = ca_vec[n][j] * H_s.xy[k][j][i] -
-                                  cb_vec[n][j] * eh_vec[n][j][0] / ((double) N_h_y);
+                H_s.xy[k][j][i] = PSTD.ca[n][j] * H_s.xy[k][j][i] -
+                                  PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
 
               /*
@@ -3323,7 +3271,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
     fprintf(stdout,"\neh_vec: ");
     for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",eh_vec[n][j][0]/((double) N_e_y));
+    fprintf(stdout,"%e ",eh_vec[n][j][0]/((double) PSTD.N_ey));
     fprintf(stdout,"\n");
     }
         */
@@ -3385,12 +3333,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!materials[k][j][i]) {
-                  ca_vec[n][i] = D.a.x[array_ind];
-                  cb_vec[n][i] = D.b.x[array_ind];
+                  PSTD.ca[n][i] = D.a.x[array_ind];
+                  PSTD.cb[n][i] = D.b.x[array_ind];
                   //		H_s.yx[k][j][i] = D.a.x[array_ind]*H_s.yx[k][j][i]+D.b.x[array_ind]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
                 } else {
-                  ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
-                  cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
+                  PSTD.ca[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
+                  PSTD.cb[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
                   //	H_s.yx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
                 }
 
@@ -3401,12 +3349,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               eh_vec[n][i][0] = E_s.zx[k][j][i] + E_s.zy[k][j][i];
               eh_vec[n][i][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_h_x, N_h_x, H_s.yx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hx, PSTD.N_hx, H_s.yx.plan_f[n],
                                H_s.yx.plan_b[n]);
 
               for (i = 0; i < I_tot; i++) {
-                H_s.yx[k][j][i] = ca_vec[n][i] * H_s.yx[k][j][i] +
-                                  cb_vec[n][i] * eh_vec[n][i][0] / ((double) N_h_x);
+                H_s.yx[k][j][i] = PSTD.ca[n][i] * H_s.yx[k][j][i] +
+                                  PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
           //PSTD, H_s.yx
@@ -3466,14 +3414,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                       k_loc = params.pml.Dzl + 1;
                   }
                 if (!materials[k][j][i]) {
-                  ca_vec[n][k] = D.a.z[k_loc];
-                  cb_vec[n][k] = D.b.z[k_loc];
+                  PSTD.ca[n][k] = D.a.z[k_loc];
+                  PSTD.cb[n][k] = D.b.z[k_loc];
                   /*if(tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                   //H_s.yz[k][j][i] = D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 } else {
-                  ca_vec[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
-                  cb_vec[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
+                  PSTD.ca[n][k] = Dmaterial.a.z[materials[k][j][i] - 1];
+                  PSTD.cb[n][k] = Dmaterial.b.z[materials[k][j][i] - 1];
                   /*if(tind==0)
         fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                   //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
@@ -3494,12 +3442,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     }
         */
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_h_z, N_h_z, H_s.yz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz, H_s.yz.plan_f[n],
                                H_s.yz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
-                H_s.yz[k][j][i] = ca_vec[n][k] * H_s.yz[k][j][i] -
-                                  cb_vec[n][k] * eh_vec[n][k][0] / ((double) N_h_z);
+                H_s.yz[k][j][i] = PSTD.ca[n][k] * H_s.yz[k][j][i] -
+                                  PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
           //PSTD, H_s.yz
@@ -3637,12 +3585,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!materials[k][j][i]) {
-                  ca_vec[n][j] = D.a.y[array_ind];
-                  cb_vec[n][j] = D.b.y[array_ind];
+                  PSTD.ca[n][j] = D.a.y[array_ind];
+                  PSTD.cb[n][j] = D.b.y[array_ind];
                   //	      H_s.zy[k][j][i] = D.a.y[array_ind]*H_s.zy[k][j][i]+D.b.y[array_ind]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
                 } else {
-                  ca_vec[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
-                  cb_vec[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
+                  PSTD.ca[n][j] = Dmaterial.a.y[materials[k][j][i] - 1];
+                  PSTD.cb[n][j] = Dmaterial.b.y[materials[k][j][i] - 1];
                   //	      H_s.zy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
                 }
 
@@ -3653,12 +3601,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               eh_vec[n][j][0] = E_s.xy[k][j][i] + E_s.xz[k][j][i];
               eh_vec[n][j][1] = 0.;
 
-              first_derivative(eh_vec[n], eh_vec[n], dk_h_y, N_h_y, H_s.zy.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy, H_s.zy.plan_f[n],
                                H_s.zy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
-                H_s.zy[k][j][i] = ca_vec[n][j] * H_s.zy[k][j][i] +
-                                  cb_vec[n][j] * eh_vec[n][j][0] / ((double) N_h_y);
+                H_s.zy[k][j][i] = PSTD.ca[n][j] * H_s.zy[k][j][i] +
+                                  PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
           //PSTD, H_s.zy
@@ -3718,12 +3666,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 array_ind = (I_tot + 1) * k_loc + i;
               if (!materials[k][j][i]) {
                 //		H_s.zx[k][j][i] = D.a.x[array_ind]*H_s.zx[k][j][i]+D.b.x[array_ind]*(E_s.yx[k][j][i] + E_s.yz[k][j][i] - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
-                ca_vec[n][i] = D.a.x[array_ind];
-                cb_vec[n][i] = D.b.x[array_ind];
+                PSTD.ca[n][i] = D.a.x[array_ind];
+                PSTD.cb[n][i] = D.b.x[array_ind];
               } else {
                 //		H_s.zx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*H_s.zx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.yx[k][j][i] + E_s.yz[k][j][i] - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
-                ca_vec[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
-                cb_vec[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
+                PSTD.ca[n][i] = Dmaterial.a.x[materials[k][j][i] - 1];
+                PSTD.cb[n][i] = Dmaterial.b.x[materials[k][j][i] - 1];
               }
 
               eh_vec[n][i][0] = E_s.yx[k][j][i] + E_s.yz[k][j][i];
@@ -3734,13 +3682,13 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
             eh_vec[n][i][1] = 0.;
 
 
-            first_derivative(eh_vec[n], eh_vec[n], dk_h_x,
-                             N_h_x, H_s.zx.plan_f[n], H_s.zx.plan_b[n]);
+            first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hx,
+                             PSTD.N_hx, H_s.zx.plan_f[n], H_s.zx.plan_b[n]);
 
             for (i = 0; i < I_tot; i++) {
-              H_s.zx[k][j][i] = ca_vec[n][i] * H_s.zx[k][j][i] -
-                                cb_vec[n][i] *
-                                        eh_vec[n][i][0] / ((double) N_h_x);
+              H_s.zx[k][j][i] = PSTD.ca[n][i] * H_s.zx[k][j][i] -
+                                PSTD.cb[n][i] *
+                                        eh_vec[n][i][0] / ((double) PSTD.N_hx);
             }
           }
 //PSTD, H_s.zx
@@ -3971,8 +3919,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 	  explained above, the acquisition period is actually three periods of the harmonic waves
 	  fundamental period. The complex amplitudes are reset to 0 using calls such as:
 
-      initialiseDouble3DArray(ExR, dims[0], dims[1], dims[2]);
-
     However, the normalisation factors are reset to 0 here.
 	 */
 
@@ -4186,20 +4132,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     free_cast_matlab_3D_array(materials, 0);
     /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
-  if (solver_method == SolverMethod::PseudoSpectral) {
-    fftw_free(dk_e_x);
-    fftw_free(dk_e_y);
-    fftw_free(dk_e_z);
-
-    fftw_free(dk_h_x);
-    fftw_free(dk_h_y);
-    fftw_free(dk_h_z);
-  }
-
   free(E_norm);
   free(H_norm);
-  free(dims);
-  free(label_dims);
 
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
     mxDestroyArray(E_copy_MATLAB_data[0]);

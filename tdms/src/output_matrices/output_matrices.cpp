@@ -71,14 +71,11 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
 void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels) {
   // the dimensions of the fields
   E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
-  E.iu = H.iu =
-          (params.pml.Dxu) ? E_s_dimensions.I_tot() - params.pml.Dxu - 1 : E_s_dimensions.I_tot();
+  E.iu = H.iu = (params.pml.Dxu) ? n_Yee_cells.I_tot() - params.pml.Dxu - 1 : n_Yee_cells.I_tot();
   E.jl = H.jl = (params.pml.Dyl) ? params.pml.Dyl + 2 : 0;
-  E.ju = H.ju =
-          (params.pml.Dyu) ? E_s_dimensions.J_tot() - params.pml.Dyu - 1 : E_s_dimensions.J_tot();
+  E.ju = H.ju = (params.pml.Dyu) ? n_Yee_cells.J_tot() - params.pml.Dyu - 1 : n_Yee_cells.J_tot();
   E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
-  E.ku = H.ku =
-          (params.pml.Dzu) ? E_s_dimensions.K_tot() - params.pml.Dzu - 1 : E_s_dimensions.K_tot();
+  E.ku = H.ku = (params.pml.Dzu) ? n_Yee_cells.K_tot() - params.pml.Dzu - 1 : n_Yee_cells.K_tot();
   // upper/lower limits of cell extraction
   E.I_tot = H.I_tot = E.iu - E.il + 1;
   E.J_tot = H.J_tot = E.ju - E.jl + 1;

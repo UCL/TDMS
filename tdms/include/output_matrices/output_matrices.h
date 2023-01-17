@@ -29,7 +29,7 @@ private:
   // Pointers to arrays in C++ that will be populated by pointers to the output data
   OutputMatrixPointers output_arrays;
 
-  IJKDims E_s_dimensions;//< Number of Yee cells in the simulation, dictated by the E_s split-field
+  IJKDims n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
 
   /**
    * @brief Computes the field values at the centre of the Yee cells, and the corresponding spatial coordinates of these locations.
@@ -42,6 +42,13 @@ public:
   OutputMatrices() = default;
 
   /**
+   * @brief Record the number of Yee cells in each axial direction from the split-electric field that was input.
+   *
+   * @param IJK_tot Number of Yee cells in the {I,J,K} directions
+   */
+  void set_n_Yee_cells(IJKDims IJK_tot) { n_Yee_cells = IJK_tot; }
+
+  /**
    * @brief Fetch a (pointer to a) MATLAB output matrix by name.
    *
    * @param matrix_name Name of the matrix to fetch the pointer to
@@ -49,15 +56,6 @@ public:
    */
   mxArray *&operator[](const std::string &matrix_name) {
     return output_arrays[matrix_name];
-  }
-
-  /**
-   * @brief Record the number of Yee cells in each axial direction from the split-electric field that was input.
-   *
-   * @param E_s Split electric field input
-   */
-  void set_E_s_dimensions(ElectricSplitField &E_s) {
-    E_s_dimensions = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
   }
 
   IDVariables ID;//< The ID output, and associated variables
