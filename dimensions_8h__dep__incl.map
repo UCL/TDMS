@@ -1,13 +1,13 @@
 <map id="tdms/include/dimensions.h" name="tdms/include/dimensions.h">
-<area shape="rect" id="node1" title=" " alt="" coords="383,5,580,32"/>
-<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="406,80,557,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="336,5,533,32"/>
+<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="359,80,510,107"/>
 <area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,155,149,196"/>
 <area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="174,162,373,189"/>
-<area shape="rect" id="node6" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="397,162,566,189"/>
-<area shape="rect" id="node9" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="590,155,749,196"/>
-<area shape="rect" id="node10" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="773,155,925,196"/>
+<area shape="rect" id="node6" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="325,333,494,360"/>
+<area shape="rect" id="node8" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="452,244,604,285"/>
+<area shape="rect" id="node9" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="498,155,657,196"/>
+<area shape="rect" id="node10" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="681,155,833,196"/>
 <area shape="rect" id="node5" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="199,244,348,285"/>
-<area shape="rect" id="node7" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="379,251,522,278"/>
-<area shape="rect" id="node8" href="$openandorder_8cpp.html" title="Passing arguments and file IO." alt="" coords="546,251,745,278"/>
-<area shape="rect" id="node11" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="775,244,924,285"/>
+<area shape="rect" id="node7" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="399,408,542,435"/>
+<area shape="rect" id="node11" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="683,244,832,285"/>
 </map>

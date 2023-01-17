@@ -56,6 +56,7 @@ var hierarchy =
     [ "MatrixCollection", "classMatrixCollection.html", [
       [ "MatFileMatrixCollection", "classMatFileMatrixCollection.html", null ]
     ] ],
+    [ "OutputMatrices", "classOutputMatrices.html", null ],
     [ "PerfectlyMatchedLayer", "structPerfectlyMatchedLayer.html", null ],
     [ "PlanarInterface", "structPlanarInterface.html", null ],
     [ "SimulationParameters", "classSimulationParameters.html", null ],

@@ -40,6 +40,7 @@ var annotated_dup =
     [ "MatFileMatrixCollection", "classMatFileMatrixCollection.html", "classMatFileMatrixCollection" ],
     [ "Matrix", "classMatrix.html", "classMatrix" ],
     [ "MatrixCollection", "classMatrixCollection.html", "classMatrixCollection" ],
+    [ "OutputMatrices", "classOutputMatrices.html", "classOutputMatrices" ],
     [ "PerfectlyMatchedLayer", "structPerfectlyMatchedLayer.html", "structPerfectlyMatchedLayer" ],
     [ "PlanarInterface", "structPlanarInterface.html", "structPlanarInterface" ],
     [ "Pupil", "classPupil.html", "classPupil" ],

@@ -1,6 +1,7 @@
 var classArgumentNamespace =
 [
     [ "ArgumentNamespace", "classArgumentNamespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6", null ],
+    [ "check_files_can_be_accessed", "classArgumentNamespace.html#ac90ed1af7641004746700fac1068caeb", null ],
     [ "cubic_interpolation", "classArgumentNamespace.html#aedbab63bb61218f7a39f1d60c0c258ac", null ],
     [ "finite_difference", "classArgumentNamespace.html#a7334784d24819031d41ed914a8ac058e", null ],
     [ "grid_filename", "classArgumentNamespace.html#a75b3ea55ae247796f2e6be7f9654dfc6", null ],

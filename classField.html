@@ -144,12 +144,12 @@ virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (
 <tr class="memitem:acdf5183798698b1dd14fd4c93512b63f"><td class="memItemLeft" align="right" valign="top">virtual std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#acdf5183798698b1dd14fd4c93512b63f">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell)=0</td></tr>
 <tr class="memdesc:acdf5183798698b1dd14fd4c93512b63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a <a class="el" href="classField.html">Field</a> component to the centre of a Yee cell.  <a href="classField.html#acdf5183798698b1dd14fd4c93512b63f">More...</a><br /></td></tr>
 <tr class="separator:acdf5183798698b1dd14fd4c93512b63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb30ac26b024b801c426c63c0cf5eac8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aeb30ac26b024b801c426c63c0cf5eac8">interpolate_over_range</a> (mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower, int i_upper, int j_lower, int j_upper, int k_lower, int k_upper, Dimension mode=Dimension::THREE)</td></tr>
-<tr class="memdesc:aeb30ac26b024b801c426c63c0cf5eac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a> over the range provided.  <a href="classField.html#aeb30ac26b024b801c426c63c0cf5eac8">More...</a><br /></td></tr>
-<tr class="separator:aeb30ac26b024b801c426c63c0cf5eac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c8df94d512196b144c0e23c40a41891"><td class="memItemLeft" align="right" valign="top"><a id="a2c8df94d512196b144c0e23c40a41891"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_over_range</b> (mxArray **x_out, mxArray **y_out, mxArray **z_out, Dimension mode=Dimension::THREE)</td></tr>
-<tr class="separator:a2c8df94d512196b144c0e23c40a41891"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad229a40d2caf451e88f0cdec639e274f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ad229a40d2caf451e88f0cdec639e274f">interpolate_over_range</a> (mxArray *x_out, mxArray *y_out, mxArray *z_out, int i_lower, int i_upper, int j_lower, int j_upper, int k_lower, int k_upper, Dimension mode=Dimension::THREE)</td></tr>
+<tr class="memdesc:ad229a40d2caf451e88f0cdec639e274f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a> over the range provided.  <a href="classField.html#ad229a40d2caf451e88f0cdec639e274f">More...</a><br /></td></tr>
+<tr class="separator:ad229a40d2caf451e88f0cdec639e274f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fb4dd9f724a61002b48057a9b174010"><td class="memItemLeft" align="right" valign="top"><a id="a9fb4dd9f724a61002b48057a9b174010"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_over_range</b> (mxArray *x_out, mxArray *y_out, mxArray *z_out, Dimension mode=Dimension::THREE)</td></tr>
+<tr class="separator:a9fb4dd9f724a61002b48057a9b174010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace2a629c5fc9141735862d022040a92c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ace2a629c5fc9141735862d022040a92c">interpolate_transverse_electric_components</a> (<a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
 <tr class="memdesc:ace2a629c5fc9141735862d022040a92c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a>'s transverse electric components to the centre of Yee cell i,j,k.  <a href="classField.html#ace2a629c5fc9141735862d022040a92c">More...</a><br /></td></tr>
 <tr class="separator:ace2a629c5fc9141735862d022040a92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -327,8 +327,8 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
 
 </div>
 </div>
-<a id="aeb30ac26b024b801c426c63c0cf5eac8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb30ac26b024b801c426c63c0cf5eac8">&#9670;&nbsp;</a></span>interpolate_over_range()</h2>
+<a id="ad229a40d2caf451e88f0cdec639e274f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad229a40d2caf451e88f0cdec639e274f">&#9670;&nbsp;</a></span>interpolate_over_range()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -336,19 +336,19 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="memname">void Field::interpolate_over_range </td>
           <td>(</td>
-          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramtype">mxArray *&#160;</td>
           <td class="paramname"><em>x_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramtype">mxArray *&#160;</td>
           <td class="paramname"><em>y_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">mxArray **&#160;</td>
+          <td class="paramtype">mxArray *&#160;</td>
           <td class="paramname"><em>z_out</em>, </td>
         </tr>
         <tr>

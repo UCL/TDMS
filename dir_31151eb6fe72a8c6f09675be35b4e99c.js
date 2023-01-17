@@ -76,7 +76,9 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     ] ],
     [ "mesh_base.h", "mesh__base_8h.html", "mesh__base_8h" ],
     [ "numerical_derivative.h", "numerical__derivative_8h.html", "numerical__derivative_8h" ],
-    [ "openandorder.h", "openandorder_8h.html", "openandorder_8h" ],
+    [ "output_matrices.h", "output__matrices_8h.html", [
+      [ "OutputMatrices", "classOutputMatrices.html", "classOutputMatrices" ]
+    ] ],
     [ "shapes.h", "shapes_8h_source.html", null ],
     [ "simulation_parameters.h", "simulation__parameters_8h.html", "simulation__parameters_8h" ],
     [ "source.h", "source_8h.html", [
