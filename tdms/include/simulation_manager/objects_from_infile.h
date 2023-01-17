@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include "matrix.h"
 
 #include "arrays.h"

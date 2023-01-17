@@ -278,7 +278,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   int i, j, k, n, k_loc, K;
   int Nsteps = 0, dft_counter = 0;
-  int Ni_tdf = 0, Nk_tdf = 0;
 
   mxArray *E_copy_MATLAB_data[3];
   mxArray *mx_surface_vertices, *mx_surface_facets;
@@ -3990,32 +3989,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   /*End of FDTD iteration*/
 
-  //fprintf(stderr,"Pos 17\n");
   /* Free the additional data structures used to cast the matlab arrays*/
   if (inputs.params.exphasorssurface && inputs.params.run_mode == RunMode::complete) {
     mxDestroyArray(mx_surface_vertices);
-    // ~SurfacePhasors cleans up remaining surface phasor arrays, except the data which we return in plhs[23]
   }
-  // ~VertexPhasors cleans up the vertex phasors arrays, except the data which we return in plhs[28]
-
-  //fprintf(stderr,"Pos 20\n");
-  if (inputs.I0.apply || inputs.I1.apply) {
-    free_cast_matlab_3D_array(inputs.Isource.imag, (inputs.K1.index - inputs.K0.index + 1));
-    free_cast_matlab_3D_array(inputs.Isource.real, (inputs.K1.index - inputs.K0.index + 1));
-  }
-  if (inputs.J0.apply || inputs.J1.apply) {
-    free_cast_matlab_3D_array(inputs.Jsource.imag, (inputs.K1.index - inputs.K0.index + 1));
-    free_cast_matlab_3D_array(inputs.Jsource.real, (inputs.K1.index - inputs.K0.index + 1));
-  }
-  if (inputs.K0.apply || inputs.K1.apply) {
-    free_cast_matlab_3D_array(inputs.Ksource.imag, (inputs.J1.index - inputs.J0.index + 1));
-    free_cast_matlab_3D_array(inputs.Ksource.real, (inputs.J1.index - inputs.J0.index + 1));
-  }
-
-  if (inputs.params.dimension == THREE) free_cast_matlab_3D_array(inputs.materials, inputs.E_s.K_tot + 1);
-  else
-    free_cast_matlab_3D_array(inputs.materials, 0);
-    /*Free the additional memory which was allocated to store integers which were passed as doubles*/
 
   free(E_norm);
   free(H_norm);
