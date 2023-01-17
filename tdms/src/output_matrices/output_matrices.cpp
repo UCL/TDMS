@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "mesh_base.h"
+
 using namespace tdms_matrix_names;
 using namespace std;
 
@@ -234,7 +236,27 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
   }
 }
 
-void OutputMatrices::assign_surface_phasor_outputs(bool empty_allocation, mxArray *mx_surface_facets) {
+void OutputMatrices::setup_surface_mesh(Cuboid cuboid, SimulationParameters params, int n_frequencies) {
+  if (params.exphasorssurface && params.run_mode == RunMode::complete) {
+    mxArray *mx_surface_facets = nullptr;
+    if (n_Yee_cells.J_tot() == 0) {
+      conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5],
+                            &mx_surface_vertices, &mx_surface_facets);
+    } else {
+      conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2],
+                                   cuboid[3], cuboid[4], cuboid[5],
+                                   params.spacing_stride, &mx_surface_vertices,
+                                   &mx_surface_facets);
+    }
+    //we don't need the facets so destroy the matrix now to save memory
+    mxDestroyArray(mx_surface_facets);
+    // now cast the MATLAB array that we created to the surface phasors object
+    surface_phasors.set_from_matlab_array(mx_surface_vertices, n_frequencies);
+  }
+}
+
+void OutputMatrices::assign_surface_phasor_outputs(bool empty_allocation,
+                                                   mxArray *mx_surface_facets) {
   // output names that we will be assigning to
   vector<string> phasor_matrices = {"vertices", "camplitudes", "facets"};
 
@@ -281,4 +303,11 @@ void OutputMatrices::save_outputs(string output_file_name, bool compressed_outpu
 
   // close matfile
   matClose(output_file);
+}
+
+OutputMatrices::~OutputMatrices() {
+  // free underlying surface phasor MATLAB array, if we need to
+  if (mx_surface_vertices != nullptr) {
+    mxDestroyArray(mx_surface_vertices);
+  }
 }

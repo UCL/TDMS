@@ -1,53 +1,94 @@
 #pragma once
 
+#include <complex>
+#include <vector>
+
 #include "arrays.h"
 #include "field.h"
-#include "grid_labels.h"
-#include "surface_phasors.h"
+#include "matrix.h"
+#include "objects_from_infile.h"
 
 class LoopVariables {
 private:
+  // Pointers to the MATLAB structure that underlies E_copy, the convergence checker
+  mxArray *E_copy_MATLAB_data[3] = {nullptr};
+
   /**
-   * @brief Set the interpolation method for each of the fields we are interpolating
+   * @brief Determine the dispersive properties and setup the corresponding arrays
    *
-   * @param pim The interpolation method to use
+   * @param data The objects and data obtained from the input file
    */
-  void set_interpolation_method(PreferredInterpolationMethods pim);
-  // Setup the PSTD derivative-shift operator and related variables
-  void setup_PSTD_exclusive_variables();
-  // Sets up the mesh for the user-specified surface, over which to extract phasors
-  void setup_surface_mesh();
-  // Set the dimensions of the field (phasor) arrays for this simulation
-  void setup_field_dimensions();
-  // Determine the dispersive properties and setup the corresponding arrays
-  void setup_dispersive_properties();
+  void setup_dispersive_properties(ObjectsFromInfile &data);
   /**
    * @brief Determine if we have a dispersive medium by searching for non-zero attenuation constants in gamma.
    *
+   * @param materials
+   * @param IJK_tot Number of Yee cells in each axial direction
+   * @param attenuation_constants Material attenuation constants
+   * @param dt Simulation timestep
    * @param non_zero_tol Tolerance for an attenuation constant being "non-zero"
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive(double non_zero_tol = 1e-15);
+  bool is_dispersive(uint8_t ***materials, IJKDims IJK_tot, double *attenuation_constants,
+                     double dt, double non_zero_tol = 1e-15);
 
-  // Zero the field arrays
-  void zero_field_arrays();
   /**
-   * @brief Zero all elements of a n_dim1-by-n_dim2 array that has been cast to a MATLAB array.
+   * @brief Performs an optimisation step in a 2D simulation (J_tot==0) when we have either TE or TM, but not both.
    *
-   * The array is assumed to be indexed by cast_array[j][i], where
-   * 0 <= j < n_dim2,
-   * 0 <= i < n_dim1.
+   * In the J_tot==0 2D version; the 'TE' case involves components Ey, Hx and Hz, whilst the 'TM' case involves components Ex, Ez and Hy.
    *
-   * @param cast_array The array whose elements are to be set to zero
-   * @param n_dim1,n_dim2 The number of elements in each axis
+   * The idea is to use an alternative upper limit to the loop over j when we have J_tot==0. As it stands, we are planning the loops listed below. We use the syntax (k k_min k_max : j j_min j_max : i i_min i_max) to represent the nested for loop:
+   *    for( k = k_min; k < k_max; k++) {
+   *        for( j = j_min; j < j_max; j++) {
+   *            for( i = i_min; i < i_max; i++) {
+   *            }
+   *        }
+   *    }
+   *
+   * Exy: Not involved in 2D, (k 0 K_tot+1 : j 1 J_tot : i 0 I_tot)
+   * Exz: TM, (k 1 K_tot : j 0 J_tot+1 : i 0 I_tot)
+   * Eyx: TE, (k 0 K_tot+1 : j 0 max(J_tot, 1) : i 1 I_tot)
+   * Eyz: TE, (k 1 K_tot : j 0 max(J_tot, 1) : i 0 I_tot+1)
+   * Ezx: TM, (k 0 K_tot : j 0 J_tot+1 : i 1 I_tot)
+   * Ezy: Not involved in 2D, (k 0 K_tot : j 1 J_tot : i 0 I_tot+1)
+   * Hxy: Not involved in 2D, (k 0 K_tot : j 0 J_tot : i 0 I_tot+1)
+   * Hxz: TE, (k 0 K_tot : j 0 max(J_tot,1) : i 0 I_tot+1)
+   * Hyx: TM, (k 0 K_tot : j 0 J_tot+1 : i 0 I_tot)
+   * Hyz: TM, (k 0 K_tot : j 0 J_tot+1 : i 0 I_tot)
+   * Hzx: TE, (k 0 K_tot+1 : j 0 max(J_tot,1) : i 0 I_tot)
+   * Hzy: Not involved in 2D, (k 0 K_tot+1) : j 0 J_tot : i 0 I_tot)
+   *
+   * We see that in all cases, the TE update has the following loop on j:
+   *    for(j=0;j<max(J_tot,1);j++)
+   * whilst the TM case has:
+   *    for(j=0;j<(J_tot+1);j++)
+   *
+   * So we can create variables
+   * int J_tot_p1_bound, J_tot_bound
+   * which would take the following values
+   *    3D:
+   *        J_tot_p1_bound = J_tot + 1;
+   *        J_tot_bound = J_tot;
+   *    2D:
+   *        TE:
+   *            J_tot_bound = 1;
+   *        Not TE:
+   *            J_tot_bound = 0;
+   *        TM:
+   *            J_tot_p1_bound = 1;
+   *        Not TM:
+   *            J_tot_p1_bound = 0;
+   *
+   * @param data Data and objects obtained from the input file
+   * @param non_zero_tol Tolerance at which doubles are considered "non-zero"
    */
-  void zero_cast_array(double **cast_array, int n_dim1, int n_dim2);
+  void optimise_loop_J_range(ObjectsFromInfile &data, double non_zero_tol = 1e-15);
 
 public:
   DetectorSensitivityArrays Ex_t, Ey_t;//< temporary storage for detector sensitivity evaluation
 
-  ElectricField E_copy;
+  ElectricField E_copy;//< Stores the phasors at the previous iteration, to check for convergence
 
   ElectricSplitField E_nm1;
   CurrentDensitySplitField
@@ -56,11 +97,19 @@ public:
 
   EHVec eh_vec;
 
-  bool is_conductive, is_disp;
+  std::vector<std::complex<double>>
+          E_norm,//< Holds the E-field phasors norm at each extraction frequency
+          H_norm;//< Holds the H-field phasors norm at each extraction frequency
+  //std::complex<double> *E_norm = nullptr, *H_norm = nullptr;
 
-  int J_tot_p1_bound, J_tot_bound;
+  bool is_conductive, is_disp;//< Whether the materials are dispersive / conductive respectively
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
 
+  int J_tot_p1_bound, J_tot_bound;
   int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
+
+  LoopVariables(ObjectsFromInfile &data);
+
+  ~LoopVariables();
 };

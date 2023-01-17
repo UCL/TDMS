@@ -16,6 +16,7 @@
 #include "matlabio.h"
 #include "shapes.h"
 #include "source.h"
+#include "loop_variables.h"
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
 #include "objects_from_infile.h"
@@ -254,11 +255,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
 
-  auto J_s = CurrentDensitySplitField();
-
-  auto E_copy = ElectricField();  // Used to check convergence with E - E_copy
-  E_copy.set_preferred_interpolation_methods(preferred_interpolation_methods); // We never actually interpolate this field, but adding this just in case we later add functionality that depends on it
-
   double rho;
   double alpha_l, beta_l, gamma_l;
   double kappa_l, sigma_l;
@@ -276,11 +272,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   complex<double> cphaseTermE;
   double lambda_an_t;
 
-  int i, j, k, n, k_loc, K;
+  int i, j, k, n, k_loc;
   int Nsteps = 0, dft_counter = 0;
 
-  mxArray *E_copy_MATLAB_data[3];
-  mxArray *mx_surface_vertices, *mx_surface_facets;
+  mxArray *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
 
   // get the number of Yee cells in each axial direction
@@ -288,20 +283,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   outputs.set_n_Yee_cells(IJK_tot);
   int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
 
-  /*Deduce the refractive index of the first layer of the multilayer, or of the bulk of homogeneous*/
-  refind = sqrt(1. / (inputs.freespace_Cbx[0] / inputs.params.dt * inputs.params.delta.dx) / EPSILON0);
-  spdlog::info("refind = {0:e}", refind);
-
-  /*Setup temporary storage for detector sensitivity evaluation*/
-  auto Ex_t = DetectorSensitivityArrays();
-  auto Ey_t = DetectorSensitivityArrays();
-
-  if (inputs.params.exdetintegral) {
-    int n0 = I_tot - inputs.params.pml.Dxl - inputs.params.pml.Dxu;
-    int n1 = J_tot - inputs.params.pml.Dyl - inputs.params.pml.Dyu;
-    Ex_t.initialise(n1, n0);
-    Ey_t.initialise(n1, n0);
-  }
+  // will become a member of superclass
+  LoopVariables loop_variables(inputs);
 
   // setup PSTD variables, and any dependencies there might be
   PSTD.set_using_dimensions(IJK_tot);
@@ -314,35 +297,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     inputs.H_s.initialise_fftw_plan(n_threads, eh_vec);
   }
 
-  //initialise E_norm and H_norm
-  auto E_norm = (complex<double> *) malloc(inputs.f_ex_vec.size() * sizeof(complex<double>));
-  auto H_norm = (complex<double> *) malloc(inputs.f_ex_vec.size() * sizeof(complex<double>));
-  for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-    E_norm[ifx] = 0.;
-    H_norm[ifx] = 0.;
-  }
-
-  //fprintf(stderr,"Pre 02\n");
-
-  //fprintf(stderr,"Qos 00 (%d) (%d,%d,%d,%d):\n",J_tot,cuboid[0], cuboid[1],cuboid[4], cuboid[5]);
   /*set up surface mesh if required*/
+  outputs.setup_surface_mesh(inputs.cuboid, inputs.params, inputs.f_ex_vec.size());
 
-  if (inputs.params.exphasorssurface && inputs.params.run_mode == RunMode::complete) {
-    if (J_tot == 0)
-      conciseCreateBoundary(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[4], inputs.cuboid[5], &mx_surface_vertices,
-                            &mx_surface_facets);
-    else
-      conciseTriangulateCuboidSkip(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[2], inputs.cuboid[3], inputs.cuboid[4], inputs.cuboid[5],
-                                   inputs.params.spacing_stride, &mx_surface_vertices,
-                                   &mx_surface_facets);
-    //fprintf(stderr,"Qos 00a:\n");
-    //we don't need the facets so destroy the matrix now to save memory
-    mxDestroyArray(mx_surface_facets);
-
-    outputs.surface_phasors.set_from_matlab_array(mx_surface_vertices, inputs.f_ex_vec.size());
-  }
-
-  //fprintf(stderr,"Pre 03\n");
   /*Now set up the phasor array, we will have 3 complex output arrays for Ex, Ey and Ez.
     Phasors are extracted over the range Dxl + 3 - 1 to I_tot - Dxu - 1 to avoid pml cells
     see page III.80 for explanation of the following. This has been extended so that interpolation
@@ -350,52 +307,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     more appropriatley*/
   outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels, preferred_interpolation_methods);
 
-  // We need to test for convergence under the following conditions. As such, we need to initialise the array that will ultimately be copies of the phasors at the previous iteration, to test convergence against
-  if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorsvolume &&
-      inputs.params.source_mode == SourceMode::steadystate) {
-    // fetch the E-field dimensions from the output object
-    IJKDims IJK = outputs.get_E_dimensions();
-    int dummy_dims[3] = {IJK.I_tot(), IJK.J_tot(), IJK.K_tot()};
-    // allocate memory space for this array
-    E_copy_MATLAB_data[0] =
-            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
-    E_copy_MATLAB_data[1] =
-            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
-    E_copy_MATLAB_data[2] =
-            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
-
-    E_copy.real.x = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.x = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-
-    E_copy.real.y = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.y = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-
-    E_copy.real.z = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-
-    E_copy.I_tot = IJK.I_tot();
-    E_copy.J_tot = IJK.J_tot();
-    E_copy.K_tot = IJK.K_tot();
-
-    E_copy.zero();
-  }
-
-  // Setup the ID output
+ // Setup the ID output
   bool need_Id_memory = (inputs.params.exdetintegral && inputs.params.run_mode == RunMode::complete);
   outputs.setup_Id(!need_Id_memory, inputs.f_ex_vec.size(), inputs.D_tilde.num_det_modes());
-
-  /*This is just for efficiency */
-  K = K_tot - inputs.params.pml.Dxl - inputs.params.pml.Dxu;
-
-  /*Now set up the phasor arrays for storing the fdtd version of the input fields,
-    these will be used in a boot strapping procedure. Calculated over a complete
-    xy-plane. */
 
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
   Matrix<complex<double>> iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs;
@@ -409,33 +323,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   //y magnetic field source phasor - boot strapping
   iwave_lHy_bs.allocate(I_tot, J_tot + 1);
 
-  /*start dispersive*/
-
-  //work out if we have any disperive materials
-  bool is_disp = is_dispersive(inputs.materials, inputs.gamma, inputs.params.dt, I_tot, J_tot, K_tot);
-  //work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
-  bool is_conductive = !(inputs.rho_cond.all_elements_less_than(1e-15, I_tot + 1, J_tot + 1, K_tot + 1));
-  // work out if we have a dispersive background
-  if (inputs.params.is_disp_ml) inputs.params.is_disp_ml = inputs.matched_layer.is_dispersive(K_tot);
-  //  fprintf(stderr,"is_disp:%d, is_conductive%d, params.is_disp_ml: %d\n",is_disp,is_conductive,params.is_disp_ml);
-  //if we have dispersive materials we need to create additional field variables
-  auto E_nm1 = ElectricSplitField(I_tot, J_tot, K_tot);
-  auto J_nm1 = CurrentDensitySplitField(I_tot, J_tot, K_tot);
-
-  if (is_disp || inputs.params.is_disp_ml) {
-    E_nm1.allocate_and_zero();
-    J_nm1.allocate_and_zero();
-    J_s.allocate_and_zero();
-  }
-  //fprintf(stderr,"Pre 14\n");
-  auto J_c = CurrentDensitySplitField(I_tot, J_tot, K_tot);
-  if (is_conductive) { J_c.allocate_and_zero(); }
-  /*end dispersive*/
-
   outputs.setup_fieldsample(in_matrices["fieldsample"]);
   outputs.setup_vertex_phasors(in_matrices["campssample"], inputs.f_ex_vec.size());
-
-  /*end of setup the output array for the sampled field*/
 
   /*set up the parameters for the phasor convergence procedure*/
   /*First we set dt so that an integer number of time periods fits within a sinusoidal period
@@ -448,15 +337,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     inputs.params.dt = 2. * DCPI / inputs.params.omega_an * 3 / Nsteps_tmp;
   }
 
-  //fprintf(stderr,"Pre 16\n");
   if (inputs.params.source_mode == SourceMode::steadystate && inputs.params.run_mode == RunMode::complete) {
     spdlog::info("Changed dt to {0:.10e} (was {1:.10e})", inputs.params.dt, dt_old);
   }
   Nsteps = (int) lround(Nsteps_tmp);
-  //fprintf(stderr,"Pre 17\n");
-  //Nsteps = (int)(floor(3*2.*DCPI/(params.omega_an*params.dt)) + 1.);//the number of time steps in a sinusoidal period
   dft_counter = 0;
-  //fprintf(stderr,"Pre 18\n");
+
   /*params.Nt should be an integer number of Nsteps in the case of steady-state operation*/
   if (inputs.params.source_mode == SourceMode::steadystate && inputs.params.run_mode == RunMode::complete)
     if (inputs.params.Nt / Nsteps * Nsteps != inputs.params.Nt) {
@@ -464,146 +350,10 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       inputs.params.Nt = inputs.params.Nt / Nsteps * Nsteps;
       spdlog::info("Changing the value of Nt to {0:d} (was {1:d})", inputs.params.Nt, old_Nt);
     }
-  //fprintf(stderr,"Pre 19\n");
 
   if ((inputs.params.run_mode == RunMode::complete) && (inputs.params.source_mode == SourceMode::steadystate)) {
     spdlog::info("Nsteps: {0:d}", Nsteps);
   }
-
-  /*An optimization step in the 2D (J_tot==0) case, try to work out if we have either
-    of TE or TM, ie, not both*/
-  int ksource_nz[4];
-  for (int icomp = 0; icomp < 4; icomp++) ksource_nz[icomp] = 0;
-  //fprintf(stderr,"Pre 20\n");
-  if (J_tot == 0) {
-
-
-    for (int icomp = 0; icomp < 4; icomp++)
-      for (i = 0; i < (I_tot + 1); i++) {
-        ksource_nz[icomp] = ksource_nz[icomp] ||
-                            (fabs(inputs.Ksource.imag[0][i - (inputs.I0.index)][icomp]) > 1.0e-15) ||
-                            (fabs(inputs.Ksource.real[0][i - (inputs.I0.index)][icomp]) > 1.0e-15);
-      }
-
-    //for (int icomp=0;icomp<4;icomp++)
-    //	fprintf(stderr,"ksource_nz[%d] = %d\n",icomp,ksource_nz[icomp]);
-  }
-  //fprintf(stderr,"Pre 21\n");
-  /*
-    In the J_tot==0 2D version, the 'TE' case involves components Ey, Hx and Hz
-    'TM' case involves components Ex, Ez and Hy
-
-    Ey and Hx receive an input from the source condition only if ksource_nz[2] or ksource_nz[1]
-    are non-zero.
-
-    Ex and Hy receive an input from the source condition only if ksource_nz[3] or ksource_nz[0]
-    are non-zero.
-
-    The idea is to use an alternative upper limit to the loop over j when we have J_tot==0. We currently have the followingloops
-    in place for each of the component updates.
-
-    From the analysis below, we see that in all cases, the TE update has the following loop on j:
-    for(j=0;j<max(J_tot,1);j++)
-    whilst the TM case has:
-    for(j=0;j<(J_tot+1);j++)
-
-    So we can create variables
-    J_tot_p1_bound
-    and
-    J_tot_bound
-
-    which would take the following values
-    3D:
-    J_tot_p1_bound = J_tot + 1;
-    J_tot_bound = J_tot;
-
-    2D:
-    TE:
-    J_tot_bound = 1;
-    Not TE:
-    J_tot_bound = 0;
-
-    TM:
-    J_tot_p1_bound = 1;
-    Not TM:
-    J_tot_p1_bound = 0;
-
-    Exy: Not involved in 2D
-    for(k=0;k<(K_tot+1);k++)
-    for(j=1;j<J_tot;j++)
-    for(i=0;i<I_tot;i++){
-
-    Exz: TM
-    for(k=1;k<K_tot;k++)
-    for(j=0;j<(J_tot+1);j++)
-    for(i=0;i<I_tot;i++){
-
-    Eyx: TE
-    for(k=0;k<(K_tot+1);k++)
-    for(j=0;j<max(J_tot,1);j++)
-    for(i=1;i<I_tot;i++){
-
-    Eyz: TE
-    for(k=1;k<K_tot;k++)
-    for(j=0;j<max(J_tot,1);j++)
-    for(i=0;i<(I_tot+1);i++){
-
-    Ezx: TM
-    for(k=0;k<K_tot;k++)
-    for(j=0;j<(J_tot+1);j++)
-    for(i=1;i<I_tot;i++){
-
-    Ezy: Not involved in 2D
-    for(k=0;k<K_tot;k++)
-    for(j=1;j<J_tot;j++)
-    for(i=0;i<(I_tot+1);i++){
-
-    Hxy:  Not involved in 2D
-    for(k=0;k<K_tot;k++)
-    for(j=0;j<J_tot;j++)
-    for(i=0;i<(I_tot+1);i++)
-
-    Hxz: TE
-    for(k=0;k<K_tot;k++)
-    for(j=0;j<max(J_tot,1);j++)
-    for(i=0;i<(I_tot+1);i++){
-
-    Hyx: TM
-    for(k=0;k<K_tot;k++)
-    for(j=0;j<(J_tot+1);j++)
-    for(i=0;i<I_tot;i++){
-
-    Hyz: TM
-    for(k=0;k<K_tot;k++){
-    for(j=0;j<(J_tot+1);j++)
-    for(i=0;i<I_tot;i++){
-
-    Hzx: TE
-    for(k=0;k<(K_tot+1);k++)
-    for(j=0;j<max(J_tot,1);j++)
-    for(i=0;i<I_tot;i++){
-
-    Hzy: Not involved in 2D
-    for(k=0;k<(K_tot+1);k++)
-    for(j=0;j<J_tot;j++)
-    for(i=0;i<I_tot;i++){
-  */
-  //implement the above
-  int J_tot_bound = J_tot;
-  int J_tot_p1_bound = J_tot + 1;
-  if (J_tot == 0) {
-    //TE case
-    if (ksource_nz[2] || ksource_nz[1] || inputs.params.eyi_present) J_tot_bound = 1;
-    else
-      J_tot_bound = 0;
-
-    //TM case
-    if (ksource_nz[3] || ksource_nz[0] || inputs.params.exi_present) J_tot_p1_bound = 1;
-    else
-      J_tot_p1_bound = 0;
-  }
-  //fprintf(stderr,"Pre 22a\n");
-  //fprintf(stderr,"Pre 23\n");
 
   /*Start of FDTD iteration*/
   //open a file for logging the times
@@ -649,11 +399,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
       dft_counter = 0;
 
-      double tol = outputs.E.normalised_difference(E_copy);
+      double tol = outputs.E.normalised_difference(loop_variables.E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
-      E_copy.set_values_from(outputs.E);
+      loop_variables.E_copy.set_values_from(outputs.E);
 
       outputs.E.zero();
       outputs.H.zero();
@@ -728,14 +478,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         for (j = inputs.params.pml.Dyl; j < (J_tot - inputs.params.pml.Dyu); j++)
           for (i = inputs.params.pml.Dxl; i < (I_tot - inputs.params.pml.Dxu); i++) {
             int m = j - inputs.params.pml.Dyl + (i - inputs.params.pml.Dxl) * (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl);
-            Ex_t.v[m][0] = inputs.E_s.xy[inputs.params.k_det_obs][j][i] + inputs.E_s.xz[inputs.params.k_det_obs][j][i];
-            Ex_t.v[m][1] = 0.;
-            Ey_t.v[m][0] = inputs.E_s.yx[inputs.params.k_det_obs][j][i] + inputs.E_s.yz[inputs.params.k_det_obs][j][i];
-            Ey_t.v[m][1] = 0.;
+            loop_variables.Ex_t.v[m][0] = inputs.E_s.xy[inputs.params.k_det_obs][j][i] + inputs.E_s.xz[inputs.params.k_det_obs][j][i];
+            loop_variables.Ex_t.v[m][1] = 0.;
+            loop_variables.Ey_t.v[m][0] = inputs.E_s.yx[inputs.params.k_det_obs][j][i] + inputs.E_s.yz[inputs.params.k_det_obs][j][i];
+            loop_variables.Ey_t.v[m][1] = 0.;
           }
 
-        fftw_execute(Ex_t.plan);
-        fftw_execute(Ey_t.plan);
+        fftw_execute(loop_variables.Ex_t.plan);
+        fftw_execute(loop_variables.Ey_t.plan);
 
         //Iterate over each mode
         for (int im = 0; im < inputs.D_tilde.num_det_modes(); im++) {
@@ -744,16 +494,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
           for (j = 0; j < (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
               int m = j + i * (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl);
-              Ex_t.cm[j][i] = Ex_t.v[m][0] + IMAGINARY_UNIT * Ex_t.v[m][1];
-              Ey_t.cm[j][i] = Ey_t.v[m][0] + IMAGINARY_UNIT * Ey_t.v[m][1];
+              loop_variables.Ex_t.cm[j][i] = loop_variables.Ex_t.v[m][0] + IMAGINARY_UNIT * loop_variables.Ex_t.v[m][1];
+              loop_variables.Ey_t.cm[j][i] = loop_variables.Ey_t.v[m][0] + IMAGINARY_UNIT * loop_variables.Ey_t.v[m][1];
             }
 
           //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
-              Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x[j][i][im];
-              Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y[j][i][im];
+              loop_variables.Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x[j][i][im];
+              loop_variables.Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y[j][i][im];
             }
 
             //now iterate over each frequency to extract phasors at
@@ -791,8 +541,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   } else
                     kprop = 0.;
 
-                  Idxt += Ex_t.cm[j][i] * kprop;
-                  Idyt += Ey_t.cm[j][i] * kprop;
+                  Idxt += loop_variables.Ex_t.cm[j][i] * kprop;
+                  Idyt += loop_variables.Ey_t.cm[j][i] * kprop;
                 }
               phaseTermE = fmod(inputs.f_ex_vec[ifx] * 2. * DCPI * ((double) tind) * inputs.params.dt, 2 * DCPI);
               cphaseTermE = exp(phaseTermE * IMAGINARY_UNIT) * 1. / ((double) inputs.params.Npe);
@@ -859,12 +609,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -908,7 +658,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.y[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.y[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -917,7 +667,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -952,24 +702,24 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 Enp1 = Ca * inputs.E_s.xy[k][j][i] + Cb * (inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i] -
                                                     inputs.H_s.zy[k][j - 1][i] - inputs.H_s.zx[k][j - 1][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.xy[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
-                                  ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * J_c.xy[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.xy[k][j][i] + beta_l * loop_variables.J_nm1.xy[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.xy[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.xy[k][j][i] + beta_l * loop_variables.J_nm1.xy[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.xy[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy[k][j][i];
 
-                  E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
-                  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
-                  J_s.xy[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
+                  loop_variables.J_nm1.xy[k][j][i] = loop_variables.J_s.xy[k][j][i];
+                  loop_variables.J_s.xy[k][j][i] = Jnp1;
 
                   //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
-                if (is_conductive && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]); }
 
                 inputs.E_s.xy[k][j][i] = Enp1;
               }
@@ -983,12 +733,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1032,7 +782,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.y[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.y[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1041,7 +791,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1076,24 +826,24 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 Enp1 = 0.0;
                 //Enp1 = Ca*E_s.xy[k][j][i]+Cb*(H_s.zy[k][j][i] + H_s.zx[k][j][i] - H_s.zy[k][j-1][i] - H_s.zx[k][j-1][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.xy[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
-                                  ((1 + alpha_l) * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * J_c.xy[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.xy[k][j][i] + beta_l * J_nm1.xy[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.xy[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.xy[k][j][i] + beta_l * loop_variables.J_nm1.xy[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.xy[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.xy[k][j][i] + beta_l * loop_variables.J_nm1.xy[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.xy[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy[k][j][i];
 
-                  E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
-                  J_nm1.xy[k][j][i] = J_s.xy[k][j][i];
-                  J_s.xy[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
+                  loop_variables.J_nm1.xy[k][j][i] = loop_variables.J_s.xy[k][j][i];
+                  loop_variables.J_s.xy[k][j][i] = Jnp1;
 
                   //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
-                if (is_conductive && rho) { J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]); }
 
                 eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
                 eh_vec[n][j][1] = 0.;
@@ -1133,17 +883,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
           for (k = 1; k < K_tot; k++)
-            for (j = 0; j < J_tot_p1_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
               for (i = 0; i < I_tot; i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1182,7 +932,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.z[k_loc];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1191,7 +941,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1228,40 +978,40 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 Enp1 = Ca * inputs.E_s.xz[k][j][i] + Cb * (inputs.H_s.yx[k - 1][j][i] + inputs.H_s.yz[k - 1][j][i] -
                                                     inputs.H_s.yx[k][j][i] - inputs.H_s.yz[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.xz[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
-                                  ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * J_c.xz[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.xz[k][j][i] + beta_l * loop_variables.J_nm1.xz[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.xz[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.xz[k][j][i] + beta_l * loop_variables.J_nm1.xz[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.xz[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz[k][j][i];
-                  E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
-                  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
-                  J_s.xz[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
+                  loop_variables.J_nm1.xz[k][j][i] = loop_variables.J_s.xz[k][j][i];
+                  loop_variables.J_s.xz[k][j][i] = Jnp1;
                 }
 
-                if (is_conductive && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]); }
 
                 inputs.E_s.xz[k][j][i] = Enp1;
               }
           //FDTD, E_s.xz
         } else {
           //#pragma omp for
-          for (j = 0; j < J_tot_p1_bound; j++)
+          for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
 #pragma omp for
             for (i = 0; i < I_tot; i++) {
               for (k = 1; k < K_tot; k++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1299,7 +1049,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.z[k_loc];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1308,7 +1058,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1344,21 +1094,21 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       if(tind==0)
       fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.xz[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
-                                  ((1 + alpha_l) * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * J_c.xz[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.xz[k][j][i] + beta_l * J_nm1.xz[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.xz[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.xz[k][j][i] + beta_l * loop_variables.J_nm1.xz[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.xz[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.xz[k][j][i] + beta_l * loop_variables.J_nm1.xz[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.xz[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz[k][j][i];
-                  E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
-                  J_nm1.xz[k][j][i] = J_s.xz[k][j][i];
-                  J_s.xz[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
+                  loop_variables.J_nm1.xz[k][j][i] = loop_variables.J_s.xz[k][j][i];
+                  loop_variables.J_s.xz[k][j][i] = Jnp1;
                 }
 
-                if (is_conductive && rho) { J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]); }
 
                 eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
                 eh_vec[n][k][1] = 0.;
@@ -1386,17 +1136,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
           //FDTD, E_s.yx
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
-            for (j = 0; j < J_tot_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_bound; j++)
               for (i = 1; i < I_tot; i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure) {
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1440,7 +1190,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.x[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1449,7 +1199,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1484,20 +1234,20 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 Enp1 = Ca * inputs.E_s.yx[k][j][i] + Cb * (inputs.H_s.zx[k][j][i - 1] + inputs.H_s.zy[k][j][i - 1] -
                                                     inputs.H_s.zx[k][j][i] - inputs.H_s.zy[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.yx[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
-                                  ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * J_c.yx[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.yx[k][j][i] + beta_l * loop_variables.J_nm1.yx[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.yx[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] + beta_l * loop_variables.J_nm1.yx[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.yx[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx[k][j][i];
-                  E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
-                  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
-                  J_s.yx[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
+                  loop_variables.J_nm1.yx[k][j][i] = loop_variables.J_s.yx[k][j][i];
+                  loop_variables.J_s.yx[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + inputs.E_s.yx[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.yx[k][j][i] -= rho * (Enp1 + inputs.E_s.yx[k][j][i]); }
 
                 inputs.E_s.yx[k][j][i] = Enp1;
               }
@@ -1505,17 +1255,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         } else {
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
-            for (j = 0; j < J_tot_bound; j++) {
+            for (j = 0; j < loop_variables.J_tot_bound; j++) {
               for (i = 1; i < I_tot; i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure) {
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1559,7 +1309,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.x[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1568,7 +1318,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1602,20 +1352,20 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
 
                 //Enp1 = Ca*E_s.yx[k][j][i]+Cb*(H_s.zx[k][j][i-1] + H_s.zy[k][j][i-1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.yx[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
-                                  ((1 + alpha_l) * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * J_c.yx[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.yx[k][j][i] + beta_l * J_nm1.yx[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.yx[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.yx[k][j][i] + beta_l * loop_variables.J_nm1.yx[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.yx[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] + beta_l * loop_variables.J_nm1.yx[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.yx[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx[k][j][i];
-                  E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
-                  J_nm1.yx[k][j][i] = J_s.yx[k][j][i];
-                  J_s.yx[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
+                  loop_variables.J_nm1.yx[k][j][i] = loop_variables.J_s.yx[k][j][i];
+                  loop_variables.J_s.yx[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.yx[k][j][i] -= rho * (Enp1 + inputs.E_s.yx[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.yx[k][j][i] -= rho * (Enp1 + inputs.E_s.yx[k][j][i]); }
 
                 eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
                 eh_vec[n][i][1] = 0.;
@@ -1644,17 +1394,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 //FDTD, E_s.yz
 #pragma omp for
           for (k = 1; k < K_tot; k++)
-            for (j = 0; j < J_tot_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_bound; j++)
               for (i = 0; i < (I_tot + 1); i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1693,7 +1443,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.z[k_loc];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1702,7 +1452,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1737,39 +1487,39 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
                 Enp1 = Ca * inputs.E_s.yz[k][j][i] + Cb * (inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i] -
                                                     inputs.H_s.xy[k - 1][j][i] - inputs.H_s.xz[k - 1][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.yz[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
-                                  ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * J_c.yz[k][j][i];
+                                  ((1 + alpha_l) * loop_variables.J_s.yz[k][j][i] + beta_l * loop_variables.J_nm1.yz[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.yz[k][j][i];
 
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] + beta_l * loop_variables.J_nm1.yz[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.yz[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz[k][j][i];
-                  E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
-                  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
-                  J_s.yz[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
+                  loop_variables.J_nm1.yz[k][j][i] = loop_variables.J_s.yz[k][j][i];
+                  loop_variables.J_s.yz[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + inputs.E_s.yz[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.yz[k][j][i] -= rho * (Enp1 + inputs.E_s.yz[k][j][i]); }
 
                 inputs.E_s.yz[k][j][i] = Enp1;
               }
           //FDTD, E_s.yz
         } else {
 #pragma omp for
-          for (j = 0; j < J_tot_bound; j++)
+          for (j = 0; j < loop_variables.J_tot_bound; j++)
             for (i = 0; i < (I_tot + 1); i++) {
               for (k = 1; k < K_tot; k++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1808,7 +1558,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.z[k_loc];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.z[k_loc];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.z[k_loc];
                 }
 
                 alpha_l = 0.;
@@ -1817,7 +1567,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1851,21 +1601,21 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
                 //Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.yz[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
-                                  ((1 + alpha_l) * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * J_c.yz[k][j][i];
+                                  ((1 + alpha_l) * loop_variables.J_s.yz[k][j][i] + beta_l * loop_variables.J_nm1.yz[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.yz[k][j][i];
 
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.yz[k][j][i] + beta_l * J_nm1.yz[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.yz[k][j][i]);
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] + beta_l * loop_variables.J_nm1.yz[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.yz[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz[k][j][i];
-                  E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
-                  J_nm1.yz[k][j][i] = J_s.yz[k][j][i];
-                  J_s.yz[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
+                  loop_variables.J_nm1.yz[k][j][i] = loop_variables.J_s.yz[k][j][i];
+                  loop_variables.J_s.yz[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.yz[k][j][i] -= rho * (Enp1 + inputs.E_s.yz[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.yz[k][j][i] -= rho * (Enp1 + inputs.E_s.yz[k][j][i]); }
 
                 eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
                 eh_vec[n][k][1] = 0.;
@@ -1895,17 +1645,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //E_s.zx updates
           for (k = 0; k < K_tot; k++)
-            for (j = 0; j < J_tot_p1_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
               for (i = 1; i < I_tot; i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -1949,7 +1699,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.x[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -1958,7 +1708,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1995,20 +1745,20 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 Enp1 = Ca * inputs.E_s.zx[k][j][i] + Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
                                                     inputs.H_s.yx[k][j][i - 1] - inputs.H_s.yz[k][j][i - 1]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.zx[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
-                                  ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * J_c.zx[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                  E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                  J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
-                  J_s.zx[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
+                  loop_variables.J_nm1.zx[k][j][i] = loop_variables.J_s.zx[k][j][i];
+                  loop_variables.J_s.zx[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
 
                 inputs.E_s.zx[k][j][i] = Enp1;
               }
@@ -2016,17 +1766,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         } else {
 #pragma omp for
           for (k = 0; k < K_tot; k++)
-            for (j = 0; j < J_tot_p1_bound; j++) {
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++) {
               for (i = 1; i < I_tot; i++) {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -2070,7 +1820,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.x[array_ind];
                   else
                     Cc = 0.;
-                  if (is_conductive) rho = inputs.rho_cond.x[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.x[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2079,7 +1829,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2115,20 +1865,20 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 /*if( materials[k][j][i] || materials[k][j][i+1])
         fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.zx[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
-                                  ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * J_c.zx[k][j][i];
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
+                                  ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                  E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                  J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
-                  J_s.zx[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
+                  loop_variables.J_nm1.zx[k][j][i] = loop_variables.J_s.zx[k][j][i];
+                  loop_variables.J_s.zx[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
 
                 eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
                 eh_vec[n][i][1] = 0.;
@@ -2160,11 +1910,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               rho = 0.;
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                  if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
+                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                  if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                    k_loc = inputs.params.pml.Dzl + K - 1;
+                  else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                    k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                   else
                     k_loc = inputs.params.pml.Dzl + 1;
                 }
@@ -2179,7 +1929,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 if (inputs.params.is_disp_ml) Cc = inputs.C.c.x[array_ind];
                 else
                   Cc = 0.;
-                if (is_conductive) rho = inputs.rho_cond.x[i];
+                if (loop_variables.is_conductive) rho = inputs.rho_cond.x[i];
               } else {
                 rho = 0.;
                 Ca = inputs.Cmaterial.a.x[inputs.materials[k][j][i] - 1];
@@ -2194,7 +1944,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               sigma_l = 0.;
 
 
-              if (is_disp || inputs.params.is_disp_ml) {
+              if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                 sigma_l = inputs.matched_layer.sigma.x[array_ind];
                 kappa_l = inputs.matched_layer.kappa.x[array_ind];
                 alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2215,21 +1965,21 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
               Enp1 = Ca * inputs.E_s.zx[k][j][i] + Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
                                                   inputs.H_s.yx[k][j][i - 1] - inputs.H_s.yz[k][j][i - 1]);
-              if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zx[k][j][i] -
+              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                         1. / 2. * Cb * inputs.params.delta.dx *
-                                ((1 + alpha_l) * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i]);
-              if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * J_c.zx[k][j][i];
+                                ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i]);
+              if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
 
-              if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zx[k][j][i] + beta_l * J_nm1.zx[k][j][i] +
-                       kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zx[k][j][i]);
+              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] + beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                       kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
                 Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                J_nm1.zx[k][j][i] = J_s.zx[k][j][i];
-                J_s.zx[k][j][i] = Jnp1;
+                loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
+                loop_variables.J_nm1.zx[k][j][i] = loop_variables.J_s.zx[k][j][i];
+                loop_variables.J_s.zx[k][j][i] = Jnp1;
               }
-              if (is_conductive && rho) { J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
+              if (loop_variables.is_conductive && rho) { loop_variables.J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]); }
 
               inputs.E_s.zx[k][j][i] = Enp1;
             }
@@ -2246,12 +1996,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -2295,7 +2045,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.y[array_ind];
                   else
                     Cc = 0;
-                  if (is_conductive) rho = inputs.rho_cond.y[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2304,7 +2054,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2339,22 +2089,22 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                 Enp1 = Ca * inputs.E_s.zy[k][j][i] + Cb * (inputs.H_s.xy[k][j - 1][i] + inputs.H_s.xz[k][j - 1][i] -
                                                     inputs.H_s.xy[k][j][i] - inputs.H_s.xz[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.zy[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
-                                  ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * J_c.zy[k][j][i];
+                                  ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
 
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                  E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                  J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
-                  J_s.zy[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
+                  loop_variables.J_nm1.zy[k][j][i] = loop_variables.J_s.zy[k][j][i];
+                  loop_variables.J_s.zy[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
                 inputs.E_s.zy[k][j][i] = Enp1;
               }
           //FDTD, E_s.zy
@@ -2367,12 +2117,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -2416,7 +2166,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                   if (inputs.params.is_disp_ml) Cc = inputs.C.c.y[array_ind];
                   else
                     Cc = 0;
-                  if (is_conductive) rho = inputs.rho_cond.y[array_ind];
+                  if (loop_variables.is_conductive) rho = inputs.rho_cond.y[array_ind];
                 }
 
                 alpha_l = 0.;
@@ -2425,7 +2175,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2459,22 +2209,22 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
 
                 //Enp1 = Ca*E_s.zy[k][j][i]+Cb*(H_s.xy[k][j-1][i] + H_s.xz[k][j-1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                  Enp1 += Cc * E_nm1.zy[k][j][i] -
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                  Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
-                                  ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-                if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * J_c.zy[k][j][i];
+                                  ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i]);
+                if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-                if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                  Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
+                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                  Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                         kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
 
                   Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                  E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                  J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
-                  J_s.zy[k][j][i] = Jnp1;
+                  loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
+                  loop_variables.J_nm1.zy[k][j][i] = loop_variables.J_s.zy[k][j][i];
+                  loop_variables.J_s.zy[k][j][i] = Jnp1;
                 }
-                if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
+                if (loop_variables.is_conductive && rho) { loop_variables.J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
 
                 eh_vec[n][j][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
                 eh_vec[n][j][1] = 0.;
@@ -2505,11 +2255,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               rho = 0.;
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                  if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
+                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                  if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                    k_loc = inputs.params.pml.Dzl + K - 1;
+                  else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                    k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                   else
                     k_loc = inputs.params.pml.Dzl + 1;
                 }
@@ -2524,7 +2274,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                 if (inputs.params.is_disp_ml) Cc = inputs.C.c.y[array_ind];
                 else
                   Cc = 0.;
-                if (is_conductive) rho = inputs.rho_cond.y[array_ind];
+                if (loop_variables.is_conductive) rho = inputs.rho_cond.y[array_ind];
               } else {
                 rho = 0.;
                 Ca = inputs.Cmaterial.a.y[inputs.materials[k][j][i] - 1];
@@ -2538,7 +2288,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               kappa_l = 1.;
               sigma_l = 0.;
 
-              if (is_disp || inputs.params.is_disp_ml) {
+              if (loop_variables.is_disp || inputs.params.is_disp_ml) {
                 kappa_l = inputs.matched_layer.kappa.y[array_ind];
                 sigma_l = inputs.matched_layer.sigma.y[array_ind];
                 alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2559,22 +2309,22 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
               Enp1 = Ca * inputs.E_s.zy[k][j][i] + Cb * (inputs.H_s.xy[k][j - 1][i] + inputs.H_s.xz[k][j - 1][i] -
                                                   inputs.H_s.xy[k][j][i] - inputs.H_s.xz[k][j][i]);
-              if ((is_disp || inputs.params.is_disp_ml) && gamma_l)
-                Enp1 += Cc * E_nm1.zy[k][j][i] -
+              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                         1. / 2. * Cb * inputs.params.delta.dy *
-                                ((1 + alpha_l) * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i]);
-              if (is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * J_c.zy[k][j][i];
+                                ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i]);
+              if (loop_variables.is_conductive && rho) Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-              if ((is_disp || inputs.params.is_disp_ml) && gamma_l) {
-                Jnp1 = alpha_l * J_s.zy[k][j][i] + beta_l * J_nm1.zy[k][j][i] +
-                       kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - E_nm1.zy[k][j][i]);
+              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] + beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                       kappa_l * gamma_l / (2. * inputs.params.dt) * (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
 
                 Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                J_nm1.zy[k][j][i] = J_s.zy[k][j][i];
-                J_s.zy[k][j][i] = Jnp1;
+                loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
+                loop_variables.J_nm1.zy[k][j][i] = loop_variables.J_s.zy[k][j][i];
+                loop_variables.J_s.zy[k][j][i] = Jnp1;
               }
-              if (is_conductive && rho) { J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
+              if (loop_variables.is_conductive && rho) { loop_variables.J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]); }
 
               inputs.E_s.zy[k][j][i] = Enp1;
             }
@@ -2603,14 +2353,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
                                     IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][2]));
-              if (is_conductive)
-                J_c.zx[k][j][inputs.I0.index] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.zx[k][j][inputs.I0.index] +=
                         inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
                               IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][2]));
               if (inputs.params.is_disp_ml)
-                J_s.zx[k][j][inputs.I0.index] +=
+                loop_variables.J_s.zx[k][j][inputs.I0.index] +=
                         inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
@@ -2623,14 +2373,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
                                     IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][3]));
-              if (is_conductive)
-                J_c.yx[k][j][inputs.I0.index] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.yx[k][j][inputs.I0.index] -=
                         inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
                               IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][3]));
               if (inputs.params.is_disp_ml)
-                J_s.yx[k][j][inputs.I0.index] -=
+                loop_variables.J_s.yx[k][j][inputs.I0.index] -=
                         inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
@@ -2650,14 +2400,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
                                     IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][6]));
-              if (is_conductive)
-                J_c.zx[k][j][inputs.I1.index] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.zx[k][j][inputs.I1.index] -=
                         inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
                               IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][6]));
               if (inputs.params.is_disp_ml)
-                J_s.zx[k][j][inputs.I1.index] -=
+                loop_variables.J_s.zx[k][j][inputs.I1.index] -=
                         inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
@@ -2670,14 +2420,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
                                     IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][7]));
-              if (is_conductive)
-                J_c.yx[k][j][inputs.I1.index] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.yx[k][j][inputs.I1.index] +=
                         inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
                               IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)][j - (inputs.J0.index)][7]));
               if (inputs.params.is_disp_ml)
-                J_s.yx[k][j][inputs.I1.index] +=
+                loop_variables.J_s.yx[k][j][inputs.I1.index] +=
                         inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
@@ -2701,14 +2451,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
                                     IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][2]));
-              if (is_conductive)
-                J_c.zy[k][(inputs.J0.index)][i] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.zy[k][(inputs.J0.index)][i] -=
                         inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
                               IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][2]));
               if (inputs.params.is_disp_ml)
-                J_s.zy[k][(inputs.J0.index)][i] -=
+                loop_variables.J_s.zy[k][(inputs.J0.index)][i] -=
                         inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
@@ -2721,14 +2471,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
                                     IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][3]));
-              if (is_conductive)
-                J_c.xy[k][(inputs.J0.index)][i] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.xy[k][(inputs.J0.index)][i] +=
                         inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
                               IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][3]));
               if (inputs.params.is_disp_ml)
-                J_s.xy[k][(inputs.J0.index)][i] +=
+                loop_variables.J_s.xy[k][(inputs.J0.index)][i] +=
                         inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
@@ -2748,14 +2498,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
                                     IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][6]));
-              if (is_conductive)
-                J_c.zy[k][(inputs.J1.index)][i] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.zy[k][(inputs.J1.index)][i] +=
                         inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
                               IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][6]));
               if (inputs.params.is_disp_ml)
-                J_s.zy[k][(inputs.J1.index)][i] -=
+                loop_variables.J_s.zy[k][(inputs.J1.index)][i] -=
                         inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
@@ -2768,14 +2518,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
                                     IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][7]));
-              if (is_conductive)
-                J_c.xy[k][(inputs.J1.index)][i] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.xy[k][(inputs.J1.index)][i] -=
                         inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
                               IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)][i - (inputs.I0.index)][7]));
               if (inputs.params.is_disp_ml)
-                J_s.xy[k][(inputs.J1.index)][i] +=
+                loop_variables.J_s.xy[k][(inputs.J1.index)][i] +=
                         inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
@@ -2794,14 +2544,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
                                     IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][2]));
-              if (is_conductive)
-                J_c.yz[(inputs.K0.index)][j][i] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.yz[(inputs.K0.index)][j][i] +=
                         inputs.rho_cond.z[(inputs.K0.index)] * inputs.C.b.z[inputs.K0.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
                               IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][2]));
               if (inputs.params.is_disp_ml)
-                J_s.yz[(inputs.K0.index)][j][i] -=
+                loop_variables.J_s.yz[(inputs.K0.index)][j][i] -=
                         inputs.matched_layer.kappa.z[(inputs.K0.index)] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.z[inputs.K0.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
@@ -2814,14 +2564,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
                                     IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][3]));
-              if (is_conductive)
-                J_c.xz[(inputs.K0.index)][j][i] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.xz[(inputs.K0.index)][j][i] -=
                         inputs.rho_cond.z[(inputs.K0.index)] * inputs.C.b.z[inputs.K0.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
                               IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][3]));
               if (inputs.params.is_disp_ml)
-                J_s.xz[(inputs.K0.index)][j][i] +=
+                loop_variables.J_s.xz[(inputs.K0.index)][j][i] +=
                         inputs.matched_layer.kappa.z[(inputs.K0.index)] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.z[inputs.K0.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
@@ -2836,14 +2586,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
                                     IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][6]));
-              if (is_conductive)
-                J_c.yz[(inputs.K1.index)][j][i] -=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.yz[(inputs.K1.index)][j][i] -=
                         inputs.rho_cond.z[(inputs.K1.index)] * inputs.C.b.z[inputs.K1.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
                               IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][6]));
               if (inputs.params.is_disp_ml)
-                J_s.yz[(inputs.K1.index)][j][i] +=
+                loop_variables.J_s.yz[(inputs.K1.index)][j][i] +=
                         inputs.matched_layer.kappa.z[(inputs.K1.index)] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.z[inputs.K1.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
@@ -2856,14 +2606,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                               real(commonAmplitude * commonPhase *
                                    (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
                                     IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][7]));
-              if (is_conductive)
-                J_c.xz[(inputs.K1.index)][j][i] +=
+              if (loop_variables.is_conductive)
+                loop_variables.J_c.xz[(inputs.K1.index)][j][i] +=
                         inputs.rho_cond.z[(inputs.K1.index)] * inputs.C.b.z[inputs.K1.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
                               IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][7]));
               if (inputs.params.is_disp_ml)
-                J_s.xz[(inputs.K1.index)][j][i] -=
+                loop_variables.J_s.xz[(inputs.K1.index)][j][i] -=
                         inputs.matched_layer.kappa.z[(inputs.K1.index)] * inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) * inputs.C.b.z[inputs.K1.index] *
                         real(commonAmplitude * commonPhase *
                              (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
@@ -2887,8 +2637,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                           exp(-1.0 * DCPI *
                               pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
           //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-          if (is_conductive)
-            J_c.yz[inputs.K0.index][j][i] +=
+          if (loop_variables.is_conductive)
+            loop_variables.J_c.yz[inputs.K0.index][j][i] +=
                     inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
                     real((inputs.Ksource.real[0][i - (inputs.I0.index)][2] +
                           IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][2]) *
@@ -2896,7 +2646,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                     exp(-1.0 * DCPI * pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
           //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
           if (inputs.params.is_disp_ml) {
-            J_s.yz[inputs.K0.index][j][i] -=
+            loop_variables.J_s.yz[inputs.K0.index][j][i] -=
                     inputs.matched_layer.kappa.z[inputs.K0.index] * inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
                     inputs.C.b.z[inputs.K0.index] *
                     real((inputs.Ksource.real[0][i - (inputs.I0.index)][2] +
@@ -2923,8 +2673,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                             exp(-1.0 * DCPI *
                                 pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
             //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-            if (is_conductive)
-              J_c.yz[inputs.K0.index][j][i] +=
+            if (loop_variables.is_conductive)
+              loop_variables.J_c.yz[inputs.K0.index][j][i] +=
                       inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
                       real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
                             IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][2]) *
@@ -2933,7 +2683,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                       exp(-1.0 * DCPI * pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
             //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
             if (inputs.params.is_disp_ml) {
-              J_s.yz[inputs.K0.index][j][i] -=
+              loop_variables.J_s.yz[inputs.K0.index][j][i] -=
                       inputs.matched_layer.kappa.z[inputs.K0.index] * inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
                       inputs.C.b.z[inputs.K0.index] *
                       real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
@@ -2956,8 +2706,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                           exp(-1.0 * DCPI *
                               pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
           //E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
-          if (is_conductive)
-            J_c.xz[inputs.K0.index][j][i] -=
+          if (loop_variables.is_conductive)
+            loop_variables.J_c.xz[inputs.K0.index][j][i] -=
                     inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
                     real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
                           IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)][i - (inputs.I0.index)][3]) *
@@ -2965,7 +2715,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
                     exp(-1.0 * DCPI * pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) / (inputs.params.hwhm), 2));
           //J_c.xz[(int)K0[0]][j][i] -= rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
           if (inputs.params.is_disp_ml)
-            J_s.xz[inputs.K0.index][j][i] +=
+            loop_variables.J_s.xz[inputs.K0.index][j][i] +=
                     inputs.matched_layer.kappa.z[inputs.K0.index] * inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
                     inputs.C.b.z[inputs.K0.index] *
                     real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
@@ -2997,16 +2747,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //H_s.xz updates
           for (k = 0; k < K_tot; k++)
-            for (j = 0; j < J_tot_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_bound; j++)
               for (i = 0; i < (I_tot + 1); i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3025,17 +2775,17 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         } else {
 #pragma omp for
           //H_s.xz updates
-          for (j = 0; j < J_tot_bound; j++)
+          for (j = 0; j < loop_variables.J_tot_bound; j++)
             for (i = 0; i < (I_tot + 1); i++) {
               for (k = 0; k < K_tot; k++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3078,12 +2828,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               for (i = 0; i < (I_tot + 1); i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3109,12 +2859,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               for (j = 0; j < J_tot; j++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3171,16 +2921,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //H_s.yx updates
           for (k = 0; k < K_tot; k++)
-            for (j = 0; j < J_tot_p1_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3203,16 +2953,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //H_s.yx updates
           for (k = 0; k < K_tot; k++)
-            for (j = 0; j < J_tot_p1_bound; j++) {
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++) {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3252,16 +3002,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //H_s.yz updates
           for (k = 0; k < K_tot; k++) {
-            for (j = 0; j < J_tot_p1_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3285,18 +3035,18 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         } else {
           //#pragma omp for
           //H_s.yz updates
-          for (j = 0; j < J_tot_p1_bound; j++)
+          for (j = 0; j < loop_variables.J_tot_p1_bound; j++)
 #pragma omp for
             for (i = 0; i < I_tot; i++) {
               for (k = 0; k < K_tot; k++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3357,11 +3107,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                  if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
+                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                  if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                    k_loc = inputs.params.pml.Dzl + K - 1;
+                  else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                    k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                   else
                     k_loc = inputs.params.pml.Dzl + 1;
                 }
@@ -3386,11 +3136,11 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                  if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
+                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                  if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                    k_loc = inputs.params.pml.Dzl + K - 1;
+                  else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                    k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                   else
                     k_loc = inputs.params.pml.Dzl + 1;
                 }
@@ -3428,12 +3178,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3459,12 +3209,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
               for (j = 0; j < J_tot; j++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3505,16 +3255,16 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
           //H_s.zx update
           for (k = 0; k < (K_tot + 1); k++)
-            for (j = 0; j < J_tot_bound; j++)
+            for (j = 0; j < loop_variables.J_tot_bound; j++)
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                    if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                    if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                      k_loc = inputs.params.pml.Dzl + K - 1;
+                    else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                      k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                     else
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
@@ -3536,15 +3286,15 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 #pragma omp for
         //H_s.zx update
         for (k = 0; k < (K_tot + 1); k++)
-          for (j = 0; j < J_tot_bound; j++) {
+          for (j = 0; j < loop_variables.J_tot_bound; j++) {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + K)) {
-                  if ((k - inputs.structure[i][1]) < (K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
+                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.K)) {
+                  if ((k - inputs.structure[i][1]) < (loop_variables.K + inputs.params.pml.Dzl) && (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >= (K + inputs.params.pml.Dzl))
-                    k_loc = inputs.params.pml.Dzl + K - 1;
+                  else if ((k - inputs.structure[i][1]) >= (loop_variables.K + inputs.params.pml.Dzl))
+                    k_loc = inputs.params.pml.Dzl + loop_variables.K - 1;
                   else
                     k_loc = inputs.params.pml.Dzl + 1;
                 }
@@ -3814,8 +3564,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         outputs.H.angular_norm = 0.0;
 
         for(int ifx=0; ifx<inputs.f_ex_vec.size(); ifx++){
-          E_norm[ifx] = 0.;
-          H_norm[ifx] = 0.;
+          loop_variables.E_norm[ifx] = 0.;
+          loop_variables.H_norm[ifx] = 0.;
         }
       }
 
@@ -3860,8 +3610,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         outputs.H.add_to_angular_norm(tind, Nsteps, inputs.params);
 
         for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-          extractPhasorENorm(&E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
-          extractPhasorHNorm(&H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
+          extractPhasorENorm(&loop_variables.E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
+          extractPhasorHNorm(&loop_variables.H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
         }
       } else {
         if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
@@ -3870,8 +3620,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
           outputs.H.add_to_angular_norm(tind, inputs.params.Npe, inputs.params);
 
           for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-            extractPhasorENorm(&E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.params.Npe);
-            extractPhasorHNorm(&H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.params.Npe);
+            extractPhasorENorm(&loop_variables.E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.params.Npe);
+            extractPhasorHNorm(&loop_variables.H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.params.Npe);
           }
         }
       }
@@ -3889,7 +3639,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     if ((inputs.params.source_mode == SourceMode::steadystate) && (tind == (inputs.params.Nt - 1)) && (inputs.params.run_mode == RunMode::complete) &&
         inputs.params.exphasorsvolume) {
       fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
-      outputs.E.set_values_from(E_copy);
+      outputs.E.set_values_from(loop_variables.E_copy);
     }
     //fprintf(stderr,"Post-iter 4\n");
     fflush(stdout);
@@ -3917,7 +3667,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   }//end of main iteration loop
   if (TIME_MAIN_LOOP) {
     timers.end_timer(TimersTrackingLoop::MAIN);
-    spdlog::info("Time elapsed in main loop: {0:e}", timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
+    spdlog::info("Time elapsed in main loop (s): {0:e}", timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
   }
   //save state of fdtdgrid
 
@@ -3931,15 +3681,15 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorssurface) {
     spdlog::info("Surface phasors");
     for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+      outputs.surface_phasors.normalise_surface(ifx, loop_variables.E_norm[ifx], loop_variables.H_norm[ifx]);
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(loop_variables.E_norm[ifx]), imag(loop_variables.E_norm[ifx]));
     }
   }
   if (inputs.params.run_mode == RunMode::complete && outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
     spdlog::info("Vertex phasors");
     for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+      outputs.vertex_phasors.normalise_vertices(ifx, loop_variables.E_norm[ifx], loop_variables.H_norm[ifx]);
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(loop_variables.E_norm[ifx]), imag(loop_variables.E_norm[ifx]));
     }
   }
 
@@ -3947,8 +3697,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   if (inputs.params.source_mode == SourceMode::pulsed && inputs.params.run_mode == RunMode::complete && inputs.params.exdetintegral) {
     for (int im = 0; im < inputs.D_tilde.num_det_modes(); im++)
       for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-        outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / E_norm[ifx];
-        outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / E_norm[ifx];
+        outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / loop_variables.E_norm[ifx];
+        outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / loop_variables.E_norm[ifx];
 
         outputs.ID.x_real[ifx][im] = real(outputs.ID.x[ifx][im]);
         outputs.ID.x_imag[ifx][im] = imag(outputs.ID.x[ifx][im]);
@@ -3988,22 +3738,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   outputs.assign_surface_phasor_outputs(!extracting_phasors, mx_surface_facets);
 
   /*End of FDTD iteration*/
-
-  /* Free the additional data structures used to cast the matlab arrays*/
-  if (inputs.params.exphasorssurface && inputs.params.run_mode == RunMode::complete) {
-    mxDestroyArray(mx_surface_vertices);
-  }
-
-  free(E_norm);
-  free(H_norm);
-
-  if (inputs.params.source_mode == SourceMode::steadystate && inputs.params.run_mode == RunMode::complete) {
-    mxDestroyArray(E_copy_MATLAB_data[0]);
-    mxDestroyArray(E_copy_MATLAB_data[1]);
-    mxDestroyArray(E_copy_MATLAB_data[2]);
-  }
-  //must destroy surface_phasors.mx_surface_amplitudes
-
   return outputs;
 }
 

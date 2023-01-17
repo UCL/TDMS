@@ -15,6 +15,7 @@
 #include "output_matrix_pointers.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
+#include "shapes.h"
 #include "vertex_phasors.h"
 
 /**
@@ -28,6 +29,9 @@ class OutputMatrices {
 private:
   // Pointers to arrays in C++ that will be populated by pointers to the output data
   OutputMatrixPointers output_arrays;
+
+  // Holds the pointer to the MATLAB structure that surface_phasors is bound to
+  mxArray *mx_surface_vertices = nullptr;
 
   IJKDims n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
 
@@ -97,6 +101,7 @@ public:
 
   SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface
 
+  void setup_surface_mesh(Cuboid cuboid, SimulationParameters params, int n_frequencies);
   /**
    * @brief Create MATLAB memory for the surface phasor outputs
    *
@@ -150,4 +155,6 @@ public:
    * @param compressed_output If true, write compressed output (do not write facets and vertices)
    */
   void save_outputs(std::string output_file_name, bool compressed_output = false);
+
+  ~OutputMatrices();
 };

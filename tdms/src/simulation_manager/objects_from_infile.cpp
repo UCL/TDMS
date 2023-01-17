@@ -106,6 +106,9 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
       ex_td_field_exporter.allocate(Ni_tdf, Nk_tdf);
     }
   }
+
+  // work out if we have a dispersive background
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.K_tot()); }
 }
 
 IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
@@ -138,7 +141,6 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
 }
 
 ObjectsFromInfile::~ObjectsFromInfile() {
-  spdlog::info("Destroying ObjectsFromInfile");
   if (I0.apply || I1.apply) {
     free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
     free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
