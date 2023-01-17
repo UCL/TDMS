@@ -42,6 +42,34 @@ void OutputMatrices::assign_empty_matrix(std::vector<std::string> matrix_names, 
   }
 }
 
+void OutputMatrices::compute_interpolated_fields(Dimension dimension) {
+  // link the interpolated gridlabels to the respective outputs
+  interp_output_grid_labels.x = mxGetPr(matrix_pointers[index_from_matrix_name("x_i")]);
+  interp_output_grid_labels.y = mxGetPr(matrix_pointers[index_from_matrix_name("y_i")]);
+  interp_output_grid_labels.z = mxGetPr(matrix_pointers[index_from_matrix_name("z_i")]);
+
+  // depending on whether we are in 3D or not, the Yee cell range we interpolate over changes, which we address here
+  int i_upper = E.I_tot - 2, i_lower = 2;
+  int j_upper = E.J_tot - 2, j_lower = 2;
+  int k_upper = E.K_tot - 2, k_lower = 2;
+  if (dimension != THREE) {
+    // change K-range in a non-3D simulation
+    k_upper = k_lower = 0;
+  }
+
+  // now interpolate over the extracted phasors, and set the interpolated gridlabels
+  E.interpolate_over_range(matrix_pointers[index_from_matrix_name("Ex_i")],
+                           matrix_pointers[index_from_matrix_name("Ey_i")],
+                           matrix_pointers[index_from_matrix_name("Ez_i")], i_lower, i_upper,
+                           j_lower, j_upper, k_lower, k_upper, dimension);
+  H.interpolate_over_range(matrix_pointers[index_from_matrix_name("Hx_i")],
+                           matrix_pointers[index_from_matrix_name("Hy_i")],
+                           matrix_pointers[index_from_matrix_name("Hz_i")], i_lower, i_upper,
+                           j_lower, j_upper, k_lower, k_upper, dimension);
+  interp_output_grid_labels.initialise_from(output_grid_labels, i_lower, i_upper, j_lower, j_upper,
+                                            k_lower, k_upper);
+}
+
 void OutputMatrices::setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies) {
   // setup from the input provided
   vertex_phasors.set_from(vp_ptr);
@@ -191,13 +219,16 @@ void OutputMatrices::setup_Id(bool empty_allocation, int n_frequencies, int n_de
   }
 }
 
-void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension) {
+void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
+  // if we do not need to interpolate, we do not need to allocate memory to the interpolation-related outputs
+  bool need_to_interpolate = (params.run_mode == RunMode::complete && params.exphasorsvolume);
+
   // output names that we will be allocating here
   vector<string> interpolated_gridlabels_names = {"x_i", "y_i", "z_i"};
   vector<string> interpolated_E_field_names = {"Ex_i", "Ey_i", "Ez_i"};
   vector<string> interpolated_H_field_names = {"Hx_i", "Hy_i", "Hz_i"};
 
-  if (empty_allocation) {
+  if (!need_to_interpolate) {
     // assign empty matrices
     assign_empty_matrix(interpolated_E_field_names);
     assign_empty_matrix(interpolated_H_field_names);
@@ -208,47 +239,29 @@ void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, Electr
     error_on_memory_assigned(interpolated_H_field_names);
     error_on_memory_assigned(interpolated_gridlabels_names);
 
-    // interpolated field memory needs to be assigned
-    int i_upper, i_lower, j_upper, j_lower, k_upper, k_lower;
-    int outdims[3] = {0, 0, 0};
+    // interpolated field memory needs to be assigned. Since E, H field have the same {IJK}_tot, we can set the dimensions once, and do it here rather than separately for each field
+    int i_upper = E.I_tot - 2, i_lower = 2;
+    int j_upper = E.J_tot - 2, j_lower = 2;
+    int k_upper = E.K_tot - 2, k_lower = 2;
+    if (params.dimension != THREE) {
+      k_upper = k_lower = 0;
+    }
+    // dimensions of the interpolated fields
+    int outdims[3] = {i_upper - i_lower + 1, j_upper - j_lower + 1, 0};
+    if (params.dimension == THREE) {
+      outdims[2] = k_upper - k_lower + 1;
+      outdims[1] = max(1, j_upper - j_lower + 1);
+    }
 
-    // E-field memory assignment
-    i_upper = E.I_tot - 2, i_lower = 2;
-    j_upper = E.J_tot - 2, j_lower = 2;
-    if (simulation_dimension == THREE) {
-      k_upper = E.K_tot - 2;
-      k_lower = 2;
-    } else {
-      k_upper = 0;
-      k_lower = 0;
+    // Create interpolated E-field memory
+    for (string matrix : interpolated_E_field_names) {
+      matrix_pointers[index_from_matrix_name(matrix)] =
+              mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
-    outdims[0] = i_upper - i_lower + 1;
-    outdims[1] = j_upper - j_lower + 1;
-    if (simulation_dimension == THREE) {
-      outdims[2] = k_upper - k_lower + 1;
-      outdims[1] = max(1, j_upper - j_lower + 1);
-    }
-    for(string matrix : interpolated_E_field_names) {
-      matrix_pointers[index_from_matrix_name(matrix)] = mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
-    }
-    // H-field memory assignment
-    i_upper = H.I_tot - 2, i_lower = 2;
-    j_upper = H.J_tot - 2, j_lower = 2;
-    if (simulation_dimension == THREE) {
-      k_upper = H.K_tot - 2;
-      k_lower = 2;
-    } else {
-      k_upper = 0;
-      k_lower = 0;
-    }
-    outdims[0] = i_upper - i_lower + 1;
-    outdims[1] = j_upper - j_lower + 1;
-    if (simulation_dimension == THREE) {
-      outdims[2] = k_upper - k_lower + 1;
-      outdims[1] = max(1, j_upper - j_lower + 1);
-    }
+    // Create interpolated H-field memory
     for (string matrix : interpolated_H_field_names) {
-      matrix_pointers[index_from_matrix_name(matrix)] = mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
+      matrix_pointers[index_from_matrix_name(matrix)] =
+              mxCreateNumericArray(3, (mwSize *) outdims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
 
     // interpolated gridlabels memory needs to be assigned
@@ -261,13 +274,16 @@ void OutputMatrices::allocate_interpolation_memory(bool empty_allocation, Electr
     matrix_pointers[index_from_matrix_name("y_i")] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
     // z-labels depend on the dimensionality of the simulation
-    if (simulation_dimension == THREE) {
+    if (params.dimension == THREE) {
       label_dims[1] = E.K_tot - 3;
     } else {
       label_dims[1] = 1;
     }
     matrix_pointers[index_from_matrix_name("z_i")] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
+
+    // now run the post-processing interpolation
+    compute_interpolated_fields(params.dimension);
   }
 }
 

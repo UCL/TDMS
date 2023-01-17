@@ -4128,47 +4128,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       }
   }
 
-  //now find the maximum absolute value of residual field in the grid
-  // after resetting the maxfield value calculated in the main loop
+  /* Find the maximum absolute value of residual field in the grid, and write too the outputs */
   maxfield = max(E_s.largest_field_value(), H_s.largest_field_value());
-  //fprintf(stderr,"Pos 15\n");
-  //now set the output
   outputs.set_maxresfield(maxfield, false);
 
-  auto interp_output_grid_labels = GridLabels();
-
-  // if we do not need to interpolate, we do not need to allocate memory to the interpolation-related outputs
-  bool need_to_interpolate = (params.run_mode == RunMode::complete && params.exphasorsvolume);
-  // setup interpolated grid memory (if required)
-  outputs.allocate_interpolation_memory(!need_to_interpolate, outputs.E, outputs.H, params.dimension);
-  // now interpolate if we need to
-  if (need_to_interpolate) {
-    //now interpolate over the extracted phasors
-    if (params.dimension == THREE) {
-      outputs.E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, outputs.E.I_tot - 2, 2, outputs.E.J_tot - 2, 2,
-                               outputs.E.K_tot - 2, Dimension::THREE);
-      outputs.H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, outputs.H.I_tot - 2, 2, outputs.H.J_tot - 2, 2,
-                               outputs.H.K_tot - 2, Dimension::THREE);
-    } else {
-      // either TE or TM, but interpolate_over_range will handle that for us. Only difference is the k_upper/lower values we pass...
-      outputs.E.interpolate_over_range(outputs["Ex_i"], outputs["Ey_i"], outputs["Ez_i"], 2, outputs.E.I_tot - 2, 2, outputs.E.J_tot - 2, 0,
-                               0, params.dimension);
-      outputs.H.interpolate_over_range(outputs["Hx_i"], outputs["Hy_i"], outputs["Hz_i"], 2, outputs.H.I_tot - 2, 2, outputs.H.J_tot - 2, 0,
-                               0, params.dimension);
-    }
-
-    interp_output_grid_labels.x = mxGetPr(outputs["x_i"]);
-    interp_output_grid_labels.y = mxGetPr(outputs["y_i"]);
-    interp_output_grid_labels.z = mxGetPr(outputs["z_i"]);
-
-    if (params.dimension == THREE) {
-      interp_output_grid_labels.initialise_from(outputs.output_grid_labels, 2, outputs.E.I_tot - 2,
-                                                2, outputs.E.J_tot - 2, 2, outputs.E.K_tot - 2);
-    } else {
-      interp_output_grid_labels.initialise_from(outputs.output_grid_labels, 2, outputs.E.I_tot - 2,
-                                                2, outputs.E.J_tot - 2, 0, 0);
-    }
-  }
+  // setup interpolated field outputs and labels (if necessary)
+  outputs.setup_interpolation_outputs(params);
 
   /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
     these vertices and a list of facets*/

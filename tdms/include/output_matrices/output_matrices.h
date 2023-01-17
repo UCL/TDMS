@@ -63,6 +63,13 @@ private:
 
   IJKDims E_s_dimensions;//< Number of Yee cells in the simulation, dictated by the E_s split-field
 
+  /**
+   * @brief Computes the field values at the centre of the Yee cells, and the corresponding spatial coordinates of these locations.
+   *
+   * @param dimension Dimensionality of the simulation: THREE, TE, or TM.
+   */
+  void compute_interpolated_fields(Dimension dimension);
+
 public:
   OutputMatrices() = default;
 
@@ -152,6 +159,8 @@ public:
    */
   void set_maxresfield(double maxfield, bool overwrite_existing);
 
+  GridLabels interp_output_grid_labels;//< Holds the spatial co-ordinates of the interpolated fields
+
   /**
    * @brief Create MATLAB memory for the gridlabels for the interpolated fields
    *
@@ -159,7 +168,7 @@ public:
    * @param E,H The {electric,magnetic} field that will be interpolated
    * @param simulation_dimension Whether we are running a 3D, TE, or TM simulation
    */
-  void allocate_interpolation_memory(bool empty_allocation, ElectricField &E, MagneticField &H, Dimension simulation_dimension = THREE);
+  void setup_interpolation_outputs(SimulationParameters params);
 
 
   /**
