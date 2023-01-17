@@ -17,6 +17,13 @@
 #include "surface_phasors.h"
 #include "vertex_phasors.h"
 
+/**
+ * @brief Handles the data that is written to the output file, and the associated native C++ classes and datatypes.
+ *
+ * Some of the C++ datatypes are updated in the main iterative loop, whilst others are obtained using the data from the main loop. This class handles both cases, and uses pointers to track where the MATLAB-structures to be written out are stored.
+ *
+ * Upon writing the output, an instance of this class can go out of scope and will take with it any reserved memory for MATLAB structures and native C++ arrays of dynamic size.
+ */
 class OutputMatrices {
 private:
   // Pointers to arrays in C++ that will be populated by pointers to the output data
@@ -53,7 +60,7 @@ public:
     E_s_dimensions = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
   }
 
-  IDVariables ID;
+  IDVariables ID;//< The ID output, and associated variables
 
   /**
    * @brief Create MATLAB memory for the Id structure array.
@@ -84,7 +91,7 @@ public:
     return IJKDims(E.I_tot, E.J_tot, E.K_tot);
   }
 
-  SurfacePhasors surface_phasors;
+  SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface
 
   /**
    * @brief Create MATLAB memory for the surface phasor outputs
@@ -94,7 +101,7 @@ public:
    */
   void assign_surface_phasor_outputs(bool empty_allocation, mxArray *mx_surface_facets);
 
-  VertexPhasors vertex_phasors;
+  VertexPhasors vertex_phasors;//< Phasors extracted at user-specified vertices
 
   /**
    * @brief Setup the object that will handle extraction of the phasors at the vertices
@@ -104,7 +111,8 @@ public:
    */
   void setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies);
 
-  FieldSample fieldsample;
+  FieldSample fieldsample;//< E,H split-field values sampled at user-specified locations and frequencies
+
   /**
    * @brief Setup the object that handles extraction of the field values at the sample positions
    *

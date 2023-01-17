@@ -47,20 +47,14 @@ private:
 public:
   DetectorSensitivityArrays Ex_t, Ey_t;//< temporary storage for detector sensitivity evaluation
 
-  ElectricField E, E_copy;
-  MagneticField H;
+  ElectricField E_copy;
 
   ElectricSplitField E_nm1;
   CurrentDensitySplitField
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  SurfacePhasors surface_phasors;
-
-  GridLabels output_grid_labels;
-
   EHVec eh_vec;
-  CCoefficientMatrix ca_vec, cb_vec, cc_vec;
 
   bool is_conductive, is_disp;
 

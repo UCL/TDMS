@@ -1,3 +1,7 @@
+/**
+ * @file pstd_variables.h
+ * @brief Declares the PSTDVariables class, which handles variables exclusively used in the PSTD solver method
+ */
 #pragma once
 
 #include <fftw3.h>
@@ -5,8 +9,9 @@
 #include "arrays.h"
 #include "cell_coordinate.h"
 
-/* PSTD EXCLUSIVE VARIABLES (REQUIRES MEMORY MANAGEMENT)
-  These variables are not used when using FDTD method */
+/**
+ * @brief Handles allocation and tear-down of memory/variables required when running a PSTD simulation. If running an FDTD simulation, none of the member variables of this class are needed.
+ */
 class PSTDVariables {
 private:
   // flags whether the dk-variables have been malloc'd or not

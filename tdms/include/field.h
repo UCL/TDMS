@@ -235,15 +235,6 @@ public:
   int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
 
   /**
-   * @brief Normalises the field entries by divding by the angular norm.
-   *
-   * Specifically,
-   * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm
-   *
-   */
-  void normalise_volume();
-
-  /**
      * Default no arguments constructor
      */
   Field() = default;
@@ -272,6 +263,15 @@ public:
     allocate();
     zero();
   }
+
+  /**
+   * @brief Normalises the field entries by divding by the angular norm.
+   *
+   * Specifically,
+   * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm
+   *
+   */
+  void normalise_volume();
 
   /**
    * Set the phasors for this field, given a split field. Result gives field according to the

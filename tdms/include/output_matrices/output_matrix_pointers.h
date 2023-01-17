@@ -1,3 +1,7 @@
+/**
+ * @file output_matrix_pointers.h
+ * @brief Declares a class that allows for memory-management of pointers to the output arrays (OutputMatrixPointers)
+ */
 #pragma once
 
 #include <vector>

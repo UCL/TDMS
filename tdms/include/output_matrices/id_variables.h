@@ -1,10 +1,18 @@
+/**
+ * @file id_variables.h
+ * @brief Contains the IDVariables class, handling the ID output matrix.
+ */
 #pragma once
 
 #include <complex>
 
 #include "matrix.h"
 
-// possibly needs to be a class because MALLOC will happen :(
+/**
+ * @brief Class that handles the variables associated with the ID output.
+ *
+ * The ID output is a MATLAB struct that we create during runtime, so we need to free the memory we reserve upon destruction, as well as link pointers to the MATLAB structs to our native C++ arrays.
+ */
 class IDVariables {
 private:
   int n_frequencies = 0;//< Number of frequencies that we're extracting at. ( = to f_ex_vec.size() )
