@@ -18,7 +18,7 @@ private:
   bool variables_allocated = false;
 
 public:
-  CCoefficientMatrix ca, cb, cc;
+  CCoefficientMatrix ca, cb;//< TODO
 
   // The number of complex fourier coefficients in the derivative-shift operator, for each field component ( N_ex = # coeffs for Ex, for example)
   int N_ex, N_ey, N_ez, N_hx, N_hy, N_hz;

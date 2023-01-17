@@ -9,7 +9,6 @@ void PSTDVariables::set_using_dimensions(IJKDims IJK_tot) {
 
   ca.allocate(n_threads, max_IJK + 1);
   cb.allocate(n_threads, max_IJK + 1);
-  cc.allocate(n_threads, max_IJK + 1);
 
   // deduce the number of coefficients in the derivative-shift operator
   N_ex = IJK_tot.I_tot();

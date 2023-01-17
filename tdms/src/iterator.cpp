@@ -956,7 +956,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
 #pragma omp parallel default(shared) private(i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,\
                                              beta_l, gamma_l, kappa_l, sigma_l, Enp1,              \
-                                             Jnp1)//,ca_vec,cb_vec,PSTD.cc,eh_vec)
+                                             Jnp1)//,ca_vec,cb_vec,eh_vec)
     {
       n = omp_get_thread_num();
       Enp1 = 0.0;
@@ -3100,7 +3100,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     /********************/
     //begin parallel
 #pragma omp parallel default(shared) private(i, j, k, n, k_loc,                                    \
-                                             array_ind)//,ca_vec,cb_vec,PSTD.cc,eh_vec)
+                                             array_ind)//,ca_vec,cb_vec,eh_vec)
     {
       n = omp_get_thread_num();
 
