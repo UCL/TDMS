@@ -7,11 +7,12 @@
 
 #include <spdlog/spdlog.h>
 
-#include "openandorder.h"
+#include "argument_parser.h"
 #include "input_output_names.h"
 #include "input_matrices.h"
 #include "iterator.h"
 #include "mat_io.h"
+#include "output_matrices.h"
 
 using namespace tdms_matrix_names;
 
@@ -24,11 +25,10 @@ int main(int nargs, char *argv[]){
     spdlog::set_level(spdlog::level::info);
   #endif
 
-  mxArray *plhs[NOUTMATRICES_PASSED];
   InputMatrices matrix_inputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
-  check_files_can_be_accessed(args);
+  args.check_files_can_be_accessed();
 
   //now it is safe to use matlab routines to open the file and order the matrices
   if (!args.has_grid_filename()) {
@@ -50,16 +50,11 @@ int main(int nargs, char *argv[]){
   }
 
   // now run the time propagation code
-  execute_simulation(NOUTMATRICES_PASSED, (mxArray **) plhs, NMATRICES,
-                     matrix_inputs, solver_method, preferred_interpolation_methods);
+  OutputMatrices outputs =
+          execute_simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
 
-  if (!args.have_flag("-m")) {//prints vertices and facets
-    saveoutput(plhs, matricestosave_all, outputmatrices_all, NOUTMATRICES_WRITE_ALL,
-               args.output_filename());
-  } else {// minimise the file size by not printing vertices and facets
-    saveoutput(plhs, matricestosave, outputmatrices, NOUTMATRICES_WRITE,
-               args.output_filename());
-  }
+  // save the outputs, possibly in compressed format
+  outputs.save_outputs(args.output_filename(), args.have_flag("-m"));
 
   return 0;
 }

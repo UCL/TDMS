@@ -310,10 +310,10 @@ public:
    * @param i_upper,j_upper,k_upper Upper index for interpolation in the i,j,k directions, respectively
    * @param mode Determines which field components to compute, based on the simulation Dimension
    */
-  void interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out, int i_lower,
+  void interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out, int i_lower,
                               int i_upper, int j_lower, int j_upper, int k_lower, int k_upper,
                               Dimension mode = Dimension::THREE);
-  void interpolate_over_range(mxArray **x_out, mxArray **y_out, mxArray **z_out,
+  void interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out,
                               Dimension mode = Dimension::THREE);
 
   /**

@@ -114,6 +114,11 @@ public:
      * @return std::vector<std::string> the input filenames
      */
     std::vector<std::string> input_filenames();
+
+    /**
+     * @brief Check that all input and output files can be accessed with the correct privilages
+     */
+    void check_files_can_be_accessed();
 };
 
 /**
