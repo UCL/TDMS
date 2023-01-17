@@ -288,7 +288,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   uint8_t ***materials;
 
-  int i, j, k, n, k_loc, ndims, K;
+  int i, j, k, n, k_loc, K;
   int Nsteps = 0, dft_counter = 0;
   int Ni_tdf = 0, Nk_tdf = 0;
 
@@ -303,7 +303,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   dims = (mwSize *) malloc(3 * sizeof(mwSize));
   mwSize *label_dims;
   label_dims = (mwSize *) malloc(2 * sizeof(mwSize));
-  mxArray *dummy_array[3];
+  mxArray *E_copy_MATLAB_data[3];
   mxArray *mx_surface_vertices, *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
 
@@ -497,26 +497,26 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     IJKDims IJK = outputs.get_E_dimensions();
     int dummy_dims[3] = {IJK.I_tot(), IJK.J_tot(), IJK.K_tot()};
     // allocate memory space for this array
-    dummy_array[0] =
-            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
-    dummy_array[1] =
-            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
-    dummy_array[2] =
-            mxCreateNumericArray(ndims, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
+    E_copy_MATLAB_data[0] =
+            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
+    E_copy_MATLAB_data[1] =
+            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ey
+    E_copy_MATLAB_data[2] =
+            mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
 
-    E_copy.real.x = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[0]), dummy_dims[0],
+    E_copy.real.x = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.x = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-
-    E_copy.real.y = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.y = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[1]), dummy_dims[0],
+    E_copy.imag.x = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
-    E_copy.real.z = cast_matlab_3D_array(mxGetPr((mxArray *) dummy_array[2]), dummy_dims[0],
+    E_copy.real.y = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.z = cast_matlab_3D_array(mxGetPi((mxArray *) dummy_array[2]), dummy_dims[0],
+    E_copy.imag.y = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+
+    E_copy.real.z = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+    E_copy.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
     E_copy.I_tot = IJK.I_tot();
@@ -4234,9 +4234,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   free(label_dims);
 
   if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
-    mxDestroyArray(dummy_array[0]);
-    mxDestroyArray(dummy_array[1]);
-    mxDestroyArray(dummy_array[2]);
+    mxDestroyArray(E_copy_MATLAB_data[0]);
+    mxDestroyArray(E_copy_MATLAB_data[1]);
+    mxDestroyArray(E_copy_MATLAB_data[2]);
   }
   //must destroy surface_phasors.mx_surface_amplitudes
 
