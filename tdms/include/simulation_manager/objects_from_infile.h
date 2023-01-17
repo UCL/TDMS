@@ -49,8 +49,6 @@ public:
   FrequencyVectors f_vec;                   //< frequency vector
   Pupil pupil;                              //< TODO
   DTilde D_tilde;                           //< TODO
-  FieldSample fieldsample;               //< handles field-value extraction at user-defined vertices
-  VertexPhasors vertex_phasors;          //< handles phasor extraction at user-defined vertices
   TDFieldExporter2D ex_td_field_exporter;//< two-dimensional field exporter
 
   GridLabels input_grid_labels;//< cartesian labels of the Yee cells

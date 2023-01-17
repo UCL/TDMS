@@ -21,7 +21,7 @@
 #include "objects_from_infile.h"
 #include "pstd_variables.h"
 #include "output_matrices.h"
-#include "timer.h"
+#include "loop_timers.h"
 #include "utils.h"
 
 using namespace std;
@@ -245,6 +245,9 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   // PSTD storage (to be a member of the simulation manager later)
   PSTDVariables PSTD;
+
+  // timers for the main loop (to be a member of the simulation manager later)
+  LoopTimers timers;
 
   // this will later be a member of simulation_elements
   //ObjectsFromInfile inputs(in_matrices, solver_method);
@@ -747,16 +750,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
 
   spdlog::debug("Starting main loop");
-  auto main_loop_timer = Timer();
 
-  if (TIME_MAIN_LOOP) { main_loop_timer.start(); }
+  if (TIME_MAIN_LOOP) { timers.start_timer(TimersTrackingLoop::MAIN); }
 
   for (unsigned int tind = params.start_tind; tind < params.Nt; tind++) {
     //fprintf(stderr,"Pos 00:\n");
     time_E = ((double) (tind + 1)) * params.dt;
     time_H = time_E - params.dt / 2.;
     //Extract phasors
-    auto timer = Timer();
     if ((dft_counter == Nsteps) && (params.run_mode == RunMode::complete)
         && (params.source_mode == SourceMode::steadystate) && params.exphasorsvolume) {
 
@@ -793,13 +794,13 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       }
 
     } else if ((params.source_mode == SourceMode::pulsed) && (params.run_mode == RunMode::complete) && params.exphasorsvolume) {
-      if (TIME_EXEC) { timer.click(); }
+      if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
       if ((tind - params.start_tind) % params.Np == 0) {
         outputs.E.set_phasors(E_s, tind - 1, params.omega_an, params.dt, params.Npe);
         outputs.H.set_phasors(H_s, tind, params.omega_an, params.dt, params.Npe);
       }
-      if (TIME_EXEC) { timer.click(); }
+      if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
       //fprintf(stderr,"Pos 01b:\n");
     }
 
@@ -945,7 +946,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
     int array_ind = 0;
     //fprintf(stderr,"I_tot=%d, J_tot=%d, K_tot=%d\n",I_tot,J_tot,K_tot);
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
     //fprintf(stderr,"Dimension = %d\n",params.dimension);
     /*
       for(k=0;k<(K_tot+1);k++)
@@ -2694,7 +2695,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
       }
     }//end of parallel section
     //fprintf(stderr,"Pos 09:\n");
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
     /********************/
 
     //update terms for self consistency across scattered/total interface - E updates##
@@ -3095,7 +3096,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     //fprintf(stderr,"Pos 10:\n");
 
     //end of source terms
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     /********************/
     //begin parallel
@@ -3695,7 +3696,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }//(params.dimension==THREE || params.dimension==TE)
     }  //end parallel
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
@@ -3907,7 +3908,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
              exp(-1. * DCPI * pow((time_E - params.to_l) / (params.hwhm), 2.));
       //fprintf(stderr,"Pos 11j\n");
     }
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     if (params.exphasorssurface || params.exphasorsvolume || params.exdetintegral || outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
       if (params.source_mode == SourceMode::steadystate) {
@@ -3989,7 +3990,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
         }
       }
     }
-    if (TIME_EXEC) { timer.click(); }
+    if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     if ((((double) time(NULL)) - t0) > 1) {
 
@@ -4029,11 +4030,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   }//end of main iteration loop
   if (TIME_MAIN_LOOP) {
-    //fprintf(stderr,"Post-iter 7\n");
-    main_loop_timer.end();
-    //fprintf(stderr,"Post-iter 8\n");
-    fprintf(stdout, "# Time elasped in main loop: %e\n", main_loop_timer.delta_seconds());
-    //fprintf(stderr,"Post-iter 9\n");
+    timers.end_timer(TimersTrackingLoop::MAIN);
+    spdlog::info("Time elapsed in main loop: {0:e}", timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
   }
   //save state of fdtdgrid
 
