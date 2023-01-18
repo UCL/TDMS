@@ -316,6 +316,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
   FDTDBootstrapper FDTD(IJK_tot);
 
+
   outputs.setup_fieldsample(in_matrices["fieldsample"]);
   outputs.setup_vertex_phasors(in_matrices["campssample"], inputs.f_ex_vec.size());
 
