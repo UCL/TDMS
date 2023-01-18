@@ -399,7 +399,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
       dft_counter = 0;
 
-      fprintf(stderr, "Dimensions are (E) %d %d %d | (copy) %d %d %d\n",Eijk.I_tot(),Eijk.J_tot(),Eijk.K_tot(),copyijk.I_tot(),copyijk.J_tot(),copyijk.K_tot());
       double tol = outputs.E.normalised_difference(loop_variables.E_copy);
       if (tol < TOL) break; //required accuracy obtained
 
