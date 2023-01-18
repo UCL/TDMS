@@ -3630,7 +3630,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     timers.end_timer(TimersTrackingLoop::MAIN);
     spdlog::info("Time elapsed in main loop (s): {0:e}", timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
   }
-  //save state of fdtdgrid
 
   //fprintf(stderr,"Pos 12\n");
   if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorsvolume) {
