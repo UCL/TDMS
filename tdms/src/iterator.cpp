@@ -283,20 +283,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   outputs.set_n_Yee_cells(IJK_tot);
   int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
 
-  // will become a member of superclass
-  LoopVariables loop_variables(inputs);
-
-  // setup PSTD variables, and any dependencies there might be
-  PSTD.set_using_dimensions(IJK_tot);
-  EHVec eh_vec;
-  if (solver_method == SolverMethod::PseudoSpectral) {
-    int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
-    eh_vec.allocate(n_threads, max_IJK + 1);
-
-    inputs.E_s.initialise_fftw_plan(n_threads, eh_vec);
-    inputs.H_s.initialise_fftw_plan(n_threads, eh_vec);
-  }
-
   /*set up surface mesh if required*/
   outputs.setup_surface_mesh(inputs.cuboid, inputs.params, inputs.f_ex_vec.size());
 
@@ -310,6 +296,20 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
  // Setup the ID output
   bool need_Id_memory = (inputs.params.exdetintegral && inputs.params.run_mode == RunMode::complete);
   outputs.setup_Id(!need_Id_memory, inputs.f_ex_vec.size(), inputs.D_tilde.num_det_modes());
+
+  // will become a member of superclass, or maybe not - scope can be limited to the main loop without repercussions
+  LoopVariables loop_variables(inputs, outputs.get_E_dimensions());
+
+  // setup PSTD variables, and any dependencies there might be
+  PSTD.set_using_dimensions(IJK_tot);
+  EHVec eh_vec;
+  if (solver_method == SolverMethod::PseudoSpectral) {
+    int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
+    eh_vec.allocate(n_threads, max_IJK + 1);
+
+    inputs.E_s.initialise_fftw_plan(n_threads, eh_vec);
+    inputs.H_s.initialise_fftw_plan(n_threads, eh_vec);
+  }
 
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
   Matrix<complex<double>> iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs;
@@ -399,6 +399,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
       dft_counter = 0;
 
+      fprintf(stderr, "Dimensions are (E) %d %d %d | (copy) %d %d %d\n",Eijk.I_tot(),Eijk.J_tot(),Eijk.K_tot(),copyijk.I_tot(),copyijk.J_tot(),copyijk.K_tot());
       double tol = outputs.E.normalised_difference(loop_variables.E_copy);
       if (tol < TOL) break; //required accuracy obtained
 

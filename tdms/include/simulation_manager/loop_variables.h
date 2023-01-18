@@ -109,7 +109,7 @@ public:
   int J_tot_p1_bound, J_tot_bound;
   int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
 
-  LoopVariables(ObjectsFromInfile &data);
+  LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims);
 
   ~LoopVariables();
 };

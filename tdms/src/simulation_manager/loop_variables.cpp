@@ -7,7 +7,7 @@
 using namespace tdms_phys_constants;
 using namespace std;
 
-LoopVariables::LoopVariables(ObjectsFromInfile &data) {
+LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
   // deduce the number of non-pml cells in the z-direction, for efficiency
   K = data.IJK_tot.K_tot() - data.params.pml.Dxl - data.params.pml.Dxu;
 
@@ -30,7 +30,7 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data) {
   // We need to test for convergence under the following conditions. As such, we need to initialise the array (E_copy) that will ultimately be copies of the phasors at the previous iteration, to test convergence against
   if (data.params.run_mode == RunMode::complete && data.params.exphasorsvolume &&
       data.params.source_mode == SourceMode::steadystate) {
-    int dummy_dims[3] = {data.IJK_tot.I_tot(), data.IJK_tot.J_tot(), data.IJK_tot.K_tot()};
+    int dummy_dims[3] = {E_field_dims.I_tot(), E_field_dims.J_tot(), E_field_dims.K_tot()};
     // allocate memory space for this array
     E_copy_MATLAB_data[0] =
             mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ex
@@ -54,9 +54,9 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data) {
     E_copy.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
-    E_copy.I_tot = data.IJK_tot.I_tot();
-    E_copy.J_tot = data.IJK_tot.J_tot();
-    E_copy.K_tot = data.IJK_tot.K_tot();
+    E_copy.I_tot = E_field_dims.I_tot();
+    E_copy.J_tot = E_field_dims.J_tot();
+    E_copy.K_tot = E_field_dims.K_tot();
 
     E_copy.zero();
   }
