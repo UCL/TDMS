@@ -24,8 +24,6 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
 double linearRamp(double t, double period, double rampwidth);
 
-bool is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot, int J_tot, int K_tot);
-
 void extractPhasorENorm(std::complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt);
 
 void extractPhasorHNorm(std::complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt);

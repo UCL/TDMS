@@ -10,17 +10,26 @@
 #include "loop_timers.h"
 #include "pstd_variables.h"
 #include "fdtd_bootstrapper.h"
+#include "output_matrices.h"
+#include "matrix.h"
 
 class SimulationManager {
 private:
   SimulationParameters params;//< The parameters for this simulation
-  ObjectsFromInfile infile_data;
+  ObjectsFromInfile inputs;
   LoopTimers timers;
-  PSTDVariables pstd;
-  FDTDBootstrapper fdtd_boots;
+  PSTDVariables PSTD;
+  FDTDBootstrapper FDTD;
+  OutputMatrices outputs;
+
+  PreferredInterpolationMethods pim;
+  SolverMethod solver_method;
+
+  void prepare_output(const mxArray *fieldsample, const mxArray* campssample);
 
 public:
-  SimulationManager(InputMatrices inputs, SolverMethod _solver_method);
+  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method, PreferredInterpolationMethods _pim);
 
-  IJKDims n_Yee_cells() { return infile_data.IJK_tot; }
+  IJKDims n_Yee_cells() { return inputs.IJK_tot; }
+
 };

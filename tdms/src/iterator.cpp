@@ -267,14 +267,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
   double maxfield = 0.;
 
-  //refractive index of the first layer of the multilayer, or of the bulk of homogeneous
-  double refind;
   double phaseTermE;
   complex<double> cphaseTermE;
   double lambda_an_t;
 
   int i, j, k, n, k_loc;
-  int Nsteps = 0, dft_counter = 0;
+  int dft_counter = 0;
 
   mxArray *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
@@ -316,38 +314,8 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
   FDTDBootstrapper FDTD(IJK_tot);
 
-
   outputs.setup_fieldsample(in_matrices["fieldsample"]);
   outputs.setup_vertex_phasors(in_matrices["campssample"], inputs.f_ex_vec.size());
-
-  /*set up the parameters for the phasor convergence procedure*/
-  /*First we set dt so that an integer number of time periods fits within a sinusoidal period
-   */
-  double Nsteps_tmp = 0.0;
-  double dt_old;
-  if (inputs.params.source_mode == SourceMode::steadystate) {
-    dt_old = inputs.params.dt;
-    Nsteps_tmp = ceil(2. * DCPI / inputs.params.omega_an / inputs.params.dt * 3);
-    inputs.params.dt = 2. * DCPI / inputs.params.omega_an * 3 / Nsteps_tmp;
-  }
-
-  if (inputs.params.source_mode == SourceMode::steadystate && inputs.params.run_mode == RunMode::complete) {
-    spdlog::info("Changed dt to {0:.10e} (was {1:.10e})", inputs.params.dt, dt_old);
-  }
-  Nsteps = (int) lround(Nsteps_tmp);
-  dft_counter = 0;
-
-  /*params.Nt should be an integer number of Nsteps in the case of steady-state operation*/
-  if (inputs.params.source_mode == SourceMode::steadystate && inputs.params.run_mode == RunMode::complete)
-    if (inputs.params.Nt / Nsteps * Nsteps != inputs.params.Nt) {
-      int old_Nt = inputs.params.Nt;//< For logging purposes, holds the Nt value that had to be changed
-      inputs.params.Nt = inputs.params.Nt / Nsteps * Nsteps;
-      spdlog::info("Changing the value of Nt to {0:d} (was {1:d})", inputs.params.Nt, old_Nt);
-    }
-
-  if ((inputs.params.run_mode == RunMode::complete) && (inputs.params.source_mode == SourceMode::steadystate)) {
-    spdlog::info("Nsteps: {0:d}", Nsteps);
-  }
 
   /*Start of FDTD iteration*/
   //open a file for logging the times
@@ -388,7 +356,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     time_E = ((double) (tind + 1)) * inputs.params.dt;
     time_H = time_E - inputs.params.dt / 2.;
     //Extract phasors
-    if ((dft_counter == Nsteps) && (inputs.params.run_mode == RunMode::complete)
+    if ((dft_counter == inputs.Nsteps) && (inputs.params.run_mode == RunMode::complete)
         && (inputs.params.source_mode == SourceMode::steadystate) && inputs.params.exphasorsvolume) {
 
       dft_counter = 0;
@@ -411,13 +379,13 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
     if ((inputs.params.source_mode == SourceMode::steadystate) && (inputs.params.run_mode == RunMode::complete) && inputs.params.exphasorsvolume) {
 
-      outputs.E.set_phasors(inputs.E_s, dft_counter - 1, inputs.params.omega_an, inputs.params.dt, Nsteps);
-      outputs.H.set_phasors(inputs.H_s, dft_counter, inputs.params.omega_an, inputs.params.dt, Nsteps);
+      outputs.E.set_phasors(inputs.E_s, dft_counter - 1, inputs.params.omega_an, inputs.params.dt, inputs.Nsteps);
+      outputs.H.set_phasors(inputs.H_s, dft_counter, inputs.params.omega_an, inputs.params.dt, inputs.Nsteps);
 
       if (inputs.params.exphasorssurface) {
         for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
           outputs.surface_phasors.extractPhasorsSurface(ifx, inputs.E_s, inputs.H_s, dft_counter,
-                                                        inputs.f_ex_vec[ifx] * 2 * DCPI, Nsteps, inputs.params,
+                                                        inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.Nsteps, inputs.params,
                                                         inputs.params.intphasorssurface);
         }
         dft_counter++;
@@ -520,14 +488,14 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 
                     if (!inputs.params.air_interface_present) {
                       //This had to be fixed since we must take into account the refractive index of the medium.
-                      kprop = exp(IMAGINARY_UNIT * inputs.params.z_obs * 2. * DCPI / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * inputs.f_vec.x[i] / refind, 2.) -
-                                       pow(lambda_an_t * inputs.f_vec.y[j] / refind, 2.)));
+                      kprop = exp(IMAGINARY_UNIT * inputs.params.z_obs * 2. * DCPI / lambda_an_t * loop_variables.refind *
+                                  sqrt(1. - pow(lambda_an_t * inputs.f_vec.x[i] / loop_variables.refind, 2.) -
+                                       pow(lambda_an_t * inputs.f_vec.y[j] / loop_variables.refind, 2.)));
                       //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,DCPI,lambda_an_t);
                     } else {
-                      kprop = exp(IMAGINARY_UNIT * (-inputs.params.air_interface + inputs.params.z_obs) * 2. * DCPI / lambda_an_t * refind *
-                                  sqrt(1. - pow(lambda_an_t * inputs.f_vec.x[i] / refind, 2.) -
-                                       pow(lambda_an_t * inputs.f_vec.y[j] / refind, 2.))) *
+                      kprop = exp(IMAGINARY_UNIT * (-inputs.params.air_interface + inputs.params.z_obs) * 2. * DCPI / lambda_an_t * loop_variables.refind *
+                                  sqrt(1. - pow(lambda_an_t * inputs.f_vec.x[i] / loop_variables.refind, 2.) -
+                                       pow(lambda_an_t * inputs.f_vec.y[j] / loop_variables.refind, 2.))) *
                               exp(IMAGINARY_UNIT * inputs.params.air_interface * 2. * DCPI / lambda_an_t *
                                   sqrt(1. - pow(lambda_an_t * inputs.f_vec.x[i], 2.) -
                                        pow(lambda_an_t * inputs.f_vec.y[j], 2.)));
@@ -3552,7 +3520,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     However, the normalisation factors are reset to 0 here.
 	 */
 
-      if( (tind % Nsteps) == 0 ){
+      if( (tind % inputs.Nsteps) == 0 ){
         outputs.E.angular_norm = 0.0;
         outputs.H.angular_norm = 0.0;
 
@@ -3599,12 +3567,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
 	  above. So the two cases are equivalent.
 	 */
 
-        outputs.E.add_to_angular_norm(tind, Nsteps, inputs.params);
-        outputs.H.add_to_angular_norm(tind, Nsteps, inputs.params);
+        outputs.E.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
+        outputs.H.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
 
         for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-          extractPhasorENorm(&loop_variables.E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
-          extractPhasorHNorm(&loop_variables.H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, Nsteps);
+          extractPhasorENorm(&loop_variables.E_norm[ifx], outputs.E.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.Nsteps);
+          extractPhasorHNorm(&loop_variables.H_norm[ifx], outputs.H.ft, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.dt, inputs.Nsteps);
         }
       } else {
         if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
@@ -3757,24 +3725,4 @@ double linearRamp(double t, double period, double rampwidth) {
   if (t > period * rampwidth) return 1.;
   else
     return t / (period * rampwidth);
-}
-
-/* These functions are used by the dispersive component of the code*/
-
-/*Work out if there are any non-zero alpha values*/
-bool is_dispersive(unsigned char ***materials, double *gamma, double dt, int I_tot, int J_tot,
-                  int K_tot) {
-  int max_mat = 0;
-
-  //first find the number of entries in alpha
-  for (int k = 0; k < (K_tot + 1); k++)
-    for (int j = 0; j < (J_tot + 1); j++)
-      for (int i = 0; i < (I_tot + 1); i++) {
-        if (materials[k][j][i] > max_mat) max_mat = materials[k][j][i];
-      }
-  //now see if there are any non zero alphas
-  for (int i = 0; i < max_mat; i++) {
-    if (fabs(gamma[i] / dt) > 1e-15) { return 1; }
-  }
-  return 0;
 }

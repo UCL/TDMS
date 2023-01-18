@@ -8,6 +8,8 @@
 // for init_grid_arrays
 #include "array_init.h"
 
+using tdms_math_constants::DCPI;
+
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
                                                            SolverMethod _solver_method,
                                                            PreferredInterpolationMethods _pim)
@@ -109,6 +111,28 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
 
   // work out if we have a dispersive background
   if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.K_tot()); }
+
+  // Set dt so that an integer number of time periods fits within a sinusoidal period
+  double Nsteps_tmp = 0.0;
+  double dt_old;
+  if (params.source_mode == SourceMode::steadystate) {
+    dt_old = params.dt;
+    Nsteps_tmp = ceil(2. * DCPI / params.omega_an / params.dt * 3);
+    params.dt = 2. * DCPI / params.omega_an * 3 / Nsteps_tmp;
+    if (params.run_mode == RunMode::complete) {
+      spdlog::info("Changed dt to {0:.10e} (was {1:.10e})", params.dt, dt_old);
+    }
+  }
+  Nsteps = (int) lround(Nsteps_tmp);
+  // Nt should be an integer number of Nsteps in the case of steady-state operation
+  if (params.source_mode == SourceMode::steadystate && params.run_mode == RunMode::complete) {
+    if (params.Nt / Nsteps * Nsteps != params.Nt) {
+      int old_Nt = params.Nt;//< For logging purposes, holds the Nt value that had to be changed
+      params.Nt = params.Nt / Nsteps * Nsteps;
+      spdlog::info("Changing the value of Nt to {0:d} (was {1:d})", params.Nt, old_Nt);
+    }
+    spdlog::info("Nsteps: {0:d}", Nsteps);
+  }
 }
 
 IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {

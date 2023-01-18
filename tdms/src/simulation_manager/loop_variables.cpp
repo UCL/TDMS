@@ -66,6 +66,8 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
 
   // attempt to optimise the iteration loops, if we can
   optimise_loop_J_range(data);
+
+  // set Nsteps
 }
 
 void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
