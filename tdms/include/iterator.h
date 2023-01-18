@@ -22,17 +22,6 @@
 OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver_method,
                                   PreferredInterpolationMethods preferred_interpolation_methods);
 
-void extractPhasorsPlane(Matrix<std::complex<double>> &iwave_lEx_bs,
-                         Matrix<std::complex<double>> &iwave_lEy_bs,
-                         Matrix<std::complex<double>> &iwave_lHx_bs,
-                         Matrix<std::complex<double>> &iwave_lHy_bs, ElectricSplitField &E,
-                         MagneticSplitField &H, int I_tot, int J_tot, int K1, int n, double omega,
-                         double dt, int Nt);
-
-void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim);
-
-void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim);
-
 double linearRamp(double t, double period, double rampwidth);
 
 bool is_dispersive(unsigned char ***materials,double *gamma, double dt, int I_tot, int J_tot, int K_tot);

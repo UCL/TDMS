@@ -24,6 +24,7 @@
 #include "output_matrices.h"
 #include "loop_timers.h"
 #include "utils.h"
+#include "fdtd_bootstrapper.h"
 
 using namespace std;
 using namespace tdms_math_constants;
@@ -298,6 +299,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   outputs.setup_Id(!need_Id_memory, inputs.f_ex_vec.size(), inputs.D_tilde.num_det_modes());
 
   // will become a member of superclass, or maybe not - scope can be limited to the main loop without repercussions
+  // depends on outputs.setup_EH_and_gridlabels being completed first!
   LoopVariables loop_variables(inputs, outputs.get_E_dimensions());
 
   // setup PSTD variables, and any dependencies there might be
@@ -312,16 +314,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   }
 
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
-  Matrix<complex<double>> iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs;
-
-  //x electric field source phasor - boot strapping
-  iwave_lEx_bs.allocate(I_tot, J_tot + 1);
-  //y electric field source phasor - boot strapping
-  iwave_lEy_bs.allocate(I_tot + 1, J_tot);
-  //x magnetic field source phasor - boot strapping
-  iwave_lHx_bs.allocate(I_tot + 1, J_tot);
-  //y magnetic field source phasor - boot strapping
-  iwave_lHy_bs.allocate(I_tot, J_tot + 1);
+  FDTDBootstrapper FDTD(IJK_tot);
 
   outputs.setup_fieldsample(in_matrices["fieldsample"]);
   outputs.setup_vertex_phasors(in_matrices["campssample"], inputs.f_ex_vec.size());
@@ -560,8 +553,7 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
     if (inputs.params.run_mode == RunMode::complete)
       if (inputs.params.dimension == THREE) {
         //extract the phasors just above the line
-        extractPhasorsPlane(iwave_lEx_bs, iwave_lEy_bs, iwave_lHx_bs, iwave_lHy_bs, inputs.E_s, inputs.H_s, I_tot,
-                            J_tot, inputs.K0.index + 1, tind, inputs.params.omega_an, inputs.params.dt, inputs.params.Nt);
+        FDTD.extract_phasors_in_plane(inputs.E_s, inputs.H_s, IJK_tot, inputs.K0.index + 1, tind, inputs.params);
       }
     //fprintf(stderr,"Pos 02c:\n");
 
@@ -3741,72 +3733,12 @@ OutputMatrices execute_simulation(InputMatrices in_matrices, SolverMethod solver
   return outputs;
 }
 
-/*Sets the contents of the 3 dimensional double array to zero
-  inArray - pointer to the array
-  i_lim - number of elements along the i dimension of the array
-  j_lim - number of elements along the j dimension of the array
-  k_lim - number of elements along the k dimension of the array
-
-  The array is assumed to be indexed according to inArray[k][j][i]
-
-*/
-
-void initialiseDouble3DArray(double ***inArray, int i_lim, int j_lim, int k_lim) {
-  for (int k_var = 0; k_var < k_lim; k_var++)
-    for (int j_var = 0; j_var < j_lim; j_var++)
-      for (int i_var = 0; i_var < i_lim; i_var++) inArray[k_var][j_var][i_var] = 0.0;
-}
-
-/*Sets the contents of the 2 dimensional double array to zero
-  inArray - pointer to the array
-  i_lim - number of elements along the i dimension of the array
-  j_lim - number of elements along the j dimension of the array
-
-  The array is assumed to be indexed according to inArray[j][i]
-
-*/
-
-void initialiseDouble2DArray(double **inArray, int i_lim, int j_lim) {
-  for (int j_var = 0; j_var < j_lim; j_var++)
-    for (int i_var = 0; i_var < i_lim; i_var++) inArray[j_var][i_var] = 0.0;
-}
-
 void extractPhasorENorm(complex<double> *Enorm, double ft, int n, double omega, double dt, int Nt) {
   *Enorm += ft * exp(fmod(omega * ((double) (n + 1)) * dt, 2 * DCPI) * IMAGINARY_UNIT) * 1. / ((double) Nt);
 }
 
 void extractPhasorHNorm(complex<double> *Hnorm, double ft, int n, double omega, double dt, int Nt) {
   *Hnorm += ft * exp(fmod(omega * ((double) n + 0.5) * dt, 2 * DCPI) * IMAGINARY_UNIT) * 1. / ((double) Nt);
-}
-
-void extractPhasorsPlane(Matrix<complex<double>> &iwave_lEx_bs, Matrix<complex<double>> &iwave_lEy_bs,
-                         Matrix<complex<double>> &iwave_lHx_bs, Matrix<complex<double>> &iwave_lHy_bs,
-                         ElectricSplitField &E, MagneticSplitField &H, int I_tot, int J_tot, int K1,
-                         int n, double omega, double dt, int Nt) {
-  complex<double> phaseTerm = fmod(omega * ((double) n) * dt, 2 * DCPI);
-
-  for (int j = 0; j < J_tot; j++) {
-    for (int i = 0; i < (I_tot + 1); i++) {
-      complex<double> subResult = 0.;
-      //Eyz
-      subResult = (E.yz[K1][j][i] + E.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lEy_bs[i][j] += subResult;
-      //Hxz
-      subResult = (H.xz[K1 - 1][j][i] + H.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lHx_bs[i][j] += subResult;
-    }
-  }
-  for (int j = 0; j < (J_tot + 1); j++) {
-    for (int i = 0; i < I_tot; i++) {
-      complex<double> subResult = 0.;
-      //Exz
-      subResult = (E.xz[K1][j][i] + E.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lEx_bs[i][j] += subResult;
-      //Hyz
-      subResult = (H.yz[K1 - 1][j][i] + H.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
-      iwave_lHy_bs[i][j] += subResult;
-    }
-  }
 }
 
 /*Implements a linear ramp which has the properties:
