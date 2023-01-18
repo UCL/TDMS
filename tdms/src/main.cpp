@@ -54,11 +54,11 @@ int main(int nargs, char *argv[]){
   // now run the time propagation code
   simulation.execute_simulation();
 
-  // process the outputs
-  OutputMatrices outputs = simulation.post_loop_processing();
+  // perform post-loop processes
+  simulation.post_loop_processing();
 
   // save the outputs, possibly in compressed format
-  outputs.save_outputs(args.output_filename(), args.have_flag("-m"));
+  simulation.outputs.save_outputs(args.output_filename(), args.have_flag("-m"));
 
   return 0;
 }

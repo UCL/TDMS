@@ -37,7 +37,7 @@ void FDTDBootstrapper::extract_phasors_in_plane(ElectricSplitField &E_s, Magneti
       Hx[i][j] += subResult;
     }
   }
-  for (int j = 0; j < (J_tot + 1); j++)
+  for (int j = 0; j < (J_tot + 1); j++) {
     for (int i = 0; i < I_tot; i++) {
       //Exz
       subResult = (E_s.xz[K1][j][i] + E_s.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. /
@@ -48,4 +48,5 @@ void FDTDBootstrapper::extract_phasors_in_plane(ElectricSplitField &E_s, Magneti
                   ((double) Nt);
       Hy[i][j] += subResult;
     }
+  }
 }

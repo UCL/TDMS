@@ -245,7 +245,7 @@ void SimulationManager::execute_simulation() {
   int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
 
   // setup the variables that are to be used in the loop
-  LoopVariables loop_variables(inputs, outputs.get_E_dimensions());
+  LoopVariables loop_variables(inputs, outputs.get_E_dimensions(), solver_method);
 
   /*Start of FDTD iteration*/
   //open a file for logging the times
@@ -778,16 +778,16 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
+                eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
                 PSTD.ca[n][j - 1] = Ca;
                 PSTD.cb[n][j - 1] = Cb;
               }
               if (J_tot > 1) {
                 j = 0;
-                loop_variables.eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
-                first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
+                eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
                                  inputs.E_s.xy.plan_f[n], inputs.E_s.xy.plan_b[n]);
 
 
@@ -796,7 +796,7 @@ void SimulationManager::execute_simulation() {
                 for (j = 1; j < J_tot; j++) {
                   inputs.E_s.xy[k][j][i] =
                           PSTD.ca[n][j - 1] * inputs.E_s.xy[k][j][i] +
-                          PSTD.cb[n][j - 1] * loop_variables.eh_vec[n][j][0] / ((double) PSTD.N_ey);
+                          PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
                 }
               }
             }
@@ -1059,21 +1059,21 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
-                loop_variables.eh_vec[n][k][1] = 0.;
+                eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+                eh_vec[n][k][1] = 0.;
                 PSTD.ca[n][k - 1] = Ca;
                 PSTD.cb[n][k - 1] = Cb;
               }
               k = 0;
-              loop_variables.eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
-              loop_variables.eh_vec[n][k][1] = 0.;
+              eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+              eh_vec[n][k][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ez, PSTD.N_ez, inputs.E_s.xz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez, inputs.E_s.xz.plan_f[n],
                                inputs.E_s.xz.plan_b[n]);
 
               for (k = 1; k < K_tot; k++) {
                 inputs.E_s.xz[k][j][i] = PSTD.ca[n][k - 1] * inputs.E_s.xz[k][j][i] -
-                                         PSTD.cb[n][k - 1] * loop_variables.eh_vec[n][k][0] / ((double) PSTD.N_ez);
+                                         PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
               }
             }
           //PSTD, E_s.xz
@@ -1331,21 +1331,21 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.yx[k][j][i] -= rho * (Enp1 + inputs.E_s.yx[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
-                loop_variables.eh_vec[n][i][1] = 0.;
+                eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
+                eh_vec[n][i][1] = 0.;
                 PSTD.ca[n][i - 1] = Ca;
                 PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
-              loop_variables.eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
-              loop_variables.eh_vec[n][i][1] = 0.;
+              eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
+              eh_vec[n][i][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ex, PSTD.N_ex, inputs.E_s.yx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex, inputs.E_s.yx.plan_f[n],
                                inputs.E_s.yx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
                 inputs.E_s.yx[k][j][i] = PSTD.ca[n][i - 1] * inputs.E_s.yx[k][j][i] -
-                                         PSTD.cb[n][i - 1] * loop_variables.eh_vec[n][i][0] / ((double) PSTD.N_ex);
+                                         PSTD.cb[n][i - 1] * eh_vec[n][i][0] / ((double) PSTD.N_ex);
                 //E_s.yx[k][j][i] = Enp1;
               }
             }
@@ -1596,21 +1596,21 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.yz[k][j][i] -= rho * (Enp1 + inputs.E_s.yz[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
-                loop_variables.eh_vec[n][k][1] = 0.;
+                eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                eh_vec[n][k][1] = 0.;
                 PSTD.ca[n][k - 1] = Ca;
                 PSTD.cb[n][k - 1] = Cb;
               }
               k = 0;
-              loop_variables.eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
-              loop_variables.eh_vec[n][k][1] = 0.;
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ez, PSTD.N_ez, inputs.E_s.yz.plan_f[n],
+              eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+              eh_vec[n][k][1] = 0.;
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez, inputs.E_s.yz.plan_f[n],
                                inputs.E_s.yz.plan_b[n]);
 
 
               for (k = 1; k < K_tot; k++) {
                 inputs.E_s.yz[k][j][i] = PSTD.ca[n][k - 1] * inputs.E_s.yz[k][j][i] +
-                                         PSTD.cb[n][k - 1] * loop_variables.eh_vec[n][k][0] / ((double) PSTD.N_ez);
+                                         PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
                 //E_s.yz[k][j][i] = Enp1;
               }
             }
@@ -1875,21 +1875,21 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.zx[k][j][i] -= rho * (Enp1 + inputs.E_s.zx[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
-                loop_variables.eh_vec[n][i][1] = 0.;
+                eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+                eh_vec[n][i][1] = 0.;
                 PSTD.ca[n][i - 1] = Ca;
                 PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
-              loop_variables.eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
-              loop_variables.eh_vec[n][i][1] = 0.;
+              eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+              eh_vec[n][i][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ex, PSTD.N_ex, inputs.E_s.zx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex, inputs.E_s.zx.plan_f[n],
                                inputs.E_s.zx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
                 inputs.E_s.zx[k][j][i] = PSTD.ca[n][i - 1] * inputs.E_s.zx[k][j][i] +
-                                         PSTD.cb[n][i - 1] * loop_variables.eh_vec[n][i][0] / ((double) PSTD.N_ex);
+                                         PSTD.cb[n][i - 1] * eh_vec[n][i][0] / ((double) PSTD.N_ex);
                 //E_s.zx[k][j][i] = Enp1;
               }
             }
@@ -2246,21 +2246,21 @@ void SimulationManager::execute_simulation() {
                   loop_variables.J_c.zy[k][j][i] -= rho * (Enp1 + inputs.E_s.zy[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][j][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
+                eh_vec[n][j][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
                 PSTD.ca[n][j - 1] = Ca;
                 PSTD.cb[n][j - 1] = Cb;
               }
               if (J_tot > 1) {
                 j = 0;
-                loop_variables.eh_vec[n][j][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
-                first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
+                eh_vec[n][j][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
+                first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
                                  inputs.E_s.zy.plan_f[n], inputs.E_s.zy.plan_b[n]);
               }
               for (j = 1; j < J_tot; j++) {
                 inputs.E_s.zy[k][j][i] = PSTD.ca[n][j - 1] * inputs.E_s.zy[k][j][i] -
-                                         PSTD.cb[n][j - 1] * loop_variables.eh_vec[n][j][0] / ((double) PSTD.N_ey);
+                                         PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
                 //E_s.zy[k][j][i] = Enp1;
               }
             }
@@ -2984,19 +2984,19 @@ void SimulationManager::execute_simulation() {
                   //H_s.xz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i] + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][k][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
-                loop_variables.eh_vec[n][k][1] = 0.;
+                eh_vec[n][k][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+                eh_vec[n][k][1] = 0.;
               }
               k = K_tot;
-              loop_variables.eh_vec[n][k][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
-              loop_variables.eh_vec[n][k][1] = 0.;
+              eh_vec[n][k][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+              eh_vec[n][k][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hz, PSTD.N_hz, inputs.H_s.xz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz, inputs.H_s.xz.plan_f[n],
                                inputs.H_s.xz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
                 inputs.H_s.xz[k][j][i] = PSTD.ca[n][k] * inputs.H_s.xz[k][j][i] +
-                                         PSTD.cb[n][k] * loop_variables.eh_vec[n][k][0] / ((double) PSTD.N_hz);
+                                         PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
 
@@ -3071,19 +3071,19 @@ void SimulationManager::execute_simulation() {
                   //		H_s.xy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy[k][j][i] + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
                 }
 
-                loop_variables.eh_vec[n][j][0] = inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
+                eh_vec[n][j][0] = inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
+                eh_vec[n][j][1] = 0.;
               }
               j = J_tot;
-              loop_variables.eh_vec[n][j][0] = inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
-              loop_variables.eh_vec[n][j][1] = 0.;
+              eh_vec[n][j][0] = inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
+              eh_vec[n][j][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hy, PSTD.N_hy, inputs.H_s.xy.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy, inputs.H_s.xy.plan_f[n],
                                inputs.H_s.xy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
                 inputs.H_s.xy[k][j][i] = PSTD.ca[n][j] * inputs.H_s.xy[k][j][i] -
-                                         PSTD.cb[n][j] * loop_variables.eh_vec[n][j][0] / ((double) PSTD.N_hy);
+                                         PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
 
               /*
@@ -3175,19 +3175,19 @@ void SimulationManager::execute_simulation() {
                   //	H_s.yx[k][j][i] = Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1] + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][i][0] = inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
-                loop_variables.eh_vec[n][i][1] = 0.;
+                eh_vec[n][i][0] = inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
+                eh_vec[n][i][1] = 0.;
               }
               i = I_tot;
-              loop_variables.eh_vec[n][i][0] = inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
-              loop_variables.eh_vec[n][i][1] = 0.;
+              eh_vec[n][i][0] = inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
+              eh_vec[n][i][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hx, PSTD.N_hx, inputs.H_s.yx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hx, PSTD.N_hx, inputs.H_s.yx.plan_f[n],
                                inputs.H_s.yx.plan_b[n]);
 
               for (i = 0; i < I_tot; i++) {
                 inputs.H_s.yx[k][j][i] = PSTD.ca[n][i] * inputs.H_s.yx[k][j][i] +
-                                         PSTD.cb[n][i] * loop_variables.eh_vec[n][i][0] / ((double) PSTD.N_hx);
+                                         PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
           //PSTD, H_s.yx
@@ -3266,12 +3266,12 @@ void SimulationManager::execute_simulation() {
                   //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 }
 
-                loop_variables.eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
-                loop_variables.eh_vec[n][k][1] = 0.;
+                eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+                eh_vec[n][k][1] = 0.;
               }
               k = K_tot;
-              loop_variables.eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
-              loop_variables.eh_vec[n][k][1] = 0.;
+              eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+              eh_vec[n][k][1] = 0.;
 
               /*
     if( i==12 & j==12 ){
@@ -3281,12 +3281,12 @@ void SimulationManager::execute_simulation() {
     }
         */
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hz, PSTD.N_hz, inputs.H_s.yz.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz, inputs.H_s.yz.plan_f[n],
                                inputs.H_s.yz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
                 inputs.H_s.yz[k][j][i] = PSTD.ca[n][k] * inputs.H_s.yz[k][j][i] -
-                                         PSTD.cb[n][k] * loop_variables.eh_vec[n][k][0] / ((double) PSTD.N_hz);
+                                         PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
           //PSTD, H_s.yz
@@ -3452,19 +3452,19 @@ void SimulationManager::execute_simulation() {
                   //	      H_s.zy[k][j][i] = Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i] + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
                 }
 
-                loop_variables.eh_vec[n][j][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
-                loop_variables.eh_vec[n][j][1] = 0.;
+                eh_vec[n][j][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+                eh_vec[n][j][1] = 0.;
               }
               j = J_tot;
-              loop_variables.eh_vec[n][j][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
-              loop_variables.eh_vec[n][j][1] = 0.;
+              eh_vec[n][j][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+              eh_vec[n][j][1] = 0.;
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hy, PSTD.N_hy, inputs.H_s.zy.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy, inputs.H_s.zy.plan_f[n],
                                inputs.H_s.zy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
                 inputs.H_s.zy[k][j][i] = PSTD.ca[n][j] * inputs.H_s.zy[k][j][i] +
-                                         PSTD.cb[n][j] * loop_variables.eh_vec[n][j][0] / ((double) PSTD.N_hy);
+                                         PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
           //PSTD, H_s.zy
@@ -3539,20 +3539,20 @@ void SimulationManager::execute_simulation() {
                   PSTD.cb[n][i] = inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1];
                 }
 
-                loop_variables.eh_vec[n][i][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
-                loop_variables.eh_vec[n][i][1] = 0.;
+                eh_vec[n][i][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+                eh_vec[n][i][1] = 0.;
               }
               i = I_tot;
-              loop_variables.eh_vec[n][i][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
-              loop_variables.eh_vec[n][i][1] = 0.;
+              eh_vec[n][i][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+              eh_vec[n][i][1] = 0.;
 
 
-              first_derivative(loop_variables.eh_vec[n], loop_variables.eh_vec[n], PSTD.dk_hx, PSTD.N_hx, inputs.H_s.zx.plan_f[n],
+              first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hx, PSTD.N_hx, inputs.H_s.zx.plan_f[n],
                                inputs.H_s.zx.plan_b[n]);
 
               for (i = 0; i < I_tot; i++) {
                 inputs.H_s.zx[k][j][i] = PSTD.ca[n][i] * inputs.H_s.zx[k][j][i] -
-                                         PSTD.cb[n][i] * loop_variables.eh_vec[n][i][0] / ((double) PSTD.N_hx);
+                                         PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
           //PSTD, H_s.zx

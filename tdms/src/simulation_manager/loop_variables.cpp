@@ -1,13 +1,14 @@
 #include "loop_variables.h"
 
 #include <spdlog/spdlog.h>
+#include <omp.h>
 
 #include "globals.h"
 
 using namespace tdms_phys_constants;
 using namespace std;
 
-LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
+LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims, SolverMethod solver_method) {
   // deduce the number of non-pml cells in the z-direction, for efficiency
   K = data.IJK_tot.K_tot() - data.params.pml.Dxl - data.params.pml.Dxu;
 
@@ -62,8 +63,6 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
 
   // attempt to optimise the iteration loops, if we can
   optimise_loop_J_range(data);
-
-  // set Nsteps
 }
 
 void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
