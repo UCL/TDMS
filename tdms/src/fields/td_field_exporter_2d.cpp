@@ -34,7 +34,7 @@ void TDFieldExporter2D::export_field(SplitField& F, int stride, int iteration) c
     }
 
   char toutputfilename[512];
-  sprintf(toutputfilename, "%s/ex_%06d.mat", folder_name, iteration);
+  snprintf(toutputfilename, 512, "%s/ex_%06d.mat", folder_name, iteration);
   fprintf(stderr, "time domain output: %s\n", toutputfilename);
 
   auto toutfile = matOpen(toutputfilename, "w");
