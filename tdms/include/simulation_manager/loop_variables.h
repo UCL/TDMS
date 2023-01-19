@@ -95,11 +95,6 @@ public:
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  std::vector<std::complex<double>>
-          E_norm,//< Holds the E-field phasors norm at each extraction frequency
-          H_norm;//< Holds the H-field phasors norm at each extraction frequency
-  //std::complex<double> *E_norm = nullptr, *H_norm = nullptr;
-
   bool is_conductive, is_disp;//< Whether the materials are dispersive / conductive respectively
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
