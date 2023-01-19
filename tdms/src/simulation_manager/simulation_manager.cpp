@@ -7,7 +7,8 @@ using namespace tdms_math_constants;
 
 SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
                                      PreferredInterpolationMethods _pim)
-    : inputs(in_matrices, _solver_method, _pim) {
+    : inputs(in_matrices, _solver_method, _pim),
+    FDTD(n_Yee_cells()) {
   solver_method = _solver_method;
   pim = _pim;
 
@@ -28,9 +29,6 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
   // initialise the {E,H}_norm variables to an array of zeros
   E_norm = vector<complex<double>>(inputs.f_ex_vec.size(), 0);
   H_norm = vector<complex<double>>(inputs.f_ex_vec.size(), 0);
-
-  // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
-  FDTD = FDTDBootstrapper(IJK_tot);
 
   // setup the output object
   prepare_output(in_matrices["fieldsample"], in_matrices["campssample"]);

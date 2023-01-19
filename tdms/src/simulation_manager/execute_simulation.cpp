@@ -43,7 +43,7 @@ void SimulationManager::execute() {
   complex<double> Idxt, Idyt, kprop;
 
   // get the number of Yee cells in each axial direction
-  IJKDims IJK_tot = inputs.IJK_tot;
+  IJKDims IJK_tot = n_Yee_cells();
   int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
 
   // will become a member of superclass, or maybe not - scope can be limited to the main loop without repercussions
