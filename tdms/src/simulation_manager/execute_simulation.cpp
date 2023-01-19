@@ -31,30 +31,31 @@ void SimulationManager::execute() {
 
   // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
   double rho;
-  double alpha_l, beta_l, gamma_l;
-  double kappa_l, sigma_l;
-  double t0;
+  double alpha_l, beta_l, gamma_l;//< alpha, beta, gamma parameters of the layer the local thread is examining
+  double kappa_l, sigma_l;//< kappa, sigma parameters of the layer the local thread is examining
+  double t0;//< (Real) time since the last iteration log was written to the screen
 
   double Ca, Cb, Cc;//used by interpolation scheme
   //the C and D vars for free space and pml
   double Enp1, Jnp1;
 
-  double maxfield = 0.;
+  double maxfield = 0.;//< Max absolute value of the reisdual between fields
 
   double phaseTermE;
   complex<double> cphaseTermE;
-  double lambda_an_t;
+  double lambda_an_t;//< Wavelength of light in free space at the current frequency
 
-  int i, j, k, n, k_loc;
-  int dft_counter = 0;
+  int i, j, k;//< Loop variables
+  int n;//< The thread number of the local OMP thread
+  int k_loc;//< Local thread copy of the variable k
+
+  int dft_counter = 0;//< Number of DFTs we have performed since last checking for phasor convergence
 
   complex<double> Idxt, Idyt, kprop;
 
   // variables used in the main loop that require linking/setup from the input and output objects
   LoopVariables loop_variables(inputs, outputs.get_E_dimensions());
 
-  /*Start of FDTD iteration*/
-  //open a file for logging the times
   /*The times of the E and H fields at the point where update equations are applied.
     time_H is actually the time of the H field when the E field consistency update is
     applied and vice versa. time_E > time_H below since after the E field consistency
@@ -76,19 +77,15 @@ void SimulationManager::execute() {
     When one notes that fte is calculated using time_E and fth using time_H we see
     that this indexing is correct, ie, time_E = (tind+1)*dt and time_H = (tind+1/2)*dt.
   */
-  //fprintf(stderr,"Pre 24\n");
-  double time_E;
-  double time_H;
-  t0 = (double) time(NULL);
-  //fprintf(stderr,"params.start_tind: %d\n",params.start_tind);
-  //  fprintf(stdout,"params.delta.dz: %e, c: %e, params.delta.dz/c: %e\n",params.delta.dz,LIGHT_V,params.delta.dz/LIGHT_V);
+  double time_E, time_H;
 
-  spdlog::debug("Starting main loop");
+  // fetch the current time for logging purposes
+  t0 = (double) time(NULL);
+  spdlog::info("Starting main loop");
 
   if (TIME_MAIN_LOOP) { timers.start_timer(TimersTrackingLoop::MAIN); }
 
   for (unsigned int tind = inputs.params.start_tind; tind < inputs.params.Nt; tind++) {
-    //fprintf(stderr,"Pos 00:\n");
     time_E = ((double) (tind + 1)) * inputs.params.dt;
     time_H = time_E - inputs.params.dt / 2.;
     //Extract phasors
@@ -141,16 +138,14 @@ void SimulationManager::execute() {
                               inputs.params.Npe);
       }
       if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
-      //fprintf(stderr,"Pos 01b:\n");
     }
 
-    /*extract fieldsample*/
+    // Extract the fields at the sample locations
     if (outputs.fieldsample.all_vectors_are_non_empty()) {
       outputs.fieldsample.extract(inputs.E_s, inputs.params.pml, inputs.params.Nt);
     }
-    /*end extract fieldsample*/
 
-    //fprintf(stderr,"Pos 02:\n");
+    // Extract phasors on the user-defined surface
     if (inputs.params.source_mode == SourceMode::pulsed &&
         inputs.params.run_mode == RunMode::complete && inputs.params.exphasorssurface) {
       if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
@@ -161,21 +156,17 @@ void SimulationManager::execute() {
         }
       }
     }
-
+    // Extract phasors at the user-defined vertices
     if (inputs.params.source_mode == SourceMode::pulsed &&
         inputs.params.run_mode == RunMode::complete &&
         (outputs.vertex_phasors.there_are_vertices_to_extract_at()) &&
         ((tind - inputs.params.start_tind) % inputs.params.Np == 0)) {
-      //     fprintf(stderr,"loc 01 (%d,%d,%d)\n",tind,params.start_tind,params.Np);
-      //fprintf(stderr,"loc 03\n");
-      //	  fprintf(stderr,"EPV 01\n");
       for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.vertex_phasors.extractPhasorsVertices(
                 ifx, inputs.E_s, inputs.H_s, tind, inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params);
       }
     }
 
-    //fprintf(stderr,"Pos 02a:\n");
     if (inputs.params.source_mode == SourceMode::pulsed &&
         inputs.params.run_mode == RunMode::complete && inputs.params.exdetintegral) {
       if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
@@ -212,7 +203,6 @@ void SimulationManager::execute() {
                       loop_variables.Ey_t.v[m][0] + IMAGINARY_UNIT * loop_variables.Ey_t.v[m][1];
             }
 
-          //fprintf(stderr,"Pos 02a [3]:\n");
           //Now multiply the pupil, mostly the pupil is non-zero in only a elements
           for (j = 0; j < (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl); j++)
             for (i = 0; i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
@@ -228,7 +218,6 @@ void SimulationManager::execute() {
             for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
               //wavelength in air
               lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
-              //fprintf(stdout,"lambda_an_t = %e, LIGHT_V = %e, z_obs = %e\n",lambda_an_t,LIGHT_V,z_obs);
               Idxt = 0.;
               Idyt = 0.;
 
@@ -247,7 +236,6 @@ void SimulationManager::execute() {
                                            2.) -
                                        pow(lambda_an_t * inputs.f_vec.y[j] / loop_variables.refind,
                                            2.)));
-                      //fprintf(stdout,"%d %d %e %e %e %e %e %e %e\n",i,j,f_vec.x[i],f_vec.y[j],real(kprop),imag(kprop),z_obs,DCPI,lambda_an_t);
                     } else {
                       kprop = exp(IMAGINARY_UNIT *
                                   (-inputs.params.air_interface + inputs.params.z_obs) * 2. * DCPI /
@@ -282,14 +270,12 @@ void SimulationManager::execute() {
       }
     }//end of section for calculating detector function
 
-    //fprintf(stderr,"Pos 02b:\n");
     if (inputs.params.run_mode == RunMode::complete)
       if (inputs.params.dimension == THREE) {
         //extract the phasors just above the line
         FDTD.extract_phasors_in_plane(inputs.E_s, inputs.H_s, IJK_tot, inputs.K0.index + 1, tind,
                                       inputs.params);
       }
-    //fprintf(stderr,"Pos 02c:\n");
 
     //Update equations for the E field
 
@@ -307,14 +293,7 @@ void SimulationManager::execute() {
     */
 
     int array_ind = 0;
-    //fprintf(stderr,"I_tot=%d, J_tot=%d, K_tot=%d\n",I_tot,J_tot,K_tot);
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
-    //fprintf(stderr,"Dimension = %d\n",params.dimension);
-    /*
-      for(k=0;k<(K_tot+1);k++)
-      fprintf(stdout,"%e ",Exy[k][13][13]+Exz[k][13][13]);
-      fprintf(stdout,"\n");
-    */
     (void) n;// n is unused in FD derivatives – this silences the compiler warning
 
 #pragma omp parallel default(shared) private(i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc,        \
@@ -352,7 +331,6 @@ void SimulationManager::execute() {
 
                 //use the average of material parameters between nodes
                 if (inputs.materials[k][j][i] || inputs.materials[k][j][i + 1]) {
-                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
                   rho = 0.;
                   if (!inputs.materials[k][j][i]) {
                     Ca = inputs.C.a.y[array_ind];
@@ -448,8 +426,6 @@ void SimulationManager::execute() {
                   loop_variables.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
                   loop_variables.J_nm1.xy[k][j][i] = loop_variables.J_s.xy[k][j][i];
                   loop_variables.J_s.xy[k][j][i] = Jnp1;
-
-                  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
                 if (loop_variables.is_conductive && rho) {
@@ -460,7 +436,6 @@ void SimulationManager::execute() {
               }
           //FDTD, E_s.xy
         } else {
-//fprintf(stderr,"Pos 02d:\n");
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
             for (i = 0; i < I_tot; i++) {
@@ -484,7 +459,6 @@ void SimulationManager::execute() {
 
                 //use the average of material parameters between nodes
                 if (inputs.materials[k][j][i] || inputs.materials[k][j][i + 1]) {
-                  //fprintf(stdout,"(%d,%d,%d,%d)\n",i,j,k,tind);
                   rho = 0.;
                   if (!inputs.materials[k][j][i]) {
                     Ca = inputs.C.a.y[array_ind];
@@ -579,8 +553,6 @@ void SimulationManager::execute() {
                   loop_variables.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
                   loop_variables.J_nm1.xy[k][j][i] = loop_variables.J_s.xy[k][j][i];
                   loop_variables.J_s.xy[k][j][i] = Jnp1;
-
-                  //	    fprintf(stderr,"(%d,%d,%d): %e\n",i,j,k,J_s.xy[k][j][i]);
                 }
 
                 if (loop_variables.is_conductive && rho) {
@@ -598,10 +570,6 @@ void SimulationManager::execute() {
                 eh_vec[n][j][1] = 0.;
                 first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
                                  inputs.E_s.xy.plan_f[n], inputs.E_s.xy.plan_b[n]);
-
-
-                //fprintf(stdout,"(%d,%d) %d (of %d)\n",i,k,n,omp_get_num_threads());
-
                 for (j = 1; j < J_tot; j++) {
                   inputs.E_s.xy[k][j][i] =
                           PSTD.ca[n][j - 1] * inputs.E_s.xy[k][j][i] +
@@ -611,17 +579,6 @@ void SimulationManager::execute() {
             }
           //PSTD, E_s.xy
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
-        /*
-    if(is_disp){
-    i=36;
-    j=36;
-    k=36;
-
-    fprintf(stdout,"%e %e",J_s.xy[k][j][i],E_s.xy[k][j][i]);
-    }
-  */
-
-        //fprintf(stderr,"Pos 04:\n");
         //E_s.xz updates
         if (solver_method == SolverMethod::FiniteDifference) {
 #pragma omp for
@@ -716,10 +673,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                /*if( materials[k][j][i] || materials[k][j][i+1])
-      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
-      if(tind==0)
-      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 Enp1 = Ca * inputs.E_s.xz[k][j][i] +
                        Cb * (inputs.H_s.yx[k - 1][j][i] + inputs.H_s.yz[k - 1][j][i] -
                              inputs.H_s.yx[k][j][i] - inputs.H_s.yz[k][j][i]);
@@ -841,10 +794,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                /*if( materials[k][j][i] || materials[k][j][i+1])
-      fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);
-      if(tind==0)
-      fprintf(stdout,"%d %d %e %e\n",i,k,Ca, Cb);*/
                 //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
                 if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.xz[k][j][i] -
@@ -887,8 +836,6 @@ void SimulationManager::execute() {
             }
           //PSTD, E_s.xz
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
-
-        //fprintf(stderr,"Pos 05:\n");
         //E_s.yx updates
         if (solver_method == SolverMethod::FiniteDifference) {
           //FDTD, E_s.yx
@@ -1160,8 +1107,6 @@ void SimulationManager::execute() {
             }
           //PSTD, E_s.yx
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
-
-        //fprintf(stderr,"Pos 06:\n");
         //E_s.yz updates
         if (solver_method == SolverMethod::FiniteDifference) {
 //FDTD, E_s.yz
@@ -1257,8 +1202,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-
-                //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
                 Enp1 = Ca * inputs.E_s.yz[k][j][i] +
                        Cb * (inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i] -
                              inputs.H_s.xy[k - 1][j][i] - inputs.H_s.xz[k - 1][j][i]);
@@ -1380,8 +1323,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-
-                //fprintf(stderr,"[%d %d %d]Ca: %e, Cb: %e, Cc: %e, alpha: %e, beta: %e, gamme: %e\n",i,j,k,Ca,Cb,Cc,alpha_l,beta_l,gamma_l);
                 //Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
                 if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
@@ -1427,7 +1368,6 @@ void SimulationManager::execute() {
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
       }  //if(params.dimension==THREE || params.dimension==TE)
 
-      //fprintf(stderr,"Pos 07:\n");
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (solver_method == SolverMethod::FiniteDifference) {
@@ -1530,9 +1470,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-
-                /*if( materials[k][j][i] || materials[k][j][i+1])
-        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 Enp1 = Ca * inputs.E_s.zx[k][j][i] +
                        Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
                              inputs.H_s.yx[k][j][i - 1] - inputs.H_s.yz[k][j][i - 1]);
@@ -1659,9 +1596,6 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-
-                /*if( materials[k][j][i] || materials[k][j][i+1])
-        fprintf(stdout,"(%d,%d,%d), Ca= %e, Cb=%e, is_conductive:%d, rho: %e, is_disp: %d, params.is_disp_ml: %d\n",i,j,k,Ca,Cb,is_conductive,rho,is_disp,params.is_disp_ml);*/
                 //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
                 if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
@@ -1797,7 +1731,6 @@ void SimulationManager::execute() {
               inputs.E_s.zx[k][j][i] = Enp1;
             }
       }
-      //fprintf(stderr,"Pos 08:\n");
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
         if (solver_method == SolverMethod::FiniteDifference) {
@@ -2168,7 +2101,6 @@ void SimulationManager::execute() {
             }
       }
     }//end of parallel section
-    //fprintf(stderr,"Pos 09:\n");
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
     /********************/
 
@@ -2596,10 +2528,6 @@ void SimulationManager::execute() {
       } else
         for (j = 0; j < J_tot; j++)
           for (i = 0; i < (I_tot + 1); i++) {
-            /*
-        if(i==41 & j==41)
-        fprintf(stderr,"C.b.z = %.10e, Re(K) = %.10e, Im(K) = %.10e, time_H= %.10e, params.to_l=%.10e, params.delta.dz/LIGHT_V/2=%.10e, hwhm = %.10e, dE=%.10e\n",C.b.z[(int)K0[0]],Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2],Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2],time_H,params.to_l,params.delta.dz/LIGHT_V/2,params.hwhm,C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l + params.delta.dz/LIGHT_V/2.)/(params.hwhm),2)));
-      */
             inputs.E_s.yz[inputs.K0.index][j][i] =
                     inputs.E_s.yz[inputs.K0.index][j][i] -
                     inputs.C.b.z[inputs.K0.index] *
@@ -2716,7 +2644,6 @@ void SimulationManager::execute() {
                       2));
       //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
     }
-    //fprintf(stderr,"Pos 10:\n");
 
     //end of source terms
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
@@ -2894,23 +2821,6 @@ void SimulationManager::execute() {
                 inputs.H_s.xy[k][j][i] = PSTD.ca[n][j] * inputs.H_s.xy[k][j][i] -
                                          PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
-
-              /*
-    if( i==12 && k==24){
-    fprintf(stdout,"tind: %d\n",tind);
-    fprintf(stdout,"Da: ");
-    for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",ca_vec[n][j]);
-    fprintf(stdout,"\nDb: ");
-    for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",cb_vec[n][j]);
-
-    fprintf(stdout,"\neh_vec: ");
-    for(j=0;j<J_tot;j++)
-    fprintf(stdout,"%e ",eh_vec[n][j][0]/((double) PSTD.N_ey));
-    fprintf(stdout,"\n");
-    }
-        */
             }
           //PSTD, H_s.xy
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else PseudoSpectral)
@@ -3022,16 +2932,12 @@ void SimulationManager::execute() {
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
                 if (!inputs.materials[k][j][i]) {
-                  /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                   inputs.H_s.yz[k][j][i] =
                           inputs.D.a.z[k_loc] * inputs.H_s.yz[k][j][i] +
                           inputs.D.b.z[k_loc] *
                                   (inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i] -
                                    inputs.E_s.xy[k + 1][j][i] - inputs.E_s.xz[k + 1][j][i]);
                 } else {
-                  /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                   inputs.H_s.yz[k][j][i] =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1] *
                                   inputs.H_s.yz[k][j][i] +
@@ -3064,14 +2970,10 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][k] = inputs.D.a.z[k_loc];
                   PSTD.cb[n][k] = inputs.D.b.z[k_loc];
-                  /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,D.a.z[k_loc], D.b.z[k_loc]);*/
                   //H_s.yz[k][j][i] = D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 } else {
                   PSTD.ca[n][k] = inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][k] = inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1];
-                  /*if(tind==0)
-        fprintf(stdout,"%d %d %e %e\n",i,k,Dmaterial.Da.z[materials[k][j][i]-1],Dmaterial.Db.z[materials[k][j][i]-1]);*/
                   //H_s.yz[k][j][i] = Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i] + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 }
 
@@ -3081,15 +2983,6 @@ void SimulationManager::execute() {
               k = K_tot;
               eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
               eh_vec[n][k][1] = 0.;
-
-              /*
-    if( i==12 & j==12 ){
-    for(k=0;k<K_tot;k++)
-    fprintf(stdout,"%.10e ",eh_vec[n][k][0]);
-    fprintf(stdout,"\n");
-    }
-        */
-
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz, inputs.H_s.yz.plan_f[n],
                                inputs.H_s.yz.plan_b[n]);
 
@@ -3370,7 +3263,6 @@ void SimulationManager::execute() {
     }    //end parallel
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
-    //fprintf(stderr,"Pos 11b:\n");
     //update terms for self consistency across scattered/total interface - E updates
     if (inputs.params.source_mode == SourceMode::steadystate) {//steadystate
       complex<double> commonPhase =
@@ -3542,9 +3434,7 @@ void SimulationManager::execute() {
         }
       outputs.E.ft = real(commonAmplitude * commonPhase);
     } else if (inputs.params.source_mode == 1) {//pulsed
-      //fprintf(stderr,"Pos 11c\n");
       if (J_tot == 0) {
-        //fprintf(stderr,"Pos 11d\n");
         j = 0;
         for (i = 0; i < (I_tot + 1); i++) {
           inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
@@ -3564,7 +3454,6 @@ void SimulationManager::execute() {
                     inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
                     inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.y[tind][j][i];
         }
-        //fprintf(stderr,"Pos 11e\n");
         for (i = 0; i < I_tot; i++) {
           inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
                   inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
@@ -3583,11 +3472,8 @@ void SimulationManager::execute() {
                     inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
                     inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.x[tind][j][i];
           //if(i==511)
-          //  fprintf(stdout,"%e\n",D.b.z[((int)K0[0])-1]*exi[tind][j][i]);
         }
-        //fprintf(stderr,"Pos 11f\n");
       } else {
-        //fprintf(stderr,"Pos 11g\n");
         for (j = 0; j < J_tot; j++)
           for (i = 0; i < (I_tot + 1); i++) {
             inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
@@ -3609,7 +3495,6 @@ void SimulationManager::execute() {
                       inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
                       inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.y[tind][j][i];
           }
-        //fprintf(stderr,"Pos 11h\n");
         for (j = 0; j < (J_tot + 1); j++)
           for (i = 0; i < I_tot; i++) {
             inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
@@ -3631,14 +3516,12 @@ void SimulationManager::execute() {
                       inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
                       inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.x[tind][j][i];
           }
-        //fprintf(stderr,"Pos 11i\n");
       }
       outputs.E.ft =
               real((-1. * IMAGINARY_UNIT) *
                    exp(-IMAGINARY_UNIT *
                        fmod(inputs.params.omega_an * (time_E - inputs.params.to_l), 2 * DCPI))) *
               exp(-1. * DCPI * pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
-      //fprintf(stderr,"Pos 11j\n");
     }
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
@@ -3730,36 +3613,17 @@ void SimulationManager::execute() {
       spdlog::info("Iterating: tind = {0:d}, maxfield = {1:e}", tind, maxfield);
       t0 = double(time(NULL));
     }
-    //fprintf(stderr,"Post-iter 3\n");
     if ((inputs.params.source_mode == SourceMode::steadystate) &&
         (tind == (inputs.params.Nt - 1)) && (inputs.params.run_mode == RunMode::complete) &&
         inputs.params.exphasorsvolume) {
-      fprintf(stdout, "Iteration limit reached, setting output fields to last complete DFT\n");
+      spdlog::info("Iteration limit reached (no convergence): setting output fields to last "
+                   "complete DFT");
       outputs.E.set_values_from(loop_variables.E_copy);
     }
-    //fprintf(stderr,"Post-iter 4\n");
-    fflush(stdout);
-    //fprintf(stderr,"Post-iter 5\n");
-    //fprintf(stderr,"%s %d %d\n",tdfdirstr, strcmp(tdfdirstr,""),are_equal(tdfdirstr,""));
     if (inputs.params.has_tdfdir && (tind % inputs.params.Np) == 0) {
-      fprintf(stderr, "Saving field\n");
+      spdlog::info("Exporting field...");
       inputs.ex_td_field_exporter.export_field(inputs.E_s, inputs.skip_tdf, tind);
     }
-    //fprintf(stderr,"Post-iter 6\n");
-    /*write out fdtdgrid to a file*/
-    /*
-     MATFile *toutfile;
-     char toutputfilename[100];
-     if(tind % params.Np == 0){
-     //if(tind <= 1000){
-       sprintf(toutputfilename,"tdata/fdtdgrid_%04d.mat",tind);
-       toutfile = matOpen(toutputfilename, "w");
-       matPutVariable(toutfile, "fdtdgrid", (mxArray *)in_matrices[0]);
-       matClose(toutfile);
-       }
-    */
-    /*write out fdtdgrid to a file*/
-
   }//end of main iteration loop
   if (TIME_MAIN_LOOP) {
     timers.end_timer(TimersTrackingLoop::MAIN);
