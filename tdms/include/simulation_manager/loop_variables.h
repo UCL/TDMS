@@ -1,3 +1,8 @@
+/**
+ * @file loop_variables.h
+ * @author your name (you@domain.com)
+ * @brief Class that handles the setup of variables whose scope is limited to the main simulation loop, but which require complex setup from the inputs and/or outputs.
+ */
 #pragma once
 
 #include <complex>
@@ -8,6 +13,11 @@
 #include "matrix.h"
 #include "objects_from_infile.h"
 
+/**
+ * @brief Handles the setup of variables that will be scoped to the main iteration loop, however which require complicated setup from the input objects and potential linking to the output data.
+ *
+ * This setup is handled in the constructor, and the destructor tears down the MATLAB malloc'd memory that we will no longer need after the main loop.
+ */
 class LoopVariables {
 private:
   // Pointers to the MATLAB structure that underlies E_copy, the convergence checker

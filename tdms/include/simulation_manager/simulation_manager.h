@@ -1,6 +1,6 @@
 /**
  * @file simulation_manager.h
- * @brief
+ * @brief Class that runs the physics of the TDMS executable, and produces an output.
  */
 #pragma once
 
@@ -17,6 +17,13 @@
 #include "output_matrices.h"
 #include "matrix.h"
 
+/**
+ * @brief Manages the physics of TDMS and the simulation loop itself.
+ *
+ * Takes in the contents of the input file and produces the output in the outputs member, so that it can be written to the specified output file.
+ *
+ * Attributes are private to avoid external alterations to their content and potential reassignment of MATLAB pointers, resulting in leaking memory. The outputs can be accessed through a fetch-method within main.cpp if necessary.
+ */
 class SimulationManager {
 private:
   SimulationParameters params;//< The parameters for this simulation

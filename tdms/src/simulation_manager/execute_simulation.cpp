@@ -1,3 +1,7 @@
+/**
+ * @file execute_simulation.cpp
+ * @brief Code for performing the time-stepping algorithm for the physical process TDMS models.
+ */
 #include "simulation_manager.h"
 
 #include <omp.h>
@@ -19,8 +23,14 @@ using namespace tdms_phys_constants;
 #define TOL 1e-6
 
 void SimulationManager::execute() {
+  // log the number of OMP threads being used
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
 
+  // get the number of Yee cells in each axial direction
+  IJKDims IJK_tot = n_Yee_cells();
+  int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
+
+  // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
   double rho;
   double alpha_l, beta_l, gamma_l;
   double kappa_l, sigma_l;
@@ -42,12 +52,7 @@ void SimulationManager::execute() {
   mxArray *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
 
-  // get the number of Yee cells in each axial direction
-  IJKDims IJK_tot = n_Yee_cells();
-  int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
-
-  // will become a member of superclass, or maybe not - scope can be limited to the main loop without repercussions
-  // depends on outputs.setup_EH_and_gridlabels being completed first!
+  // variables used in the main loop that require linking/setup from the input and output objects
   LoopVariables loop_variables(inputs, outputs.get_E_dimensions());
 
   /*Start of FDTD iteration*/

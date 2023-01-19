@@ -1,3 +1,9 @@
+/**
+ * @file fdtd_bootstrapper.h
+ * @brief Handles the boostrapping variables used in the FDTD solver.
+ *
+ * NOTE: Can be deleted from codebase without altering functionality. See https://github.com/UCL/TDMS/issues/214#issue-1532363539 - holding off doing so until meeting clarification.
+ */
 #pragma once
 
 #include <complex>
