@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "arrays.h"
 #include "globals.h"
 #include "objects_from_infile.h"
 #include "cell_coordinate.h"
@@ -24,6 +25,8 @@ private:
 
   PreferredInterpolationMethods pim;
   SolverMethod solver_method;
+
+  EHVec eh_vec;
 
   void prepare_output(const mxArray *fieldsample, const mxArray* campssample);
 

@@ -95,8 +95,6 @@ public:
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  EHVec eh_vec;
-
   std::vector<std::complex<double>>
           E_norm,//< Holds the E-field phasors norm at each extraction frequency
           H_norm;//< Holds the H-field phasors norm at each extraction frequency

@@ -12,12 +12,12 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
   IJKDims IJK_tot = n_Yee_cells();
 
   // setup PSTD variables, and any dependencies there might be
-  PSTD.set_using_dimensions(IJK_tot);
-  EHVec eh_vec;
   if (solver_method == SolverMethod::PseudoSpectral) {
     int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
-    eh_vec.allocate(n_threads, max_IJK + 1);
 
+    PSTD.set_using_dimensions(IJK_tot);
+
+    eh_vec.allocate(n_threads, max_IJK + 1);
     inputs.E_s.initialise_fftw_plan(n_threads, eh_vec);
     inputs.H_s.initialise_fftw_plan(n_threads, eh_vec);
   }
