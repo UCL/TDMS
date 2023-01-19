@@ -16,7 +16,6 @@
 #include "pstd_variables.h"
 #include "fdtd_bootstrapper.h"
 #include "output_matrices.h"
-#include "matrix.h"
 
 /**
  * @brief Manages the physics of TDMS and the simulation loop itself.

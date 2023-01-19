@@ -3766,5 +3766,4 @@ void SimulationManager::execute() {
     spdlog::info("Time elapsed in main loop (s): {0:e}",
                  timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
   }
-  //save state of fdtdgrid
 }
