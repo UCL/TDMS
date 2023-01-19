@@ -95,6 +95,8 @@ public:
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
+  EHVec eh_vec;
+
   bool is_conductive, is_disp;//< Whether the materials are dispersive / conductive respectively
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
@@ -102,7 +104,7 @@ public:
   int J_tot_p1_bound, J_tot_bound;
   int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
 
-  LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims, SolverMethod solver_method);
+  LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims);
 
   ~LoopVariables();
 };

@@ -58,6 +58,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
 
   // setup PSTD variables, and any dependencies there might be
   PSTD.set_using_dimensions(IJK_tot);
+  EHVec eh_vec;
   if (solver_method == SolverMethod::PseudoSpectral) {
     int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
     eh_vec.allocate(n_threads, max_IJK + 1);
@@ -67,7 +68,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
   }
 
   // these are needed later... but don't seem to EVER be used? They were previously plhs[6->9], but these outputs were never written. Also, they are assigned to, but never written out nor referrenced by any of the other variables in the main loop. I am confused... Also note that because we're using the Matrix class, we order indices [i][j][k] rather than [k][j][i] like in the rest of the codebase :(
-  FDTD.allocate_memory(IJK_tot);
+  FDTD = FDTDBootstrapper(IJK_tot);
 
   // setup the output object
   prepare_output(in_matrices["fieldsample"], in_matrices["campssample"]);
@@ -77,7 +78,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
   H_norm = vector<complex<double>>(inputs.f_ex_vec.size(), 0);
 }
 
-void SimulationManager::post_loop_processing() {
+OutputMatrices SimulationManager::post_loop_processing() {
   // normalise output fields
   if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorsvolume) {
     outputs.E.normalise_volume();
@@ -153,4 +154,7 @@ void SimulationManager::post_loop_processing() {
     outputs.assign_surface_phasor_outputs(!extracting_phasors, mx_surface_facets);
     // now safe to cast mx_surface_vertices to nullptr if we need to, since surface_phasors will destroy the MATLAB memory
   }
+
+  // all stages are complete, return the output object
+  return outputs;
 }

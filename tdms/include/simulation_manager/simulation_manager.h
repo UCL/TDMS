@@ -7,7 +7,6 @@
 #include <complex>
 #include <vector>
 
-#include "arrays.h"
 #include "cell_coordinate.h"
 #include "fdtd_bootstrapper.h"
 #include "globals.h"
@@ -32,11 +31,10 @@ private:
   LoopTimers timers;
   PSTDVariables PSTD;
   FDTDBootstrapper FDTD;
+  OutputMatrices outputs;
 
   PreferredInterpolationMethods pim;
   SolverMethod solver_method;
-
-  EHVec eh_vec;
 
   std::vector<std::complex<double>>
           E_norm,//< Holds the E-field phasors norm at each extraction frequency
@@ -83,8 +81,6 @@ private:
   void extract_phasor_norms(int frequency_index, int tind, int Nt);
 
 public:
-  OutputMatrices outputs;
-
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
                     PreferredInterpolationMethods _pim);
 
@@ -92,5 +88,10 @@ public:
 
   void execute_simulation();
 
-  void post_loop_processing();
+  OutputMatrices post_loop_processing();
 };
+
+
+// SimulationManager(in_matrices, solver_method, pim)
+// SimulationManager.execute_simulation()
+// OutputMatrices = SimulationManager.post_loop_processing()
