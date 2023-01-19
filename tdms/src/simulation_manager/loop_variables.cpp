@@ -23,6 +23,10 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
     Ey_t.initialise(n1, n0);
   }
 
+  // initialise the {E,H}_norm variables to an array of zeros
+  E_norm = vector<complex<double>>(data.f_ex_vec.size(), 0);
+  H_norm = vector<complex<double>>(data.f_ex_vec.size(), 0);
+
   // We need to test for convergence under the following conditions. As such, we need to initialise the array (E_copy) that will ultimately be copies of the phasors at the previous iteration, to test convergence against
   if (data.params.run_mode == RunMode::complete && data.params.exphasorsvolume &&
       data.params.source_mode == SourceMode::steadystate) {
