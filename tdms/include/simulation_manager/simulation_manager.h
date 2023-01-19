@@ -27,19 +27,18 @@
 class SimulationManager {
 private:
   SimulationParameters params;//< The parameters for this simulation
-  ObjectsFromInfile inputs;
-  LoopTimers timers;
-  PSTDVariables PSTD;
-  FDTDBootstrapper FDTD;
-  OutputMatrices outputs;
+  ObjectsFromInfile inputs;//< The input objects that are generated from an input file
+  LoopTimers timers;//< Timers for tracking execution of the simulation
+  PSTDVariables PSTD;//< PSTD-solver-specifi variables
+  FDTDBootstrapper FDTD;//< FDTD bootsrapping variables
+  OutputMatrices outputs;//< Output object that will contain the results of this simulation, given the input file
 
-  PreferredInterpolationMethods pim;
-  SolverMethod solver_method;
+  PreferredInterpolationMethods pim;//< The interpolation methods to use in this simulation
+  SolverMethod solver_method;//< The solver method to use in this simulation
 
-  EHVec eh_vec;
+  EHVec eh_vec;//< TODO
 
   double ramp_width = 4.;//< Width of the ramp when introducing the waveform in steady state mode
-
   /**
    * @brief Evaluates the linear ramp function r(t)
    *
@@ -60,18 +59,32 @@ private:
 
   std::vector<std::complex<double>> E_norm;//< Holds the E-field phasors norm at each extraction frequency
   std::vector<std::complex<double>> H_norm;//< Holds the H-field phasors norm at each extraction frequency
-
+  /**
+   * @brief Extracts the phasors norms at the given frequency (index)
+   *
+   * @param frequency_index The index of the frequency (in inputs.f_ex_vec) to extract at
+   * @param tind The current timestep
+   * @param Nt The number of timesteps in a sinusoidal period
+   */
   void extract_phasor_norms(int frequency_index, int tind, int Nt);
 
+  /**
+   * @brief Creates MATLAB memory blocks that will be iteratively updated in the execute() method, and assigns array sizes for writting purposes later.
+   *
+   * @param fieldsample The fieldsample input from the input file
+   * @param campssample The campssample input from the input file
+   */
   void prepare_output(const mxArray *fieldsample, const mxArray* campssample);
-
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method, PreferredInterpolationMethods _pim);
 
+  /** @brief Fetch the number of Yee cells in each dimension */
   IJKDims n_Yee_cells() { return inputs.IJK_tot; }
 
+  /** @brief Run the time-stepping algorithm given the current inputs. */
   void execute();
 
+  /** @brief Get the outputs of this simulation */
   OutputMatrices &get_outputs() { return outputs; }
 };
