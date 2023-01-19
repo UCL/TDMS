@@ -6,6 +6,7 @@
 
 #include <complex>
 #include <vector>
+#include <string>
 
 #include "arrays.h"
 #include "globals.h"
@@ -85,6 +86,20 @@ public:
   /** @brief Run the time-stepping algorithm given the current inputs. */
   void execute();
 
-  /** @brief Get the outputs of this simulation */
-  OutputMatrices &get_outputs() { return outputs; }
+  /**
+   * @brief Perform additional (mostly conditional) computations on the outputs, depending on the simulation inputs and run specifications.
+   *
+   * This should only be run AFTER a successful run of the execute() method.
+   */
+  void post_loop_processing();
+
+  /**
+   * @brief Write the outputs to the file provided. Wrapper for outputs.save_outputs
+   *
+   * @param output_file The filename to write the outputs to
+   * @param compressed_format If true, write compressed output (do not write facets and vertices)
+   */
+  void write_outputs_to_file(std::string output_file, bool compressed_format = false) {
+    outputs.save_outputs(output_file, compressed_format);
+  }
 };

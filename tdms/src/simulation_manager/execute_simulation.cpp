@@ -9,7 +9,6 @@
 
 #include "loop_variables.h"
 #include "numerical_derivative.h"
-#include "mesh_base.h"
 
 using namespace std;
 using namespace tdms_math_constants;
@@ -49,7 +48,6 @@ void SimulationManager::execute() {
   int i, j, k, n, k_loc;
   int dft_counter = 0;
 
-  mxArray *mx_surface_facets;
   complex<double> Idxt, Idyt, kprop;
 
   // variables used in the main loop that require linking/setup from the input and output objects
@@ -3769,80 +3767,4 @@ void SimulationManager::execute() {
                  timers.time_ellapsed_by(TimersTrackingLoop::MAIN));
   }
   //save state of fdtdgrid
-
-  //fprintf(stderr,"Pos 12\n");
-  if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorsvolume) {
-    outputs.E.normalise_volume();
-    outputs.H.normalise_volume();
-  }
-
-  //fprintf(stderr,"Pos 13\n");
-  if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorssurface) {
-    spdlog::info("Surface phasors");
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx],
-                                                H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
-                   imag(E_norm[ifx]));
-    }
-  }
-  if (inputs.params.run_mode == RunMode::complete &&
-      outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
-    spdlog::info("Vertex phasors");
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx],
-                                                H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
-                   imag(E_norm[ifx]));
-    }
-  }
-
-  //fprintf(stderr,"Pos 14\n");
-  if (inputs.params.source_mode == SourceMode::pulsed &&
-      inputs.params.run_mode == RunMode::complete && inputs.params.exdetintegral) {
-    for (int im = 0; im < inputs.D_tilde.num_det_modes(); im++)
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-        outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / E_norm[ifx];
-        outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / E_norm[ifx];
-
-        outputs.ID.x_real[ifx][im] = real(outputs.ID.x[ifx][im]);
-        outputs.ID.x_imag[ifx][im] = imag(outputs.ID.x[ifx][im]);
-
-        outputs.ID.y_real[ifx][im] = real(outputs.ID.y[ifx][im]);
-        outputs.ID.y_imag[ifx][im] = imag(outputs.ID.y[ifx][im]);
-      }
-  }
-
-  /* Find the maximum absolute value of residual field in the grid, and write too the outputs */
-  maxfield = max(inputs.E_s.largest_field_value(), inputs.H_s.largest_field_value());
-  outputs.set_maxresfield(maxfield, false);
-
-  // setup interpolated field outputs and labels (if necessary)
-  outputs.setup_interpolation_outputs(inputs.params);
-
-  /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
-    these vertices and a list of facets*/
-  // if we need to extract the phasors, we will need to allocate memory in the output
-  bool extracting_phasors =
-          (inputs.params.exphasorssurface && inputs.params.run_mode == RunMode::complete);
-  if (extracting_phasors) {
-    //first regenerate the mesh since we threw away the facet list before iterating
-    mxArray *dummy_vertex_list;
-    if (J_tot == 0)
-      conciseCreateBoundary(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[4], inputs.cuboid[5],
-                            &dummy_vertex_list, &mx_surface_facets);
-    else
-      conciseTriangulateCuboidSkip(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[2],
-                                   inputs.cuboid[3], inputs.cuboid[4], inputs.cuboid[5],
-                                   inputs.params.spacing_stride, &dummy_vertex_list,
-                                   &mx_surface_facets);
-    mxDestroyArray(dummy_vertex_list);
-
-    //now create and populate the vertex list
-    outputs.surface_phasors.create_vertex_list(inputs.input_grid_labels);
-  }
-  // assign to the output
-  outputs.assign_surface_phasor_outputs(!extracting_phasors, mx_surface_facets);
-
-  /*End of FDTD iteration*/
 }

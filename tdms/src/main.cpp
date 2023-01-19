@@ -41,14 +41,17 @@ int main(int nargs, char *argv[]){
     preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
   }
 
-  // setup the simulation
+  // Handles the running of the simulation, given the inputs to the executable.
   SimulationManager simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
 
   // now run the time propagation code
   simulation.execute();
 
+  // perform post-loop processes on the outputs
+  simulation.post_loop_processing();
+
   // save the outputs, possibly in compressed format
-  simulation.get_outputs().save_outputs(args.output_filename(), args.have_flag("-m"));
+  simulation.write_outputs_to_file(args.output_filename(), args.have_flag("-m"));
 
   return 0;
 }

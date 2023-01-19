@@ -2,6 +2,8 @@
 
 #include <omp.h>
 
+#include "mesh_base.h"
+
 using namespace std;
 using namespace tdms_math_constants;
 
@@ -65,4 +67,81 @@ void SimulationManager::prepare_output(const mxArray *fieldsample, const mxArray
   // Link to the fieldsample and vertex_phasor inputs
   outputs.setup_fieldsample(fieldsample);
   outputs.setup_vertex_phasors(campssample, inputs.f_ex_vec.size());
+}
+
+void SimulationManager::post_loop_processing() {
+  // normalise the phasors in the volume, if we extracted there
+  if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorsvolume) {
+    outputs.E.normalise_volume();
+    outputs.H.normalise_volume();
+  }
+
+  // normalise the phasors on the surface, if we extracted there
+  if (inputs.params.run_mode == RunMode::complete && inputs.params.exphasorssurface) {
+    spdlog::info("Surface phasors");
+    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+    }
+  }
+  // normalise the phasors on the vertices, if we extracted at any
+  if (inputs.params.run_mode == RunMode::complete &&
+      outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
+    spdlog::info("Vertex phasors");
+    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
+      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]), imag(E_norm[ifx]));
+    }
+  }
+
+  // write the ID output using the phasor norms at each frequency, obtained from the main loop
+  if (inputs.params.source_mode == SourceMode::pulsed &&
+      inputs.params.run_mode == RunMode::complete && inputs.params.exdetintegral) {
+    for (int im = 0; im < inputs.D_tilde.num_det_modes(); im++)
+      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+        outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / E_norm[ifx];
+        outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / E_norm[ifx];
+
+        outputs.ID.x_real[ifx][im] = real(outputs.ID.x[ifx][im]);
+        outputs.ID.x_imag[ifx][im] = imag(outputs.ID.x[ifx][im]);
+
+        outputs.ID.y_real[ifx][im] = real(outputs.ID.y[ifx][im]);
+        outputs.ID.y_imag[ifx][im] = imag(outputs.ID.y[ifx][im]);
+      }
+  }
+
+  // Write the maximum absolute value of residual field in the grid
+  double maxfield = max(inputs.E_s.largest_field_value(), inputs.H_s.largest_field_value());
+  outputs.set_maxresfield(maxfield, false);
+
+  // setup interpolated field outputs and labels (if necessary)
+  outputs.setup_interpolation_outputs(inputs.params);
+
+  /*Now export 3 matrices, a vertex list, a matrix of complex amplitudes at
+    these vertices and a list of facets*/
+
+  // if we need to extract the phasors, we will need to allocate memory in the output
+  bool extracting_phasors =
+          (inputs.params.exphasorssurface && inputs.params.run_mode == RunMode::complete);
+  mxArray *mx_surface_facets = nullptr;
+  if (extracting_phasors) {
+    //first regenerate the mesh since we threw away the facet list before iterating
+    mxArray *dummy_vertex_list;
+    if (n_Yee_cells().J_tot() == 0)
+      conciseCreateBoundary(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[4], inputs.cuboid[5],
+                            &dummy_vertex_list, &mx_surface_facets);
+    else
+      conciseTriangulateCuboidSkip(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[2],
+                                   inputs.cuboid[3], inputs.cuboid[4], inputs.cuboid[5],
+                                   inputs.params.spacing_stride, &dummy_vertex_list,
+                                   &mx_surface_facets);
+    mxDestroyArray(dummy_vertex_list);
+
+    //now create and populate the vertex list
+    outputs.surface_phasors.create_vertex_list(inputs.input_grid_labels);
+  }
+  // assign to the output
+  outputs.assign_surface_phasor_outputs(!extracting_phasors, mx_surface_facets);
+  // it is safe to reassign the mx_surface_facets pointer here, since outputs.surface_phasors now tracks the memory
+  mx_surface_facets = nullptr;
 }
