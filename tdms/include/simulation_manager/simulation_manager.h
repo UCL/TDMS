@@ -26,7 +26,6 @@
  */
 class SimulationManager {
 private:
-  SimulationParameters params;//< The parameters for this simulation
   ObjectsFromInfile inputs;//< The input objects that are generated from an input file
   LoopTimers timers;//< Timers for tracking execution of the simulation
   PSTDVariables PSTD;//< PSTD-solver-specifi variables
