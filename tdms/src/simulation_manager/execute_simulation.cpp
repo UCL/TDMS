@@ -36,8 +36,6 @@ void SimulationManager::execute() {
   // the C and D vars for free space and pml
   double Enp1, Jnp1;
 
-  double maxfield = 0.;//< Max absolute value of the reisdual between fields
-
   int i, j, k;//< Loop variables
   int n;      //< The thread number of the local OMP thread
   int k_loc;  //< Local thread copy of the variable k
