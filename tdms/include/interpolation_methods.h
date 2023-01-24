@@ -111,7 +111,7 @@ class InterpolationScheme {
          * @return true This scheme has greater value
          * @return false This scheme has lesser, or equal, value to s
          */
-        bool is_better_than(const InterpolationScheme s) const;
+        bool is_better_than(const InterpolationScheme &s) const;
 };
 
 /* Constant members of the interpScheme class */

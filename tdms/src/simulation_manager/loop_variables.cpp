@@ -3,7 +3,6 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
-#include "loop_variables.h"
 
 using namespace tdms_phys_constants;
 using namespace std;
