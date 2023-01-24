@@ -75,20 +75,20 @@ private:
    *    for(j=0;j<(J_tot+1);j++)
    *
    * So we can create variables
-   * int J_tot_p1_bound, J_tot_bound
+   * int J_loop_upper_bound_plus_1, J_loop_upper_bound
    * which would take the following values
    *    3D:
-   *        J_tot_p1_bound = J_tot + 1;
-   *        J_tot_bound = J_tot;
+   *        J_loop_upper_bound_plus_1 = J_tot + 1;
+   *        J_loop_upper_bound = J_tot;
    *    2D:
    *        TE:
-   *            J_tot_bound = 1;
+   *            J_loop_upper_bound = 1;
    *        Not TE:
-   *            J_tot_bound = 0;
+   *            J_loop_upper_bound = 0;
    *        TM:
-   *            J_tot_p1_bound = 1;
+   *            J_loop_upper_bound_plus_1 = 1;
    *        Not TM:
-   *            J_tot_p1_bound = 0;
+   *            J_loop_upper_bound_plus_1 = 0;
    *
    * @param data Data and objects obtained from the input file
    * @param non_zero_tol Tolerance at which doubles are considered "non-zero"
@@ -109,8 +109,9 @@ public:
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
 
-  int J_tot_p1_bound, J_tot_bound;
-  int K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
+  int J_loop_upper_bound;//< Optimised upper bound for main loop over the j-index (see optimise_loop_J_range for details)
+  int J_loop_upper_bound_plus_1;//< One greater than the optimised upper bound for the main loop over the j-index
+  int n_non_pml_cells_in_K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
 
   LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims);
 

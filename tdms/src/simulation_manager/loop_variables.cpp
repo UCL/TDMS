@@ -3,13 +3,14 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
+#include "loop_variables.h"
 
 using namespace tdms_phys_constants;
 using namespace std;
 
 LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
   // deduce the number of non-pml cells in the z-direction, for efficiency
-  K = data.IJK_tot.k - data.params.pml.Dxl - data.params.pml.Dxu;
+  n_non_pml_cells_in_K = data.IJK_tot.k - data.params.pml.Dxl - data.params.pml.Dxu;
 
   // deduce refractive index, and print to log
   refind = sqrt(1. / (data.freespace_Cbx[0] / data.params.dt * data.params.delta.dx) / EPSILON0);
@@ -88,7 +89,8 @@ void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
 }
 
 bool LoopVariables::is_dispersive_medium(uint8_t ***materials, IJKDims IJK_tot,
-                                  double *attenuation_constants, double dt, double non_zero_tol) {
+                                         double *attenuation_constants, double dt,
+                                         double non_zero_tol) {
   int max_mat = 0;
   // determine the number of entries in gamma, by examining the materials array
   for (int k = 0; k < (IJK_tot.k + 1); k++)
@@ -127,23 +129,23 @@ void LoopVariables::optimise_loop_J_range(ObjectsFromInfile &data, double non_ze
     Ex and Hy receive an input from the source condition only if ksource_nz[3] or ksource_nz[0]
     are non-zero.
 
-    Thus we can set the variables J_tot_p1_bound, J_tot_bound accordingly for the 3D, 2D-TE, and 2D-TM simulations.
+    Thus we can set the variables J_loop_upper_bound_plus_1, J_loop_upper_bound accordingly for the 3D, 2D-TE, and 2D-TM simulations.
   */
-  J_tot_bound = data.IJK_tot.j;
-  J_tot_p1_bound = data.IJK_tot.j + 1;
+  J_loop_upper_bound = data.IJK_tot.j;
+  J_loop_upper_bound_plus_1 = data.IJK_tot.j + 1;
   // If in a 2D simulation, adjust the values accordingly
   if (data.IJK_tot.j == 0) {
     // TE case
     if (ksource_nz[2] || ksource_nz[1] || data.params.eyi_present) {
-      J_tot_bound = 1;
+      J_loop_upper_bound = 1;
     } else {
-      J_tot_bound = 0;
+      J_loop_upper_bound = 0;
     }
     // TM case
     if (ksource_nz[3] || ksource_nz[0] || data.params.exi_present) {
-      J_tot_p1_bound = 1;
+      J_loop_upper_bound_plus_1 = 1;
     } else {
-      J_tot_p1_bound = 0;
+      J_loop_upper_bound_plus_1 = 0;
     }
   }
 }
