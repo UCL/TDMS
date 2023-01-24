@@ -14,14 +14,14 @@ int OutputMatrixPointers::index_from_matrix_name(const string &matrix_name) {
   return distance(outputmatrices_all.begin(), position);
 }
 
-bool OutputMatrixPointers::memory_already_assigned(vector<string> matrix_names) {
-  for (string &matrix_name : matrix_names) {
+bool OutputMatrixPointers::memory_already_assigned(const vector<string> &matrix_names) {
+  for (const string &matrix_name : matrix_names) {
     if (matrix_pointers[index_from_matrix_name(matrix_name)] != nullptr) { return true; }
   }
   return false;
 }
 
-void OutputMatrixPointers::assign_empty_matrix(vector<string> matrix_names, mxClassID data_type,
+void OutputMatrixPointers::assign_empty_matrix(const vector<string> &matrix_names, mxClassID data_type,
                                                mxComplexity complexity, int ndims) {
   // avoid memory leaks
   error_on_memory_assigned(matrix_names);

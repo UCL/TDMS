@@ -5,8 +5,8 @@
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using namespace std;
 
-void FDTDBootstrapper::allocate_memory(IJKDims IJK_tot) {
-    int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot();
+void FDTDBootstrapper::allocate_memory(const IJKDims &IJK_tot) {
+  const int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot();
   // x electric field source phasor - boot strapping
   Ex.allocate(I_tot, J_tot + 1);
   // y electric field source phasor - boot strapping

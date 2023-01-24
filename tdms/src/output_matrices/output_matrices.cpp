@@ -274,7 +274,7 @@ void OutputMatrices::assign_surface_phasor_outputs(bool empty_allocation,
   }
 }
 
-void OutputMatrices::save_outputs(string output_file_name, bool compressed_output) {
+void OutputMatrices::save_outputs(const string &output_file_name, bool compressed_output) {
   MATFile *output_file = matOpen(output_file_name.c_str(), "w7.3");
 
   // check output file was opened successfully

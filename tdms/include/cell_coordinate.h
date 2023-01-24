@@ -59,7 +59,7 @@ public:
 
   int max_IJK() { return max(I, J, K); }
 
-  int I_tot() { return I; };//< fetch I_tot
-  int J_tot() { return J; };//< fetch J_tot
-  int K_tot() { return K; };//< fetch K_tot
+  int I_tot() const { return I; };//< fetch I_tot
+  int J_tot() const { return J; };//< fetch J_tot
+  int K_tot() const { return K; };//< fetch K_tot
 };
