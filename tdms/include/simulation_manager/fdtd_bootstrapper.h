@@ -24,14 +24,14 @@ class FDTDBootstrapper {
       Matrix<std::complex<double>> Ex, Ey, Hx, Hy;
     public:
       FDTDBootstrapper() = default;
-      FDTDBootstrapper(IJKDims IJK_tot) { allocate_memory(IJK_tot); }
+      FDTDBootstrapper(const IJKDims& IJK_tot) { allocate_memory(IJK_tot); }
 
       /**
        * @brief Allocate memory for the bootstrapping variables, given the number of Yee cells
        *
        * @param IJK_tot Number of Yee cells in each axial direction
        */
-      void allocate_memory(IJKDims IJK_tot);
+      void allocate_memory(const IJKDims& IJK_tot);
 
       /**
        * @brief Extract phasors on the user-defined plane

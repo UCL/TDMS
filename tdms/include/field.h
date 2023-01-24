@@ -265,7 +265,7 @@ public:
   }
 
   /**
-   * @brief Normalises the field entries by divding by the angular norm.
+   * @brief Normalises the field entries by dividing by the angular norm.
    *
    * Specifically,
    * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm

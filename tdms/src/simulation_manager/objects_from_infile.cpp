@@ -13,7 +13,7 @@ using tdms_math_constants::DCPI;
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
                                                            SolverMethod _solver_method,
                                                            PreferredInterpolationMethods _pim)
-    :// initalizer list - members whose classes have no default constructors
+    :// initialisation list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C

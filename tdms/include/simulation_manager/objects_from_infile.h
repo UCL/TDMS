@@ -75,7 +75,7 @@ public:
           SolverMethod _solver_method = SolverMethod::PseudoSpectral,
           PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
 
-  // Set the solver method (FDTD / PSTD) and update dependent variables
+  /** Set the solver method (FDTD / PSTD) and update dependent variables */
   void set_solver_method(SolverMethod _sm) {
     solver_method = _sm;
     if (solver_method == SolverMethod::FiniteDifference) {
@@ -89,7 +89,7 @@ public:
     }
   }
 
-  // Set the preferred method of interpolation, and update the fields about this change
+  /** Set the preferred method of interpolation, and update the fields about this change */
   void set_interpolation_method(PreferredInterpolationMethods _pim) {
     interpolation_methods = _pim;
     E_s.set_preferred_interpolation_methods(interpolation_methods);

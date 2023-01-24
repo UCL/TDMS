@@ -218,7 +218,7 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
     int label_dims[2] = {1, E.I_tot - 3};
     output_arrays["x_i"] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
-    // y-labels might recieve nJ < 0, in which case a manual adjustment is made
+    // y-labels might receive nJ < 0, in which case a manual adjustment is made
     label_dims[1] = max(E.J_tot - 3, 1);
     output_arrays["y_i"] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
@@ -291,7 +291,7 @@ void OutputMatrices::save_outputs(string output_file_name, bool compressed_outpu
   }
   // iterate through the matrices we want to save, setting names and placing them into the matfile
   for(string matrix_to_write : output_matrices_requested) {
-    // returns 0 if successful and non-zero if an error occured
+    // returns 0 if successful and non-zero if an error occurred
     int mpv_out = matPutVariable(output_file, matrix_to_write.c_str(), output_arrays[matrix_to_write]);
     if (mpv_out != 0) {
         // print error information

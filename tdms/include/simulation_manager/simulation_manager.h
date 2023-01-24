@@ -26,14 +26,14 @@
  */
 class SimulationManager {
 private:
-  ObjectsFromInfile inputs;//< The input objects that are generated from an input file
-  LoopTimers timers;//< Timers for tracking execution of the simulation
-  PSTDVariables PSTD;//< PSTD-solver-specifi variables
-  FDTDBootstrapper FDTD;//< FDTD bootsrapping variables
-  OutputMatrices outputs;//< Output object that will contain the results of this simulation, given the input file
+  ObjectsFromInfile inputs; //< The input objects that are generated from an input file
+  LoopTimers timers;        //< Timers for tracking the execution of the simulation
+  PSTDVariables PSTD;       //< PSTD-solver-specific variables
+  FDTDBootstrapper FDTD;    //< FDTD bootstrapping variables
+  OutputMatrices outputs;   //< Output object that will contain the results of this simulation, given the input file
 
-  PreferredInterpolationMethods pim;//< The interpolation methods to use in this simulation
-  SolverMethod solver_method;//< The solver method to use in this simulation
+  PreferredInterpolationMethods pim; //< The interpolation methods to use in this simulation
+  SolverMethod solver_method;        //< The solver method to use in this simulation
 
   EHVec eh_vec;//< TODO
 
@@ -68,10 +68,10 @@ private:
   void extract_phasor_norms(int frequency_index, int tind, int Nt);
 
   /**
-   * @brief Creates MATLAB memory blocks that will be iteratively updated in the execute() method, and assigns array sizes for writting purposes later.
+   * @brief Creates MATLAB memory blocks that will be iteratively updated in the execute() method, and assigns array sizes for writing purposes later.
    *
    * @param fieldsample The fieldsample input from the input file
-   * @param campssample The campssample input from the input file
+   * @param campssample The complex amplitude sample input from the input file
    */
   void prepare_output(const mxArray *fieldsample, const mxArray* campssample);
 

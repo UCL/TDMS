@@ -45,7 +45,7 @@ public:
    *
    * @param matrix_names List of output matrices to check.
    */
-  bool memory_already_assigned(std::vector<std::string> matrix_names);
+  bool memory_already_assigned(const std::vector<std::string>& matrix_names);
 
   /**
    * @brief Throw an error if the matrix_pointer corresponding to any one of the matrix names passed already points to allocated memory.
@@ -54,7 +54,7 @@ public:
    *
    * @param matrix_names List of output matrices to check.
    */
-  void error_on_memory_assigned(std::vector<std::string> matrix_names) {
+  void error_on_memory_assigned(const std::vector<std::string>& matrix_names) {
     if (memory_already_assigned(matrix_names)) {
       throw std::runtime_error("Reassigning output pointer will cause memory leak - aborting.");
     }
@@ -66,11 +66,11 @@ public:
    * Outputs are typically set to empty arrays when the user has requested the simulation be run in such a way that the output is not generated, or not requested. We still check for memory leaks before assignment as creating an empty array can still leave MATLAB memory not-cleaned-up.
    *
    * @param matrix_names The list of matrix names to set to be empty.
-   * @param data_type The data type to assign to the empty array (needed for compatability issues)
+   * @param data_type The data type to assign to the empty array (needed for compatibility issues)
    * @param is_complex Whether the data is complex (mxCOMPLEX) or real (mxREAL)
    * @param ndims Number of dimensions in the empty array to assign
    */
-  void assign_empty_matrix(std::vector<std::string> matrix_names,
+  void assign_empty_matrix(const std::vector<std::string>& matrix_names,
                            mxClassID data_type = mxDOUBLE_CLASS,
                            mxComplexity complexity = mxCOMPLEX, int ndims = 2);
 

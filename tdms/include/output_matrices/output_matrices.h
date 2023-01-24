@@ -21,7 +21,7 @@
 /**
  * @brief Handles the data that is written to the output file, and the associated native C++ classes and datatypes.
  *
- * Some of the C++ datatypes are updated in the main iterative loop, whilst others are obtained using the data from the main loop. This class handles both cases, and uses pointers to track where the MATLAB-structures to be written out are stored.
+ * Some of the C++ datatypes are updated in the main iterative loop, whilst others are created later using the data from the main loop. This class handles both cases, and uses pointers to track where the MATLAB-structures to be written out are stored.
  *
  * Upon writing the output, an instance of this class can go out of scope and will take with it any reserved memory for MATLAB structures and native C++ arrays of dynamic size.
  */
@@ -154,7 +154,7 @@ public:
    * @param output_file_name The file to write the simulation outputs to
    * @param compressed_output If true, write compressed output (do not write facets and vertices)
    */
-  void save_outputs(std::string output_file_name, bool compressed_output = false);
+  void save_outputs(const std::string& output_file_name, bool compressed_output = false);
 
   ~OutputMatrices();
 };
