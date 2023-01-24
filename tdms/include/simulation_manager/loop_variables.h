@@ -20,7 +20,7 @@
  */
 class LoopVariables {
 private:
-  // Pointers to the MATLAB structure that underlies E_copy, the convergence checker
+  // Pointers to the MATLAB structure that underlies E_at_previous_iteration, the convergence checker
   mxArray *E_copy_MATLAB_data[3] = {nullptr};
 
   /**
@@ -40,7 +40,7 @@ private:
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive(uint8_t ***materials, IJKDims IJK_tot, double *attenuation_constants,
+  bool is_dispersive_medium(uint8_t ***materials, IJKDims IJK_tot, double *attenuation_constants,
                      double dt, double non_zero_tol = 1e-15);
 
   /**
@@ -98,14 +98,14 @@ private:
 public:
   DetectorSensitivityArrays Ex_t, Ey_t;//< temporary storage for detector sensitivity evaluation
 
-  ElectricField E_copy;//< Stores the phasors at the previous iteration, to check for convergence
+  ElectricField E_at_previous_iteration;//< Stores the phasors at the previous iteration, to check for convergence
 
   ElectricSplitField E_nm1;
   CurrentDensitySplitField
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  bool is_conductive, is_disp;//< Whether the materials are dispersive / conductive respectively
+  bool is_conductive, is_dispersive;//< Whether the materials are dispersive / conductive respectively
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
 

@@ -94,11 +94,11 @@ void SimulationManager::execute() {
 
       dft_counter = 0;
 
-      double tol = outputs.E.normalised_difference(loop_variables.E_copy);
+      double tol = outputs.E.normalised_difference(loop_variables.E_at_previous_iteration);
       if (tol < TOL) break;//required accuracy obtained
 
       spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol, TOL);
-      loop_variables.E_copy.set_values_from(outputs.E);
+      loop_variables.E_at_previous_iteration.set_values_from(outputs.E);
 
       outputs.E.zero();
       outputs.H.zero();
@@ -373,7 +373,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -409,14 +409,14 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.xy[k][j][i] +
                        Cb * (inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i] -
                              inputs.H_s.zy[k][j - 1][i] - inputs.H_s.zx[k][j - 1][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) * loop_variables.J_s.xy[k][j][i] +
                                    beta_l * loop_variables.J_nm1.xy[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.xy[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.xy[k][j][i] +
                          beta_l * loop_variables.J_nm1.xy[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -501,7 +501,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -536,14 +536,14 @@ void SimulationManager::execute() {
 
                 Enp1 = 0.0;
                 //Enp1 = Ca*E_s.xy[k][j][i]+Cb*(H_s.zy[k][j][i] + H_s.zx[k][j][i] - H_s.zy[k][j-1][i] - H_s.zx[k][j-1][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.xy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) * loop_variables.J_s.xy[k][j][i] +
                                    beta_l * loop_variables.J_nm1.xy[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.xy[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.xy[k][j][i] +
                          beta_l * loop_variables.J_nm1.xy[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -642,7 +642,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -676,14 +676,14 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.xz[k][j][i] +
                        Cb * (inputs.H_s.yx[k - 1][j][i] + inputs.H_s.yz[k - 1][j][i] -
                              inputs.H_s.yx[k][j][i] - inputs.H_s.yz[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) * loop_variables.J_s.xz[k][j][i] +
                                    beta_l * loop_variables.J_nm1.xz[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.xz[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.xz[k][j][i] +
                          beta_l * loop_variables.J_nm1.xz[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -763,7 +763,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -795,14 +795,14 @@ void SimulationManager::execute() {
                   }
                 }
                 //Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i] - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.xz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) * loop_variables.J_s.xz[k][j][i] +
                                    beta_l * loop_variables.J_nm1.xz[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.xz[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.xz[k][j][i] +
                          beta_l * loop_variables.J_nm1.xz[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -905,7 +905,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -941,14 +941,14 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.yx[k][j][i] +
                        Cb * (inputs.H_s.zx[k][j][i - 1] + inputs.H_s.zy[k][j][i - 1] -
                              inputs.H_s.zx[k][j][i] - inputs.H_s.zy[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) * loop_variables.J_s.yx[k][j][i] +
                                    beta_l * loop_variables.J_nm1.yx[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.yx[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] +
                          beta_l * loop_variables.J_nm1.yx[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1032,7 +1032,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1066,14 +1066,14 @@ void SimulationManager::execute() {
 
 
                 //Enp1 = Ca*E_s.yx[k][j][i]+Cb*(H_s.zx[k][j][i-1] + H_s.zy[k][j][i-1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) * loop_variables.J_s.yx[k][j][i] +
                                    beta_l * loop_variables.J_nm1.yx[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.yx[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] +
                          beta_l * loop_variables.J_nm1.yx[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1171,7 +1171,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1205,7 +1205,7 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.yz[k][j][i] +
                        Cb * (inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i] -
                              inputs.H_s.xy[k - 1][j][i] - inputs.H_s.xz[k - 1][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) * loop_variables.J_s.yz[k][j][i] +
@@ -1213,7 +1213,7 @@ void SimulationManager::execute() {
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.yz[k][j][i];
 
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] +
                          beta_l * loop_variables.J_nm1.yz[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1292,7 +1292,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.z[k_loc];
                   kappa_l = inputs.matched_layer.kappa.z[k_loc];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1324,7 +1324,7 @@ void SimulationManager::execute() {
                   }
                 }
                 //Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] + H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) * loop_variables.J_s.yz[k][j][i] +
@@ -1332,7 +1332,7 @@ void SimulationManager::execute() {
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz * loop_variables.J_c.yz[k][j][i];
 
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] +
                          beta_l * loop_variables.J_nm1.yz[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1438,7 +1438,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1473,14 +1473,14 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.zx[k][j][i] +
                        Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
                              inputs.H_s.yx[k][j][i - 1] - inputs.H_s.yz[k][j][i - 1]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] +
                                    beta_l * loop_variables.J_nm1.zx[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
                          beta_l * loop_variables.J_nm1.zx[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1564,7 +1564,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.x[array_ind];
                   kappa_l = inputs.matched_layer.kappa.x[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1597,14 +1597,14 @@ void SimulationManager::execute() {
                   }
                 }
                 //Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] + H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] +
                                    beta_l * loop_variables.J_nm1.zx[k][j][i]);
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
                          beta_l * loop_variables.J_nm1.zx[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1684,7 +1684,7 @@ void SimulationManager::execute() {
               sigma_l = 0.;
 
 
-              if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+              if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                 sigma_l = inputs.matched_layer.sigma.x[array_ind];
                 kappa_l = inputs.matched_layer.kappa.x[array_ind];
                 alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1706,7 +1706,7 @@ void SimulationManager::execute() {
               Enp1 = Ca * inputs.E_s.zx[k][j][i] +
                      Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
                            inputs.H_s.yx[k][j][i - 1] - inputs.H_s.yz[k][j][i - 1]);
-              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+              if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                 Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
                         1. / 2. * Cb * inputs.params.delta.dx *
                                 ((1 + alpha_l) * loop_variables.J_s.zx[k][j][i] +
@@ -1714,7 +1714,7 @@ void SimulationManager::execute() {
               if (loop_variables.is_conductive && rho)
                 Enp1 += Cb * inputs.params.delta.dx * loop_variables.J_c.zx[k][j][i];
 
-              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+              if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
                        beta_l * loop_variables.J_nm1.zx[k][j][i] +
                        kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1802,7 +1802,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1838,7 +1838,7 @@ void SimulationManager::execute() {
                 Enp1 = Ca * inputs.E_s.zy[k][j][i] +
                        Cb * (inputs.H_s.xy[k][j - 1][i] + inputs.H_s.xz[k][j - 1][i] -
                              inputs.H_s.xy[k][j][i] - inputs.H_s.xz[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] +
@@ -1846,7 +1846,7 @@ void SimulationManager::execute() {
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
                          beta_l * loop_variables.J_nm1.zy[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -1931,7 +1931,7 @@ void SimulationManager::execute() {
                 kappa_l = 1.;
                 sigma_l = 0.;
 
-                if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+                if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                   sigma_l = inputs.matched_layer.sigma.y[array_ind];
                   kappa_l = inputs.matched_layer.kappa.y[array_ind];
                   alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -1965,7 +1965,7 @@ void SimulationManager::execute() {
 
 
                 //Enp1 = Ca*E_s.zy[k][j][i]+Cb*(H_s.xy[k][j-1][i] + H_s.xz[k][j-1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                   Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] +
@@ -1973,7 +1973,7 @@ void SimulationManager::execute() {
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-                if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+                if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                   Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
                          beta_l * loop_variables.J_nm1.zy[k][j][i] +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -2052,7 +2052,7 @@ void SimulationManager::execute() {
               kappa_l = 1.;
               sigma_l = 0.;
 
-              if (loop_variables.is_disp || inputs.params.is_disp_ml) {
+              if (loop_variables.is_dispersive || inputs.params.is_disp_ml) {
                 kappa_l = inputs.matched_layer.kappa.y[array_ind];
                 sigma_l = inputs.matched_layer.sigma.y[array_ind];
                 alpha_l = inputs.matched_layer.alpha[k_loc];
@@ -2074,7 +2074,7 @@ void SimulationManager::execute() {
               Enp1 = Ca * inputs.E_s.zy[k][j][i] +
                      Cb * (inputs.H_s.xy[k][j - 1][i] + inputs.H_s.xz[k][j - 1][i] -
                            inputs.H_s.xy[k][j][i] - inputs.H_s.xz[k][j][i]);
-              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l)
+              if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
                 Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
                         1. / 2. * Cb * inputs.params.delta.dy *
                                 ((1 + alpha_l) * loop_variables.J_s.zy[k][j][i] +
@@ -2082,7 +2082,7 @@ void SimulationManager::execute() {
               if (loop_variables.is_conductive && rho)
                 Enp1 += Cb * inputs.params.delta.dy * loop_variables.J_c.zy[k][j][i];
 
-              if ((loop_variables.is_disp || inputs.params.is_disp_ml) && gamma_l) {
+              if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
                 Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
                        beta_l * loop_variables.J_nm1.zy[k][j][i] +
                        kappa_l * gamma_l / (2. * inputs.params.dt) *
@@ -3618,7 +3618,7 @@ void SimulationManager::execute() {
         inputs.params.exphasorsvolume) {
       spdlog::info("Iteration limit reached (no convergence): setting output fields to last "
                    "complete DFT");
-      outputs.E.set_values_from(loop_variables.E_copy);
+      outputs.E.set_values_from(loop_variables.E_at_previous_iteration);
     }
     if (inputs.params.has_tdfdir && (tind % inputs.params.Np) == 0) {
       spdlog::info("Exporting field...");

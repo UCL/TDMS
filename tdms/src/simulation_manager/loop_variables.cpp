@@ -23,7 +23,7 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
     Ey_t.initialise(n1, n0);
   }
 
-  // We need to test for convergence under the following conditions. As such, we need to initialise the array (E_copy) that will ultimately be copies of the phasors at the previous iteration, to test convergence against
+  // We need to test for convergence under the following conditions. As such, we need to initialise the array (E_at_previous_iteration) that will ultimately be copies of the phasors at the previous iteration, to test convergence against
   if (data.params.run_mode == RunMode::complete && data.params.exphasorsvolume &&
       data.params.source_mode == SourceMode::steadystate) {
     int dummy_dims[3] = {E_field_dims.i, E_field_dims.j, E_field_dims.k};
@@ -35,26 +35,26 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
     E_copy_MATLAB_data[2] =
             mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
 
-    E_copy.real.x = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0],
+    E_at_previous_iteration.real.x = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.x = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-
-    E_copy.real.y = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.y = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0],
+    E_at_previous_iteration.imag.x = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
-    E_copy.real.z = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0],
+    E_at_previous_iteration.real.y = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
-    E_copy.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
+    E_at_previous_iteration.imag.y = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
-    E_copy.I_tot = E_field_dims.i;
-    E_copy.J_tot = E_field_dims.j;
-    E_copy.K_tot = E_field_dims.k;
+    E_at_previous_iteration.real.z = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
+                                         dummy_dims[1], dummy_dims[2]);
 
-    E_copy.zero();
+    E_at_previous_iteration.I_tot = E_field_dims.i;
+    E_at_previous_iteration.J_tot = E_field_dims.j;
+    E_at_previous_iteration.K_tot = E_field_dims.k;
+
+    E_at_previous_iteration.zero();
   }
 
   // Setup dispersive properties and the related arrays
@@ -69,7 +69,7 @@ LoopVariables::LoopVariables(ObjectsFromInfile &data, IJKDims E_field_dims) {
 void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
   IJKDims IJK = data.IJK_tot;
   // determine whether or not we have a dispersive medium
-  is_disp = is_dispersive(data.materials, IJK, data.gamma, data.params.dt);
+  is_dispersive = is_dispersive_medium(data.materials, IJK, data.gamma, data.params.dt);
   // work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
   is_conductive = !(data.rho_cond.all_elements_less_than(1e-15, IJK.i + 1, IJK.j + 1, IJK.k + 1));
 
@@ -78,7 +78,7 @@ void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
   J_nm1 = CurrentDensitySplitField(IJK.i, IJK.j, IJK.k);
   J_c = CurrentDensitySplitField(IJK.i, IJK.j, IJK.k);
   // if we have a dispersive material we will need to write to the additional fields, so assign the memory to them and zero the entries
-  if (is_disp || data.params.is_disp_ml) {
+  if (is_dispersive || data.params.is_disp_ml) {
     E_nm1.allocate_and_zero();
     J_nm1.allocate_and_zero();
     J_s.allocate_and_zero();
@@ -87,7 +87,7 @@ void LoopVariables::setup_dispersive_properties(ObjectsFromInfile &data) {
   if (is_conductive) { J_c.allocate_and_zero(); }
 }
 
-bool LoopVariables::is_dispersive(uint8_t ***materials, IJKDims IJK_tot,
+bool LoopVariables::is_dispersive_medium(uint8_t ***materials, IJKDims IJK_tot,
                                   double *attenuation_constants, double dt, double non_zero_tol) {
   int max_mat = 0;
   // determine the number of entries in gamma, by examining the materials array
