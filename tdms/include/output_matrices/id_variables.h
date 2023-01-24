@@ -30,6 +30,17 @@ public:
 
   IDVariables() = default;
 
+  /**
+   * @brief Creates MATLAB arrays that constitute the fields of the ID output, and assigns them as the appropriate fields of the ID output.
+   *
+   * The ID output is a 1-by-1 structure array with 2 fields, which is pointed to in id_pointer.
+   * In order to assign arrays as the field values, we need to create fresh MATLAB structures using the member variables of this class.
+   * The arrays assigned to the two fieldnames, "x" and "y", are of side n_frequencies-by-n_det_modes.
+   *
+   * @param id_pointer Pointer to the ID output structure array
+   * @param _n_frequencies The number of frequencies we are considering in this simulation
+   * @param n_det_modes TODO:: DTilde.n_det_modes()
+   */
   void link_to_pointer(mxArray *&id_pointer, int _n_frequencies, int n_det_modes);
 
   ~IDVariables();
