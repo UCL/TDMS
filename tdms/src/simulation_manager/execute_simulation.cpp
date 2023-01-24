@@ -27,7 +27,7 @@ void SimulationManager::execute() {
 
   // get the number of Yee cells in each axial direction
   IJKDims IJK_tot = n_Yee_cells();
-  int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot(), K_tot = IJK_tot.K_tot();
+  int I_tot = IJK_tot.i, J_tot = IJK_tot.j, K_tot = IJK_tot.k;
 
   // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
   double rho;

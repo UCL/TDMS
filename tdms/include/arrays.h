@@ -10,7 +10,6 @@
 
 #include <fftw3.h>
 
-#include "cell_coordinate.h"
 #include "matlabio.h"
 #include "utils.h"
 #include "globals.h"

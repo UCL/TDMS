@@ -74,13 +74,15 @@ void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLa
   // set the interpolation methods
   set_interpolation_methods(pim);
 
-  // the dimensions of the fields
+  /* Set the dimensions of the field
+  If a PML is present, we allow for 2 "buffer" cells surrounding the PML, which will form the range of cells over which we interpolate.
+  This also provides a translation between the global Yee cell indexing system and the local indexing system, cell (il, jl, kl) is local cell (0,0,0). */
   E.il = H.il = (params.pml.Dxl) ? params.pml.Dxl + 2 : 0;
-  E.iu = H.iu = (params.pml.Dxu) ? n_Yee_cells.I_tot() - params.pml.Dxu - 1 : n_Yee_cells.I_tot();
+  E.iu = H.iu = (params.pml.Dxu) ? n_Yee_cells.i - params.pml.Dxu - 1 : n_Yee_cells.i;
   E.jl = H.jl = (params.pml.Dyl) ? params.pml.Dyl + 2 : 0;
-  E.ju = H.ju = (params.pml.Dyu) ? n_Yee_cells.J_tot() - params.pml.Dyu - 1 : n_Yee_cells.J_tot();
+  E.ju = H.ju = (params.pml.Dyu) ? n_Yee_cells.j - params.pml.Dyu - 1 : n_Yee_cells.j;
   E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
-  E.ku = H.ku = (params.pml.Dzu) ? n_Yee_cells.K_tot() - params.pml.Dzu - 1 : n_Yee_cells.K_tot();
+  E.ku = H.ku = (params.pml.Dzu) ? n_Yee_cells.k - params.pml.Dzu - 1 : n_Yee_cells.k;
   // upper/lower limits of cell extraction
   E.I_tot = H.I_tot = E.iu - E.il + 1;
   E.J_tot = H.J_tot = E.ju - E.jl + 1;
@@ -239,7 +241,7 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
 void OutputMatrices::setup_surface_mesh(Cuboid cuboid, SimulationParameters params, int n_frequencies) {
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     mxArray *mx_surface_facets = nullptr;
-    if (n_Yee_cells.J_tot() == 0) {
+    if (n_Yee_cells.j == 0) {
       conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5],
                             &mx_surface_vertices, &mx_surface_facets);
     } else {

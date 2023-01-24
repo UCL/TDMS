@@ -79,7 +79,7 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
   {
 #pragma omp for
     for (vindex = 0; vindex < n_vertices(); vindex++) {// loop over every vertex
-      CellCoordinate current_cell(vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]);
+      CellCoordinate current_cell {vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]};
 
       switch (params.dimension) {
         case Dimension::THREE:

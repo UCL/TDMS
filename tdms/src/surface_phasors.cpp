@@ -87,8 +87,8 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_index,
     if (interpolate) {
 #pragma omp for
       for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-        CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
-                                    surface_vertices[2][vindex]);
+        CellCoordinate current_cell {surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                    surface_vertices[2][vindex]};
         switch (params.dimension) {
           case Dimension::THREE:
             F.Ex = E.interpolate_to_centre_of(AxialDirection::X, current_cell);
@@ -122,8 +122,8 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_index,
     } else {
 #pragma omp for
       for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-        CellCoordinate current_cell(surface_vertices[0][vindex], surface_vertices[1][vindex],
-                                    surface_vertices[2][vindex]);
+        CellCoordinate current_cell {surface_vertices[0][vindex], surface_vertices[1][vindex],
+                                    surface_vertices[2][vindex]};
 
         F.Ex = E.xy[current_cell] + E.xz[current_cell];
         F.Ey = E.yx[current_cell] + E.yz[current_cell];

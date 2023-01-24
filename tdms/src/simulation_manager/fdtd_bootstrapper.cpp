@@ -6,7 +6,7 @@ using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using namespace std;
 
 void FDTDBootstrapper::allocate_memory(const IJKDims &IJK_tot) {
-  const int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot();
+  const int I_tot = IJK_tot.i, J_tot = IJK_tot.j;
   // x electric field source phasor - boot strapping
   Ex.allocate(I_tot, J_tot + 1);
   // y electric field source phasor - boot strapping
@@ -20,7 +20,7 @@ void FDTDBootstrapper::allocate_memory(const IJKDims &IJK_tot) {
 void FDTDBootstrapper::extract_phasors_in_plane(ElectricSplitField &E_s, MagneticSplitField &H_s,
                                                 IJKDims IJK_tot, int K1, int tind,
                                                 SimulationParameters params) {
-  int Nt = params.Nt, I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot();
+  int Nt = params.Nt, I_tot = IJK_tot.i, J_tot = IJK_tot.j;
 
   complex<double> phaseTerm = fmod(params.omega_an * ((double) tind) * params.dt, 2 * DCPI);
   complex<double> subResult = 0.;

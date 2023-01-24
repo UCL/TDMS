@@ -38,7 +38,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
   // get the fdtd grid
   init_grid_arrays(matrices_from_input_file["fdtdgrid"], E_s, H_s, materials);
   // set the {IJK}_tot variables using the split-field information we just unpacked
-  IJK_tot = IJKDims(E_s.I_tot, E_s.J_tot, E_s.K_tot);
+  IJK_tot = IJKDims {E_s.I_tot, E_s.J_tot, E_s.K_tot};
 
   // Get freespace - Cby Cbz Dbx Dby Dbz are unused
   freespace_Cbx =
@@ -58,7 +58,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
   // Get phasorsurface
   cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    cuboid.initialise(matrices_from_input_file["phasorsurface"], IJK_tot.J_tot());
+    cuboid.initialise(matrices_from_input_file["phasorsurface"], IJK_tot.j);
   }
 
   // Get conductive_aux, and setup with pointers
@@ -96,10 +96,10 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
             string_in(matrices_from_input_file["tdfdir"], "tdfdir").c_str();
 
     int Ni_tdf = 0, Nk_tdf = 0;
-    for (int k = 0; k < IJK_tot.K_tot(); k++)
+    for (int k = 0; k < IJK_tot.k; k++)
       if ((k % skip_tdf) == 0) Nk_tdf++;
 
-    for (int i = 0; i < IJK_tot.I_tot(); i++)
+    for (int i = 0; i < IJK_tot.i; i++)
       if ((i % skip_tdf) == 0) Ni_tdf++;
     spdlog::info("Ni_tdf = {0:d}, Nk_tdf = {1:d}", Ni_tdf, Nk_tdf);
 
@@ -110,7 +110,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
   }
 
   // work out if we have a dispersive background
-  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.K_tot()); }
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.k); }
 
   // Set dt so that an integer number of time periods fits within a sinusoidal period
   double Nsteps_tmp = 0.0;
@@ -156,7 +156,7 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
       Ksource(matrices_from_input_file["Ksource"], I1.index - I0.index + 1, J1.index - J0.index + 1,
               "Ksource"),
       // Get structure, we need I_tot from Iterator_IndependentObjectsFromInfile
-      structure(matrices_from_input_file["structure"], IJK_tot.I_tot()),
+      structure(matrices_from_input_file["structure"], IJK_tot.i),
       // Get f_ex_vec, the vector of frequencies to extract the field at.
       // Need params.omega from Iterator_IndependentObjectsFromInfile
       f_ex_vec(matrices_from_input_file["f_ex_vec"], params.omega_an) {

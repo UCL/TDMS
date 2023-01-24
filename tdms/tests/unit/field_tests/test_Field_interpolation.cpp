@@ -123,7 +123,7 @@ TEST_CASE("E-field interpolation check") {
         double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
         double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
         // current cell index
-        CellCoordinate current_cell(ii, jj, kk);
+        CellCoordinate current_cell {ii, jj, kk};
 
         // Ex interpolation
         if (ii!=0) {
@@ -338,7 +338,7 @@ TEST_CASE("H-field interpolation check") {
         double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
         double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
         // current cell index
-        CellCoordinate current_cell(ii, jj, kk);
+        CellCoordinate current_cell {ii, jj, kk};
 
         // Hx interpolation
         if (jj != 0 && kk != 0) {

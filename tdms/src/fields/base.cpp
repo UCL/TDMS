@@ -86,7 +86,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
     // beyond that however, interpolation methods can be called as usual
     for (int i = i_lower; i <= i_upper; i++) {
       for (int k = k_lower; k <= k_upper; k++) {
-        CellCoordinate current_cell(i,0,k);
+        CellCoordinate current_cell {i,0,k};
         complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell),
                         y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell),
                         z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
@@ -105,7 +105,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
       for (int j = j_lower; j <= j_upper; j++) {
         for (int k = k_lower; k <= k_upper; k++) {
           complex<double> x_at_centre, y_at_centre, z_at_centre;
-          CellCoordinate current_cell(i,j,k);
+          CellCoordinate current_cell {i,j,k};
           switch (mode) {
             case Dimension::THREE:
               // 3D interpolation is identical for both E and H fields

@@ -19,7 +19,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
 
   // setup PSTD variables, and any dependencies there might be
   if (solver_method == SolverMethod::PseudoSpectral) {
-    int max_IJK = IJK_tot.max_IJK(), n_threads = omp_get_max_threads();
+    int max_IJK = IJK_tot.max(), n_threads = omp_get_max_threads();
 
     PSTD.set_using_dimensions(IJK_tot);
 
@@ -127,7 +127,7 @@ void SimulationManager::post_loop_processing() {
   if (extracting_phasors) {
     //first regenerate the mesh since we threw away the facet list before iterating
     mxArray *dummy_vertex_list;
-    if (n_Yee_cells().J_tot() == 0)
+    if (n_Yee_cells().j == 0)
       conciseCreateBoundary(inputs.cuboid[0], inputs.cuboid[1], inputs.cuboid[4], inputs.cuboid[5],
                             &dummy_vertex_list, &mx_surface_facets);
     else
