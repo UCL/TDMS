@@ -17,9 +17,9 @@ void FDTDBootstrapper::allocate_memory(const IJKDims &IJK_tot) {
   Hy.allocate(I_tot, J_tot + 1);
 }
 
-void FDTDBootstrapper::extract_phasors_in_plane(ElectricSplitField &E_s, MagneticSplitField &H_s,
-                                                IJKDims IJK_tot, int K1, int tind,
-                                                SimulationParameters params) {
+void FDTDBootstrapper::extract_phasors_in_plane(const ElectricSplitField &E_s, const MagneticSplitField &H_s,
+                                                const IJKDims &IJK_tot, int K1, int tind,
+                                                const SimulationParameters &params) {
   int Nt = params.Nt, I_tot = IJK_tot.i, J_tot = IJK_tot.j;
 
   complex<double> phaseTerm = fmod(params.omega_an * ((double) tind) * params.dt, 2 * DCPI);

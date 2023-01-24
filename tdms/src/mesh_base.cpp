@@ -537,7 +537,7 @@ void conciseCreateBoundary(int I0, int I1,int K0, int K1,
 }
 
 void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
-                                  SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray ** facets){
+                                  const SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray ** facets){
 
   int dI = spacing_stride.x, dJ = spacing_stride.y, dK = spacing_stride.z;
   mxArray *triangles[6];

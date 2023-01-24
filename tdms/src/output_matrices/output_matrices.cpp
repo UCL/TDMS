@@ -70,7 +70,7 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
   *mxGetPr(output_arrays["maxresfield"]) = maxfield;
 }
 
-void OutputMatrices::setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels, PreferredInterpolationMethods pim) {
+void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params, const GridLabels &input_grid_labels, PreferredInterpolationMethods pim) {
   // set the interpolation methods
   set_interpolation_methods(pim);
 
@@ -238,7 +238,7 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
   }
 }
 
-void OutputMatrices::setup_surface_mesh(Cuboid cuboid, SimulationParameters params, int n_frequencies) {
+void OutputMatrices::setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params, int n_frequencies) {
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     mxArray *mx_surface_facets = nullptr;
     if (n_Yee_cells.j == 0) {

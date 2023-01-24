@@ -4,7 +4,7 @@
 
 #include "numerical_derivative.h"
 
-void PSTDVariables::set_using_dimensions(IJKDims IJK_tot) {
+void PSTDVariables::set_using_dimensions(const IJKDims &IJK_tot) {
   int max_IJK = IJK_tot.max(), n_threads = omp_get_max_threads();
 
   ca.allocate(n_threads, max_IJK + 1);

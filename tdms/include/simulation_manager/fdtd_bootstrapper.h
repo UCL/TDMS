@@ -42,5 +42,7 @@ class FDTDBootstrapper {
        * @param tind Current iteration number
        * @param params Simulation parameters for this run of TDMS
        */
-      void extract_phasors_in_plane(ElectricSplitField &E_s, MagneticSplitField &H_s, IJKDims IJK_tot, int K1, int tind, SimulationParameters params);
+      void extract_phasors_in_plane(const ElectricSplitField &E_s, const MagneticSplitField &H_s,
+                                    const IJKDims &IJK_tot, int K1, int tind,
+                                    const SimulationParameters &params);
 };

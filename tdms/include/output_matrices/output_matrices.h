@@ -84,7 +84,7 @@ public:
    * @param input_grid_labels The grid labels obtained from the input file
    * @param pim The interpolation methods to use on the field values
    */
-  void setup_EH_and_gridlabels(SimulationParameters params, GridLabels input_grid_labels, PreferredInterpolationMethods pim);
+  void setup_EH_and_gridlabels(const SimulationParameters &params, const GridLabels &input_grid_labels, PreferredInterpolationMethods pim);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
@@ -101,7 +101,7 @@ public:
 
   SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface
 
-  void setup_surface_mesh(Cuboid cuboid, SimulationParameters params, int n_frequencies);
+  void setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params, int n_frequencies);
   /**
    * @brief Create MATLAB memory for the surface phasor outputs
    *

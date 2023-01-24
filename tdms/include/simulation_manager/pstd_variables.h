@@ -26,14 +26,14 @@ public:
   fftw_complex *dk_ex, *dk_ey, *dk_ez, *dk_hx, *dk_hy, *dk_hz;
 
   PSTDVariables() = default;
-  PSTDVariables(IJKDims IJK_tot) { set_using_dimensions(IJK_tot); }
+  PSTDVariables(const IJKDims &IJK_tot) { set_using_dimensions(IJK_tot); }
 
   /**
    * @brief Allocate memory for PSTD method, for a simulation with the provided number of Yee cells in each dimension.
    *
    * @param IJK_tot Triple containing the number of Yee cells in the I,J,K directions
    */
-  void set_using_dimensions(IJKDims IJK_tot);
+  void set_using_dimensions(const IJKDims &IJK_tot);
 
   ~PSTDVariables();
 };

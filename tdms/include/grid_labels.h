@@ -26,5 +26,5 @@ public:
      * @param i_l,j_l,k_l The first item to copy from the x, y, z attributes (respectively)
      * @param i_u,j_u,k_u The final (inclusive) item to copy from the x, y, z attributes (respectively)
      */
-    void initialise_from(GridLabels &labels_to_copy_from, int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
+    void initialise_from(const GridLabels &labels_to_copy_from, int i_l, int i_u, int j_l, int j_u, int k_l, int k_u);
 };
