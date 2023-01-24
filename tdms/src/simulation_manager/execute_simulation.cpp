@@ -2,12 +2,12 @@
  * @file execute_simulation.cpp
  * @brief Code for performing the time-stepping algorithm for the physical process TDMS models.
  */
-#include "simulation_manager.h"
+#include "simulation_manager/simulation_manager.h"
 
 #include <omp.h>
 #include <spdlog/spdlog.h>
 
-#include "loop_variables.h"
+#include "simulation_manager/loop_variables.h"
 #include "numerical_derivative.h"
 
 using namespace std;

@@ -1,4 +1,4 @@
-#include "output_matrices.h"
+#include "output_matrices/output_matrices.h"
 
 #include <spdlog/spdlog.h>
 

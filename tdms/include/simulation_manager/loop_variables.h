@@ -11,7 +11,7 @@
 #include "arrays.h"
 #include "field.h"
 #include "matrix.h"
-#include "objects_from_infile.h"
+#include "simulation_manager/objects_from_infile.h"
 
 /**
  * @brief Handles the setup of variables that will be scoped to the main iteration loop, however which require complicated setup from the input objects and potential linking to the output data.

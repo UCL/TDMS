@@ -4,7 +4,7 @@
  */
 #include "argument_parser.h"
 #include "input_matrices.h"
-#include "simulation_manager.h"
+#include "simulation_manager/simulation_manager.h"
 
 using namespace tdms_matrix_names;
 

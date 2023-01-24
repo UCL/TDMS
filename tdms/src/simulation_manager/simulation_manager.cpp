@@ -1,4 +1,4 @@
-#include "simulation_manager.h"
+#include "simulation_manager/simulation_manager.h"
 
 #include <omp.h>
 

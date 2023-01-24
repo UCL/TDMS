@@ -1,4 +1,4 @@
-#include "output_matrix_pointers.h"
+#include "output_matrices/output_matrix_pointers.h"
 
 #include <algorithm>
 

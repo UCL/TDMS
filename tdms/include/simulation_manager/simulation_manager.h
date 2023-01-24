@@ -9,13 +9,13 @@
 #include <string>
 
 #include "arrays.h"
-#include "globals.h"
-#include "objects_from_infile.h"
 #include "cell_coordinate.h"
-#include "loop_timers.h"
-#include "pstd_variables.h"
-#include "fdtd_bootstrapper.h"
-#include "output_matrices.h"
+#include "globals.h"
+#include "output_matrices/output_matrices.h"
+#include "simulation_manager/fdtd_bootstrapper.h"
+#include "simulation_manager/loop_timers.h"
+#include "simulation_manager/objects_from_infile.h"
+#include "simulation_manager/pstd_variables.h"
 
 /**
  * @brief Manages the physics of TDMS and the simulation loop itself.

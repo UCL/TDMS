@@ -1,4 +1,4 @@
-#include "objects_from_infile.h"
+#include "simulation_manager/objects_from_infile.h"
 
 #include <spdlog/spdlog.h>
 #include <stdexcept>
