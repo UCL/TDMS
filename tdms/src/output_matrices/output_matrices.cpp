@@ -14,9 +14,9 @@ void OutputMatrices::compute_interpolated_fields(Dimension dimension) {
   interp_output_grid_labels.z = mxGetPr(output_arrays["z_i"]);
 
   // depending on whether we are in 3D or not, the Yee cell range we interpolate over changes, which we address here
-  int i_upper = E.I_tot - 2, i_lower = 2;
-  int j_upper = E.J_tot - 2, j_lower = 2;
-  int k_upper = E.K_tot - 2, k_lower = 2;
+  int i_upper = E.tot.i - 2, i_lower = 2;
+  int j_upper = E.tot.j - 2, j_lower = 2;
+  int k_upper = E.tot.k - 2, k_lower = 2;
   if (dimension != THREE) {
     // change K-range in a non-3D simulation
     k_upper = k_lower = 0;
@@ -84,9 +84,9 @@ void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params,
   E.kl = H.kl = (params.pml.Dzl) ? params.pml.Dzl + 2 : 0;
   E.ku = H.ku = (params.pml.Dzu) ? n_Yee_cells.k - params.pml.Dzu - 1 : n_Yee_cells.k;
   // upper/lower limits of cell extraction
-  E.I_tot = H.I_tot = E.iu - E.il + 1;
-  E.J_tot = H.J_tot = E.ju - E.jl + 1;
-  E.K_tot = H.K_tot = E.ku - E.kl + 1;
+  E.tot.i = H.tot.i = E.iu - E.il + 1;
+  E.tot.j = H.tot.j = E.ju - E.jl + 1;
+  E.tot.k = H.tot.k = E.ku - E.kl + 1;
 
   // depending on the simulation, we might not need to assign this memory
   bool need_EH_memory = (params.run_mode == RunMode::complete && params.exphasorsvolume);
@@ -104,7 +104,7 @@ void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params,
     output_arrays.error_on_memory_assigned(grid_matrices);
 
     // initialise to actual, proper arrays
-    int dims[3] = {E.I_tot, E.J_tot, E.K_tot};
+    int dims[3] = {E.tot.i, E.tot.j, E.tot.k};
     spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
     // create MATLAB data storage for the field-component outputs
@@ -112,31 +112,31 @@ void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params,
       output_arrays[matrix] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
     // create MATLAB data storage for the gridlabel outputs
-    int label_dims_x[2] = {1, E.I_tot};
-    int label_dims_y[2] = {1, E.J_tot};
-    int label_dims_z[2] = {1, E.K_tot};
+    int label_dims_x[2] = {1, E.tot.i};
+    int label_dims_y[2] = {1, E.tot.j};
+    int label_dims_z[2] = {1, E.tot.k};
     output_arrays["x_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_x, mxDOUBLE_CLASS, mxREAL);
     output_arrays["y_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_y, mxDOUBLE_CLASS, mxREAL);
     output_arrays["z_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_z, mxDOUBLE_CLASS, mxREAL);
 
     // cast E, H, and gridlabel members to the MATLAB structures
-    E.real.x = cast_matlab_3D_array(mxGetPr(output_arrays["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.x = cast_matlab_3D_array(mxGetPi(output_arrays["Ex_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.x = cast_matlab_3D_array(mxGetPr(output_arrays["Ex_out"]), E.tot.i, E.tot.j, E.tot.k);
+    E.imag.x = cast_matlab_3D_array(mxGetPi(output_arrays["Ex_out"]), E.tot.i, E.tot.j, E.tot.k);
 
-    E.real.y = cast_matlab_3D_array(mxGetPr(output_arrays["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.y = cast_matlab_3D_array(mxGetPi(output_arrays["Ey_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.y = cast_matlab_3D_array(mxGetPr(output_arrays["Ey_out"]), E.tot.i, E.tot.j, E.tot.k);
+    E.imag.y = cast_matlab_3D_array(mxGetPi(output_arrays["Ey_out"]), E.tot.i, E.tot.j, E.tot.k);
 
-    E.real.z = cast_matlab_3D_array(mxGetPr(output_arrays["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
-    E.imag.z = cast_matlab_3D_array(mxGetPi(output_arrays["Ez_out"]), E.I_tot, E.J_tot, E.K_tot);
+    E.real.z = cast_matlab_3D_array(mxGetPr(output_arrays["Ez_out"]), E.tot.i, E.tot.j, E.tot.k);
+    E.imag.z = cast_matlab_3D_array(mxGetPi(output_arrays["Ez_out"]), E.tot.i, E.tot.j, E.tot.k);
 
-    H.real.x = cast_matlab_3D_array(mxGetPr(output_arrays["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.x = cast_matlab_3D_array(mxGetPi(output_arrays["Hx_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.x = cast_matlab_3D_array(mxGetPr(output_arrays["Hx_out"]), H.tot.i, H.tot.j, H.tot.k);
+    H.imag.x = cast_matlab_3D_array(mxGetPi(output_arrays["Hx_out"]), H.tot.i, H.tot.j, H.tot.k);
 
-    H.real.y = cast_matlab_3D_array(mxGetPr(output_arrays["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.y = cast_matlab_3D_array(mxGetPi(output_arrays["Hy_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.y = cast_matlab_3D_array(mxGetPr(output_arrays["Hy_out"]), H.tot.i, H.tot.j, H.tot.k);
+    H.imag.y = cast_matlab_3D_array(mxGetPi(output_arrays["Hy_out"]), H.tot.i, H.tot.j, H.tot.k);
 
-    H.real.z = cast_matlab_3D_array(mxGetPr(output_arrays["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
-    H.imag.z = cast_matlab_3D_array(mxGetPi(output_arrays["Hz_out"]), H.I_tot, H.J_tot, H.K_tot);
+    H.real.z = cast_matlab_3D_array(mxGetPr(output_arrays["Hz_out"]), H.tot.i, H.tot.j, H.tot.k);
+    H.imag.z = cast_matlab_3D_array(mxGetPi(output_arrays["Hz_out"]), H.tot.i, H.tot.j, H.tot.k);
 
     //now construct the grid labels
     output_grid_labels.x = mxGetPr(output_arrays["x_out"]);
@@ -191,9 +191,9 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
     output_arrays.error_on_memory_assigned(interpolated_gridlabels_names);
 
     // interpolated field memory needs to be assigned. Since E, H field have the same {IJK}_tot, we can set the dimensions once, and do it here rather than separately for each field
-    int i_upper = E.I_tot - 2, i_lower = 2;
-    int j_upper = E.J_tot - 2, j_lower = 2;
-    int k_upper = E.K_tot - 2, k_lower = 2;
+    int i_upper = E.tot.i - 2, i_lower = 2;
+    int j_upper = E.tot.j - 2, j_lower = 2;
+    int k_upper = E.tot.k - 2, k_lower = 2;
     if (params.dimension != THREE) {
       k_upper = k_lower = 0;
     }
@@ -217,16 +217,16 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
 
     // interpolated gridlabels memory needs to be assigned
     // x-labels are always a fixed size
-    int label_dims[2] = {1, E.I_tot - 3};
+    int label_dims[2] = {1, E.tot.i - 3};
     output_arrays["x_i"] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
     // y-labels might receive nJ < 0, in which case a manual adjustment is made
-    label_dims[1] = max(E.J_tot - 3, 1);
+    label_dims[1] = max(E.tot.j - 3, 1);
     output_arrays["y_i"] =
             mxCreateNumericArray(2, (const mwSize *) label_dims, mxDOUBLE_CLASS, mxREAL);
     // z-labels depend on the dimensionality of the simulation
     if (params.dimension == THREE) {
-      label_dims[1] = E.K_tot - 3;
+      label_dims[1] = E.tot.k - 3;
     } else {
       label_dims[1] = 1;
     }

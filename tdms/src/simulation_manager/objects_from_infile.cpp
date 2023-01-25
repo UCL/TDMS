@@ -38,7 +38,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
   // get the fdtd grid
   init_grid_arrays(matrices_from_input_file["fdtdgrid"], E_s, H_s, materials);
   // set the {IJK}_tot variables using the split-field information we just unpacked
-  IJK_tot = IJKDims {E_s.I_tot, E_s.J_tot, E_s.K_tot};
+  IJK_tot = E_s.tot;
 
   // Get freespace - Cby Cbz Dbx Dby Dbz are unused
   freespace_Cbx =
@@ -137,7 +137,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
 
 IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
   if (params.dimension == THREE) {
-    free_cast_matlab_3D_array(materials, E_s.K_tot + 1);
+    free_cast_matlab_3D_array(materials, E_s.tot.k + 1);
   } else {
     free_cast_matlab_3D_array(materials, 0);
   }

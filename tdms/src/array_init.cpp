@@ -47,9 +47,9 @@ void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint
     } else if (are_equal(elements[i], "Hzy")) { H_s.zy.initialise_from_matlab(tensor, dims);
     } else if (are_equal(elements[i], "materials")) {
       materials = cast_matlab_3D_array((uint8_t *) mxGetPr(element), dims[0], dims[1], dims[2]);
-      E_s.I_tot = H_s.I_tot = dims[0] - 1; // The _tot variables do NOT include the additional cell
-      E_s.J_tot = H_s.J_tot = dims[1] - 1; // at the edge of the grid which is only partially used
-      E_s.K_tot = H_s.K_tot = dims[2] - 1;
+      E_s.tot.i = H_s.tot.i = dims[0] - 1; // The _tot variables do NOT include the additional cell
+      E_s.tot.j = H_s.tot.j = dims[1] - 1; // at the edge of the grid which is only partially used
+      E_s.tot.k = H_s.tot.k = dims[2] - 1;
     } else {
       throw runtime_error("element fdtdgrid.%s not handled " + element_name);
     }

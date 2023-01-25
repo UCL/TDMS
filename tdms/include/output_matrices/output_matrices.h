@@ -90,8 +90,8 @@ public:
    *
    * @return IJKDims The dimensions of the electric (and magnetic) field
    */
-  IJKDims get_E_dimensions() {
-    return IJKDims {E.I_tot, E.J_tot, E.K_tot};
+  IJKDims get_E_dimensions() const {
+    return E.tot;
   }
   // set the interpolation method for the E and H fields
   void set_interpolation_methods(PreferredInterpolationMethods pim) {

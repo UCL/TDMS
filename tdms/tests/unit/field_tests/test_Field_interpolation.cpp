@@ -64,7 +64,7 @@ TEST_CASE("E-field interpolation check") {
   // setup the "split" E-field components
   ElectricSplitField E_split(Nx-1, Ny-1, Nz-1);
   E_split.allocate(); // alocates Nx, Ny, Nz memory space here
-  E_split.I_tot++; E_split.J_tot++; E_split.K_tot++; // correct the "number of datapoints" variable for these fields
+  E_split.tot += 1; // correct the "number of datapoints" variable for these fields
   // setup for non-split field components
   ElectricField E(Nx, Ny, Nz);
   E.allocate();
@@ -277,9 +277,7 @@ TEST_CASE("H-field interpolation check") {
   MagneticSplitField H_split(Nx - 1, Ny - 1, Nz - 1);
   H_split.allocate();// alocates Nx, Ny, Nz memory space here
   // setup the non-split field components
-  H_split.I_tot++;
-  H_split.J_tot++;
-  H_split.K_tot++;// correct the "number of datapoints" variable for these fields
+  H_split.tot += 1; // correct the "number of datapoints" variable for these fields
   MagneticField H(Nx, Ny, Nz);
   H.allocate();
 

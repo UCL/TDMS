@@ -19,14 +19,14 @@ TDFieldExporter2D::~TDFieldExporter2D() { free_cast_matlab_2D_array(array);
 void TDFieldExporter2D::export_field(SplitField& F, int stride, int iteration) const{
 
   // need to check that enough memory was allocated before we cast!
-  if ((nI < F.I_tot) || (nK < F.K_tot)) {
-    throw std::runtime_error("Not enough memory to write this field! (" + to_string(nI) + " , " + to_string(nK) + ") but need (" + to_string(F.I_tot) + " , " + to_string(F.K_tot) + ")");
+  if ((nI < F.tot.i) || (nK < F.tot.k)) {
+    throw std::runtime_error("Not enough memory to write this field! (" + to_string(nI) + " , " + to_string(nK) + ") but need (" + to_string(F.tot.i) + " , " + to_string(F.tot.k) + ")");
   }
   // if we have enough memory, then we can write out
   int i = 0;
-  while (i < F.I_tot) {
+  while (i < F.tot.i) {
       int k = 0;
-      while (k < F.K_tot){
+      while (k < F.tot.k){
         array[k][i] = F.xy[k][0][i] + F.xz[k][0][i];
         k += stride;
       }

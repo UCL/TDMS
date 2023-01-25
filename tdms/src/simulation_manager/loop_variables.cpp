@@ -50,9 +50,7 @@ LoopVariables::LoopVariables(const ObjectsFromInfile &data, IJKDims E_field_dims
     E_at_previous_iteration.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
                                          dummy_dims[1], dummy_dims[2]);
 
-    E_at_previous_iteration.I_tot = E_field_dims.i;
-    E_at_previous_iteration.J_tot = E_field_dims.j;
-    E_at_previous_iteration.K_tot = E_field_dims.k;
+    E_at_previous_iteration.tot = E_field_dims;
 
     E_at_previous_iteration.zero();
   }

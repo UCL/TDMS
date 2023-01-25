@@ -43,15 +43,14 @@ SplitFieldComponent::~SplitFieldComponent() {
 void SplitField::allocate() {
 
   for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}){
-    component->allocate(K_tot + 1, J_tot + 1, I_tot + 1);
+    component->allocate(tot.k + 1, tot.j + 1, tot.i + 1);
   }
 }
 
 SplitField::SplitField(int I_total, int J_total, int K_total) {
-
-  I_tot = I_total;
-  J_tot = J_total;
-  K_tot = K_total;
+  tot.i = I_total;
+  tot.j = J_total;
+  tot.k = K_total;
 }
 
 void SplitField::zero() {
@@ -64,9 +63,9 @@ void SplitField::zero() {
 void SplitField::initialise_fftw_plan(int n_threads, EHVec &eh_vec) {
 
   // N_e_y
-  int n_x = I_tot + delta_n() + 1;
-  int n_y = J_tot + delta_n() + 1;
-  int n_z = K_tot + delta_n() + 1;
+  int n_x = tot.i + delta_n() + 1;
+  int n_y = tot.j + delta_n() + 1;
+  int n_z = tot.k + delta_n() + 1;
 
   xy.initialise_fftw_plan(n_threads, n_y, eh_vec);
   xz.initialise_fftw_plan(n_threads, n_z, eh_vec);
@@ -78,9 +77,9 @@ void SplitField::initialise_fftw_plan(int n_threads, EHVec &eh_vec) {
 
 double SplitField::largest_field_value() {
   double largest_value = 0.;
-  for (int k = 0; k < (K_tot + 1); k++) {
-    for (int j = 0; j < (J_tot + 1); j++) {
-      for (int i = 0; i < (I_tot + 1); i++) {
+  for (int k = 0; k < (tot.k + 1); k++) {
+    for (int j = 0; j < (tot.j + 1); j++) {
+      for (int i = 0; i < (tot.i + 1); i++) {
         double x_field = fabs(xy[k][j][i] + xz[k][j][i]);
         double y_field = fabs(yx[k][j][i] + yz[k][j][i]);
         double z_field = fabs(zx[k][j][i] + zy[k][j][i]);

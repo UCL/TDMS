@@ -33,15 +33,14 @@ protected:
   PreferredInterpolationMethods pim = PreferredInterpolationMethods::BandLimited;
 
 public:
-  int I_tot = 0;
-  int J_tot = 0;
-  int K_tot = 0;
+  // The {IJK}_tot values of this grid
+  IJKDims tot = { 0, 0, 0 };
 
   /**
      * Maximum value out of I_tot, J_tot and K_tot
      * @return value
      */
-  int max_IJK_tot() const { return max(I_tot, J_tot, K_tot); };
+  int max_IJK_tot() const { return tot.max(); };
 
   /**
    * @brief Set the preferred interpolation methods
