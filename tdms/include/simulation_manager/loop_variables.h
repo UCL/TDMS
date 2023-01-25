@@ -40,7 +40,7 @@ private:
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive_medium(const uint8_t ***materials, const IJKDims &IJK_tot, double *attenuation_constants,
+  bool is_dispersive_medium(uint8_t ***materials, const IJKDims &IJK_tot, double *attenuation_constants,
                      double dt, double non_zero_tol = 1e-15);
 
   /**

@@ -87,7 +87,7 @@ void LoopVariables::setup_dispersive_properties(const ObjectsFromInfile &data) {
   if (is_conductive) { J_c.allocate_and_zero(); }
 }
 
-bool LoopVariables::is_dispersive_medium(const uint8_t ***materials, const IJKDims &IJK_tot,
+bool LoopVariables::is_dispersive_medium(uint8_t ***materials, const IJKDims &IJK_tot,
                                          double *attenuation_constants, double dt,
                                          double non_zero_tol) {
   int max_mat = 0;
