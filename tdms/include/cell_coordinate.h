@@ -17,10 +17,10 @@ struct ijk {
   int i = 0, j = 0, k = 0;
 
   /** @brief Return the maximum of i,j,k */
-  int max() { return std::max(std::max(i, j), k); }
+  int max() const { return std::max(std::max(i, j), k); }
 
   /** @brief Print the (i,j,k) values */
-  void print() { spdlog::info("ijk: ({},{},{})", i, j, k); }
+  void print() const { spdlog::info("ijk: ({},{},{})", i, j, k); }
 };
 
 /* Synonyms for code readability */
