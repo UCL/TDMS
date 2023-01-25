@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include <omp.h>
-
+#include <spdlog/spdlog.h>
 
 void Timer::start() {
   start_time = omp_get_wtime();
@@ -19,6 +19,6 @@ double Timer::delta_seconds() const {
 
 void Timer::click(){
   end();
-  fprintf(stdout, "∆time = %.03e s\n", delta_seconds());
+  spdlog::info("Time ellapsed (s): %.03e", delta_seconds());
   start();
 }
