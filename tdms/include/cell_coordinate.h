@@ -22,7 +22,7 @@ struct ijk {
   /** @brief Print the (i,j,k) values */
   void print() const { spdlog::info("ijk: ({},{},{})", i, j, k); }
 
-  ijk operator+=(int n) { return ijk {i+n, j+n, k+n}; }
+  ijk &operator+=(int n) { this->i += n; this->j += n; this->k += n; return *this; }
 };
 
 /* Synonyms for code readability */
