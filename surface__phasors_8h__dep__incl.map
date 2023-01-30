@@ -1,6 +1,0 @@
-<map id="tdms/include/surface_phasors.h" name="tdms/include/surface_phasors.h">
-<area shape="rect" id="node1" title="Contains a class that handles the complex amplitude extraction." alt="" coords="72,5,231,47"/>
-<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="75,95,227,136"/>
-<area shape="rect" id="node3" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="5,184,175,211"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="80,259,223,285"/>
-</map>

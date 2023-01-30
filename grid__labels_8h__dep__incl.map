@@ -1,9 +1,6 @@
 <map id="tdms/include/grid_labels.h" name="tdms/include/grid_labels.h">
-<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="111,5,304,32"/>
-<area shape="rect" id="node2" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="5,259,175,285"/>
-<area shape="rect" id="node4" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="128,80,287,121"/>
-<area shape="rect" id="node6" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="311,80,463,121"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="80,333,223,360"/>
-<area shape="rect" id="node5" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="131,169,283,211"/>
-<area shape="rect" id="node7" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="313,169,462,211"/>
+<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="77,5,271,32"/>
+<area shape="rect" id="node2" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="5,80,164,121"/>
+<area shape="rect" id="node3" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="189,80,341,121"/>
+<area shape="rect" id="node4" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="190,169,339,211"/>
 </map>

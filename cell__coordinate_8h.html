@@ -84,33 +84,38 @@ $(document).ready(function(){initNavTree('cell__coordinate_8h.html',''); initRes
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">cell_coordinate.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Class declaration for Yee cell coordinates.  
+<p>Container for {ijk} or {IJK} grouped variables.  
 <a href="#details">More...</a></p>
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &lt;spdlog/spdlog.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for cell_coordinate.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="cell__coordinate_8h__incl.png" border="0" usemap="#atdms_2include_2cell__coordinate_8h" alt=""/></div>
+<map name="atdms_2include_2cell__coordinate_8h" id="atdms_2include_2cell__coordinate_8h">
+<area shape="rect" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="5,5,227,32"/>
+<area shape="rect" title=" " alt="" coords="54,80,178,107"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="cell__coordinate_8h__dep__incl.png" border="0" usemap="#atdms_2include_2cell__coordinate_8hdep" alt=""/></div>
 <map name="atdms_2include_2cell__coordinate_8hdep" id="atdms_2include_2cell__coordinate_8hdep">
-<area shape="rect" title="Class declaration for Yee cell coordinates." alt="" coords="492,5,713,32"/>
-<area shape="rect" href="arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="581,80,744,107"/>
-<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="469,244,619,271"/>
-<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="74,326,273,353"/>
-<area shape="rect" href="iterator_8h.html" title="The main time propogation algorithm." alt="" coords="499,497,669,524"/>
-<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="617,319,775,360"/>
-<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="800,319,952,360"/>
-<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="220,155,399,196"/>
-<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="347,319,491,360"/>
-<area shape="rect" href="output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="389,408,541,449"/>
-<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="99,408,248,449"/>
-<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="451,572,594,599"/>
-<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="801,408,951,449"/>
-<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="25,244,221,271"/>
+<area shape="rect" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="264,5,485,32"/>
+<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="299,80,450,107"/>
+<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,155,149,196"/>
+<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="174,162,373,189"/>
+<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="397,155,555,196"/>
+<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="580,155,732,196"/>
+<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="199,244,348,285"/>
+<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="581,244,731,285"/>
 </map>
 </div>
 </div>
@@ -118,11 +123,21 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCellCoordinate.html">CellCoordinate</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structijk.html">ijk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A structure for holding three values, which typically pertain to the same quantity but for each of the axial directions.  <a href="structijk.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a3f5d14a0d93b0ecee277023e2a434b1f"><td class="memItemLeft" align="right" valign="top"><a id="a3f5d14a0d93b0ecee277023e2a434b1f"></a>
+typedef <a class="el" href="structijk.html">ijk</a>&#160;</td><td class="memItemRight" valign="bottom"><b>CellCoordinate</b></td></tr>
+<tr class="separator:a3f5d14a0d93b0ecee277023e2a434b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41ec7d2990479010bb9935ed9af25fa7"><td class="memItemLeft" align="right" valign="top"><a id="a41ec7d2990479010bb9935ed9af25fa7"></a>
+typedef <a class="el" href="structijk.html">ijk</a>&#160;</td><td class="memItemRight" valign="bottom"><b>IJKDimensions</b></td></tr>
+<tr class="separator:a41ec7d2990479010bb9935ed9af25fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Class declaration for Yee cell coordinates. </p>
+<div class="textblock"><p>Container for {ijk} or {IJK} grouped variables. </p>
 <dl class="section author"><dt>Author</dt><dd>William Graham (<a href="#" onclick="location.href='mai'+'lto:'+'cca'+'eg'+'ra@'+'uc'+'l.a'+'c.'+'uk'; return false;">ccaeg<span style="display: none;">.nosp@m.</span>ra@u<span style="display: none;">.nosp@m.</span>cl.ac<span style="display: none;">.nosp@m.</span>.uk</a>) </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,16 +1,14 @@
 <map id="tdms/include/matrix_collection.h" name="tdms/include/matrix_collection.h">
-<area shape="rect" id="node1" title="A collection of named MATLAB matrices." alt="" coords="455,5,609,47"/>
-<area shape="rect" id="node2" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="121,95,263,136"/>
-<area shape="rect" id="node10" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="761,437,913,479"/>
-<area shape="rect" id="node3" href="$iterator_8h.html" title="The main time propogation algorithm." alt="" coords="421,527,590,553"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="434,601,577,628"/>
-<area shape="rect" id="node5" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="239,184,417,225"/>
-<area shape="rect" id="node6" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="450,273,601,300"/>
-<area shape="rect" id="node8" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="93,355,291,382"/>
-<area shape="rect" id="node14" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="230,273,426,300"/>
-<area shape="rect" id="node7" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="727,348,871,389"/>
-<area shape="rect" id="node11" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="543,348,702,389"/>
-<area shape="rect" id="node12" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="316,348,468,389"/>
-<area shape="rect" id="node9" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="117,437,267,479"/>
-<area shape="rect" id="node13" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="317,437,467,479"/>
+<area shape="rect" id="node1" title="A collection of named MATLAB matrices." alt="" coords="316,5,469,47"/>
+<area shape="rect" id="node2" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="321,95,464,136"/>
+<area shape="rect" id="node3" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="211,184,390,225"/>
+<area shape="rect" id="node12" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="415,191,557,218"/>
+<area shape="rect" id="node4" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="225,273,376,300"/>
+<area shape="rect" id="node6" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,355,204,382"/>
+<area shape="rect" id="node11" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="400,273,596,300"/>
+<area shape="rect" id="node5" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="229,348,373,389"/>
+<area shape="rect" id="node8" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="397,348,556,389"/>
+<area shape="rect" id="node9" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="581,348,733,389"/>
+<area shape="rect" id="node7" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="30,437,179,479"/>
+<area shape="rect" id="node10" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="582,437,731,479"/>
 </map>

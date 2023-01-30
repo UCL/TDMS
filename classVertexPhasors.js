@@ -1,12 +1,15 @@
 var classVertexPhasors =
 [
+    [ "VertexPhasors", "classVertexPhasors.html#a0acc203fb56dfc3237831b595e5912b0", null ],
     [ "VertexPhasors", "classVertexPhasors.html#aae6207412f686aa39eef314d2fcacd14", null ],
     [ "~VertexPhasors", "classVertexPhasors.html#a5b81b00a607be586892a6fbe7b4c0fa4", null ],
     [ "extractPhasorsVertices", "classVertexPhasors.html#a0914585579857a5067800c755e71ebd6", null ],
     [ "get_mx_camplitudes", "classVertexPhasors.html#a4ed8526cb92b3824b1a33109772a65b4", null ],
+    [ "n_components", "classVertexPhasors.html#a6687f07a430aca97c213b2f6bd8802d5", null ],
     [ "n_vertices", "classVertexPhasors.html#ad7e6b56a196ab75a34d5e1de7f665a91", null ],
     [ "normalise_vertices", "classVertexPhasors.html#a885ba9bda39b6c62b1a78395a1891d5a", null ],
-    [ "setup_complex_amplitude_arrays", "classVertexPhasors.html#aa01118081119a227229e593c2a97d234", null ],
+    [ "set_from", "classVertexPhasors.html#add181a9ead3a7b4e973d74b3f47aaa7f", null ],
+    [ "setup_complex_amplitude_arrays", "classVertexPhasors.html#aa55d80d600322b2639f1abbb9557587b", null ],
     [ "there_are_elements_in_arrays", "classVertexPhasors.html#af171ae9ae056e75e45e9769c13b29622", null ],
     [ "there_are_vertices_to_extract_at", "classVertexPhasors.html#ad7cb67b33fdff91e2dd1bdb07fb78d21", null ],
     [ "update_vertex_camplitudes", "classVertexPhasors.html#a440fef465a4124c7ddc2c9c30a07cc1d", null ],

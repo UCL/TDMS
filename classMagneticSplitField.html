@@ -106,11 +106,12 @@ Collaboration diagram for MagneticSplitField:</div>
 <div class="dyncontent">
 <div class="center"><img src="classMagneticSplitField__coll__graph.png" border="0" usemap="#aMagneticSplitField_coll__map" alt="Collaboration graph"/></div>
 <map name="aMagneticSplitField_coll__map" id="aMagneticSplitField_coll__map">
-<area shape="rect" title=" " alt="" coords="5,320,148,347"/>
-<area shape="rect" href="classSplitField.html" title=" " alt="" coords="35,244,118,271"/>
-<area shape="rect" href="classGrid.html" title=" " alt="" coords="31,81,80,108"/>
-<area shape="rect" href="classSplitFieldComponent.html" title=" " alt="" coords="105,81,262,108"/>
-<area shape="rect" href="classTensor3D.html" title=" " alt="" coords="105,5,261,32"/>
+<area shape="rect" title=" " alt="" coords="21,333,164,360"/>
+<area shape="rect" href="classSplitField.html" title=" " alt="" coords="51,257,134,284"/>
+<area shape="rect" href="classGrid.html" title=" " alt="" coords="5,95,55,121"/>
+<area shape="rect" href="structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="11,5,49,32"/>
+<area shape="rect" href="classSplitFieldComponent.html" title=" " alt="" coords="79,95,237,121"/>
+<area shape="rect" href="classTensor3D.html" title=" " alt="" coords="80,5,236,32"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -118,7 +119,7 @@ Collaboration diagram for MagneticSplitField:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a44ba8ba444cfa073d72e7e30758546a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMagneticSplitField.html#a44ba8ba444cfa073d72e7e30758546a8">MagneticSplitField</a> (int I_total, int J_total, int K_total)</td></tr>
 <tr class="separator:a44ba8ba444cfa073d72e7e30758546a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d55380a33963564647256ad92095a26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMagneticSplitField.html#a8d55380a33963564647256ad92095a26">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell) override</td></tr>
+<tr class="memitem:a8d55380a33963564647256ad92095a26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMagneticSplitField.html#a8d55380a33963564647256ad92095a26">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="structijk.html">CellCoordinate</a> cell) override</td></tr>
 <tr class="memdesc:a8d55380a33963564647256ad92095a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a split E-field component to the centre of a Yee cell.  <a href="classMagneticSplitField.html#a8d55380a33963564647256ad92095a26">More...</a><br /></td></tr>
 <tr class="separator:a8d55380a33963564647256ad92095a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classSplitField"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classSplitField')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classSplitField.html">SplitField</a></td></tr>
@@ -173,15 +174,9 @@ Additional Inherited Members</h2></td></tr>
 <a class="el" href="classSplitFieldComponent.html">SplitFieldComponent</a>&#160;</td><td class="memItemRight" valign="bottom"><b>zy</b></td></tr>
 <tr class="separator:a1f011968382107ea2d18ec02541010ac inherit pub_attribs_classSplitField"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
-<tr class="memitem:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="abc62df28e06b99a32b0eb94043054975"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>I_tot</b> = 0</td></tr>
-<tr class="separator:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="af905adb66d69fc7b71b1096c2f93773c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>J_tot</b> = 0</td></tr>
-<tr class="separator:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a7380bf9a24e5f50af087676009086af6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr>
-<tr class="separator:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a592958d6cbe6d196c111599c5aab9 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="ad9a592958d6cbe6d196c111599c5aab9"></a>
+<a class="el" href="structijk.html">IJKDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>tot</b> = { 0, 0, 0 }</td></tr>
+<tr class="separator:ad9a592958d6cbe6d196c111599c5aab9 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classGrid')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
 <tr class="memitem:a6e94f975157d7b93936a74e42745b4b6 inherit pro_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a6e94f975157d7b93936a74e42745b4b6"></a>
 PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"><b>pim</b> = PreferredInterpolationMethods::BandLimited</td></tr>
@@ -250,7 +245,7 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classCellCoordinate.html">CellCoordinate</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structijk.html">CellCoordinate</a>&#160;</td>
           <td class="paramname"><em>cell</em>&#160;</td>
         </tr>
         <tr>

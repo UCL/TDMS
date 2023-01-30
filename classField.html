@@ -109,17 +109,15 @@ Collaboration diagram for Field:</div>
 <div class="dyncontent">
 <div class="center"><img src="classField__coll__graph.png" border="0" usemap="#aField_coll__map" alt="Collaboration graph"/></div>
 <map name="aField_coll__map" id="aField_coll__map">
-<area shape="rect" title=" " alt="" coords="73,109,126,136"/>
-<area shape="rect" href="classGrid.html" title=" " alt="" coords="5,5,55,32"/>
-<area shape="rect" href="classXYZTensor3D.html" title=" " alt="" coords="79,5,261,32"/>
+<area shape="rect" title=" " alt="" coords="107,199,161,225"/>
+<area shape="rect" href="classGrid.html" title=" " alt="" coords="5,95,55,121"/>
+<area shape="rect" href="structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="11,5,49,32"/>
+<area shape="rect" href="classXYZTensor3D.html" title=" " alt="" coords="79,95,261,121"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">normalise_volume</a> ()</td></tr>
-<tr class="memdesc:a616a0a2e9edb5ee42374611c2eea777e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalises the field entries by divding by the angular norm.  <a href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">More...</a><br /></td></tr>
-<tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49946f632ba55deabf6bc8cd5f100225"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a49946f632ba55deabf6bc8cd5f100225">Field</a> ()=default</td></tr>
 <tr class="separator:a49946f632ba55deabf6bc8cd5f100225"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebcda2e27b2a7abf93642e35bfd247dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#aebcda2e27b2a7abf93642e35bfd247dc">Field</a> (int I_total, int J_total, int K_total)</td></tr>
@@ -130,6 +128,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5511a94b5f37a81ee7b3dacb83dd20b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15784ebeb6582788e6e6cd732f5dfc26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a15784ebeb6582788e6e6cd732f5dfc26">allocate_and_zero</a> ()</td></tr>
 <tr class="separator:a15784ebeb6582788e6e6cd732f5dfc26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a616a0a2e9edb5ee42374611c2eea777e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">normalise_volume</a> ()</td></tr>
+<tr class="memdesc:a616a0a2e9edb5ee42374611c2eea777e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalises the field entries by dividing by the angular norm.  <a href="classField.html#a616a0a2e9edb5ee42374611c2eea777e">More...</a><br /></td></tr>
+<tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88c2e1c843986da2cce6a54379466bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a88c2e1c843986da2cce6a54379466bbb">set_phasors</a> (<a class="el" href="classSplitField.html">SplitField</a> &amp;F, int n, double omega, double dt, int Nt)</td></tr>
 <tr class="separator:a88c2e1c843986da2cce6a54379466bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top"><a id="a263a2ebc51f6e0dff6c60138b68c9e82"></a>
@@ -141,7 +142,7 @@ std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom">
 <tr class="memitem:a865cfb4be5000462a8a4f94a40934695"><td class="memItemLeft" align="right" valign="top"><a id="a865cfb4be5000462a8a4f94a40934695"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (int n, double omega, double dt)=0</td></tr>
 <tr class="separator:a865cfb4be5000462a8a4f94a40934695"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdf5183798698b1dd14fd4c93512b63f"><td class="memItemLeft" align="right" valign="top">virtual std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#acdf5183798698b1dd14fd4c93512b63f">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell)=0</td></tr>
+<tr class="memitem:acdf5183798698b1dd14fd4c93512b63f"><td class="memItemLeft" align="right" valign="top">virtual std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#acdf5183798698b1dd14fd4c93512b63f">interpolate_to_centre_of</a> (AxialDirection d, <a class="el" href="structijk.html">CellCoordinate</a> cell)=0</td></tr>
 <tr class="memdesc:acdf5183798698b1dd14fd4c93512b63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a <a class="el" href="classField.html">Field</a> component to the centre of a Yee cell.  <a href="classField.html#acdf5183798698b1dd14fd4c93512b63f">More...</a><br /></td></tr>
 <tr class="separator:acdf5183798698b1dd14fd4c93512b63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad229a40d2caf451e88f0cdec639e274f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ad229a40d2caf451e88f0cdec639e274f">interpolate_over_range</a> (mxArray *x_out, mxArray *y_out, mxArray *z_out, int i_lower, int i_upper, int j_lower, int j_upper, int k_lower, int k_upper, Dimension mode=Dimension::THREE)</td></tr>
@@ -150,10 +151,10 @@ virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (
 <tr class="memitem:a9fb4dd9f724a61002b48057a9b174010"><td class="memItemLeft" align="right" valign="top"><a id="a9fb4dd9f724a61002b48057a9b174010"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>interpolate_over_range</b> (mxArray *x_out, mxArray *y_out, mxArray *z_out, Dimension mode=Dimension::THREE)</td></tr>
 <tr class="separator:a9fb4dd9f724a61002b48057a9b174010"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace2a629c5fc9141735862d022040a92c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ace2a629c5fc9141735862d022040a92c">interpolate_transverse_electric_components</a> (<a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
+<tr class="memitem:ace2a629c5fc9141735862d022040a92c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#ace2a629c5fc9141735862d022040a92c">interpolate_transverse_electric_components</a> (<a class="el" href="structijk.html">CellCoordinate</a> cell, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
 <tr class="memdesc:ace2a629c5fc9141735862d022040a92c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a>'s transverse electric components to the centre of Yee cell i,j,k.  <a href="classField.html#ace2a629c5fc9141735862d022040a92c">More...</a><br /></td></tr>
 <tr class="separator:ace2a629c5fc9141735862d022040a92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85319f6f980824a51d089c7373d3d05f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a85319f6f980824a51d089c7373d3d05f">interpolate_transverse_magnetic_components</a> (<a class="el" href="classCellCoordinate.html">CellCoordinate</a> cell, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
+<tr class="memitem:a85319f6f980824a51d089c7373d3d05f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a85319f6f980824a51d089c7373d3d05f">interpolate_transverse_magnetic_components</a> (<a class="el" href="structijk.html">CellCoordinate</a> cell, std::complex&lt; double &gt; *x_at_centre, std::complex&lt; double &gt; *y_at_centre, std::complex&lt; double &gt; *z_at_centre)=0</td></tr>
 <tr class="memdesc:a85319f6f980824a51d089c7373d3d05f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates the <a class="el" href="classField.html">Field</a>'s transverse magnetic components to the centre of Yee cell i,j,k.  <a href="classField.html#a85319f6f980824a51d089c7373d3d05f">More...</a><br /></td></tr>
 <tr class="separator:a85319f6f980824a51d089c7373d3d05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9aaf9b68cac30ee0c2ad27ca15975f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">set_values_from</a> (<a class="el" href="classField.html">Field</a> &amp;other)</td></tr>
@@ -201,15 +202,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>kl</b> = 0</td></tr>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>ku</b> = 0</td></tr>
 <tr class="separator:a9c5c3d22eda742cd2a03f718fdd462e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classGrid"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classGrid')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classGrid.html">Grid</a></td></tr>
-<tr class="memitem:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="abc62df28e06b99a32b0eb94043054975"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>I_tot</b> = 0</td></tr>
-<tr class="separator:abc62df28e06b99a32b0eb94043054975 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="af905adb66d69fc7b71b1096c2f93773c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>J_tot</b> = 0</td></tr>
-<tr class="separator:af905adb66d69fc7b71b1096c2f93773c inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="a7380bf9a24e5f50af087676009086af6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>K_tot</b> = 0</td></tr>
-<tr class="separator:a7380bf9a24e5f50af087676009086af6 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a592958d6cbe6d196c111599c5aab9 inherit pub_attribs_classGrid"><td class="memItemLeft" align="right" valign="top"><a id="ad9a592958d6cbe6d196c111599c5aab9"></a>
+<a class="el" href="structijk.html">IJKDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>tot</b> = { 0, 0, 0 }</td></tr>
+<tr class="separator:ad9a592958d6cbe6d196c111599c5aab9 inherit pub_attribs_classGrid"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -433,7 +428,7 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classCellCoordinate.html">CellCoordinate</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structijk.html">CellCoordinate</a>&#160;</td>
           <td class="paramname"><em>cell</em>&#160;</td>
         </tr>
         <tr>
@@ -475,7 +470,7 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="memname">virtual void Field::interpolate_transverse_electric_components </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classCellCoordinate.html">CellCoordinate</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structijk.html">CellCoordinate</a>&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
@@ -534,7 +529,7 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="memname">virtual void Field::interpolate_transverse_magnetic_components </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classCellCoordinate.html">CellCoordinate</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structijk.html">CellCoordinate</a>&#160;</td>
           <td class="paramname"><em>cell</em>, </td>
         </tr>
         <tr>
@@ -596,7 +591,7 @@ PreferredInterpolationMethods&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 
-<p>Normalises the field entries by divding by the angular norm. </p>
+<p>Normalises the field entries by dividing by the angular norm. </p>
 <p>Specifically, real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm </p>
 
 </div>

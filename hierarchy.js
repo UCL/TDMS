@@ -6,7 +6,6 @@ var hierarchy =
       [ "CCollection", "classCCollection.html", null ],
       [ "CMaterial", "classCMaterial.html", null ]
     ] ],
-    [ "CellCoordinate", "classCellCoordinate.html", null ],
     [ "complex_vector", "structcomplex__vector.html", null ],
     [ "Cuboid", "classCuboid.html", null ],
     [ "DCollectionBase", "classDCollectionBase.html", [
@@ -33,6 +32,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "GridLabels", "classGridLabels.html", null ],
+    [ "ijk", "structijk.html", null ],
     [ "IncidentField", "classIncidentField.html", null ],
     [ "InputMatrices", "classInputMatrices.html", null ],
     [ "InterfaceComponent", "classInterfaceComponent.html", null ],
@@ -56,7 +56,6 @@ var hierarchy =
     [ "MatrixCollection", "classMatrixCollection.html", [
       [ "MatFileMatrixCollection", "classMatFileMatrixCollection.html", null ]
     ] ],
-    [ "OutputMatrices", "classOutputMatrices.html", null ],
     [ "PerfectlyMatchedLayer", "structPerfectlyMatchedLayer.html", null ],
     [ "PlanarInterface", "structPlanarInterface.html", null ],
     [ "SimulationParameters", "classSimulationParameters.html", null ],

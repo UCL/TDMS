@@ -32,9 +32,7 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "EHVec", "classEHVec.html", "classEHVec" ],
       [ "FullFieldSnapshot", "classFullFieldSnapshot.html", "classFullFieldSnapshot" ]
     ] ],
-    [ "cell_coordinate.h", "cell__coordinate_8h.html", [
-      [ "CellCoordinate", "classCellCoordinate.html", "classCellCoordinate" ]
-    ] ],
+    [ "cell_coordinate.h", "cell__coordinate_8h.html", "cell__coordinate_8h" ],
     [ "dimensions.h", "dimensions_8h.html", [
       [ "Dimensions", "classDimensions.html", "classDimensions" ]
     ] ],
@@ -68,7 +66,6 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
       [ "InterfaceComponent", "classInterfaceComponent.html", "classInterfaceComponent" ]
     ] ],
     [ "interpolation_methods.h", "interpolation__methods_8h.html", "interpolation__methods_8h" ],
-    [ "iterator.h", "iterator_8h.html", "iterator_8h" ],
     [ "mat_io.h", "mat__io_8h.html", null ],
     [ "matrix_collection.h", "matrix__collection_8h.html", [
       [ "MatrixCollection", "classMatrixCollection.html", "classMatrixCollection" ],
@@ -76,9 +73,6 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     ] ],
     [ "mesh_base.h", "mesh__base_8h.html", "mesh__base_8h" ],
     [ "numerical_derivative.h", "numerical__derivative_8h.html", "numerical__derivative_8h" ],
-    [ "output_matrices.h", "output__matrices_8h.html", [
-      [ "OutputMatrices", "classOutputMatrices.html", "classOutputMatrices" ]
-    ] ],
     [ "shapes.h", "shapes_8h_source.html", null ],
     [ "simulation_parameters.h", "simulation__parameters_8h.html", "simulation__parameters_8h" ],
     [ "source.h", "source_8h.html", [
