@@ -28,4 +28,4 @@ struct ijk {
 /* Synonyms for code readability */
 
 typedef ijk CellCoordinate;//< Index-coordinates (i,j,k) of a Yee cell
-typedef ijk IJKDims;       //< Holds array dimensions (I_tot, J_tot, K_tot)
+typedef ijk IJKDimensions; //< Holds array dimensions (I_tot, J_tot, K_tot)

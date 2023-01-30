@@ -34,7 +34,7 @@ protected:
 
 public:
   // The {IJK}_tot values of this grid
-  IJKDims tot = { 0, 0, 0 };
+  IJKDimensions tot = { 0, 0, 0 };
 
   /**
      * Maximum value out of I_tot, J_tot and K_tot

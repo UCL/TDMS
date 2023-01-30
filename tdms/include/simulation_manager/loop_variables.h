@@ -40,7 +40,7 @@ private:
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive_medium(uint8_t ***materials, const IJKDims &IJK_tot, double *attenuation_constants,
+  bool is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot, double *attenuation_constants,
                      double dt, double non_zero_tol = 1e-15);
 
   /**
@@ -113,7 +113,7 @@ public:
   int J_loop_upper_bound_plus_1;//< One greater than the optimised upper bound for the main loop over the j-index
   int n_non_pml_cells_in_K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
 
-  LoopVariables(const ObjectsFromInfile &data, IJKDims E_field_dims);
+  LoopVariables(const ObjectsFromInfile &data, IJKDimensions E_field_dims);
 
   ~LoopVariables();
 };

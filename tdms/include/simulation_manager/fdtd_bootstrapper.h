@@ -24,14 +24,14 @@ class FDTDBootstrapper {
       Matrix<std::complex<double>> Ex, Ey, Hx, Hy;
     public:
       FDTDBootstrapper() = default;
-      FDTDBootstrapper(const IJKDims& IJK_tot) { allocate_memory(IJK_tot); }
+      FDTDBootstrapper(const IJKDimensions& IJK_tot) { allocate_memory(IJK_tot); }
 
       /**
        * @brief Allocate memory for the bootstrapping variables, given the number of Yee cells
        *
        * @param IJK_tot Number of Yee cells in each axial direction
        */
-      void allocate_memory(const IJKDims& IJK_tot);
+      void allocate_memory(const IJKDimensions& IJK_tot);
 
       /**
        * @brief Extract phasors on the user-defined plane
@@ -43,6 +43,6 @@ class FDTDBootstrapper {
        * @param params Simulation parameters for this run of TDMS
        */
       void extract_phasors_in_plane(const ElectricSplitField &E_s, const MagneticSplitField &H_s,
-                                    const IJKDims &IJK_tot, int K1, int tind,
+                                    const IJKDimensions &IJK_tot, int K1, int tind,
                                     const SimulationParameters &params);
 };

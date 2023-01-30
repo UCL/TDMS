@@ -15,7 +15,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _so
   pim = _pim;
 
   // read number of Yee cells
-  IJKDims IJK_tot = n_Yee_cells();
+  IJKDimensions IJK_tot = n_Yee_cells();
 
   // setup PSTD variables, and any dependencies there might be
   if (solver_method == SolverMethod::PseudoSpectral) {
@@ -49,7 +49,7 @@ void SimulationManager::extract_phasor_norms(int frequency_index, int tind, int 
 }
 
 void SimulationManager::prepare_output(const mxArray *fieldsample, const mxArray *campssample) {
-  IJKDims IJK_tot = n_Yee_cells();
+  IJKDimensions IJK_tot = n_Yee_cells();
 
   outputs.set_n_Yee_cells(IJK_tot);
   /*set up surface mesh if required*/

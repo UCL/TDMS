@@ -79,7 +79,7 @@ public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method, PreferredInterpolationMethods _pim);
 
   /** @brief Fetch the number of Yee cells in each dimension */
-  IJKDims n_Yee_cells() { return inputs.IJK_tot; }
+  IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }
 
   /** @brief Run the time-stepping algorithm given the current inputs. */
   void execute();

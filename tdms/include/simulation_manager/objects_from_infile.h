@@ -67,7 +67,7 @@ public:
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
-  IJKDims IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
+  IJKDimensions IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
   int Nsteps;//< Number of dfts to perform before checking for phasor convergence
 
   IndependentObjectsFromInfile(

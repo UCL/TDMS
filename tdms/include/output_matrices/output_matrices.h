@@ -33,7 +33,7 @@ private:
   // Holds the pointer to the MATLAB structure that surface_phasors is bound to
   mxArray *mx_surface_vertices = nullptr;
 
-  IJKDims n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
+  IJKDimensions n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
 
   /**
    * @brief Computes the field values at the centre of the Yee cells, and the corresponding spatial coordinates of these locations.
@@ -50,7 +50,7 @@ public:
    *
    * @param IJK_tot Number of Yee cells in the {I,J,K} directions
    */
-  void set_n_Yee_cells(IJKDims IJK_tot) { n_Yee_cells = IJK_tot; }
+  void set_n_Yee_cells(IJKDimensions IJK_tot) { n_Yee_cells = IJK_tot; }
 
   /**
    * @brief Fetch a (pointer to a) MATLAB output matrix by name.
@@ -88,9 +88,9 @@ public:
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
-   * @return IJKDims The dimensions of the electric (and magnetic) field
+   * @return IJKDimensions The dimensions of the electric (and magnetic) field
    */
-  IJKDims get_E_dimensions() const {
+  IJKDimensions get_E_dimensions() const {
     return E.tot;
   }
   // set the interpolation method for the E and H fields
