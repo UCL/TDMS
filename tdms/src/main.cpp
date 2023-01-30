@@ -2,17 +2,9 @@
  * @file main.cpp
  * @brief The main function. Launches TDMS.
  */
-#include <vector>
-#include <string>
-
-#include <spdlog/spdlog.h>
-
 #include "argument_parser.h"
-#include "input_output_names.h"
 #include "input_matrices.h"
-#include "iterator.h"
-#include "mat_io.h"
-#include "output_matrices.h"
+#include "simulation_manager/simulation_manager.h"
 
 using namespace tdms_matrix_names;
 
@@ -49,12 +41,17 @@ int main(int nargs, char *argv[]){
     preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
   }
 
+  // Handles the running of the simulation, given the inputs to the executable.
+  SimulationManager simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
+
   // now run the time propagation code
-  OutputMatrices outputs =
-          execute_simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
+  simulation.execute();
+
+  // perform post-loop processes on the outputs
+  simulation.post_loop_processing();
 
   // save the outputs, possibly in compressed format
-  outputs.save_outputs(args.output_filename(), args.have_flag("-m"));
+  simulation.write_outputs_to_file(args.output_filename(), args.have_flag("-m"));
 
   return 0;
 }

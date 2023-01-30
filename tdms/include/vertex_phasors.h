@@ -42,7 +42,15 @@ private:
   double ***camplitudesR = nullptr, ***camplitudesI = nullptr;
 
 public:
-  VertexPhasors(const mxArray *ptr);
+  VertexPhasors() = default;
+  VertexPhasors(const mxArray *ptr) { set_from(ptr); }
+
+  /**
+   * @brief Setup using data from an input file
+   *
+   * @param ptr Pointer to the struct containing the list of vertices and components to extract phasors at/for
+   */
+  void set_from(const mxArray *ptr);
 
   mxArray *get_mx_camplitudes() { return mx_camplitudes; }
 
@@ -51,12 +59,14 @@ public:
    *
    * Provided there are vertices for us to extract at, allocates the memory for the camplitude{R,I} arrays and creates the mx_camplitudes pointer to the output data.
    *
-   * @param _f_ex_vector_size The number of frequencies at which we need to extract phasors
+   * @param n_frequencies The number of frequencies at which we need to extract phasors
    */
-  void setup_complex_amplitude_arrays(int _f_ex_vector_size);
+  void setup_complex_amplitude_arrays(int n_frequencies);
 
   // Fetch the number of vertices at which we are extracting phasors
   int n_vertices() { return vertices.n_vertices(); }
+  // Fetch the number of field components we are extracting
+  int n_components() { return components.size(); }
   // Returns true/false based on whether there are/aren't vertices to extract at
   bool there_are_vertices_to_extract_at() { return (n_vertices() > 0); }
   // Returns true/false based on whether there are/aren't elements in BOTH the vertices and components arrays

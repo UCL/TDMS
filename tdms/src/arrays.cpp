@@ -28,7 +28,7 @@ void XYZVectors::set_ptr(AxialDirection d, double* ptr){
 }
 
 bool XYZVectors::all_elements_less_than(double comparison_value, int vector_length,
-                                        AxialDirection component, int buffer_start) {
+                                        AxialDirection component, int buffer_start) const {
   double *component_pointer;
   switch (component) {
     case AxialDirection::X:
@@ -49,7 +49,7 @@ bool XYZVectors::all_elements_less_than(double comparison_value, int vector_leng
   }
   return true;
 }
-bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny, int nz) {
+bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny, int nz) const {
   if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) { return false; }
   if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) { return false; }
   if (!all_elements_less_than(comparison_value, nz, AxialDirection::Z)) { return false; }

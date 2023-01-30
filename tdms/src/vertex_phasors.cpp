@@ -7,7 +7,7 @@
 using namespace std;
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 
-VertexPhasors::VertexPhasors(const mxArray *ptr) {
+void VertexPhasors::set_from(const mxArray *ptr) {
   // extract information from the MATLAB struct that was passed
   if (mxIsEmpty(ptr)) {
     spdlog::info("VertexPhasors: struct provided is empty");
@@ -39,9 +39,9 @@ void VertexPhasors::normalise_vertices(int frequency_index, complex<double> Enor
   }
 }
 
-void VertexPhasors::setup_complex_amplitude_arrays(int _f_ex_vector_size) {
+void VertexPhasors::setup_complex_amplitude_arrays(int n_frequencies) {
   // store the size of the frequency extraction vector
-  f_ex_vector_size = _f_ex_vector_size;
+  f_ex_vector_size = n_frequencies;
 
   // setup camplitudes{R,I} storage if we need them for this run
   int dims[3] = {0, 0, 0};
@@ -52,8 +52,6 @@ void VertexPhasors::setup_complex_amplitude_arrays(int _f_ex_vector_size) {
     mx_camplitudes = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
     camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
     camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
-  } else {
-    mx_camplitudes = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
   }
 }
 
@@ -81,7 +79,7 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
   {
 #pragma omp for
     for (vindex = 0; vindex < n_vertices(); vindex++) {// loop over every vertex
-      CellCoordinate current_cell(vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]);
+      CellCoordinate current_cell {vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]};
 
       switch (params.dimension) {
         case Dimension::THREE:

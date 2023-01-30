@@ -27,7 +27,7 @@ void triangulatePlane(int I0, int I1, int J0, int J1, int K,int coordmap[], int 
 
   //check all numbers are within range and none are equal
   if( !(temp_res[0] && temp_res[1] && temp_res[2]) || (coordmap[0]==coordmap[1]) || (coordmap[1]==coordmap[2]) || (coordmap[0]==coordmap[2])){
-    sprintf(buffer,"Error in triangulatePlane(), coordmap incorrect [%d %d %d], [%d %d %d]",coordmap[0],coordmap[1],coordmap[2],temp_res[0],temp_res[1],temp_res[2]);
+    snprintf(buffer, 100, "Error in triangulatePlane(), coordmap incorrect [%d %d %d], [%d %d %d]",coordmap[0],coordmap[1],coordmap[2],temp_res[0],temp_res[1],temp_res[2]);
     mexErrMsgTxt(buffer);
 
   }
@@ -142,7 +142,7 @@ void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], 
 
   //check all numbers are within range and none are equal
   if( !(temp_res[0] && temp_res[1] && temp_res[2]) || (coordmap[0]==coordmap[1]) || (coordmap[1]==coordmap[2]) || (coordmap[0]==coordmap[2])){
-    sprintf(buffer,"Error in triangulatePlane(), coordmap incorrect [%d %d %d], [%d %d %d]",coordmap[0],coordmap[1],coordmap[2],temp_res[0],temp_res[1],temp_res[2]);
+    snprintf(buffer, 100, "Error in triangulatePlane(), coordmap incorrect [%d %d %d], [%d %d %d]",coordmap[0],coordmap[1],coordmap[2],temp_res[0],temp_res[1],temp_res[2]);
     mexErrMsgTxt(buffer);
 
   }
@@ -537,7 +537,7 @@ void conciseCreateBoundary(int I0, int I1,int K0, int K1,
 }
 
 void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
-                                  SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray ** facets){
+                                  const SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray ** facets){
 
   int dI = spacing_stride.x, dJ = spacing_stride.y, dK = spacing_stride.z;
   mxArray *triangles[6];

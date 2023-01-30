@@ -111,22 +111,34 @@ class InterpolationScheme {
          * @return true This scheme has greater value
          * @return false This scheme has lesser, or equal, value to s
          */
-        bool is_better_than(const InterpolationScheme s) const;
+        bool is_better_than(const InterpolationScheme &s) const;
 };
 
 /* Constant members of the interpScheme class */
-const InterpolationScheme BL0 = InterpolationScheme(BAND_LIMITED_0);
-const InterpolationScheme BL1 = InterpolationScheme(BAND_LIMITED_1);
-const InterpolationScheme BL2 = InterpolationScheme(BAND_LIMITED_2);
-const InterpolationScheme BL3 = InterpolationScheme(BAND_LIMITED_3);
-const InterpolationScheme BL4 = InterpolationScheme(BAND_LIMITED_4);
-const InterpolationScheme BL5 = InterpolationScheme(BAND_LIMITED_5);
-const InterpolationScheme BL6 = InterpolationScheme(BAND_LIMITED_6);
-const InterpolationScheme BL7 = InterpolationScheme(BAND_LIMITED_7);
-const InterpolationScheme BL_TO_CELL_0 = InterpolationScheme(BAND_LIMITED_CELL_ZERO);
-const InterpolationScheme CBFst = InterpolationScheme(CUBIC_INTERP_FIRST);
-const InterpolationScheme CBMid = InterpolationScheme(CUBIC_INTERP_MIDDLE);
-const InterpolationScheme CBLst = InterpolationScheme(CUBIC_INTERP_LAST);
+const InterpolationScheme BL0 =
+        InterpolationScheme(BAND_LIMITED_0);//< Scheme performing BLi to position 0.5
+const InterpolationScheme BL1 =
+        InterpolationScheme(BAND_LIMITED_1);//< Scheme performing BLi to position 1.5
+const InterpolationScheme BL2 =
+        InterpolationScheme(BAND_LIMITED_2);//< Scheme performing BLi to position 2.5
+const InterpolationScheme BL3 =
+        InterpolationScheme(BAND_LIMITED_3);//< Scheme performing BLi to position 3.5
+const InterpolationScheme BL4 =
+        InterpolationScheme(BAND_LIMITED_4);//< Scheme performing BLi to position 4.5
+const InterpolationScheme BL5 =
+        InterpolationScheme(BAND_LIMITED_5);//< Scheme performing BLi to position 5.5
+const InterpolationScheme BL6 =
+        InterpolationScheme(BAND_LIMITED_6);//< Scheme performing BLi to position 6.5
+const InterpolationScheme BL7 = InterpolationScheme(
+        BAND_LIMITED_7);//< Scheme performing BLi to position 7.5 (after last cell)
+const InterpolationScheme BL_TO_CELL_0 = InterpolationScheme(
+        BAND_LIMITED_CELL_ZERO);//< Scheme performing BLi to position -0.5 (before 1st cell)
+const InterpolationScheme CBFst = InterpolationScheme(
+        CUBIC_INTERP_FIRST);//< Scheme performing cubic interpolation to the midpoint of the first pair of a set of 4 datapoints
+const InterpolationScheme CBMid = InterpolationScheme(
+        CUBIC_INTERP_MIDDLE);//< Scheme performing cubic interpolation to the midpoint of the central pair of a set of 4 datapoints
+const InterpolationScheme CBLst = InterpolationScheme(
+        CUBIC_INTERP_LAST);//< Scheme performing cubic interpolation to the midpoint of the last pair of a set of 4 datapoints
 
 /**
  * @brief Determine the appropriate interpolation scheme to use, given the number of datapoints available and the position to which we wish to interpolate to.

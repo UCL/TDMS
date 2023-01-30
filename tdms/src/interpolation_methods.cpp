@@ -181,7 +181,7 @@ int InterpolationScheme::num_nonzero_coeffs() const {
     return last_nonzero_coeff - first_nonzero_coeff + 1;
 }
 
-bool InterpolationScheme::is_better_than(const InterpolationScheme s) const {
+bool InterpolationScheme::is_better_than(const InterpolationScheme &s) const {
     return (priority > s.get_priority());
 }
 

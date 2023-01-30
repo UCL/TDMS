@@ -33,15 +33,14 @@ protected:
   PreferredInterpolationMethods pim = PreferredInterpolationMethods::BandLimited;
 
 public:
-  int I_tot = 0;
-  int J_tot = 0;
-  int K_tot = 0;
+  // The {IJK}_tot values of this grid
+  IJKDimensions tot = { 0, 0, 0 };
 
   /**
      * Maximum value out of I_tot, J_tot and K_tot
      * @return value
      */
-  int max_IJK_tot() const { return max(I_tot, J_tot, K_tot); };
+  int max_IJK_tot() const { return tot.max(); };
 
   /**
    * @brief Set the preferred interpolation methods
@@ -56,7 +55,7 @@ public:
   fftw_plan* plan_b = nullptr;  // Backward fftw plan
 
   double **operator[](int value) const { return tensor[value]; };
-  double operator[](CellCoordinate cell) const { return tensor[cell.k()][cell.j()][cell.i()]; }
+  double operator[](CellCoordinate cell) const { return tensor[cell.k][cell.j][cell.i]; }
 
   void initialise_from_matlab(double*** tensor, Dimensions &dims);
 
@@ -235,15 +234,6 @@ public:
   int il = 0, iu = 0, jl = 0, ju = 0, kl = 0, ku = 0;
 
   /**
-   * @brief Normalises the field entries by divding by the angular norm.
-   *
-   * Specifically,
-   * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm
-   *
-   */
-  void normalise_volume();
-
-  /**
      * Default no arguments constructor
      */
   Field() = default;
@@ -272,6 +262,15 @@ public:
     allocate();
     zero();
   }
+
+  /**
+   * @brief Normalises the field entries by dividing by the angular norm.
+   *
+   * Specifically,
+   * real[c][k][j][i] + i imag[c][k][j][i] = ( real[c][k][j][i] + i imag[c][k][j][i] ) / angular_norm
+   *
+   */
+  void normalise_volume();
 
   /**
    * Set the phasors for this field, given a split field. Result gives field according to the

@@ -17,9 +17,9 @@ void Field::normalise_volume() {
   double denom = norm_r * norm_r + norm_i * norm_i;
 
   for (char c : {'x', 'y', 'z'})
-    for (int k = 0; k < K_tot; k++)
-      for (int j = 0; j < J_tot; j++)
-        for (int i = 0; i < I_tot; i++){
+    for (int k = 0; k < tot.k; k++)
+      for (int j = 0; j < tot.j; j++)
+        for (int i = 0; i < tot.i; i++){
 
           auto temp_r = real[c][k][j][i];
           auto temp_i = imag[c][k][j][i];
@@ -29,23 +29,23 @@ void Field::normalise_volume() {
 }
 
 Field::Field(int I_total, int J_total, int K_total) {
-  I_tot = I_total;
-  J_tot = J_total;
-  K_tot = K_total;
+  tot.i = I_total;
+  tot.j = J_total;
+  tot.k = K_total;
 }
 
 void Field::allocate() {
   for (auto arr : {&real, &imag}) {
-    arr->allocate(I_tot, J_tot, K_tot);
+    arr->allocate(tot.i, tot.j, tot.k);
   }
 };
 
 void Field::zero() {
   for (auto &arr : {real, imag})
     for (char c : {'x', 'y', 'z'})
-      for (int k = 0; k < K_tot; k++)
-        for (int j = 0; j < J_tot; j++)
-          for (int i = 0; i < I_tot; i++)
+      for (int k = 0; k < tot.k; k++)
+        for (int j = 0; j < tot.j; j++)
+          for (int i = 0; i < tot.i; i++)
               arr[c][k][j][i] = 0.;
 }
 
@@ -86,7 +86,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
     // beyond that however, interpolation methods can be called as usual
     for (int i = i_lower; i <= i_upper; i++) {
       for (int k = k_lower; k <= k_upper; k++) {
-        CellCoordinate current_cell(i,0,k);
+        CellCoordinate current_cell {i,0,k};
         complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell),
                         y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell),
                         z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
@@ -105,7 +105,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
       for (int j = j_lower; j <= j_upper; j++) {
         for (int k = k_lower; k <= k_upper; k++) {
           complex<double> x_at_centre, y_at_centre, z_at_centre;
-          CellCoordinate current_cell(i,j,k);
+          CellCoordinate current_cell {i,j,k};
           switch (mode) {
             case Dimension::THREE:
               // 3D interpolation is identical for both E and H fields
@@ -133,19 +133,19 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
 }
 void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out,
                                    Dimension mode) {
-  interpolate_over_range(x_out, y_out, z_out, 0, I_tot, 0, J_tot, 0, K_tot, mode);
+  interpolate_over_range(x_out, y_out, z_out, 0, tot.i, 0, tot.j, 0, tot.k, mode);
 }
 
 double Field::normalised_difference(Field &other) {
-  if (other.I_tot != I_tot || other.J_tot != J_tot || other.K_tot != K_tot) {
+  if (other.tot.i != tot.i || other.tot.j != tot.j || other.tot.k != tot.k) {
     throw runtime_error("Cannot compare the values of fields with different sizes");
   }
 
   double max_abs = 0., max_abs_diff = 0.;
   for (char c : {'x', 'y', 'z'})
-    for (int k = 0; k < K_tot; k++)
-      for (int j = 0; j < J_tot; j++)
-        for (int i = 0; i < I_tot; i++) {
+    for (int k = 0; k < tot.k; k++)
+      for (int j = 0; j < tot.j; j++)
+        for (int i = 0; i < tot.i; i++) {
 
           complex<double> field_value = real[c][k][j][i] + IMAGINARY_UNIT * imag[c][k][j][i],
                           other_field_value =
@@ -165,7 +165,7 @@ Field::~Field() {
   for (auto &arr : {real, imag})
     for (char c : {'x', 'y', 'z'}){
       if (arr[c] != nullptr){
-        free_cast_matlab_3D_array(arr[c], K_tot);
+        free_cast_matlab_3D_array(arr[c], tot.k);
       }
     }
 }
@@ -209,7 +209,7 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
 
 void Field::set_values_from(Field &other) {
 
-  if (other.I_tot != I_tot || other.J_tot != J_tot || other.K_tot != K_tot){
+  if (other.tot.i != tot.i || other.tot.j != tot.j || other.tot.k != tot.k){
     throw runtime_error("Cannot set the values of a field with a different size");
   }
 
@@ -219,9 +219,9 @@ void Field::set_values_from(Field &other) {
     auto other_component = are_equal(component, "real") ? other.real : other.imag;
 
     for (char c : {'x', 'y', 'z'})
-      for (int k = 0; k < K_tot; k++)
-        for (int j = 0; j < J_tot; j++)
-          for (int i = 0; i < I_tot; i++) {
+      for (int k = 0; k < tot.k; k++)
+        for (int j = 0; j < tot.j; j++)
+          for (int i = 0; i < tot.i; i++) {
             this_component[c][k][j][i] = other_component[c][k][j][i];
           }
   }

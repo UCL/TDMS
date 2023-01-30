@@ -10,7 +10,6 @@
 
 #include <fftw3.h>
 
-#include "cell_coordinate.h"
 #include "matlabio.h"
 #include "utils.h"
 #include "globals.h"
@@ -96,7 +95,7 @@ public:
    * @return false At least one element is not less than the comparison_value
    */
   bool all_elements_less_than(double comparison_value, int vector_length,
-                                 AxialDirection component, int buffer_start = 0);
+                                 AxialDirection component, int buffer_start = 0) const;
   /**
    * @brief Determines whether all elements in the x, y, AND z vectors are less than a given value.
    *
@@ -105,7 +104,7 @@ public:
    * @return true All elements are less than the comparison_value
    * @return false At least one element is not less than the comparison_value
    */
-  bool all_elements_less_than(double comparison_value, int nx, int ny, int nz);
+  bool all_elements_less_than(double comparison_value, int nx, int ny, int nz) const;
 };
 
 // TODO: docstring

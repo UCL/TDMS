@@ -27,14 +27,14 @@ void ElectricField::interpolate_transverse_magnetic_components(CellCoordinate ce
 
 complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
-  int i = cell.i(), j = cell.j(), k = cell.k();
+  int i = cell.i, j = cell.j, k = cell.k;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   complex<double> interp_data[8];
 
   switch (d) {
     case X:
       // determine the interpolation scheme to use
-      scheme = &(best_scheme(I_tot, i, pim));
+      scheme = &(best_scheme(tot.i, i, pim));
       // now fill the interpolation data
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -45,11 +45,11 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
       break;
     case Y:
       // if we are in a 2D simulation, we just return the field value at cell (i, 0, k) since there is no y-dimension to interpolate in.
-      if (J_tot <= 1) {
+      if (tot.j <= 1) {
         return complex<double>(real.y[k][0][i], imag.y[k][0][i]);
       } else { // 3D simulation, interpolation is as normal
         // determine the interpolation scheme to use
-        scheme = &(best_scheme(J_tot, j, pim));
+        scheme = &(best_scheme(tot.j, j, pim));
 
         // now fill the interpolation data
         // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -62,7 +62,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
       break;
     case Z:
       // determine the interpolation scheme to use
-      scheme = &(best_scheme(K_tot, k, pim));
+      scheme = &(best_scheme(tot.k, k, pim));
 
       // now fill the interpolation data
       // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
@@ -82,13 +82,13 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
 
 double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) {
   const InterpolationScheme *scheme;
-  int i = cell.i(), j = cell.j(), k = cell.k();
+  int i = cell.i, j = cell.j, k = cell.k;
   // prepare input data - if using a cubic scheme we have reserved more memory than necessary but nevermind
   double interp_data[8];
 
   switch (d) {
     case X:
-      scheme = &(best_scheme(I_tot, i, pim));
+      scheme = &(best_scheme(tot.i, i, pim));
       // now fill the interpolation data
       // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
       for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -100,10 +100,10 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
       break;
     case Y:
       // if we are in a 2D simulation, we just return the field value at cell (i, 0, k) since there is no y-dimension to interpolate in.
-      if (J_tot <= 1) {
+      if (tot.j <= 1) {
         return yx[k][0][i] + yz[k][0][i];
       } else {// 3D simulation, interpolation is as normal
-        scheme = &(best_scheme(J_tot, j, pim));
+        scheme = &(best_scheme(tot.j, j, pim));
         // now fill the interpolation data
         // j - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
         for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {
@@ -114,7 +114,7 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
         return scheme->interpolate(interp_data);
         break;
         case Z:
-          scheme = &(best_scheme(K_tot, k, pim));
+          scheme = &(best_scheme(tot.k, k, pim));
           // now fill the interpolation data
           // k - scheme.number_of_datapoints_to_left is the index of the Yee cell that plays the role of v0 in the interpolation
           for (int ind = scheme->first_nonzero_coeff; ind <= scheme->last_nonzero_coeff; ind++) {

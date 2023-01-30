@@ -28,19 +28,8 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
     exit(-1);
   }
 
-  if( !args.has_grid_filename()){
-    fprintf(stdout,"infile:[%s], outfile:[%s], m=%d\n",
-            args.input_filename(),
-            args.output_filename(),
-            args.have_flag("-m"));
-  }
-  else{
-    fprintf(stdout,"infile:[%s], gridfile:[%s], outfile:[%s], m=%d\n",
-            args.input_filename(),
-            args.grid_filename(),
-            args.output_filename(),
-            args.have_flag("-m"));
-  }
+  // write name of output file to log - input files will be logged when read from
+  spdlog::info("Output file specified: {0:s}", args.output_filename());
 
   spdlog::debug("Finished parsing arguments");
   return args;

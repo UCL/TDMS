@@ -1,6 +1,6 @@
 #include "fieldsample.h"
 
-FieldSample::FieldSample(const mxArray *ptr) {
+void FieldSample::set_from(const mxArray *ptr) {
 
   if (mxIsEmpty(ptr)) { return; }
 
@@ -34,10 +34,10 @@ Since the split-field has already been computed, we can do this in parallel by r
     for (int kt = 0; kt < k.size(); kt++) {
       for (int jt = 0; jt < j.size(); jt++) {
         for (int it = 0; it < i.size(); it++) {
-          CellCoordinate current_cell(i[it] + pml.Dxl - 1, j[jt] + pml.Dyl - 1,
-                                      k[kt] + pml.Dzl - 1);
+          CellCoordinate current_cell {i[it] + pml.Dxl - 1, j[jt] + pml.Dyl - 1,
+                                      k[kt] + pml.Dzl - 1};
           Ex_temp = E_split.interpolate_to_centre_of(AxialDirection::X, current_cell);
-          if (current_cell.j() != 0) {
+          if (current_cell.j != 0) {
             Ey_temp = E_split.interpolate_to_centre_of(AxialDirection::Y, current_cell);
           } else {
             Ey_temp = E_split.yx[current_cell] + E_split.yz[current_cell];
