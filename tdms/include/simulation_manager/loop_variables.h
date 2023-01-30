@@ -1,6 +1,6 @@
 /**
  * @file loop_variables.h
- * @author your name (you@domain.com)
+ * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Class that handles the setup of variables whose scope is limited to the main simulation loop, but which require complex setup from the inputs and/or outputs.
  */
 #pragma once

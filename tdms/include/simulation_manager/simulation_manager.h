@@ -1,6 +1,6 @@
 /**
  * @file simulation_manager.h
- * @brief Class that runs the physics of the TDMS executable, and produces an output.
+ * @brief Class that runs the physics of the TDMS executable, and produces an output. Implementation is split between simulation_manager.cpp and execute_simulation.cpp.
  */
 #pragma once
 
