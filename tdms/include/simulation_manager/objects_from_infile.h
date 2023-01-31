@@ -9,9 +9,9 @@
 #include "matrix.h"
 
 #include "arrays.h"
+#include "cell_coordinate.h"
 #include "field.h"
 #include "fieldsample.h"
-#include "cell_coordinate.h"
 #include "globals.h"
 #include "grid_labels.h"
 #include "input_matrices.h"
@@ -32,20 +32,20 @@
 class IndependentObjectsFromInfile {
 public:
   SolverMethod solver_method;//< Either PSTD (default) or FDTD, the solver method
-  int skip_tdf;                //< Either 1 if we are using PSTD, or 6 if using FDTD
+  int skip_tdf;              //< Either 1 if we are using PSTD, or 6 if using FDTD
   PreferredInterpolationMethods interpolation_methods =
-          BandLimited;         //< Either band_limited or cubic, the preferred interpolation methods
+          BandLimited;//< Either band_limited or cubic, the preferred interpolation methods
 
-  SimulationParameters params; //< The parameters for this simulation
+  SimulationParameters params;//< The parameters for this simulation
 
-  ElectricSplitField E_s;      //< The split electric-field values
-  MagneticSplitField H_s;      //< The split magnetic-field values
+  ElectricSplitField E_s;//< The split electric-field values
+  MagneticSplitField H_s;//< The split magnetic-field values
 
-  uint8_t ***materials;        //< TODO
-  CMaterial Cmaterial;         //< TODO
-  DMaterial Dmaterial;         //< TODO
-  CCollection C;               //< TODO
-  DCollection D;               //< TODO
+  uint8_t ***materials;//< TODO
+  CMaterial Cmaterial; //< TODO
+  DMaterial Dmaterial; //< TODO
+  CCollection C;       //< TODO
+  DCollection D;       //< TODO
 
   double *freespace_Cbx;       //< freespace constants
   double *alpha, *beta, *gamma;//< dispersion parameters
@@ -53,22 +53,22 @@ public:
   InterfaceComponent I0, I1, J0, J1, K0, K1;//< user-defined interface components
   Cuboid cuboid;                            //< user-defined surface to extract phasors over
 
-  XYZVectors rho_cond;                      //< conductive aux
-  DispersiveMultiLayer matched_layer;       //< dispersive aux
+  XYZVectors rho_cond;               //< conductive aux
+  DispersiveMultiLayer matched_layer;//< dispersive aux
 
-  IncidentField Ei;                         //< time-domain field
+  IncidentField Ei;//< time-domain field
 
-  FrequencyVectors f_vec;                   //< frequency vector
-  Pupil pupil;                              //< TODO
-  DTilde D_tilde;                           //< TODO
-  TDFieldExporter2D ex_td_field_exporter;   //< two-dimensional field exporter
+  FrequencyVectors f_vec;                //< frequency vector
+  Pupil pupil;                           //< TODO
+  DTilde D_tilde;                        //< TODO
+  TDFieldExporter2D ex_td_field_exporter;//< two-dimensional field exporter
 
   GridLabels input_grid_labels;//< cartesian labels of the Yee cells
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
   IJKDimensions IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
-  int Nsteps;//< Number of dfts to perform before checking for phasor convergence
+  int Nsteps;           //< Number of dfts to perform before checking for phasor convergence
 
   IndependentObjectsFromInfile(
           InputMatrices matrices_from_input_file,
@@ -113,14 +113,19 @@ public:
  */
 class ObjectsFromInfile : public IndependentObjectsFromInfile {
 public:
-    Source Isource, Jsource, Ksource;//< TODO
-    GratingStructure structure;//< TODO
-    FrequencyExtractVector f_ex_vec;//< Vector of frequencies to extract field & phasors at
+  Source Isource, Jsource, Ksource;//< TODO
+  GratingStructure structure;      //< TODO
+  FrequencyExtractVector f_ex_vec; //< Vector of frequencies to extract field & phasors at
 
-    ObjectsFromInfile(
-            InputMatrices matrices_from_input_file,
-            SolverMethod _solver_method = SolverMethod::PseudoSpectral,
-            PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
+  ObjectsFromInfile(
+          InputMatrices matrices_from_input_file,
+          SolverMethod _solver_method = SolverMethod::PseudoSpectral,
+          PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
 
-    ~ObjectsFromInfile();
+  /** @brief Determine whether the {IJK}source terms are empty (true) or not (false) */
+  bool all_sources_are_empty() {
+    return Isource.is_empty() && Jsource.is_empty() && Ksource.is_empty();
+  }
+
+  ~ObjectsFromInfile();
 };
