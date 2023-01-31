@@ -7,7 +7,7 @@
 using namespace tdms_phys_constants;
 using namespace std;
 
-LoopVariables::LoopVariables(const ObjectsFromInfile &data, IJKDims E_field_dims) {
+LoopVariables::LoopVariables(const ObjectsFromInfile &data, IJKDimensions E_field_dims) {
   // deduce the number of non-pml cells in the z-direction, for efficiency
   n_non_pml_cells_in_K = data.IJK_tot.k - data.params.pml.Dxl - data.params.pml.Dxu;
 
@@ -65,7 +65,7 @@ LoopVariables::LoopVariables(const ObjectsFromInfile &data, IJKDims E_field_dims
 }
 
 void LoopVariables::setup_dispersive_properties(const ObjectsFromInfile &data) {
-  IJKDims IJK = data.IJK_tot;
+  IJKDimensions IJK = data.IJK_tot;
   // determine whether or not we have a dispersive medium
   is_dispersive = is_dispersive_medium(data.materials, IJK, data.gamma, data.params.dt);
   // work out if we have conductive background: background is conductive if at least one entry exceeds 1e-15
@@ -85,7 +85,7 @@ void LoopVariables::setup_dispersive_properties(const ObjectsFromInfile &data) {
   if (is_conductive) { J_c.allocate_and_zero(); }
 }
 
-bool LoopVariables::is_dispersive_medium(uint8_t ***materials, const IJKDims &IJK_tot,
+bool LoopVariables::is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot,
                                          double *attenuation_constants, double dt,
                                          double non_zero_tol) {
   int max_mat = 0;

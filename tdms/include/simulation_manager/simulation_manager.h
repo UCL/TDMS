@@ -1,6 +1,6 @@
 /**
  * @file simulation_manager.h
- * @brief Class that runs the physics of the TDMS executable, and produces an output.
+ * @brief Class that runs the physics of the TDMS executable, and produces an output. Implementation is split between simulation_manager.cpp and execute_simulation.cpp.
  */
 #pragma once
 
@@ -79,7 +79,7 @@ public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method, PreferredInterpolationMethods _pim);
 
   /** @brief Fetch the number of Yee cells in each dimension */
-  IJKDims n_Yee_cells() { return inputs.IJK_tot; }
+  IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }
 
   /** @brief Run the time-stepping algorithm given the current inputs. */
   void execute();

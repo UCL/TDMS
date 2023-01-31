@@ -7,9 +7,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <algorithm>
-
-
 /**
  * @brief A structure for holding three values, which typically pertain to the same quantity but for each of the axial directions.
  *
@@ -25,15 +22,10 @@ struct ijk {
   /** @brief Print the (i,j,k) values */
   void print() const { spdlog::info("ijk: ({},{},{})", i, j, k); }
 
-  ijk &operator+=(int n) {
-    this->i += n;
-    this->j += n;
-    this->k += n;
-    return *this;
-  }
+  ijk &operator+=(int n) { this->i += n; this->j += n; this->k += n; return *this; }
 };
 
 /* Synonyms for code readability */
 
 typedef ijk CellCoordinate;//< Index-coordinates (i,j,k) of a Yee cell
-typedef ijk IJKDims;       //< Holds array dimensions (I_tot, J_tot, K_tot)
+typedef ijk IJKDimensions; //< Holds array dimensions (I_tot, J_tot, K_tot)

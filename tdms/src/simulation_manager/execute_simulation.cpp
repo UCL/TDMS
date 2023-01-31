@@ -26,7 +26,7 @@ void SimulationManager::execute() {
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
 
   // get the number of Yee cells in each axial direction
-  IJKDims IJK_tot = n_Yee_cells();
+  IJKDimensions IJK_tot = n_Yee_cells();
   int I_tot = IJK_tot.i, J_tot = IJK_tot.j, K_tot = IJK_tot.k;
 
   // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
