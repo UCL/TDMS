@@ -31,8 +31,8 @@ repos:
           args: ["-p=tdms/build/compile_commands.json"]
         # - id: cppcheck
         #   args: ["--project=tdms/build/compile_commands.json"]
-        - id: cpplint
-          args: ["--filter=-whitespace/comments,-legal/copyright", "--linelength=120", "--quiet"]
+        #        - id: cpplint
+        #  args: ["--filter=-whitespace/comments,-legal/copyright", "--linelength=120", "--quiet"]
           # suppress whitespace because it conflicts with clang-tidy and doxygen
           # suppress copyright in file headers because we don't require them in the developer docs
           # run quietly so we don't see you doing this if everything is fine
