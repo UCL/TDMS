@@ -21,8 +21,9 @@ bool OutputMatrixPointers::memory_already_assigned(const vector<string> &matrix_
   return false;
 }
 
-void OutputMatrixPointers::assign_empty_matrix(const vector<string> &matrix_names, mxClassID data_type,
-                                               mxComplexity complexity, int ndims) {
+void OutputMatrixPointers::assign_empty_matrix(const vector<string> &matrix_names,
+                                               mxClassID data_type, mxComplexity complexity,
+                                               int ndims) {
   // avoid memory leaks
   error_on_memory_assigned(matrix_names);
   // assign the empty array to all the matrix_names

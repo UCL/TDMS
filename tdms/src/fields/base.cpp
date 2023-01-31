@@ -1,7 +1,7 @@
 #include "field.h"
 
-#include "matlabio.h"
 #include "globals.h"
+#include "matlabio.h"
 
 using namespace std;
 using namespace tdms_math_constants;
@@ -19,7 +19,7 @@ void Field::normalise_volume() {
   for (char c : {'x', 'y', 'z'})
     for (int k = 0; k < tot.k; k++)
       for (int j = 0; j < tot.j; j++)
-        for (int i = 0; i < tot.i; i++){
+        for (int i = 0; i < tot.i; i++) {
 
           auto temp_r = real[c][k][j][i];
           auto temp_i = imag[c][k][j][i];
@@ -35,9 +35,7 @@ Field::Field(int I_total, int J_total, int K_total) {
 }
 
 void Field::allocate() {
-  for (auto arr : {&real, &imag}) {
-    arr->allocate(tot.i, tot.j, tot.k);
-  }
+  for (auto arr : {&real, &imag}) { arr->allocate(tot.i, tot.j, tot.k); }
 };
 
 void Field::zero() {
@@ -45,14 +43,11 @@ void Field::zero() {
     for (char c : {'x', 'y', 'z'})
       for (int k = 0; k < tot.k; k++)
         for (int j = 0; j < tot.j; j++)
-          for (int i = 0; i < tot.i; i++)
-              arr[c][k][j][i] = 0.;
+          for (int i = 0; i < tot.i; i++) arr[c][k][j][i] = 0.;
 }
 
-complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int Nt){
-  return f
-         * exp( fmod(phase(n, omega, dt), 2*DCPI) * IMAGINARY_UNIT)
-         * 1./((double) Nt);
+complex<double> Field::phasor_norm(double f, int n, double omega, double dt, int Nt) {
+  return f * exp(fmod(phase(n, omega, dt), 2 * DCPI) * IMAGINARY_UNIT) * 1. / ((double) Nt);
 }
 
 void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out, int i_lower,
@@ -86,7 +81,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
     // beyond that however, interpolation methods can be called as usual
     for (int i = i_lower; i <= i_upper; i++) {
       for (int k = k_lower; k <= k_upper; k++) {
-        CellCoordinate current_cell {i,0,k};
+        CellCoordinate current_cell{i, 0, k};
         complex<double> x_at_centre = interpolate_to_centre_of(AxialDirection::X, current_cell),
                         y_at_centre = interpolate_to_centre_of(AxialDirection::Y, current_cell),
                         z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
@@ -105,7 +100,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
       for (int j = j_lower; j <= j_upper; j++) {
         for (int k = k_lower; k <= k_upper; k++) {
           complex<double> x_at_centre, y_at_centre, z_at_centre;
-          CellCoordinate current_cell {i,j,k};
+          CellCoordinate current_cell{i, j, k};
           switch (mode) {
             case Dimension::THREE:
               // 3D interpolation is identical for both E and H fields
@@ -114,10 +109,12 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
               z_at_centre = interpolate_to_centre_of(AxialDirection::Z, current_cell);
               break;
             case Dimension::TRANSVERSE_ELECTRIC:
-              interpolate_transverse_electric_components(current_cell, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_electric_components(current_cell, &x_at_centre, &y_at_centre,
+                                                         &z_at_centre);
               break;
             case Dimension::TRANSVERSE_MAGNETIC:
-              interpolate_transverse_magnetic_components(current_cell, &x_at_centre, &y_at_centre, &z_at_centre);
+              interpolate_transverse_magnetic_components(current_cell, &x_at_centre, &y_at_centre,
+                                                         &z_at_centre);
               break;
           }
           real_out.x[k - k_lower][j - j_lower][i - i_lower] = x_at_centre.real();
@@ -131,8 +128,7 @@ void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_ou
     }
   }
 }
-void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out,
-                                   Dimension mode) {
+void Field::interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out, Dimension mode) {
   interpolate_over_range(x_out, y_out, z_out, 0, tot.i, 0, tot.j, 0, tot.k, mode);
 }
 
@@ -163,10 +159,8 @@ double Field::normalised_difference(Field &other) {
 Field::~Field() {
 
   for (auto &arr : {real, imag})
-    for (char c : {'x', 'y', 'z'}){
-      if (arr[c] != nullptr){
-        free_cast_matlab_3D_array(arr[c], tot.k);
-      }
+    for (char c : {'x', 'y', 'z'}) {
+      if (arr[c] != nullptr) { free_cast_matlab_3D_array(arr[c], tot.k); }
     }
 }
 
@@ -209,7 +203,7 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
 
 void Field::set_values_from(Field &other) {
 
-  if (other.tot.i != tot.i || other.tot.j != tot.j || other.tot.k != tot.k){
+  if (other.tot.i != tot.i || other.tot.j != tot.j || other.tot.k != tot.k) {
     throw runtime_error("Cannot set the values of a field with a different size");
   }
 

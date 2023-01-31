@@ -4,9 +4,9 @@
  */
 #pragma once
 
-#include <vector>
-#include <string>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "input_output_names.h"
 #include "matrix.h"
@@ -45,7 +45,7 @@ public:
    *
    * @param matrix_names List of output matrices to check.
    */
-  bool memory_already_assigned(const std::vector<std::string>& matrix_names);
+  bool memory_already_assigned(const std::vector<std::string> &matrix_names);
 
   /**
    * @brief Throw an error if the matrix_pointer corresponding to any one of the matrix names passed already points to allocated memory.
@@ -54,7 +54,7 @@ public:
    *
    * @param matrix_names List of output matrices to check.
    */
-  void error_on_memory_assigned(const std::vector<std::string>& matrix_names) {
+  void error_on_memory_assigned(const std::vector<std::string> &matrix_names) {
     if (memory_already_assigned(matrix_names)) {
       throw std::runtime_error("Reassigning output pointer will cause memory leak - aborting.");
     }
@@ -70,7 +70,7 @@ public:
    * @param is_complex Whether the data is complex (mxCOMPLEX) or real (mxREAL)
    * @param ndims Number of dimensions in the empty array to assign
    */
-  void assign_empty_matrix(const std::vector<std::string>& matrix_names,
+  void assign_empty_matrix(const std::vector<std::string> &matrix_names,
                            mxClassID data_type = mxDOUBLE_CLASS,
                            mxComplexity complexity = mxCOMPLEX, int ndims = 2);
 

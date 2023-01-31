@@ -1,14 +1,14 @@
 #include "field.h"
 
 #include "cell_coordinate.h"
-#include "interpolation_methods.h"
 #include "globals.h"
+#include "interpolation_methods.h"
 
 using namespace std;
 using namespace tdms_math_constants;
 
-double MagneticField::phase(int n, double omega, double dt){
-  return omega * ((double) n + 0.5) * dt;  // 0.5 added because it's known half a time step after E
+double MagneticField::phase(int n, double omega, double dt) {
+  return omega * ((double) n + 0.5) * dt;// 0.5 added because it's known half a time step after E
 }
 
 void MagneticField::interpolate_transverse_electric_components(CellCoordinate cell,
@@ -78,17 +78,16 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, CellCo
   switch (d) {
     case X:
       // Associations: a = x, b = y, c = z
-      if (tot.j <=1) {
+      if (tot.j <= 1) {
         // this is a 2D simulation
         // we simply interpolate the Hx field in the z-direction to get the field value at the centre
         c_scheme = &(best_scheme(tot.k, k, pim));
-        for(int kk = c_scheme->first_nonzero_coeff; kk <= c_scheme->last_nonzero_coeff; kk++) {
+        for (int kk = c_scheme->first_nonzero_coeff; kk <= c_scheme->last_nonzero_coeff; kk++) {
           int cell_k = k - c_scheme->number_of_datapoints_to_left + kk;
           data_for_first_scheme[kk] = real.x[cell_k][0][i] + IMAGINARY_UNIT * imag.x[cell_k][0][i];
         }
         return c_scheme->interpolate(data_for_first_scheme);
-      }
-      else {
+      } else {
         c_scheme = &(best_scheme(tot.k, k, pim));
         b_scheme = &(best_scheme(tot.j, j, pim));
 
@@ -189,8 +188,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d, CellCo
           data_for_first_scheme[ii] = real.z[k][0][cell_i] + IMAGINARY_UNIT * imag.z[k][0][cell_i];
         }
         return b_scheme->interpolate(data_for_first_scheme);
-      }
-      else {
+      } else {
         b_scheme = &(best_scheme(tot.i, i, pim));
         c_scheme = &(best_scheme(tot.j, j, pim));
 
@@ -259,9 +257,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
         // now fill the interpolation data
         // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
         for (int ind = b_scheme->first_nonzero_coeff; ind <= b_scheme->last_nonzero_coeff; ind++) {
-          data_for_first_scheme[ind] =
-                  xy[k - b_scheme->number_of_datapoints_to_left + ind][j][i] +
-                  xz[k - b_scheme->number_of_datapoints_to_left + ind][j][i];
+          data_for_first_scheme[ind] = xy[k - b_scheme->number_of_datapoints_to_left + ind][j][i] +
+                                       xz[k - b_scheme->number_of_datapoints_to_left + ind][j][i];
         }
 
         // now run the interpolation scheme and place the result into the output
@@ -361,9 +358,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
         // now fill the interpolation data
         // i - (scheme.number_of_datapoints_to_left) is the index of the Yee cell that plays the role of v0 in the interpolation
         for (int ind = b_scheme->first_nonzero_coeff; ind <= b_scheme->last_nonzero_coeff; ind++) {
-          data_for_first_scheme[ind] =
-                  zx[k][j][i - b_scheme->number_of_datapoints_to_left + ind] +
-                  zy[k][j][i - b_scheme->number_of_datapoints_to_left + ind];
+          data_for_first_scheme[ind] = zx[k][j][i - b_scheme->number_of_datapoints_to_left + ind] +
+                                       zy[k][j][i - b_scheme->number_of_datapoints_to_left + ind];
         }
 
         // now run the interpolation scheme and place the result into the output

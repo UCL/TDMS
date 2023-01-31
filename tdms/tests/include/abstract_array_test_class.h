@@ -80,9 +80,7 @@ protected:
   /**
    * @brief Creates the MATLAB empty struct (no fields, 0 size)
    */
-  void create_empty_struct() {
-    create_struct_array(0, 1, 0, {});
-  }
+  void create_empty_struct() { create_struct_array(0, 1, 0, {}); }
   /**
    * @brief Creates a MATLAB numeric array
    *

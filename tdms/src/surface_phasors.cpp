@@ -61,9 +61,8 @@ void SurfacePhasors::normalise_surface(int frequency_index, complex<double> Enor
   }
 }
 
-void SurfacePhasors::extractPhasorsSurface(int frequency_index,
-                                           ElectricSplitField &E, MagneticSplitField &H, int n,
-                                           double omega, int Nt,
+void SurfacePhasors::extractPhasorsSurface(int frequency_index, ElectricSplitField &E,
+                                           MagneticSplitField &H, int n, double omega, int Nt,
                                            SimulationParameters &params, bool interpolate) {
   int vindex;
   FullFieldSnapshot F;
@@ -87,7 +86,7 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_index,
     if (interpolate) {
 #pragma omp for
       for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-        CellCoordinate current_cell {surface_vertices[0][vindex], surface_vertices[1][vindex],
+        CellCoordinate current_cell{surface_vertices[0][vindex], surface_vertices[1][vindex],
                                     surface_vertices[2][vindex]};
         switch (params.dimension) {
           case Dimension::THREE:
@@ -122,7 +121,7 @@ void SurfacePhasors::extractPhasorsSurface(int frequency_index,
     } else {
 #pragma omp for
       for (vindex = 0; vindex < n_surface_vertices; vindex++) {
-        CellCoordinate current_cell {surface_vertices[0][vindex], surface_vertices[1][vindex],
+        CellCoordinate current_cell{surface_vertices[0][vindex], surface_vertices[1][vindex],
                                     surface_vertices[2][vindex]};
 
         F.Ex = E.xy[current_cell] + E.xz[current_cell];
@@ -160,10 +159,9 @@ void SurfacePhasors::create_vertex_list(GridLabels input_grid_labels) {
   }
 }
 
-void SurfacePhasors::update_surface_EH(int frequency_index, int vertex_index,
-                       FullFieldSnapshot F) {
+void SurfacePhasors::update_surface_EH(int frequency_index, int vertex_index, FullFieldSnapshot F) {
   // FullFieldSnapshot uses the same indexing scheme as surface_EH{r,i} do, so we can just loop
-  for(int component = 0; component < 6; component++) {
+  for (int component = 0; component < 6; component++) {
     surface_EHr[frequency_index][component][vertex_index] += real(F[component]);
     surface_EHi[frequency_index][component][vertex_index] += imag(F[component]);
   }

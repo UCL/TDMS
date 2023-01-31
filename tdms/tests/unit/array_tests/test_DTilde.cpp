@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 
 using namespace std;
 
@@ -79,6 +79,4 @@ void DTildeTest::test_initialise_method() {
   CHECK(information_stored);
 }
 
-TEST_CASE("DTilde") {
-  DTildeTest().run_all_class_tests();
-}
+TEST_CASE("DTilde") { DTildeTest().run_all_class_tests(); }

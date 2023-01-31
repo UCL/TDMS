@@ -20,14 +20,14 @@ void VertexPhasors::set_from(const mxArray *ptr) {
 
 void VertexPhasors::normalise_vertices(int frequency_index, complex<double> Enorm,
                                        complex<double> Hnorm) {
-  for(int i = FieldComponents::Ex; i <= FieldComponents::Hz; i++) {
+  for (int i = FieldComponents::Ex; i <= FieldComponents::Hz; i++) {
     // determine whether we are extracting this field component at the vertices or not
     int index_in_camplitudes = components.index(i);
     if (index_in_camplitudes >= 0) {
       // we are extracting this component, determine the normalisation factor
       complex<double> norm = i <= FieldComponents::Ez ? Enorm : Hnorm;
       // loop over all entries and normalise
-      for(int vindex = 0; vindex < n_vertices(); vindex++) {
+      for (int vindex = 0; vindex < n_vertices(); vindex++) {
         complex<double> normalised_amplitude =
                 complex<double>(camplitudesR[frequency_index][index_in_camplitudes][vindex],
                                 camplitudesI[frequency_index][index_in_camplitudes][vindex]) /
@@ -74,12 +74,11 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
   these computations can be done in parallel as the computation of the phasors is independent of one another.
   Ergo, we use a parallel loop.
   */
-#pragma omp parallel default(shared) \
-        private(F, vindex)
+#pragma omp parallel default(shared) private(F, vindex)
   {
 #pragma omp for
     for (vindex = 0; vindex < n_vertices(); vindex++) {// loop over every vertex
-      CellCoordinate current_cell {vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]};
+      CellCoordinate current_cell{vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]};
 
       switch (params.dimension) {
         case Dimension::THREE:
@@ -114,24 +113,26 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
   }//end parallel region
 }
 
-void VertexPhasors::update_vertex_camplitudes(int frequency_index, int vertex_index, FullFieldSnapshot F) {
-  for(int component_id = FieldComponents::Ex; component_id <= FieldComponents::Hz; component_id++) {
-      int idx = components.index(component_id);
-      // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes Ex->Hz with 0->5 (FullFieldSnapshot)
-      // this is not an ideal fix, but it is the simplist so long as we remember the correspondence above
-      int cpp_component_index = component_id - 1;
-      if (idx >= 0) {
-          // this component has been requested for extraction
-          camplitudesR[frequency_index][idx][vertex_index] += real(F[cpp_component_index]);
-          camplitudesI[frequency_index][idx][vertex_index] += imag(F[cpp_component_index]);
-      }
+void VertexPhasors::update_vertex_camplitudes(int frequency_index, int vertex_index,
+                                              FullFieldSnapshot F) {
+  for (int component_id = FieldComponents::Ex; component_id <= FieldComponents::Hz;
+       component_id++) {
+    int idx = components.index(component_id);
+    // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes Ex->Hz with 0->5 (FullFieldSnapshot)
+    // this is not an ideal fix, but it is the simplist so long as we remember the correspondence above
+    int cpp_component_index = component_id - 1;
+    if (idx >= 0) {
+      // this component has been requested for extraction
+      camplitudesR[frequency_index][idx][vertex_index] += real(F[cpp_component_index]);
+      camplitudesI[frequency_index][idx][vertex_index] += imag(F[cpp_component_index]);
+    }
   }
 }
 
 VertexPhasors::~VertexPhasors() {
-    // cleanup storage arrays if they were created
-    if (there_are_vertices_to_extract_at()) {
-        free_cast_matlab_3D_array(camplitudesR, f_ex_vector_size);
-        free_cast_matlab_3D_array(camplitudesI, f_ex_vector_size);
-    }
+  // cleanup storage arrays if they were created
+  if (there_are_vertices_to_extract_at()) {
+    free_cast_matlab_3D_array(camplitudesR, f_ex_vector_size);
+    free_cast_matlab_3D_array(camplitudesI, f_ex_vector_size);
+  }
 }

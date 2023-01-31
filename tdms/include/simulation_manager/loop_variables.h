@@ -40,8 +40,8 @@ private:
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot, double *attenuation_constants,
-                     double dt, double non_zero_tol = 1e-15);
+  bool is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot,
+                            double *attenuation_constants, double dt, double non_zero_tol = 1e-15);
 
   /**
    * @brief Performs an optimisation step in a 2D simulation (J_tot==0) when we have either TE or TM, but not both.
@@ -98,14 +98,16 @@ private:
 public:
   DetectorSensitivityArrays Ex_t, Ey_t;//< temporary storage for detector sensitivity evaluation
 
-  ElectricField E_at_previous_iteration;//< Stores the phasors at the previous iteration, to check for convergence
+  ElectricField
+          E_at_previous_iteration;//< Stores the phasors at the previous iteration, to check for convergence
 
   ElectricSplitField E_nm1;
   CurrentDensitySplitField
           J_c;//< The per-cell ( current density or conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  bool is_conductive, is_dispersive;//< Whether the materials are dispersive / conductive respectively
+  bool is_conductive,
+          is_dispersive;//< Whether the materials are dispersive / conductive respectively
 
   double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
 

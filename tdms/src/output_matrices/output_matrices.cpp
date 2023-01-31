@@ -63,14 +63,15 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
     output_arrays.error_on_memory_assigned({"maxresfield"});
     // create and allocate new memory
     int dims[2] = {1, 1};
-    output_arrays["maxresfield"] =
-            mxCreateNumericArray(2, (mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
+    output_arrays["maxresfield"] = mxCreateNumericArray(2, (mwSize *) dims, mxDOUBLE_CLASS, mxREAL);
   }
   // assign new maxfield to the output
   *mxGetPr(output_arrays["maxresfield"]) = maxfield;
 }
 
-void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params, const GridLabels &input_grid_labels, PreferredInterpolationMethods pim) {
+void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params,
+                                             const GridLabels &input_grid_labels,
+                                             PreferredInterpolationMethods pim) {
   // set the interpolation methods
   set_interpolation_methods(pim);
 
@@ -108,16 +109,20 @@ void OutputMatrices::setup_EH_and_gridlabels(const SimulationParameters &params,
     spdlog::info("dims: ({0:d},{1:d},{2:d})", dims[0], dims[1], dims[2]);
 
     // create MATLAB data storage for the field-component outputs
-    for(string matrix : field_matrices) {
-      output_arrays[matrix] = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+    for (string matrix : field_matrices) {
+      output_arrays[matrix] =
+              mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
     }
     // create MATLAB data storage for the gridlabel outputs
     int label_dims_x[2] = {1, E.tot.i};
     int label_dims_y[2] = {1, E.tot.j};
     int label_dims_z[2] = {1, E.tot.k};
-    output_arrays["x_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_x, mxDOUBLE_CLASS, mxREAL);
-    output_arrays["y_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_y, mxDOUBLE_CLASS, mxREAL);
-    output_arrays["z_out"] = mxCreateNumericArray(2, (const mwSize *) label_dims_z, mxDOUBLE_CLASS, mxREAL);
+    output_arrays["x_out"] =
+            mxCreateNumericArray(2, (const mwSize *) label_dims_x, mxDOUBLE_CLASS, mxREAL);
+    output_arrays["y_out"] =
+            mxCreateNumericArray(2, (const mwSize *) label_dims_y, mxDOUBLE_CLASS, mxREAL);
+    output_arrays["z_out"] =
+            mxCreateNumericArray(2, (const mwSize *) label_dims_z, mxDOUBLE_CLASS, mxREAL);
 
     // cast E, H, and gridlabel members to the MATLAB structures
     E.real.x = cast_matlab_3D_array(mxGetPr(output_arrays["Ex_out"]), E.tot.i, E.tot.j, E.tot.k);
@@ -194,9 +199,7 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
     int i_upper = E.tot.i - 2, i_lower = 2;
     int j_upper = E.tot.j - 2, j_lower = 2;
     int k_upper = E.tot.k - 2, k_lower = 2;
-    if (params.dimension != THREE) {
-      k_upper = k_lower = 0;
-    }
+    if (params.dimension != THREE) { k_upper = k_lower = 0; }
     // dimensions of the interpolated fields
     int outdims[3] = {i_upper - i_lower + 1, j_upper - j_lower + 1, 0};
     if (params.dimension == THREE) {
@@ -238,17 +241,16 @@ void OutputMatrices::setup_interpolation_outputs(SimulationParameters params) {
   }
 }
 
-void OutputMatrices::setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params, int n_frequencies) {
+void OutputMatrices::setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params,
+                                        int n_frequencies) {
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
     mxArray *mx_surface_facets = nullptr;
     if (n_Yee_cells.j == 0) {
-      conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5],
-                            &mx_surface_vertices, &mx_surface_facets);
+      conciseCreateBoundary(cuboid[0], cuboid[1], cuboid[4], cuboid[5], &mx_surface_vertices,
+                            &mx_surface_facets);
     } else {
-      conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2],
-                                   cuboid[3], cuboid[4], cuboid[5],
-                                   params.spacing_stride, &mx_surface_vertices,
-                                   &mx_surface_facets);
+      conciseTriangulateCuboidSkip(cuboid[0], cuboid[1], cuboid[2], cuboid[3], cuboid[4], cuboid[5],
+                                   params.spacing_stride, &mx_surface_vertices, &mx_surface_facets);
     }
     //we don't need the facets so destroy the matrix now to save memory
     mxDestroyArray(mx_surface_facets);
@@ -270,8 +272,7 @@ void OutputMatrices::assign_surface_phasor_outputs(bool empty_allocation,
 
     // pull the memory blocks from the phasors
     output_arrays["vertices"] = surface_phasors.get_vertex_list();
-    output_arrays["camplitudes"] =
-            surface_phasors.get_mx_surface_amplitudes();
+    output_arrays["camplitudes"] = surface_phasors.get_mx_surface_amplitudes();
     output_arrays["facets"] = mx_surface_facets;
   }
 }
@@ -292,14 +293,15 @@ void OutputMatrices::save_outputs(const string &output_file_name, bool compresse
     output_matrices_requested = outputmatrices_all;
   }
   // iterate through the matrices we want to save, setting names and placing them into the matfile
-  for(string matrix_to_write : output_matrices_requested) {
+  for (string matrix_to_write : output_matrices_requested) {
     // returns 0 if successful and non-zero if an error occurred
-    int mpv_out = matPutVariable(output_file, matrix_to_write.c_str(), output_arrays[matrix_to_write]);
+    int mpv_out =
+            matPutVariable(output_file, matrix_to_write.c_str(), output_arrays[matrix_to_write]);
     if (mpv_out != 0) {
-        // print error information
-        FILE *fp = matGetFp(output_file);
-        spdlog::info("Could not write array {0:s} to {1:s} ({2:d},{3:d},{4:d})",
-                     matrix_to_write.c_str(), output_file_name, mpv_out, feof(fp), ferror(fp));
+      // print error information
+      FILE *fp = matGetFp(output_file);
+      spdlog::info("Could not write array {0:s} to {1:s} ({2:d},{3:d},{4:d})",
+                   matrix_to_write.c_str(), output_file_name, mpv_out, feof(fp), ferror(fp));
     }
   }
 
@@ -309,7 +311,5 @@ void OutputMatrices::save_outputs(const string &output_file_name, bool compresse
 
 OutputMatrices::~OutputMatrices() {
   // free underlying surface phasor MATLAB array, if we need to
-  if (mx_surface_vertices != nullptr) {
-    mxDestroyArray(mx_surface_vertices);
-  }
+  if (mx_surface_vertices != nullptr) { mxDestroyArray(mx_surface_vertices); }
 }

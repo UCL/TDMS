@@ -4,11 +4,11 @@
  * @brief Tests allocation, deallocation, and methods for the XYZTensor3D class
  */
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 #include <complex>
+#include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
@@ -62,6 +62,4 @@ void XYZTensor3DTest::test_other_methods() {
   }
 }
 
-TEST_CASE("XYZTensor") {
-  XYZTensor3DTest().run_all_class_tests();
-}
+TEST_CASE("XYZTensor") { XYZTensor3DTest().run_all_class_tests(); }

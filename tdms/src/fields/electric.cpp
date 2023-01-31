@@ -6,20 +6,22 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-double ElectricField::phase(int n, double omega, double dt){
+double ElectricField::phase(int n, double omega, double dt) {
   return omega * ((double) n + 1) * dt;
 }
 
-void ElectricField::interpolate_transverse_electric_components(CellCoordinate cell, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void ElectricField::interpolate_transverse_electric_components(CellCoordinate cell,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = interpolate_to_centre_of(AxialDirection::X, cell);
   *y_at_centre = interpolate_to_centre_of(AxialDirection::Y, cell);
   *z_at_centre = complex<double>(0., 0.);
 }
-void ElectricField::interpolate_transverse_magnetic_components(CellCoordinate cell, complex<double> *x_at_centre,
-                                              complex<double> *y_at_centre,
-                                              complex<double> *z_at_centre) {
+void ElectricField::interpolate_transverse_magnetic_components(CellCoordinate cell,
+                                                               complex<double> *x_at_centre,
+                                                               complex<double> *y_at_centre,
+                                                               complex<double> *z_at_centre) {
   *x_at_centre = complex<double>(0., 0.);
   *y_at_centre = complex<double>(0., 0.);
   *z_at_centre = interpolate_to_centre_of(AxialDirection::Z, cell);
@@ -47,7 +49,7 @@ complex<double> ElectricField::interpolate_to_centre_of(AxialDirection d, CellCo
       // if we are in a 2D simulation, we just return the field value at cell (i, 0, k) since there is no y-dimension to interpolate in.
       if (tot.j <= 1) {
         return complex<double>(real.y[k][0][i], imag.y[k][0][i]);
-      } else { // 3D simulation, interpolation is as normal
+      } else {// 3D simulation, interpolation is as normal
         // determine the interpolation scheme to use
         scheme = &(best_scheme(tot.j, j, pim));
 
@@ -125,8 +127,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d, CellCoordi
           return scheme->interpolate(interp_data);
       }
       break;
-        default:
-          throw runtime_error("Invalid axial direction selected for interpolation!\n");
-          break;
-      }
+    default:
+      throw runtime_error("Invalid axial direction selected for interpolation!\n");
+      break;
+  }
 }

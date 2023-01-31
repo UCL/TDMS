@@ -27,7 +27,7 @@ private:
   double **vertex_list_data_ptr = nullptr;//< Buffer to place vertex data into MATLAB array
 
   mxArray *mx_surface_amplitudes = nullptr;//< Complex surface amplitudes
-  int f_ex_vector_size = 0; //< Number of elements in the frequency extraction vector
+  int f_ex_vector_size = 0;                //< Number of elements in the frequency extraction vector
 
   /* Storage for real and imag parts of mx_surface_amplitudes (these can be f_ex_vector_size * n_surface_vertices arrays of FullFieldSnapshots when MATLAB is removed!)
 
@@ -54,7 +54,7 @@ public:
    */
   void zero_surface_EH() {
     for (int k = 0; k < f_ex_vector_size; k++) {
-      for(int j = 0; j < 6; j++) { // 6 field components: Ex, y, z, and Hx, y, z
+      for (int j = 0; j < 6; j++) {// 6 field components: Ex, y, z, and Hx, y, z
         for (int i = 0; i < n_surface_vertices; i++) {
           surface_EHr[k][j][i] = 0.;
           surface_EHi[k][j][i] = 0.;
@@ -87,7 +87,8 @@ public:
    * @param frequency_vector_index Frequency index, surface_EH{r,i}[frequency_vector_index] will be normalised
    * @param Enorm,Hnorm The {E,H}-norm to normalise the {E,H}-components by
    */
-  void normalise_surface(int frequency_index, std::complex<double> Enorm, std::complex<double> Hnorm);
+  void normalise_surface(int frequency_index, std::complex<double> Enorm,
+                         std::complex<double> Hnorm);
 
   /**
    * @brief Extract the phasor values at the vertices on the surface, for the given frequency index
@@ -100,9 +101,9 @@ public:
    * @param params The parameters for this simulation
    * @param interpolate If true, perform interpolation on the fields when extracting phasors
    */
-  void extractPhasorsSurface(int frequency_index, ElectricSplitField &E,
-                             MagneticSplitField &H, int n, double omega, int Nt,
-                             SimulationParameters &params, bool interpolate = true);
+  void extractPhasorsSurface(int frequency_index, ElectricSplitField &E, MagneticSplitField &H,
+                             int n, double omega, int Nt, SimulationParameters &params,
+                             bool interpolate = true);
 
   /**
    * @brief Pulls the GridLabels information of vertices on the surface into vertex_list, a continuous block of memory.

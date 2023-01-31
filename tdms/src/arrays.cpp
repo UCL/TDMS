@@ -1,7 +1,7 @@
 #include "arrays.h"
 
-#include <spdlog/spdlog.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <utility>
 
 #include "globals.h"
@@ -10,20 +10,40 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-void XYZVectors::set_ptr(const char c, double* ptr){
+void XYZVectors::set_ptr(const char c, double *ptr) {
   switch (c) {
-    case 'x': {x = ptr; break;}
-    case 'y': {y = ptr; break;}
-    case 'z': {z = ptr; break;}
-    default: throw std::runtime_error("Have no element " + to_string(c));
+    case 'x': {
+      x = ptr;
+      break;
+    }
+    case 'y': {
+      y = ptr;
+      break;
+    }
+    case 'z': {
+      z = ptr;
+      break;
+    }
+    default:
+      throw std::runtime_error("Have no element " + to_string(c));
   }
 }
-void XYZVectors::set_ptr(AxialDirection d, double* ptr){
+void XYZVectors::set_ptr(AxialDirection d, double *ptr) {
   switch (d) {
-    case AxialDirection::X: {x = ptr; break;}
-    case AxialDirection::Y: {y = ptr; break;}
-    case AxialDirection::Z: {z = ptr; break;}
-    default: throw std::runtime_error("Have no element " + to_string(d));
+    case AxialDirection::X: {
+      x = ptr;
+      break;
+    }
+    case AxialDirection::Y: {
+      y = ptr;
+      break;
+    }
+    case AxialDirection::Z: {
+      z = ptr;
+      break;
+    }
+    default:
+      throw std::runtime_error("Have no element " + to_string(d));
   }
 }
 
@@ -65,7 +85,8 @@ CMaterial::CMaterial(const mxArray *ptr) {
   init_xyz_vectors(ptr, c, "Cc");
 }
 
-void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
+void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                                          const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
     auto element = ptr_to_vector_in(ptr, prefix + component, "material");
@@ -78,7 +99,9 @@ void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
   for (char component : {'x', 'y', 'z'}) {
 
     auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
-    is_multilayer = mxGetDimensions(element)[0] != 1; // this only matters when we check the 'z' component right? No point re-setting it each time when it's not used? TODO: check this.
+    is_multilayer =
+            mxGetDimensions(element)[0] !=
+            1;// this only matters when we check the 'z' component right? No point re-setting it each time when it's not used? TODO: check this.
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -125,9 +148,7 @@ void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const
 
 DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
 
-  if (mxIsEmpty(ptr)) {
-    return;
-  }
+  if (mxIsEmpty(ptr)) { return; }
   assert_is_struct_with_n_fields(ptr, 9, "dispersive_aux");
 
   alpha = mxGetPr(ptr_to_vector_in(ptr, "alpha", "dispersive_aux"));
@@ -153,12 +174,10 @@ bool DispersiveMultiLayer::is_dispersive(int K_tot, double near_zero_tolerance) 
 
 GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
 
-  if (mxIsEmpty(ptr)) {
-    return;
-  }
+  if (mxIsEmpty(ptr)) { return; }
 
   auto dims = mxGetDimensions(ptr);
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 || dims[1] != (I_tot + 1)){
+  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 || dims[1] != (I_tot + 1)) {
     throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
   }
 
@@ -182,7 +201,7 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
     auto dims = mxGetDimensions(ptr);
     auto n_dims = mxGetNumberOfDimensions(ptr);
 
-    if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)){
+    if (n_dims != 2 || !(dims[0] == 1 || dims[1] == 1)) {
       throw runtime_error("f_ex_vec should be a vector with N>0 elements");
     }
     // compute the number of elements prior to displaying
@@ -194,17 +213,13 @@ FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_
 
 double FrequencyExtractVector::max() {
   double tmp = -DBL_MAX;
-  for (int i = 0; i < n; i++){
-    tmp = std::max(tmp, vector[i]);
-  }
+  for (int i = 0; i < n; i++) { tmp = std::max(tmp, vector[i]); }
   return tmp;
 }
 
-void FrequencyVectors::initialise(const mxArray *ptr){
+void FrequencyVectors::initialise(const mxArray *ptr) {
 
-  if (mxIsEmpty(ptr)) {
-    return;
-  }
+  if (mxIsEmpty(ptr)) { return; }
 
   assert_is_struct_with_n_fields(ptr, 2, "f_vec");
   x = Vector<double>(ptr_to_vector_in(ptr, "fx_vec", "f_vec"));
@@ -213,16 +228,13 @@ void FrequencyVectors::initialise(const mxArray *ptr){
 
 void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
-  if (mxIsEmpty(ptr)){
-    return;
-  }
+  if (mxIsEmpty(ptr)) { return; }
 
-  auto dims = (int *)mxGetDimensions(ptr);
+  auto dims = (int *) mxGetDimensions(ptr);
 
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols){
-    throw runtime_error("Pupil has dimension "+ to_string(dims[0]) + "x"
-                        + to_string(dims[1]) + " but it needed to be " +
-                        to_string(n_rows) + "x" + to_string(n_cols));
+  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols) {
+    throw runtime_error("Pupil has dimension " + to_string(dims[0]) + "x" + to_string(dims[1]) +
+                        " but it needed to be " + to_string(n_rows) + "x" + to_string(n_cols));
   }
 
   matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
@@ -235,18 +247,18 @@ Pupil::~Pupil() {
   matrix = nullptr;
 }
 
-void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr, const string &name,
-                           int n_rows, int n_cols){
+void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr,
+                           const string &name, int n_rows, int n_cols) {
 
   auto element = ptr_to_nd_array_in(ptr, 3, name, "D_tilde");
 
-  auto dims = (int *)mxGetDimensions(element);
+  auto dims = (int *) mxGetDimensions(element);
   int n_det_modes = dims[0];
 
-  if (dims[1] != n_rows || dims[2] != n_cols){
-    throw runtime_error("D_tilde.{x, y} has final dimensions "+ to_string(dims[1]) + "x"
-                        + to_string(dims[2]) + " but it needed to be " +
-                        to_string(n_rows) + "x" + to_string(n_cols));
+  if (dims[1] != n_rows || dims[2] != n_cols) {
+    throw runtime_error("D_tilde.{x, y} has final dimensions " + to_string(dims[1]) + "x" +
+                        to_string(dims[2]) + " but it needed to be " + to_string(n_rows) + "x" +
+                        to_string(n_cols));
   }
 
   auto p = (complex<double> ***) malloc(sizeof(complex<double> **) * n_cols);
@@ -273,9 +285,7 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr
 
 void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
-  if (mxIsEmpty(ptr)){
-    return;
-  }
+  if (mxIsEmpty(ptr)) { return; }
 
   assert_is_struct_with_n_fields(ptr, 2, "D_tilde");
   set_component(x, ptr, "Dx_tilde", n_rows, n_cols);
@@ -283,7 +293,8 @@ void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   n_det_modes = mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
 }
 
-void IncidentField::set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name){
+void IncidentField::set_component(Tensor3D<double> &component, const mxArray *ptr,
+                                  const std::string &name) {
 
   if (mxIsEmpty(mxGetField(ptr, 0, name.c_str()))) {
     spdlog::info("{} not present", name);
@@ -296,10 +307,11 @@ void IncidentField::set_component(Tensor3D<double> &component, const mxArray *pt
   component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N);
   component.is_matlab_initialised = true;
 
-  cerr << "Got tdfield, dims=("+to_string(N)+","+to_string(M)+","+to_string(O)+")" << endl;
+  cerr << "Got tdfield, dims=(" + to_string(N) + "," + to_string(M) + "," + to_string(O) + ")"
+       << endl;
 }
 
-IncidentField::IncidentField(const mxArray *ptr){
+IncidentField::IncidentField(const mxArray *ptr) {
 
   assert_is_struct_with_n_fields(ptr, 2, "tdfield");
   set_component(x, ptr, "exi");
@@ -309,9 +321,7 @@ IncidentField::IncidentField(const mxArray *ptr){
 void FieldComponentsVector::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "components", "campssample");
-  if (mxIsEmpty(element)){
-    return;
-  }
+  if (mxIsEmpty(element)) { return; }
 
   auto dims = mxGetDimensions(element);
   vector = (int *) mxGetPr((mxArray *) element);
@@ -320,7 +330,7 @@ void FieldComponentsVector::initialise(const mxArray *ptr) {
 
 int FieldComponentsVector::index(int value) {
 
-  for (int i = 0; i < n; i++){
+  for (int i = 0; i < n; i++) {
     if (vector[i] == value) return i;
   }
 
@@ -330,25 +340,19 @@ int FieldComponentsVector::index(int value) {
 void Vertices::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
-  if (mxIsEmpty(element)){
-    return;
-  }
+  if (mxIsEmpty(element)) { return; }
 
   auto dims = mxGetDimensions(element);
   int n_vertices = n_rows = dims[0];
   n_cols = dims[1];
 
-  if (n_cols != 3){
-    throw runtime_error("Second dimension in campssample.vertices must be 3");
-  }
+  if (n_cols != 3) { throw runtime_error("Second dimension in campssample.vertices must be 3"); }
 
   spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
-  matrix = cast_matlab_2D_array((int *)mxGetPr(element), n_vertices, n_cols);
+  matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, n_cols);
 
-  for (int j = 0; j < n_vertices; j++)   // decrement index for MATLAB->C indexing
-    for (int k = 0; k < n_cols; k++) {
-      matrix[k][j] -= 1;
-    }
+  for (int j = 0; j < n_vertices; j++)// decrement index for MATLAB->C indexing
+    for (int k = 0; k < n_cols; k++) { matrix[k][j] -= 1; }
 }
 
 void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {
@@ -369,7 +373,7 @@ DetectorSensitivityArrays::~DetectorSensitivityArrays() {
 }
 
 EHVec::~EHVec() {
-  if (has_elements()){
+  if (has_elements()) {
     for (int i = 0; i < n_rows; i++) fftw_free(matrix[i]);
     free(matrix);
   }

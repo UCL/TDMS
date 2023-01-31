@@ -9,9 +9,9 @@
 #include "arrays.h"
 #include "cell_coordinate.h"
 #include "dimensions.h"
+#include "globals.h"
 #include "mat_io.h"
 #include "simulation_parameters.h"
-#include "globals.h"
 
 /**
  * A generic grid entity. For example:
@@ -34,7 +34,7 @@ protected:
 
 public:
   // The {IJK}_tot values of this grid
-  IJKDimensions tot = { 0, 0, 0 };
+  IJKDimensions tot = {0, 0, 0};
 
   /**
      * Maximum value out of I_tot, J_tot and K_tot
@@ -48,16 +48,16 @@ public:
   void set_preferred_interpolation_methods(PreferredInterpolationMethods _pim) { pim = _pim; };
 };
 
-class SplitFieldComponent: public Tensor3D<double>{
+class SplitFieldComponent : public Tensor3D<double> {
 public:
-  int n_threads = 1;             // Number of threads this component was chunked with
-  fftw_plan* plan_f = nullptr;  // Forward fftw plan
-  fftw_plan* plan_b = nullptr;  // Backward fftw plan
+  int n_threads = 1;          // Number of threads this component was chunked with
+  fftw_plan *plan_f = nullptr;// Forward fftw plan
+  fftw_plan *plan_b = nullptr;// Backward fftw plan
 
   double **operator[](int value) const { return tensor[value]; };
   double operator[](CellCoordinate cell) const { return tensor[cell.k][cell.j][cell.i]; }
 
-  void initialise_from_matlab(double*** tensor, Dimensions &dims);
+  void initialise_from_matlab(double ***tensor, Dimensions &dims);
 
   /**
    * Initialise a vector of 1d discrete Fourier transform plans
@@ -75,58 +75,58 @@ public:
  * To reconstruct the components we have e.g.: Ex = Exy + Exz multiplied by
  * a phase factor
  */
-class SplitField : public Grid{
+class SplitField : public Grid {
 protected:
-  virtual int delta_n() = 0;  // TODO: no idea what this is or why it's needed
+  virtual int delta_n() = 0;// TODO: no idea what this is or why it's needed
 
 public:
-    // Pointers (3D arrays) which hold the magnitude of the split field
-    // component at each grid point (i, j, k)
-    SplitFieldComponent xy;
-    SplitFieldComponent xz;
-    SplitFieldComponent yx;
-    SplitFieldComponent yz;
-    SplitFieldComponent zx;
-    SplitFieldComponent zy;
+  // Pointers (3D arrays) which hold the magnitude of the split field
+  // component at each grid point (i, j, k)
+  SplitFieldComponent xy;
+  SplitFieldComponent xz;
+  SplitFieldComponent yx;
+  SplitFieldComponent yz;
+  SplitFieldComponent zx;
+  SplitFieldComponent zy;
 
-    /**
+  /**
      * Default no arguments constructor
      */
-    SplitField() = default;
+  SplitField() = default;
 
-    /**
+  /**
      * Constructor of the field with a defined size in the x, y, z Cartesian
      * dimensions
      */
-    SplitField(int I_total, int J_total, int K_total);
+  SplitField(int I_total, int J_total, int K_total);
 
-    /**
+  /**
      * Allocate the memory appropriate for all the 3D tensors associated with
      * this split field
      */
-    void allocate();
+  void allocate();
 
-    /**
+  /**
      * Set all the values of all components of the field to zero
      */
-    void zero();
+  void zero();
 
-    /**
+  /**
      * Allocate and set to zero all components of the field
      */
-    void allocate_and_zero(){
-      allocate();
-      zero();
-    }
+  void allocate_and_zero() {
+    allocate();
+    zero();
+  }
 
-    /**
+  /**
      * Initialise the fftw plans for all components
      * @param n_threads Number of threads to split over
      * @param eh_vec // TODO
      */
-    void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
+  void initialise_fftw_plan(int n_threads, EHVec &eh_vec);
 
-    /**
+  /**
      * @brief Fetches the largest absolute value of the field.
      *
      * Split field values are sums of the corresponding components, so this function returns the largest absolute value of the entries in
@@ -134,90 +134,90 @@ public:
      *
      * @return double Largest (by absolute value) field value
      */
-    double largest_field_value();
+  double largest_field_value();
 
-    /**
+  /**
    * @brief Interpolates a SplitField component to the centre of a Yee cell
    *
    * @param d SplitField component to interpolate
    * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated field value
    */
-    virtual double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) = 0;
+  virtual double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) = 0;
 };
 
-class ElectricSplitField: public SplitField{
+class ElectricSplitField : public SplitField {
 protected:
-  int delta_n() override { return -1; };  // TODO: no idea what this is or why it's needed
+  int delta_n() override { return -1; };// TODO: no idea what this is or why it's needed
 
 public:
-    ElectricSplitField() = default;
+  ElectricSplitField() = default;
 
-    /**
+  /**
      * Constructor of the field with a defined size in the x, y, z Cartesian
      * dimensions
      */
-    ElectricSplitField(int I_total, int J_total, int K_total) :
-            SplitField(I_total, J_total, K_total){};
+  ElectricSplitField(int I_total, int J_total, int K_total)
+      : SplitField(I_total, J_total, K_total){};
 
-    /**
+  /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
    * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
+  double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 };
 
-class MagneticSplitField: public SplitField{
+class MagneticSplitField : public SplitField {
 protected:
-  int delta_n() override { return 0; };  // TODO: no idea what this is or why it's needed
+  int delta_n() override { return 0; };// TODO: no idea what this is or why it's needed
 
 public:
-    MagneticSplitField() = default;
+  MagneticSplitField() = default;
 
-    /**
+  /**
      * Constructor of the field with a defined size in the x, y, z Cartesian
      * dimensions
      */
-    MagneticSplitField(int I_total, int J_total, int K_total) :
-            SplitField(I_total, J_total, K_total){};
+  MagneticSplitField(int I_total, int J_total, int K_total)
+      : SplitField(I_total, J_total, K_total){};
 
-    /**
+  /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
    *
    * @param d Field component to interpolate
    * @param cell Index (i,j,k) of the Yee cell to interpolate to the centre of
    * @return double The interpolated component value
    */
-    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
+  double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override;
 };
 
-class CurrentDensitySplitField: public SplitField{
+class CurrentDensitySplitField : public SplitField {
 protected:
   int delta_n() override { return 0; }
 
 public:
-    CurrentDensitySplitField() = default;
+  CurrentDensitySplitField() = default;
 
-    /**
+  /**
      * Constructor of the field with a defined size in the x, y, z Cartesian
      * dimensions
      */
-    CurrentDensitySplitField(int I_total, int J_total, int K_total) :
-            SplitField(I_total, J_total, K_total){};
+  CurrentDensitySplitField(int I_total, int J_total, int K_total)
+      : SplitField(I_total, J_total, K_total){};
 
-    double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override { return 0.; };
+  double interpolate_to_centre_of(AxialDirection d, CellCoordinate cell) override { return 0.; };
 };
 
 /**
  * A complex field defined over a grid. Has real and imaginary components
  * at each (x, y, z) grid point
  */
-class Field : public Grid{
+class Field : public Grid {
 public:
-  double ft = 0.;  // TODO: an explanation of what this is
+  double ft = 0.;// TODO: an explanation of what this is
 
   std::complex<double> angular_norm = 0.;
 
@@ -358,7 +358,7 @@ public:
   ~Field();
 };
 
-class ElectricField: public Field{
+class ElectricField : public Field {
 
 private:
   double phase(int n, double omega, double dt) override;
@@ -402,7 +402,7 @@ public:
                                                   std::complex<double> *z_at_centre) override;
 };
 
-class MagneticField: public Field{
+class MagneticField : public Field {
 
 private:
   double phase(int n, double omega, double dt) override;
@@ -449,14 +449,14 @@ public:
 /**
  * Structure to hold a field and allow saving it to a file
  */
-class TDFieldExporter2D{
+class TDFieldExporter2D {
 private:
-  int nI = 0; //< Array size in the i direction
-  int nK = 0; //< Array size in the k direction
+  int nI = 0;//< Array size in the i direction
+  int nK = 0;//< Array size in the k direction
 public:
-  mxArray* matlab_array = nullptr;
-  double** array = nullptr;
-  const char* folder_name = nullptr;
+  mxArray *matlab_array = nullptr;
+  double **array = nullptr;
+  const char *folder_name = nullptr;
 
   /**
    * Allocate the arrays to hold the field
@@ -470,7 +470,7 @@ public:
    * @param stride Interval to compute the field component at
    * @param iteration Iteration number of the main loop. Used in the filename
    */
-  void export_field(SplitField& F, int stride, int iteration) const;
+  void export_field(SplitField &F, int stride, int iteration) const;
 
   ~TDFieldExporter2D();
 };

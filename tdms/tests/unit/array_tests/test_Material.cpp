@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 
 void CMaterialTest::test_incorrect_number_of_fields() {
   SECTION("Too few fields") {
@@ -66,10 +66,6 @@ void DMaterialTest::test_correct_construction() {
   DMaterial dm(matlab_input);
 }
 
-TEST_CASE("CMaterial") {
-  CMaterialTest().run_all_class_tests();
-}
+TEST_CASE("CMaterial") { CMaterialTest().run_all_class_tests(); }
 
-TEST_CASE("DMaterial") {
-  DMaterialTest().run_all_class_tests();
-}
+TEST_CASE("DMaterial") { DMaterialTest().run_all_class_tests(); }

@@ -16,4 +16,4 @@
  * @param H_s Magnetic split field
  * @param materials Materials array
  */
-void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint8_t*** &materials);
+void init_grid_arrays(const mxArray *ptr, SplitField &E_s, SplitField &H_s, uint8_t ***&materials);

@@ -10,12 +10,12 @@
 #include "field.h"
 #include "fieldsample.h"
 #include "grid_labels.h"
-#include "output_matrices/id_variables.h"
 #include "matrix.h"
+#include "output_matrices/id_variables.h"
 #include "output_matrices/output_matrix_pointers.h"
+#include "shapes.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
-#include "shapes.h"
 #include "vertex_phasors.h"
 
 /**
@@ -33,7 +33,8 @@ private:
   // Holds the pointer to the MATLAB structure that surface_phasors is bound to
   mxArray *mx_surface_vertices = nullptr;
 
-  IJKDimensions n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
+  IJKDimensions
+          n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
 
   /**
    * @brief Computes the field values at the centre of the Yee cells, and the corresponding spatial coordinates of these locations.
@@ -58,9 +59,7 @@ public:
    * @param matrix_name Name of the matrix to fetch the pointer to
    * @return mxArray* Pointer to the corresponding MATLAB array
    */
-  mxArray *&operator[](const std::string &matrix_name) {
-    return output_arrays[matrix_name];
-  }
+  mxArray *&operator[](const std::string &matrix_name) { return output_arrays[matrix_name]; }
 
   IDVariables ID;//< The ID output, and associated variables
 
@@ -73,8 +72,8 @@ public:
    */
   void setup_Id(bool empty_allocation, int n_frequencies, int n_det_modes);
 
-  ElectricField E;//< Electric field and phasors at the Yee cell positions
-  MagneticField H;//< Magnetic field and phasors at the Yee cell positions
+  ElectricField E;              //< Electric field and phasors at the Yee cell positions
+  MagneticField H;              //< Magnetic field and phasors at the Yee cell positions
   GridLabels output_grid_labels;//< Co-ordinates (spatial positions) of the field values
 
   /**
@@ -84,15 +83,15 @@ public:
    * @param input_grid_labels The grid labels obtained from the input file
    * @param pim The interpolation methods to use on the field values
    */
-  void setup_EH_and_gridlabels(const SimulationParameters &params, const GridLabels &input_grid_labels, PreferredInterpolationMethods pim);
+  void setup_EH_and_gridlabels(const SimulationParameters &params,
+                               const GridLabels &input_grid_labels,
+                               PreferredInterpolationMethods pim);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
    * @return IJKDimensions The dimensions of the electric (and magnetic) field
    */
-  IJKDimensions get_E_dimensions() const {
-    return E.tot;
-  }
+  IJKDimensions get_E_dimensions() const { return E.tot; }
   // set the interpolation method for the E and H fields
   void set_interpolation_methods(PreferredInterpolationMethods pim) {
     E.set_preferred_interpolation_methods(pim);
@@ -101,7 +100,8 @@ public:
 
   SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface
 
-  void setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params, int n_frequencies);
+  void setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params,
+                          int n_frequencies);
   /**
    * @brief Create MATLAB memory for the surface phasor outputs
    *
@@ -120,7 +120,8 @@ public:
    */
   void setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies);
 
-  FieldSample fieldsample;//< E,H split-field values sampled at user-specified locations and frequencies
+  FieldSample
+          fieldsample;//< E,H split-field values sampled at user-specified locations and frequencies
 
   /**
    * @brief Setup the object that handles extraction of the field values at the sample positions
@@ -154,7 +155,7 @@ public:
    * @param output_file_name The file to write the simulation outputs to
    * @param compressed_output If true, write compressed output (do not write facets and vertices)
    */
-  void save_outputs(const std::string& output_file_name, bool compressed_output = false);
+  void save_outputs(const std::string &output_file_name, bool compressed_output = false);
 
   ~OutputMatrices();
 };

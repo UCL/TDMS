@@ -16,9 +16,9 @@
 
 using namespace tdms_math_constants;
 
-using tdms_tests::TOLERANCE;
 using tdms_tests::euclidean;
 using tdms_tests::is_close_or_better;
+using tdms_tests::TOLERANCE;
 
 /* Overview of Tests
 
@@ -32,9 +32,7 @@ All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over
 */
 
 // functional form for the {E,H}-field components
-inline double field_component(double t) {
-    return sin(2. * DCPI * t) * exp(-t * t);
-}
+inline double field_component(double t) { return sin(2. * DCPI * t) * exp(-t * t); }
 
 /**
  * @brief Test the interpolation of the E-field components to the centre of the Yee cells
@@ -62,9 +60,9 @@ TEST_CASE("E-field interpolation check") {
       Nz = round(extent_z / cellDims[2]);
 
   // setup the "split" E-field components
-  ElectricSplitField E_split(Nx-1, Ny-1, Nz-1);
-  E_split.allocate(); // alocates Nx, Ny, Nz memory space here
-  E_split.tot += 1; // correct the "number of datapoints" variable for these fields
+  ElectricSplitField E_split(Nx - 1, Ny - 1, Nz - 1);
+  E_split.allocate();// alocates Nx, Ny, Nz memory space here
+  E_split.tot += 1;  // correct the "number of datapoints" variable for these fields
   // setup for non-split field components
   ElectricField E(Nx, Ny, Nz);
   E.allocate();
@@ -107,12 +105,12 @@ TEST_CASE("E-field interpolation check") {
   Ez_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower) + (i+0.5,j+0.5,k+0.5)*cellDims
   */
   Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error, Ez_split_error;
-  Ex_error.allocate(Nz, Ny, Nx-1);
-  Ex_split_error.allocate(Nz, Ny, Nx-1);
-  Ey_error.allocate(Nz, Ny-1, Nx);
-  Ey_split_error.allocate(Nz, Ny-1, Nx);
-  Ez_error.allocate(Nz-1, Ny, Nx);
-  Ez_split_error.allocate(Nz-1, Ny, Nx);
+  Ex_error.allocate(Nz, Ny, Nx - 1);
+  Ex_split_error.allocate(Nz, Ny, Nx - 1);
+  Ey_error.allocate(Nz, Ny - 1, Nx);
+  Ey_split_error.allocate(Nz, Ny - 1, Nx);
+  Ez_error.allocate(Nz - 1, Ny, Nx);
+  Ez_split_error.allocate(Nz - 1, Ny, Nx);
   // now interpolate
   // note that we aren't interpolating to position 0 (before 1st point) or N{x,y,z} (after last point)
   for (int ii = 0; ii < Nx; ii++) {
@@ -123,36 +121,36 @@ TEST_CASE("E-field interpolation check") {
         double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
         double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
         // current cell index
-        CellCoordinate current_cell {ii, jj, kk};
+        CellCoordinate current_cell{ii, jj, kk};
 
         // Ex interpolation
-        if (ii!=0) {
+        if (ii != 0) {
           double Ex_exact = field_component(x_eval_position);// Ex depends on y
           double Ex_split_interp =
                   E_split.interpolate_to_centre_of(AxialDirection::X, current_cell);
           double Ex_interp = E.interpolate_to_centre_of(AxialDirection::X, current_cell).real();
-          Ex_error[kk][jj][ii-1] = Ex_interp - Ex_exact;
-          Ex_split_error[kk][jj][ii-1] = Ex_split_interp - Ex_exact;
+          Ex_error[kk][jj][ii - 1] = Ex_interp - Ex_exact;
+          Ex_split_error[kk][jj][ii - 1] = Ex_split_interp - Ex_exact;
         }
 
         // Ey interpolation
-        if (jj!=0) {
+        if (jj != 0) {
           double Ey_exact = field_component(y_eval_position);// Ey depends on z
           double Ey_split_interp =
                   E_split.interpolate_to_centre_of(AxialDirection::Y, current_cell);
           double Ey_interp = E.interpolate_to_centre_of(AxialDirection::Y, current_cell).real();
-          Ey_error[kk][jj-1][ii] = Ey_interp - Ey_exact;
-          Ey_split_error[kk][jj-1][ii] = Ey_split_interp - Ey_exact;
+          Ey_error[kk][jj - 1][ii] = Ey_interp - Ey_exact;
+          Ey_split_error[kk][jj - 1][ii] = Ey_split_interp - Ey_exact;
         }
 
         // Ez interpolation
-        if (kk!=0) {
+        if (kk != 0) {
           double Ez_exact = field_component(z_eval_position);// Ez depends on x
           double Ez_split_interp =
                   E_split.interpolate_to_centre_of(AxialDirection::Z, current_cell);
           double Ez_interp = E.interpolate_to_centre_of(AxialDirection::Z, current_cell).real();
-          Ez_error[kk-1][jj][ii] = Ez_interp - Ez_exact;
-          Ez_split_error[kk-1][jj][ii] = Ez_split_interp - Ez_exact;
+          Ez_error[kk - 1][jj][ii] = Ez_interp - Ez_exact;
+          Ez_split_error[kk - 1][jj][ii] = Ez_split_interp - Ez_exact;
         }
       }
     }
@@ -277,7 +275,7 @@ TEST_CASE("H-field interpolation check") {
   MagneticSplitField H_split(Nx - 1, Ny - 1, Nz - 1);
   H_split.allocate();// alocates Nx, Ny, Nz memory space here
   // setup the non-split field components
-  H_split.tot += 1; // correct the "number of datapoints" variable for these fields
+  H_split.tot += 1;// correct the "number of datapoints" variable for these fields
   MagneticField H(Nx, Ny, Nz);
   H.allocate();
 
@@ -336,7 +334,7 @@ TEST_CASE("H-field interpolation check") {
         double y_eval_position = z_lower + ((double) kk + 0.5) * cellDims[2];
         double z_eval_position = x_lower + ((double) ii + 0.5) * cellDims[0];
         // current cell index
-        CellCoordinate current_cell {ii, jj, kk};
+        CellCoordinate current_cell{ii, jj, kk};
 
         // Hx interpolation
         if (jj != 0 && kk != 0) {
@@ -344,8 +342,8 @@ TEST_CASE("H-field interpolation check") {
           double Hx_split_interp =
                   H_split.interpolate_to_centre_of(AxialDirection::X, current_cell);
           double Hx_interp = H.interpolate_to_centre_of(AxialDirection::X, current_cell).imag();
-          Hx_error[kk-1][jj-1][ii] = Hx_interp - Hx_exact;
-          Hx_split_error[kk-1][jj-1][ii] = Hx_split_interp - Hx_exact;
+          Hx_error[kk - 1][jj - 1][ii] = Hx_interp - Hx_exact;
+          Hx_split_error[kk - 1][jj - 1][ii] = Hx_split_interp - Hx_exact;
         }
 
         // Hy interpolation
@@ -354,8 +352,8 @@ TEST_CASE("H-field interpolation check") {
           double Hy_split_interp =
                   H_split.interpolate_to_centre_of(AxialDirection::Y, current_cell);
           double Hy_interp = H.interpolate_to_centre_of(AxialDirection::Y, current_cell).imag();
-          Hy_error[kk-1][jj][ii-1] = Hy_interp - Hy_exact;
-          Hy_split_error[kk-1][jj][ii-1] = Hy_split_interp - Hy_exact;
+          Hy_error[kk - 1][jj][ii - 1] = Hy_interp - Hy_exact;
+          Hy_split_error[kk - 1][jj][ii - 1] = Hy_split_interp - Hy_exact;
         }
 
         // Hz interpolation
@@ -364,17 +362,15 @@ TEST_CASE("H-field interpolation check") {
           double Hz_split_interp =
                   H_split.interpolate_to_centre_of(AxialDirection::Z, current_cell);
           double Hz_interp = H.interpolate_to_centre_of(AxialDirection::Z, current_cell).imag();
-          Hz_error[kk][jj-1][ii-1] = Hz_interp - Hz_exact;
-          Hz_split_error[kk][jj-1][ii-1] = Hz_split_interp - Hz_exact;
+          Hz_error[kk][jj - 1][ii - 1] = Hz_interp - Hz_exact;
+          Hz_split_error[kk][jj - 1][ii - 1] = Hz_split_interp - Hz_exact;
         }
       }
     }
   }
   // compute Frobenius norms
-  double Hx_fro_err = Hx_error.frobenius(),
-         Hy_fro_err = Hy_error.frobenius(),
-         Hz_fro_err = Hz_error.frobenius(),
-         Hx_split_fro_err = Hx_split_error.frobenius(),
+  double Hx_fro_err = Hx_error.frobenius(), Hy_fro_err = Hy_error.frobenius(),
+         Hz_fro_err = Hz_error.frobenius(), Hx_split_fro_err = Hx_split_error.frobenius(),
          Hy_split_fro_err = Hy_split_error.frobenius(),
          Hz_split_fro_err = Hz_split_error.frobenius();
 

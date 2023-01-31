@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using namespace std;
@@ -48,8 +48,8 @@ void IncidentFieldTest::test_correct_construction() {
   // create the data for the fields of our struct
   mxArray *field_array_ptrs[2];
   for (int i = 0; i < 2; i++) {
-    field_array_ptrs[i] = mxCreateNumericArray(3, (const mwSize *) dimensions_3d,
-                                               mxDOUBLE_CLASS, mxREAL);
+    field_array_ptrs[i] =
+            mxCreateNumericArray(3, (const mwSize *) dimensions_3d, mxDOUBLE_CLASS, mxREAL);
     mxDouble *place_data = mxGetPr(field_array_ptrs[i]);
     for (int ii = 0; ii < n_rows; ii++) {
       for (int jj = 0; jj < n_cols; jj++) {
@@ -80,6 +80,4 @@ void IncidentFieldTest::test_correct_construction() {
   REQUIRE(elements_set_correctly);
 }
 
-TEST_CASE("IncidentField") {
-  IncidentFieldTest().run_all_class_tests();
-}
+TEST_CASE("IncidentField") { IncidentFieldTest().run_all_class_tests(); }

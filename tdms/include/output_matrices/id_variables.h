@@ -16,9 +16,10 @@
 class IDVariables {
 private:
   int n_frequencies = 0;//< Number of frequencies that we're extracting at. ( = to f_ex_vec.size() )
-  int n_det_modes = 0;//< D_tilde.num_det_modes()
+  int n_det_modes = 0;  //< D_tilde.num_det_modes()
 
-  bool memory_assigned = false;//< Flags whether MATLAB memory has been assigned and needs to be free'd
+  bool memory_assigned =
+          false;//< Flags whether MATLAB memory has been assigned and needs to be free'd
 public:
   mxArray *x_ptr = nullptr;//< Holds the array in the Idx field of OutputMatrices["Id"]
   mxArray *y_ptr = nullptr;//< Holds the arrays in the Idy field of OutputMatrices["Id"]

@@ -6,14 +6,14 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
-using tdms_tests::TOLERANCE;
 using tdms_tests::is_close;
+using tdms_tests::TOLERANCE;
 
 void VectorTest::test_correct_construction() {
   // default constructor should not assign any elements or pointers
@@ -96,12 +96,8 @@ void FrequencyExtractVectorTest::test_wrong_input_dimensions() {
 }
 
 void FrequencyExtractVectorTest::test_correct_construction() {
-  SECTION("(horz)") {
-    dimensions_2d[1] = n_numeric_elements;
-  }
-  SECTION("(vert)") {
-    dimensions_2d[0] = n_numeric_elements;
-  }
+  SECTION("(horz)") { dimensions_2d[1] = n_numeric_elements; }
+  SECTION("(vert)") { dimensions_2d[0] = n_numeric_elements; }
   create_numeric_array(2, dimensions_2d);
   FrequencyExtractVector fev(matlab_input, omega_an);
   CHECK(fev.size() == n_numeric_elements);
@@ -121,7 +117,9 @@ void FrequencyExtractVectorTest::test_other_methods() {
     }
     SECTION("Find element 0") {
       for (int i = 0; i < n_numeric_elements; i++) {
-        data_placement[i] = ((double) (n_numeric_elements - i) / (double) (n_numeric_elements - 1)) * omega_an * DCPI;
+        data_placement[i] =
+                ((double) (n_numeric_elements - i) / (double) (n_numeric_elements - 1)) * omega_an *
+                DCPI;
       }
       target_max_index = 0;
     }
@@ -132,14 +130,8 @@ void FrequencyExtractVectorTest::test_other_methods() {
   }
 }
 
-TEST_CASE("Vector") {
-  VectorTest().run_all_class_tests();
-}
+TEST_CASE("Vector") { VectorTest().run_all_class_tests(); }
 
-TEST_CASE("FieldComponentsVector") {
-  FieldComponentsVectorTest().run_all_class_tests();
-}
+TEST_CASE("FieldComponentsVector") { FieldComponentsVectorTest().run_all_class_tests(); }
 
-TEST_CASE("FrequencyExtractVector") {
-  FrequencyExtractVectorTest().run_all_class_tests();
-}
+TEST_CASE("FrequencyExtractVector") { FrequencyExtractVectorTest().run_all_class_tests(); }

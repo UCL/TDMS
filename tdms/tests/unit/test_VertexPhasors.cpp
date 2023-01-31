@@ -7,8 +7,8 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "vertex_phasors.h"
 #include "globals.h"
+#include "vertex_phasors.h"
 
 using namespace std;
 

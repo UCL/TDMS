@@ -70,7 +70,9 @@ public:
   // Returns true/false based on whether there are/aren't vertices to extract at
   bool there_are_vertices_to_extract_at() { return (n_vertices() > 0); }
   // Returns true/false based on whether there are/aren't elements in BOTH the vertices and components arrays
-  bool there_are_elements_in_arrays() { return (vertices.has_elements() && components.has_elements()); }
+  bool there_are_elements_in_arrays() {
+    return (vertices.has_elements() && components.has_elements());
+  }
 
   /**
    * @brief Normalise the surface amplitudes at frequency_vector_index by the E- and H-norms provided.

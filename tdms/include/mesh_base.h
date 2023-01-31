@@ -58,8 +58,10 @@
  *
  * The space allocated by *vertexMatrix must be freed after use.
 */
-void triangulatePlane(int I0, int I1, int J0, int J1, int K,int coordmap[], int order, mxArray **vertexMatrix);
-void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ);
+void triangulatePlane(int I0, int I1, int J0, int J1, int K, int coordmap[], int order,
+                      mxArray **vertexMatrix);
+void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K, int coordmap[], int order,
+                          mxArray **vertexMatrix, int dI, int dJ);
 /**
  * @brief
  *
@@ -71,7 +73,8 @@ void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], 
  * Each vertexMatrix[i] should be destroyed after calling this function
  */
 void triangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix);
-void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix, int dI, int dJ, int dK);
+void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix,
+                           int dI, int dJ, int dK);
 
 /**
  * @brief Generates a triangulation of a cuboid defined the surface of a regular
@@ -94,6 +97,7 @@ void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1, mxArr
 void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices,
                               mxArray **facets);
 void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
-                                  const SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray **facets);
+                                  const SurfaceSpacingStride &spacing_stride, mxArray **vertices,
+                                  mxArray **facets);
 
-void conciseCreateBoundary(int I0, int I1,int K0, int K1, mxArray **vertices, mxArray ** facets);
+void conciseCreateBoundary(int I0, int I1, int K0, int K1, mxArray **vertices, mxArray **facets);

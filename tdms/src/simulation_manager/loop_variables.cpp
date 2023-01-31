@@ -35,20 +35,20 @@ LoopVariables::LoopVariables(const ObjectsFromInfile &data, IJKDimensions E_fiel
     E_copy_MATLAB_data[2] =
             mxCreateNumericArray(3, (const mwSize *) dummy_dims, mxDOUBLE_CLASS, mxCOMPLEX);//Ez
 
-    E_at_previous_iteration.real.x = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_at_previous_iteration.imag.x = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.real.x = cast_matlab_3D_array(
+            mxGetPr(E_copy_MATLAB_data[0]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.imag.x = cast_matlab_3D_array(
+            mxGetPi(E_copy_MATLAB_data[0]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
 
-    E_at_previous_iteration.real.y = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_at_previous_iteration.imag.y = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.real.y = cast_matlab_3D_array(
+            mxGetPr(E_copy_MATLAB_data[1]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.imag.y = cast_matlab_3D_array(
+            mxGetPi(E_copy_MATLAB_data[1]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
 
-    E_at_previous_iteration.real.z = cast_matlab_3D_array(mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
-    E_at_previous_iteration.imag.z = cast_matlab_3D_array(mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0],
-                                         dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.real.z = cast_matlab_3D_array(
+            mxGetPr(E_copy_MATLAB_data[2]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
+    E_at_previous_iteration.imag.z = cast_matlab_3D_array(
+            mxGetPi(E_copy_MATLAB_data[2]), dummy_dims[0], dummy_dims[1], dummy_dims[2]);
 
     E_at_previous_iteration.tot = E_field_dims;
 
@@ -103,7 +103,7 @@ bool LoopVariables::is_dispersive_medium(uint8_t ***materials, const IJKDimensio
 }
 
 LoopVariables::~LoopVariables() {
-  for(int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     if (E_copy_MATLAB_data[i] != nullptr) { mxDestroyArray(E_copy_MATLAB_data[i]); }
   }
 }
@@ -115,9 +115,10 @@ void LoopVariables::optimise_loop_J_range(const ObjectsFromInfile &data, double 
   if (data.IJK_tot.j == 0) {
     for (int icomp = 0; icomp < 4; icomp++)
       for (int ki = 0; ki < (data.IJK_tot.i + 1); ki++) {
-        ksource_nz[icomp] = ksource_nz[icomp] ||
-                            (fabs(data.Ksource.imag[0][ki - (data.I0.index)][icomp]) > non_zero_tol) ||
-                            (fabs(data.Ksource.real[0][ki - (data.I0.index)][icomp]) > non_zero_tol);
+        ksource_nz[icomp] =
+                ksource_nz[icomp] ||
+                (fabs(data.Ksource.imag[0][ki - (data.I0.index)][icomp]) > non_zero_tol) ||
+                (fabs(data.Ksource.real[0][ki - (data.I0.index)][icomp]) > non_zero_tol);
       }
   }
   /* We now know the following information:

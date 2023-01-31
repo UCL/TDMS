@@ -8,18 +8,18 @@
 #include "field.h"
 #include "simulation_parameters.h"
 
-class FieldSample{
+class FieldSample {
 
 private:
-  double**** tensor = nullptr;
+  double ****tensor = nullptr;
 
 public:
-  mxArray* mx;       // Matlab array
+  mxArray *mx;// Matlab array
 
-  Vector<int> i;     //< Indices along the x-direction of locations at which to sample the field
-  Vector<int> j;     //< Indices along the y-direction of locations at which to sample the field
-  Vector<int> k;     //< Indices along the z-direction of locations at which to sample the field
-  Vector<double> n;  //< Vector of the moments of the field to sample
+  Vector<int> i;   //< Indices along the x-direction of locations at which to sample the field
+  Vector<int> j;   //< Indices along the y-direction of locations at which to sample the field
+  Vector<int> k;   //< Indices along the z-direction of locations at which to sample the field
+  Vector<double> n;//< Vector of the moments of the field to sample
 
   FieldSample() = default;
   explicit FieldSample(const mxArray *ptr) { set_from(ptr); }
@@ -31,11 +31,11 @@ public:
   void set_from(const mxArray *ptr);
 
   /** Return true if all vectors in this instance are non-empty (have size > 0) */
-  bool all_vectors_are_non_empty() const{
-          return i.size() > 0 && j.size() > 0 && k.size() > 0 && n.size() > 0;
+  bool all_vectors_are_non_empty() const {
+    return i.size() > 0 && j.size() > 0 && k.size() > 0 && n.size() > 0;
   };
 
-  inline double*** operator[] (int value) const { return tensor[value]; };
+  inline double ***operator[](int value) const { return tensor[value]; };
 
   /**
    * @brief Extract the (Electric) field values at the vertices

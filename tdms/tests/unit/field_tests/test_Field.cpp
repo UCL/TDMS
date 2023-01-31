@@ -6,8 +6,8 @@
  */
 #include "field.h"
 
-#include <complex>
 #include <catch2/catch_test_macros.hpp>
+#include <complex>
 
 #include "globals.h"
 #include "unit_test_utils.h"
@@ -15,8 +15,8 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-using tdms_tests::TOLERANCE;
 using tdms_tests::is_close;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("Field: normalise_volume") {
 
@@ -52,17 +52,17 @@ TEST_CASE("Field: normalise_volume") {
     for (int j = 0; j < J_tot; j++) {
       for (int k = 0; k < K_tot; k++) {
         // set x component to be 1 + i, so should normalise to 1.
-        x_normalised_correctly =
-                (x_normalised_correctly &&
-                 (abs(F.real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < TOLERANCE));
+        x_normalised_correctly = (x_normalised_correctly &&
+                                  (abs(F.real.x[k][j][i] - 1. +
+                                       IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < TOLERANCE));
         // set y component to be 2, so should normalise to be 1 - i
-        y_normalised_correctly =
-                (y_normalised_correctly &&
-                 (abs(F.real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < TOLERANCE));
+        y_normalised_correctly = (y_normalised_correctly &&
+                                  (abs(F.real.y[k][j][i] - 1. +
+                                       IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < TOLERANCE));
         // keep z components as 0
-        z_normalised_correctly =
-                (z_normalised_correctly &&
-                 (abs(F.real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < TOLERANCE));
+        z_normalised_correctly = (z_normalised_correctly &&
+                                  (abs(F.real.z[k][j][i] - 0. +
+                                       IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < TOLERANCE));
       }
     }
   }

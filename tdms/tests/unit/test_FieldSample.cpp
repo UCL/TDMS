@@ -117,6 +117,4 @@ void FieldSampleTest::test_correct_construction() {
   }
 }
 
-TEST_CASE("FieldSample") {
-  FieldSampleTest().run_all_class_tests();
-}
+TEST_CASE("FieldSample") { FieldSampleTest().run_all_class_tests(); }

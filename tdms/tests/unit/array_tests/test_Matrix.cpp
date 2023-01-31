@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::is_close;
@@ -143,9 +143,7 @@ void PupilTest::test_wrong_input_dimensions() {
 
 void PupilTest::test_correct_construction() {
   Pupil p;
-  SECTION("Default constructor") {
-    REQUIRE(!p.has_elements());
-  }
+  SECTION("Default constructor") { REQUIRE(!p.has_elements()); }
   SECTION("Overloaded constructor") {
     dimensions_2d[0] = n_rows;
     dimensions_2d[1] = n_cols;
@@ -178,22 +176,12 @@ void EHVecTest::test_other_methods() {
   REQUIRE(elements_set_correctly);
 }
 
-TEST_CASE("Matrix") {
-  MatrixTest().run_all_class_tests();
-}
+TEST_CASE("Matrix") { MatrixTest().run_all_class_tests(); }
 
-TEST_CASE("Vertices") {
-  VerticesTest().run_all_class_tests();
-}
+TEST_CASE("Vertices") { VerticesTest().run_all_class_tests(); }
 
-TEST_CASE("GratingStructure") {
-  GratingStructureTest().run_all_class_tests();
-}
+TEST_CASE("GratingStructure") { GratingStructureTest().run_all_class_tests(); }
 
-TEST_CASE("Pupil") {
-  PupilTest().run_all_class_tests();
-}
+TEST_CASE("Pupil") { PupilTest().run_all_class_tests(); }
 
-TEST_CASE("EHVec") {
-  EHVecTest().run_all_class_tests();
-}
+TEST_CASE("EHVec") { EHVecTest().run_all_class_tests(); }

@@ -5,14 +5,14 @@
 #pragma once
 
 #include <complex>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <fftw3.h>
 
+#include "globals.h"
 #include "matlabio.h"
 #include "utils.h"
-#include "globals.h"
 
 template<typename T>
 class XYZTensor3D {
@@ -21,20 +21,28 @@ public:
   T ***y = nullptr;
   T ***z = nullptr;
 
-  T*** operator[] (char c) const{
+  T ***operator[](char c) const {
     switch (c) {
-      case 'x': return x;
-      case 'y': return y;
-      case 'z': return z;
-      default: throw std::runtime_error("Have no element " + to_string(c));
+      case 'x':
+        return x;
+      case 'y':
+        return y;
+      case 'z':
+        return z;
+      default:
+        throw std::runtime_error("Have no element " + to_string(c));
     }
   }
-  T*** operator[] (AxialDirection d) const{
+  T ***operator[](AxialDirection d) const {
     switch (d) {
-      case AxialDirection::X: return x;
-      case AxialDirection::Y: return y;
-      case AxialDirection::Z: return z;
-      default: throw std::runtime_error("Have no element " + to_string(d));
+      case AxialDirection::X:
+        return x;
+      case AxialDirection::Y:
+        return y;
+      case AxialDirection::Z:
+        return z;
+      default:
+        throw std::runtime_error("Have no element " + to_string(d));
     }
   }
 
@@ -62,9 +70,9 @@ public:
 
 class XYZVectors {
 public:
-  double* x = nullptr;
-  double* y = nullptr;
-  double* z = nullptr;
+  double *x = nullptr;
+  double *y = nullptr;
+  double *z = nullptr;
 
   /**
    * Default constructor
@@ -76,7 +84,7 @@ public:
    * @param c Character labeling the vector
    * @param ptr Pointer to assign
    */
-  void set_ptr(char c, double* ptr);
+  void set_ptr(char c, double *ptr);
   /**
    * Set the pointer for one of the vectors in this collection with a name of c
    * @param d AxialDirection labeling the vector
@@ -94,8 +102,8 @@ public:
    * @return true All elements are less than the comparison_value
    * @return false At least one element is not less than the comparison_value
    */
-  bool all_elements_less_than(double comparison_value, int vector_length,
-                                 AxialDirection component, int buffer_start = 0) const;
+  bool all_elements_less_than(double comparison_value, int vector_length, AxialDirection component,
+                              int buffer_start = 0) const;
   /**
    * @brief Determines whether all elements in the x, y, AND z vectors are less than a given value.
    *
@@ -108,7 +116,7 @@ public:
 };
 
 // TODO: docstring
-class MaterialCollection{
+class MaterialCollection {
 protected:
   static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
 };
@@ -169,7 +177,7 @@ public:
 };
 
 /*! @copydoc DCollectionBase */
-class DCollection: public DCollectionBase{
+class DCollection : public DCollectionBase {
 private:
   static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
 
@@ -183,11 +191,11 @@ public:
   explicit DMaterial(const mxArray *ptr);
 };
 
-class DispersiveMultiLayer{
+class DispersiveMultiLayer {
 public:
-  double* alpha = nullptr;
-  double* beta = nullptr;
-  double* gamma = nullptr;
+  double *alpha = nullptr;
+  double *beta = nullptr;
+  double *gamma = nullptr;
   XYZVectors kappa;
   XYZVectors sigma;
 
@@ -202,15 +210,15 @@ public:
    * @return true Background is dispersive
    * @return false Background is not dispersive
    */
-  bool is_dispersive(int K_tot, double near_zero_tolerance=1e-15);
+  bool is_dispersive(int K_tot, double near_zero_tolerance = 1e-15);
 };
 
 template<typename T>
-class Matrix{
+class Matrix {
 protected:
   int n_rows = 0;
   int n_cols = 0;
-  T** matrix = nullptr;
+  T **matrix = nullptr;
 
 public:
   /**
@@ -224,18 +232,16 @@ public:
    * @param n_rows,n_cols Number of rows and columns in the matrix
    * @param initial_value The initial value of the elements, defaults to 0 to avoid initalised but unassigned values
    */
-  Matrix(int n_rows, int n_cols) {
-    allocate(n_rows, n_cols);
-  }
+  Matrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
 
-  inline T* operator[] (int value) const { return matrix[value]; }
+  inline T *operator[](int value) const { return matrix[value]; }
   /**
    * @brief Check whether this matrix has elements assigned
    *
    * @return true If this matrix has assigned elements
    * @return false This matrix is currently unassigned
    */
-  bool has_elements(){ return matrix != nullptr; };
+  bool has_elements() { return matrix != nullptr; };
 
   /**
    * Allocate the memory for this matrix
@@ -243,20 +249,18 @@ public:
    * @param n_rows Number of rows
    * @param n_cols Number of columns
    */
-  void allocate(int n_rows, int n_cols, T initial_value = 0){
+  void allocate(int n_rows, int n_cols, T initial_value = 0) {
     this->n_rows = n_rows;
     this->n_cols = n_cols;
 
     matrix = (T **) malloc(sizeof(T *) * n_rows);
-    for (int i = 0; i < n_rows; i++) {
-      matrix[i] = (T *) malloc(sizeof(T) * n_cols);
-    }
+    for (int i = 0; i < n_rows; i++) { matrix[i] = (T *) malloc(sizeof(T) * n_cols); }
   };
 
   /**
    * Destructor. Must be defined in the header
    */
-  ~Matrix(){
+  ~Matrix() {
     if (has_elements()) {
       for (int i = 0; i < n_rows; i++) { free(matrix[i]); }
       free(matrix);
@@ -264,7 +268,7 @@ public:
   };
 };
 
-class GratingStructure: public Matrix<int>{
+class GratingStructure : public Matrix<int> {
 
 public:
   GratingStructure(const mxArray *ptr, int I_tot);
@@ -273,10 +277,10 @@ public:
 };
 
 template<typename T>
-class Vector{
+class Vector {
 protected:
-  int n = 0;        // Number of elements
-  T* vector = nullptr; // Internal array
+  int n = 0;          // Number of elements
+  T *vector = nullptr;// Internal array
 
 public:
   Vector() = default;
@@ -291,19 +295,19 @@ public:
 
   bool has_elements() { return vector != nullptr; }
 
-  inline T operator[] (int value) const { return vector[value]; };
+  inline T operator[](int value) const { return vector[value]; };
 
   inline int size() const { return n; };
 };
 
-class FrequencyExtractVector: public Vector<double>{
+class FrequencyExtractVector : public Vector<double> {
 public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
 
   double max();
 };
 
-class FrequencyVectors{
+class FrequencyVectors {
 public:
   Vector<double> x;
   Vector<double> y;
@@ -312,7 +316,7 @@ public:
 };
 
 // TODO: docstring
-class Pupil: public Matrix<double>{
+class Pupil : public Matrix<double> {
 public:
   Pupil() = default;
 
@@ -322,23 +326,23 @@ public:
 };
 
 template<typename T>
-class Tensor3D{
+class Tensor3D {
 protected:
   int n_layers = 0;
   int n_cols = 0;
   int n_rows = 0;
-  T*** tensor = nullptr;
+  T ***tensor = nullptr;
 
 public:
   bool is_matlab_initialised = false;
 
   Tensor3D() = default;
 
-  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows) {
+  Tensor3D(T ***tensor, int n_layers, int n_cols, int n_rows) {
     initialise(tensor, n_layers, n_cols, n_rows);
   }
 
-  void initialise(T*** _tensor, int _n_layers, int _n_cols, int _n_rows) {
+  void initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows) {
     tensor = _tensor;
     n_layers = _n_layers;
     n_cols = _n_cols;
@@ -347,7 +351,7 @@ public:
 
   inline T **operator[](int value) const { return tensor[value]; };
 
-  bool has_elements(){ return tensor != nullptr; };
+  bool has_elements() { return tensor != nullptr; };
 
   void zero() {
     for (int k = 0; k < n_layers; k++)
@@ -355,18 +359,14 @@ public:
         for (int i = 0; i < n_rows; i++) { tensor[k][j][i] = 0; }
   }
 
-  void allocate(int nK, int nJ, int nI){
+  void allocate(int nK, int nJ, int nI) {
     n_layers = nK, n_cols = nJ, n_rows = nI;
-    tensor = (T ***)malloc(n_layers * sizeof(T **));
+    tensor = (T ***) malloc(n_layers * sizeof(T **));
 
-    for(int k=0; k < n_layers; k++){
-      tensor[k] = (T **)malloc(n_cols * sizeof(T *));
-    }
+    for (int k = 0; k < n_layers; k++) { tensor[k] = (T **) malloc(n_cols * sizeof(T *)); }
 
-    for(int k=0; k < n_layers; k++){
-      for(int j=0; j < n_cols; j++){
-        tensor[k][j] = (T *)malloc(n_rows * sizeof(T));
-      }
+    for (int k = 0; k < n_layers; k++) {
+      for (int j = 0; j < n_cols; j++) { tensor[k][j] = (T *) malloc(n_rows * sizeof(T)); }
     }
   };
 
@@ -379,21 +379,21 @@ public:
     T norm_val = 0;
     for (int i1 = 0; i1 < n_layers; i1++) {
       for (int i2 = 0; i2 < n_cols; i2++) {
-        for (int i3 = 0; i3 < n_rows; i3++) { norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]); }
+        for (int i3 = 0; i3 < n_rows; i3++) {
+          norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]);
+        }
       }
     }
     return sqrt(norm_val);
   }
 
-  ~Tensor3D(){
+  ~Tensor3D() {
     if (tensor == nullptr) return;
-    if (is_matlab_initialised){
+    if (is_matlab_initialised) {
       free_cast_matlab_3D_array(tensor, n_layers);
     } else {
       for (int k = 0; k < n_layers; k++) {
-        for (int j = 0; j < n_cols; j++) {
-          free(tensor[k][j]);
-        }
+        for (int j = 0; j < n_cols; j++) { free(tensor[k][j]); }
         free(tensor[k]);
       }
       free(tensor);
@@ -401,11 +401,12 @@ public:
   }
 };
 
-class DTilde{
+class DTilde {
 protected:
   int n_det_modes = 0;
   static void set_component(Tensor3D<std::complex<double>> &tensor, const mxArray *ptr,
-                     const std::string &name, int n_rows, int n_cols);
+                            const std::string &name, int n_rows, int n_cols);
+
 public:
   inline int num_det_modes() const { return n_det_modes; };
 
@@ -415,7 +416,7 @@ public:
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
 };
 
-class IncidentField{
+class IncidentField {
 protected:
   void set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name);
 
@@ -429,9 +430,8 @@ public:
 /**
  * List of field components as integers
  */
-class FieldComponentsVector: public Vector<int>{
+class FieldComponentsVector : public Vector<int> {
 public:
-
   FieldComponentsVector() = default;
 
   void initialise(const mxArray *ptr);
@@ -445,28 +445,25 @@ public:
   int index(int value);
 };
 
-class Vertices: public Matrix<int>{
+class Vertices : public Matrix<int> {
 public:
-
   Vertices() = default;
 
   void initialise(const mxArray *ptr);
 
-  int n_vertices(){ return n_rows; }
+  int n_vertices() { return n_rows; }
 
-  ~Vertices(){
-    if (has_elements()){
-      free_cast_matlab_2D_array(matrix);
-    }
+  ~Vertices() {
+    if (has_elements()) { free_cast_matlab_2D_array(matrix); }
     matrix = nullptr;
   };
 };
 
-class DetectorSensitivityArrays{
+class DetectorSensitivityArrays {
 public:
-  fftw_complex* v = nullptr;            // Flat fftw vector
-  fftw_plan plan = nullptr;             // fftw plan for the setup
-  std::complex<double>** cm = nullptr;  // Column major matrix
+  fftw_complex *v = nullptr;          // Flat fftw vector
+  fftw_plan plan = nullptr;           // fftw plan for the setup
+  std::complex<double> **cm = nullptr;// Column major matrix
 
   void initialise(int n_rows, int n_cols);
 
@@ -476,12 +473,12 @@ public:
 /**
  * Matrix of c coefficients. See the pdf documentation for their definition
  */
-class CCoefficientMatrix: public Matrix<double>{};
+class CCoefficientMatrix : public Matrix<double> {};
 
 /**
  * Temporary storage 'vector'
  */
-class EHVec: public Matrix<fftw_complex>{
+class EHVec : public Matrix<fftw_complex> {
 public:
   ~EHVec();
 };
@@ -491,12 +488,12 @@ public:
  */
 class FullFieldSnapshot {
 public:
-  std::complex<double> Ex = 0.; //< x-component of the electric field
-  std::complex<double> Ey = 0.; //< y-component of the electric field
-  std::complex<double> Ez = 0.; //< z-component of the electric field
-  std::complex<double> Hx = 0.; //< x-component of the magnetic field
-  std::complex<double> Hy = 0.; //< y-component of the magnetic field
-  std::complex<double> Hz = 0.; //< z-component of the magnetic field
+  std::complex<double> Ex = 0.;//< x-component of the electric field
+  std::complex<double> Ey = 0.;//< y-component of the electric field
+  std::complex<double> Ez = 0.;//< z-component of the electric field
+  std::complex<double> Hx = 0.;//< x-component of the magnetic field
+  std::complex<double> Hy = 0.;//< y-component of the magnetic field
+  std::complex<double> Hz = 0.;//< z-component of the magnetic field
 
   FullFieldSnapshot() = default;
 
@@ -512,7 +509,7 @@ public:
    * @return std::complex<double> The field component
    */
   std::complex<double> operator[](int index) {
-    switch(index) {
+    switch (index) {
       case 0:
         return Ex;
         break;
@@ -532,7 +529,8 @@ public:
         return Hz;
         break;
       default:
-        throw std::runtime_error("Index " + std::to_string(index) + " does not correspond to a field component.");
+        throw std::runtime_error("Index " + std::to_string(index) +
+                                 " does not correspond to a field component.");
         break;
     }
   }

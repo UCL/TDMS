@@ -4,11 +4,11 @@
  * @brief Tests allocation, deallocation, and methods for the XYZVectors class
  */
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 #include <numeric>
+#include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
@@ -74,6 +74,4 @@ void XYZVectorsTest::test_other_methods() {
   }
 }
 
-TEST_CASE("XYZVectors") {
-  XYZVectorsTest().run_all_class_tests();
-}
+TEST_CASE("XYZVectors") { XYZVectorsTest().run_all_class_tests(); }

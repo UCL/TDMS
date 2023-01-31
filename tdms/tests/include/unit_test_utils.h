@@ -23,7 +23,7 @@ namespace tdms_tests {
   * @param x Value to test
   * @param tol Tolerance for being "close" to zero
   */
-  inline bool near_zero(const double &x, double tol=TOLERANCE) { return std::abs(x) < tol; }
+  inline bool near_zero(const double &x, double tol = TOLERANCE) { return std::abs(x) < tol; }
 
   /**
  * @brief Determines if two numerical values are close by relative comparison.
@@ -117,9 +117,7 @@ namespace tdms_tests {
   }
 
   // returns the order of magnitude of the value x
-  inline int order_of_magnitude(double x) {
-    return floor(log10(x));
-  }
+  inline int order_of_magnitude(double x) { return floor(log10(x)); }
 
   /**
  * @brief Create a temporary directory for writing files.

@@ -7,8 +7,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::TOLERANCE;
@@ -73,6 +73,4 @@ void Tensor3DTest::test_other_methods() {
   }
 }
 
-TEST_CASE("Tensor3D: zero, frobenius") {
-  Tensor3DTest().run_all_class_tests();
-}
+TEST_CASE("Tensor3D: zero, frobenius") { Tensor3DTest().run_all_class_tests(); }

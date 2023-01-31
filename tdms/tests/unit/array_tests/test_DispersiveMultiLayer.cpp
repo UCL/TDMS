@@ -3,12 +3,12 @@
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests for the DispersiveMultiLayer class and its subclasses
  */
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using namespace std;
@@ -23,7 +23,8 @@ void DispersiveMultilayerTest::test_empty_construction() {
 
 void DispersiveMultilayerTest::test_wrong_input_type() {
   // Constructor should throw runtime_error at not recieving struct
-  dimensions_2d[0] = 2; dimensions_2d[1] = 3;
+  dimensions_2d[0] = 2;
+  dimensions_2d[1] = 3;
   create_numeric_array(2, dimensions_2d, mxUINT16_CLASS);
   REQUIRE_THROWS_AS(DispersiveMultiLayer(matlab_input), runtime_error);
 }
@@ -80,6 +81,4 @@ void DispersiveMultilayerTest::test_other_methods() {
   }
 }
 
-TEST_CASE("DispersiveMultiLayer") {
-  DispersiveMultilayerTest().run_all_class_tests();
-}
+TEST_CASE("DispersiveMultiLayer") { DispersiveMultilayerTest().run_all_class_tests(); }

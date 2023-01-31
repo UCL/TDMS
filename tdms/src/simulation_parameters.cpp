@@ -45,7 +45,7 @@ void SimulationParameters::set_dimension(string mode_string) {
   }
 }
 
-void SimulationParameters::set_spacing_stride(const double* vector) {
+void SimulationParameters::set_spacing_stride(const double *vector) {
   spacing_stride.x = (int) vector[0];
   spacing_stride.y = (int) vector[1];
   spacing_stride.z = (int) vector[2];
@@ -57,7 +57,7 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
   Np = (int) floor(1. / (2.5 * dt * f_max));
 
   //calculate Npe, the temporal DFT will be evaluated whenever tind increments by Npe
-  for (unsigned int tind = start_tind; tind < Nt; tind++){
+  for (unsigned int tind = start_tind; tind < Nt; tind++) {
     if ((tind - start_tind) % Np == 0) Npe++;
   }
   spdlog::info("Np = {}, Nt = {}, Npe = {}, f_max = {}, Npraw = {}", Np, Nt, Npe, f_max,
@@ -117,7 +117,8 @@ void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices)
 
   // get intmethod
   if (!mxIsEmpty(in_matrices["intmethod"])) {
-    interp_method = InterpolationMethod(int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
+    interp_method =
+            InterpolationMethod(int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
   }
   spdlog::info("intmethod = " + to_string(interp_method));
 

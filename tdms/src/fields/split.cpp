@@ -13,7 +13,7 @@ void SplitFieldComponent::initialise_fftw_plan(int n_threads, int size, EHVec &e
   plan_f = (fftw_plan *) malloc(sizeof(fftw_plan *) * n_threads);
   plan_b = (fftw_plan *) malloc(sizeof(fftw_plan *) * n_threads);
 
-  for (int i = 0; i < n_threads; i++){
+  for (int i = 0; i < n_threads; i++) {
     plan_f[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
     plan_b[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
   }
@@ -29,12 +29,10 @@ void SplitFieldComponent::initialise_from_matlab(double ***tensor, Dimensions &d
 
 SplitFieldComponent::~SplitFieldComponent() {
 
-  for (auto plan : {plan_f, plan_b}){
+  for (auto plan : {plan_f, plan_b}) {
     if (plan == nullptr) continue;
 
-    for (int i = 0; i < n_threads; i++){
-      fftw_destroy_plan(plan[i]);
-    }
+    for (int i = 0; i < n_threads; i++) { fftw_destroy_plan(plan[i]); }
     free(plan);
   }
   // superclass Tensor3D destructor removes tensor memory
@@ -42,7 +40,7 @@ SplitFieldComponent::~SplitFieldComponent() {
 
 void SplitField::allocate() {
 
-  for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}){
+  for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}) {
     component->allocate(tot.k + 1, tot.j + 1, tot.i + 1);
   }
 }
@@ -55,9 +53,7 @@ SplitField::SplitField(int I_total, int J_total, int K_total) {
 
 void SplitField::zero() {
 
-  for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}){
-    component->zero();
-  }
+  for (auto component : {&xy, &xz, &yx, &yz, &zx, &zy}) { component->zero(); }
 }
 
 void SplitField::initialise_fftw_plan(int n_threads, EHVec &eh_vec) {

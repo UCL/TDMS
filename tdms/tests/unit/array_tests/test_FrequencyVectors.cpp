@@ -6,8 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using namespace std;
@@ -77,8 +77,7 @@ void FrequencyVectorsTest::test_initialise_method() {
   REQUIRE_NOTHROW(fv.initialise(matlab_input));
   // check that we actually assigned values to the Vectors under the hood
   bool not_assigned = (!fv.x.has_elements() && !fv.y.has_elements());
-  bool expected_size =
-          (fv.x.size() == n_numeric_elements && fv.y.size() == n_numeric_elements);
+  bool expected_size = (fv.x.size() == n_numeric_elements && fv.y.size() == n_numeric_elements);
   bool assigned_and_correct_size = ((!not_assigned) && expected_size);
   REQUIRE(assigned_and_correct_size);
   // and the values themselves are what we expect
@@ -91,6 +90,4 @@ void FrequencyVectorsTest::test_initialise_method() {
   REQUIRE(values_are_correct);
 }
 
-TEST_CASE("FrequencyVectors") {
-  FrequencyVectorsTest().run_all_class_tests();
-}
+TEST_CASE("FrequencyVectors") { FrequencyVectorsTest().run_all_class_tests(); }
