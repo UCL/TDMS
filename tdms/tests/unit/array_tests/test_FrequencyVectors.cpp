@@ -14,7 +14,8 @@ using namespace std;
 using tdms_tests::TOLERANCE;
 
 void FrequencyVectorsTest::test_empty_construction() {
-  // initialise() method should exit without assignment if we pass in a pointer to an empty array (regardless of whether this is a struct or not)
+  // initialise() method should exit without assignment if we pass in a pointer
+  // to an empty array (regardless of whether this is a struct or not)
   FrequencyVectors fv;
   dimensions_2d[0] = 0;
   create_numeric_array(2, dimensions_2d, mxUINT8_CLASS);
@@ -35,7 +36,8 @@ void FrequencyVectorsTest::test_wrong_input_type() {
 }
 
 void FrequencyVectorsTest::test_incorrect_number_of_fields() {
-  // assignment will throw error if we attempt to provide a struct array that doesn't have two fields
+  // assignment will throw error if we attempt to provide a struct array that
+  // doesn't have two fields
   FrequencyVectors fv;
   SECTION("Struct with too many inputs") {
     const char *too_many_names[3] = {"field1", "field2", "field3"};
@@ -63,8 +65,8 @@ void FrequencyVectorsTest::test_initialise_method() {
   // create the data for the fields of our struct
   mxArray *field_array_ptrs[2];
   for (int i = 0; i < 2; i++) {
-    field_array_ptrs[i] = mxCreateNumericArray(2, (const mwSize *) field_array_dimensions,
-                                               mxDOUBLE_CLASS, mxREAL);
+    field_array_ptrs[i] = mxCreateNumericArray(
+            2, (const mwSize *) field_array_dimensions, mxDOUBLE_CLASS, mxREAL);
     mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
     // 0th field, fx_vec[i], will be 1/(i+1)
     // 1st field, fy_vec[i], will be -1/(i+1)
@@ -77,7 +79,8 @@ void FrequencyVectorsTest::test_initialise_method() {
   REQUIRE_NOTHROW(fv.initialise(matlab_input));
   // check that we actually assigned values to the Vectors under the hood
   bool not_assigned = (!fv.x.has_elements() && !fv.y.has_elements());
-  bool expected_size = (fv.x.size() == n_numeric_elements && fv.y.size() == n_numeric_elements);
+  bool expected_size = (fv.x.size() == n_numeric_elements &&
+                        fv.y.size() == n_numeric_elements);
   bool assigned_and_correct_size = ((!not_assigned) && expected_size);
   REQUIRE(assigned_and_correct_size);
   // and the values themselves are what we expect

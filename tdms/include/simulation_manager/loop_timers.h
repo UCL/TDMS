@@ -1,6 +1,7 @@
 /**
  * @file loop_timers.h
- * @brief Declares the class that handles the timing of the main loop and subprocesses of the main loop.
+ * @brief Declares the class that handles the timing of the main loop and
+ * subprocesses of the main loop.
  */
 #pragma once
 
@@ -9,18 +10,24 @@
 
 #include "timer.h"
 
-// There are two timers concerning the main loop: the internal timer that is tracking individual tasks, and the timer that is tracking how long the main iteration has actually taken.
+// There are two timers concerning the main loop: the internal timer that is
+// tracking individual tasks, and the timer that is tracking how long the main
+// iteration has actually taken.
 enum class TimersTrackingLoop { MAIN, INTERNAL };
 
 /**
- * @brief Class that handles the timers that monitor the performance of the program during the main loop, and providing information to be printed to the logger/debugger.
+ * @brief Class that handles the timers that monitor the performance of the
+ * program during the main loop, and providing information to be printed to the
+ * logger/debugger.
  */
 class LoopTimers {
 private:
   Timer main_loop_timer;//< Timer for the main iteration loops
   Timer internal_timer; //< Timer for tasks that are internal to one iteration
   // Error to throw when we try to use a timer that doesn't exist
-  void unrecognised_timer() { throw std::runtime_error("Didn't recognise that timer!"); }
+  void unrecognised_timer() {
+    throw std::runtime_error("Didn't recognise that timer!");
+  }
 
 public:
   void start_timer(TimersTrackingLoop timer) {
@@ -72,7 +79,8 @@ public:
         break;
       default:
         unrecognised_timer();
-        // return garbage just to make the compiler happy - the statement above will error so we'll never get here anyway
+        // return garbage just to make the compiler happy - the statement above
+        // will error so we'll never get here anyway
         return -1.;
         break;
     }

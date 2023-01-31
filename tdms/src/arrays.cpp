@@ -47,8 +47,10 @@ void XYZVectors::set_ptr(AxialDirection d, double *ptr) {
   }
 }
 
-bool XYZVectors::all_elements_less_than(double comparison_value, int vector_length,
-                                        AxialDirection component, int buffer_start) const {
+bool XYZVectors::all_elements_less_than(double comparison_value,
+                                        int vector_length,
+                                        AxialDirection component,
+                                        int buffer_start) const {
   double *component_pointer;
   switch (component) {
     case AxialDirection::X:
@@ -65,14 +67,23 @@ bool XYZVectors::all_elements_less_than(double comparison_value, int vector_leng
       break;
   }
   for (int index = buffer_start; index < vector_length; index++) {
-    if (component_pointer[buffer_start + index] > comparison_value) { return false; }
+    if (component_pointer[buffer_start + index] > comparison_value) {
+      return false;
+    }
   }
   return true;
 }
-bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny, int nz) const {
-  if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) { return false; }
-  if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) { return false; }
-  if (!all_elements_less_than(comparison_value, nz, AxialDirection::Z)) { return false; }
+bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny,
+                                        int nz) const {
+  if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) {
+    return false;
+  }
+  if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) {
+    return false;
+  }
+  if (!all_elements_less_than(comparison_value, nz, AxialDirection::Z)) {
+    return false;
+  }
   return true;
 }
 
@@ -85,7 +96,8 @@ CMaterial::CMaterial(const mxArray *ptr) {
   init_xyz_vectors(ptr, c, "Cc");
 }
 
-void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+void MaterialCollection::init_xyz_vectors(const mxArray *ptr,
+                                          XYZVectors &arrays,
                                           const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
@@ -94,14 +106,16 @@ void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays
   }
 }
 
-void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
+void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                                   const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
 
     auto element = ptr_to_matrix_in(ptr, prefix + component, "C");
-    is_multilayer =
-            mxGetDimensions(element)[0] !=
-            1;// this only matters when we check the 'z' component right? No point re-setting it each time when it's not used? TODO: check this.
+    is_multilayer = mxGetDimensions(element)[0] !=
+                    1;// this only matters when we check the 'z' component
+                      // right? No point re-setting it each time when it's not
+                      // used? TODO: check this.
     arrays.set_ptr(component, mxGetPr(element));
   }
 }
@@ -110,7 +124,8 @@ CCollection::CCollection(const mxArray *ptr) {
 
   auto num_fields = mxGetNumberOfFields(ptr);
   if (num_fields != 6 && num_fields != 9) {
-    throw runtime_error("C should have 6 or 9 members, it has " + to_string(num_fields));
+    throw runtime_error("C should have 6 or 9 members, it has " +
+                        to_string(num_fields));
   }
 
   init_xyz_vectors(ptr, a, "Ca");
@@ -138,7 +153,8 @@ DCollection::DCollection(const mxArray *ptr) {
   init_xyz_vectors(ptr, b, "Db");
 }
 
-void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const string &prefix) {
+void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                                   const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
     auto element = ptr_to_matrix_in(ptr, prefix + component, "D");
@@ -162,7 +178,8 @@ DispersiveMultiLayer::DispersiveMultiLayer(const mxArray *ptr) {
   sigma.z = mxGetPr(ptr_to_matrix_in(ptr, "sigma_z", "dispersive_aux"));
 }
 
-bool DispersiveMultiLayer::is_dispersive(int K_tot, double near_zero_tolerance) {
+bool DispersiveMultiLayer::is_dispersive(int K_tot,
+                                         double near_zero_tolerance) {
   for (int i = 0; i < K_tot; i++) {
     if (fabs(gamma[i]) > near_zero_tolerance) {
       // non-zero attenuation constant of a Yee cell implies media is dispersive
@@ -177,7 +194,8 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
   if (mxIsEmpty(ptr)) { return; }
 
   auto dims = mxGetDimensions(ptr);
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 || dims[1] != (I_tot + 1)) {
+  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 ||
+      dims[1] != (I_tot + 1)) {
     throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
   }
 
@@ -190,7 +208,8 @@ GratingStructure::~GratingStructure() {
   matrix = nullptr;
 }
 
-FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr, double omega_an) {
+FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr,
+                                               double omega_an) {
 
   if (mxIsEmpty(ptr)) {
     n = 1;
@@ -232,9 +251,11 @@ void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
   auto dims = (int *) mxGetDimensions(ptr);
 
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows || dims[1] != n_cols) {
-    throw runtime_error("Pupil has dimension " + to_string(dims[0]) + "x" + to_string(dims[1]) +
-                        " but it needed to be " + to_string(n_rows) + "x" + to_string(n_cols));
+  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows ||
+      dims[1] != n_cols) {
+    throw runtime_error("Pupil has dimension " + to_string(dims[0]) + "x" +
+                        to_string(dims[1]) + " but it needed to be " +
+                        to_string(n_rows) + "x" + to_string(n_cols));
   }
 
   matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
@@ -247,8 +268,9 @@ Pupil::~Pupil() {
   matrix = nullptr;
 }
 
-void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr,
-                           const string &name, int n_rows, int n_cols) {
+void DTilde::set_component(Tensor3D<complex<double>> &tensor,
+                           const mxArray *ptr, const string &name, int n_rows,
+                           int n_cols) {
 
   auto element = ptr_to_nd_array_in(ptr, 3, name, "D_tilde");
 
@@ -256,8 +278,9 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr
   int n_det_modes = dims[0];
 
   if (dims[1] != n_rows || dims[2] != n_cols) {
-    throw runtime_error("D_tilde.{x, y} has final dimensions " + to_string(dims[1]) + "x" +
-                        to_string(dims[2]) + " but it needed to be " + to_string(n_rows) + "x" +
+    throw runtime_error("D_tilde.{x, y} has final dimensions " +
+                        to_string(dims[1]) + "x" + to_string(dims[2]) +
+                        " but it needed to be " + to_string(n_rows) + "x" +
                         to_string(n_cols));
   }
 
@@ -265,12 +288,15 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor, const mxArray *ptr
   for (int j = 0; j < n_cols; j++) {
     p[j] = (complex<double> **) malloc(sizeof(complex<double> *) * n_rows);
     for (int i = 0; i < n_rows; i++) {
-      p[j][i] = (complex<double> *) malloc(sizeof(complex<double>) * n_det_modes);
+      p[j][i] =
+              (complex<double> *) malloc(sizeof(complex<double>) * n_det_modes);
     }
   }
 
-  auto temp_re = cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
-  auto temp_im = cast_matlab_3D_array(mxGetPi(element), dims[0], dims[1], dims[2]);
+  auto temp_re =
+          cast_matlab_3D_array(mxGetPr(element), dims[0], dims[1], dims[2]);
+  auto temp_im =
+          cast_matlab_3D_array(mxGetPi(element), dims[0], dims[1], dims[2]);
 
   for (int k = 0; k < n_det_modes; k++)
     for (int j = 0; j < n_cols; j++)
@@ -290,11 +316,12 @@ void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {
   assert_is_struct_with_n_fields(ptr, 2, "D_tilde");
   set_component(x, ptr, "Dx_tilde", n_rows, n_cols);
   set_component(y, ptr, "Dy_tilde", n_rows, n_cols);
-  n_det_modes = mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
+  n_det_modes =
+          mxGetDimensions(ptr_to_nd_array_in(ptr, 3, "Dx_tilde", "D_tilde"))[0];
 }
 
-void IncidentField::set_component(Tensor3D<double> &component, const mxArray *ptr,
-                                  const std::string &name) {
+void IncidentField::set_component(Tensor3D<double> &component,
+                                  const mxArray *ptr, const std::string &name) {
 
   if (mxIsEmpty(mxGetField(ptr, 0, name.c_str()))) {
     spdlog::info("{} not present", name);
@@ -304,10 +331,12 @@ void IncidentField::set_component(Tensor3D<double> &component, const mxArray *pt
   auto element = ptr_to_nd_array_in(ptr, 3, name, "tdfield");
   auto dims = mxGetDimensions(element);
   int N = dims[0], M = dims[1], O = dims[2];
-  component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N);
+  component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M,
+                       N);
   component.is_matlab_initialised = true;
 
-  cerr << "Got tdfield, dims=(" + to_string(N) + "," + to_string(M) + "," + to_string(O) + ")"
+  cerr << "Got tdfield, dims=(" + to_string(N) + "," + to_string(M) + "," +
+                  to_string(O) + ")"
        << endl;
 }
 
@@ -346,7 +375,9 @@ void Vertices::initialise(const mxArray *ptr) {
   int n_vertices = n_rows = dims[0];
   n_cols = dims[1];
 
-  if (n_cols != 3) { throw runtime_error("Second dimension in campssample.vertices must be 3"); }
+  if (n_cols != 3) {
+    throw runtime_error("Second dimension in campssample.vertices must be 3");
+  }
 
   spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
   matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, n_cols);

@@ -8,9 +8,12 @@
 #include <spdlog/spdlog.h>
 
 /**
- * @brief A structure for holding three values, which typically pertain to the same quantity but for each of the axial directions.
+ * @brief A structure for holding three values, which typically pertain to the
+ * same quantity but for each of the axial directions.
  *
- * Effectively stores the 3-vector (i,j,k). This is typically used to represent Yee cell indices, or 3D-array dimensions, or the maximum number of Yee cells in each coordinate direction, for example.
+ * Effectively stores the 3-vector (i,j,k). This is typically used to represent
+ * Yee cell indices, or 3D-array dimensions, or the maximum number of Yee cells
+ * in each coordinate direction, for example.
  */
 struct ijk {
   // The values (by dimension) that the object contains

@@ -6,11 +6,13 @@
 using namespace std;
 
 
-fdtdGridInitialiser::fdtdGridInitialiser(const mxArray *fdtd_pointer, const char *fdtd_filename) {
+fdtdGridInitialiser::fdtdGridInitialiser(const mxArray *fdtd_pointer,
+                                         const char *fdtd_filename) {
   pointer = fdtd_pointer;
   mat_filename = fdtd_filename;
 
-  dimensions = {value_of_attribute("I_tot") + 1, value_of_attribute("J_tot") + 1,
+  dimensions = {value_of_attribute("I_tot") + 1,
+                value_of_attribute("J_tot") + 1,
                 value_of_attribute("K_tot") + 1};
 }
 
@@ -21,11 +23,14 @@ mwSize fdtdGridInitialiser::value_of_attribute(const string &key) {
 
 
   if (mxGetFieldNumber((mxArray *) pointer, key.c_str()) == -1) {
-    throw runtime_error(string(mat_filename) + " missing field fdtdgrid." + key);
+    throw runtime_error(string(mat_filename) + " missing field fdtdgrid." +
+                        key);
   }
   auto element = mxGetField((mxArray *) pointer, 0, key.c_str());
 
-  if (element == nullptr) { throw runtime_error("Failed to find " + key + " in fdtdgrid"); }
+  if (element == nullptr) {
+    throw runtime_error("Failed to find " + key + " in fdtdgrid");
+  }
 
   auto value = (mwSize) (*mxGetPr(element));
   mxRemoveField((mxArray *) pointer, mxGetFieldNumber(pointer, key.c_str()));
@@ -39,7 +44,8 @@ void fdtdGridInitialiser::add_tensor(const string &name) {
 
   auto element = mxGetField((mxArray *) pointer, 0, name.c_str());
   element = mxCreateNumericArray((const mwSize) dimensions.size(),
-                                 (const mwSize *) &dimensions.front(), mxDOUBLE_CLASS, mxREAL);
+                                 (const mwSize *) &dimensions.front(),
+                                 mxDOUBLE_CLASS, mxREAL);
 
   mxSetField((mxArray *) pointer, 0, name.c_str(), element);
 }

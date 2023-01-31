@@ -13,15 +13,18 @@ void VertexPhasors::set_from(const mxArray *ptr) {
     spdlog::info("VertexPhasors: struct provided is empty");
     return;
   }
-  assert_is_struct_with_n_fields(ptr, 2, "VertexPhasors (using campssample array)");
+  assert_is_struct_with_n_fields(ptr, 2,
+                                 "VertexPhasors (using campssample array)");
   vertices.initialise(ptr);
   components.initialise(ptr);
 }
 
-void VertexPhasors::normalise_vertices(int frequency_index, complex<double> Enorm,
+void VertexPhasors::normalise_vertices(int frequency_index,
+                                       complex<double> Enorm,
                                        complex<double> Hnorm) {
   for (int i = FieldComponents::Ex; i <= FieldComponents::Hz; i++) {
-    // determine whether we are extracting this field component at the vertices or not
+    // determine whether we are extracting this field component at the vertices
+    // or not
     int index_in_camplitudes = components.index(i);
     if (index_in_camplitudes >= 0) {
       // we are extracting this component, determine the normalisation factor
@@ -29,11 +32,15 @@ void VertexPhasors::normalise_vertices(int frequency_index, complex<double> Enor
       // loop over all entries and normalise
       for (int vindex = 0; vindex < n_vertices(); vindex++) {
         complex<double> normalised_amplitude =
-                complex<double>(camplitudesR[frequency_index][index_in_camplitudes][vindex],
-                                camplitudesI[frequency_index][index_in_camplitudes][vindex]) /
+                complex<double>(camplitudesR[frequency_index]
+                                            [index_in_camplitudes][vindex],
+                                camplitudesI[frequency_index]
+                                            [index_in_camplitudes][vindex]) /
                 norm;
-        camplitudesR[frequency_index][index_in_camplitudes][vindex] = normalised_amplitude.real();
-        camplitudesI[frequency_index][index_in_camplitudes][vindex] = normalised_amplitude.imag();
+        camplitudesR[frequency_index][index_in_camplitudes][vindex] =
+                normalised_amplitude.real();
+        camplitudesI[frequency_index][index_in_camplitudes][vindex] =
+                normalised_amplitude.imag();
       }
     }
   }
@@ -49,14 +56,19 @@ void VertexPhasors::setup_complex_amplitude_arrays(int n_frequencies) {
     dims[0] = n_vertices();
     dims[1] = components.size();
     dims[2] = f_ex_vector_size;
-    mx_camplitudes = mxCreateNumericArray(3, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0], dims[1], dims[2]);
-    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0], dims[1], dims[2]);
+    mx_camplitudes = mxCreateNumericArray(3, (const mwSize *) dims,
+                                          mxDOUBLE_CLASS, mxCOMPLEX);
+    camplitudesR = cast_matlab_3D_array(mxGetPr(mx_camplitudes), dims[0],
+                                        dims[1], dims[2]);
+    camplitudesI = cast_matlab_3D_array(mxGetPi(mx_camplitudes), dims[0],
+                                        dims[1], dims[2]);
   }
 }
 
-void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitField &E,
-                                           MagneticSplitField &H, int n, double omega,
+void VertexPhasors::extractPhasorsVertices(int frequency_index,
+                                           ElectricSplitField &E,
+                                           MagneticSplitField &H, int n,
+                                           double omega,
                                            SimulationParameters &params) {
   int vindex;
   FullFieldSnapshot F;
@@ -70,15 +82,17 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
 
   /* Loop over every vertex requested by the user.
 
-  Since the value of the phasors at each vertex is entirely determined from the previously calculated fields,
-  these computations can be done in parallel as the computation of the phasors is independent of one another.
-  Ergo, we use a parallel loop.
+  Since the value of the phasors at each vertex is entirely determined from the
+  previously calculated fields, these computations can be done in parallel as
+  the computation of the phasors is independent of one another. Ergo, we use a
+  parallel loop.
   */
 #pragma omp parallel default(shared) private(F, vindex)
   {
 #pragma omp for
     for (vindex = 0; vindex < n_vertices(); vindex++) {// loop over every vertex
-      CellCoordinate current_cell{vertices[0][vindex], vertices[1][vindex], vertices[2][vindex]};
+      CellCoordinate current_cell{vertices[0][vindex], vertices[1][vindex],
+                                  vertices[2][vindex]};
 
       switch (params.dimension) {
         case Dimension::THREE:
@@ -110,21 +124,25 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index, ElectricSplitFie
       // update the master arrays
       update_vertex_camplitudes(frequency_index, vindex, F);
     }
-  }//end parallel region
+  }// end parallel region
 }
 
-void VertexPhasors::update_vertex_camplitudes(int frequency_index, int vertex_index,
+void VertexPhasors::update_vertex_camplitudes(int frequency_index,
+                                              int vertex_index,
                                               FullFieldSnapshot F) {
-  for (int component_id = FieldComponents::Ex; component_id <= FieldComponents::Hz;
-       component_id++) {
+  for (int component_id = FieldComponents::Ex;
+       component_id <= FieldComponents::Hz; component_id++) {
     int idx = components.index(component_id);
-    // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes Ex->Hz with 0->5 (FullFieldSnapshot)
-    // this is not an ideal fix, but it is the simplist so long as we remember the correspondence above
+    // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes
+    // Ex->Hz with 0->5 (FullFieldSnapshot) this is not an ideal fix, but it is
+    // the simplist so long as we remember the correspondence above
     int cpp_component_index = component_id - 1;
     if (idx >= 0) {
       // this component has been requested for extraction
-      camplitudesR[frequency_index][idx][vertex_index] += real(F[cpp_component_index]);
-      camplitudesI[frequency_index][idx][vertex_index] += imag(F[cpp_component_index]);
+      camplitudesR[frequency_index][idx][vertex_index] +=
+              real(F[cpp_component_index]);
+      camplitudesI[frequency_index][idx][vertex_index] +=
+              imag(F[cpp_component_index]);
     }
   }
 }

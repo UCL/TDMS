@@ -1,7 +1,8 @@
 /**
  * @file test_interpolation_functions.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes
+ * @brief Tests the performance of the interpolation functions, using 1D data
+ * mimicing a coordinate axes
  */
 #include "interpolation_methods.h"
 
@@ -29,13 +30,16 @@ using namespace std;
  * polynomial fields up to cubic order are interpolated exactly (to within
  * machine error)
  *
- * Checks are run on both the old interp{1,2,3} functions and newer const Interp_scheme instances. Old cubic methods will be redundant upon integration of BLi into the codebase.
+ * Checks are run on both the old interp{1,2,3} functions and newer const
+ * Interp_scheme instances. Old cubic methods will be redundant upon integration
+ * of BLi into the codebase.
  */
 TEST_CASE("Cubic interpolation: exact for polynomials of degree <= 3") {
   // equidistant points
   double x[] = {0., 1., 2., 3.};
   // test acceptence tolerance. Allow for FLOP imprecision and rounding errors
-  // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 * __DBL__EPSILON__
+  // error should be \approx 4 max(c_i) x^2 __DBL__EPSILON, so order 40 *
+  // __DBL__EPSILON__
   double tol = 4e1 * __DBL_EPSILON__;
 
   // constant field
@@ -126,7 +130,8 @@ TEST_CASE("BLi: interpolation-coefficient sums match") {
   double coeff_sums[8];
   double a[8] = {1., 1., 1., 1., 1., 1., 1., 1.};
 
-  // fast way to sum the coefficients is to "interpolate" the constant function 1
+  // fast way to sum the coefficients is to "interpolate" the constant function
+  // 1
   coeff_sums[0] = BL0.interpolate(a);
   coeff_sums[1] = BL1.interpolate(a);
   coeff_sums[2] = BL2.interpolate(a);
@@ -139,24 +144,34 @@ TEST_CASE("BLi: interpolation-coefficient sums match") {
   int n = 8;
   while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol)
     ;
-  // we only reach the end of the while loop, IE get to n==0, when all elements in the array are the same
+  // we only reach the end of the while loop, IE get to n==0, when all elements
+  // in the array are the same
   REQUIRE(n == 0);
 }
 
 /**
- * @brief We will check that BLi interpolation data gives comparible error to the equivalent functions in MATLAB
+ * @brief We will check that BLi interpolation data gives comparible error to
+ * the equivalent functions in MATLAB
  *
- *  * For 100 sample points, we will use BLi to interpolate the following complex-valued function with 100 sample points:
- * real part of sin(2\pi x)
- * imag part of pulse function.
+ *  * For 100 sample points, we will use BLi to interpolate the following
+ * complex-valued function with 100 sample points: real part of sin(2\pi x) imag
+ * part of pulse function.
  *
- * Interoplation will then be tested against over the range [0,1], the max element-wise error (by absolute value) will be determined. We will then check that this is of the same order of magnitude as the error produced by MATLAB, 5.35317432e-04.
+ * Interoplation will then be tested against over the range [0,1], the max
+ * element-wise error (by absolute value) will be determined. We will then check
+ * that this is of the same order of magnitude as the error produced by
+ * MATLAB, 5.35317432e-04.
  *
- * For 100 sample points, we will use BLi to interpolate the following functions with 100 sample points:
- * - The constant function 1    : range 0,1 : max. element-wise error (MATLAB) 2.82944733e-04
- * - sin(2\pi x)                : range 0,1 : max. element-wise error (MATLAB) 2.63468327e-04
- * - pulse function             : range 0,1 : max. element-wise error (MATLAB) 4.87599933e-04
- * - complex function           : range 0,1 : max. element-wise error (MATLAB) 5.35317432e-04
+ * For 100 sample points, we will use BLi to interpolate the following functions
+ * with 100 sample points:
+ * - The constant function 1    : range 0,1 : max. element-wise error
+ * (MATLAB) 2.82944733e-04
+ * - sin(2\pi x)                : range 0,1 : max. element-wise error
+ * (MATLAB) 2.63468327e-04
+ * - pulse function             : range 0,1 : max. element-wise error
+ * (MATLAB) 4.87599933e-04
+ * - complex function           : range 0,1 : max. element-wise error
+ * (MATLAB) 5.35317432e-04
  *
  * MATLAB norm-errors:
  * constant function norm error: 2.81526454e-03
@@ -165,7 +180,8 @@ TEST_CASE("BLi: interpolation-coefficient sums match") {
  * complex fn norm error:        2.08892374e-03
  *
  * Error values produced from benchmark_test_interpolation_functions.m
- * The complex function has real part sin(2\pi x) and its imaginary part is the pulse function.
+ * The complex function has real part sin(2\pi x) and its imaginary part is the
+ * pulse function.
  */
 
 // Hardcode MATLAB errors from benchmark_test_interpolation_functions.m
@@ -173,8 +189,10 @@ inline const double ML_const_fn_max_pointwise_error = 2.82944733e-04,
                     ML_sin_max_pointwise_error = 2.63468327e-04,
                     ML_pulse_max_pointwise_error = 4.87599933e-04,
                     ML_complex_fn_max_pointwise_error = 5.35317432e-04;
-inline const double ML_cont_fn_norm_error = 2.81526454e-03, ML_sin_norm_error = 1.85845330e-03,
-                    ML_pulse_norm_error = 9.65609916e-04, ML_complex_fn_norm_error = 2.08892374e-03;
+inline const double ML_cont_fn_norm_error = 2.81526454e-03,
+                    ML_sin_norm_error = 1.85845330e-03,
+                    ML_pulse_norm_error = 9.65609916e-04,
+                    ML_complex_fn_norm_error = 2.08892374e-03;
 
 // Evalutes f(x) = 1, for consistency with test sectioning
 inline double constant_1(double x) { return 1.; }
@@ -183,7 +201,8 @@ inline double constant_1(double x) { return 1.; }
 inline double s2pi(double x) { return sin(2. * DCPI * x); }
 
 /**
- * @brief Evaluates the smooth pulse/ mollifier Kernel function, supported between 0 and 1
+ * @brief Evaluates the smooth pulse/ mollifier Kernel function, supported
+ * between 0 and 1
  *
  * The smooth mollifier \phi(x) is the function
  * \phi(x) =
@@ -192,7 +211,8 @@ inline double s2pi(double x) { return sin(2. * DCPI * x); }
  *  e^{-1/(1-|x|^2)}    &   when |x| < 1
  * \end{cases}
  * This function is compactly supported over the interval [-1,1].
- * By evaluating pulse(x) = \phi(3[2x-1]), we obtain a smooth function with support in [1/3,2/3] \subset [0,1]
+ * By evaluating pulse(x) = \phi(3[2x-1]), we obtain a smooth function with
+ * support in [1/3,2/3] \subset [0,1]
  *
  * @param x Point of evaluation
  * @return double Evaluted value
@@ -206,18 +226,21 @@ inline double pulse(double x) {
   }
 }
 
-// Evalutes the complex function we will be using as a benchmark, f(x) = sin(2\pi x) + i * pulse(x)
-inline complex<double> complex_fn(double x) { return s2pi(x) + IMAGINARY_UNIT * pulse(x); }
+// Evalutes the complex function we will be using as a benchmark, f(x) =
+// sin(2\pi x) + i * pulse(x)
+inline complex<double> complex_fn(double x) {
+  return s2pi(x) + IMAGINARY_UNIT * pulse(x);
+}
 
 TEST_CASE("BLi: MATLAB benchmarking") {
   // setup test logging information
   stringstream logging_string;
   logging_string << scientific << setprecision(8);
 
-  int nSamples = 100;                           //< number of datapooints in this dimension
+  int nSamples = 100;//< number of datapooints in this dimension
   double spacing = 1. / (double) (nSamples - 1);//< spacing between datapoints
   double xi[nSamples];                          //< coordinates of the samples
-  double xi5[nSamples - 1];                     //< coordinates of the interpolation points
+  double xi5[nSamples - 1];//< coordinates of the interpolation points
   // setup cell centres (xi5) and data sample positions (xi)
   for (int i = 0; i < nSamples - 1; i++) {
     xi[i] = ((double) i) * spacing;
@@ -256,7 +279,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
       analytic_function = &pulse;
     }
 
-    // Setup sample points (xi), Yee cell centres (xi5), and function values at these points (sampled data & exact values)
+    // Setup sample points (xi), Yee cell centres (xi5), and function values at
+    // these points (sampled data & exact values)
     for (int i = 0; i < nSamples - 1; i++) {
       f_data[i] = analytic_function(xi[i]);
       f_exact[i] = analytic_function(xi5[i]);
@@ -265,7 +289,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
       InterpolationScheme scheme = best_scheme(nSamples, i + 1);
-      f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
+      f_interp[i] = scheme.interpolate(
+              f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
     }
@@ -279,7 +304,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     MATLAB_max_error = ML_complex_fn_max_pointwise_error;
     MATLAB_norm_error = ML_complex_fn_norm_error;
 
-    // Setup sample points (xi), Yee cell centres (xi5), and function values at these points (sampled data & exact values)
+    // Setup sample points (xi), Yee cell centres (xi5), and function values at
+    // these points (sampled data & exact values)
     for (int i = 0; i < nSamples - 1; i++) {
       f_data[i] = complex_fn(xi[i]);
       f_exact[i] = complex_fn(xi5[i]);
@@ -288,7 +314,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
       InterpolationScheme scheme = best_scheme(nSamples, i + 1);
-      f_interp[i] = scheme.interpolate(f_data, i + 1 - scheme.number_of_datapoints_to_left);
+      f_interp[i] = scheme.interpolate(
+              f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
       f_errors[i] = abs(f_exact[i] - f_interp[i]);
     }
@@ -302,7 +329,9 @@ TEST_CASE("BLi: MATLAB benchmarking") {
   REQUIRE(is_close_or_better(norm_error, MATLAB_norm_error));
 
   // report test results
-  logging_string << "Max ptwise error: " << max_error << " (" << MATLAB_max_error << ") | ";
-  logging_string << "Norm error: " << norm_error << " (" << MATLAB_norm_error << ")";
+  logging_string << "Max ptwise error: " << max_error << " ("
+                 << MATLAB_max_error << ") | ";
+  logging_string << "Norm error: " << norm_error << " (" << MATLAB_norm_error
+                 << ")";
   SPDLOG_INFO(logging_string.str());
 }

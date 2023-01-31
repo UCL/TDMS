@@ -1,7 +1,8 @@
 /**
  * @file test_Material.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for the Material class and it's subclasses (CMaterial, DMaterial)
+ * @brief Unit tests for the Material class and it's subclasses (CMaterial,
+ * DMaterial)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -31,7 +32,8 @@ void CMaterialTest::test_correct_construction() {
   create_1by1_struct(n_fields, fieldnames);
   mxArray *elements[n_fields];
   for (int i = 0; i < n_fields; i++) {
-    elements[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+    elements[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS,
+                                        mxREAL);
     mxSetField(matlab_input, 0, fieldnames[i], elements[i]);
   }
   // construction should succeed
@@ -44,7 +46,8 @@ void DMaterialTest::test_incorrect_number_of_fields() {
     REQUIRE_THROWS_AS(DMaterial(matlab_input), std::runtime_error);
   }
   SECTION("Too many fields") {
-    const char *too_many_fields[] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz", "extra"};
+    const char *too_many_fields[] = {"Dax", "Day", "Daz",  "Dbx",
+                                     "Dby", "Dbz", "extra"};
     create_1by1_struct(n_fields + 1, too_many_fields);
     REQUIRE_THROWS_AS(DMaterial(matlab_input), std::runtime_error);
   }
@@ -59,7 +62,8 @@ void DMaterialTest::test_correct_construction() {
   create_1by1_struct(n_fields, fieldnames);
   mxArray *elements[n_fields];
   for (int i = 0; i < n_fields; i++) {
-    elements[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+    elements[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS,
+                                        mxREAL);
     mxSetField(matlab_input, 0, fieldnames[i], elements[i]);
   }
   // construction should succeed

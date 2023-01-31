@@ -31,14 +31,17 @@ void DispersiveMultilayerTest::test_wrong_input_type() {
 
 void DispersiveMultilayerTest::test_correct_construction() {
   create_1by1_struct(n_fields, fieldnames);
-  // build "data" for each of the fields, which is going to be the same array filled with consecutive integers
+  // build "data" for each of the fields, which is going to be the same array
+  // filled with consecutive integers
   const int array_size[2] = {1, n_numeric_elements};
   mxArray *field_array_ptrs[n_fields];
   for (int i = 0; i < n_fields; i++) {
-    field_array_ptrs[i] =
-            mxCreateNumericArray(2, (const mwSize *) array_size, mxDOUBLE_CLASS, mxREAL);
+    field_array_ptrs[i] = mxCreateNumericArray(2, (const mwSize *) array_size,
+                                               mxDOUBLE_CLASS, mxREAL);
     mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
-    for (int i = 0; i < n_numeric_elements; i++) { where_to_place_data[i] = (double) i; }
+    for (int i = 0; i < n_numeric_elements; i++) {
+      where_to_place_data[i] = (double) i;
+    }
     mxSetField(matlab_input, 0, fieldnames[i], field_array_ptrs[i]);
   }
   // we should now be able to create a DispersiveMultiLayer object
@@ -65,20 +68,25 @@ void DispersiveMultilayerTest::test_other_methods() {
     const int array_size[2] = {1, n_numeric_elements};
     mxArray *field_array_ptrs[n_fields];
     for (int i = 0; i < n_fields; i++) {
-      field_array_ptrs[i] =
-              mxCreateNumericArray(2, (const mwSize *) array_size, mxDOUBLE_CLASS, mxREAL);
+      field_array_ptrs[i] = mxCreateNumericArray(2, (const mwSize *) array_size,
+                                                 mxDOUBLE_CLASS, mxREAL);
       mxDouble *where_to_place_data = mxGetPr(field_array_ptrs[i]);
-      for (int i = 0; i < n_numeric_elements; i++) { where_to_place_data[i] = 1.; }
+      for (int i = 0; i < n_numeric_elements; i++) {
+        where_to_place_data[i] = 1.;
+      }
       mxSetField(matlab_input, 0, fieldnames[i], field_array_ptrs[i]);
     }
     // create DispersiveMultiLayer object
     DispersiveMultiLayer dml(matlab_input);
 
-    // all entries in gamma are 1. -> so a tolerance of 1.5 should flag the dml as not dispersive
+    // all entries in gamma are 1. -> so a tolerance of 1.5 should flag the dml
+    // as not dispersive
     REQUIRE(!dml.is_dispersive(n_numeric_elements, 1.5));
     // yet a tolerance of 0.5 should flag it as dispersive
     REQUIRE(dml.is_dispersive(n_numeric_elements, 0.5));
   }
 }
 
-TEST_CASE("DispersiveMultiLayer") { DispersiveMultilayerTest().run_all_class_tests(); }
+TEST_CASE("DispersiveMultiLayer") {
+  DispersiveMultilayerTest().run_all_class_tests();
+}

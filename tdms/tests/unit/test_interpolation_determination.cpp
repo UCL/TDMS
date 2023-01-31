@@ -1,7 +1,8 @@
 /**
  * @file test_interpolation_determination.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Tests the logic that determines which interpolation schemes are appropriate.
+ * @brief Tests the logic that determines which interpolation schemes are
+ * appropriate.
  */
 #include "interpolation_methods.h"
 
@@ -11,21 +12,25 @@
 using namespace std;
 
 /**
- * @brief Test whether best_scheme correctly determines the appropriate interpolation scheme to use, given the number of Yee cells either side of cell (i,j,k)
+ * @brief Test whether best_scheme correctly determines the appropriate
+ * interpolation scheme to use, given the number of Yee cells either side of
+ * cell (i,j,k)
  *
  */
 TEST_CASE("best_interp_scheme: correct interpolation chosen") {
   int N = 10;
   bool all_schemes_correct = true;
 
-  // should throw out_of_range exception if interpolation is impossible (<3 Yee cells in direction)
+  // should throw out_of_range exception if interpolation is impossible (<3 Yee
+  // cells in direction)
   SECTION("Too few cells to interpolate") {
     REQUIRE_THROWS_AS(best_scheme(1, 0), out_of_range);
     REQUIRE_THROWS_AS(best_scheme(2, 0), out_of_range);
     REQUIRE_THROWS_AS(best_scheme(2, 1), out_of_range);
   }
 
-  /* Suppose we have N >= 8 Yee cells in a dimension. The program should determine:
+  /* Suppose we have N >= 8 Yee cells in a dimension. The program should
+    determine:
     - cell_id <  0 : Interpolation impossible
     - cell_id == 0 : BAND_LIMITED_CELL_ZERO
     - cell_id == 1,2,3 : Use BAND_LIMITED_(0,1,2) scheme respectively
@@ -38,30 +43,36 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
 
     REQUIRE_THROWS_AS(best_scheme(N, -1), out_of_range);
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 0).get_priority() == BAND_LIMITED_CELL_ZERO);
-    all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 1).get_priority() == BAND_LIMITED_0);
-    all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 2).get_priority() == BAND_LIMITED_1);
-    all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 3).get_priority() == BAND_LIMITED_2);
+            all_schemes_correct &&
+            (best_scheme(N, 0).get_priority() == BAND_LIMITED_CELL_ZERO);
+    all_schemes_correct = all_schemes_correct &&
+                          (best_scheme(N, 1).get_priority() == BAND_LIMITED_0);
+    all_schemes_correct = all_schemes_correct &&
+                          (best_scheme(N, 2).get_priority() == BAND_LIMITED_1);
+    all_schemes_correct = all_schemes_correct &&
+                          (best_scheme(N, 3).get_priority() == BAND_LIMITED_2);
     for (int i = 4; i <= N - 4; i++) {
       all_schemes_correct =
-              all_schemes_correct && (best_scheme(N, i).get_priority() == BAND_LIMITED_3);
+              all_schemes_correct &&
+              (best_scheme(N, i).get_priority() == BAND_LIMITED_3);
     }
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
+            all_schemes_correct &&
+            (best_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N - 2).get_priority() == BAND_LIMITED_5);
+            all_schemes_correct &&
+            (best_scheme(N, N - 2).get_priority() == BAND_LIMITED_5);
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N - 1).get_priority() == BAND_LIMITED_6);
-    all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N).get_priority() == BAND_LIMITED_7);
+            all_schemes_correct &&
+            (best_scheme(N, N - 1).get_priority() == BAND_LIMITED_6);
+    all_schemes_correct = all_schemes_correct &&
+                          (best_scheme(N, N).get_priority() == BAND_LIMITED_7);
     REQUIRE(all_schemes_correct);
     REQUIRE_THROWS_AS(best_scheme(N, N + 1), out_of_range);
   }
 
-  /* Suppose we have N >= 8 Yee cells in a dimension. Then if we are restricted to the cubic interpolation functions, the program should determine:
+  /* Suppose we have N >= 8 Yee cells in a dimension. Then if we are restricted
+    to the cubic interpolation functions, the program should determine:
     - cell_id <= 0 : Interpolation impossible
     - cell_id == 1 : CUBIC_INTERP_FIRST
     - cell_id == 2,3,...,N-2 : Use CUBIC_INTERP_MIDDLE
@@ -73,13 +84,16 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     PreferredInterpolationMethods pim = Cubic;
     REQUIRE_THROWS_AS(best_scheme(N, 0, pim), out_of_range);
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 1, pim).get_priority() == CUBIC_INTERP_FIRST);
+            all_schemes_correct &&
+            (best_scheme(N, 1, pim).get_priority() == CUBIC_INTERP_FIRST);
     for (int i = 2; i <= N - 2; i++) {
       all_schemes_correct =
-              all_schemes_correct && (best_scheme(N, i, pim).get_priority() == CUBIC_INTERP_MIDDLE);
+              all_schemes_correct &&
+              (best_scheme(N, i, pim).get_priority() == CUBIC_INTERP_MIDDLE);
     }
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N - 1, pim).get_priority() == CUBIC_INTERP_LAST);
+            all_schemes_correct &&
+            (best_scheme(N, N - 1, pim).get_priority() == CUBIC_INTERP_LAST);
     REQUIRE(all_schemes_correct);
     REQUIRE_THROWS_AS(best_scheme(N, N, pim), out_of_range);
   }
@@ -95,13 +109,16 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     N = 6;
     REQUIRE_THROWS_AS(best_scheme(N, 0), out_of_range);
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, 1).get_priority() == CUBIC_INTERP_FIRST);
+            all_schemes_correct &&
+            (best_scheme(N, 1).get_priority() == CUBIC_INTERP_FIRST);
     for (int i = 2; i <= N - 2; i++) {
       all_schemes_correct =
-              all_schemes_correct && (best_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);
+              all_schemes_correct &&
+              (best_scheme(N, i).get_priority() == CUBIC_INTERP_MIDDLE);
     }
     all_schemes_correct =
-            all_schemes_correct && (best_scheme(N, N - 1).get_priority() == CUBIC_INTERP_LAST);
+            all_schemes_correct &&
+            (best_scheme(N, N - 1).get_priority() == CUBIC_INTERP_LAST);
     REQUIRE(all_schemes_correct);
     REQUIRE_THROWS_AS(best_scheme(N, N), out_of_range);
   }

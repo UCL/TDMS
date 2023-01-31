@@ -47,7 +47,8 @@ public:
   }
 
   /**
-   * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays
+   * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1)
+   * arrays
    *
    * @param I_total,J_total,K_total Dimensions of the tensor size to set
    */
@@ -93,32 +94,39 @@ public:
   void set_ptr(AxialDirection d, double *ptr);
 
   /**
-   * @brief Determines whether all elements in the x, y, or z vector are less than a given value.
+   * @brief Determines whether all elements in the x, y, or z vector are less
+   * than a given value.
    *
    * @param comparison_value Value to compare elements to
    * @param vector_length Number of elements to compare against
    * @param component Vector to compare elements against; x, y, or z
-   * @param buffer_start Only compare elements between buffer_start (inclusive) and buffer_start+vector_length-1 (inclusive)
+   * @param buffer_start Only compare elements between buffer_start (inclusive)
+   * and buffer_start+vector_length-1 (inclusive)
    * @return true All elements are less than the comparison_value
    * @return false At least one element is not less than the comparison_value
    */
-  bool all_elements_less_than(double comparison_value, int vector_length, AxialDirection component,
+  bool all_elements_less_than(double comparison_value, int vector_length,
+                              AxialDirection component,
                               int buffer_start = 0) const;
   /**
-   * @brief Determines whether all elements in the x, y, AND z vectors are less than a given value.
+   * @brief Determines whether all elements in the x, y, AND z vectors are less
+   * than a given value.
    *
    * @param comparison_value Value to compare elements to
-   * @param nx,ny,nz Number of elements in the nx, ny, and nz vectors respectively
+   * @param nx,ny,nz Number of elements in the nx, ny, and nz vectors
+   * respectively
    * @return true All elements are less than the comparison_value
    * @return false At least one element is not less than the comparison_value
    */
-  bool all_elements_less_than(double comparison_value, int nx, int ny, int nz) const;
+  bool all_elements_less_than(double comparison_value, int nx, int ny,
+                              int nz) const;
 };
 
 // TODO: docstring
 class MaterialCollection {
 protected:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                               const std::string &prefix);
 };
 
 /**
@@ -143,7 +151,8 @@ public:
 /*! @copydoc CCollectionBase */
 class CCollection : public CCollectionBase {
 private:
-  void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                        const std::string &prefix);
 
 public:
   bool is_multilayer = false;
@@ -179,7 +188,8 @@ public:
 /*! @copydoc DCollectionBase */
 class DCollection : public DCollectionBase {
 private:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                               const std::string &prefix);
 
 public:
   explicit DCollection(const mxArray *ptr);
@@ -205,8 +215,10 @@ public:
   /**
    * @brief Determines whether the (background) medium is dispersive
    *
-   * @param K_tot Number of Yee cells in the z-direction (number of entries in this->gamma)
-   * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation) values
+   * @param K_tot Number of Yee cells in the z-direction (number of entries in
+   * this->gamma)
+   * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation)
+   * values
    * @return true Background is dispersive
    * @return false Background is not dispersive
    */
@@ -230,7 +242,8 @@ public:
    * @brief Construct a new Matrix object, providing the dimensions
    *
    * @param n_rows,n_cols Number of rows and columns in the matrix
-   * @param initial_value The initial value of the elements, defaults to 0 to avoid initalised but unassigned values
+   * @param initial_value The initial value of the elements, defaults to 0 to
+   * avoid initalised but unassigned values
    */
   Matrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
 
@@ -254,7 +267,9 @@ public:
     this->n_cols = n_cols;
 
     matrix = (T **) malloc(sizeof(T *) * n_rows);
-    for (int i = 0; i < n_rows; i++) { matrix[i] = (T *) malloc(sizeof(T) * n_cols); }
+    for (int i = 0; i < n_rows; i++) {
+      matrix[i] = (T *) malloc(sizeof(T) * n_cols);
+    }
   };
 
   /**
@@ -363,17 +378,22 @@ public:
     n_layers = nK, n_cols = nJ, n_rows = nI;
     tensor = (T ***) malloc(n_layers * sizeof(T **));
 
-    for (int k = 0; k < n_layers; k++) { tensor[k] = (T **) malloc(n_cols * sizeof(T *)); }
+    for (int k = 0; k < n_layers; k++) {
+      tensor[k] = (T **) malloc(n_cols * sizeof(T *));
+    }
 
     for (int k = 0; k < n_layers; k++) {
-      for (int j = 0; j < n_cols; j++) { tensor[k][j] = (T *) malloc(n_rows * sizeof(T)); }
+      for (int j = 0; j < n_cols; j++) {
+        tensor[k][j] = (T *) malloc(n_rows * sizeof(T));
+      }
     }
   };
 
   /**
    * @brief Computes the Frobenius norm of the tensor
    *
-   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
+   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot}
+   * |t[k][j][i]|^2 }\f$
    */
   double frobenius() {
     T norm_val = 0;
@@ -404,8 +424,9 @@ public:
 class DTilde {
 protected:
   int n_det_modes = 0;
-  static void set_component(Tensor3D<std::complex<double>> &tensor, const mxArray *ptr,
-                            const std::string &name, int n_rows, int n_cols);
+  static void set_component(Tensor3D<std::complex<double>> &tensor,
+                            const mxArray *ptr, const std::string &name,
+                            int n_rows, int n_cols);
 
 public:
   inline int num_det_modes() const { return n_det_modes; };
@@ -418,7 +439,8 @@ public:
 
 class IncidentField {
 protected:
-  void set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name);
+  void set_component(Tensor3D<double> &component, const mxArray *ptr,
+                     const std::string &name);
 
 public:
   Tensor3D<double> x;
@@ -498,7 +520,8 @@ public:
   FullFieldSnapshot() = default;
 
   /**
-   * @brief Return the component of the field corresponding to the index provided.
+   * @brief Return the component of the field corresponding to the index
+   * provided.
    *
    * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.
    * This is the indexing order that other storage containers use.

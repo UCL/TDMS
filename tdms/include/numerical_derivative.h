@@ -21,7 +21,8 @@
  * @param[out] c The results of the element-wise multiplications a .* b.
  * @param[in] len The length of the arrays.
  */
-void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c, int len);
+void complex_mult_vec(fftw_complex *a, fftw_complex *b, fftw_complex *c,
+                      int len);
 
 /**
  * @brief Initialise the coefficients required to simultaneously perform
@@ -36,16 +37,17 @@ void init_diff_shift_op(double delta, fftw_complex *Dk, int N);
 
 /**
  * @brief Calculate the first derivative of a sampled function.
- * @note in_pb_pf must be the buffer which is the input for both plans pf and pb.
- * Likewise, out_pb_pf must be the output for both plans pf and pb.
+ * @note in_pb_pf must be the buffer which is the input for both plans pf and
+ * pb. Likewise, out_pb_pf must be the output for both plans pf and pb.
  *
  * @param[in] in_pb_pf The buffer containing the data to be differentiated.
  * 	    @warning This buffer will be overwritten as part of the computation.
  * @param[out] out_pb_pf The buffer which will contain the computed derivative.
- * @param[inout] Dk Buffer to write the coefficients for performing differentiation and shifting in Fourier space.
+ * @param[inout] Dk Buffer to write the coefficients for performing
+ * differentiation and shifting in Fourier space.
  * @param[in] N Number of elements in buffers.
  * @param[in] pf The plan for forward FFT.
  * @param[in] pb The plan for backward FFT.
  */
-void first_derivative(fftw_complex *in_pb_pf, fftw_complex *out_pb_pf, fftw_complex *Dk, int N,
-                      fftw_plan pf, fftw_plan pb);
+void first_derivative(fftw_complex *in_pb_pf, fftw_complex *out_pb_pf,
+                      fftw_complex *Dk, int N, fftw_plan pf, fftw_plan pb);

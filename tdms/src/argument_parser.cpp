@@ -28,7 +28,8 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
     exit(-1);
   }
 
-  // write name of output file to log - input files will be logged when read from
+  // write name of output file to log - input files will be logged when read
+  // from
   spdlog::info("Output file specified: {0:s}", args.output_filename());
 
   spdlog::debug("Finished parsing arguments");
@@ -36,17 +37,21 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 }
 
 void ArgumentParser::print_help_message() {
-  fprintf(stdout, "Usage:\n"
-                  "tdms [options] infile outfile\n"
-                  "tdms [options] infile gridfile outfile\n"
-                  "Options:\n"
-                  "-h:\tDisplay this help message\n"
-                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the "
-                  "pseudo-spectral method.\n"
-                  "-c, --cubic-interpolation:\tUse cubic interpolation to determine field values "
-                  "at Yee cell centres, as opposed to band-limited interpolation.\n"
-                  "-q:\tQuiet operation. Silence all logging\n"
-                  "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
+  fprintf(stdout,
+          "Usage:\n"
+          "tdms [options] infile outfile\n"
+          "tdms [options] infile gridfile outfile\n"
+          "Options:\n"
+          "-h:\tDisplay this help message\n"
+          "-fd, --finite-difference:\tUse the finite-difference solver, "
+          "instead of the "
+          "pseudo-spectral method.\n"
+          "-c, --cubic-interpolation:\tUse cubic interpolation to determine "
+          "field values "
+          "at Yee cell centres, as opposed to band-limited interpolation.\n"
+          "-q:\tQuiet operation. Silence all logging\n"
+          "-m:\tMinimise output file size by not saving vertex and facet "
+          "information\n\n");
 }
 
 ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {
@@ -62,7 +67,9 @@ ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {
   }
 }
 
-bool ArgumentNamespace::is_a_flag_argument(std::string arg) { return arg[0] == '-'; }
+bool ArgumentNamespace::is_a_flag_argument(std::string arg) {
+  return arg[0] == '-';
+}
 
 bool ArgumentNamespace::have_flag(std::string const &flag) const {
 
@@ -89,7 +96,8 @@ const char *ArgumentNamespace::output_filename() {
     return non_flag_arguments[1].c_str();
   }
 
-  throw std::runtime_error("Failed to determine the output file from arguments");
+  throw std::runtime_error(
+          "Failed to determine the output file from arguments");
 }
 
 const char *ArgumentNamespace::grid_filename() {
@@ -120,7 +128,9 @@ vector<string> ArgumentNamespace::input_filenames() {
 
 void ArgumentNamespace::check_files_can_be_accessed() {
   // check input files can be read from
-  for (const auto &filename : input_filenames()) { assert_can_open_file(filename.c_str(), "r"); }
+  for (const auto &filename : input_filenames()) {
+    assert_can_open_file(filename.c_str(), "r");
+  }
   // check output file can be written to
   assert_can_open_file(output_filename(), "a+");
 }

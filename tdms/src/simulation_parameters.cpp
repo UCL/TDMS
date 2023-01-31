@@ -56,15 +56,17 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
   double f_max = f_ex_vec.max();
   Np = (int) floor(1. / (2.5 * dt * f_max));
 
-  //calculate Npe, the temporal DFT will be evaluated whenever tind increments by Npe
+  // calculate Npe, the temporal DFT will be evaluated whenever tind increments
+  // by Npe
   for (unsigned int tind = start_tind; tind < Nt; tind++) {
     if ((tind - start_tind) % Np == 0) Npe++;
   }
-  spdlog::info("Np = {}, Nt = {}, Npe = {}, f_max = {}, Npraw = {}", Np, Nt, Npe, f_max,
-               2.5 * dt * f_max);
+  spdlog::info("Np = {}, Nt = {}, Npe = {}, f_max = {}, Npraw = {}", Np, Nt,
+               Npe, f_max, 2.5 * dt * f_max);
 }
 
-void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices) {
+void SimulationParameters::unpack_from_input_matrices(
+        InputMatrices in_matrices) {
   // determine if we have a dispersive medium or multilayer
   CCollection C(in_matrices["C"]);
   is_disp_ml = C.is_disp_ml;
@@ -94,11 +96,14 @@ void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices)
   set_run_mode(string_in(in_matrices["runmode"], "runmode"));
 
   // determine additional behaviour of this call to tdms
-  exphasorsvolume = bool_cast_from_double_in(in_matrices["exphasorsvolume"], "exphasorsvolume");
-  exphasorssurface = bool_cast_from_double_in(in_matrices["exphasorssurface"], "exphasorssurface");
-  intphasorssurface =
-          bool_cast_from_double_in(in_matrices["intphasorssurface"], "intphasorssurface");
-  interp_mat_props = bool_cast_from_double_in(in_matrices["intmatprops"], "intmatprops");
+  exphasorsvolume = bool_cast_from_double_in(in_matrices["exphasorsvolume"],
+                                             "exphasorsvolume");
+  exphasorssurface = bool_cast_from_double_in(in_matrices["exphasorssurface"],
+                                              "exphasorssurface");
+  intphasorssurface = bool_cast_from_double_in(in_matrices["intphasorssurface"],
+                                               "intphasorssurface");
+  interp_mat_props =
+          bool_cast_from_double_in(in_matrices["intmatprops"], "intmatprops");
 
   // set the stride and dimension of the simulation
   set_spacing_stride(mxGetPr(in_matrices["phasorinc"]));
@@ -106,7 +111,8 @@ void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices)
 
   // get exdetintegral if it is present
   if (!mxIsEmpty(in_matrices["exdetintegral"])) {
-    exdetintegral = bool_cast_from_double_in(in_matrices["exdetintegral"], "exdetintegral");
+    exdetintegral = bool_cast_from_double_in(in_matrices["exdetintegral"],
+                                             "exdetintegral");
   }
 
   // get air interface
@@ -117,8 +123,8 @@ void SimulationParameters::unpack_from_input_matrices(InputMatrices in_matrices)
 
   // get intmethod
   if (!mxIsEmpty(in_matrices["intmethod"])) {
-    interp_method =
-            InterpolationMethod(int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
+    interp_method = InterpolationMethod(
+            int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
   }
   spdlog::info("intmethod = " + to_string(interp_method));
 

@@ -7,19 +7,23 @@
 using namespace std;
 
 
-void SplitFieldComponent::initialise_fftw_plan(int n_threads, int size, EHVec &eh_vec) {
+void SplitFieldComponent::initialise_fftw_plan(int n_threads, int size,
+                                               EHVec &eh_vec) {
 
   this->n_threads = n_threads;
   plan_f = (fftw_plan *) malloc(sizeof(fftw_plan *) * n_threads);
   plan_b = (fftw_plan *) malloc(sizeof(fftw_plan *) * n_threads);
 
   for (int i = 0; i < n_threads; i++) {
-    plan_f[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_FORWARD, FFTW_MEASURE);
-    plan_b[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_BACKWARD, FFTW_MEASURE);
+    plan_f[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_FORWARD,
+                                 FFTW_MEASURE);
+    plan_b[i] = fftw_plan_dft_1d(size, eh_vec[i], eh_vec[i], FFTW_BACKWARD,
+                                 FFTW_MEASURE);
   }
 }
 
-void SplitFieldComponent::initialise_from_matlab(double ***tensor, Dimensions &dims) {
+void SplitFieldComponent::initialise_from_matlab(double ***tensor,
+                                                 Dimensions &dims) {
   this->tensor = tensor;
   this->n_layers = dims[2];
   this->n_cols = dims[1];

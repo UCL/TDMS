@@ -17,36 +17,37 @@ void FDTDBootstrapper::allocate_memory(const IJKDimensions &IJK_tot) {
   Hy.allocate(I_tot, J_tot + 1);
 }
 
-void FDTDBootstrapper::extract_phasors_in_plane(const ElectricSplitField &E_s,
-                                                const MagneticSplitField &H_s,
-                                                const IJKDimensions &IJK_tot, int K1, int tind,
-                                                const SimulationParameters &params) {
+void FDTDBootstrapper::extract_phasors_in_plane(
+        const ElectricSplitField &E_s, const MagneticSplitField &H_s,
+        const IJKDimensions &IJK_tot, int K1, int tind,
+        const SimulationParameters &params) {
   int Nt = params.Nt, I_tot = IJK_tot.i, J_tot = IJK_tot.j;
 
-  complex<double> phaseTerm = fmod(params.omega_an * ((double) tind) * params.dt, 2 * DCPI);
+  complex<double> phaseTerm =
+          fmod(params.omega_an * ((double) tind) * params.dt, 2 * DCPI);
   complex<double> subResult = 0.;
 
   for (int j = 0; j < J_tot; j++) {
     for (int i = 0; i < (I_tot + 1); i++) {
-      //Eyz
-      subResult = (E_s.yz[K1][j][i] + E_s.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. /
-                  ((double) Nt);
+      // Eyz
+      subResult = (E_s.yz[K1][j][i] + E_s.yx[K1][j][i]) *
+                  exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
       Ey[i][j] += subResult;
-      //Hxz
-      subResult = (H_s.xz[K1 - 1][j][i] + H_s.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. /
-                  ((double) Nt);
+      // Hxz
+      subResult = (H_s.xz[K1 - 1][j][i] + H_s.xy[K1][j][i]) *
+                  exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
       Hx[i][j] += subResult;
     }
   }
   for (int j = 0; j < (J_tot + 1); j++)
     for (int i = 0; i < I_tot; i++) {
-      //Exz
-      subResult = (E_s.xz[K1][j][i] + E_s.xy[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. /
-                  ((double) Nt);
+      // Exz
+      subResult = (E_s.xz[K1][j][i] + E_s.xy[K1][j][i]) *
+                  exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
       Ex[i][j] += subResult;
-      //Hyz
-      subResult = (H_s.yz[K1 - 1][j][i] + H_s.yx[K1][j][i]) * exp(phaseTerm * IMAGINARY_UNIT) * 1. /
-                  ((double) Nt);
+      // Hyz
+      subResult = (H_s.yz[K1 - 1][j][i] + H_s.yx[K1][j][i]) *
+                  exp(phaseTerm * IMAGINARY_UNIT) * 1. / ((double) Nt);
       Hy[i][j] += subResult;
     }
 }

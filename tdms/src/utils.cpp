@@ -11,7 +11,9 @@ void assert_can_open_file(const char *filename, const char *mode) {
 
   auto file = fopen(filename, mode);
 
-  if (file == nullptr) { throw runtime_error("Unable to open file " + string(filename)); }
+  if (file == nullptr) {
+    throw runtime_error("Unable to open file " + string(filename));
+  }
 
   fclose(file);
 }

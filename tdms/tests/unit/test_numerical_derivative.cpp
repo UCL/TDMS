@@ -56,8 +56,8 @@ TEST_CASE("Element-by-element multiplication of array of complex numbers") {
  *
  * The cosine should have negative sine as a derivative. This test involves a
  * bit of trickery because the normalisation is arbitrary. So the ratio of the
- * expected function (-sinθ) and the output (k dcosθ / dx) should be a constant (k)
- * modulo the places where either function is a zero. So calculate the mean
+ * expected function (-sinθ) and the output (k dcosθ / dx) should be a constant
+ * (k) modulo the places where either function is a zero. So calculate the mean
  * ratio of the expected to the output, and check the ratio ~= it's mean value.
  */
 TEST_CASE("Numerical derivative") {
@@ -68,8 +68,10 @@ TEST_CASE("Numerical derivative") {
   // setup buffers and fft plans
   fftw_complex sampled_cosine[NSAMPLES], output[NSAMPLES], dk[NSAMPLES] = {0.};
   double minus_sine[NSAMPLES];
-  fftw_plan pf = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output, FFTW_FORWARD, FFTW_ESTIMATE);
-  fftw_plan pb = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output, FFTW_BACKWARD, FFTW_ESTIMATE);
+  fftw_plan pf = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output,
+                                  FFTW_FORWARD, FFTW_ESTIMATE);
+  fftw_plan pb = fftw_plan_dft_1d(NSAMPLES, sampled_cosine, output,
+                                  FFTW_BACKWARD, FFTW_ESTIMATE);
 
   // sample cosθ and its derivative (-sinθ)
   for (int i = 0; i < NSAMPLES; i++) {
@@ -94,8 +96,8 @@ TEST_CASE("Numerical derivative") {
       ratio[i] = minus_sine[i] / output[i][REAL];
       total += ratio[i];
     }
-    spdlog::trace("expected: {} \t calculate: {} \t ratio: {}", minus_sine[i], output[i][REAL],
-                  ratio[i]);
+    spdlog::trace("expected: {} \t calculate: {} \t ratio: {}", minus_sine[i],
+                  output[i][REAL], ratio[i]);
   }
   double mean = total / (NSAMPLES - zeroes);
 

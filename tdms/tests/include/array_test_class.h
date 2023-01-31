@@ -18,14 +18,15 @@
  * public:
  *   std::string get_class_name() override { return "SETME"; }
  * };
-*/
+ */
 #pragma once
 
 #include "abstract_array_test_class.h"
 
 class CCollectionTest : public AbstractArrayTest {
 private:
-  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz"};
+  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby",
+                               "Cbz", "Ccx", "Ccy", "Ccz"};
 
   void test_incorrect_number_of_fields() override;
   void test_correct_construction() override;
@@ -59,8 +60,9 @@ public:
 class DispersiveMultilayerTest : public AbstractArrayTest {
 private:
   const int n_fields = 9;
-  const char *fieldnames[9] = {"alpha",   "beta",    "gamma",   "kappa_x", "kappa_y",
-                               "kappa_z", "sigma_x", "sigma_y", "sigma_z"};
+  const char *fieldnames[9] = {"alpha",   "beta",    "gamma",
+                               "kappa_x", "kappa_y", "kappa_z",
+                               "sigma_x", "sigma_y", "sigma_z"};
 
   void test_empty_construction() override;
   void test_wrong_input_type() override;
@@ -72,7 +74,8 @@ public:
   std::string get_class_name() override { return "DispersiveMultilayer"; }
 };
 
-// Test methods check the performance of initialise, as this is the de-facto constructor
+// Test methods check the performance of initialise, as this is the de-facto
+// constructor
 class DTildeTest : public AbstractArrayTest {
 private:
   const int n_fields = 2;
@@ -102,7 +105,8 @@ public:
   std::string get_class_name() override { return "FieldSample"; }
 };
 
-// Test methods check the performance of initialise, as this is the de-facto constructor
+// Test methods check the performance of initialise, as this is the de-facto
+// constructor
 class FrequencyVectorsTest : public AbstractArrayTest {
 private:
   const int n_fields = 2;
@@ -145,8 +149,10 @@ public:
 class CMaterialTest : public AbstractArrayTest {
 private:
   const int n_fields = 9;
-  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby", "Cbz", "Ccx", "Ccy", "Ccz"};
-  const char *wrong_fieldnames[9] = {"Dax", "Cay", "Daz", "Cbx", "Dby", "Cbz", "Ccx", "Ccy", "Ccz"};
+  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby",
+                               "Cbz", "Ccx", "Ccy", "Ccz"};
+  const char *wrong_fieldnames[9] = {"Dax", "Cay", "Daz", "Cbx", "Dby",
+                                     "Cbz", "Ccx", "Ccy", "Ccz"};
 
   void test_incorrect_number_of_fields() override;
   void test_incorrect_fieldname() override;

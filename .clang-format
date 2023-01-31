@@ -33,7 +33,7 @@ BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
-ColumnLimit: 100
+ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 8
 IndentCaseLabels: true
@@ -45,7 +45,7 @@ NamespaceIndentation: None
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PointerAlignment: Right
-ReflowComments: false
+ReflowComments: true
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: false

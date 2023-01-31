@@ -11,7 +11,8 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
   priority = val;
 
   // set values for this method based on the scheme_value passed in
-  // these are all hard-coded values - there is no way around a long list of cases!
+  // these are all hard-coded values - there is no way around a long list of
+  // cases!
   switch (val) {
     case BAND_LIMITED_0: {
       scheme_coeffs[0] = 0.389880694606603;
@@ -111,7 +112,8 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
       break;
     }
     case BAND_LIMITED_CELL_ZERO: {
-      // by symmetry, we can reflect the setup for BLi to position 7 in order to interpolate to the centre of Yee cell 0
+      // by symmetry, we can reflect the setup for BLi to position 7 in order to
+      // interpolate to the centre of Yee cell 0
       scheme_coeffs[0] = 1.609553415928240;
       scheme_coeffs[1] = -0.752494454088346;
       scheme_coeffs[2] = 0.182115867658487;
@@ -154,8 +156,8 @@ InterpolationScheme::InterpolationScheme(scheme_value val) {
     }
     default: {
       // if we cannot identify the scheme from it's value, throw an error
-      throw runtime_error("Error: could not assign value " + std::to_string(val) +
-                          " to interpolation scheme.\n");
+      throw runtime_error("Error: could not assign value " +
+                          std::to_string(val) + " to interpolation scheme.\n");
       break;
     }
   }
@@ -171,16 +173,19 @@ bool InterpolationScheme::is_better_than(const InterpolationScheme &s) const {
   return (priority > s.get_priority());
 }
 
-const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolation_position,
-                                       PreferredInterpolationMethods interpolation_methods) {
+const InterpolationScheme &
+best_scheme(int datapts_in_direction, int interpolation_position,
+            PreferredInterpolationMethods interpolation_methods) {
   // interpolation is impossible with fewer than 4 datapoints in a dimension
   if (datapts_in_direction < 4) {
-    throw out_of_range("Error: domain axis has <4 datapoints, cubic and bandlimited interpolation "
+    throw out_of_range("Error: domain axis has <4 datapoints, cubic and "
+                       "bandlimited interpolation "
                        "impossible.\n");
   } else if ((datapts_in_direction < 8) ||
              (interpolation_methods == PreferredInterpolationMethods::Cubic)) {
     // we are restricted to cubic interpolation
-    if (interpolation_position <= 0 || interpolation_position >= datapts_in_direction) {
+    if (interpolation_position <= 0 ||
+        interpolation_position >= datapts_in_direction) {
       throw out_of_range("Error: Cubic interpolation impossible to position " +
                          to_string(interpolation_position) + "\n");
     } else {
@@ -193,7 +198,8 @@ const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolati
         return CBMid;
       }
     }
-  } else if (interpolation_position < 0 || interpolation_position > datapts_in_direction) {
+  } else if (interpolation_position < 0 ||
+             interpolation_position > datapts_in_direction) {
     // cannot interpolate to here using BLi, throw error
     throw out_of_range("Error: BLi interpolation impossible to position " +
                        to_string(interpolation_position) + "\n");
@@ -221,5 +227,6 @@ const InterpolationScheme &best_scheme(int datapts_in_direction, int interpolati
     }
   }
   // if we get to here we have, somehow, not returned a scheme. Raise an error
-  throw runtime_error("Error: could not identify scheme for unknown reasons, diagnose further.\n");
+  throw runtime_error("Error: could not identify scheme for unknown reasons, "
+                      "diagnose further.\n");
 }
