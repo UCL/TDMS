@@ -58,7 +58,7 @@ public:
   bool is_empty() { return no_data_stored; }
 
   std::complex<double> operator[](SourceIndex index) {
-    return complex<double>(real[index.k][index.j][index.i],
-                           imag[index.k][index.j][index.i]);
+    return std::complex<double>(real[index.k][index.j][index.i],
+                                imag[index.k][index.j][index.i]);
   }
 };
