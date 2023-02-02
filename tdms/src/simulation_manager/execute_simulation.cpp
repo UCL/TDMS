@@ -7,8 +7,8 @@
 #include <omp.h>
 #include <spdlog/spdlog.h>
 
-#include "simulation_manager/loop_variables.h"
 #include "numerical_derivative.h"
+#include "simulation_manager/loop_variables.h"
 
 using namespace std;
 using namespace tdms_math_constants;
@@ -31,9 +31,10 @@ void SimulationManager::execute() {
 
   // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
   double rho;
-  double alpha_l, beta_l, gamma_l;//< alpha, beta, gamma parameters of the layer the local thread is examining
+  double alpha_l, beta_l,
+          gamma_l;//< alpha, beta, gamma parameters of the layer the local thread is examining
   double kappa_l, sigma_l;//< kappa, sigma parameters of the layer the local thread is examining
-  double t0;//< (Real) time since the last iteration log was written to the screen
+  double t0;              //< (Real) time since the last iteration log was written to the screen
 
   double Ca, Cb, Cc;//used by interpolation scheme
   //the C and D vars for free space and pml
@@ -46,10 +47,11 @@ void SimulationManager::execute() {
   double lambda_an_t;//< Wavelength of light in free space at the current frequency
 
   int i, j, k;//< Loop variables
-  int n;//< The thread number of the local OMP thread
-  int k_loc;//< Local thread copy of the variable k
+  int n;      //< The thread number of the local OMP thread
+  int k_loc;  //< Local thread copy of the variable k
 
-  int dft_counter = 0;//< Number of DFTs we have performed since last checking for phasor convergence
+  int dft_counter =
+          0;//< Number of DFTs we have performed since last checking for phasor convergence
 
   complex<double> Idxt, Idyt, kprop;
 
@@ -315,8 +317,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -443,8 +447,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -588,8 +594,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -710,8 +718,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -846,8 +856,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure) {
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -973,8 +985,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure) {
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1117,8 +1131,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1238,8 +1254,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1379,8 +1397,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1505,8 +1525,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1648,8 +1670,10 @@ void SimulationManager::execute() {
               rho = 0.;
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                if (k > inputs.params.pml.Dzl &&
+                    k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                  if ((k - inputs.structure[i][1]) <
+                              (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                       (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
                   else if ((k - inputs.structure[i][1]) >=
@@ -1743,8 +1767,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -1872,8 +1898,10 @@ void SimulationManager::execute() {
                 rho = 0.;
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2017,8 +2045,10 @@ void SimulationManager::execute() {
               rho = 0.;
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                if (k > inputs.params.pml.Dzl &&
+                    k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                  if ((k - inputs.structure[i][1]) <
+                              (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                       (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
                   else if ((k - inputs.structure[i][1]) >=
@@ -2105,373 +2135,19 @@ void SimulationManager::execute() {
     /********************/
 
     //update terms for self consistency across scattered/total interface - E updates##
-    if (inputs.params.source_mode == SourceMode::steadystate) {//steadystate
+
+    if (inputs.params.source_mode == SourceMode::steadystate) {
+      // Steady-state source term updates
+      update_Isource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
+                                       loop_variables.J_s);
+      update_Jsource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
+                                       loop_variables.J_s);
+      update_Ksource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
+                                       loop_variables.J_s);
+
       complex<double> commonPhase =
               exp(-IMAGINARY_UNIT * fmod(inputs.params.omega_an * time_H, 2. * DCPI));
       double commonAmplitude = linear_ramp(time_H);
-      for (k = (inputs.K0.index); k <= (inputs.K1.index); k++)
-        for (j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
-          if (inputs.I0.apply) {//Perform across I0
-
-            if (!inputs.params.is_multilayer) array_ind = inputs.I0.index;
-            else
-              array_ind = (I_tot + 1) * k + inputs.I0.index;
-
-            if (k < (inputs.K1.index) ||
-                inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-              inputs.E_s.zx[k][j][inputs.I0.index] =
-                      inputs.E_s.zx[k][j][inputs.I0.index] -
-                      inputs.C.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][2]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.zx[k][j][inputs.I0.index] +=
-                        inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][2]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.zx[k][j][inputs.I0.index] +=
-                        inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][2]));
-            }
-            if (j < (inputs.J1.index)) {
-              inputs.E_s.yx[k][j][inputs.I0.index] =
-                      inputs.E_s.yx[k][j][inputs.I0.index] +
-                      inputs.C.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][3]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.yx[k][j][inputs.I0.index] -=
-                        inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][3]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.yx[k][j][inputs.I0.index] -=
-                        inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][3]));
-            }
-          }
-          if (inputs.I1.apply) {//Perform across I1
-
-            if (!inputs.params.is_multilayer) array_ind = inputs.I1.index;
-            else
-              array_ind = (I_tot + 1) * k + inputs.I1.index;
-
-            if (k < (inputs.K1.index) ||
-                inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-              inputs.E_s.zx[k][j][inputs.I1.index] =
-                      inputs.E_s.zx[k][j][inputs.I1.index] +
-                      inputs.C.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][6]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.zx[k][j][inputs.I1.index] -=
-                        inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][6]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.zx[k][j][inputs.I1.index] -=
-                        inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][6]));
-            }
-            if (j < (inputs.J1.index)) {
-              inputs.E_s.yx[k][j][inputs.I1.index] =
-                      inputs.E_s.yx[k][j][inputs.I1.index] -
-                      inputs.C.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][7]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.yx[k][j][inputs.I1.index] +=
-                        inputs.rho_cond.x[array_ind] * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][7]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.yx[k][j][inputs.I1.index] +=
-                        inputs.matched_layer.kappa.x[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.x[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Isource.real[k - (inputs.K0.index)][j - (inputs.J0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Isource.imag[k - (inputs.K0.index)]
-                                                                  [j - (inputs.J0.index)][7]));
-            }
-          }
-        }
-
-      for (k = (inputs.K0.index); k <= (inputs.K1.index); k++)
-        for (i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-          if (inputs.J0.apply) {//Perform across J0
-            if (k < (inputs.K1.index) ||
-                inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-
-              if (!inputs.params.is_multilayer) array_ind = inputs.J0.index;
-              else
-                array_ind = (J_tot + 1) * k + inputs.J0.index;
-
-              inputs.E_s.zy[k][(inputs.J0.index)][i] =
-                      inputs.E_s.zy[k][(inputs.J0.index)][i] +
-                      inputs.C.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][2]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.zy[k][(inputs.J0.index)][i] -=
-                        inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][2]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.zy[k][(inputs.J0.index)][i] -=
-                        inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][2]));
-            }
-            if (i < (inputs.I1.index)) {
-              inputs.E_s.xy[k][(inputs.J0.index)][i] =
-                      inputs.E_s.xy[k][(inputs.J0.index)][i] -
-                      inputs.C.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][3]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.xy[k][(inputs.J0.index)][i] +=
-                        inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][3]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.xy[k][(inputs.J0.index)][i] +=
-                        inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][3]));
-            }
-          }
-          if (inputs.J1.apply) {//Perform across J1
-
-            if (!inputs.params.is_multilayer) array_ind = inputs.J1.index;
-            else
-              array_ind = (J_tot + 1) * k + inputs.J1.index;
-
-            if (k < (inputs.K1.index) ||
-                inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-              inputs.E_s.zy[k][(inputs.J1.index)][i] =
-                      inputs.E_s.zy[k][(inputs.J1.index)][i] -
-                      inputs.C.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][6]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.zy[k][(inputs.J1.index)][i] +=
-                        inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][6]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.zy[k][(inputs.J1.index)][i] -=
-                        inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][6]));
-            }
-            if (i < (inputs.I1.index)) {
-              inputs.E_s.xy[k][(inputs.J1.index)][i] =
-                      inputs.E_s.xy[k][(inputs.J1.index)][i] +
-                      inputs.C.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][7]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.xy[k][(inputs.J1.index)][i] -=
-                        inputs.rho_cond.y[array_ind] * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][7]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.xy[k][(inputs.J1.index)][i] +=
-                        inputs.matched_layer.kappa.y[array_ind] * inputs.matched_layer.gamma[k] /
-                        (2. * inputs.params.dt) * inputs.C.b.y[array_ind] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Jsource.real[k - (inputs.K0.index)][i - (inputs.I0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                                  [i - (inputs.I0.index)][7]));
-            }
-          }
-        }
-
-      for (j = (inputs.J0.index); j <= (inputs.J1.index); j++)
-        for (i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-          if (inputs.K0.apply) {//Perform across K0
-            if (j < (inputs.J1.index)) {
-              inputs.E_s.yz[(inputs.K0.index)][j][i] =
-                      inputs.E_s.yz[(inputs.K0.index)][j][i] -
-                      inputs.C.b.z[inputs.K0.index] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][2]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.yz[(inputs.K0.index)][j][i] +=
-                        inputs.rho_cond.z[(inputs.K0.index)] * inputs.C.b.z[inputs.K0.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][2]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.yz[(inputs.K0.index)][j][i] -=
-                        inputs.matched_layer.kappa.z[(inputs.K0.index)] *
-                        inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) *
-                        inputs.C.b.z[inputs.K0.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][2]));
-            }
-            if (i < (inputs.I1.index)) {
-              inputs.E_s.xz[(inputs.K0.index)][j][i] =
-                      inputs.E_s.xz[(inputs.K0.index)][j][i] +
-                      inputs.C.b.z[inputs.K0.index] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][3]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.xz[(inputs.K0.index)][j][i] -=
-                        inputs.rho_cond.z[(inputs.K0.index)] * inputs.C.b.z[inputs.K0.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][3]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.xz[(inputs.K0.index)][j][i] +=
-                        inputs.matched_layer.kappa.z[(inputs.K0.index)] *
-                        inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) *
-                        inputs.C.b.z[inputs.K0.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][3]));
-            }
-          }
-          if (inputs.K1.apply) {//Perform across K1
-            if (j < (inputs.J1.index)) {
-              inputs.E_s.yz[(inputs.K1.index)][j][i] =
-                      inputs.E_s.yz[(inputs.K1.index)][j][i] +
-                      inputs.C.b.z[inputs.K1.index] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][6]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.yz[(inputs.K1.index)][j][i] -=
-                        inputs.rho_cond.z[(inputs.K1.index)] * inputs.C.b.z[inputs.K1.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][6]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.yz[(inputs.K1.index)][j][i] +=
-                        inputs.matched_layer.kappa.z[(inputs.K1.index)] *
-                        inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) *
-                        inputs.C.b.z[inputs.K1.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][6] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][6]));
-            }
-            if (i < (inputs.I1.index)) {
-              inputs.E_s.xz[(inputs.K1.index)][j][i] =
-                      inputs.E_s.xz[(inputs.K1.index)][j][i] -
-                      inputs.C.b.z[inputs.K1.index] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][7]));
-              if (loop_variables.is_conductive)
-                loop_variables.J_c.xz[(inputs.K1.index)][j][i] +=
-                        inputs.rho_cond.z[(inputs.K1.index)] * inputs.C.b.z[inputs.K1.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][7]));
-              if (inputs.params.is_disp_ml)
-                loop_variables.J_s.xz[(inputs.K1.index)][j][i] -=
-                        inputs.matched_layer.kappa.z[(inputs.K1.index)] *
-                        inputs.matched_layer.gamma[k] / (2. * inputs.params.dt) *
-                        inputs.C.b.z[inputs.K1.index] *
-                        real(commonAmplitude * commonPhase *
-                             (inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][7] +
-                              IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                  [i - (inputs.I0.index)][7]));
-            }
-          }
-        }
       outputs.H.ft = real(commonAmplitude * commonPhase);
     } else if (inputs.params.source_mode == SourceMode::pulsed) {//pulsed
 
@@ -2665,8 +2341,10 @@ void SimulationManager::execute() {
               for (i = 0; i < (I_tot + 1); i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2699,8 +2377,10 @@ void SimulationManager::execute() {
               for (k = 0; k < K_tot; k++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2748,8 +2428,10 @@ void SimulationManager::execute() {
               for (i = 0; i < (I_tot + 1); i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2784,8 +2466,10 @@ void SimulationManager::execute() {
               for (j = 0; j < J_tot; j++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2834,8 +2518,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2871,8 +2557,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2921,8 +2609,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -2957,8 +2647,10 @@ void SimulationManager::execute() {
               for (k = 0; k < K_tot; k++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -3011,8 +2703,10 @@ void SimulationManager::execute() {
             for (i = 0; i < (I_tot + 1); i++) {
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                if (k > inputs.params.pml.Dzl &&
+                    k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                  if ((k - inputs.structure[i][1]) <
+                              (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                       (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
                   else if ((k - inputs.structure[i][1]) >=
@@ -3046,8 +2740,10 @@ void SimulationManager::execute() {
             for (i = 0; i < I_tot; i++) {
               k_loc = k;
               if (inputs.params.is_structure)
-                if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                if (k > inputs.params.pml.Dzl &&
+                    k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                  if ((k - inputs.structure[i][1]) <
+                              (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                       (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                     k_loc = k - inputs.structure[i][1];
                   else if ((k - inputs.structure[i][1]) >=
@@ -3095,8 +2791,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -3131,8 +2829,10 @@ void SimulationManager::execute() {
               for (j = 0; j < J_tot; j++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -3182,8 +2882,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -3218,8 +2920,10 @@ void SimulationManager::execute() {
               for (i = 0; i < I_tot; i++) {
                 k_loc = k;
                 if (inputs.params.is_structure)
-                  if (k > inputs.params.pml.Dzl && k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) < (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
+                  if (k > inputs.params.pml.Dzl &&
+                      k < (inputs.params.pml.Dzl + loop_variables.n_non_pml_cells_in_K)) {
+                    if ((k - inputs.structure[i][1]) <
+                                (loop_variables.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
                         (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
                       k_loc = k - inputs.structure[i][1];
                     else if ((k - inputs.structure[i][1]) >=
@@ -3590,7 +3294,7 @@ void SimulationManager::execute() {
         outputs.H.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
 
         for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-            extract_phasor_norms(ifx, tind, inputs.Nsteps);
+          extract_phasor_norms(ifx, tind, inputs.Nsteps);
         }
       } else {
         if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {

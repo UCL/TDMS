@@ -5,8 +5,8 @@
 #pragma once
 
 #include <complex>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "arrays.h"
 #include "cell_coordinate.h"
@@ -26,14 +26,15 @@
  */
 class SimulationManager {
 private:
-  ObjectsFromInfile inputs; //< The input objects that are generated from an input file
-  LoopTimers timers;        //< Timers for tracking the execution of the simulation
-  PSTDVariables PSTD;       //< PSTD-solver-specific variables
-  FDTDBootstrapper FDTD;    //< FDTD bootstrapping variables
-  OutputMatrices outputs;   //< Output object that will contain the results of this simulation, given the input file
+  ObjectsFromInfile inputs;//< The input objects that are generated from an input file
+  LoopTimers timers;       //< Timers for tracking the execution of the simulation
+  PSTDVariables PSTD;      //< PSTD-solver-specific variables
+  FDTDBootstrapper FDTD;   //< FDTD bootstrapping variables
+  OutputMatrices
+          outputs;//< Output object that will contain the results of this simulation, given the input file
 
-  PreferredInterpolationMethods pim; //< The interpolation methods to use in this simulation
-  SolverMethod solver_method;        //< The solver method to use in this simulation
+  PreferredInterpolationMethods pim;//< The interpolation methods to use in this simulation
+  SolverMethod solver_method;       //< The solver method to use in this simulation
 
   EHVec eh_vec;//< TODO
 
@@ -56,8 +57,10 @@ private:
     return std::min(1., t / (ramp_width * period));
   }
 
-  std::vector<std::complex<double>> E_norm;//< Holds the E-field phasors norm at each extraction frequency
-  std::vector<std::complex<double>> H_norm;//< Holds the H-field phasors norm at each extraction frequency
+  std::vector<std::complex<double>>
+          E_norm;//< Holds the E-field phasors norm at each extraction frequency
+  std::vector<std::complex<double>>
+          H_norm;//< Holds the H-field phasors norm at each extraction frequency
   /**
    * @brief Extracts the phasors norms at the given frequency (index)
    *
@@ -73,10 +76,21 @@ private:
    * @param fieldsample The fieldsample input from the input file
    * @param campssample The complex amplitude sample input from the input file
    */
-  void prepare_output(const mxArray *fieldsample, const mxArray* campssample);
+  void prepare_output(const mxArray *fieldsample, const mxArray *campssample);
+
+  void update_Isource_terms_steadystate(double time_H, bool is_conductive,
+                                        CurrentDensitySplitField &J_c,
+                                        CurrentDensitySplitField &J_s);
+  void update_Jsource_terms_steadystate(double time_H, bool is_conductive,
+                                        CurrentDensitySplitField &J_c,
+                                        CurrentDensitySplitField &J_s);
+  void update_Ksource_terms_steadystate(double time_H, bool is_conductive,
+                                        CurrentDensitySplitField &J_c,
+                                        CurrentDensitySplitField &J_s);
 
 public:
-  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method, PreferredInterpolationMethods _pim);
+  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
+                    PreferredInterpolationMethods _pim);
 
   /** @brief Fetch the number of Yee cells in each dimension */
   IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }
