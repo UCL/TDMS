@@ -125,12 +125,12 @@ void SimulationManager::update_Ksource_terms_steadystate(
     for (int j = inputs.J0.index; j <= inputs.J1.index; j++) {
       for (int i = inputs.I0.index; i <= inputs.I1.index; i++) {
         if (j < (inputs.J1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Y, true, true,
+          update_source_steadystate(time_H, AxialDirection::Z, true, true,
                                     is_conductive, i, j, inputs.K0.index, J_c,
                                     J_s);
         }
         if (i < (inputs.I1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Y, false, true,
+          update_source_steadystate(time_H, AxialDirection::Z, false, true,
                                     is_conductive, i, j, inputs.K0.index, J_c,
                                     J_s);
         }
@@ -266,7 +266,7 @@ void SimulationManager::update_source_steadystate(
       c_constant = inputs.C.b.z[array_ind];
 
       s_index.j -= inputs.I0.index;
-      s_index.k -= inputs.I1.index;
+      s_index.k -= inputs.J0.index;
       source_value = inputs.Ksource[s_index];
 
       cell_to_update = {cell_b, cell_c, inputs.K0.index};
