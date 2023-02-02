@@ -92,12 +92,52 @@ private:
    */
   void prepare_output(const mxArray *fieldsample, const mxArray *campssample);
 
+  /**
+   * @brief Update electric-split field components and current densities in
+   * steady-state after an E-field timestep has been performed.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param parallel The axis to which the plane of the Source term is parallel.
+   * EG X = Isource, Y = Jsource, etc
+   * @param C_axis Whether we are updating terms along the C-axis (true) or
+   * B-axis (false) of the Source plane. See Source doc for axis information.
+   * @param zero_plane Whether we are updating terms on the 0-plane (true) or
+   * the 1-plane (false). EG I0 would have this input as true, whereas J1 as
+   * false.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param cell_b,cell_c The coordinates (cell_a, cell_b, cell_c) of the Yee
+   * cell in which we are updating the field. See the Source doc for notation
+   * information.
+   * @param array_ind The index of the various material property arrays that
+   * correspond to this particular Yee cell, and thus update equation.
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
+  void update_source_steadystate(double time_H, AxialDirection parallel,
+                                 bool C_axis, bool zero_plane,
+                                 bool is_conductive, int cell_b, int cell_c,
+                                 int array_ind, CurrentDensitySplitField &J_c,
+                                 CurrentDensitySplitField &J_s);
+  /**
+   * @brief Performs updates to the electric-split field components and current
+   * density fields after an E-field timestep has been performed, in accordance
+   * with the {IJK} source terms.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
   void update_Isource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
+  /*! @copydoc update_Isource_terms_steadystate */
   void update_Jsource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
+  /*! @copydoc update_Isource_terms_steadystate */
   void update_Ksource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
