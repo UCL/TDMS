@@ -2139,7 +2139,7 @@ void SimulationManager::execute() {
 
     if (inputs.params.source_mode == SourceMode::steadystate) {
       // Steady-state source term updates
-      update_source_terms_steadystate(time_H, loop_variables.is_conductive,
+      E_source_update_all_steadystate(time_H, loop_variables.is_conductive,
                                       loop_variables.J_c, loop_variables.J_s);
 
       // Common phase term in update equations
@@ -2823,7 +2823,7 @@ void SimulationManager::execute() {
 
     if (inputs.params.source_mode == SourceMode::steadystate) {
       // Steady-state source term updates
-      update_source_terms_steadystate(time_E);
+      H_source_update_all_steadystate(time_E);
 
       //! Common phase term in update equations
       complex<double> common_phase =

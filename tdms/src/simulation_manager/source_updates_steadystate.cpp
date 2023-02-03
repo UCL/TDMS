@@ -6,15 +6,15 @@ using namespace std;
 using namespace tdms_phys_constants;
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 
-void SimulationManager::update_source_terms_steadystate(
+void SimulationManager::E_source_update_all_steadystate(
         double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
         CurrentDensitySplitField &J_s) {
-  update_Isource_terms_steadystate(time_H, is_conductive, J_c, J_s);
-  update_Jsource_terms_steadystate(time_H, is_conductive, J_c, J_s);
-  update_Ksource_terms_steadystate(time_H, is_conductive, J_c, J_s);
+  E_Isource_update_steadystate(time_H, is_conductive, J_c, J_s);
+  E_Jsource_update_steadystate(time_H, is_conductive, J_c, J_s);
+  E_Ksource_update_steadystate(time_H, is_conductive, J_c, J_s);
 }
 
-void SimulationManager::update_Isource_terms_steadystate(
+void SimulationManager::E_Isource_update_steadystate(
         double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
         CurrentDensitySplitField &J_s) {
   // Only run update equations is source data was provided
@@ -33,12 +33,12 @@ void SimulationManager::update_Isource_terms_steadystate(
         }
         if (k < (inputs.K1.index) ||
             inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          update_source_steadystate(time_H, AxialDirection::X, true, true,
-                                    is_conductive, j, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::X, true, true,
+                                      is_conductive, j, k, array_ind, J_c, J_s);
         }
         if (j < (inputs.J1.index)) {
-          update_source_steadystate(time_H, AxialDirection::X, false, true,
-                                    is_conductive, j, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::X, false, true,
+                                      is_conductive, j, k, array_ind, J_c, J_s);
         }
       }
     }
@@ -55,19 +55,19 @@ void SimulationManager::update_Isource_terms_steadystate(
         }
         if (k < (inputs.K1.index) ||
             inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          update_source_steadystate(time_H, AxialDirection::X, true, false,
-                                    is_conductive, j, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::X, true, false,
+                                      is_conductive, j, k, array_ind, J_c, J_s);
         }
         if (j < (inputs.J1.index)) {
-          update_source_steadystate(time_H, AxialDirection::X, false, false,
-                                    is_conductive, j, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::X, false, false,
+                                      is_conductive, j, k, array_ind, J_c, J_s);
         }
       }
     }
   }
 }
 
-void SimulationManager::update_Jsource_terms_steadystate(
+void SimulationManager::E_Jsource_update_steadystate(
         double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
         CurrentDensitySplitField &J_s) {
   // Only run update equations is source data was provided
@@ -89,12 +89,12 @@ void SimulationManager::update_Jsource_terms_steadystate(
             array_ind = (n_Yee_cells().j + 1) * k + inputs.J0.index;
           }
 
-          update_source_steadystate(time_H, AxialDirection::Y, true, true,
-                                    is_conductive, i, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Y, true, true,
+                                      is_conductive, i, k, array_ind, J_c, J_s);
         }
         if (i < inputs.I1.index) {
-          update_source_steadystate(time_H, AxialDirection::Y, false, true,
-                                    is_conductive, i, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Y, false, true,
+                                      is_conductive, i, k, array_ind, J_c, J_s);
         }
       }
     }
@@ -111,19 +111,19 @@ void SimulationManager::update_Jsource_terms_steadystate(
         }
         if (k < (inputs.K1.index) ||
             inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          update_source_steadystate(time_H, AxialDirection::Y, true, false,
-                                    is_conductive, i, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Y, true, false,
+                                      is_conductive, i, k, array_ind, J_c, J_s);
         }
         if (i < (inputs.I1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Y, false, false,
-                                    is_conductive, i, k, array_ind, J_c, J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Y, false, false,
+                                      is_conductive, i, k, array_ind, J_c, J_s);
         }
       }
     }
   }
 }
 
-void SimulationManager::update_Ksource_terms_steadystate(
+void SimulationManager::E_Ksource_update_steadystate(
         double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
         CurrentDensitySplitField &J_s) {
   // Only run update equations is source data was provided
@@ -134,14 +134,14 @@ void SimulationManager::update_Ksource_terms_steadystate(
     for (int j = inputs.J0.index; j <= inputs.J1.index; j++) {
       for (int i = inputs.I0.index; i <= inputs.I1.index; i++) {
         if (j < (inputs.J1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Z, true, true,
-                                    is_conductive, i, j, inputs.K0.index, J_c,
-                                    J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Z, true, true,
+                                      is_conductive, i, j, inputs.K0.index, J_c,
+                                      J_s);
         }
         if (i < (inputs.I1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Z, false, true,
-                                    is_conductive, i, j, inputs.K0.index, J_c,
-                                    J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Z, false, true,
+                                      is_conductive, i, j, inputs.K0.index, J_c,
+                                      J_s);
         }
       }
     }
@@ -152,21 +152,21 @@ void SimulationManager::update_Ksource_terms_steadystate(
     for (int j = inputs.J0.index; j <= inputs.J1.index; j++) {
       for (int i = inputs.I0.index; i <= inputs.I1.index; i++) {
         if (j < (inputs.J1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Z, true, false,
-                                    is_conductive, i, j, inputs.K1.index, J_c,
-                                    J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Z, true, false,
+                                      is_conductive, i, j, inputs.K1.index, J_c,
+                                      J_s);
         }
         if (i < (inputs.I1.index)) {
-          update_source_steadystate(time_H, AxialDirection::Z, false, false,
-                                    is_conductive, i, j, inputs.K1.index, J_c,
-                                    J_s);
+          E_source_update_steadystate(time_H, AxialDirection::Z, false, false,
+                                      is_conductive, i, j, inputs.K1.index, J_c,
+                                      J_s);
         }
       }
     }
   }
 }
 
-void SimulationManager::update_source_steadystate(
+void SimulationManager::E_source_update_steadystate(
         double time_H, AxialDirection parallel, bool C_axis, bool zero_plane,
         bool is_conductive, int cell_b, int cell_c, int array_ind,
         CurrentDensitySplitField &J_c, CurrentDensitySplitField &J_s) {
@@ -315,18 +315,155 @@ void SimulationManager::update_source_steadystate(
   }
 }
 
-void SimulationManager::update_source_terms_steadystate(double time_E) {
-  //! Simulation dimensions
-  int I_tot = n_Yee_cells().i, J_tot = n_Yee_cells().j;
-  //! The index of the various material property arrays that correspond to this
-  //! particular Yee cell, and thus update equation.
+void SimulationManager::H_source_update_all_steadystate(double time_E) {
+  H_Isource_update_steadystate(time_E);
+  H_Jsource_update_steadystate(time_E);
+  H_Ksource_update_steadystate(time_E);
+}
+
+void SimulationManager::H_Isource_update_steadystate(double time_E) {
+  if (inputs.Isource.is_empty()) { return; }
   int array_ind;
+
+  // Update across I0
+  array_ind = inputs.I0.index - 1;
+  if (inputs.I0.apply) {
+    for (int k = inputs.K0.index; k <= inputs.K1.index; k++) {
+      for (int j = inputs.J0.index; j <= inputs.J1.index; j++) {
+        if (inputs.params.is_multilayer) {
+          array_ind = (n_Yee_cells().i + 1) * k + inputs.I0.index - 1;
+        }
+
+        if (j < inputs.J1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::X, false, true,
+                                      array_ind, j, k);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          H_source_update_steadystate(time_E, AxialDirection::X, true, true,
+                                      array_ind, j, k);
+        }
+      }
+    }
+  }
+  // Update across I1
+  array_ind = inputs.I1.index;
+  if (inputs.I1.apply) {
+    for (int k = inputs.K0.index; k <= inputs.K1.index; k++) {
+      for (int j = inputs.J0.index; j <= inputs.J1.index; j++) {
+        if (inputs.params.is_multilayer) {
+          array_ind = (n_Yee_cells().i + 1) * k + inputs.I1.index;
+        }
+
+        if (j < inputs.J1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::X, false, false,
+                                      array_ind, j, k);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          H_source_update_steadystate(time_E, AxialDirection::X, true, false,
+                                      array_ind, j, k);
+        }
+      }
+    }
+  }
+}
+
+void SimulationManager::H_Jsource_update_steadystate(double time_E) {
+  if (inputs.Jsource.is_empty()) { return; }
+  int array_ind;
+
+  // Perform across J0
+  array_ind = inputs.J0.index;
+  if (inputs.J0.apply) {
+    for (int k = inputs.K0.index; k <= inputs.K1.index; k++) {
+      for (int i = inputs.I0.index; i <= inputs.I1.index; i++) {
+        if (inputs.params.is_multilayer) {
+          array_ind = (n_Yee_cells().j + 1) * k + inputs.J0.index;
+        }
+
+        if (i < inputs.I1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::Y, false, true,
+                                      array_ind, i, k);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          H_source_update_steadystate(time_E, AxialDirection::Y, true, true,
+                                      array_ind, i, k);
+        }
+      }
+    }
+  }
+  // Perform across J1
+  array_ind = inputs.J1.index;
+  if (inputs.J1.apply) {
+    for (int k = inputs.K0.index; k <= inputs.K1.index; k++) {
+      for (int i = inputs.I0.index; i <= inputs.I1.index; i++) {
+        if (inputs.params.is_multilayer) {
+          array_ind = (n_Yee_cells().j + 1) * k + inputs.J1.index;
+        }
+
+        if (i < (inputs.I1.index)) {
+          H_source_update_steadystate(time_E, AxialDirection::Y, false, false,
+                                      array_ind, i, k);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          H_source_update_steadystate(time_E, AxialDirection::Y, true, false,
+                                      array_ind, i, k);
+        }
+      }
+    }
+  }
+}
+
+void SimulationManager::H_Ksource_update_steadystate(double time_E) {
+  if (inputs.Ksource.is_empty()) { return; }
+
+  // Perform across K0
+  if (inputs.K0.apply) {
+    for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
+      for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
+        // Perform across K0
+        if (i < inputs.I1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::Z, false, true,
+                                      inputs.K0.index - 1, i, j);
+        }
+        if (j < inputs.J1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::Z, true, true,
+                                      inputs.K0.index - 1, i, j);
+        }
+      }
+    }
+  }
+  // Perform across K1
+  if (inputs.K1.apply) {
+    for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
+      for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
+        if (i < inputs.I1.index) {
+          H_source_update_steadystate(time_E, AxialDirection::Z, false, false,
+                                      inputs.K1.index, i, j);
+        }
+        if (j < (inputs.J1.index)) {
+          H_source_update_steadystate(time_E, AxialDirection::Z, true, false,
+                                      inputs.K1.index, i, j);
+        }
+      }
+    }
+  }
+}
+
+void SimulationManager::H_source_update_steadystate(
+        double time_E, AxialDirection parallel, bool C_axis, bool zero_plane,
+        int array_ind, int cell_b, int cell_c) {
   //! Common phase factor that appears in update equations
   complex<double> common_phase = exp(
           -IMAGINARY_UNIT * fmod(inputs.params.omega_an * time_E, 2. * DCPI));
   //! Common amplitude factor that appears in update equations
   double common_amplitude = linear_ramp(time_E);
 
+  /*! D.b.{x,y,z} constant that appears in the update equations */
+  double d_constant;
   /*! Value of the source term in Yee cell (cell_a, cell_b, cell_c) */
   complex<double> source_value;
   /*! The split-field cell index to update */
@@ -336,183 +473,68 @@ void SimulationManager::update_source_terms_steadystate(double time_E) {
 
    cell_b and cell_c need to be offset by the corresponding {IJK}0.index before
    we can retrieve the source value. */
-  SourceIndex s_index;
+  SourceIndex s_index = {0, cell_b, cell_c};
+  // If working along the C-axis, split_field_ID is one greater than the B-axis
+  if (C_axis) { s_index.i += 1; }
+  // If working along the {IJK}1 plane, split_field_Id is 4 greater than the
+  // 0-plane
+  if (!zero_plane) { s_index.i += 4; }
 
-  // TODO: Pull if statements outside loops. Refactor akin to e-field: have
-  // central function with switch to setup, then call that rather than repeating
-  // yourself over and over again
+  /*! Field updates are signed based on the component, plane, and axis */
+  double update_sign = 1.;
 
-  // Update Isource terms
-  for (int k = (inputs.K0.index); k <= (inputs.K1.index); k++) {
-    for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
-      // Update across I0
-      if (inputs.I0.apply) {
-        cell_to_update = {inputs.I0.index - 1, j, k};
+  SplitFieldComponent
+          *H_s_component;//< The H_s component that should be updated
 
-        if (!inputs.params.is_multilayer) {
-          array_ind = inputs.I0.index - 1;
-        } else {
-          array_ind = (I_tot + 1) * k + inputs.I0.index - 1;
-        }
+  switch (parallel) {
+    case AxialDirection::X:
+      // Dealing with Isource
+      d_constant = inputs.D.b.x[array_ind];
 
-        if (j < inputs.J1.index) {
-          s_index = {0, j - inputs.J0.index, k - inputs.K0.index};
+      s_index.j -= inputs.J0.index;
+      s_index.k -= inputs.K0.index;
+      source_value = inputs.Isource[s_index];
 
-          inputs.H_s.zx[cell_to_update] +=
-                  inputs.D.b.x[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Isource[s_index]);
-        }
-        if (k < (inputs.K1.index) ||
-            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          s_index = {1, j - inputs.J0.index, k - inputs.K0.index};
+      cell_to_update.i = (zero_plane) ? inputs.I0.index - 1 : inputs.I1.index;
+      cell_to_update.j = cell_b;
+      cell_to_update.k = cell_c;
 
-          inputs.H_s.yx[cell_to_update] -=
-                  inputs.D.b.x[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Isource[s_index]);
-        }
-      }
+      H_s_component = (C_axis) ? &inputs.H_s.yx : &inputs.H_s.zx;
+      if (C_axis == zero_plane) { update_sign = -1.; }
+      break;
+    case AxialDirection::Y:
+      // Dealing with Jsource
+      d_constant = inputs.D.b.y[array_ind];
 
-      // Update across I1
-      if (inputs.I1.apply) {
-        cell_to_update = {inputs.I1.index, j, k};
+      s_index.j -= inputs.I0.index;
+      s_index.k -= inputs.K0.index;
+      source_value = inputs.Jsource[s_index];
 
-        if (!inputs.params.is_multilayer) {
-          array_ind = inputs.I1.index;
-        } else {
-          array_ind = (I_tot + 1) * k + inputs.I1.index;
-        }
+      cell_to_update.i = cell_b;
+      cell_to_update.j = (zero_plane) ? inputs.J0.index - 1 : inputs.J1.index;
+      cell_to_update.k = cell_c;
 
-        if (j < inputs.J1.index) {
-          s_index = {4, j - inputs.J0.index, k - inputs.K0.index};
+      H_s_component = (C_axis) ? &inputs.H_s.xy : &inputs.H_s.zy;
+      if (C_axis != zero_plane) { update_sign = -1.; }
+      break;
+    case AxialDirection::Z:
+      // Dealing wtih Ksource
+      d_constant = inputs.D.b.z[array_ind];
 
-          inputs.H_s.zx[cell_to_update] -=
-                  inputs.D.b.x[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Isource[s_index]);
-        }
-        if (k < (inputs.K1.index) ||
-            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          s_index = {5, j - inputs.J0.index, k - inputs.K0.index};
+      s_index.j -= inputs.I0.index;
+      s_index.k -= inputs.J0.index;
+      source_value = inputs.Ksource[s_index];
 
-          inputs.H_s.yx[cell_to_update] +=
-                  inputs.D.b.x[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Isource[s_index]);
-        }
-      }
-    }
+      cell_to_update.i = cell_b;
+      cell_to_update.j = cell_c;
+      cell_to_update.k = (zero_plane) ? inputs.K0.index - 1 : inputs.K1.index;
+
+      H_s_component = (C_axis) ? &inputs.H_s.xz : &inputs.H_s.yz;
+      if (C_axis == zero_plane) { update_sign = -1.; }
+      break;
   }
 
-  // Update Jsource terms
-  for (int k = (inputs.K0.index); k <= (inputs.K1.index); k++) {
-    for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-      // Perform across J0
-      if (inputs.J0.apply) {
-        cell_to_update = {i, inputs.J0.index - 1, k};
-
-        if (!inputs.params.is_multilayer) {
-          array_ind = inputs.J0.index;
-        } else {
-          array_ind = (J_tot + 1) * k + inputs.J0.index;
-        }
-
-        if (i < inputs.I1.index) {
-          s_index = {0, inputs.I0.index, inputs.K0.index};
-
-          inputs.H_s.zy[s_index] -= inputs.D.b.y[array_ind] *
-                                    real(common_amplitude * common_phase *
-                                         inputs.Jsource[s_index]);
-        }
-        if (k < (inputs.K1.index) ||
-            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          s_index = {1, inputs.I0.index, inputs.K0.index};
-
-          inputs.H_s.xy[cell_to_update] +=
-                  inputs.D.b.y[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Jsource[s_index]);
-        }
-      }
-
-      // Perform across J1
-      if (inputs.J1.apply) {
-        cell_to_update = {i, inputs.J1.index, k};
-
-        if (!inputs.params.is_multilayer) {
-          array_ind = inputs.J1.index;
-        } else {
-          array_ind = (J_tot + 1) * k + inputs.J1.index;
-        }
-
-        if (i < (inputs.I1.index)) {
-          s_index = {4, i - inputs.I0.index, k - inputs.K0.index};
-
-          inputs.H_s.zy[cell_to_update] +=
-                  inputs.D.b.y[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Jsource[s_index]);
-        }
-        if (k < (inputs.K1.index) ||
-            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          s_index = {5, i - inputs.I0.index, k - inputs.K0.index};
-
-          inputs.H_s.xy[cell_to_update] -=
-                  inputs.D.b.y[array_ind] *
-                  real(common_amplitude * common_phase *
-                       inputs.Jsource[s_index]);
-        }
-      }
-    }
-  }
-
-  // Update Ksource terms
-  for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
-    for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-      // Perform across K0
-      if (inputs.K0.apply) {
-        cell_to_update = {i, j, inputs.K0.index - 1};
-
-        if (i < inputs.I1.index) {
-          s_index = {0, i - inputs.I0.index, j - inputs.J0.index};
-
-          inputs.H_s.yz[cell_to_update] +=
-                  inputs.D.b.z[inputs.K0.index - 1] *
-                  real(common_amplitude * common_phase *
-                       inputs.Ksource[s_index]);
-        }
-        if (j < inputs.J1.index) {
-          s_index = {1, i - inputs.I0.index, j - inputs.J0.index};
-
-          inputs.H_s.xz[cell_to_update] -=
-                  inputs.D.b.z[inputs.K0.index - 1] *
-                  real(common_amplitude * common_phase *
-                       inputs.Ksource[s_index]);
-        }
-      }
-
-      // Perform across K1
-      if (inputs.K1.apply) {
-        cell_to_update = {i, j, inputs.K1.index};
-
-        if (i < inputs.I1.index) {
-          s_index = {4, i - inputs.I0.index, j - inputs.J0.index};
-
-          inputs.H_s.yz[cell_to_update] -=
-                  inputs.D.b.z[inputs.K1.index] *
-                  real(common_amplitude * common_phase *
-                       inputs.Ksource[s_index]);
-        }
-        if (j < (inputs.J1.index)) {
-          s_index = {5, i - inputs.I0.index, j - inputs.J0.index};
-
-          inputs.H_s.xz[cell_to_update] +=
-                  inputs.D.b.z[inputs.K1.index] *
-                  real(common_amplitude * common_phase *
-                       inputs.Ksource[s_index]);
-        }
-      }
-    }
-  }
+  (*H_s_component)[cell_to_update] +=
+          update_sign * d_constant *
+          real(common_amplitude * common_phase * source_value);
 }

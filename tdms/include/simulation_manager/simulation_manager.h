@@ -93,8 +93,9 @@ private:
   void prepare_output(const mxArray *fieldsample, const mxArray *campssample);
 
   /**
-   * @brief Update electric-split field components and current densities in
-   * steady-state after an E-field timestep has been performed.
+   * @brief Update electric-split field components and current densities AT A
+   * PARTICULAR CELL in steady-state after an E-field timestep has been
+   * performed.
    *
    * @param time_H The time the magnetic field is currently sitting at.
    * @param parallel The axis to which the plane of the Source term is parallel.
@@ -114,11 +115,33 @@ private:
    * @param J_c The current density in the conductive medium
    * @param J_s The current density in the dispersive medium
    */
-  void update_source_steadystate(double time_H, AxialDirection parallel,
-                                 bool C_axis, bool zero_plane,
-                                 bool is_conductive, int cell_b, int cell_c,
-                                 int array_ind, CurrentDensitySplitField &J_c,
-                                 CurrentDensitySplitField &J_s);
+  void E_source_update_steadystate(double time_H, AxialDirection parallel,
+                                   bool C_axis, bool zero_plane,
+                                   bool is_conductive, int cell_b, int cell_c,
+                                   int array_ind, CurrentDensitySplitField &J_c,
+                                   CurrentDensitySplitField &J_s);
+  /**
+   * @brief Update magnetic-split field components AT A
+   * PARTICULAR CELL in steady-state after an H-field timestep has been
+   * performed.
+   *
+   * @param time_E The time the electric field is currently sitting at
+   * @param parallel The axis to which the plane of the Source term is parallel.
+   * EG X = Isource, Y = Jsource, etc
+   * @param C_axis Whether we are updating terms along the C-axis (true) or
+   * B-axis (false) of the Source plane. See Source doc for axis information.
+   * @param zero_plane Whether we are updating terms on the 0-plane (true) or
+   * the 1-plane (false). EG I0 would have this input as true, whereas J1 as
+   * false.
+   * @param array_ind The index of the various material property arrays that
+   * correspond to this particular Yee cell, and thus update equation.
+   * @param cell_b,cell_c The coordinates (cell_a, cell_b, cell_c) of the Yee
+   * cell in which we are updating the field. See the Source doc for notation
+   * information.
+   */
+  void H_source_update_steadystate(double time_E, AxialDirection parallel,
+                                   bool zero_plane, bool C_axis, int array_ind,
+                                   int cell_b, int cell_c);
   /**
    * @brief [E-FIELD UPDATES] Performs updates to the electric-split field
    * components and current density fields after an E-field timestep has been
@@ -130,7 +153,7 @@ private:
    * @param J_c The current density in the conductive medium
    * @param J_s The current density in the dispersive medium
    */
-  void update_source_terms_steadystate(double time_H, bool is_conductive,
+  void E_source_update_all_steadystate(double time_H, bool is_conductive,
                                        CurrentDensitySplitField &J_c,
                                        CurrentDensitySplitField &J_s);
   /**
@@ -140,20 +163,26 @@ private:
    *
    * @param time_E The time the electric field is currently sitting at.
    */
-  void update_source_terms_steadystate(double time_E);
+  void H_source_update_all_steadystate(double time_E);
 
-  /*! @copydoc update_source_terms_steadystate */
-  void update_Isource_terms_steadystate(double time_H, bool is_conductive,
-                                        CurrentDensitySplitField &J_c,
-                                        CurrentDensitySplitField &J_s);
-  /*! @copydoc update_source_terms_steadystate */
-  void update_Jsource_terms_steadystate(double time_H, bool is_conductive,
-                                        CurrentDensitySplitField &J_c,
-                                        CurrentDensitySplitField &J_s);
-  /*! @copydoc update_source_terms_steadystate */
-  void update_Ksource_terms_steadystate(double time_H, bool is_conductive,
-                                        CurrentDensitySplitField &J_c,
-                                        CurrentDensitySplitField &J_s);
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Isource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Jsource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Ksource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Isource_update_steadystate(double time_E);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Jsource_update_steadystate(double time_E);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Ksource_update_steadystate(double time_E);
 
   /**
    * @brief [E-FIELD UPDATES] Performs the updates to the electric-split field
