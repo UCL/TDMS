@@ -122,7 +122,7 @@ private:
   /**
    * @brief Performs updates to the electric-split field components and current
    * density fields after an E-field timestep has been performed, in accordance
-   * with the {IJK} source terms.
+   * with the I,J, and K-source terms.
    *
    * @param time_H The time the magnetic field is currently sitting at.
    * @param is_conductive Whether the medium is conductive (so J_c needs to be
@@ -130,17 +130,36 @@ private:
    * @param J_c The current density in the conductive medium
    * @param J_s The current density in the dispersive medium
    */
+  void update_source_terms_steadystate(double time_H, bool is_conductive,
+                                       CurrentDensitySplitField &J_c,
+                                       CurrentDensitySplitField &J_s);
+  /*! @copydoc update_source_terms_steadystate */
   void update_Isource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
-  /*! @copydoc update_Isource_terms_steadystate */
+  /*! @copydoc update_source_terms_steadystate */
   void update_Jsource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
-  /*! @copydoc update_Isource_terms_steadystate */
+  /*! @copydoc update_source_terms_steadystate */
   void update_Ksource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
                                         CurrentDensitySplitField &J_s);
+
+  /**
+   * @brief Performs the updates to the electric-split field components nad
+   * current density fields after an E-field timestep has been performed, in
+   * accordance with the source terms.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
+  void update_source_terms_pulsed(double time_H, bool is_conductive,
+                                  CurrentDensitySplitField &J_c,
+                                  CurrentDensitySplitField &J_s);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,

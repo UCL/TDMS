@@ -2134,191 +2134,42 @@ void SimulationManager::execute() {
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
     /********************/
 
-    //update terms for self consistency across scattered/total interface - E updates##
+    /* Update source terms for self consistency across scattered/total
+     * interface. E_s updates use time_H simulation time. */
 
     if (inputs.params.source_mode == SourceMode::steadystate) {
       // Steady-state source term updates
-      update_Isource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
-                                       loop_variables.J_s);
-      update_Jsource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
-                                       loop_variables.J_s);
-      update_Ksource_terms_steadystate(time_H, loop_variables.is_conductive, loop_variables.J_c,
-                                       loop_variables.J_s);
+      update_source_terms_steadystate(time_H, loop_variables.is_conductive,
+                                      loop_variables.J_c, loop_variables.J_s);
 
-      complex<double> commonPhase =
-              exp(-IMAGINARY_UNIT * fmod(inputs.params.omega_an * time_H, 2. * DCPI));
-      double commonAmplitude = linear_ramp(time_H);
-      outputs.H.ft = real(commonAmplitude * commonPhase);
-    } else if (inputs.params.source_mode == SourceMode::pulsed) {//pulsed
+      // Common phase term in update equations
+      complex<double> common_phase =
+              exp(-IMAGINARY_UNIT *
+                  fmod(inputs.params.omega_an * time_H, 2. * DCPI));
+      // Common amplitude factor in update equations
+      double common_amplitude = linear_ramp(time_H);
+      // Update output H-field
+      outputs.H.ft = real(common_amplitude * common_phase);
+    } else if (inputs.params.source_mode == SourceMode::pulsed) {
+      // Pulsed source term updates
+      update_source_terms_pulsed(time_H, loop_variables.is_conductive,
+                                 loop_variables.J_c, loop_variables.J_s);
 
-      if (J_tot == 0) {
-        j = 0;
-        for (i = 0; i < (I_tot + 1); i++) {
-          inputs.E_s.yz[inputs.K0.index][j][i] =
-                  inputs.E_s.yz[inputs.K0.index][j][i] -
-                  inputs.C.b.z[inputs.K0.index] *
-                          real((inputs.Ksource.real[0][i - (inputs.I0.index)][2] +
-                                IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][2]) *
-                               (-1.0 * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT *
-                                   fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                        2. * DCPI))) *
-                          exp(-1.0 * DCPI *
-                              pow((time_H - inputs.params.to_l +
-                                   inputs.params.delta.dz / LIGHT_V / 2.) /
-                                          (inputs.params.hwhm),
-                                  2));
-          //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-          if (loop_variables.is_conductive)
-            loop_variables.J_c.yz[inputs.K0.index][j][i] +=
-                    inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
-                    real((inputs.Ksource.real[0][i - (inputs.I0.index)][2] +
-                          IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][2]) *
-                         (-1.0 * IMAGINARY_UNIT) *
-                         exp(-IMAGINARY_UNIT *
-                             fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                  2. * DCPI))) *
-                    exp(-1.0 * DCPI *
-                        pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) /
-                                    (inputs.params.hwhm),
-                            2));
-          //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-          if (inputs.params.is_disp_ml) {
-            loop_variables.J_s.yz[inputs.K0.index][j][i] -=
-                    inputs.matched_layer.kappa.z[inputs.K0.index] *
-                    inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
-                    inputs.C.b.z[inputs.K0.index] *
-                    real((inputs.Ksource.real[0][i - (inputs.I0.index)][2] +
-                          IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][2]) *
-                         (-1.0 * IMAGINARY_UNIT) *
-                         exp(-IMAGINARY_UNIT *
-                             fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                  2. * DCPI))) *
-                    exp(-1.0 * DCPI *
-                        pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) /
-                                    (inputs.params.hwhm),
-                            2));
-            //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[0][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[0][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-          }
-        }
-      } else
-        for (j = 0; j < J_tot; j++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            inputs.E_s.yz[inputs.K0.index][j][i] =
-                    inputs.E_s.yz[inputs.K0.index][j][i] -
-                    inputs.C.b.z[inputs.K0.index] *
-                            real((inputs.Ksource
-                                          .real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                                  IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                      [i - (inputs.I0.index)][2]) *
-                                 (-1.0 * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT *
-                                     fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                          2. * DCPI))) *
-                            exp(-1.0 * DCPI *
-                                pow((time_H - inputs.params.to_l +
-                                     inputs.params.delta.dz / LIGHT_V / 2.) /
-                                            (inputs.params.hwhm),
-                                    2));
-            //E_s.yz[(int)K0[0]][j][i] = E_s.yz[(int)K0[0]][j][i] - C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-            if (loop_variables.is_conductive)
-              loop_variables.J_c.yz[inputs.K0.index][j][i] +=
-                      inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
-                      real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                            IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                [i - (inputs.I0.index)][2]) *
-                           (-1.0 * IMAGINARY_UNIT) *
-                           exp(-IMAGINARY_UNIT *
-                               fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                    2. * DCPI))) *
-                      exp(-1.0 * DCPI *
-                          pow((time_H - inputs.params.to_l +
-                               inputs.params.delta.dz / LIGHT_V / 2.) /
-                                      (inputs.params.hwhm),
-                              2));
-            //J_c.yz[(int)K0[0]][j][i] += rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-            if (inputs.params.is_disp_ml) {
-              loop_variables.J_s.yz[inputs.K0.index][j][i] -=
-                      inputs.matched_layer.kappa.z[inputs.K0.index] *
-                      inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
-                      inputs.C.b.z[inputs.K0.index] *
-                      real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][2] +
-                            IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                [i - (inputs.I0.index)][2]) *
-                           (-1.0 * IMAGINARY_UNIT) *
-                           exp(-IMAGINARY_UNIT *
-                               fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                    2. * DCPI))) *
-                      exp(-1.0 * DCPI *
-                          pow((time_H - inputs.params.to_l +
-                               inputs.params.delta.dz / LIGHT_V / 2.) /
-                                      (inputs.params.hwhm),
-                              2));
-              //J_s.yz[(int)K0[0]][j][i] -= matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][2] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][2])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-            }
-          }
-      for (j = 0; j < (J_tot + 1); j++)
-        for (i = 0; i < I_tot; i++) {
-          inputs.E_s.xz[inputs.K0.index][j][i] =
-                  inputs.E_s.xz[inputs.K0.index][j][i] +
-                  inputs.C.b.z[inputs.K0.index] *
-                          real((inputs.Ksource
-                                        .real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                                IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                    [i - (inputs.I0.index)][3]) *
-                               (-1.0 * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT *
-                                   fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                        2 * DCPI))) *
-                          exp(-1.0 * DCPI *
-                              pow((time_H - inputs.params.to_l +
-                                   inputs.params.delta.dz / LIGHT_V / 2.) /
-                                          (inputs.params.hwhm),
-                                  2));
-          //E_s.xz[(int)K0[0]][j][i] = E_s.xz[(int)K0[0]][j][i] + C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
-          if (loop_variables.is_conductive)
-            loop_variables.J_c.xz[inputs.K0.index][j][i] -=
-                    inputs.rho_cond.z[inputs.K0.index] * inputs.C.b.z[inputs.K0.index] *
-                    real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                          IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                              [i - (inputs.I0.index)][3]) *
-                         (-1.0 * IMAGINARY_UNIT) *
-                         exp(-IMAGINARY_UNIT *
-                             fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                  2 * DCPI))) *
-                    exp(-1.0 * DCPI *
-                        pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) /
-                                    (inputs.params.hwhm),
-                            2));
-          //J_c.xz[(int)K0[0]][j][i] -= rho_cond.z[(int)K0[0]]*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
-          if (inputs.params.is_disp_ml)
-            loop_variables.J_s.xz[inputs.K0.index][j][i] +=
-                    inputs.matched_layer.kappa.z[inputs.K0.index] *
-                    inputs.matched_layer.gamma[inputs.K0.index] / (2. * inputs.params.dt) *
-                    inputs.C.b.z[inputs.K0.index] *
-                    real((inputs.Ksource.real[j - (inputs.J0.index)][i - (inputs.I0.index)][3] +
-                          IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                              [i - (inputs.I0.index)][3]) *
-                         (-1.0 * IMAGINARY_UNIT) *
-                         exp(-IMAGINARY_UNIT *
-                             fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
-                                  2 * DCPI))) *
-                    exp(-1.0 * DCPI *
-                        pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) /
-                                    (inputs.params.hwhm),
-                            2));
-          //J_s.xz[(int)K0[0]][j][i] += matched_layer.kappa.z[(int)K0[0]]*matched_layer.gamma[(int)K0[0]]/(2.*params.dt)*C.b.z[(int)K0[0]]*real((Ksource.real[j-((int)J0[0])][i-((int)I0[0])][3] + IMAGINARY_UNIT*Ksource.imag[j-((int)J0[0])][i-((int)I0[0])][3])*(-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2 ));
-        }
-      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
-      outputs.H.ft =
-              real((-1.0 * IMAGINARY_UNIT) *
-                   exp(-IMAGINARY_UNIT *
-                       fmod(inputs.params.omega_an * (time_H - inputs.params.to_l), 2. * DCPI))) *
+      // Common amplitude factor in update equations
+      double common_amplitude =
               exp(-1.0 * DCPI *
-                  pow((time_H - inputs.params.to_l + inputs.params.delta.dz / LIGHT_V / 2.) /
-                              (inputs.params.hwhm),
+                  pow((time_H - inputs.params.to_l +
+                       inputs.params.delta.dz / LIGHT_V / 2.) /
+                              inputs.params.hwhm,
                       2));
-      //fth = real((-1.0*IMAGINARY_UNIT)*exp(-IMAGINARY_UNIT*fmod(params.omega_an*(time_H - params.to_l),2.*DCPI)))*exp( -1.0*DCPI*pow((time_H - params.to_l)/(params.hwhm),2));
+      // Common phase term in update equations
+      complex<double> common_phase =
+              -1.0 * IMAGINARY_UNIT *
+              exp(-IMAGINARY_UNIT *
+                  fmod(inputs.params.omega_an * (time_H - inputs.params.to_l),
+                       2. * DCPI));
+      // Update output H-field
+      outputs.H.ft = real(common_phase) * common_amplitude;
     }
 
     //end of source terms

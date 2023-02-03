@@ -3,7 +3,16 @@
 #include "cell_coordinate.h"
 
 using namespace std;
+using namespace tdms_phys_constants;
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
+
+void SimulationManager::update_source_terms_steadystate(
+        double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
+        CurrentDensitySplitField &J_s) {
+  update_Isource_terms_steadystate(time_H, is_conductive, J_c, J_s);
+  update_Jsource_terms_steadystate(time_H, is_conductive, J_c, J_s);
+  update_Ksource_terms_steadystate(time_H, is_conductive, J_c, J_s);
+}
 
 void SimulationManager::update_Isource_terms_steadystate(
         double time_H, bool is_conductive, CurrentDensitySplitField &J_c,
