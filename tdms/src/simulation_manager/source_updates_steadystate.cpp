@@ -213,7 +213,7 @@ void SimulationManager::update_source_steadystate(
    * to recover the source value at the relevant Yee cell.
 
    cell_b and cell_c need to be offset by the corresponding {IJK}0.index before
-   we cna retrieve the source value. */
+   we can retrieve the source value. */
   SourceIndex s_index = {split_field_ID, cell_b, cell_c};
 
   // setup axis-dependent parameters
@@ -312,5 +312,207 @@ void SimulationManager::update_source_steadystate(
   if (inputs.params.is_disp_ml) {
     (*J_s_component)[cell_to_update] += update_sign[2] * kappa * gamma /
                                         (2 * inputs.params.dt) * E_split_update;
+  }
+}
+
+void SimulationManager::update_source_terms_steadystate(double time_E) {
+  //! Simulation dimensions
+  int I_tot = n_Yee_cells().i, J_tot = n_Yee_cells().j;
+  //! The index of the various material property arrays that correspond to this
+  //! particular Yee cell, and thus update equation.
+  int array_ind;
+  //! Common phase factor that appears in update equations
+  complex<double> common_phase = exp(
+          -IMAGINARY_UNIT * fmod(inputs.params.omega_an * time_E, 2. * DCPI));
+  //! Common amplitude factor that appears in update equations
+  double common_amplitude = linear_ramp(time_E);
+
+  /*! Value of the source term in Yee cell (cell_a, cell_b, cell_c) */
+  complex<double> source_value;
+  /*! The split-field cell index to update */
+  CellCoordinate cell_to_update;
+  /*! This is the index that is to be passed to the (relevent) Source instance,
+   * to recover the source value at the relevant Yee cell.
+
+   cell_b and cell_c need to be offset by the corresponding {IJK}0.index before
+   we can retrieve the source value. */
+  SourceIndex s_index;
+
+  // TODO: Pull if statements outside loops. Refactor akin to e-field: have
+  // central function with switch to setup, then call that rather than repeating
+  // yourself over and over again
+
+  // Update Isource terms
+  for (int k = (inputs.K0.index); k <= (inputs.K1.index); k++) {
+    for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
+      // Update across I0
+      if (inputs.I0.apply) {
+        cell_to_update = {inputs.I0.index - 1, j, k};
+
+        if (!inputs.params.is_multilayer) {
+          array_ind = inputs.I0.index - 1;
+        } else {
+          array_ind = (I_tot + 1) * k + inputs.I0.index - 1;
+        }
+
+        if (j < inputs.J1.index) {
+          s_index = {0, j - inputs.J0.index, k - inputs.K0.index};
+
+          inputs.H_s.zx[cell_to_update] +=
+                  inputs.D.b.x[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Isource[s_index]);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          s_index = {1, j - inputs.J0.index, k - inputs.K0.index};
+
+          inputs.H_s.yx[cell_to_update] -=
+                  inputs.D.b.x[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Isource[s_index]);
+        }
+      }
+
+      // Update across I1
+      if (inputs.I1.apply) {
+        cell_to_update = {inputs.I1.index, j, k};
+
+        if (!inputs.params.is_multilayer) {
+          array_ind = inputs.I1.index;
+        } else {
+          array_ind = (I_tot + 1) * k + inputs.I1.index;
+        }
+
+        if (j < inputs.J1.index) {
+          s_index = {4, j - inputs.J0.index, k - inputs.K0.index};
+
+          inputs.H_s.zx[cell_to_update] -=
+                  inputs.D.b.x[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Isource[s_index]);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          s_index = {5, j - inputs.J0.index, k - inputs.K0.index};
+
+          inputs.H_s.yx[cell_to_update] +=
+                  inputs.D.b.x[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Isource[s_index]);
+        }
+      }
+    }
+  }
+
+  // Update Jsource terms
+  for (int k = (inputs.K0.index); k <= (inputs.K1.index); k++) {
+    for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
+      // Perform across J0
+      if (inputs.J0.apply) {
+        cell_to_update = {i, inputs.J0.index - 1, k};
+
+        if (!inputs.params.is_multilayer) {
+          array_ind = inputs.J0.index;
+        } else {
+          array_ind = (J_tot + 1) * k + inputs.J0.index;
+        }
+
+        if (i < inputs.I1.index) {
+          s_index = {0, inputs.I0.index, inputs.K0.index};
+
+          inputs.H_s.zy[s_index] -= inputs.D.b.y[array_ind] *
+                                    real(common_amplitude * common_phase *
+                                         inputs.Jsource[s_index]);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          s_index = {1, inputs.I0.index, inputs.K0.index};
+
+          inputs.H_s.xy[cell_to_update] +=
+                  inputs.D.b.y[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Jsource[s_index]);
+        }
+      }
+
+      // Perform across J1
+      if (inputs.J1.apply) {
+        cell_to_update = {i, inputs.J1.index, k};
+
+        if (!inputs.params.is_multilayer) {
+          array_ind = inputs.J1.index;
+        } else {
+          array_ind = (J_tot + 1) * k + inputs.J1.index;
+        }
+
+        if (i < (inputs.I1.index)) {
+          s_index = {4, i - inputs.I0.index, k - inputs.K0.index};
+
+          inputs.H_s.zy[cell_to_update] +=
+                  inputs.D.b.y[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Jsource[s_index]);
+        }
+        if (k < (inputs.K1.index) ||
+            inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
+          s_index = {5, i - inputs.I0.index, k - inputs.K0.index};
+
+          inputs.H_s.xy[cell_to_update] -=
+                  inputs.D.b.y[array_ind] *
+                  real(common_amplitude * common_phase *
+                       inputs.Jsource[s_index]);
+        }
+      }
+    }
+  }
+
+  // Update Ksource terms
+  for (int j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
+    for (int i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
+      // Perform across K0
+      if (inputs.K0.apply) {
+        cell_to_update = {i, j, inputs.K0.index - 1};
+
+        if (i < inputs.I1.index) {
+          s_index = {0, i - inputs.I0.index, j - inputs.J0.index};
+
+          inputs.H_s.yz[cell_to_update] +=
+                  inputs.D.b.z[inputs.K0.index - 1] *
+                  real(common_amplitude * common_phase *
+                       inputs.Ksource[s_index]);
+        }
+        if (j < inputs.J1.index) {
+          s_index = {1, i - inputs.I0.index, j - inputs.J0.index};
+
+          inputs.H_s.xz[cell_to_update] -=
+                  inputs.D.b.z[inputs.K0.index - 1] *
+                  real(common_amplitude * common_phase *
+                       inputs.Ksource[s_index]);
+        }
+      }
+
+      // Perform across K1
+      if (inputs.K1.apply) {
+        cell_to_update = {i, j, inputs.K1.index};
+
+        if (i < inputs.I1.index) {
+          s_index = {4, i - inputs.I0.index, j - inputs.J0.index};
+
+          inputs.H_s.yz[cell_to_update] -=
+                  inputs.D.b.z[inputs.K1.index] *
+                  real(common_amplitude * common_phase *
+                       inputs.Ksource[s_index]);
+        }
+        if (j < (inputs.J1.index)) {
+          s_index = {5, i - inputs.I0.index, j - inputs.J0.index};
+
+          inputs.H_s.xz[cell_to_update] +=
+                  inputs.D.b.z[inputs.K1.index] *
+                  real(common_amplitude * common_phase *
+                       inputs.Ksource[s_index]);
+        }
+      }
+    }
   }
 }

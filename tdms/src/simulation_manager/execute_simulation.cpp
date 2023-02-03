@@ -2818,265 +2818,37 @@ void SimulationManager::execute() {
     }    //end parallel
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
-    //update terms for self consistency across scattered/total interface - E updates
-    if (inputs.params.source_mode == SourceMode::steadystate) {//steadystate
-      complex<double> commonPhase =
-              exp(-IMAGINARY_UNIT * fmod(inputs.params.omega_an * time_E, 2. * DCPI));
-      double commonAmplitude = linear_ramp(time_E);
-      for (k = (inputs.K0.index); k <= (inputs.K1.index); k++)
-        for (j = (inputs.J0.index); j <= (inputs.J1.index); j++) {
-          if (inputs.I0.apply) {//Perform across I0
+    /* Update source terms for self consistency across scattered/total interface
+     * - H updates (use time_E) */
 
-            if (!inputs.params.is_multilayer) array_ind = inputs.I0.index - 1;
-            else
-              array_ind = (I_tot + 1) * k + inputs.I0.index - 1;
+    if (inputs.params.source_mode == SourceMode::steadystate) {
+      // Steady-state source term updates
+      update_source_terms_steadystate(time_E);
 
-            if (j < (inputs.J1.index))
-              inputs.H_s.zx[k][j][(inputs.I0.index) - 1] =
-                      inputs.H_s.zx[k][j][(inputs.I0.index) - 1] +
-                      inputs.D.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][0] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][0]));
-            if (k < (inputs.K1.index) || inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC)
-              inputs.H_s.yx[k][j][(inputs.I0.index) - 1] =
-                      inputs.H_s.yx[k][j][(inputs.I0.index) - 1] -
-                      inputs.D.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][1] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][1]));
-          }
-          if (inputs.I1.apply) {//Perform across I1
+      //! Common phase term in update equations
+      complex<double> common_phase =
+              exp(-IMAGINARY_UNIT *
+                  fmod(inputs.params.omega_an * time_E, 2. * DCPI));
+      //! Common amplitude term in update equations
+      double common_amplitude = linear_ramp(time_E);
+      // Update output field
+      outputs.E.ft = real(common_amplitude * common_phase);
+    } else if (inputs.params.source_mode == SourceMode::pulsed) {
+      // Pulsed source term updates
+      update_source_terms_pulsed(time_E, tind);
 
-            if (!inputs.params.is_multilayer) array_ind = inputs.I1.index;
-            else
-              array_ind = (I_tot + 1) * k + inputs.I1.index;
-
-            if (j < (inputs.J1.index))
-              inputs.H_s.zx[k][j][(inputs.I1.index)] =
-                      inputs.H_s.zx[k][j][(inputs.I1.index)] -
-                      inputs.D.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][4] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][4]));
-            if (k < (inputs.K1.index) || inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC)
-              inputs.H_s.yx[k][j][(inputs.I1.index)] =
-                      inputs.H_s.yx[k][j][(inputs.I1.index)] +
-                      inputs.D.b.x[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Isource
-                                            .real[k - (inputs.K0.index)][j - (inputs.J0.index)][5] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Isource.imag[k - (inputs.K0.index)]
-                                                               [j - (inputs.J0.index)][5]));
-          }
-        }
-
-      for (k = (inputs.K0.index); k <= (inputs.K1.index); k++)
-        for (i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-          if (inputs.J0.apply) {//Perform across J0
-
-            if (!inputs.params.is_multilayer) array_ind = inputs.J0.index;
-            else
-              array_ind = (J_tot + 1) * k + inputs.J0.index;
-
-            if (i < (inputs.I1.index))
-              inputs.H_s.zy[k][(inputs.J0.index) - 1][i] =
-                      inputs.H_s.zy[k][(inputs.J0.index) - 1][i] -
-                      inputs.D.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][0] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][0]));
-
-            if (k < (inputs.K1.index) || inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC)
-              inputs.H_s.xy[k][(inputs.J0.index) - 1][i] =
-                      inputs.H_s.xy[k][(inputs.J0.index) - 1][i] +
-                      inputs.D.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][1] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][1]));
-          }
-          if (inputs.J1.apply) {//Perform across J1
-
-            if (!inputs.params.is_multilayer) array_ind = inputs.J1.index;
-            else
-              array_ind = (J_tot + 1) * k + inputs.J1.index;
-
-            if (i < (inputs.I1.index))
-              inputs.H_s.zy[k][(inputs.J1.index)][i] =
-                      inputs.H_s.zy[k][(inputs.J1.index)][i] +
-                      inputs.D.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][4] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][4]));
-            if (k < (inputs.K1.index) || inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC)
-              inputs.H_s.xy[k][(inputs.J1.index)][i] =
-                      inputs.H_s.xy[k][(inputs.J1.index)][i] -
-                      inputs.D.b.y[array_ind] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Jsource
-                                            .real[k - (inputs.K0.index)][i - (inputs.I0.index)][5] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Jsource.imag[k - (inputs.K0.index)]
-                                                               [i - (inputs.I0.index)][5]));
-          }
-        }
-
-      for (j = (inputs.J0.index); j <= (inputs.J1.index); j++)
-        for (i = (inputs.I0.index); i <= (inputs.I1.index); i++) {
-          if (inputs.K0.apply) {//Perform across K0
-            if (i < (inputs.I1.index))
-              inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
-                      inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
-                      inputs.D.b.z[(inputs.K0.index) - 1] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][0] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][0]));
-            if (j < (inputs.J1.index))
-              inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
-                      inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
-                      inputs.D.b.z[(inputs.K0.index) - 1] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][1] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][1]));
-          }
-          if (inputs.K1.apply) {//Perform across K1
-            if (i < (inputs.I1.index))
-              inputs.H_s.yz[(inputs.K1.index)][j][i] =
-                      inputs.H_s.yz[(inputs.K1.index)][j][i] -
-                      inputs.D.b.z[(inputs.K1.index)] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][4] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][4]));
-            if (j < (inputs.J1.index))
-              inputs.H_s.xz[(inputs.K1.index)][j][i] =
-                      inputs.H_s.xz[(inputs.K1.index)][j][i] +
-                      inputs.D.b.z[(inputs.K1.index)] *
-                              real(commonAmplitude * commonPhase *
-                                   (inputs.Ksource
-                                            .real[j - (inputs.J0.index)][i - (inputs.I0.index)][5] +
-                                    IMAGINARY_UNIT *
-                                            inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                               [i - (inputs.I0.index)][5]));
-          }
-        }
-      outputs.E.ft = real(commonAmplitude * commonPhase);
-    } else if (inputs.params.source_mode == 1) {//pulsed
-      if (J_tot == 0) {
-        j = 0;
-        for (i = 0; i < (I_tot + 1); i++) {
-          inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
-                  inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
-                  inputs.D.b.z[(inputs.K0.index) - 1] *
-                          real((inputs.Ksource.real[0][i - (inputs.I0.index)][1] +
-                                IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][1]) *
-                               (-1. * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT *
-                                   fmod(inputs.params.omega_an * (time_E - inputs.params.to_l),
-                                        2 * DCPI))) *
-                          exp(-1. * DCPI *
-                              pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
-          //broadband source term
-          if (inputs.params.eyi_present)
-            inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
-                    inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
-                    inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.y[tind][j][i];
-        }
-        for (i = 0; i < I_tot; i++) {
-          inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
-                  inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
-                  inputs.D.b.z[(inputs.K0.index) - 1] *
-                          real((inputs.Ksource.real[0][i - (inputs.I0.index)][0] +
-                                IMAGINARY_UNIT * inputs.Ksource.imag[0][i - (inputs.I0.index)][0]) *
-                               (-1. * IMAGINARY_UNIT) *
-                               exp(-IMAGINARY_UNIT *
-                                   fmod(inputs.params.omega_an * (time_E - inputs.params.to_l),
-                                        2 * DCPI))) *
-                          exp(-1. * DCPI *
-                              pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
-          //broadband source term
-          if (inputs.params.exi_present)
-            inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
-                    inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
-                    inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.x[tind][j][i];
-          //if(i==511)
-        }
-      } else {
-        for (j = 0; j < J_tot; j++)
-          for (i = 0; i < (I_tot + 1); i++) {
-            inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
-                    inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
-                    inputs.D.b.z[(inputs.K0.index) - 1] *
-                            real((inputs.Ksource
-                                          .real[j - (inputs.J0.index)][i - (inputs.I0.index)][1] +
-                                  IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                      [i - (inputs.I0.index)][1]) *
-                                 (-1. * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT *
-                                     fmod(inputs.params.omega_an * (time_E - inputs.params.to_l),
-                                          2 * DCPI))) *
-                            exp(-1. * DCPI *
-                                pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
-            //broadband source term
-            if (inputs.params.eyi_present)
-              inputs.H_s.xz[(inputs.K0.index) - 1][j][i] =
-                      inputs.H_s.xz[(inputs.K0.index) - 1][j][i] -
-                      inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.y[tind][j][i];
-          }
-        for (j = 0; j < (J_tot + 1); j++)
-          for (i = 0; i < I_tot; i++) {
-            inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
-                    inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
-                    inputs.D.b.z[(inputs.K0.index) - 1] *
-                            real((inputs.Ksource
-                                          .real[j - (inputs.J0.index)][i - (inputs.I0.index)][0] +
-                                  IMAGINARY_UNIT * inputs.Ksource.imag[j - (inputs.J0.index)]
-                                                                      [i - (inputs.I0.index)][0]) *
-                                 (-1. * IMAGINARY_UNIT) *
-                                 exp(-IMAGINARY_UNIT *
-                                     fmod(inputs.params.omega_an * (time_E - inputs.params.to_l),
-                                          2 * DCPI))) *
-                            exp(-1. * DCPI *
-                                pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
-            //broadband source term
-            if (inputs.params.exi_present)
-              inputs.H_s.yz[(inputs.K0.index) - 1][j][i] =
-                      inputs.H_s.yz[(inputs.K0.index) - 1][j][i] +
-                      inputs.D.b.z[(inputs.K0.index) - 1] * inputs.Ei.x[tind][j][i];
-          }
-      }
-      outputs.E.ft =
-              real((-1. * IMAGINARY_UNIT) *
-                   exp(-IMAGINARY_UNIT *
-                       fmod(inputs.params.omega_an * (time_E - inputs.params.to_l), 2 * DCPI))) *
-              exp(-1. * DCPI * pow((time_E - inputs.params.to_l) / (inputs.params.hwhm), 2.));
+      //! Common amplitude factor in update equations
+      double common_amplitude =
+              exp(-1. * DCPI *
+                  pow((time_E - inputs.params.to_l) / inputs.params.hwhm, 2.));
+      //! Common phase term in update equations
+      complex<double> common_phase =
+              -1. * IMAGINARY_UNIT *
+              exp(-1. * IMAGINARY_UNIT *
+                  fmod(inputs.params.omega_an * (time_E - inputs.params.to_l),
+                       2 * DCPI));
+      // Update output field
+      outputs.E.ft = common_amplitude * real(common_phase);
     }
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 

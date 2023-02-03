@@ -120,9 +120,9 @@ private:
                                  int array_ind, CurrentDensitySplitField &J_c,
                                  CurrentDensitySplitField &J_s);
   /**
-   * @brief Performs updates to the electric-split field components and current
-   * density fields after an E-field timestep has been performed, in accordance
-   * with the I,J, and K-source terms.
+   * @brief [E-FIELD UPDATES] Performs updates to the electric-split field
+   * components and current density fields after an E-field timestep has been
+   * performed, in accordance with the I,J, and K-source terms.
    *
    * @param time_H The time the magnetic field is currently sitting at.
    * @param is_conductive Whether the medium is conductive (so J_c needs to be
@@ -133,6 +133,15 @@ private:
   void update_source_terms_steadystate(double time_H, bool is_conductive,
                                        CurrentDensitySplitField &J_c,
                                        CurrentDensitySplitField &J_s);
+  /**
+   * @brief [H-FIELD UPDATES] Performs updates to the magnetic-split field
+   * components after an H-field timestep has been performed, in accordance with
+   * the I,J, and K-source terms.
+   *
+   * @param time_E The time the electric field is currently sitting at.
+   */
+  void update_source_terms_steadystate(double time_E);
+
   /*! @copydoc update_source_terms_steadystate */
   void update_Isource_terms_steadystate(double time_H, bool is_conductive,
                                         CurrentDensitySplitField &J_c,
@@ -147,9 +156,9 @@ private:
                                         CurrentDensitySplitField &J_s);
 
   /**
-   * @brief Performs the updates to the electric-split field components nad
-   * current density fields after an E-field timestep has been performed, in
-   * accordance with the source terms.
+   * @brief [E-FIELD UPDATES] Performs the updates to the electric-split field
+   * components nad current density fields after an E-field timestep has been
+   * performed, in accordance with the source terms.
    *
    * @param time_H The time the magnetic field is currently sitting at.
    * @param is_conductive Whether the medium is conductive (so J_c needs to be
@@ -160,6 +169,15 @@ private:
   void update_source_terms_pulsed(double time_H, bool is_conductive,
                                   CurrentDensitySplitField &J_c,
                                   CurrentDensitySplitField &J_s);
+  /**
+   * @brief [H-FIELD UPDATES] Performs the updates to the magnetic-split field
+   * components and current density fields after an H-field timestep has been
+   * performed, in accordance with the source terms.
+   *
+   * @param time_E The time the electric field is currently sitting at.
+   * @param tind The current iteration number
+   */
+  void update_source_terms_pulsed(double time_E, int tind);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
