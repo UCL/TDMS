@@ -41,9 +41,6 @@ void ArgumentParser::print_help_message() {
                   "tdms [options] infile gridfile outfile\n"
                   "Options:\n"
                   "-h:\tDisplay this help message\n"
-                  "-fd, --finite-difference:\tUse the finite-difference solver, instead of the "
-                  "pseudo-spectral method.\n"
-                  "at Yee cell centres, as opposed to band-limited interpolation.\n"
                   "-q:\tQuiet operation. Silence all logging\n"
                   "-m:\tMinimise output file size by not saving vertex and facet information\n\n");
 }
@@ -70,10 +67,6 @@ bool ArgumentNamespace::have_flag(std::string const &flag) const {
   }
 
   return false;
-}
-
-bool ArgumentNamespace::finite_difference() const {
-  return this->have_flag("-fd") || this->have_flag("--finite-difference");
 }
 
 const char *ArgumentNamespace::output_filename() {

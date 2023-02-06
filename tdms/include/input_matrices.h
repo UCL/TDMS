@@ -12,8 +12,13 @@
 
 class InputMatrices {
 private:
-  // Pointers to arrays in C++ that will be populated by the MATLAB matrices (default to nullptrs)
+  //! Pointers to arrays in C++ that will be populated by the MATLAB matrices (default to nullptrs)
   const mxArray *matrix_pointers[NMATRICES];
+
+  // Optional arguments that do not need to be present in the input file, but need to be processed if they are there
+
+  //! User-input to determine the solver method to use. Options are FDTD (0 - default), PSTD (1)
+  int usecd = 0;
 
   /**
    * @brief Assigns pointers to the matrices in an input file, based on those we are expecting to recieve.
@@ -24,6 +29,13 @@ private:
    * @param actual The matrices saved in an input file, to be loaded
    */
   void assign_matrix_pointers(MatrixCollection &expected, MatFileMatrixCollection &actual);
+
+  /**
+   * @brief Process optional, hence potentially absent, inputs from the input file and place them into the respective variables. Use default values otherwise.
+   *
+   * @param recieved_matrices The names of the arrays in the input file
+   */
+  void handle_optional_inputs(const MatFileMatrixCollection &recieved_matrices);
 
   /**
    * @brief Validates that the MATLAB arrays that we are pointing to are of the type that we expect.
@@ -60,6 +72,9 @@ public:
   const mxArray *operator[](const std::string &matrix_name) {
     return matrix_pointers[index_from_matrix_name(matrix_name)];
   }
+
+  /** @brief Get the value of usecd */
+  int get_usecd() { return usecd; }
 
   /**
    * @brief Set the matrix pointer with the given index.

@@ -1,19 +1,20 @@
 #include "input_matrices.h"
 
-#include <string.h>
 #include <stdexcept>
+#include <string.h>
 
 #include <spdlog/spdlog.h>
 
 #include "fdtd_grid_initialiser.h"
-#include "utils.h"
 #include "matlabio.h"
+#include "utils.h"
 
 using namespace std;
 using namespace tdms_matrix_names;
 
 int InputMatrices::index_from_matrix_name(const string &matrix_name) {
-  auto position = find(matrixnames_input_with_grid.begin(), matrixnames_input_with_grid.end(), matrix_name);
+  auto position =
+          find(matrixnames_input_with_grid.begin(), matrixnames_input_with_grid.end(), matrix_name);
   if (position == matrixnames_input_with_grid.end()) {
     // could not find the matrix name in the list of expected input matrices
     throw runtime_error(matrix_name + " not found in matrixnames_input_with_grid");
@@ -35,7 +36,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename) {
   auto initialiser =
           fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
   const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
-                                                  "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
+                                                 "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
 
   for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
 
@@ -77,7 +78,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename, const char *gr
   auto initialiser =
           fdtdGridInitialiser(matrix_pointers[index_from_matrix_name("fdtdgrid")], mat_filename);
   const vector<string> fdtdgrid_element_names = {"Exy", "Exz", "Eyx", "Eyz", "Ezx", "Ezy",
-                                                  "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
+                                                 "Hxy", "Hxz", "Hyx", "Hyz", "Hzx", "Hzy"};
 
   for (const auto &name : fdtdgrid_element_names) { initialiser.add_tensor(name); }
 
@@ -88,7 +89,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename, const char *gr
 void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,
                                            MatFileMatrixCollection &actual) {
   // for each matrix we expect to recieve
-  for(string &expected_matrix : expected.matrix_names) {
+  for (string &expected_matrix : expected.matrix_names) {
     // look for this matrix name in the input file, throw an error if it is not present
     auto position = find(actual.matrix_names.begin(), actual.matrix_names.end(), expected_matrix);
     if (position == actual.matrix_names.end()) {
@@ -102,6 +103,24 @@ void InputMatrices::assign_matrix_pointers(MatrixCollection &expected,
       set_matrix_pointer(expected_matrix, pointer);
     }
   }
+
+  // now handle optional arrays that might have been passed
+  handle_optional_inputs(actual);
+}
+
+void InputMatrices::handle_optional_inputs(const MatFileMatrixCollection &recieved_matrices) {
+  // handle usecd: if not present use the default (0). Otherwise read an int
+  auto position = find(recieved_matrices.matrix_names.begin(), recieved_matrices.matrix_names.end(),
+                       "usecd");
+  if (position != recieved_matrices.matrix_names.end()) {
+    // usecd was specified in the input file - use this value provided the array is non-empty
+    mxArray *usecd_ptr = matGetVariable(recieved_matrices.mat_file, "usecd");
+    if (!mxIsEmpty(usecd_ptr)) { usecd = int_cast_from_double_in(usecd_ptr, "usecd"); }
+  } else {
+    // we should warn, but not error, if the usecd array is empty - the default value will be used
+    spdlog::warn("usecd present in input file, but is an empty array. REVERTING TO DEFAULT FOR "
+                 "THIS OPTION");
+  }
 }
 
 void InputMatrices::validate_assigned_pointers() {
@@ -114,14 +133,14 @@ void InputMatrices::validate_assigned_pointers() {
 
   // other arrays must contain a specific number of fieldnames
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("freespace")], 6,
-                                  "freespace");
+                                 "freespace");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("disp_params")], 3,
-                                  "disp_params");
+                                 "disp_params");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("delta")], 3, "delta");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("interface")], 6,
-                                  "interface");
+                                 "interface");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("grid_labels")], 3,
-                                  "grid_labels");
+                                 "grid_labels");
   assert_is_struct_with_n_fields(matrix_pointers[index_from_matrix_name("conductive_aux")], 3,
-                                  "conductive_aux");
+                                 "conductive_aux");
 }

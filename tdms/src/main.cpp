@@ -17,24 +17,19 @@ int main(int nargs, char *argv[]) {
   spdlog::set_level(spdlog::level::info);
 #endif
 
-  InputMatrices matrix_inputs;
-
   auto args = ArgumentParser::parse_args(nargs, argv);
   args.check_files_can_be_accessed();
 
-  //now it is safe to use matlab routines to open the file and order the matrices
+  // Now it is safe to use matlab routines to open the file and order the matrices
+  InputMatrices matrix_inputs;
   if (!args.has_grid_filename()) {
     matrix_inputs.set_from_input_file(args.input_filename());
   } else {
     matrix_inputs.set_from_input_file(args.input_filename(), args.grid_filename());
   }
 
-  // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod solver_method = PseudoSpectral;// default
-  if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
-
   // Handles the running of the simulation, given the inputs to the executable.
-  SimulationManager simulation(matrix_inputs, solver_method);
+  SimulationManager simulation(matrix_inputs);
 
   // now run the time propagation code
   simulation.execute();
@@ -45,5 +40,6 @@ int main(int nargs, char *argv[]) {
   // save the outputs, possibly in compressed format
   simulation.write_outputs_to_file(args.output_filename(), args.have_flag("-m"));
 
+  // return success!
   return 0;
 }

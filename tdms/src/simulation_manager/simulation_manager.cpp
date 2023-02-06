@@ -7,15 +7,14 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method)
-    : inputs(in_matrices, _solver_method), FDTD(n_Yee_cells()) {
-  solver_method_SM = _solver_method;
+SimulationManager::SimulationManager(InputMatrices in_matrices)
+    : inputs(in_matrices), FDTD(n_Yee_cells()) {
 
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
   // setup PSTD variables, and any dependencies there might be
-  if (solver_method_SM == SolverMethod::PseudoSpectral) {
+  if (solver_method() == SolverMethod::PseudoSpectral) {
     int max_IJK = IJK_tot.max(), n_threads = omp_get_max_threads();
 
     PSTD.set_using_dimensions(IJK_tot);

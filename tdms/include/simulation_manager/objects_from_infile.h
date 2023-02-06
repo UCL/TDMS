@@ -4,9 +4,9 @@
  */
 #pragma once
 
-#include <spdlog/spdlog.h>
+#include <stdexcept>
 
-#include "matrix.h"
+#include <spdlog/spdlog.h>
 
 #include "arrays.h"
 #include "cell_coordinate.h"
@@ -16,6 +16,7 @@
 #include "grid_labels.h"
 #include "input_matrices.h"
 #include "interface.h"
+#include "matrix.h"
 #include "shapes.h"
 #include "simulation_parameters.h"
 #include "source.h"
@@ -31,10 +32,11 @@
  */
 class IndependentObjectsFromInfile {
 public:
-  SolverMethod solver_method;//!< Either FDTD (default) or PSTD, the solver method
-  int skip_tdf;              //!< Either 1 if we are using PSTD, or 6 if using FDTD
-  PreferredInterpolationMethods interpolation_methods =
-          Cubic;//!< Either Cubic (default) or BandLimited, the preferred interpolation methods
+  /*! Either FDTD (default) or PSTD, the solver method */
+  SolverMethod solver_method;
+  int skip_tdf;//!< Either 1 if we are using PSTD, or 6 if using FDTD
+  /*! Either Cubic (default) or BandLimited, the preferred interpolation methods */
+  PreferredInterpolationMethods interpolation_methods;
 
   SimulationParameters params;//< The parameters for this simulation
 
@@ -71,24 +73,28 @@ public:
   IJKDimensions IJK_tot;//!< total number of Yee cells in the x,y,z directions respectively
   int Nsteps;           //!< Number of dfts to perform before checking for phasor convergence
 
-  IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
-                               SolverMethod _solver_method = SolverMethod::PseudoSpectral);
+  IndependentObjectsFromInfile(InputMatrices matrices_from_input_file);
 
-  /** Set the solver method (FDTD / PSTD) and update dependent variables */
-  void set_solver_method(SolverMethod _sm) {
-    solver_method = _sm;
-    if (solver_method == SolverMethod::FiniteDifference) {
-      spdlog::info("Using finite-difference method (FDTD)");
-      skip_tdf = 6;
-    } else if (solver_method == SolverMethod::PseudoSpectral) {
-      spdlog::info("Using pseudospectral method (PSTD)");
-      skip_tdf = 1;
-    } else {
-      throw std::runtime_error("Solver method not recognised!");
+  /** @brief Set the solver method object using the flag from the input, and update dependent variables */
+  void set_solver_method(int usecd_from_input_file) {
+    switch (usecd_from_input_file) {
+      case 0:
+        solver_method = FiniteDifference;
+        skip_tdf = 6;
+        spdlog::info("Using finite-difference method (FDTD)");
+        break;
+      case 1:
+        solver_method = PseudoSpectral;
+        skip_tdf = 1;
+        spdlog::info("Using pseudospectral method (PSTD)");
+        break;
+      default:
+        throw std::runtime_error("Unknown solver method: " + to_string(usecd_from_input_file));
+        break;
     }
   }
 
-  /** Set the preferred method of interpolation, and update the fields about this change */
+  /** @brief Set the preferred method of interpolation using the flag from the input, and update the fields about this change */
   void set_interpolation_method(const mxArray *interpolation_method_flag) {
     if (!mxIsEmpty(interpolation_method_flag)) {
       int flag_value = int_cast_from_double_in(interpolation_method_flag, "intmethod");
@@ -100,6 +106,9 @@ public:
         case 2:
           interpolation_methods = BandLimited;
           spdlog::info("Using band-limited interpolation where possible");
+          break;
+        default:
+          throw std::runtime_error("Interpolation methods not recognised:" + to_string(flag_value));
           break;
       }
     }
@@ -124,8 +133,7 @@ public:
   GratingStructure structure;      //< TODO
   FrequencyExtractVector f_ex_vec; //< Vector of frequencies to extract field & phasors at
 
-  ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                    SolverMethod _solver_method = SolverMethod::PseudoSpectral);
+  ObjectsFromInfile(InputMatrices matrices_from_input_file);
 
   /** @brief Determine whether the {IJK}source terms are empty (true) or not (false) */
   bool all_sources_are_empty() {
