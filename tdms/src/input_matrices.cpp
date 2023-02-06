@@ -115,12 +115,17 @@ void InputMatrices::handle_optional_inputs(const MatFileMatrixCollection &reciev
   if (position != recieved_matrices.matrix_names.end()) {
     // usecd was specified in the input file - use this value provided the array is non-empty
     mxArray *usecd_ptr = matGetVariable(recieved_matrices.mat_file, "usecd");
-    if (!mxIsEmpty(usecd_ptr)) { usecd = int_cast_from_double_in(usecd_ptr, "usecd"); }
-  } else {
-    // we should warn, but not error, if the usecd array is empty - the default value will be used
-    spdlog::warn("usecd present in input file, but is an empty array. REVERTING TO DEFAULT FOR "
-                 "THIS OPTION");
+    if (!mxIsEmpty(usecd_ptr)) {
+      // cast the input to the member variable
+      usecd = int_cast_from_double_in(usecd_ptr, "usecd");
+    } else {
+      // we should warn, but not error, if the usecd array is empty - the default value will be used
+      spdlog::warn(
+              "usecd present in input file, but it is an empty array. REVERTING TO DEFAULT FOR "
+              "THIS OPTION");
+    }
   }
+  // else position == last; usecd was not present in the input file, default value will remain unchanged
 }
 
 void InputMatrices::validate_assigned_pointers() {

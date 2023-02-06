@@ -18,7 +18,6 @@ Source::Source(const mxArray *ptr, int dim1, int dim2,
   } else {
     // fetch dimensions of the input array, and check they are what we expect
     auto dims = Dimensions(ptr);
-
     if (dims.are_1d()) {
       throw runtime_error(name + " should be 3- or 2-dimensional");
     }
