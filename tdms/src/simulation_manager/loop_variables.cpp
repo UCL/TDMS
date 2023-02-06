@@ -132,9 +132,11 @@ LoopVariables::~LoopVariables() {
 
 void LoopVariables::optimise_loop_J_range(const ObjectsFromInfile &data,
                                           double non_zero_tol) {
-  bool ksource_nz[4];//< "k source non-zero"
-
-  if (data.IJK_tot.j == 0) {
+  /*! "k-source non-zero" - helps us deduce which SimulationMode we are
+   * computing */
+  bool ksource_nz[4] = {false, false, false, false};
+  // determine where we will have an interaction with the Ksource
+  if (data.IJK_tot.j == 0 && !(data.Ksource.is_empty())) {
     for (int icomp = 0; icomp < 4; icomp++) {
       for (int ki = 0; ki < (data.IJK_tot.i + 1); ki++) {
         ksource_nz[icomp] =
