@@ -23,6 +23,8 @@ TEST_URLS = {
     "12": ZENODO_URL + "/arc_12.zip",
     "13": ZENODO_URL + "/arc_13.zip",
     "example_fdtd": ZENODO_URL + "/arc_example_fdtd.zip",
+    # "17": ZENODO_URL + "/arc_17.zip",
+    # "18": ZENODO_URL + "/arc_18.zip",
 }
 
 
