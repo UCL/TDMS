@@ -7,15 +7,15 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
-                                     PreferredInterpolationMethods _pim)
-    : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()), solver_method(_solver_method),
-      pim(_pim) {
+SimulationManager::SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method)
+    : inputs(in_matrices, _solver_method), FDTD(n_Yee_cells()) {
+  solver_method_SM = _solver_method;
+
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
   // setup PSTD variables, and any dependencies there might be
-  if (solver_method == SolverMethod::PseudoSpectral) {
+  if (solver_method_SM == SolverMethod::PseudoSpectral) {
     int max_IJK = IJK_tot.max(), n_threads = omp_get_max_threads();
 
     PSTD.set_using_dimensions(IJK_tot);
@@ -56,7 +56,7 @@ void SimulationManager::prepare_output(const mxArray *fieldsample, const mxArray
     see page III.80 for explanation of the following. This has been extended so that interpolation
     is done at the end of the FDTD run and also to handle the case of when there is no PML in place
     more appropriatley*/
-  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels, pim);
+  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels, interpolation_method());
   // Setup the ID output
   bool need_Id_memory =
           (inputs.params.exdetintegral && inputs.params.run_mode == RunMode::complete);

@@ -209,11 +209,13 @@ private:
   void update_source_terms_pulsed(double time_E, int tind);
 
 public:
-  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
-                    PreferredInterpolationMethods _pim);
+  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method);
 
   /** @brief Fetch the number of Yee cells in each dimension */
   IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }
+
+  /** @brief Fetch the preferred interpolation methods for this simulation */
+  PreferredInterpolationMethods interpolation_method() { return inputs.interpolation_methods; }
 
   /** @brief Run the time-stepping algorithm given the current inputs. */
   void execute();

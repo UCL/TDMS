@@ -11,8 +11,7 @@
 using tdms_math_constants::DCPI;
 
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                                           SolverMethod _solver_method,
-                                                           PreferredInterpolationMethods _pim)
+                                                           SolverMethod _solver_method)
     :// initialisation list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
@@ -30,7 +29,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(InputMatrices matrice
   // set solver method
   set_solver_method(_solver_method);
   // set interpolation methods
-  set_interpolation_method(_pim);
+  set_interpolation_method(matrices_from_input_file["intmethod"]);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -144,10 +143,9 @@ IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
 }
 
 ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                     SolverMethod _solver_method,
-                                     PreferredInterpolationMethods _pim)
+                                     SolverMethod _solver_method)
     :// build the independent objects first
-      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method, _pim),
+      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method),
       // Source has no default constructor, and we need information from the Iterator_IndependentObjectsFromInfile first
       Isource(matrices_from_input_file["Isource"], J1.index - J0.index + 1, K1.index - K0.index + 1,
               "Isource"),

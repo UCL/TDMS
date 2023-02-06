@@ -8,14 +8,14 @@
 
 using namespace tdms_matrix_names;
 
-int main(int nargs, char *argv[]){
+int main(int nargs, char *argv[]) {
 
-  // Set the logging level with a compile-time #define for debugging
-  #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-    spdlog::set_level(spdlog::level::debug);
-  #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
-    spdlog::set_level(spdlog::level::info);
-  #endif
+// Set the logging level with a compile-time #define for debugging
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+  spdlog::set_level(spdlog::level::debug);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+  spdlog::set_level(spdlog::level::info);
+#endif
 
   InputMatrices matrix_inputs;
 
@@ -30,19 +30,11 @@ int main(int nargs, char *argv[]){
   }
 
   // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod solver_method = PseudoSpectral; // default
-  if (args.finite_difference())
-    solver_method = SolverMethod::FiniteDifference;
-
-  // decide whether to toggle off the band-limited interpolation methods
-  PreferredInterpolationMethods preferred_interpolation_methods =
-          PreferredInterpolationMethods::BandLimited;// default
-  if (args.cubic_interpolation()) {
-    preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
-  }
+  SolverMethod solver_method = PseudoSpectral;// default
+  if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
 
   // Handles the running of the simulation, given the inputs to the executable.
-  SimulationManager simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
+  SimulationManager simulation(matrix_inputs, solver_method);
 
   // now run the time propagation code
   simulation.execute();
