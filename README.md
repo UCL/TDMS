@@ -93,14 +93,15 @@ tdms [options] infile outfile
 tdms [options] infile gridfile outfile
 Options:
 -h:	Display this help message
--fd, --finite-difference:	Use the finite-difference solver, instead of the pseudo-spectral method.
 -q:	Quiet operation. Silence all logging
 -m:	Minimise output file size by not saving vertex and facet information
 ```
 
 The basic workflow is with two arguments, an input file as specified by [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output file name to be created.
 
-You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
+In addition to specifying the physical materials and objects as inputs, you can also specify the following behaviours of the `tdms` executable by setting the corresponding variable in the input file:
+- The solver method | Input file variable: `usecd` : `double` | Specifies the solver method as either finite-difference time-domain (FDTD, the default) or pseudo-spectral time-domain (PSTD). Setting `usecd` to `1` will make `tdms` use PSTD, otherwise (or if `usecd` is not present) FDTD will be used.
+- The interpolation method | Input file variable: `intmethod` : `double` | Specifies the interpolation methods to apply to the fields when extracting phasors at Yee cell centres (that is, at locations that are off the computational grid). By default, `intmethod = 1` and cubic interpolation schemes are used. Setting `intmethod = 2` will make `tdms` use band-limited interpolation where possible, which is ideal when the Yee cell dimensions are (approximately) of the order of one-sixth the shortest wavelength of interest.
 
 #### Parallelism
 
