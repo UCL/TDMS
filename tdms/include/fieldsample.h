@@ -14,15 +14,15 @@ private:
   double ****tensor = nullptr;
 
 public:
-  mxArray *mx;// Matlab array
+  mxArray *mx;//!< Matlab array
 
-  Vector<int> i;   //< Indices along the x-direction of locations at which to
-                   // sample the field
-  Vector<int> j;   //< Indices along the y-direction of locations at which to
-                   // sample the field
-  Vector<int> k;   //< Indices along the z-direction of locations at which to
-                   // sample the field
-  Vector<double> n;//< Vector of the moments of the field to sample
+  Vector<int> i;   //!< Indices along the x-direction of locations at which to
+                   //!< sample the field
+  Vector<int> j;   //!< Indices along the y-direction of locations at which to
+                   //!< sample the field
+  Vector<int> k;   //!< Indices along the z-direction of locations at which to
+                   //!< sample the field
+  Vector<double> n;//!< Vector of the moments of the field to sample
 
   FieldSample() = default;
   explicit FieldSample(const mxArray *ptr) { set_from(ptr); }
