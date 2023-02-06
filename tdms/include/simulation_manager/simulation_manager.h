@@ -42,11 +42,6 @@ private:
    * input file */
   OutputMatrices outputs;
 
-  /*! The solver method to use in this simulation */
-  SolverMethod solver_method;
-  /*! The interpolation methods to use in this simulation */
-  PreferredInterpolationMethods pim;
-
   EHVec eh_vec;//!< TODO
 
   /*! Width of the ramp when introducing the waveform in steady state mode */
