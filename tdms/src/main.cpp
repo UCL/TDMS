@@ -8,31 +8,32 @@
 
 using namespace tdms_matrix_names;
 
-int main(int nargs, char *argv[]){
+int main(int nargs, char *argv[]) {
 
-  // Set the logging level with a compile-time #define for debugging
-  #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-    spdlog::set_level(spdlog::level::debug);
-  #elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
-    spdlog::set_level(spdlog::level::info);
-  #endif
+// Set the logging level with a compile-time #define for debugging
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+  spdlog::set_level(spdlog::level::debug);
+#elif SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_INFO
+  spdlog::set_level(spdlog::level::info);
+#endif
 
   InputMatrices matrix_inputs;
 
   auto args = ArgumentParser::parse_args(nargs, argv);
   args.check_files_can_be_accessed();
 
-  //now it is safe to use matlab routines to open the file and order the matrices
+  // now it is safe to use matlab routines to open the file and order the
+  // matrices
   if (!args.has_grid_filename()) {
     matrix_inputs.set_from_input_file(args.input_filename());
   } else {
-    matrix_inputs.set_from_input_file(args.input_filename(), args.grid_filename());
+    matrix_inputs.set_from_input_file(args.input_filename(),
+                                      args.grid_filename());
   }
 
   // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod solver_method = PseudoSpectral; // default
-  if (args.finite_difference())
-    solver_method = SolverMethod::FiniteDifference;
+  SolverMethod solver_method = PseudoSpectral;// default
+  if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
 
   // decide whether to toggle off the band-limited interpolation methods
   PreferredInterpolationMethods preferred_interpolation_methods =
@@ -42,7 +43,8 @@ int main(int nargs, char *argv[]){
   }
 
   // Handles the running of the simulation, given the inputs to the executable.
-  SimulationManager simulation(matrix_inputs, solver_method, preferred_interpolation_methods);
+  SimulationManager simulation(matrix_inputs, solver_method,
+                               preferred_interpolation_methods);
 
   // now run the time propagation code
   simulation.execute();
@@ -51,7 +53,8 @@ int main(int nargs, char *argv[]){
   simulation.post_loop_processing();
 
   // save the outputs, possibly in compressed format
-  simulation.write_outputs_to_file(args.output_filename(), args.have_flag("-m"));
+  simulation.write_outputs_to_file(args.output_filename(),
+                                   args.have_flag("-m"));
 
   return 0;
 }

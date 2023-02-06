@@ -1,7 +1,8 @@
 /**
  * @file test_CollectionBase.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for CollectionBase class and its subclasses (CCollection, DCollection)
+ * @brief Unit tests for CollectionBase class and its subclasses (CCollection,
+ * DCollection)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -19,7 +20,8 @@ void CCollectionTest::test_correct_construction() {
     create_1by1_struct(6, fieldnames);
     mxArray *field_arrays[6];
     for (int i = 0; i < 6; i++) {
-      field_arrays[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+      field_arrays[i] = mxCreateNumericMatrix(1, n_numeric_elements,
+                                              mxDOUBLE_CLASS, mxREAL);
       mxSetField(matlab_input, 0, fieldnames[i], field_arrays[i]);
     }
     CCollection cc6(matlab_input);
@@ -30,7 +32,8 @@ void CCollectionTest::test_correct_construction() {
     create_1by1_struct(9, fieldnames);
     mxArray *field_arrays[9];
     for (int i = 0; i < 9; i++) {
-      field_arrays[i] = mxCreateNumericMatrix(2, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+      field_arrays[i] = mxCreateNumericMatrix(2, n_numeric_elements,
+                                              mxDOUBLE_CLASS, mxREAL);
       mxSetField(matlab_input, 0, fieldnames[i], field_arrays[i]);
     }
     CCollection cc9(matlab_input);
@@ -48,7 +51,8 @@ void DCollectionTest::test_correct_construction() {
   create_1by1_struct(6, fieldnames);
   mxArray *elements6[6];
   for (int i = 0; i < 6; i++) {
-    elements6[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS, mxREAL);
+    elements6[i] = mxCreateNumericMatrix(1, n_numeric_elements, mxDOUBLE_CLASS,
+                                         mxREAL);
     mxSetField(matlab_input, 0, fieldnames[i], elements6[i]);
   }
   REQUIRE_NOTHROW(DCollection(matlab_input));

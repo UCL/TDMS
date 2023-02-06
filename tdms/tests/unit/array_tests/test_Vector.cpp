@@ -1,19 +1,20 @@
 /**
  * @file test_Vector.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Unit tests for the Vector class and its subclasses (FieldComponentsVector, FrequencyExtractVector)
+ * @brief Unit tests for the Vector class and its subclasses
+ * (FieldComponentsVector, FrequencyExtractVector)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
-using tdms_tests::TOLERANCE;
 using tdms_tests::is_close;
+using tdms_tests::TOLERANCE;
 
 void VectorTest::test_correct_construction() {
   // default constructor should not assign any elements or pointers
@@ -27,23 +28,28 @@ void VectorTest::test_correct_construction() {
     create_numeric_array(2, dimensions_2d);
     mxDouble *where_to_place_data = mxGetPr(matlab_input);
     // data is just the integers starting from 0
-    for (int i = 0; i < n_numeric_elements; i++) { where_to_place_data[i] = (double) i; }
+    for (int i = 0; i < n_numeric_elements; i++) {
+      where_to_place_data[i] = (double) i;
+    }
     // assign this MATLAB array to a vector
     Vector<double> v_from_matlab(matlab_input);
     bool has_elements_and_right_size =
-            (v_from_matlab.has_elements() && v_from_matlab.size() == n_numeric_elements);
+            (v_from_matlab.has_elements() &&
+             v_from_matlab.size() == n_numeric_elements);
     REQUIRE(has_elements_and_right_size);
     // check that the data is the _right_ data too
     bool correct_data_accessed = true;
     for (int i = 0; i < n_numeric_elements; i++) {
-      correct_data_accessed = correct_data_accessed && is_close(v_from_matlab[i], (double) i);
+      correct_data_accessed =
+              correct_data_accessed && is_close(v_from_matlab[i], (double) i);
     }
     REQUIRE(correct_data_accessed);
   }
 }
 
 void FieldComponentsVectorTest::test_correct_construction() {
-  // FieldComponentsVector can be initialised with the default constructor, then have initialise() called to assign values from a pre-existing MATLAB array
+  // FieldComponentsVector can be initialised with the default constructor, then
+  // have initialise() called to assign values from a pre-existing MATLAB array
   FieldComponentsVector fcv;
   bool fcv_ready = ((!fcv.has_elements()) && (fcv.size() == 0));
   REQUIRE(fcv_ready);
@@ -52,15 +58,17 @@ void FieldComponentsVectorTest::test_correct_construction() {
 void FieldComponentsVectorTest::test_initialise_method() {
   FieldComponentsVector fcv;
   // create a MATLAB struct with a "components" field to cast to
-  // the constructor shouldn't care whether or not the components field contains an n*1 or 1*n vector either
-  // struct with horizontal vector
+  // the constructor shouldn't care whether or not the components field contains
+  // an n*1 or 1*n vector either struct with horizontal vector
   create_1by1_struct(n_fields, fieldnames);
   mxArray *vector_array;
   SECTION("(horz)") {
-    vector_array = mxCreateNumericMatrix(1, n_numeric_elements, mxINT16_CLASS, mxREAL);
+    vector_array =
+            mxCreateNumericMatrix(1, n_numeric_elements, mxINT16_CLASS, mxREAL);
   }
   SECTION("(vert)") {
-    vector_array = mxCreateNumericMatrix(n_numeric_elements, 1, mxINT16_CLASS, mxREAL);
+    vector_array =
+            mxCreateNumericMatrix(n_numeric_elements, 1, mxINT16_CLASS, mxREAL);
   }
   mxSetField(matlab_input, 0, fieldnames[0], vector_array);
   // initialise
@@ -70,7 +78,8 @@ void FieldComponentsVectorTest::test_initialise_method() {
 }
 
 void FrequencyExtractVectorTest::test_empty_construction() {
-  // if passed in an empty pointer, creates a length-1 array with a single, predetermined element
+  // if passed in an empty pointer, creates a length-1 array with a single,
+  // predetermined element
   dimensions_2d[0] = 0;
   dimensions_2d[1] = n_numeric_elements;
   create_numeric_array(2, dimensions_2d);
@@ -92,16 +101,13 @@ void FrequencyExtractVectorTest::test_wrong_input_dimensions() {
     dimensions_3d[2] = 3;
     create_numeric_array(3, dimensions_3d);
   }
-  REQUIRE_THROWS_AS(FrequencyExtractVector(matlab_input, omega_an), std::runtime_error);
+  REQUIRE_THROWS_AS(FrequencyExtractVector(matlab_input, omega_an),
+                    std::runtime_error);
 }
 
 void FrequencyExtractVectorTest::test_correct_construction() {
-  SECTION("(horz)") {
-    dimensions_2d[1] = n_numeric_elements;
-  }
-  SECTION("(vert)") {
-    dimensions_2d[0] = n_numeric_elements;
-  }
+  SECTION("(horz)") { dimensions_2d[1] = n_numeric_elements; }
+  SECTION("(vert)") { dimensions_2d[0] = n_numeric_elements; }
   create_numeric_array(2, dimensions_2d);
   FrequencyExtractVector fev(matlab_input, omega_an);
   CHECK(fev.size() == n_numeric_elements);
@@ -115,13 +121,16 @@ void FrequencyExtractVectorTest::test_other_methods() {
     int target_max_index;
     SECTION("Find element n_numeric_elements-1") {
       for (int i = 0; i < n_numeric_elements; i++) {
-        data_placement[i] = ((double) i / (double) (n_numeric_elements - 1)) * omega_an * DCPI;
+        data_placement[i] = ((double) i / (double) (n_numeric_elements - 1)) *
+                            omega_an * DCPI;
       }
       target_max_index = n_numeric_elements - 1;
     }
     SECTION("Find element 0") {
       for (int i = 0; i < n_numeric_elements; i++) {
-        data_placement[i] = ((double) (n_numeric_elements - i) / (double) (n_numeric_elements - 1)) * omega_an * DCPI;
+        data_placement[i] = ((double) (n_numeric_elements - i) /
+                             (double) (n_numeric_elements - 1)) *
+                            omega_an * DCPI;
       }
       target_max_index = 0;
     }
@@ -132,9 +141,7 @@ void FrequencyExtractVectorTest::test_other_methods() {
   }
 }
 
-TEST_CASE("Vector") {
-  VectorTest().run_all_class_tests();
-}
+TEST_CASE("Vector") { VectorTest().run_all_class_tests(); }
 
 TEST_CASE("FieldComponentsVector") {
   FieldComponentsVectorTest().run_all_class_tests();

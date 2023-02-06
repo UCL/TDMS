@@ -1,6 +1,7 @@
 /**
  * @file test_SplitField.cpp
- * @brief Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)
+ * @brief Unit tests for the SplitField class and its subclasses
+ * (ElectricSplitField, MagneticSplitField)
  */
 #include "field.h"
 
@@ -10,16 +11,18 @@
 
 using tdms_tests::is_close;
 
-// NOTE: MagneticSplitField and ElectricSplitField inherit these methods from SplitField, so we can use either here
+// NOTE: MagneticSplitField and ElectricSplitField inherit these methods from
+// SplitField, so we can use either here
 
 TEST_CASE("SplitField: allocate and zero") {
 
   ElectricSplitField field(2, 1, 0);
   field.allocate_and_zero();
 
-  bool all_components_have_elements = field.xy.has_elements() && field.xz.has_elements() &&
-                                      field.yx.has_elements() && field.yz.has_elements() &&
-                                      field.zx.has_elements() && field.zy.has_elements();
+  bool all_components_have_elements =
+          field.xy.has_elements() && field.xz.has_elements() &&
+          field.yx.has_elements() && field.yz.has_elements() &&
+          field.zx.has_elements() && field.zy.has_elements();
   REQUIRE(all_components_have_elements);
 
   // NOTE: the allocated field is actually [I_tot+1, J_tot+1, K_tot+1] in size

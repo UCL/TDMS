@@ -1,6 +1,7 @@
 /**
  * @file vertex_phasors.h
- * @brief Contains a class that handles the complex amplitude extraction at the vertices.
+ * @brief Contains a class that handles the complex amplitude extraction at the
+ * vertices.
  */
 #pragma once
 
@@ -11,33 +12,46 @@
 #include "grid_labels.h"
 
 /**
- * Class container for handling complex amplitude samples at the vertices, and their extraction.
+ * Class container for handling complex amplitude samples at the vertices, and
+ * their extraction.
  *
  * Abbreviated to CAmpSample in MATLAB code
  */
 class VertexPhasors {
 private:
   /* n_vertices()-by-3 int array.
-  Each "row" corresponds to the index of a vertex at which to extract the field components requested.
+  Each "row" corresponds to the index of a vertex at which to extract the field
+  components requested.
   */
   Vertices vertices;
-  /* An int array containing the MATLAB indices of the field components we want to extract at the vertices.
+  /* An int array containing the MATLAB indices of the field components we want
+  to extract at the vertices.
 
-  The ints in this array correspond to the underlying values of the FieldComponents enum:
-  components = [1, 2, 6] corresponds to extracting Ex, Ey, and Hz at the vertices, for example.
+  The ints in this array correspond to the underlying values of the
+  FieldComponents enum: components = [1, 2, 6] corresponds to extracting Ex, Ey,
+  and Hz at the vertices, for example.
   */
   FieldComponentsVector components;
 
   mxArray *mx_camplitudes = nullptr;//< Complex amplitudes at the vertices
-  int f_ex_vector_size = 0;         //< Number of elements in the frequency extraction vector
+  int f_ex_vector_size =
+          0;//< Number of elements in the frequency extraction vector
 
-  /* Storage for real and imag parts of mx_surface_amplitudes (these can be f_ex_vector_size * n_surface_vertices arrays of FullFieldSnapshots when MATLAB is removed!)
+  /* Storage for real and imag parts of mx_surface_amplitudes (these can be
+  f_ex_vector_size * n_surface_vertices arrays of FullFieldSnapshots when MATLAB
+  is removed!)
 
-  Arrays are index by [frequency_index][field_component_position][vertex_id/number].
+  Arrays are index by
+  [frequency_index][field_component_position][vertex_id/number].
 
-  frequency_index corresponds to the frequencies at which the user has requested we extract the amplitudes.
+  frequency_index corresponds to the frequencies at which the user has requested
+  we extract the amplitudes.
 
-  field_component_position corresponds to components.index(field_component) of the field_component we are interested it. Since the user might not request consecutive components for extraction (EG [Ex, Ey, Hz] would correspond to [1, 2, 6]) we need to be able to convert these MATLAB indices -> consecutive indices for storage here.
+  field_component_position corresponds to components.index(field_component) of
+  the field_component we are interested it. Since the user might not request
+  consecutive components for extraction (EG [Ex, Ey, Hz] would correspond to [1,
+  2, 6]) we need to be able to convert these MATLAB indices -> consecutive
+  indices for storage here.
   */
   double ***camplitudesR = nullptr, ***camplitudesI = nullptr;
 
@@ -48,7 +62,8 @@ public:
   /**
    * @brief Setup using data from an input file
    *
-   * @param ptr Pointer to the struct containing the list of vertices and components to extract phasors at/for
+   * @param ptr Pointer to the struct containing the list of vertices and
+   * components to extract phasors at/for
    */
   void set_from(const mxArray *ptr);
 
@@ -57,9 +72,12 @@ public:
   /**
    * @brief Allocate memory for the camplitude{R,I} arrays.
    *
-   * Provided there are vertices for us to extract at, allocates the memory for the camplitude{R,I} arrays and creates the mx_camplitudes pointer to the output data.
+   * Provided there are vertices for us to extract at, allocates the memory for
+   * the camplitude{R,I} arrays and creates the mx_camplitudes pointer to the
+   * output data.
    *
-   * @param n_frequencies The number of frequencies at which we need to extract phasors
+   * @param n_frequencies The number of frequencies at which we need to extract
+   * phasors
    */
   void setup_complex_amplitude_arrays(int n_frequencies);
 
@@ -69,47 +87,58 @@ public:
   int n_components() { return components.size(); }
   // Returns true/false based on whether there are/aren't vertices to extract at
   bool there_are_vertices_to_extract_at() { return (n_vertices() > 0); }
-  // Returns true/false based on whether there are/aren't elements in BOTH the vertices and components arrays
-  bool there_are_elements_in_arrays() { return (vertices.has_elements() && components.has_elements()); }
+  // Returns true/false based on whether there are/aren't elements in BOTH the
+  // vertices and components arrays
+  bool there_are_elements_in_arrays() {
+    return (vertices.has_elements() && components.has_elements());
+  }
 
   /**
-   * @brief Normalise the surface amplitudes at frequency_vector_index by the E- and H-norms provided.
+   * @brief Normalise the surface amplitudes at frequency_vector_index by the E-
+   * and H-norms provided.
    *
    * E-field components in camplitudes{R,I} are divided by the (complex) Enorm.
    * H-field components in camplitudes{R,I} are divided by the (complex) Hnorm.
    *
-   * @param frequency_index Frequency index, camplitudes{R,I}[frequency_index] will be normalised
+   * @param frequency_index Frequency index, camplitudes{R,I}[frequency_index]
+   * will be normalised
    * @param Enorm,Hnorm The {E,H}-norm to normalise the {E,H}-components by
    */
   void normalise_vertices(int frequency_index, std::complex<double> Enorm,
                           std::complex<double> Hnorm);
 
   /**
-   * @brief Extract the phasor values at the vertices on the surface, for the given frequency index
+   * @brief Extract the phasor values at the vertices on the surface, for the
+   * given frequency index
    *
-   * @param frequency_index The entries in camplitudes{R,I}[frequency_index] will be written to
+   * @param frequency_index The entries in camplitudes{R,I}[frequency_index]
+   * will be written to
    * @param E,H The electric,magnetic split field
    * @param n Current timestep index
    * @param omega Angular frequency
    * @param params The parameters for this simulation
    */
-  void extractPhasorsVertices(int frequency_index, ElectricSplitField &E, MagneticSplitField &H,
-                              int n, double omega, SimulationParameters &params);
+  void extractPhasorsVertices(int frequency_index, ElectricSplitField &E,
+                              MagneticSplitField &H, int n, double omega,
+                              SimulationParameters &params);
 
   /**
-   * @brief Incriments camplitudes{R,I} at the given index by the field values provided.
+   * @brief Incriments camplitudes{R,I} at the given index by the field values
+   * provided.
    *
-   * If we allow element-wise assignment, we are essentially performing the operations:
-   * camplitudesR[frequency_index][:][vertex_index] += F.real(),
+   * If we allow element-wise assignment, we are essentially performing the
+   * operations: camplitudesR[frequency_index][:][vertex_index] += F.real(),
    * camplitudesI[frequency_index][:][vertex_index] += F.imag().
    *
-   * Only field components that we are extracting at the vertices are pulled out of F.
+   * Only field components that we are extracting at the vertices are pulled out
+   * of F.
    *
    * @param frequency_index Frequency index
    * @param vertex_index Vertex index
    * @param F Field values to assign
    */
-  void update_vertex_camplitudes(int frequency_index, int vertex_index, FullFieldSnapshot F);
+  void update_vertex_camplitudes(int frequency_index, int vertex_index,
+                                 FullFieldSnapshot F);
 
   ~VertexPhasors();
 };
