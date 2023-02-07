@@ -20,20 +20,22 @@
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
 
 TEST_CASE("Test file I/O construction/destruction.") {
-  // setup - temporary directory
+
+  // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
   SECTION("Check file creation.") {
     HDF5Writer f(tmp.string() + "/test_file_constructor.h5");
     CHECK(f.is_ok());
-  }// destructor called as we leave scope
+  }
 
   SECTION("Check all reasonable file extensions are OK.") {
     for (auto extension : {".hdf5", ".h5", ".mat"}) {
       {
         HDF5Writer fw(tmp.string() + "/test_file" + extension);
         CHECK(fw.is_ok());
-      }// destructor called as we leave scope
+
+      }// Destructor called as we leave scope.
 
       HDF5Reader fr(tmp.string() + "/test_file" + extension);
       CHECK(fr.is_ok());
@@ -44,26 +46,76 @@ TEST_CASE("Test file I/O construction/destruction.") {
     CHECK_THROWS(HDF5Reader(tmp.string() + "/this_file_doesnt_exist.h5"));
   }
 
+  SECTION("Check can't read nonexistent data.") {
+    {
+      HDF5Writer fw(tmp.string() + "/this_file_does_exist_but_is_empty.h5");
+      CHECK(fw.is_ok());
+
+    }// Destructor called as we leave scope.
+
+    double data[1];
+    HDF5Reader fr(tmp.string() + "/this_file_does_exist_but_is_empty.h5");
+    CHECK_THROWS(fr.read("nonexistantdata", data));
+  }
+
   // Normal operation: we should be able to create a file and write to it, then
   // read from it.
   SECTION("Check write then read.") {
-    // create a file
     {
       HDF5Writer fw(tmp.string() + "/test_file_wr.h5");
       hsize_t dimensions[1] = {1};
       double writeme = 1337.;
       fw.write("testdata", &writeme, 1, dimensions);
-      spdlog::debug("Written data");
+      SPDLOG_DEBUG("Written data");
 
       CHECK(fw.is_ok());
       fw.ls();
 
-    }// destructor called as we leave scope
+    }// Destructor called as we leave scope.
 
     double data[1];
     HDF5Reader fr(tmp.string() + "/test_file_wr.h5");
     fr.read("testdata", data);
-    spdlog::debug("Have read {}!", data[0]);
+    SPDLOG_DEBUG("Have read {}!", data[0]);
+  }
+
+  SECTION("Check write then (overwrite) then read.") {
+    // Create the file and write some data.
+    {
+      HDF5Writer f1(tmp.string() + "/test_file_wor.h5");
+      hsize_t dimensions[1] = {1};
+      double writeme = 12345;
+      f1.write("testdata", &writeme, 1, dimensions);
+      SPDLOG_DEBUG("Written first data");
+
+      CHECK(f1.is_ok());
+
+    }// Destructor called as we leave scope.
+
+    // Overwrite the file and add some different data.
+    {
+      HDF5Writer f2(tmp.string() + "/test_file_wor.h5");
+      hsize_t dimensions[1] = {1};
+      double writeme = 54321.;
+      f2.write("testdata2", &writeme, 1, dimensions);
+      SPDLOG_DEBUG("Written second data");
+
+      CHECK(f2.is_ok());
+
+    }// destructor called as we leave scope
+
+    // Now open the file with a Reader. The first data should not be there (and
+    // should throw an exception). The second data should be there.
+    HDF5Reader f3(tmp.string() + "/test_file_wor.h5");
+
+    CHECK(f3.get_datanames().size() == 1);
+
+    double data[1];
+    HDF5Reader fr(tmp.string() + "/test_file_wor.h5");
+    CHECK_THROWS(f3.read("testdata", data));
+
+    f3.read("testdata2", data);
+    CHECK(data[0] == Catch::Approx(54321.));
   }
 
   // teardown - remove temporary directory and all files
