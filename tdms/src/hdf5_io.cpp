@@ -3,49 +3,50 @@
 #include <iostream>
 
 #include <H5Cpp.h>
+#include <spdlog/spdlog.h>
 
 /******************************************************************************
  * HDF5Reader
  */
-template<typename T>
-void HDF5Reader::read(const std::string &dataset_name, T *data) const {
+// template<typename T>
+// void HDF5Reader::read(const std::string &dataset_name, T *data) const {
+//   spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
 
-  // get the dataset and dataspace (contains dimensionality info)
-  H5::DataSet dataset = file_->openDataSet(dataset_name);
-  H5::DataSpace dataspace = dataset.getSpace();
+//   // get the dataset and dataspace (contains dimensionality info)
+//   H5::DataSet dataset = file_->openDataSet(dataset_name);
+//   H5::DataSpace dataspace = dataset.getSpace();
 
-  // need to get the number of matrix dimensions (rank) so that we can
-  // dynamically allocate `dimensions`
-  int rank = dataspace.getSimpleExtentNdims();
-  hsize_t *dimensions = new hsize_t[rank];
-  dataspace.getSimpleExtentDims(dimensions);
+//   // need to get the number of matrix dimensions (rank) so that we can
+//   // dynamically allocate `dimensions`
+//   int rank = dataspace.getSimpleExtentNdims();
+//   hsize_t *dimensions = new hsize_t[rank];
+//   dataspace.getSimpleExtentDims(dimensions);
 
-  // auto dimensions = shape_of(dataset_name);
-  //  TODO why do we need `dimensions` at all here?
+//   //auto dimensions = shape_of(dataset_name);
+//   // TODO why do we need `dimensions` at all here?
 
-  // now get the data type
-  H5::DataType datatype = dataset.getDataType();
-  dataset.read(data, datatype);
+//   // now get the data type
+//   H5::DataType datatype = dataset.getDataType();
+//   dataset.read(data, datatype);
 
-  delete[] dimensions;
-}
+//   delete[] dimensions;
+// }
 
 /******************************************************************************
  * HDF5Writer
  */
 void HDF5Writer::write(const std::string &dataset_name, double *data, int size,
                        hsize_t *dimensions) {
-  // 1D array
-  hsize_t rank = 1;
-  (void) size;// TODO what?
+  spdlog::debug("Writing {} to file: {}", dataset_name, filename_);
 
   // declare a dataspace
-  H5::DataSpace dataspace(rank, dimensions);
+  H5::DataSpace dataspace(size, dimensions);
   H5::DataType datatype(H5::PredType::NATIVE_DOUBLE);
 
   // write the data to the dataset object in the file
   H5::DataSet dataset = file_->createDataSet(dataset_name, datatype, dataspace);
   dataset.write(data, H5::PredType::NATIVE_DOUBLE);
+  spdlog::trace("Write successful.");
 }
 
 /******************************************************************************
