@@ -6,13 +6,13 @@
  */
 #pragma once
 
-// std
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
-// libhdf5
 #include <H5Cpp.h>
+#include <spdlog/spdlog.h>
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -32,8 +32,7 @@ protected:
    * HDF5Writer.)
    * @throws H5::FileIException if the file doesn't exist or can't be created.
    */
-  HDF5Base(const std::string &filename, int mode = H5F_ACC_RDONLY)
-      : filename_(filename) {
+  HDF5Base(const std::string &filename, int mode = H5F_ACC_RDONLY) : filename_(filename) {
     file_ = std::make_unique<H5::H5File>(filename, mode);
   }
 
@@ -106,8 +105,38 @@ public:
    * @param dataname The name of the datset to be read.
    * @param data A pointer to an array of correct size.
    */
-  template <typename T>
-  void read(const std::string &dataname, T *data) const;
+  //template <typename T>
+  //void read(const std::string &dataname, T *data) const;
+  template<typename T>
+  void read(const std::string &dataset_name, T *data) const {
+    spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
+
+    // get the dataset and dataspace (contains dimensionality info)
+    H5::DataSet dataset = file_->openDataSet(dataset_name);
+    H5::DataSpace dataspace = dataset.getSpace();
+    spdlog::debug("Created dataspace");
+
+    // need to get the number of matrix dimensions (rank) so that we can
+    // dynamically allocate `dimensions`
+    int rank = dataspace.getSimpleExtentNdims();
+    spdlog::debug("Rank of dataspace: {}", rank);
+    hsize_t *dimensions = new hsize_t[rank];
+    dataspace.getSimpleExtentDims(dimensions);
+    spdlog::debug("Got dimensions");
+
+    //auto dimensions = shape_of(dataset_name);
+    // TODO why do we need `dimensions` at all here?
+
+    // now get the data type
+    H5::DataType datatype = dataset.getDataType();
+    spdlog::debug("Got datatype");
+    // std::cout << datatype.getObjName() << std::endl;
+    //
+    dataset.read(data, datatype);
+    spdlog::debug("Read");
+
+    delete[] dimensions;
+  }
 };
 
 class HDF5Writer : public HDF5Base {
@@ -127,6 +156,5 @@ public:
    * @param size The size of the data array.
    * @param dimensions The number of dimensions of the array.
    */
-  void write(const std::string &dataname, double *data, int size,
-             hsize_t *dimensions);
+  void write(const std::string &dataname, double *data, int size, hsize_t *dimensions);
 };
