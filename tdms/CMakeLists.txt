@@ -64,7 +64,7 @@ if(NOT spdlog_FOUND)
     include(FetchContent)
     FetchContent_Declare(spdlog
 	    GIT_REPOSITORY ${GITHUB_PREFIX}gabime/spdlog
-            GIT_TAG v1.10.0
+            GIT_TAG v1.11.0
             )
     FetchContent_MakeAvailable(spdlog)
 endif()
