@@ -180,11 +180,18 @@ void SimulationManager::E_source_update_steadystate(
   /*! Dispersive parameter. = inputs.matched_layer.kappa.{x,y,z} */
   double kappa;
   /*! NOTE: if dealing with Ksource, then the index used to fetch the gamma
-   * parameter is k = inputs.K1.index, rather than cell_c. This inconsistency &
-   * potential error is flagged in #221. Have a feeling that, in the K-case,
-   * this should be inputs.K{0,1}.index depending on the plane we're in */
-  int gamma_ind = (parallel == AxialDirection::Z) ? inputs.K1.index : cell_c;
-  /*! Dispersive parameter. = inputs.matched_layer.gamma[k]. */
+   * parameter is k = inputs.K1.index or inputs.K0.index, depending on whether
+   * we are updating in the zero_plnae or not. If dealing with Isource or
+   * Jsource, cell_c (which = the k index) is the index for the gamma parameter.
+   * See https://github.com/UCL/TDMS/issues/225
+   */
+  int gamma_ind;
+  if (parallel == AxialDirection::Z) {
+    gamma_ind = (zero_plane) ? inputs.K0.index : inputs.K1.index;
+  } else {
+    gamma_ind = cell_c;
+  }
+  /*! Dispersive parameter. Pulls values from inputs.matched_layer.gamma */
   double gamma = inputs.matched_layer.gamma[gamma_ind];
 
   /*! Value of the source term in Yee cell (cell_a, cell_b, cell_c) */
