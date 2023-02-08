@@ -1,0 +1,20 @@
+test_id: 'example_fdtd'
+tests:
+  fs_bli:
+    input_file: in/fdtd_fs_bli.mat
+    reference: fdtd_fs_bli_reference.mat
+    fdtd_solver: True
+  fs_cubic:
+    input_file: in/fdtd_fs_cubic.mat
+    reference: fdtd_fs_cubic_reference.mat
+    cubic_interpolation: True
+    fdtd_solver: True
+  cyl_bli:
+    input_file: in/fdtd_cyl_bli.mat
+    reference: fdtd_cyl_bli_reference.mat
+    fdtd_solver: True
+  cyl_cubic:
+    input_file: in/fdtd_cyl_cubic.mat
+    reference: fdtd_cyl_cubic_reference.mat
+    cubic_interpolation: True
+    fdtd_solver: True
