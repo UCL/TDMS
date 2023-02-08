@@ -79,16 +79,13 @@ void SimulationManager::E_Jsource_update_steadystate(
   if (inputs.J0.apply) {
     for (int k = inputs.K0.index; k <= inputs.K1.index; k++) {
       for (int i = inputs.I0.index; i < inputs.I1.index; i++) {
+        if (!inputs.params.is_multilayer) {
+          array_ind = inputs.J0.index;
+        } else {
+          array_ind = (n_Yee_cells().j + 1) * k + inputs.J0.index;
+        }
         if (k < (inputs.K1.index) ||
             inputs.params.dimension == Dimension::TRANSVERSE_MAGNETIC) {
-          // shouldn't this be one-level up to be consistent with the other
-          // source update steps?!?!?!?!
-          if (!inputs.params.is_multilayer) {
-            array_ind = inputs.J0.index;
-          } else {
-            array_ind = (n_Yee_cells().j + 1) * k + inputs.J0.index;
-          }
-
           E_source_update_steadystate(time_H, AxialDirection::Y, true, true,
                                       is_conductive, i, k, array_ind, J_c, J_s);
         }
