@@ -3,15 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Relative path to the matlab functions that generate the input data
-addpath('../../../matlab');
-
-% Create directory to place input files in, if it doesn't exist already
-if ~exist('in', 'dir')
-    mkdir('in');
-end
-
-% clear variables that may polute workspace
-clear; close all;
+addpath('../');
+prepare_input_generation;
 
 %% Generate the input file
 % By default, intmethod is set to 1 if not present in the input file.
@@ -55,15 +48,9 @@ iteratefdtd_matrix('pstd_input_file.m','filesetup','in/pstd_fs_cubic','gridfile_
 % Thus, we can simply clear (all variables), load the file we just created,
 % set intmethod to 2, then save the workspace as the new input file.
 
-clear;
-load('in/pstd_cyl_cubic');
-intmethod = 2; % NOTE: This IS used, since it's saved on the next line before being cleared
-save('in/pstd_cyl_bli');
-
-clear;
-load('in/pstd_fs_cubic');
-intmethod = 2;
-save('in/pstd_fs_bli');
+clear; close all;
+set_interpolation_method('in/pstd_cyl_cubic', 'in/pstd_cyl_bli', 2);
+set_interpolation_method('in/pstd_fs_cubic', 'in/pstd_fs_bli', 2);
 
 %% Cleanup when done
 clear;

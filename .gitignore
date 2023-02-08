@@ -13,6 +13,7 @@ html/
 **/.pytest_cache/
 tdms/tests/system/data
 **.mat
+tdms/tests/system/data_generation/*/*.zip
 
 # text editor files
 .idea/
