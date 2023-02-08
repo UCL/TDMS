@@ -1,0 +1,16 @@
+test_id: '09'
+tests:
+  fs_bli:
+    input_file: in/pstd_fs_bli.mat
+    reference: pstd_fs_bli_reference.mat
+  fs_cubic:
+    input_file: in/pstd_fs_cubic.mat
+    reference: pstd_fs_cubic_reference.mat
+    cubic_interpolation: True
+  sc_bli:
+    input_file: in/pstd_sc_bli.mat
+    reference: pstd_sc_bli_reference.mat
+  sc_cubic:
+    input_file: in/pstd_sc_cubic.mat
+    reference: pstd_sc_cubic_reference.mat
+    cubic_interpolation: True
