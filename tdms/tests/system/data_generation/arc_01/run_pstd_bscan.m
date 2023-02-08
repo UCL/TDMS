@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Relative path to the matlab functions that generate the input data
-addpath('../../../tdms/matlab');
+addpath('../../../matlab');
 
 % Create directory to place input files in, if it doesn't exist already
 if ~exist('in', 'dir')
