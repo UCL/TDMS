@@ -1,3 +1,8 @@
+<!-- \cond -->
+<!-- 👆 this comment and the endcond below, tells doxygen to ignore the badges
+and title at the top of README.md when building the project page (the title
+would be duplicated) everything else in README.md is also the project homepage. -->
+
 [![Linux tests](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/linux_tests.yml)
 [![Windows tests](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/windows_tests.yml)
 [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml)
@@ -8,8 +13,9 @@
 > **Warning**
 > This repository is a _work in progress_. The API will change without notice
 
-***
-## Introduction
+<!-- \endcond -->
+
+# Time-Domain Maxwell Solver
 
 TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving
 Maxwell's equations to simulate light propagation through a medium. See the
@@ -17,7 +23,6 @@ Maxwell's equations to simulate light propagation through a medium. See the
 further details.
 
 
-***
 ## Compilation
 
 TDMS needs to be built against [FFTW](https://www.fftw.org/) and
@@ -59,7 +64,6 @@ where lines need to be commented in and the paths modified if cmake cannot
 </details>
 
 
-***
 ## Usage
 
 Once the executable has been compiled and installed, `tdms` should be in the `PATH`.
@@ -72,7 +76,7 @@ $ tdms -h
 You can invoke it directly or call it from a MATLAB script.
 We recommend that beginners with MATLAB installed start with the demonstration MATLAB script.
 
-#### To run the demonstration code
+### To run the demonstration code
 
 Move into directory [`examples/arc_01`](./examples/arc_01/),
 launch MATLAB and run the MATLAB script:
@@ -82,7 +86,7 @@ launch MATLAB and run the MATLAB script:
 This script will generate the input to the executable, run the executable and
 display sample output.
 
-#### To run standalone
+### To run standalone
 
 You can also run `tdms` from the command line...
 
@@ -102,7 +106,7 @@ The basic workflow is with two arguments, an input file as specified by [`iterat
 
 You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
 
-#### Parallelism
+### Parallelism
 
 TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum
 number of threads can be set with the `OMP_NUM_THREADS` environment variable.
