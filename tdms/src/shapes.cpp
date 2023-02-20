@@ -18,10 +18,12 @@ void Cuboid::initialise(const mxArray *ptr, int J_tot) {
   }
 
   for (int i = 0; i < 6; i++) {
-    array[i] = max((int) *(mxGetPr(ptr) + i) - 1, // Change from MATLAB -> C indexing
+    array[i] = max((int) *(mxGetPr(ptr) + i) -
+                           1,// Change from MATLAB -> C indexing
                    0);
   }
   if (J_tot == 0 && array[2] != array[3]) {
-      throw runtime_error("When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
+    throw runtime_error(
+            "When doing a 2D simulation, J0 should equal J1 in phasorsurface.");
   }
 }

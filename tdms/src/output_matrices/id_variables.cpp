@@ -4,22 +4,26 @@
 
 using namespace std;
 
-void IDVariables::link_to_pointer(mxArray *&id_pointer, int _n_frequencies, int _n_det_modes) {
+void IDVariables::link_to_pointer(mxArray *&id_pointer, int _n_frequencies,
+                                  int _n_det_modes) {
   // save array sizes for deallocation
   n_frequencies = _n_frequencies;
   n_det_modes = _n_det_modes;
   // flag memory assignment
   memory_assigned = true;
 
-  // now construct the fields for the structure array, and assign pointers to the data
+  // now construct the fields for the structure array, and assign pointers to
+  // the data
   int ndims = 2;
   int dims[2] = {n_det_modes, n_frequencies};
 
-  x_ptr = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+  x_ptr = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+                               mxCOMPLEX);
   x_real = cast_matlab_2D_array(mxGetPr(x_ptr), dims[0], dims[1]);
   x_imag = cast_matlab_2D_array(mxGetPi(x_ptr), dims[0], dims[1]);
 
-  y_ptr = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS, mxCOMPLEX);
+  y_ptr = mxCreateNumericArray(ndims, (const mwSize *) dims, mxDOUBLE_CLASS,
+                               mxCOMPLEX);
   y_real = cast_matlab_2D_array(mxGetPr(y_ptr), dims[0], dims[1]);
   y_imag = cast_matlab_2D_array(mxGetPi(y_ptr), dims[0], dims[1]);
 

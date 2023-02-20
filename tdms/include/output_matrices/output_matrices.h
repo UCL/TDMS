@@ -10,33 +10,42 @@
 #include "field.h"
 #include "fieldsample.h"
 #include "grid_labels.h"
-#include "output_matrices/id_variables.h"
 #include "matrix.h"
+#include "output_matrices/id_variables.h"
 #include "output_matrices/output_matrix_pointers.h"
+#include "shapes.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
-#include "shapes.h"
 #include "vertex_phasors.h"
 
 /**
- * @brief Handles the data that is written to the output file, and the associated native C++ classes and datatypes.
+ * @brief Handles the data that is written to the output file, and the
+ * associated native C++ classes and datatypes.
  *
- * Some of the C++ datatypes are updated in the main iterative loop, whilst others are created later using the data from the main loop. This class handles both cases, and uses pointers to track where the MATLAB-structures to be written out are stored.
+ * Some of the C++ datatypes are updated in the main iterative loop, whilst
+ * others are created later using the data from the main loop. This class
+ * handles both cases, and uses pointers to track where the MATLAB-structures to
+ * be written out are stored.
  *
- * Upon writing the output, an instance of this class can go out of scope and will take with it any reserved memory for MATLAB structures and native C++ arrays of dynamic size.
+ * Upon writing the output, an instance of this class can go out of scope and
+ * will take with it any reserved memory for MATLAB structures and native C++
+ * arrays of dynamic size.
  */
 class OutputMatrices {
 private:
-  // Pointers to arrays in C++ that will be populated by pointers to the output data
+  // Pointers to arrays in C++ that will be populated by pointers to the output
+  // data
   OutputMatrixPointers output_arrays;
 
   // Holds the pointer to the MATLAB structure that surface_phasors is bound to
   mxArray *mx_surface_vertices = nullptr;
 
-  IJKDimensions n_Yee_cells;//< Number of Yee cells in each axial direction for the simulation (dictated by E_s split-field)
+  IJKDimensions n_Yee_cells;//< Number of Yee cells in each axial direction for
+                            // the simulation (dictated by E_s split-field)
 
   /**
-   * @brief Computes the field values at the centre of the Yee cells, and the corresponding spatial coordinates of these locations.
+   * @brief Computes the field values at the centre of the Yee cells, and the
+   * corresponding spatial coordinates of these locations.
    *
    * @param dimension Dimensionality of the simulation: THREE, TE, or TM.
    */
@@ -46,7 +55,8 @@ public:
   OutputMatrices() = default;
 
   /**
-   * @brief Record the number of Yee cells in each axial direction from the split-electric field that was input.
+   * @brief Record the number of Yee cells in each axial direction from the
+   * split-electric field that was input.
    *
    * @param IJK_tot Number of Yee cells in the {I,J,K} directions
    */
@@ -75,7 +85,8 @@ public:
 
   ElectricField E;//< Electric field and phasors at the Yee cell positions
   MagneticField H;//< Magnetic field and phasors at the Yee cell positions
-  GridLabels output_grid_labels;//< Co-ordinates (spatial positions) of the field values
+  GridLabels output_grid_labels;//< Co-ordinates (spatial positions) of the
+                                // field values
 
   /**
    * @brief Set the up E, H, and output_grid_labels outputs
@@ -84,67 +95,79 @@ public:
    * @param input_grid_labels The grid labels obtained from the input file
    * @param pim The interpolation methods to use on the field values
    */
-  void setup_EH_and_gridlabels(const SimulationParameters &params, const GridLabels &input_grid_labels, PreferredInterpolationMethods pim);
+  void setup_EH_and_gridlabels(const SimulationParameters &params,
+                               const GridLabels &input_grid_labels,
+                               PreferredInterpolationMethods pim);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
    * @return IJKDimensions The dimensions of the electric (and magnetic) field
    */
-  IJKDimensions get_E_dimensions() const {
-    return E.tot;
-  }
+  IJKDimensions get_E_dimensions() const { return E.tot; }
   // set the interpolation method for the E and H fields
   void set_interpolation_methods(PreferredInterpolationMethods pim) {
     E.set_preferred_interpolation_methods(pim);
     H.set_preferred_interpolation_methods(pim);
   }
 
-  SurfacePhasors surface_phasors;//< Phasors extracted over the user-specified surface
+  SurfacePhasors
+          surface_phasors;//< Phasors extracted over the user-specified surface
 
-  void setup_surface_mesh(const Cuboid &cuboid, const SimulationParameters &params, int n_frequencies);
+  void setup_surface_mesh(const Cuboid &cuboid,
+                          const SimulationParameters &params,
+                          int n_frequencies);
   /**
    * @brief Create MATLAB memory for the surface phasor outputs
    *
    * @param empty_allocation If true, empty arrays will be allocated
    * @param mx_surface_facets The surface facets to write out
    */
-  void assign_surface_phasor_outputs(bool empty_allocation, mxArray *mx_surface_facets);
+  void assign_surface_phasor_outputs(bool empty_allocation,
+                                     mxArray *mx_surface_facets);
 
   VertexPhasors vertex_phasors;//< Phasors extracted at user-specified vertices
 
   /**
-   * @brief Setup the object that will handle extraction of the phasors at the vertices
+   * @brief Setup the object that will handle extraction of the phasors at the
+   * vertices
    *
    * @param vp_ptr Pointer to the input array containing vertex data
    * @param n_frequencies The number of frequencies we are extracting at
    */
   void setup_vertex_phasors(const mxArray *vp_ptr, int n_frequencies);
 
-  FieldSample fieldsample;//< E,H split-field values sampled at user-specified locations and frequencies
+  FieldSample fieldsample;//< E,H split-field values sampled at user-specified
+                          // locations and frequencies
 
   /**
-   * @brief Setup the object that handles extraction of the field values at the sample positions
+   * @brief Setup the object that handles extraction of the field values at the
+   * sample positions
    *
-   * @param fieldsample_input_data Pointer to the input array containing sample positions
+   * @param fieldsample_input_data Pointer to the input array containing sample
+   * positions
    */
   void setup_fieldsample(const mxArray *fieldsample_input_data);
 
   /**
-   * @brief Set the maxresfield object. If memory has not been reserved yet, it can be assigned here.
+   * @brief Set the maxresfield object. If memory has not been reserved yet, it
+   * can be assigned here.
    *
    * @param maxfield Value to write to output memory
-   * @param overwrite_existing If true, overwrite existing value (do not assign new memory). Otherwise, create new memory for the maxresfield output.
+   * @param overwrite_existing If true, overwrite existing value (do not assign
+   * new memory). Otherwise, create new memory for the maxresfield output.
    */
   void set_maxresfield(double maxfield, bool overwrite_existing);
 
-  GridLabels interp_output_grid_labels;//< Holds the spatial co-ordinates of the interpolated fields
+  GridLabels interp_output_grid_labels;//< Holds the spatial co-ordinates of the
+                                       // interpolated fields
 
   /**
    * @brief Create MATLAB memory for the gridlabels for the interpolated fields
    *
    * @param empty_allocation If true, empty arrays will be allocated
    * @param E,H The {electric,magnetic} field that will be interpolated
-   * @param simulation_dimension Whether we are running a 3D, TE, or TM simulation
+   * @param simulation_dimension Whether we are running a 3D, TE, or TM
+   * simulation
    */
   void setup_interpolation_outputs(SimulationParameters params);
 
@@ -152,9 +175,11 @@ public:
    * @brief Save the output matrices to the output file
    *
    * @param output_file_name The file to write the simulation outputs to
-   * @param compressed_output If true, write compressed output (do not write facets and vertices)
+   * @param compressed_output If true, write compressed output (do not write
+   * facets and vertices)
    */
-  void save_outputs(const std::string& output_file_name, bool compressed_output = false);
+  void save_outputs(const std::string &output_file_name,
+                    bool compressed_output = false);
 
   ~OutputMatrices();
 };

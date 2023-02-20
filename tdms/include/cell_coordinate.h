@@ -7,10 +7,16 @@
 
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
+
+
 /**
- * @brief A structure for holding three values, which typically pertain to the same quantity but for each of the axial directions.
+ * @brief A structure for holding three values, which typically pertain to the
+ * same quantity but for each of the axial directions.
  *
- * Effectively stores the 3-vector (i,j,k). This is typically used to represent Yee cell indices, or 3D-array dimensions, or the maximum number of Yee cells in each coordinate direction, for example.
+ * Effectively stores the 3-vector (i,j,k). This is typically used to represent
+ * Yee cell indices, or 3D-array dimensions, or the maximum number of Yee cells
+ * in each coordinate direction, for example.
  */
 struct ijk {
   // The values (by dimension) that the object contains
@@ -22,7 +28,12 @@ struct ijk {
   /** @brief Print the (i,j,k) values */
   void print() const { spdlog::info("ijk: ({},{},{})", i, j, k); }
 
-  ijk &operator+=(int n) { this->i += n; this->j += n; this->k += n; return *this; }
+  ijk &operator+=(int n) {
+    this->i += n;
+    this->j += n;
+    this->k += n;
+    return *this;
+  }
 };
 
 /* Synonyms for code readability */
