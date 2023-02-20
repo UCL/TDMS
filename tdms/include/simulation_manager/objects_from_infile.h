@@ -1,6 +1,7 @@
 /**
  * @file objects_from_infile.h
- * @brief Classes that unpack variables from the input files the TDMS executable recieves and initalise fields.h and array.h datatypes to store this data.
+ * @brief Classes that unpack variables from the input files the TDMS executable
+ * recieves and initalise fields.h and array.h datatypes to store this data.
  */
 #pragma once
 
@@ -22,19 +23,25 @@
 #include "vertex_phasors.h"
 
 /**
- * @brief Class that constructs C++ arrays from an InputMatrices object and the SolverMethod enum.
+ * @brief Class that constructs C++ arrays from an InputMatrices object and the
+ * SolverMethod enum.
  *
- * Arrays that are constructed by this class are independent of one another and other setup parameters - they can simply be read from the InputMatrices object.
+ * Arrays that are constructed by this class are independent of one another and
+ * other setup parameters - they can simply be read from the InputMatrices
+ * object.
  *
- * The ObjectsFromInfile class handles the additional matrices in InputMatrices that are inter-dependent.
+ * The ObjectsFromInfile class handles the additional matrices in InputMatrices
+ * that are inter-dependent.
  *
  */
 class IndependentObjectsFromInfile {
 public:
-  SolverMethod solver_method;//< Either PSTD (default) or FDTD, the solver method
-  int skip_tdf;              //< Either 1 if we are using PSTD, or 6 if using FDTD
+  SolverMethod
+          solver_method;//< Either PSTD (default) or FDTD, the solver method
+  int skip_tdf;         //< Either 1 if we are using PSTD, or 6 if using FDTD
   PreferredInterpolationMethods interpolation_methods =
-          BandLimited;//< Either band_limited or cubic, the preferred interpolation methods
+          BandLimited;//< Either band_limited or cubic, the preferred
+                      // interpolation methods
 
   SimulationParameters params;//< The parameters for this simulation
 
@@ -50,8 +57,9 @@ public:
   double *freespace_Cbx;       //< freespace constants
   double *alpha, *beta, *gamma;//< dispersion parameters
 
-  InterfaceComponent I0, I1, J0, J1, K0, K1;//< user-defined interface components
-  Cuboid cuboid;                            //< user-defined surface to extract phasors over
+  InterfaceComponent I0, I1, J0, J1, K0,
+          K1;   //< user-defined interface components
+  Cuboid cuboid;//< user-defined surface to extract phasors over
 
   XYZVectors rho_cond;               //< conductive aux
   DispersiveMultiLayer matched_layer;//< dispersive aux
@@ -67,13 +75,16 @@ public:
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
-  IJKDimensions IJK_tot;//< total number of Yee cells in the x,y,z directions respectively
-  int Nsteps;           //< Number of dfts to perform before checking for phasor convergence
+  IJKDimensions IJK_tot;//!< total number of Yee cells in the x,y,z directions
+                        //!< respectively
+  int Nsteps;//!< Number of dfts to perform before checking for phasor
+             //!< convergence
 
   IndependentObjectsFromInfile(
           InputMatrices matrices_from_input_file,
           SolverMethod _solver_method = SolverMethod::PseudoSpectral,
-          PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
+          PreferredInterpolationMethods _pim =
+                  PreferredInterpolationMethods::BandLimited);
 
   /** Set the solver method (FDTD / PSTD) and update dependent variables */
   void set_solver_method(SolverMethod _sm) {
@@ -89,7 +100,8 @@ public:
     }
   }
 
-  /** Set the preferred method of interpolation, and update the fields about this change */
+  /** Set the preferred method of interpolation, and update the fields about
+   * this change */
   void set_interpolation_method(PreferredInterpolationMethods _pim) {
     interpolation_methods = _pim;
     E_s.set_preferred_interpolation_methods(interpolation_methods);
@@ -105,24 +117,31 @@ public:
 };
 
 /**
- * @brief Class that handles the creation of C++ arrays from the matrices passed in an InputMatrices object, but also handling interdependencies between inputs from this file.
+ * @brief Class that handles the creation of C++ arrays from the matrices passed
+ * in an InputMatrices object, but also handling interdependencies between
+ * inputs from this file.
  *
- * The Sources, GratingStructure, and FrequencyExtractVector can only be initalised after the other arrays in the input file have been parsed.
+ * The Sources, GratingStructure, and FrequencyExtractVector can only be
+ * initalised after the other arrays in the input file have been parsed.
  *
- * As such, this object inherits the setup of IndependentObjectsFromInfile, and then constructs the aforementioned arrays using a combination of information from the input file and previously mentioned setup.
+ * As such, this object inherits the setup of IndependentObjectsFromInfile, and
+ * then constructs the aforementioned arrays using a combination of information
+ * from the input file and previously mentioned setup.
  */
 class ObjectsFromInfile : public IndependentObjectsFromInfile {
 public:
   Source Isource, Jsource, Ksource;//< TODO
   GratingStructure structure;      //< TODO
-  FrequencyExtractVector f_ex_vec; //< Vector of frequencies to extract field & phasors at
+  FrequencyExtractVector
+          f_ex_vec;//< Vector of frequencies to extract field & phasors at
 
-  ObjectsFromInfile(
-          InputMatrices matrices_from_input_file,
-          SolverMethod _solver_method = SolverMethod::PseudoSpectral,
-          PreferredInterpolationMethods _pim = PreferredInterpolationMethods::BandLimited);
+  ObjectsFromInfile(InputMatrices matrices_from_input_file,
+                    SolverMethod _solver_method = SolverMethod::PseudoSpectral,
+                    PreferredInterpolationMethods _pim =
+                            PreferredInterpolationMethods::BandLimited);
 
-  /** @brief Determine whether the {IJK}source terms are empty (true) or not (false) */
+  /** @brief Determine whether the {IJK}source terms are empty (true) or not
+   * (false) */
   bool all_sources_are_empty() {
     return Isource.is_empty() && Jsource.is_empty() && Ksource.is_empty();
   }

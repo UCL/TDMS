@@ -4,11 +4,11 @@
  * @brief Tests allocation, deallocation, and methods for the XYZVectors class
  */
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 #include <numeric>
+#include <spdlog/spdlog.h>
 
-#include "arrays.h"
 #include "array_test_class.h"
+#include "arrays.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
@@ -17,7 +17,8 @@ using tdms_tests::is_close;
 
 void XYZVectorsTest::test_correct_construction() {
   XYZVectors v;
-  // check that, although this has been declared, its members still point to nullptrs
+  // check that, although this has been declared, its members still point to
+  // nullptrs
   bool are_nullptrs = (v.x == nullptr) && (v.y == nullptr) && (v.z == nullptr);
   REQUIRE(are_nullptrs);
 }
@@ -25,14 +26,16 @@ void XYZVectorsTest::test_correct_construction() {
 void XYZVectorsTest::test_other_methods() {
   XYZVectors v;
   // create some arrays to assign to the members
-  double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.}, z_vec[n_layers] = {1., 2., 3., 4.};
+  double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.},
+         z_vec[n_layers] = {1., 2., 3., 4.};
 
   SECTION("set_ptr()") {
     // now let's try assigning
     v.set_ptr(AxialDirection::X, x_vec);
     v.set_ptr(AxialDirection::Y, y_vec);
     v.set_ptr(AxialDirection::Z, z_vec);
-    bool are_not_nullptrs = (v.x != nullptr) && (v.y != nullptr) && (v.z != nullptr);
+    bool are_not_nullptrs =
+            (v.x != nullptr) && (v.y != nullptr) && (v.z != nullptr);
     REQUIRE(are_not_nullptrs);
 
     // and the components are what we expect
@@ -74,6 +77,4 @@ void XYZVectorsTest::test_other_methods() {
   }
 }
 
-TEST_CASE("XYZVectors") {
-  XYZVectorsTest().run_all_class_tests();
-}
+TEST_CASE("XYZVectors") { XYZVectorsTest().run_all_class_tests(); }

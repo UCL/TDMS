@@ -7,7 +7,7 @@
 
 #include "mat_io.h"
 
-class InterfaceComponent{
+class InterfaceComponent {
 public:
   bool apply;
   int index;

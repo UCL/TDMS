@@ -7,6 +7,9 @@
 
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
+
+
 /**
  * @brief A structure for holding three values, which typically pertain to the
  * same quantity but for each of the axial directions.

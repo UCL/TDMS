@@ -1,7 +1,9 @@
 /**
  * @file loop_variables.h
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Class that handles the setup of variables whose scope is limited to the main simulation loop, but which require complex setup from the inputs and/or outputs.
+ * @brief Class that handles the setup of variables whose scope is limited to
+ * the main simulation loop, but which require complex setup from the inputs
+ * and/or outputs.
  */
 #pragma once
 
@@ -14,23 +16,29 @@
 #include "simulation_manager/objects_from_infile.h"
 
 /**
- * @brief Handles the setup of variables that will be scoped to the main iteration loop, however which require complicated setup from the input objects and potential linking to the output data.
+ * @brief Handles the setup of variables that will be scoped to the main
+ * iteration loop, however which require complicated setup from the input
+ * objects and potential linking to the output data.
  *
- * This setup is handled in the constructor, and the destructor tears down the MATLAB malloc'd memory that we will no longer need after the main loop.
+ * This setup is handled in the constructor, and the destructor tears down the
+ * MATLAB malloc'd memory that we will no longer need after the main loop.
  */
 class LoopVariables {
 private:
-  // Pointers to the MATLAB structure that underlies E_at_previous_iteration, the convergence checker
+  // Pointers to the MATLAB structure that underlies E_at_previous_iteration,
+  // the convergence checker
   mxArray *E_copy_MATLAB_data[3] = {nullptr};
 
   /**
-   * @brief Determine the dispersive properties and setup the corresponding arrays
+   * @brief Determine the dispersive properties and setup the corresponding
+   * arrays
    *
    * @param data The objects and data obtained from the input file
    */
   void setup_dispersive_properties(const ObjectsFromInfile &data);
   /**
-   * @brief Determine if we have a dispersive medium by searching for non-zero attenuation constants in gamma.
+   * @brief Determine if we have a dispersive medium by searching for non-zero
+   * attenuation constants in gamma.
    *
    * @param materials
    * @param IJK_tot Number of Yee cells in each axial direction
@@ -40,18 +48,22 @@ private:
    * @return true, we have a dispersive medium
    * @return false, we do not have a dispersive medium
    */
-  bool is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot, double *attenuation_constants,
-                     double dt, double non_zero_tol = 1e-15);
+  bool is_dispersive_medium(uint8_t ***materials, const IJKDimensions &IJK_tot,
+                            double *attenuation_constants, double dt,
+                            double non_zero_tol = 1e-15);
 
   /**
-   * @brief Performs an optimisation step in a 2D simulation (J_tot==0) when we have either TE or TM, but not both.
+   * @brief Performs an optimisation step in a 2D simulation (J_tot==0) when we
+   * have either TE or TM, but not both.
    *
-   * In the J_tot==0 2D version; the 'TE' case involves components Ey, Hx and Hz, whilst the 'TM' case involves components Ex, Ez and Hy.
+   * In the J_tot==0 2D version; the 'TE' case involves components Ey, Hx and
+   * Hz, whilst the 'TM' case involves components Ex, Ez and Hy.
    *
-   * The idea is to use an alternative upper limit to the loop over j when we have J_tot==0. As it stands, we are planning the loops listed below. We use the syntax (k k_min k_max : j j_min j_max : i i_min i_max) to represent the nested for loop:
-   *    for( k = k_min; k < k_max; k++) {
-   *        for( j = j_min; j < j_max; j++) {
-   *            for( i = i_min; i < i_max; i++) {
+   * The idea is to use an alternative upper limit to the loop over j when we
+   * have J_tot==0. As it stands, we are planning the loops listed below. We use
+   * the syntax (k k_min k_max : j j_min j_max : i i_min i_max) to represent the
+   * nested for loop: for( k = k_min; k < k_max; k++) { for( j = j_min; j <
+   * j_max; j++) { for( i = i_min; i < i_max; i++) {
    *            }
    *        }
    *    }
@@ -93,25 +105,34 @@ private:
    * @param data Data and objects obtained from the input file
    * @param non_zero_tol Tolerance at which doubles are considered "non-zero"
    */
-  void optimise_loop_J_range(const ObjectsFromInfile &data, double non_zero_tol = 1e-15);
+  void optimise_loop_J_range(const ObjectsFromInfile &data,
+                             double non_zero_tol = 1e-15);
 
 public:
-  DetectorSensitivityArrays Ex_t, Ey_t;//< temporary storage for detector sensitivity evaluation
+  DetectorSensitivityArrays Ex_t,
+          Ey_t;//< temporary storage for detector sensitivity evaluation
 
-  ElectricField E_at_previous_iteration;//< Stores the phasors at the previous iteration, to check for convergence
+  ElectricField E_at_previous_iteration;//< Stores the phasors at the previous
+                                        // iteration, to check for convergence
 
   ElectricSplitField E_nm1;
-  CurrentDensitySplitField
-          J_c;//< The per-cell ( current density or conductivity ? ) of the material
+  CurrentDensitySplitField J_c;//< The per-cell ( current density or
+                               // conductivity ? ) of the material
   CurrentDensitySplitField J_s, J_nm1;
 
-  bool is_conductive, is_dispersive;//< Whether the materials are dispersive / conductive respectively
+  bool is_conductive,
+          is_dispersive;//< Whether the materials are dispersive / conductive
+                        // respectively
 
-  double refind;//< refractive index of the first layer of the multilayer, or of the bulk of homogeneous
+  double refind;//< refractive index of the first layer of the multilayer, or of
+                // the bulk of homogeneous
 
-  int J_loop_upper_bound;//< Optimised upper bound for main loop over the j-index (see optimise_loop_J_range for details)
-  int J_loop_upper_bound_plus_1;//< One greater than the optimised upper bound for the main loop over the j-index
-  int n_non_pml_cells_in_K;//< Number of non-pml cells in the K-direction (K_tot - Dxl - Dxu)
+  int J_loop_upper_bound;//< Optimised upper bound for main loop over the
+                         // j-index (see optimise_loop_J_range for details)
+  int J_loop_upper_bound_plus_1;//< One greater than the optimised upper bound
+                                // for the main loop over the j-index
+  int n_non_pml_cells_in_K;//< Number of non-pml cells in the K-direction (K_tot
+                           //- Dxl - Dxu)
 
   LoopVariables(const ObjectsFromInfile &data, IJKDimensions E_field_dims);
 
