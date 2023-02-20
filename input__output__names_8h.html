@@ -93,16 +93,16 @@ $(document).ready(function(){initNavTree('input__output__names_8h.html',''); ini
 
 <p>Constant values associated with the format of the input and output files and matrices.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for input_output_names.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="input__output__names_8h__incl.png" border="0" usemap="#atdms_2include_2input__output__names_8h" alt=""/></div>
 <map name="atdms_2include_2input__output__names_8h" id="atdms_2include_2input__output__names_8h">
-<area shape="rect" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="8,5,151,47"/>
-<area shape="rect" title=" " alt="" coords="5,95,68,121"/>
-<area shape="rect" title=" " alt="" coords="93,95,151,121"/>
+<area shape="rect" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="6,5,149,47"/>
+<area shape="rect" title=" " alt="" coords="5,95,64,121"/>
+<area shape="rect" title=" " alt="" coords="89,95,151,121"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -133,13 +133,13 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>NMATRICES</b>&#160;&#160;&#160;49</td></tr>
 <tr class="separator:ac1d88b6ac904b19a060dd2be2b95e80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab21e263420ba479aa56a6e742c52dc9b"><td class="memItemLeft" align="right" valign="top"><a id="ab21e263420ba479aa56a6e742c52dc9b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_WRITE</b>&#160;&#160;&#160;23</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_WRITE</b>&#160;&#160;&#160;  23</td></tr>
 <tr class="separator:ab21e263420ba479aa56a6e742c52dc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3af56d0345cc92cf16da61447fa73b44"><td class="memItemLeft" align="right" valign="top"><a id="a3af56d0345cc92cf16da61447fa73b44"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_WRITE_ALL</b>&#160;&#160;&#160;25</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_WRITE_ALL</b>&#160;&#160;&#160;  25</td></tr>
 <tr class="separator:a3af56d0345cc92cf16da61447fa73b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acde112c4560866a45dabecffadd3f8a3"><td class="memItemLeft" align="right" valign="top"><a id="acde112c4560866a45dabecffadd3f8a3"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_PASSED</b>&#160;&#160;&#160;31</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>NOUTMATRICES_PASSED</b>&#160;&#160;&#160;  31</td></tr>
 <tr class="separator:acde112c4560866a45dabecffadd3f8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -172,7 +172,7 @@ const std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">            <span class="stringliteral">&quot;fdtdgrid&quot;</span>}</div>
+<div class="line">        <span class="stringliteral">&quot;fdtdgrid&quot;</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -188,10 +188,11 @@ const std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">            <span class="stringliteral">&quot;Ex_out&quot;</span>,      <span class="stringliteral">&quot;Ey_out&quot;</span>,      <span class="stringliteral">&quot;Ez_out&quot;</span>, <span class="stringliteral">&quot;Hx_out&quot;</span>,      <span class="stringliteral">&quot;Hy_out&quot;</span>,     <span class="stringliteral">&quot;Hz_out&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;x_out&quot;</span>,       <span class="stringliteral">&quot;y_out&quot;</span>,       <span class="stringliteral">&quot;z_out&quot;</span>,  <span class="stringliteral">&quot;Ex_i&quot;</span>,        <span class="stringliteral">&quot;Ey_i&quot;</span>,       <span class="stringliteral">&quot;Ez_i&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;Hx_i&quot;</span>,        <span class="stringliteral">&quot;Hy_i&quot;</span>,        <span class="stringliteral">&quot;Hz_i&quot;</span>,   <span class="stringliteral">&quot;x_i&quot;</span>,         <span class="stringliteral">&quot;y_i&quot;</span>,        <span class="stringliteral">&quot;z_i&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;camplitudes&quot;</span>, <span class="stringliteral">&quot;maxresfield&quot;</span>, <span class="stringliteral">&quot;Id&quot;</span>,     <span class="stringliteral">&quot;fieldsample&quot;</span>, <span class="stringliteral">&quot;campssample&quot;</span>}</div>
+<div class="line">        <span class="stringliteral">&quot;Ex_out&quot;</span>, <span class="stringliteral">&quot;Ey_out&quot;</span>,      <span class="stringliteral">&quot;Ez_out&quot;</span>,     <span class="stringliteral">&quot;Hx_out&quot;</span>,      <span class="stringliteral">&quot;Hy_out&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;Hz_out&quot;</span>, <span class="stringliteral">&quot;x_out&quot;</span>,       <span class="stringliteral">&quot;y_out&quot;</span>,      <span class="stringliteral">&quot;z_out&quot;</span>,       <span class="stringliteral">&quot;Ex_i&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;Ey_i&quot;</span>,   <span class="stringliteral">&quot;Ez_i&quot;</span>,        <span class="stringliteral">&quot;Hx_i&quot;</span>,       <span class="stringliteral">&quot;Hy_i&quot;</span>,        <span class="stringliteral">&quot;Hz_i&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;x_i&quot;</span>,    <span class="stringliteral">&quot;y_i&quot;</span>,         <span class="stringliteral">&quot;z_i&quot;</span>,        <span class="stringliteral">&quot;camplitudes&quot;</span>, <span class="stringliteral">&quot;maxresfield&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;Id&quot;</span>,     <span class="stringliteral">&quot;fieldsample&quot;</span>, <span class="stringliteral">&quot;campssample&quot;</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -207,11 +208,13 @@ const std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">            <span class="stringliteral">&quot;Ex_out&quot;</span>, <span class="stringliteral">&quot;Ey_out&quot;</span>,      <span class="stringliteral">&quot;Ez_out&quot;</span>, <span class="stringliteral">&quot;Hx_out&quot;</span>,      <span class="stringliteral">&quot;Hy_out&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;Hz_out&quot;</span>, <span class="stringliteral">&quot;x_out&quot;</span>,       <span class="stringliteral">&quot;y_out&quot;</span>,  <span class="stringliteral">&quot;z_out&quot;</span>,       <span class="stringliteral">&quot;Ex_i&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;Ey_i&quot;</span>,   <span class="stringliteral">&quot;Ez_i&quot;</span>,        <span class="stringliteral">&quot;Hx_i&quot;</span>,   <span class="stringliteral">&quot;Hy_i&quot;</span>,        <span class="stringliteral">&quot;Hz_i&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;x_i&quot;</span>,    <span class="stringliteral">&quot;y_i&quot;</span>,         <span class="stringliteral">&quot;z_i&quot;</span>,    <span class="stringliteral">&quot;vertices&quot;</span>,    <span class="stringliteral">&quot;camplitudes&quot;</span>,</div>
-<div class="line">            <span class="stringliteral">&quot;facets&quot;</span>, <span class="stringliteral">&quot;maxresfield&quot;</span>, <span class="stringliteral">&quot;Id&quot;</span>,     <span class="stringliteral">&quot;fieldsample&quot;</span>, <span class="stringliteral">&quot;campssample&quot;</span>}</div>
+<div class="line">        <span class="stringliteral">&quot;Ex_out&quot;</span>,     <span class="stringliteral">&quot;Ey_out&quot;</span>,      <span class="stringliteral">&quot;Ez_out&quot;</span>,   <span class="stringliteral">&quot;Hx_out&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;Hy_out&quot;</span>,     <span class="stringliteral">&quot;Hz_out&quot;</span>,      <span class="stringliteral">&quot;x_out&quot;</span>,    <span class="stringliteral">&quot;y_out&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;z_out&quot;</span>,      <span class="stringliteral">&quot;Ex_i&quot;</span>,        <span class="stringliteral">&quot;Ey_i&quot;</span>,     <span class="stringliteral">&quot;Ez_i&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;Hx_i&quot;</span>,       <span class="stringliteral">&quot;Hy_i&quot;</span>,        <span class="stringliteral">&quot;Hz_i&quot;</span>,     <span class="stringliteral">&quot;x_i&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;y_i&quot;</span>,        <span class="stringliteral">&quot;z_i&quot;</span>,         <span class="stringliteral">&quot;vertices&quot;</span>, <span class="stringliteral">&quot;camplitudes&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;facets&quot;</span>,     <span class="stringliteral">&quot;maxresfield&quot;</span>, <span class="stringliteral">&quot;Id&quot;</span>,       <span class="stringliteral">&quot;fieldsample&quot;</span>,</div>
+<div class="line">        <span class="stringliteral">&quot;campssample&quot;</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

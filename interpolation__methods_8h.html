@@ -140,8 +140,8 @@ Enumerations</h2></td></tr>
 , <b>BAND_LIMITED_7</b> = 2
 , <br />
 &#160;&#160;<b>BAND_LIMITED_CELL_ZERO</b> = 1
-, <b>CUBIC_INTERP_MIDDLE</b> = 0
-, <b>CUBIC_INTERP_FIRST</b> = -1
+, <b>CUBIC_INTERP_MIDDLE</b>
+, <b>CUBIC_INTERP_FIRST</b>
 , <b>CUBIC_INTERP_LAST</b> = -2
 <br />
  }</td></tr>
@@ -201,7 +201,9 @@ Variables</h2></td></tr>
 <p>Defines our order of preference for the use of the various schemes. </p>
 <p>There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.</p>
 <p>MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!</p>
-<p>For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a point spacing" to the right of the final data point. These "interpolation positions" (interp positions) are marked with "o" below: v0 v1 v2 v3 v4 v5 v6 v7 o o o o o o o o We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example. </p>
+<p>For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a
+point spacing" to the right of the final data point. These "interpolation
+positions" (interp positions) are marked with "o" below: v0 v1 v2 v3 v4 v5 v6 v7 o o o o o o o o We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example. </p>
 
 </div>
 </div>
@@ -263,9 +265,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_0)</div>
-<div class="ttc" id="aclassInterpolationScheme_html"><div class="ttname"><a href="classInterpolationScheme.html">InterpolationScheme</a></div><div class="ttdef"><b>Definition:</b> interpolation_methods.h:43</div></div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_0)</div>
+<div class="ttc" id="aclassInterpolationScheme_html"><div class="ttname"><a href="classInterpolationScheme.html">InterpolationScheme</a></div><div class="ttdef"><b>Definition:</b> interpolation_methods.h:52</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -280,8 +282,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_1)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_1)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -296,8 +298,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_2)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_2)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -312,8 +314,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_3)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_3)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -328,8 +330,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_4)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_4)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -344,8 +346,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_5)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_5)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -360,8 +362,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_6)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
+<div class="line">        BAND_LIMITED_6)</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -376,8 +378,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(</div>
-<div class="line">        BAND_LIMITED_7)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="classInterpolationScheme.html">InterpolationScheme</a>(BAND_LIMITED_7)</div>
 </div><!-- fragment -->
 </div>
 </div>

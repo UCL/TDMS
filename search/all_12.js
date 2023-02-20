@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['xyztensor3d_185',['XYZTensor3D',['../classXYZTensor3D.html',1,'']]],
-  ['xyztensor3d_3c_20double_20_3e_186',['XYZTensor3D&lt; double &gt;',['../classXYZTensor3D.html',1,'']]],
-  ['xyzvectors_187',['XYZVectors',['../classXYZVectors.html',1,'XYZVectors'],['../classXYZVectors.html#ac7a70de81450ec6321abc387e727935a',1,'XYZVectors::XYZVectors()']]]
+  ['unpack_5ffrom_5finput_5fmatrices_178',['unpack_from_input_matrices',['../classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b',1,'SimulationParameters']]],
+  ['update_5fsurface_5feh_179',['update_surface_EH',['../classSurfacePhasors.html#ae4b5f4f6c42b194c9256bf2c5f93e53b',1,'SurfacePhasors']]],
+  ['update_5fvertex_5fcamplitudes_180',['update_vertex_camplitudes',['../classVertexPhasors.html#a440fef465a4124c7ddc2c9c30a07cc1d',1,'VertexPhasors']]],
+  ['utils_2eh_181',['utils.h',['../utils_8h.html',1,'']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['zero_189',['zero',['../classSplitField.html#a6367b936f626e63bcfe7eeff3ca01a54',1,'SplitField::zero()'],['../classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6',1,'Field::zero()']]],
-  ['zero_5fsurface_5feh_190',['zero_surface_EH',['../classSurfacePhasors.html#afc6e9cca06ea4af80837bbc104b9d77b',1,'SurfacePhasors']]]
+  ['xyztensor3d_190',['XYZTensor3D',['../classXYZTensor3D.html',1,'']]],
+  ['xyztensor3d_3c_20double_20_3e_191',['XYZTensor3D&lt; double &gt;',['../classXYZTensor3D.html',1,'']]],
+  ['xyzvectors_192',['XYZVectors',['../classXYZVectors.html',1,'XYZVectors'],['../classXYZVectors.html#ac7a70de81450ec6321abc387e727935a',1,'XYZVectors::XYZVectors()']]]
 ];

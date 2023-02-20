@@ -95,26 +95,26 @@ $(document).ready(function(){initNavTree('timer_8h_source.html',''); initResizab
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">/**</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * @brief Stopwatch class.</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classTimer.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTimer.html">Timer</a>{</div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classTimer.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTimer.html">Timer</a> {</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordtype">double</span> start_time; <span class="comment">//&lt; start time in seconds</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keywordtype">double</span> end_time;   <span class="comment">//&lt; end time in seconds</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keywordtype">double</span> start_time;<span class="comment">//&lt; start time in seconds</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordtype">double</span> end_time;  <span class="comment">//&lt; end time in seconds</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">public</span>:<span class="comment"></span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    /** Starts the stopwatch */</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a3a8b5272198d029779dc9302a54305a8">start</a>();<span class="comment"></span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">    /** Stops the stopwatch */</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTimer.html#accef2f2b25869fbca2947a56b494d2a0">end</a>();<span class="comment"></span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">    /** Log the difference in time and reset the timer */</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a8487935861016f5d7c6f1b46c74f5cbb">click</a>();<span class="comment"></span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">    /** Time difference */</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classTimer.html#a687a0d592f3a182270e49f55ec82087d">delta_seconds</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">  /** Starts the stopwatch */</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a3a8b5272198d029779dc9302a54305a8">start</a>();<span class="comment"></span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">  /** Stops the stopwatch */</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classTimer.html#accef2f2b25869fbca2947a56b494d2a0">end</a>();<span class="comment"></span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">  /** Log the difference in time and reset the timer */</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a8487935861016f5d7c6f1b46c74f5cbb">click</a>();<span class="comment"></span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">  /** Time difference */</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordtype">double</span> <a class="code" href="classTimer.html#a687a0d592f3a182270e49f55ec82087d">delta_seconds</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
 <div class="ttc" id="aclassTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdoc">Stopwatch class.</div><div class="ttdef"><b>Definition:</b> timer.h:9</div></div>
 <div class="ttc" id="aclassTimer_html_a3a8b5272198d029779dc9302a54305a8"><div class="ttname"><a href="classTimer.html#a3a8b5272198d029779dc9302a54305a8">Timer::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition:</b> timer.cpp:8</div></div>
-<div class="ttc" id="aclassTimer_html_a687a0d592f3a182270e49f55ec82087d"><div class="ttname"><a href="classTimer.html#a687a0d592f3a182270e49f55ec82087d">Timer::delta_seconds</a></div><div class="ttdeci">double delta_seconds() const</div><div class="ttdef"><b>Definition:</b> timer.cpp:16</div></div>
-<div class="ttc" id="aclassTimer_html_a8487935861016f5d7c6f1b46c74f5cbb"><div class="ttname"><a href="classTimer.html#a8487935861016f5d7c6f1b46c74f5cbb">Timer::click</a></div><div class="ttdeci">void click()</div><div class="ttdef"><b>Definition:</b> timer.cpp:20</div></div>
-<div class="ttc" id="aclassTimer_html_accef2f2b25869fbca2947a56b494d2a0"><div class="ttname"><a href="classTimer.html#accef2f2b25869fbca2947a56b494d2a0">Timer::end</a></div><div class="ttdeci">void end()</div><div class="ttdef"><b>Definition:</b> timer.cpp:12</div></div>
+<div class="ttc" id="aclassTimer_html_a687a0d592f3a182270e49f55ec82087d"><div class="ttname"><a href="classTimer.html#a687a0d592f3a182270e49f55ec82087d">Timer::delta_seconds</a></div><div class="ttdeci">double delta_seconds() const</div><div class="ttdef"><b>Definition:</b> timer.cpp:12</div></div>
+<div class="ttc" id="aclassTimer_html_a8487935861016f5d7c6f1b46c74f5cbb"><div class="ttname"><a href="classTimer.html#a8487935861016f5d7c6f1b46c74f5cbb">Timer::click</a></div><div class="ttdeci">void click()</div><div class="ttdef"><b>Definition:</b> timer.cpp:14</div></div>
+<div class="ttc" id="aclassTimer_html_accef2f2b25869fbca2947a56b494d2a0"><div class="ttname"><a href="classTimer.html#accef2f2b25869fbca2947a56b494d2a0">Timer::end</a></div><div class="ttdeci">void end()</div><div class="ttdef"><b>Definition:</b> timer.cpp:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
