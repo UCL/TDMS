@@ -2,7 +2,7 @@
 
 # Check that MATLAB exists on the path
 if ! [ -x "$(command -v matlab)" ]; then
-  echo "Error: MATLAB is not on the path." >&2
+  echo "Error: MATLAB is not on the path."
   exit 1
 fi
 
@@ -16,24 +16,29 @@ then
     exit 1
 fi
 
-# regenerate_test_input TEST_ID BSCAN_FILE
+# regenerate_test_input TEST_ID BSCAN_FILE EXPORT_ZIP_FILE
 function regenerate_test_input
 {
     # interpret inputs into actually readable things
     TEST_ID=$1
     TEST_DIR="arc_${TEST_ID}"
     BSCAN_FILE=$2
+    EXPORT_ZIP_FILE=$3
 
     # change into test directory
     OLD_WD=$PWD
     cd ${TEST_DIR}
 
     # run bscan script
+    echo "=== Regenerating ${TEST_DIR} input file"
     matlab -nodisplay -r "${BSCAN_FILE} ; exit"
 
     # return to top-level directory
     cd $OLD_WD
 }
+
+# start regenerating the test data
+echo "Regenerating the TDMS system test input files..."
 
 regenerate_test_input 01 "run_pstd_bscan"
 regenerate_test_input 02 "run_pstd_bscan"
@@ -44,3 +49,5 @@ regenerate_test_input 08 "run_pstd_bscan_fast"
 regenerate_test_input 12 "run_fdtd_bscan"
 regenerate_test_input 13 "run_fdtd_bscan"
 regenerate_test_input example_fdtd "run_fdtd_bscan"
+
+echo "Done"
