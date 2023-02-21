@@ -89,13 +89,17 @@ protected:
   virtual int delta_n() = 0;// TODO: no idea what this is or why it's needed
 
 public:
-  // Pointers (3D arrays) which hold the magnitude of the split field
-  // component at each grid point (i, j, k)
+  /*! Magnitude of the xy component at each grid point (i,j,k) */
   SplitFieldComponent xy;
+  /*! Magnitude of the xz component at each grid point (i,j,k) */
   SplitFieldComponent xz;
+  /*! Magnitude of the yx component at each grid point (i,j,k) */
   SplitFieldComponent yx;
+  /*! Magnitude of the yz component at each grid point (i,j,k) */
   SplitFieldComponent yz;
+  /*! Magnitude of the zx component at each grid point (i,j,k) */
   SplitFieldComponent zx;
+  /*! Magnitude of the zy component at each grid point (i,j,k) */
   SplitFieldComponent zy;
 
   /**
@@ -297,11 +301,11 @@ public:
   /**
    * Set the phasors for this field, given a split field. Result gives field
    * according to the exp(-iwt) convention
-   * @param F
-   * @param n
-   * @param omega
-   * @param dt
-   * @param Nt
+   * @param F The split-field to read values from
+   * @param n The current timestep
+   * @param omega Angular frequency
+   * @param dt Timestep
+   * @param Nt Number of timesteps in a sinusoidal period
    */
   void set_phasors(SplitField &F, int n, double omega, double dt, int Nt);
 
