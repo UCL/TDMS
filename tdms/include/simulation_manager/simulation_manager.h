@@ -43,7 +43,7 @@ private:
           pim;//< The interpolation methods to use in this simulation
   SolverMethod solver_method;//< The solver method to use in this simulation
 
-  EHVec eh_vec;//< TODO
+  EHVec eh_vec;//!< TODO
 
   double ramp_width = 4.;//< Width of the ramp when introducing the waveform in
                          // steady state mode

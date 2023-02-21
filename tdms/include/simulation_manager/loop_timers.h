@@ -30,6 +30,11 @@ private:
   }
 
 public:
+  /**
+   * @brief Start the desired timer
+   *
+   * @param timer Desired timer
+   */
   void start_timer(TimersTrackingLoop timer) {
     switch (timer) {
       case TimersTrackingLoop::MAIN:
@@ -43,6 +48,11 @@ public:
         break;
     }
   }
+  /**
+   * @brief End the desired timer
+   *
+   * @param timer Desired timer
+   */
   void end_timer(TimersTrackingLoop timer) {
     switch (timer) {
       case TimersTrackingLoop::MAIN:
@@ -56,6 +66,11 @@ public:
         break;
     }
   }
+  /**
+   * @brief Click the desired timer
+   *
+   * @param timer Desired timer
+   */
   void click_timer(TimersTrackingLoop timer) {
     switch (timer) {
       case TimersTrackingLoop::MAIN:
@@ -69,6 +84,11 @@ public:
         break;
     }
   }
+  /**
+   * @brief Print the time ellapsed by the desired timer
+   *
+   * @param timer Desired timer
+   */
   double time_ellapsed_by(TimersTrackingLoop timer) {
     switch (timer) {
       case TimersTrackingLoop::MAIN:

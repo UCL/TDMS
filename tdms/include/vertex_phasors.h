@@ -53,10 +53,12 @@ private:
   2, 6]) we need to be able to convert these MATLAB indices -> consecutive
   indices for storage here.
   */
-  double ***camplitudesR = nullptr, ***camplitudesI = nullptr;
+  double ***camplitudesR = nullptr,
+         ***camplitudesI = nullptr;//!< @copydoc camplitudesR
 
 public:
   VertexPhasors() = default;
+  /*! @copydoc set_from */
   VertexPhasors(const mxArray *ptr) { set_from(ptr); }
 
   /**
@@ -67,6 +69,7 @@ public:
    */
   void set_from(const mxArray *ptr);
 
+  /** @brief Get the pointer to the data */
   mxArray *get_mx_camplitudes() { return mx_camplitudes; }
 
   /**
@@ -81,11 +84,12 @@ public:
    */
   void setup_complex_amplitude_arrays(int n_frequencies);
 
-  // Fetch the number of vertices at which we are extracting phasors
+  /** @brief Fetch the number of vertices at which we are extracting phasors */
   int n_vertices() { return vertices.n_vertices(); }
-  // Fetch the number of field components we are extracting
+  /** @brief Fetch the number of field components we are extracting */
   int n_components() { return components.size(); }
-  // Returns true/false based on whether there are/aren't vertices to extract at
+  /** @brief Returns true/false based on whether there are/aren't vertices to
+   * extract at */
   bool there_are_vertices_to_extract_at() { return (n_vertices() > 0); }
   // Returns true/false based on whether there are/aren't elements in BOTH the
   // vertices and components arrays
