@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['zero_194',['zero',['../classSplitField.html#a6367b936f626e63bcfe7eeff3ca01a54',1,'SplitField::zero()'],['../classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6',1,'Field::zero()']]],
-  ['zero_5fsurface_5feh_195',['zero_surface_EH',['../classSurfacePhasors.html#afc6e9cca06ea4af80837bbc104b9d77b',1,'SurfacePhasors']]]
+  ['work_5fin_5fzipped_5fdir_350',['work_in_zipped_dir',['../namespaceutils.html#ae62e9e9719f652e6a649e69a6023dfa1',1,'utils']]],
+  ['write_5foutputs_5fto_5ffile_351',['write_outputs_to_file',['../classSimulationManager.html#aa0a2180ed8c7a94c457fe3a2e2f17883',1,'SimulationManager']]]
 ];

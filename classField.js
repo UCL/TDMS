@@ -14,7 +14,7 @@ var classField =
     [ "normalise_volume", "classField.html#a616a0a2e9edb5ee42374611c2eea777e", null ],
     [ "normalised_difference", "classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a", null ],
     [ "phase", "classField.html#a865cfb4be5000462a8a4f94a40934695", null ],
-    [ "phasor_norm", "classField.html#a787899ca782f76307f96ca13a763417e", null ],
+    [ "phasor_norm", "classField.html#a7bc0c1998f9ff31cb91341fb5400e815", null ],
     [ "set_phasors", "classField.html#a88c2e1c843986da2cce6a54379466bbb", null ],
     [ "set_values_from", "classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b", null ],
     [ "zero", "classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6", null ],

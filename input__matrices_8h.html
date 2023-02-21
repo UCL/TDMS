@@ -117,17 +117,28 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="input__matrices_8h__dep__incl.png" border="0" usemap="#atdms_2include_2input__matrices_8hdep" alt=""/></div>
 <map name="atdms_2include_2input__matrices_8hdep" id="atdms_2include_2input__matrices_8hdep">
-<area shape="rect" title="Class handling the input matrices that are read in from the input file." alt="" coords="321,5,464,47"/>
-<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="211,95,390,136"/>
-<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="415,102,557,129"/>
-<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="225,184,376,211"/>
-<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,266,204,293"/>
-<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="400,184,596,211"/>
-<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="229,259,373,300"/>
-<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="397,259,556,300"/>
-<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="581,259,733,300"/>
-<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="30,348,179,389"/>
-<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="582,348,731,389"/>
+<area shape="rect" title="Class handling the input matrices that are read in from the input file." alt="" coords="1691,5,1834,47"/>
+<area shape="rect" href="objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="2235,363,2413,419"/>
+<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="1029,563,1171,590"/>
+<area shape="rect" href="simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="1673,95,1852,136"/>
+<area shape="rect" href="loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="2225,467,2423,508"/>
+<area shape="rect" href="simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="1543,467,1779,508"/>
+<area shape="rect" href="execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="1892,556,2137,597"/>
+<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="1561,184,1711,211"/>
+<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="2089,273,2287,300"/>
+<area shape="rect" href="output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="1557,370,1765,411"/>
+<area shape="rect" href="fdtd__bootstrapper_8h.html" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="43,266,261,307"/>
+<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="2191,184,2387,211"/>
+<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="1920,266,2064,307"/>
+<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="785,266,943,307"/>
+<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="1744,266,1896,307"/>
+<area shape="rect" href="test__Field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="336,266,491,307"/>
+<area shape="rect" href="test__Field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="515,266,760,307"/>
+<area shape="rect" href="test__SplitField_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="968,266,1152,307"/>
+<area shape="rect" href="test__SplitFieldComponent_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="1176,266,1435,307"/>
+<area shape="rect" href="test__TDFieldExporter2D_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="1459,259,1669,315"/>
+<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="2061,370,2211,411"/>
+<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="1789,370,1939,411"/>
 </map>
 </div>
 </div>
@@ -136,6 +147,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInputMatrices.html">InputMatrices</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows us to handle the MATLAB arrays from the input file in a human-readable format.  <a href="classInputMatrices.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

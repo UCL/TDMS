@@ -1,0 +1,34 @@
+<map id="IndependentObjectsFromInfile" name="IndependentObjectsFromInfile">
+<area shape="rect" id="node1" title="Class that constructs C++ arrays from an InputMatrices object and the SolverMethod enum." alt="" coords="1284,491,1501,517"/>
+<area shape="rect" id="node2" href="$classCCollection.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="967,219,1063,245"/>
+<area shape="rect" id="node3" href="$classCCollectionBase.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="569,192,697,219"/>
+<area shape="rect" id="node27" href="$classCMaterial.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="973,117,1058,144"/>
+<area shape="rect" id="node4" href="$classXYZVectors.html" title=" " alt="" coords="263,223,359,249"/>
+<area shape="rect" id="node16" href="$classDCollectionBase.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="569,252,698,279"/>
+<area shape="rect" id="node32" href="$classDispersiveMultiLayer.html" title=" " alt="" coords="748,317,908,344"/>
+<area shape="rect" id="node5" href="$classDTilde.html" title=" " alt="" coords="983,383,1047,409"/>
+<area shape="rect" id="node6" href="$classTensor3D.html" title=" " alt="" coords="543,366,724,407"/>
+<area shape="rect" id="node7" href="$classMagneticSplitField.html" title=" " alt="" coords="944,484,1087,511"/>
+<area shape="rect" id="node8" href="$classSplitField.html" title="A split field defined over a grid." alt="" coords="592,497,675,524"/>
+<area shape="rect" id="node28" href="$classElectricSplitField.html" title=" " alt="" coords="950,535,1081,561"/>
+<area shape="rect" id="node9" href="$classGrid.html" title=" " alt="" coords="286,484,335,511"/>
+<area shape="rect" id="node10" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="64,455,103,481"/>
+<area shape="rect" id="node11" href="$classSplitFieldComponent.html" title=" " alt="" coords="232,580,389,607"/>
+<area shape="rect" id="node12" href="$classTensor3D.html" title=" " alt="" coords="5,605,161,632"/>
+<area shape="rect" id="node17" href="$classIncidentField.html" title=" " alt="" coords="413,628,519,655"/>
+<area shape="rect" id="node13" href="$classInterfaceComponent.html" title=" " alt="" coords="938,655,1093,681"/>
+<area shape="rect" id="node14" href="$classCuboid.html" title=" " alt="" coords="982,705,1049,732"/>
+<area shape="rect" id="node15" href="$classDCollection.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="967,269,1064,296"/>
+<area shape="rect" id="node24" href="$classDMaterial.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="972,168,1059,195"/>
+<area shape="rect" id="node18" href="$classSimulationParameters.html" title="Class storing the various constants and behaviour flags for one executation of the tdms executable." alt="" coords="932,756,1099,783"/>
+<area shape="rect" id="node19" href="$structSurfaceSpacingStride.html" title="A three&#45;tuple of integers that contain the stride in each direction to extract the phasors on." alt="" coords="553,680,713,707"/>
+<area shape="rect" id="node20" href="$structPerfectlyMatchedLayer.html" title=" " alt="" coords="547,731,719,757"/>
+<area shape="rect" id="node21" href="$structYeeCellDimensions.html" title="The x,y,z lengths of the cuboidal Yee cells." alt="" coords="560,781,707,808"/>
+<area shape="rect" id="node22" href="$classPupil.html" title=" " alt="" coords="988,807,1043,833"/>
+<area shape="rect" id="node23" href="$classMatrix.html" title=" " alt="" coords="564,832,703,859"/>
+<area shape="rect" id="node25" href="$classMaterialCollection.html" title=" " alt="" coords="563,128,704,155"/>
+<area shape="rect" id="node26" href="$classTDFieldExporter2D.html" title=" " alt="" coords="943,857,1087,884"/>
+<area shape="rect" id="node29" href="$classGridLabels.html" title=" " alt="" coords="970,908,1061,935"/>
+<area shape="rect" id="node30" href="$classFrequencyVectors.html" title=" " alt="" coords="947,959,1084,985"/>
+<area shape="rect" id="node31" href="$classVector.html" title=" " alt="" coords="565,959,702,985"/>
+</map>

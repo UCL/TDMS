@@ -1,0 +1,7 @@
+<map id="tdms/include/output_matrices/output_matrix_pointers.h" name="tdms/include/output_matrices/output_matrix_pointers.h">
+<area shape="rect" id="node1" title="Declares a class that allows for memory&#45;management of pointers to the output arrays (OutputMatrixPoin..." alt="" coords="95,5,277,61"/>
+<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="82,109,290,151"/>
+<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="68,199,304,240"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,295,148,322"/>
+<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="173,288,418,329"/>
+</map>

@@ -1,6 +1,6 @@
 <map id="CurrentDensitySplitField" name="CurrentDensitySplitField">
 <area shape="rect" id="node1" title=" " alt="" coords="5,333,185,360"/>
-<area shape="rect" id="node2" href="$classSplitField.html" title=" " alt="" coords="54,257,137,284"/>
+<area shape="rect" id="node2" href="$classSplitField.html" title="A split field defined over a grid." alt="" coords="54,257,137,284"/>
 <area shape="rect" id="node3" href="$classGrid.html" title=" " alt="" coords="8,95,57,121"/>
 <area shape="rect" id="node4" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="13,5,52,32"/>
 <area shape="rect" id="node5" href="$classSplitFieldComponent.html" title=" " alt="" coords="82,95,239,121"/>

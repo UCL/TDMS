@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      <span class="keywordflow">case</span> <span class="charliteral">&#39;z&#39;</span>:</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">return</span> z;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Have no element &quot;</span> + to_string(c));</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Have no element &quot;</span> + <a class="code" href="utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d">to_string</a>(c));</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  }</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  T ***operator[](AxialDirection d)<span class="keyword"> const </span>{</div>
@@ -131,7 +131,7 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">case</span> AxialDirection::Z:</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span> z;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Have no element &quot;</span> + to_string(d));</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Have no element &quot;</span> + <a class="code" href="utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d">to_string</a>(d));</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  }</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"></span> </div>
@@ -641,7 +641,7 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;        <span class="keywordflow">return</span> Hz;</div>
 <div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + std::to_string(index) +</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + <a class="code" href="utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d">std::to_string</a>(index) +</div>
 <div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;                                 <span class="stringliteral">&quot; does not correspond to a field component.&quot;</span>);</div>
 <div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    }</div>
@@ -708,6 +708,7 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="ttc" id="aclassXYZVectors_html_ac7a70de81450ec6321abc387e727935a"><div class="ttname"><a href="classXYZVectors.html#ac7a70de81450ec6321abc387e727935a">XYZVectors::XYZVectors</a></div><div class="ttdeci">XYZVectors()=default</div></div>
 <div class="ttc" id="aglobals_8h_html"><div class="ttname"><a href="globals_8h.html">globals.h</a></div><div class="ttdoc">Type definitions and global constants.</div></div>
 <div class="ttc" id="autils_8h_html"><div class="ttname"><a href="utils_8h.html">utils.h</a></div><div class="ttdoc">Useful miscellaneous utility functions.</div></div>
+<div class="ttc" id="autils_8h_html_ad1ffbdd26f55043c6d816c6854ea586d"><div class="ttname"><a href="utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d">to_string</a></div><div class="ttdeci">std::string to_string(char c)</div><div class="ttdoc">Convert a single character variable to a string.</div><div class="ttdef"><b>Definition:</b> utils.cpp:23</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

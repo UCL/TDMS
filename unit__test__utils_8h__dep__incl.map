@@ -1,0 +1,21 @@
+<map id="tdms/tests/include/unit_test_utils.h" name="tdms/tests/include/unit_test_utils.h">
+<area shape="rect" id="node1" title="Functions common to multiple unit tests." alt="" coords="1935,5,2077,47"/>
+<area shape="rect" id="node2" href="$test__DispersiveMultiLayer_8cpp.html" title="Tests for the DispersiveMultiLayer class and its subclasses." alt="" coords="5,95,204,151"/>
+<area shape="rect" id="node3" href="$test__FrequencyVectors_8cpp.html" title="Tests for the FrequencyVectors class and its subclasses." alt="" coords="228,102,467,143"/>
+<area shape="rect" id="node4" href="$test__FullFieldSnapshot_8cpp.html" title="Unit tests for FullFieldSnapshot class." alt="" coords="491,102,729,143"/>
+<area shape="rect" id="node5" href="$test__IncidentField_8cpp.html" title="Unit tests for the IncidentField class." alt="" coords="753,102,960,143"/>
+<area shape="rect" id="node6" href="$test__Matrix_8cpp.html" title="Tests for the Matrix class and its subclasses (Vertices, GratingStructure, Pupil, EHVec)" alt="" coords="984,102,1151,143"/>
+<area shape="rect" id="node7" href="$test__Tensor3D_8cpp.html" title="Tests the functionality of the Tensor3D class, which is the building block for several further field ..." alt="" coords="1175,102,1359,143"/>
+<area shape="rect" id="node8" href="$test__Vector_8cpp.html" title="Unit tests for the Vector class and its subclasses (FieldComponentsVector, FrequencyExtractVector)" alt="" coords="1384,102,1548,143"/>
+<area shape="rect" id="node9" href="$test__XYZTensor3D_8cpp.html" title="Tests allocation, deallocation, and methods for the XYZTensor3D class." alt="" coords="1573,102,1783,143"/>
+<area shape="rect" id="node10" href="$test__XYZVectors_8cpp.html" title="Tests allocation, deallocation, and methods for the XYZVectors class." alt="" coords="1807,102,2005,143"/>
+<area shape="rect" id="node11" href="$test__Field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="2029,102,2183,143"/>
+<area shape="rect" id="node12" href="$test__Field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="2207,102,2453,143"/>
+<area shape="rect" id="node13" href="$test__SplitField_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="2477,102,2661,143"/>
+<area shape="rect" id="node14" href="$test__SplitFieldComponent_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="2685,102,2943,143"/>
+<area shape="rect" id="node15" href="$test__TDFieldExporter2D_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="2968,95,3177,151"/>
+<area shape="rect" id="node16" href="$test__BLi__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="3202,102,3431,143"/>
+<area shape="rect" id="node17" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="3455,102,3605,143"/>
+<area shape="rect" id="node18" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="3629,102,3836,143"/>
+<area shape="rect" id="node19" href="$test__numerical__derivative_8cpp.html" title="Tests of the numerical differentiation/FFT functions." alt="" coords="3861,102,4055,143"/>
+</map>

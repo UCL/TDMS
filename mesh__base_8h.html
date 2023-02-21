@@ -218,6 +218,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseCreateBoundary
   <table class="params">
     <tr><td class="paramname">vertices</td><td>an array of vertices, each row is a numbered vertex. </td></tr>
     <tr><td class="paramname">facets</td><td>an array of facets each of which is created using 3 vertex indices. Each index is an index in to the vertices array. </td></tr>
+    <tr><td class="paramname">I0,I1,J0,J1,K0,K1</td><td>The Yee-cell indicies defining the cuboidal surface </td></tr>
   </table>
   </dd>
 </dl>
@@ -285,8 +286,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>conciseCreateBoundary
   </table>
   </dd>
 </dl>
-<p>(I0,I1)x(J0,J1)x(K0,K1)</p>
-<p>Each vertexMatrix[i] should be destroyed after calling this function </p>
+<p>Each matrix is a plane of the cuboid which is defined by: (I0,I1)x(J0,J1)x(K0,K1)</p>
+<p>Each vertexMatrix[i] should be destroyed after calling this function</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertexMatrix</td><td>6-element array to write the triangulations to </td></tr>
+    <tr><td class="paramname">I0,I1,J0,J1,K0,K1</td><td>The Yee-cell indicies defining the cuboidal surface </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

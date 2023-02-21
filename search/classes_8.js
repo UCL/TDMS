@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['perfectlymatchedlayer_240',['PerfectlyMatchedLayer',['../structPerfectlyMatchedLayer.html',1,'']]],
-  ['planarinterface_241',['PlanarInterface',['../structPlanarInterface.html',1,'']]],
-  ['pupil_242',['Pupil',['../classPupil.html',1,'']]]
+  ['looptimers_422',['LoopTimers',['../classLoopTimers.html',1,'']]],
+  ['loopvariables_423',['LoopVariables',['../classLoopVariables.html',1,'']]]
 ];

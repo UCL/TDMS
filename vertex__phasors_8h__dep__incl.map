@@ -1,4 +1,10 @@
 <map id="tdms/include/vertex_phasors.h" name="tdms/include/vertex_phasors.h">
-<area shape="rect" id="node1" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="5,5,157,47"/>
-<area shape="rect" id="node2" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="7,95,156,136"/>
+<area shape="rect" id="node1" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="265,5,417,47"/>
+<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="19,102,227,143"/>
+<area shape="rect" id="node6" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="251,95,430,151"/>
+<area shape="rect" id="node8" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="454,102,603,143"/>
+<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="5,199,241,240"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="52,295,195,322"/>
+<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="230,288,475,329"/>
+<area shape="rect" id="node7" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="265,199,464,240"/>
 </map>

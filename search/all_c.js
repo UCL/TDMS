@@ -1,22 +1,10 @@
 var searchData=
 [
-  ['magneticfield_105',['MagneticField',['../classMagneticField.html',1,'']]],
-  ['magneticsplitfield_106',['MagneticSplitField',['../classMagneticSplitField.html',1,'MagneticSplitField'],['../classMagneticSplitField.html#a44ba8ba444cfa073d72e7e30758546a8',1,'MagneticSplitField::MagneticSplitField()']]],
-  ['main_2ecpp_107',['main.cpp',['../main_8cpp.html',1,'']]],
-  ['mat_5fio_2eh_108',['mat_io.h',['../mat__io_8h.html',1,'']]],
-  ['materialcollection_109',['MaterialCollection',['../classMaterialCollection.html',1,'']]],
-  ['matfilematrixcollection_110',['MatFileMatrixCollection',['../classMatFileMatrixCollection.html',1,'']]],
-  ['matrix_111',['Matrix',['../classMatrix.html',1,'Matrix&lt; T &gt;'],['../classMatrix.html#a8eb2069811295ea871b8f0a690aa734f',1,'Matrix::Matrix(int n_rows, int n_cols)'],['../classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234',1,'Matrix::Matrix()=default']]],
-  ['matrix_3c_20double_20_3e_112',['Matrix&lt; double &gt;',['../classMatrix.html',1,'']]],
-  ['matrix_3c_20fftw_5fcomplex_20_3e_113',['Matrix&lt; fftw_complex &gt;',['../classMatrix.html',1,'']]],
-  ['matrix_3c_20int_20_3e_114',['Matrix&lt; int &gt;',['../classMatrix.html',1,'']]],
-  ['matrix_5fcollection_2eh_115',['matrix_collection.h',['../matrix__collection_8h.html',1,'']]],
-  ['matrixcollection_116',['MatrixCollection',['../classMatrixCollection.html',1,'MatrixCollection'],['../classMatrixCollection.html#a360ed9543774d09c45cd8a6fe3cbac39',1,'MatrixCollection::MatrixCollection()=default'],['../classMatrixCollection.html#a000f8e002fea83d6fe6c219704e26be0',1,'MatrixCollection::MatrixCollection(std::vector&lt; std::string &gt; names)']]],
-  ['max_117',['max',['../structijk.html#a840cdd2a089888ce92bfb29be8a4cba4',1,'ijk']]],
-  ['max_5fijk_5ftot_118',['max_IJK_tot',['../classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d',1,'Grid']]],
-  ['mesh_5fbase_2eh_119',['mesh_base.h',['../mesh__base_8h.html',1,'']]],
-  ['ml_5fconst_5ffn_5fmax_5fpointwise_5ferror_120',['ML_const_fn_max_pointwise_error',['../test__interpolation__functions_8cpp.html#a1290791884206a5d9c9da07e64555c07',1,'test_interpolation_functions.cpp']]],
-  ['multiply_5fe_5fby_121',['multiply_E_by',['../classFullFieldSnapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc',1,'FullFieldSnapshot']]],
-  ['multiply_5fh_5fby_122',['multiply_H_by',['../classFullFieldSnapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a',1,'FullFieldSnapshot']]],
-  ['mx_123',['mx',['../classFieldSample.html#adc368ad5a8930a7799762f4626cd9d55',1,'FieldSample']]]
+  ['largest_5ffield_5fvalue_173',['largest_field_value',['../classSplitField.html#a4c5281f8e2245cc187d488a92dfa6258',1,'SplitField']]],
+  ['linear_5framp_174',['linear_ramp',['../classSimulationManager.html#aac7ce99dd327acf44036a10089334c12',1,'SimulationManager']]],
+  ['link_5fto_5fpointer_175',['link_to_pointer',['../classIDVariables.html#af4d08610ea8c4a69dcc164a8f7e1e685',1,'IDVariables']]],
+  ['loop_5ftimers_2eh_176',['loop_timers.h',['../loop__timers_8h.html',1,'']]],
+  ['loop_5fvariables_2eh_177',['loop_variables.h',['../loop__variables_8h.html',1,'']]],
+  ['looptimers_178',['LoopTimers',['../classLoopTimers.html',1,'']]],
+  ['loopvariables_179',['LoopVariables',['../classLoopVariables.html',1,'']]]
 ];

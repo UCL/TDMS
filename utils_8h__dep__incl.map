@@ -1,13 +1,41 @@
 <map id="tdms/include/utils.h" name="tdms/include/utils.h">
-<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="383,5,533,32"/>
-<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="377,80,539,107"/>
-<area shape="rect" id="node3" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="383,244,533,271"/>
-<area shape="rect" id="node5" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,326,204,353"/>
-<area shape="rect" id="node7" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="397,319,556,360"/>
-<area shape="rect" id="node8" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="581,319,733,360"/>
-<area shape="rect" id="node10" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="206,155,385,196"/>
-<area shape="rect" id="node4" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="229,319,373,360"/>
-<area shape="rect" id="node6" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="30,408,179,449"/>
-<area shape="rect" id="node9" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="582,408,731,449"/>
-<area shape="rect" id="node11" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="163,244,359,271"/>
+<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="3151,5,3301,32"/>
+<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="3145,80,3307,107"/>
+<area shape="rect" id="node3" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="1437,266,1588,293"/>
+<area shape="rect" id="node5" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="2475,363,2673,389"/>
+<area shape="rect" id="node7" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="460,556,696,597"/>
+<area shape="rect" id="node10" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="2049,452,2227,508"/>
+<area shape="rect" id="node11" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="2188,556,2387,597"/>
+<area shape="rect" id="node13" href="$fdtd__bootstrapper_8h.html" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="278,355,497,397"/>
+<area shape="rect" id="node14" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="572,355,731,397"/>
+<area shape="rect" id="node15" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="806,355,958,397"/>
+<area shape="rect" id="node22" href="$pstd__variables_8h.html" title="Declares the PSTDVariables class, which handles variables exclusively used in the PSTD solver method." alt="" coords="5,162,204,203"/>
+<area shape="rect" id="node23" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="906,162,1085,203"/>
+<area shape="rect" id="node25" href="$test__CollectionBase_8cpp.html" title="Unit tests for CollectionBase class and its subclasses (CCollection, DCollection)" alt="" coords="2798,355,3019,397"/>
+<area shape="rect" id="node26" href="$test__DetectorSensitivityArrays_8cpp.html" title="Unit tests for the DetectorSensitivityArrays class and its subclasses." alt="" coords="3044,348,3267,404"/>
+<area shape="rect" id="node27" href="$test__DispersiveMultiLayer_8cpp.html" title="Tests for the DispersiveMultiLayer class and its subclasses." alt="" coords="3291,348,3489,404"/>
+<area shape="rect" id="node28" href="$test__DTilde_8cpp.html" title="Unit tests for the DTilde class." alt="" coords="3513,355,3680,397"/>
+<area shape="rect" id="node29" href="$test__FrequencyVectors_8cpp.html" title="Tests for the FrequencyVectors class and its subclasses." alt="" coords="3704,355,3943,397"/>
+<area shape="rect" id="node30" href="$test__FullFieldSnapshot_8cpp.html" title="Unit tests for FullFieldSnapshot class." alt="" coords="4069,355,4308,397"/>
+<area shape="rect" id="node31" href="$test__IncidentField_8cpp.html" title="Unit tests for the IncidentField class." alt="" coords="4332,355,4539,397"/>
+<area shape="rect" id="node32" href="$test__Material_8cpp.html" title="Unit tests for the Material class and it&#39;s subclasses (CMaterial, DMaterial)" alt="" coords="4563,355,4742,397"/>
+<area shape="rect" id="node33" href="$test__Matrix_8cpp.html" title="Tests for the Matrix class and its subclasses (Vertices, GratingStructure, Pupil, EHVec)" alt="" coords="4767,355,4933,397"/>
+<area shape="rect" id="node34" href="$test__Tensor3D_8cpp.html" title="Tests the functionality of the Tensor3D class, which is the building block for several further field ..." alt="" coords="4958,355,5142,397"/>
+<area shape="rect" id="node35" href="$test__Vector_8cpp.html" title="Unit tests for the Vector class and its subclasses (FieldComponentsVector, FrequencyExtractVector)" alt="" coords="5167,355,5331,397"/>
+<area shape="rect" id="node36" href="$test__XYZTensor3D_8cpp.html" title="Tests allocation, deallocation, and methods for the XYZTensor3D class." alt="" coords="5355,355,5566,397"/>
+<area shape="rect" id="node37" href="$test__XYZVectors_8cpp.html" title="Tests allocation, deallocation, and methods for the XYZVectors class." alt="" coords="5589,355,5788,397"/>
+<area shape="rect" id="node38" href="$abstract__array__test__class_8h_source.html" title=" " alt="" coords="3875,155,4027,211"/>
+<area shape="rect" id="node4" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="1267,355,1411,397"/>
+<area shape="rect" id="node6" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="606,459,814,501"/>
+<area shape="rect" id="node17" href="$test__Field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="1435,355,1590,397"/>
+<area shape="rect" id="node18" href="$test__Field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="1614,355,1859,397"/>
+<area shape="rect" id="node19" href="$test__SplitField_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="1883,355,2067,397"/>
+<area shape="rect" id="node20" href="$test__SplitFieldComponent_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="2091,355,2350,397"/>
+<area shape="rect" id="node21" href="$test__TDFieldExporter2D_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="1033,348,1243,404"/>
+<area shape="rect" id="node12" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="2537,459,2686,501"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="507,653,649,679"/>
+<area shape="rect" id="node9" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="1307,645,1553,687"/>
+<area shape="rect" id="node16" href="$test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="2251,459,2401,501"/>
+<area shape="rect" id="node24" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="761,266,957,293"/>
+<area shape="rect" id="node39" href="$array__test__class_8h.html" title="Defines the abstract class for testing objects defined in arrays.h." alt="" coords="3966,259,4110,300"/>
 </map>

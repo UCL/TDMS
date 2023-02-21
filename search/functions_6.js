@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['get_5fmx_5fsurface_5famplitudes_325',['get_mx_surface_amplitudes',['../classSurfacePhasors.html#afa16cf5a7cf2c8a373edeec4f0540119',1,'SurfacePhasors']]],
-  ['get_5fn_5fsurface_5fvertices_326',['get_n_surface_vertices',['../classSurfacePhasors.html#a27092b12c7b1e09f092309629dba5f98',1,'SurfacePhasors']]],
-  ['get_5fpriority_327',['get_priority',['../classInterpolationScheme.html#aa2f89ae59a2b4c2b4aea0aaa0331fb12',1,'InterpolationScheme']]],
-  ['get_5fvertex_5flist_328',['get_vertex_list',['../classSurfacePhasors.html#ae3634fed0c4c238d2115ae51afad6e49',1,'SurfacePhasors']]],
-  ['grid_5ffilename_329',['grid_filename',['../classArgumentNamespace.html#a75b3ea55ae247796f2e6be7f9654dfc6',1,'ArgumentNamespace']]]
+  ['fdtdgridinitialiser_581',['fdtdGridInitialiser',['../classfdtdGridInitialiser.html#a68572b27a73480baa213baf93360f7cf',1,'fdtdGridInitialiser']]],
+  ['field_582',['Field',['../classField.html#a49946f632ba55deabf6bc8cd5f100225',1,'Field::Field()=default'],['../classField.html#aebcda2e27b2a7abf93642e35bfd247dc',1,'Field::Field(int I_total, int J_total, int K_total)']]],
+  ['finite_5fdifference_583',['finite_difference',['../classArgumentNamespace.html#a7334784d24819031d41ed914a8ac058e',1,'ArgumentNamespace']]],
+  ['first_5fderivative_584',['first_derivative',['../numerical__derivative_8h.html#afe9a657c7bc11de6dc694550f01d2e23',1,'numerical_derivative.cpp']]],
+  ['frobenius_585',['frobenius',['../classTensor3D.html#a68b2ad27844616772a714b8294985db6',1,'Tensor3D']]]
 ];

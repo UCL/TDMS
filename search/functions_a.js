@@ -1,10 +1,6 @@
 var searchData=
 [
-  ['magneticsplitfield_352',['MagneticSplitField',['../classMagneticSplitField.html#a44ba8ba444cfa073d72e7e30758546a8',1,'MagneticSplitField']]],
-  ['matrix_353',['Matrix',['../classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234',1,'Matrix::Matrix()=default'],['../classMatrix.html#a8eb2069811295ea871b8f0a690aa734f',1,'Matrix::Matrix(int n_rows, int n_cols)']]],
-  ['matrixcollection_354',['MatrixCollection',['../classMatrixCollection.html#a360ed9543774d09c45cd8a6fe3cbac39',1,'MatrixCollection::MatrixCollection()=default'],['../classMatrixCollection.html#a000f8e002fea83d6fe6c219704e26be0',1,'MatrixCollection::MatrixCollection(std::vector&lt; std::string &gt; names)']]],
-  ['max_355',['max',['../structijk.html#a840cdd2a089888ce92bfb29be8a4cba4',1,'ijk']]],
-  ['max_5fijk_5ftot_356',['max_IJK_tot',['../classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d',1,'Grid']]],
-  ['multiply_5fe_5fby_357',['multiply_E_by',['../classFullFieldSnapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc',1,'FullFieldSnapshot']]],
-  ['multiply_5fh_5fby_358',['multiply_H_by',['../classFullFieldSnapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a',1,'FullFieldSnapshot']]]
+  ['largest_5ffield_5fvalue_622',['largest_field_value',['../classSplitField.html#a4c5281f8e2245cc187d488a92dfa6258',1,'SplitField']]],
+  ['linear_5framp_623',['linear_ramp',['../classSimulationManager.html#aac7ce99dd327acf44036a10089334c12',1,'SimulationManager']]],
+  ['link_5fto_5fpointer_624',['link_to_pointer',['../classIDVariables.html#af4d08610ea8c4a69dcc164a8f7e1e685',1,'IDVariables']]]
 ];

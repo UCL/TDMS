@@ -125,15 +125,27 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="simulation__parameters_8h__dep__incl.png" border="0" usemap="#atdms_2include_2simulation__parameters_8hdep" alt=""/></div>
 <map name="atdms_2include_2simulation__parameters_8hdep" id="atdms_2include_2simulation__parameters_8hdep">
-<area shape="rect" title="Classes collecting parameters for the simulation." alt="" coords="211,5,390,47"/>
-<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="225,95,376,121"/>
-<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,177,204,203"/>
-<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="400,95,596,121"/>
-<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="229,169,373,211"/>
-<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="397,169,556,211"/>
-<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="581,169,733,211"/>
-<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="30,259,179,300"/>
-<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="582,259,731,300"/>
+<area shape="rect" title="Classes collecting parameters for the simulation." alt="" coords="936,5,1115,47"/>
+<area shape="rect" href="field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="1214,95,1365,121"/>
+<area shape="rect" href="fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="298,184,497,211"/>
+<area shape="rect" href="output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="664,281,872,322"/>
+<area shape="rect" href="objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="1483,273,1661,329"/>
+<area shape="rect" href="fdtd__bootstrapper_8h.html" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="5,177,224,218"/>
+<area shape="rect" href="mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="2425,95,2621,121"/>
+<area shape="rect" href="array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="1272,177,1416,218"/>
+<area shape="rect" href="loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="1473,377,1671,419"/>
+<area shape="rect" href="surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="521,177,679,218"/>
+<area shape="rect" href="vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="1440,177,1592,218"/>
+<area shape="rect" href="test__Field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="1667,177,1821,218"/>
+<area shape="rect" href="test__Field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="1845,177,2091,218"/>
+<area shape="rect" href="test__SplitField_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="2115,177,2299,218"/>
+<area shape="rect" href="test__SplitFieldComponent_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="704,177,963,218"/>
+<area shape="rect" href="test__TDFieldExporter2D_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="987,169,1197,225"/>
+<area shape="rect" href="test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="323,281,472,322"/>
+<area shape="rect" href="simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="875,377,1111,419"/>
+<area shape="rect" href="main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="922,474,1065,501"/>
+<area shape="rect" href="execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="1100,467,1345,508"/>
+<area shape="rect" href="test__VertexPhasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="1309,281,1459,322"/>
 </map>
 </div>
 </div>
@@ -144,8 +156,10 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPerfectlyMatchedLayer.html">PerfectlyMatchedLayer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structYeeCellDimensions.html">YeeCellDimensions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The x,y,z lengths of the cuboidal Yee cells.  <a href="structYeeCellDimensions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A three-tuple of integers that contain the stride in each direction to extract the phasors on.  <a href="structSurfaceSpacingStride.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulationParameters.html">SimulationParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class storing the various constants and behaviour flags for one executation of the tdms executable.  <a href="classSimulationParameters.html#details">More...</a><br /></td></tr>
@@ -161,10 +175,11 @@ Enumerations</h2></td></tr>
 , <b>analyse</b>
  }</td></tr>
 <tr class="separator:a3dfe11cf1a3a8121f6cd7fec4bf5947e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="memItemLeft" align="right" valign="top"><a id="afeeb3ea8d8350f7e9c636d23679a4dca"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Dimension</b> { <b>THREE</b>
+<tr class="memitem:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="memItemLeft" align="right" valign="top"><a id="afeeb3ea8d8350f7e9c636d23679a4dca"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dca">Dimension</a> { <b>THREE</b>
 , <b>TRANSVERSE_ELECTRIC</b>
 , <b>TRANSVERSE_MAGNETIC</b>
  }</td></tr>
+<tr class="memdesc:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether the simulation will compute all field components, or only the TE or TM modal components. <br /></td></tr>
 <tr class="separator:afeeb3ea8d8350f7e9c636d23679a4dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0081e804011c551ea0f4a596a64b284"><td class="memItemLeft" align="right" valign="top"><a id="aa0081e804011c551ea0f4a596a64b284"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>InterpolationMethod</b> { <b>null</b>
 , <b>cubic</b>

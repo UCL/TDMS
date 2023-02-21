@@ -1,6 +1,29 @@
 var searchData=
 [
-  ['unpack_5ffrom_5finput_5fmatrices_387',['unpack_from_input_matrices',['../classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b',1,'SimulationParameters']]],
-  ['update_5fsurface_5feh_388',['update_surface_EH',['../classSurfacePhasors.html#ae4b5f4f6c42b194c9256bf2c5f93e53b',1,'SurfacePhasors']]],
-  ['update_5fvertex_5fcamplitudes_389',['update_vertex_camplitudes',['../classVertexPhasors.html#a440fef465a4124c7ddc2c9c30a07cc1d',1,'VertexPhasors']]]
+  ['save_5foutputs_658',['save_outputs',['../classOutputMatrices.html#a5df46250873a3b2b2e25f41864a2e0e0',1,'OutputMatrices']]],
+  ['set_5ffrom_659',['set_from',['../classFieldSample.html#a9c19c2b4ac548ad3a966d69161fc6b94',1,'FieldSample::set_from()'],['../classVertexPhasors.html#add181a9ead3a7b4e973d74b3f47aaa7f',1,'VertexPhasors::set_from()']]],
+  ['set_5ffrom_5finput_5ffile_660',['set_from_input_file',['../classInputMatrices.html#a26b2a0f32220ed2db4eccb7c4be124aa',1,'InputMatrices::set_from_input_file(const char *mat_filename)'],['../classInputMatrices.html#a3b5de8db762f1f9483130d8d4fbcc0c7',1,'InputMatrices::set_from_input_file(const char *mat_filename, const char *gridfile)']]],
+  ['set_5ffrom_5fmatlab_5farray_661',['set_from_matlab_array',['../classSurfacePhasors.html#aba42a247098976cbda44d8e9a405b151',1,'SurfacePhasors']]],
+  ['set_5finterpolation_5fmethod_662',['set_interpolation_method',['../classIndependentObjectsFromInfile.html#a15140f49870f2cc9163b36de93366457',1,'IndependentObjectsFromInfile']]],
+  ['set_5fmatrix_5fpointer_663',['set_matrix_pointer',['../classInputMatrices.html#ab09ad4733b8a1ccd7c13aaaa86d410d3',1,'InputMatrices::set_matrix_pointer(int index, mxArray *new_ptr)'],['../classInputMatrices.html#a74301958011b0059aefb16cf459b8240',1,'InputMatrices::set_matrix_pointer(const std::string &amp;matrix_name, mxArray *new_ptr)']]],
+  ['set_5fmaxresfield_664',['set_maxresfield',['../classOutputMatrices.html#a8a65e6b16ddd7db218c139e999acf513',1,'OutputMatrices']]],
+  ['set_5fn_5fyee_5fcells_665',['set_n_Yee_cells',['../classOutputMatrices.html#af4a1ab0c0737a7db24c9ec09607cd42f',1,'OutputMatrices']]],
+  ['set_5fphasors_666',['set_phasors',['../classField.html#a88c2e1c843986da2cce6a54379466bbb',1,'Field']]],
+  ['set_5fpreferred_5finterpolation_5fmethods_667',['set_preferred_interpolation_methods',['../classGrid.html#a58b6535bf88dece0c46c4ce472124c08',1,'Grid']]],
+  ['set_5fptr_668',['set_ptr',['../classXYZVectors.html#a8640f5a6e25c968f91aa2efdf386d11a',1,'XYZVectors::set_ptr(char c, double *ptr)'],['../classXYZVectors.html#ae36d5df3549485b7a7e572dc06f33c12',1,'XYZVectors::set_ptr(AxialDirection d, double *ptr)']]],
+  ['set_5fsolver_5fmethod_669',['set_solver_method',['../classIndependentObjectsFromInfile.html#a6cf2d7a98956f1d6dffaaa5972b67258',1,'IndependentObjectsFromInfile']]],
+  ['set_5fspacing_5fstride_670',['set_spacing_stride',['../classSimulationParameters.html#a3f5aca819aabeede1fdc3ca60e41d13d',1,'SimulationParameters']]],
+  ['set_5fusing_5fdimensions_671',['set_using_dimensions',['../classPSTDVariables.html#aa988f3fd498b1ec4f3739cfe2c573c9b',1,'PSTDVariables']]],
+  ['set_5fvalues_5ffrom_672',['set_values_from',['../classField.html#a9aaf9b68cac30ee0c2ad27ca15975f5b',1,'Field']]],
+  ['setup_5fcomplex_5famplitude_5farrays_673',['setup_complex_amplitude_arrays',['../classVertexPhasors.html#aa55d80d600322b2639f1abbb9557587b',1,'VertexPhasors']]],
+  ['setup_5fdispersive_5fproperties_674',['setup_dispersive_properties',['../classLoopVariables.html#ad7a7b4542857b2ff3ec5ce199498dfdd',1,'LoopVariables']]],
+  ['setup_5feh_5fand_5fgridlabels_675',['setup_EH_and_gridlabels',['../classOutputMatrices.html#af10848bc8f9167a2c4d0885a40de671c',1,'OutputMatrices']]],
+  ['setup_5ffieldsample_676',['setup_fieldsample',['../classOutputMatrices.html#a9469dffb9c9161d017ada81886d27549',1,'OutputMatrices']]],
+  ['setup_5fid_677',['setup_Id',['../classOutputMatrices.html#af22f9dbfcfa9c2021a3fc15d0476f847',1,'OutputMatrices']]],
+  ['setup_5finterpolation_5foutputs_678',['setup_interpolation_outputs',['../classOutputMatrices.html#ac832b0f055e4fe08860dcf2e90cc2836',1,'OutputMatrices']]],
+  ['setup_5fvertex_5fphasors_679',['setup_vertex_phasors',['../classOutputMatrices.html#a55b9b035e2c97ea39de9ffb3abf821a9',1,'OutputMatrices']]],
+  ['splitfield_680',['SplitField',['../classSplitField.html#a2bdcf6a2af5f99c6ec348b4d8e842418',1,'SplitField::SplitField()=default'],['../classSplitField.html#ab06dc80550ff3d79a2d89242ce77d3f2',1,'SplitField::SplitField(int I_total, int J_total, int K_total)']]],
+  ['start_681',['start',['../classTimer.html#a3a8b5272198d029779dc9302a54305a8',1,'Timer']]],
+  ['start_5ftimer_682',['start_timer',['../classLoopTimers.html#a16dd6471b87a0a09d95ce32561bb637f',1,'LoopTimers']]],
+  ['surfacephasors_683',['SurfacePhasors',['../classSurfacePhasors.html#a25568be5d58f1826077f0e6dbde6a57c',1,'SurfacePhasors']]]
 ];

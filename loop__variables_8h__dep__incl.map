@@ -1,0 +1,4 @@
+<map id="tdms/include/simulation_manager/loop_variables.h" name="tdms/include/simulation_manager/loop_variables.h">
+<area shape="rect" id="node1" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="29,5,227,47"/>
+<area shape="rect" id="node2" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="5,95,251,136"/>
+</map>

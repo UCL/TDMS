@@ -1,10 +1,26 @@
 var searchData=
 [
-  ['n_124',['n',['../classFieldSample.html#a6ecc06f3a1dc2360f84d0d58e55a0d0c',1,'FieldSample']]],
-  ['normalise_5fsurface_125',['normalise_surface',['../classSurfacePhasors.html#a8948023a7248add2e5fcb6a961bc9db6',1,'SurfacePhasors']]],
-  ['normalise_5fvertices_126',['normalise_vertices',['../classVertexPhasors.html#a885ba9bda39b6c62b1a78395a1891d5a',1,'VertexPhasors']]],
-  ['normalise_5fvolume_127',['normalise_volume',['../classField.html#a616a0a2e9edb5ee42374611c2eea777e',1,'Field']]],
-  ['normalised_5fdifference_128',['normalised_difference',['../classField.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a',1,'Field']]],
-  ['num_5fnonzero_5fcoeffs_129',['num_nonzero_coeffs',['../classInterpolationScheme.html#a66152c3e66f87d9be1af1972dec74f77',1,'InterpolationScheme']]],
-  ['numerical_5fderivative_2eh_130',['numerical_derivative.h',['../numerical__derivative_8h.html',1,'']]]
+  ['magneticfield_180',['MagneticField',['../classMagneticField.html',1,'']]],
+  ['magneticsplitfield_181',['MagneticSplitField',['../classMagneticSplitField.html',1,'MagneticSplitField'],['../classMagneticSplitField.html#a44ba8ba444cfa073d72e7e30758546a8',1,'MagneticSplitField::MagneticSplitField()']]],
+  ['main_2ecpp_182',['main.cpp',['../main_8cpp.html',1,'']]],
+  ['mat_5fio_2eh_183',['mat_io.h',['../mat__io_8h.html',1,'']]],
+  ['matches_184',['matches',['../classutils_1_1HDF5File.html#a6aef82b251d0d6fb0bb772ef06cc6562',1,'utils::HDF5File']]],
+  ['materialcollection_185',['MaterialCollection',['../classMaterialCollection.html',1,'']]],
+  ['matfilematrixcollection_186',['MatFileMatrixCollection',['../classMatFileMatrixCollection.html',1,'']]],
+  ['matrix_187',['Matrix',['../classMatrix.html',1,'Matrix&lt; T &gt;'],['../classMatrix.html#a8eb2069811295ea871b8f0a690aa734f',1,'Matrix::Matrix(int n_rows, int n_cols)'],['../classMatrix.html#a8f3dfbe2a101bdc58c768d315dbc1234',1,'Matrix::Matrix()=default']]],
+  ['matrix_3c_20double_20_3e_188',['Matrix&lt; double &gt;',['../classMatrix.html',1,'']]],
+  ['matrix_3c_20fftw_5fcomplex_20_3e_189',['Matrix&lt; fftw_complex &gt;',['../classMatrix.html',1,'']]],
+  ['matrix_3c_20int_20_3e_190',['Matrix&lt; int &gt;',['../classMatrix.html',1,'']]],
+  ['matrix_3c_20std_3a_3acomplex_3c_20double_20_3e_20_3e_191',['Matrix&lt; std::complex&lt; double &gt; &gt;',['../classMatrix.html',1,'']]],
+  ['matrix_5fcollection_2eh_192',['matrix_collection.h',['../matrix__collection_8h.html',1,'']]],
+  ['matrixcollection_193',['MatrixCollection',['../classMatrixCollection.html',1,'MatrixCollection'],['../classMatrixCollection.html#a360ed9543774d09c45cd8a6fe3cbac39',1,'MatrixCollection::MatrixCollection()=default'],['../classMatrixCollection.html#a000f8e002fea83d6fe6c219704e26be0',1,'MatrixCollection::MatrixCollection(std::vector&lt; std::string &gt; names)']]],
+  ['matrixtest_194',['MatrixTest',['../classMatrixTest.html',1,'']]],
+  ['max_195',['max',['../structijk.html#a840cdd2a089888ce92bfb29be8a4cba4',1,'ijk::max()'],['../utils_8h.html#a959675ffe66c53e2410c485edaeb2fe7',1,'max():&#160;utils.cpp']]],
+  ['max_5fijk_5ftot_196',['max_IJK_tot',['../classGrid.html#a7a3654bcfe6992aa6f79135a4e92383d',1,'Grid']]],
+  ['memory_5falready_5fassigned_197',['memory_already_assigned',['../classOutputMatrixPointers.html#a883367ec336d87b0ef9a4aef767ad610',1,'OutputMatrixPointers']]],
+  ['mesh_5fbase_2eh_198',['mesh_base.h',['../mesh__base_8h.html',1,'']]],
+  ['ml_5fconst_5ffn_5fmax_5fpointwise_5ferror_199',['ML_const_fn_max_pointwise_error',['../test__interpolation__functions_8cpp.html#a1290791884206a5d9c9da07e64555c07',1,'test_interpolation_functions.cpp']]],
+  ['multiply_5fe_5fby_200',['multiply_E_by',['../classFullFieldSnapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc',1,'FullFieldSnapshot']]],
+  ['multiply_5fh_5fby_201',['multiply_H_by',['../classFullFieldSnapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a',1,'FullFieldSnapshot']]],
+  ['mx_202',['mx',['../classFieldSample.html#adc368ad5a8930a7799762f4626cd9d55',1,'FieldSample']]]
 ];

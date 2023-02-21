@@ -4,7 +4,7 @@
 <area shape="rect" id="node3" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="364,155,439,181"/>
 <area shape="rect" id="node7" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="23,229,105,256"/>
 <area shape="rect" id="node10" href="$cell__coordinate_8h.html" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="1311,80,1444,107"/>
-<area shape="rect" id="node13" href="$dimensions_8h.html" title=" " alt="" coords="1177,80,1287,107"/>
+<area shape="rect" id="node13" href="$dimensions_8h.html" title="Defines a class that serves as an explicit converter between MATLAB pointers and array dimensions." alt="" coords="1177,80,1287,107"/>
 <area shape="rect" id="node14" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="1101,304,1179,331"/>
 <area shape="rect" id="node18" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="558,80,743,107"/>
 <area shape="rect" id="node4" title=" " alt="" coords="439,229,526,256"/>

@@ -159,49 +159,54 @@ $(document).ready(function(){initNavTree('mesh__base_8h_source.html',''); initRe
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment"> * using triangulatePlane. Each matrix is a plane of the cuboid which is defined</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"> * by:</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"> * (I0,I1)x(J0,J1)x(K0,K1)</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"> * Each vertexMatrix[i] should be destroyed after calling this function</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                       mxArray **vertexMatrix);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keywordtype">void</span> triangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                           mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ, <span class="keywordtype">int</span> dK);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"> * @brief Generates a triangulation of a cuboid defined the surface of a regular</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * grid.</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> * The result is returned in a concise manner, ie, a list of vertices and a list</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> * of facets which index in to the list of vertices.</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * The list of vertices is itself a list of indices in to the x, y and z grid</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * label vectors. In this sense this function deals only with the topology of</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> * the cuboid and the mesh. An extra step is required to generate the actual</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> * mesh from the values returned by this function.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> * The surface of the volume [I0,I1]x[J0,J1]x[K0,K1] is meshed by this function.</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * @param vertices an array of vertices, each row is a numbered vertex.</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> * @param facets an array of facets each of which is created using 3 vertex</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> * indices. Each index is an index in to the vertices array.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                              mxArray **vertices, mxArray **facets);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keywordtype">void</span> conciseTriangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0,</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                                  <span class="keywordtype">int</span> K1,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                                  <span class="keyword">const</span> <a class="code" href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a> &amp;spacing_stride,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                                  mxArray **vertices, mxArray **facets);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keywordtype">void</span> conciseCreateBoundary(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertices,</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                           mxArray **facets);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"> * Each matrix is a plane of the cuboid which is defined by:</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"> * (I0,I1)x(J0,J1)x(K0,K1)</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment"> * Each vertexMatrix[i] should be destroyed after calling this function</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"> * @param vertexMatrix 6-element array to write the triangulations to</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="comment"> * @param I0,I1,J0,J1,K0,K1 The Yee-cell indicies defining the cuboidal surface</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                       mxArray **vertexMatrix);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> triangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                           mxArray **vertexMatrix, <span class="keywordtype">int</span> dI, <span class="keywordtype">int</span> dJ, <span class="keywordtype">int</span> dK);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">/**</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> * @brief Generates a triangulation of a cuboid defined the surface of a regular</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> * grid.</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * The result is returned in a concise manner, ie, a list of vertices and a list</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> * of facets which index in to the list of vertices.</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> * The list of vertices is itself a list of indices in to the x, y and z grid</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> * label vectors. In this sense this function deals only with the topology of</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * the cuboid and the mesh. An extra step is required to generate the actual</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment"> * mesh from the values returned by this function.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment"> * The surface of the volume [I0,I1]x[J0,J1]x[K0,K1] is meshed by this function.</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"> * @param vertices an array of vertices, each row is a numbered vertex.</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment"> * @param facets an array of facets each of which is created using 3 vertex</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment"> * indices. Each index is an index in to the vertices array.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment"> * @param I0,I1,J0,J1,K0,K1 The Yee-cell indicies defining the cuboidal surface</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keywordtype">void</span> <a class="code" href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a>(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                              mxArray **vertices, mxArray **facets);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keywordtype">void</span> conciseTriangulateCuboidSkip(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> J0, <span class="keywordtype">int</span> J1, <span class="keywordtype">int</span> K0,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                                  <span class="keywordtype">int</span> K1,</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                                  <span class="keyword">const</span> <a class="code" href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a> &amp;spacing_stride,</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                                  mxArray **vertices, mxArray **facets);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> conciseCreateBoundary(<span class="keywordtype">int</span> I0, <span class="keywordtype">int</span> I1, <span class="keywordtype">int</span> K0, <span class="keywordtype">int</span> K1, mxArray **vertices,</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                           mxArray **facets);</div>
 <div class="ttc" id="amat__io_8h_html"><div class="ttname"><a href="mat__io_8h.html">mat_io.h</a></div><div class="ttdoc">Includes MATLAB headers for I/O.</div></div>
 <div class="ttc" id="amesh__base_8h_html_a33e5a5bb9c09e69af86409399ddfdce9"><div class="ttname"><a href="mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9">triangulatePlane</a></div><div class="ttdeci">void triangulatePlane(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix)</div><div class="ttdoc">Generate a matrix of vertices which define a triangulation of a regular two dimensional grid.</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:11</div></div>
 <div class="ttc" id="amesh__base_8h_html_a5f577c512f3cce916d1effaf7275d46b"><div class="ttname"><a href="mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b">triangulatePlaneSkip</a></div><div class="ttdeci">void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K, int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:132</div></div>
 <div class="ttc" id="amesh__base_8h_html_ad1d38a26a5651489a9f8d82fb9afb747"><div class="ttname"><a href="mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747">conciseTriangulateCuboid</a></div><div class="ttdeci">void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices, mxArray **facets)</div><div class="ttdoc">Generates a triangulation of a cuboid defined the surface of a regular grid.</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:317</div></div>
 <div class="ttc" id="amesh__base_8h_html_af542151614a30a9fea3279e6730463fd"><div class="ttname"><a href="mesh__base_8h.html#af542151614a30a9fea3279e6730463fd">triangulateCuboid</a></div><div class="ttdeci">void triangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix)</div><div class="ttdef"><b>Definition:</b> mesh_base.cpp:258</div></div>
 <div class="ttc" id="asimulation__parameters_8h_html"><div class="ttname"><a href="simulation__parameters_8h.html">simulation_parameters.h</a></div><div class="ttdoc">Classes collecting parameters for the simulation.</div></div>
-<div class="ttc" id="astructSurfaceSpacingStride_html"><div class="ttname"><a href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a></div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:53</div></div>
+<div class="ttc" id="astructSurfaceSpacingStride_html"><div class="ttname"><a href="structSurfaceSpacingStride.html">SurfaceSpacingStride</a></div><div class="ttdoc">A three-tuple of integers that contain the stride in each direction to extract the phasors on.</div><div class="ttdef"><b>Definition:</b> simulation_parameters.h:56</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

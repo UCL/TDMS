@@ -33,9 +33,22 @@ var NAVTREE =
         [ "Compiling on UCL's Myriad cluster", "index.html#autotoc_md4", null ]
       ] ],
       [ "Where's the main?", "index.html#autotoc_md5", null ],
-      [ "Testing", "index.html#autotoc_md6", [
+      [ "Code organisation of the TDMS algorithm", "index.html#autotoc_md6", [
+        [ "Initialisation (step 2)", "index.html#autotoc_md7", null ],
+        [ "Running the Main Loop (step 3)", "index.html#autotoc_md8", null ],
+        [ "Post-Processing (step 4)", "index.html#autotoc_md9", null ],
+        [ "Write out and Tear Down (step 5)", "index.html#autotoc_md10", null ]
+      ] ],
+      [ "Testing", "index.html#autotoc_md11", [
         [ "Unit", "index.html#unit-testing", null ],
         [ "System", "index.html#system-tests", null ]
+      ] ]
+    ] ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -43,8 +56,8 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -54,6 +67,7 @@ var NAVTREE =
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
         [ "Enumerations", "globals_enum.html", null ]
       ] ]
     ] ]
@@ -62,9 +76,11 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html",
-"classSimulationParameters.html#a05d8c16f873435e51e8e32ff48fe353b",
-"index.html#unit-testing"
+"",
+"classFieldSample.html#ab3eac231b85e434098bbd2d4a5814d36",
+"classOutputMatrices.html#a7ace232f22d07209ace9f538161fcc41",
+"classXYZTensor3D.html#a462c351afc01b5fa2c0f36453788643b",
+"interpolation__methods_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

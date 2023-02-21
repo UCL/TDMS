@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['zero_393',['zero',['../classSplitField.html#a6367b936f626e63bcfe7eeff3ca01a54',1,'SplitField::zero()'],['../classField.html#a5511a94b5f37a81ee7b3dacb83dd20b6',1,'Field::zero()']]],
-  ['zero_5fsurface_5feh_394',['zero_surface_EH',['../classSurfacePhasors.html#afc6e9cca06ea4af80837bbc104b9d77b',1,'SurfacePhasors']]]
+  ['validate_5fassigned_5fpointers_705',['validate_assigned_pointers',['../classInputMatrices.html#a6c585c28a30d17c03eefe1cb440a467e',1,'InputMatrices']]],
+  ['value_5fof_5fattribute_706',['value_of_attribute',['../classfdtdGridInitialiser.html#ac73ca0b90f34e6d8cf13e95891696429',1,'fdtdGridInitialiser']]],
+  ['vertexphasors_707',['VertexPhasors',['../classVertexPhasors.html#aae6207412f686aa39eef314d2fcacd14',1,'VertexPhasors']]]
 ];
