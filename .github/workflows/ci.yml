@@ -1,4 +1,5 @@
-name: Linux tests
+name: Build and run tests
+
 
 on:
   push:
@@ -7,21 +8,24 @@ on:
   release:
   workflow_dispatch:
 
+
 concurrency:
   # Skip intermediate builds: always.
   # Cancel intermediate builds: always.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+
 jobs:
-  tests:
-    name: Test - ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
+  # Run the builds first.
+  build:
+    name: Build ${{ matrix.os }} - Build type ${{ matrix.build_type }} - Build testing ${{ matrix.build_testing }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - [ubuntu-latest, windows-latest, macos-latest]
         build_type:
           - Release
         build_testing:
@@ -30,13 +34,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-
-      - name: Setup cache
-        id: cache-test-data
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/tdms/tests/system/data
-          key: test_data
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
@@ -71,12 +68,45 @@ jobs:
         run: |
           cmake --build . --config ${{ matrix.build_type }}
 
+  # Unit tests for all OSs and they can start in parallel as soon as their build
+  # is finished.
+  unit-tests:
+    name: Unit tests - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: "Build - ${{ matrix.os }} - Build type release - Build testing ON"
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
       - name: Run TDMS unit tests
-        if: matrix.build_testing == 'ON'
+        #if: matrix.build_testing == 'ON'
         working-directory: ${{runner.workspace}}/build
         run: |
           export OMP_NUM_THREADS=1
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
+
+  # Only run the slow system tests on ubuntu, job can start in parallell as soon
+  # as the ubuntu build is finished. Cache the input data to save network usage.
+  system-tests:
+    name: System tests
+    runs-on: ubuntu-latest
+    needs: Build - ubuntu-latest - Build type release - Build testing ON
+    strategy:
+      fail-fast: false
+      #matrix:
+      #  os:
+      #    - [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Setup cache of test data
+        id: cache-test-data
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/tdms/tests/system/data
+          key: test_data
 
       - name: Run TDMS system tests
         working-directory: ${{runner.workspace}}/build
