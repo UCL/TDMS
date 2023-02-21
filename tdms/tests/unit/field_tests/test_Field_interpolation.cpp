@@ -1,5 +1,5 @@
 /**
- * @file test_field_interpolation.cpp
+ * @file test_Field_interpolation.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests interpolation of E- and H-fields and compares the errors against
  * MATLAB benchmarks

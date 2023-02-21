@@ -12,19 +12,19 @@
 // Stores the thickness in each axial direction of the Perfectly Matched Layer
 // (pml)
 struct PerfectlyMatchedLayer {
-  int Dxl = 0;//< Thickness of lower pml in the x direction
-  int Dxu = 0;//< Thickness of upper pml in the x direction
-  int Dyl = 0;//< Thickness of lower pml in the y direction
-  int Dyu = 0;//< Thickness of upper pml in the y direction
-  int Dzl = 0;//< Thickness of lower pml in the z direction
-  int Dzu = 0;//< Thickness of upper pml in the z direction
+  int Dxl = 0;//!< Thickness of lower pml in the x direction
+  int Dxu = 0;//!< Thickness of upper pml in the x direction
+  int Dyl = 0;//!< Thickness of lower pml in the y direction
+  int Dyu = 0;//!< Thickness of upper pml in the y direction
+  int Dzl = 0;//!< Thickness of lower pml in the z direction
+  int Dzu = 0;//!< Thickness of upper pml in the z direction
 };
 
-// The x,y,z lengths of the cuboidal Yee cells
+/** @brief The x,y,z lengths of the cuboidal Yee cells */
 struct YeeCellDimensions {
-  double dx = 0.;//< Yee cell width in the x direction
-  double dy = 0.;//< Yee cell width in the y direction
-  double dz = 0.;//< Yee cell width in the z direction
+  double dx = 0.;//!< Yee cell width in the x direction
+  double dy = 0.;//!< Yee cell width in the y direction
+  double dz = 0.;//!< Yee cell width in the z direction
 };
 
 // Tracks whether the light source is pulsed or the simulation is at steady
@@ -33,6 +33,8 @@ enum SourceMode { steadystate, pulsed };
 
 enum RunMode { complete, analyse };
 
+/** @brief Determines whether the simulation will compute all field components,
+ * or only the TE or TM modal components */
 enum Dimension {
   THREE,              //< Full dimensionality - compute all H and E components
   TRANSVERSE_ELECTRIC,//< Transverse electric - only compute Ex, Ey, and Hz
@@ -46,9 +48,10 @@ enum Dimension {
 enum InterpolationMethod { null, cubic, band_limited };
 
 /**
- * A three-tuple of integers that contain the stride in each direction
- * to extract the phasors on. the surface i.e. x = 2 means extract from
- * every 2nd Yee cell.
+ * @brief  A three-tuple of integers that contain the stride in each direction
+ * to extract the phasors on.
+ *
+ * On the surface, a stride of EG x = 2 means extract from every 2nd Yee cell.
  */
 struct SurfaceSpacingStride {
   int x = 1;

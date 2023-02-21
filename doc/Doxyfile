@@ -19,11 +19,16 @@ PROJECT_BRIEF          = "Time Domain Maxwell Solver"
 PROJECT_LOGO           =
 # Blank == Write output to current dir.
 OUTPUT_DIRECTORY       =
-INPUT                  = tdms/include tdms/src tdms/tests/unit
+# Input directories to search for files
+INPUT                  = tdms/include/ tdms/src/ tdms/tests/unit/ tdms/tests/include tdms/tests/system
+# Recurse through input directories to find subdirectories
+RECURSIVE              = YES
 FILE_PATTERNS          = *.cpp \
                          *.h \
                          *.py
 GENERATE_LATEX         = NO
+# Allow Doxygen to build graphs for class inheritance, etc
+HAVE_DOT               = YES
 
 # also document private member functions?
 EXTRACT_PRIVATE        = YES

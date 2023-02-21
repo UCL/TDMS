@@ -10,6 +10,8 @@
 #include "mat_io.h"
 #include "matrix_collection.h"
 
+/** @brief Allows us to handle the MATLAB arrays from the input file in a
+ * human-readable format */
 class InputMatrices {
 private:
   // Pointers to arrays in C++ that will be populated by the MATLAB matrices

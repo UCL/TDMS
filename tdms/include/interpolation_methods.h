@@ -49,6 +49,11 @@ enum scheme_value {
   CUBIC_INTERP_LAST = -2// cubic interpolation to last 2 of 4 points (interp3)
 };
 
+/** @brief Executes an interpolation scheme.
+ *
+ * The scheme that an instance executes is determined by the priority that is
+ * passed at construction.
+ */
 class InterpolationScheme {
 private:
   // the "preference" or "value" of applying this scheme. It may be better to
