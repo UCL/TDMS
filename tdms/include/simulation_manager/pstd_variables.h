@@ -17,11 +17,12 @@
  */
 class PSTDVariables {
 private:
-  // flags whether the dk-variables have been malloc'd or not
+  //! Flags whether the dk-variables have been malloc'd or not
   bool variables_allocated = false;
 
 public:
-  CCoefficientMatrix ca, cb;//< TODO
+  /*! TODO: what are these? */
+  CCoefficientMatrix ca, cb;
 
   // The number of complex fourier coefficients in the derivative-shift
   // operator, for each field component ( N_ex = # coeffs for Ex, for example)
@@ -31,6 +32,7 @@ public:
   fftw_complex *dk_ex, *dk_ey, *dk_ez, *dk_hx, *dk_hy, *dk_hz;
 
   PSTDVariables() = default;
+  /*! @copydoc set_using_dimensions */
   PSTDVariables(const IJKDimensions &IJK_tot) { set_using_dimensions(IJK_tot); }
 
   /**

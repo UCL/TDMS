@@ -3,10 +3,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <spdlog/spdlog.h>
-
-#include "mat_io.h"
-
 using namespace std;
 
 MatFileMatrixCollection::MatFileMatrixCollection(const char *filename) {

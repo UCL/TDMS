@@ -142,7 +142,44 @@ spdlog::debug("Send help");
 
 ## Where's the main?
 
-The C++ `main` function is in main.cpp however the main algorithm code is execute_simulation() in iterator.cpp
+The C++ `main` function is in `main.cpp` however the main algorithm code is in the `execute()` method of the `SimulationManager` class, in `execute_simulation.cpp`.
+
+Broadly speaking, the `main` function - and thus a call to (or execution of) `tdms` -  can be broken down into the following steps:
+1. Parse the input arguments
+1. [Prepare the simulation](#initialisation-step-2) by creating an instance of `SimulationManager`
+1. [Run the _main loop_](#running-the-main-loop-step-3). The _main loop_ is meant to mean "the (implementation of) the time-stepping algorithm which TDMS uses", and is contained in the `execute()` method of the `SimulationManager` class.
+1. [Perform post-loop processing](#post-processing-step-4) on the outputs, having completed the main loop (extraction of phasors, computing derived quantities, etc).
+1. [Write the outputs](#write-out-and-tear-down-step-5) and tear-down memory.
+
+The `SimulationManager` class governs steps 2 through 5.
+
+## Code organisation of the TDMS algorithm
+
+An instance of `SimulationManager` essentially supports one `tdms` simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the `SimulationManager` instance):
+- `ObjectsFromInfile` (`inputs`): Handles conversion of any input arrays to native `C++` objects, and any variables that are derived directly from the input file supplied to `tdms` on the command line.
+- `OutputMatrices` (`outputs`): Handles data storage for the outputs and the process of writing the output file.
+- `PSTDVariables` (`PSTD`) and `FDTDBootstrapper` (`FDTD`): Handle variables that are only required for the pseudo-spectral and finite-difference solver methods, respectively.
+- `LoopTimers` (`timers`): Controls timing (and logging execution times) of the main loop and subprocesses therein.
+
+The role of `SimulationManager` is to handle how these objects interact in the main loop.
+
+### Initialisation (step 2)
+
+`SimulationManager` instances begin by initialising the `inputs` attribute. Based on this attribute, they set up `PSTD`/`FDTD` variables and prepare the `outputs` object for writing. Some members of the `outputs` objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the `outputs` object that require information _from_ the main loop are prepared (dimensions are determined, etc) at this stage but not set.
+
+### Running the Main Loop (step 3)
+
+Once initialised, the `execute()` method can be called. This will create an instance of `LoopVariables` that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the `execute()` method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. `timers` track the speed of execution of the main loop, and report to the logging.
+
+### Post-Processing (step 4)
+
+Upon completing `execute()` successfully, the `post_loop_processing()` method of `SimulationManager` writes the data to the `outputs` attributes that were not used as buffers during the main loop.
+
+### Write out and Tear Down (step 5)
+
+From here, the `write_outputs()` method exports the data in `outputs` to the desired file.
+
+At this point, the instance of `SimulationManager` can be allowed to go out of scope. In practice, `main()` terminates here and the destructor handles the tear-down of `MATLAB` memory blocks.
 
 ## Testing
 

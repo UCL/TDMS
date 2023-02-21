@@ -21,8 +21,8 @@
  */
 class SurfacePhasors {
 private:
-  int **surface_vertices = nullptr;//< Pointer to the vertices on the surface
-  int n_surface_vertices = 0;      //< Number of vertices on the surface
+  int **surface_vertices = nullptr;//!< Pointer to the vertices on the surface
+  int n_surface_vertices = 0;      //!< Number of vertices on the surface
 
   mxArray *vertex_list = nullptr;//< List of vertices
   double **vertex_list_data_ptr =
@@ -40,7 +40,8 @@ private:
   Frequency index corresponds to the frequencies at which the user has requested
   we extract the amplitudes.
   */
-  double ***surface_EHr = nullptr, ***surface_EHi = nullptr;
+  double ***surface_EHr = nullptr,
+         ***surface_EHi = nullptr;//!< @copydoc surface_EHr
 
 public:
   SurfacePhasors() = default;
