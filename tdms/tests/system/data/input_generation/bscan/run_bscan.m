@@ -4,7 +4,7 @@ function [] = run_bscan(test_directory, input_filename)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Create directory into which to place the input files, if it doesn't exist already
-dir_to_place_input_mats = strcat(test_directory,'/in')
+dir_to_place_input_mats = test_directory;%strcat(test_directory,'/in')
 if ~exist(dir_to_place_input_mats, 'dir')
     mkdir(dir_to_place_input_mats);
 end
@@ -40,7 +40,7 @@ composition_matrix = [];
 save('gridfile_fs', 'composition_matrix', 'material_matrix');
 
 %generate tdms executable input files
-iteratefdtd_matrix(input_filename,'filesetup',strcat(dir_to_place_input_mats,'/pstd_cyl'),'gridfile_cyl.mat','');
-iteratefdtd_matrix(input_filename,'filesetup',strcat(dir_to_place_input_mats,'/pstd_fs'),'gridfile_fs.mat','');
+iteratefdtd_matrix(input_filename,'filesetup',strcat(dir_to_place_input_mats,'/pstd_cyl_input'),'gridfile_cyl.mat','');
+iteratefdtd_matrix(input_filename,'filesetup',strcat(dir_to_place_input_mats,'/pstd_fs_input'),'gridfile_fs.mat','');
 
 end
