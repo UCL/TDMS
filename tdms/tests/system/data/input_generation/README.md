@@ -19,4 +19,6 @@ The `matlab/` directory contains functions that `run_bscan` will need to call on
 
 The `generate_test_input.py` file contains `.py` files that the system tests can invoke to regenerate the input data. Since the system test framework uses `pytest`, but the data generation requires `MATLAB` (for now), we use `Python` to read in and process the information that each test requires, and then call `run_bscan` with the appropriate commands from within Python.
 
+The `regenerate_all.py` file will work through all of the `config_tc.yaml` files in the directory and regenerate the input `.mat` data corresponding to each.
+
 The remaining `config_XX.yaml` and `input_file_XX.m` files are as mentioned in [the previous section](#regeneration-of-the-data). These contain the information about each test that Python and `run_bscan` will need to regenerate the input files.

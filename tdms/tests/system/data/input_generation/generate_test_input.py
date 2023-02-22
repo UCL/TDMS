@@ -228,9 +228,3 @@ class GenerationData:
         for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
             os.remove(aux_mat)
         return
-
-
-data_01 = LOCATION_OF_THIS_FILE + "/config_01.yaml"
-
-a = GenerationData(data_01)
-a.generate()
