@@ -1,4 +1,5 @@
-<!-- \cond -->
+<!-- \cond
+ -->
 <!-- 👆 this comment and the endcond below, tells doxygen to ignore the badges
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
@@ -17,10 +18,10 @@ would be duplicated) everything else in README.md is also the project homepage. 
 
 # Time-Domain Maxwell Solver
 
-TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving
-Maxwell's equations to simulate light propagation through a medium. See the
-[pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
-further details.
+TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for
+solving Maxwell's equations to simulate light propagation through a medium. See
+the [pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
+for further details.
 
 
 ## Compilation
@@ -39,42 +40,42 @@ $ cmake .. \
 # -DBUILD_TESTING=ON
 $ make install
 ```
-where lines need to be commented in and the paths modified if cmake cannot
-(1) find MATLAB, (2) find FFTW or (3) install to the default install prefix.
+where lines need to be commented in and the paths modified if cmake cannot (1)
+find MATLAB, (2) find FFTW or (3) install to the default install prefix.
 
-- <details>
-    <summary>Mac specific instructions</summary>
+<details>
+<summary>Mac specific instructions</summary>
 
-    To compile on a Mac an x86 compiler with libraries for OpenMP are required,
-    which can be installed using [brew](https://brew.sh/) with `brew install llvm`
-    then (optionally) set the following cmake arguments
+To compile on a Mac an x86 compiler with libraries for OpenMP are required,
+which can be installed using [brew](https://brew.sh/) with `brew install llvm`
+then (optionally) set the following cmake arguments
 
-    ```
-    -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
-    -DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
-    -DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
-    ```
+```{sh}
+-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
+-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
+-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
+```
 
-    On an ARM Mac install the x86 version of brew with
-    ```bash
-    arch -x86_64 zsh
-    arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    arch -x86_64 /usr/local/bin/brew install llvm
-    ```
+On an ARM Mac install the x86 version of brew with
+```bash
+arch -x86_64 zsh
+arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+arch -x86_64 /usr/local/bin/brew install llvm
+```
 </details>
 
 
 ## Usage
 
-Once the executable has been compiled and installed, `tdms` should be in the `PATH`.
-Check that installation worked with
+Once the executable has been compiled and installed, `tdms` should be in the
+`PATH`.  Check that installation worked with
 
 ```bash
 $ tdms -h
 ```
 
-You can invoke it directly or call it from a MATLAB script.
-We recommend that beginners with MATLAB installed start with the demonstration MATLAB script.
+You can invoke it directly or call it from a MATLAB script.  We recommend that
+beginners with MATLAB installed start with the demonstration MATLAB script.
 
 ### To run the demonstration code
 
@@ -102,15 +103,19 @@ Options:
 -m:	Minimise output file size by not saving vertex and facet information
 ```
 
-The basic workflow is with two arguments, an input file as specified by [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output file name to be created.
+The basic workflow is with two arguments, an input file as specified by
+[`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output
+file name to be created.
 
-You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
+You can choose two possible solver methods: either pseudo-spectral time-domain
+(PSTD, the default) or finite-difference (FDTD, with option
+`--finite-difference`).
 
 ### Parallelism
 
-TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum
-number of threads can be set with the `OMP_NUM_THREADS` environment variable.
-For example, to use 4 threads, in a bash shell, use:
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The
+maximum number of threads can be set with the `OMP_NUM_THREADS` environment
+variable.  For example, to use 4 threads, in a bash shell, use:
 
 ```bash
 $ export OMP_NUM_THREADS=4
@@ -118,6 +123,7 @@ $ export OMP_NUM_THREADS=4
 
 Before calling the `tdms` executable.
 
-## Contributing
+## Want to contribute?
 
-You are welcome to report new issues or submit pull requests.  For more information about how to contribute, please see the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file and we have developer documentation on our [`gh-pages` site](https://github-pages.ucl.ac.uk/TDMS).
+We're very grateful for bug reports, feature requests and pull requests. Please
+see our [contribution guidelines](./CONTRIBUTING.md).
