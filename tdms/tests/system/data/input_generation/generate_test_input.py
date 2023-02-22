@@ -70,14 +70,22 @@ class MATLABCommand:
     # Shell exit code after running this matlab command
     return_code: int
 
-    def __init__(self, bscan_args: BScanArguments) -> None:
+    def __init__(self, matlab_args: Union[BScanArguments, list[str]]) -> None:
         """Initialise by being told the arguments that the run_bscan function will need.
 
         Then wrap a call to this command between addpath(), so that matlab can find the run_bscan function itself, and exit, so that matlab does not hang after running the bscan function.
+
+        If the input is a BScanArguments object, the constructor can assemble the matlab call to run_bscan by itself.
+        If the input is a list[str], then the constructor interprets this as a list of matlab commands to be run, in the list order.
         """
         self.matlab_commands = [self._addpath_commands()]
         # add the additional commands here
-        self.matlab_commands += [bscan_args.create_bscan_argument()]
+        if isinstance(matlab_args, BScanArguments):
+            # handed BScanArgument, construct command from this
+            self.matlab_commands += [matlab_args.create_bscan_argument()]
+        else:
+            # handed a list of strings, which are the individual matlab arguments
+            self.matlab_commands += matlab_args
         # add the exit command because MATLAB does not give up control of the system after running a script >:(
         self.matlab_commands += [self._exit_command()]
 
