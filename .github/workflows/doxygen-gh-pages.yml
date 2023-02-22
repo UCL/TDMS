@@ -36,13 +36,6 @@ jobs:
       run: touch html/.nojekyll
       shell: bash
 
-    - name: Manually copy over assets
-      # Preserve their directory structure to keep README's image references!
-      run: |
-        mkdir -p html/doc/assets
-        cp -R doc/assets/*.png html/doc/assets
-      shell: bash
-
     - name: Upload the website
       uses: actions/upload-artifact@v3
       with:
