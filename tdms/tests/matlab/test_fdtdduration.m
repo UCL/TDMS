@@ -1,7 +1,7 @@
 
 % Define the tests as all the locally defined functions
 function tests = test_iteratefdtd_matrix_function
-    addpath('../../matlab/', 'data/');
+    addpath('../system/data/input_generation/matlab', 'data/');
     tests = functiontests(localfunctions);
 end
 
