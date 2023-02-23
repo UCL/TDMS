@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['n_0',['n',['../class_field_sample.html#a6ecc06f3a1dc2360f84d0d58e55a0d0c',1,'FieldSample']]],
-  ['n_5fsurface_5fvertices_1',['n_surface_vertices',['../class_surface_phasors.html#afc872281d9bfe3775c144f12fb09e98a',1,'SurfacePhasors']]]
+  ['k_0',['k',['../structijk.html#aae1f5344ff3cbebac369c6d456f9c5e8',1,'ijk::k()'],['../class_dimensions.html#a484abda425a94fad407e77dcfad03abc',1,'Dimensions::k()'],['../class_field_sample.html#a4c734f563c5c125633f660d5abb920fa',1,'FieldSample::k()']]]
 ];

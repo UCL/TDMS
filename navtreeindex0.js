@@ -195,6 +195,8 @@ var NAVTREEINDEX0 =
 "class_independent_objects_from_infile.html":[4,0,51],
 "class_independent_objects_from_infile.html#a15140f49870f2cc9163b36de93366457":[4,0,51,0],
 "class_independent_objects_from_infile.html#a6cf2d7a98956f1d6dffaaa5972b67258":[4,0,51,1],
+"class_independent_objects_from_infile.html#ad196f274d7c184fbc43c1f09877defa9":[4,0,51,2],
+"class_independent_objects_from_infile.html#aec7dac53fadbcffa51a8fd14b83bf34e":[4,0,51,3],
 "class_input_matrices.html":[4,0,52],
 "class_input_matrices.html#a26b2a0f32220ed2db4eccb7c4be124aa":[4,0,52,4],
 "class_input_matrices.html#a3b5de8db762f1f9483130d8d4fbcc0c7":[4,0,52,5],
@@ -245,9 +247,7 @@ var NAVTREEINDEX0 =
 "class_matrix_test.html#a64f60ba4fba80da926d8a5b88dca393e":[4,0,63,0],
 "class_matrix_test.html#ac35dea76b6399cbb96e3a446cbeafeb2":[4,0,63,1],
 "class_objects_from_infile.html":[4,0,64],
+"class_objects_from_infile.html#ad355b4b11283e606d5d5b54be97cae86":[4,0,64,0],
 "class_output_matrices.html":[4,0,65],
-"class_output_matrices.html#a55b9b035e2c97ea39de9ffb3abf821a9":[4,0,65,11],
-"class_output_matrices.html#a5df46250873a3b2b2e25f41864a2e0e0":[4,0,65,4],
-"class_output_matrices.html#a65184865bc9c15c426100947361f5f45":[4,0,65,1],
-"class_output_matrices.html#a844ef0f12b618cef3adde618bc6108f8":[4,0,65,0]
+"class_output_matrices.html#a55b9b035e2c97ea39de9ffb3abf821a9":[4,0,65,11]
 };

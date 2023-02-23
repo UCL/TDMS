@@ -94,26 +94,76 @@ $(document).ready(function(){initNavTree('class_source.html',''); initResizable(
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_source-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Source Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>The <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> class stores values of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> field across a particular plane.  
+ <a href="class_source.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="source_8h_source.html">source.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa47dd9d8e09bb5672a01511c4bcc0f9c"><td class="memItemLeft" align="right" valign="top"><a id="aa47dd9d8e09bb5672a01511c4bcc0f9c" name="aa47dd9d8e09bb5672a01511c4bcc0f9c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Source</b> (const mxArray *ptr, int dim1, int dim2, const std::string &amp;name)</td></tr>
 <tr class="separator:aa47dd9d8e09bb5672a01511c4bcc0f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b80a50bef6067852f5179a9d327bdc"><td class="memItemLeft" align="right" valign="top"><a id="a57b80a50bef6067852f5179a9d327bdc" name="a57b80a50bef6067852f5179a9d327bdc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_empty</b> ()</td></tr>
+<tr class="memdesc:a57b80a50bef6067852f5179a9d327bdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the source term is empty (true) or not (false) <br /></td></tr>
+<tr class="separator:a57b80a50bef6067852f5179a9d327bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61a196ad7bae9755f0ffccd3e1010ec5"><td class="memItemLeft" align="right" valign="top"><a id="a61a196ad7bae9755f0ffccd3e1010ec5" name="a61a196ad7bae9755f0ffccd3e1010ec5"></a>
+std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (<a class="el" href="struct_source_index.html">SourceIndex</a> index)</td></tr>
+<tr class="separator:a61a196ad7bae9755f0ffccd3e1010ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae563dbfecd55e39706f0adc629cadd8b"><td class="memItemLeft" align="right" valign="top"><a id="ae563dbfecd55e39706f0adc629cadd8b" name="ae563dbfecd55e39706f0adc629cadd8b"></a>
 double ***&#160;</td><td class="memItemRight" valign="bottom"><b>real</b> = nullptr</td></tr>
+<tr class="memdesc:ae563dbfecd55e39706f0adc629cadd8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real data for the source term. <br /></td></tr>
 <tr class="separator:ae563dbfecd55e39706f0adc629cadd8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a872e2b0ab7f001982f3691695f8c4e"><td class="memItemLeft" align="right" valign="top"><a id="a5a872e2b0ab7f001982f3691695f8c4e" name="a5a872e2b0ab7f001982f3691695f8c4e"></a>
 double ***&#160;</td><td class="memItemRight" valign="bottom"><b>imag</b> = nullptr</td></tr>
+<tr class="memdesc:a5a872e2b0ab7f001982f3691695f8c4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imag data for the source term. <br /></td></tr>
 <tr class="separator:a5a872e2b0ab7f001982f3691695f8c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a4f23a652a9e8bd86b8a8e2565dd9632b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#a4f23a652a9e8bd86b8a8e2565dd9632b">no_data_stored</a> = true</td></tr>
+<tr class="separator:a4f23a652a9e8bd86b8a8e2565dd9632b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> class stores values of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> field across a particular plane. </p>
+<p>Let A (= {i,j,k}) be the axial direction that the plane the given <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> instance is storing data for. Let B, C be the remaining axial directions, with C being the axial direction with the slower-varying index. That is: A = i : B = j : C = k, A = j : B = i : C = k, A = k : B = i : C = j.</p>
+<p>The <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> data (real and imag) is indexed by 3 indices, accessed via {real,imag}[cell_c][cell_b][split_field_ID].</p>
+<p>split_field_ID ranges between 0-7 inclusive. TODO: Indices &lt;-&gt; sources need to be deduced from input file generator functions.</p>
+<p>Let cell_a be the A-index of the plane that the instance is storing data on. Then (cell_A, cell_B, cell_C) is the Yee-cell index whose (source) data we are accessing with this call. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a4f23a652a9e8bd86b8a8e2565dd9632b" name="a4f23a652a9e8bd86b8a8e2565dd9632b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f23a652a9e8bd86b8a8e2565dd9632b">&#9670;&#160;</a></span>no_data_stored</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Source::no_data_stored = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Flags if the array is empty to avoid pointer preservation </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="source_8h_source.html">source.h</a></li>
 <li>tdms/src/source.cpp</li>

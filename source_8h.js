@@ -1,4 +1,5 @@
 var source_8h =
 [
-    [ "Source", "class_source.html", null ]
+    [ "SourceIndex", "struct_source_index.html", "struct_source_index" ],
+    [ "Source", "class_source.html", "class_source" ]
 ];

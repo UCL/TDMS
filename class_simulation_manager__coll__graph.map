@@ -29,7 +29,7 @@
 <area shape="rect" id="node25" href="$class_grid_labels.html" title=" " alt="" coords="338,881,422,907"/>
 <area shape="rect" id="node37" href="$class_output_matrices.html" title="Handles the data that is written to the output file, and the associated native C++ classes and dataty..." alt="" coords="1037,1384,1148,1409"/>
 <area shape="rect" id="node26" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="361,931,399,956"/>
-<area shape="rect" id="node27" href="$class_source.html" title=" " alt="" coords="739,815,801,840"/>
+<area shape="rect" id="node27" href="$class_source.html" title="The Source class stores values of the Source field across a particular plane." alt="" coords="739,815,801,840"/>
 <area shape="rect" id="node28" href="$class_grating_structure.html" title=" " alt="" coords="508,960,625,985"/>
 <area shape="rect" id="node29" href="$class_matrix.html" title=" " alt="" coords="35,1287,131,1312"/>
 <area shape="rect" id="node45" href="$class_vertices.html" title=" " alt="" coords="345,1496,415,1521"/>

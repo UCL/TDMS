@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['yx_0',['yx',['../class_split_field.html#ac2080d09c284cc3fd47d699ca95c80bb',1,'SplitField']]],
-  ['yz_1',['yz',['../class_split_field.html#a97498fcaa7d9c1cce6544d2bf20a7baa',1,'SplitField']]]
+  ['pim_0',['pim',['../class_simulation_manager.html#abdd6cac19585e2a731cdbca0462fd687',1,'SimulationManager']]],
+  ['pstd_1',['PSTD',['../class_simulation_manager.html#a9eceece4573c3bae86c2d03b1c9bae79',1,'SimulationManager']]]
 ];

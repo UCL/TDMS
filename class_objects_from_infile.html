@@ -151,7 +151,7 @@ Collaboration diagram for ObjectsFromInfile:</div>
 <area shape="rect" href="class_tensor3_d.html" title=" " alt="" coords="500,119,665,159"/>
 <area shape="rect" href="class_t_d_field_exporter2_d.html" title=" " alt="" coords="865,125,1000,150"/>
 <area shape="rect" href="class_grid_labels.html" title=" " alt="" coords="891,223,975,249"/>
-<area shape="rect" href="class_source.html" title=" " alt="" coords="1285,889,1348,914"/>
+<area shape="rect" href="class_source.html" title="The Source class stores values of the Source field across a particular plane." alt="" coords="1285,889,1348,914"/>
 <area shape="rect" href="class_grating_structure.html" title=" " alt="" coords="1258,1002,1375,1027"/>
 <area shape="rect" href="class_matrix.html" title=" " alt="" coords="885,1002,981,1027"/>
 </map>
@@ -162,6 +162,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa5e3b70b4f48a8edae61d7976dbfd740"><td class="memItemLeft" align="right" valign="top"><a id="aa5e3b70b4f48a8edae61d7976dbfd740" name="aa5e3b70b4f48a8edae61d7976dbfd740"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ObjectsFromInfile</b> (<a class="el" href="class_input_matrices.html">InputMatrices</a> matrices_from_input_file, SolverMethod _solver_method=SolverMethod::PseudoSpectral, <a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a> _pim=PreferredInterpolationMethods::BandLimited)</td></tr>
 <tr class="separator:aa5e3b70b4f48a8edae61d7976dbfd740"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad355b4b11283e606d5d5b54be97cae86"><td class="memItemLeft" align="right" valign="top"><a id="ad355b4b11283e606d5d5b54be97cae86" name="ad355b4b11283e606d5d5b54be97cae86"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>all_sources_are_empty</b> ()</td></tr>
+<tr class="memdesc:ad355b4b11283e606d5d5b54be97cae86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the {IJK}source terms are empty (true) or not (false) <br /></td></tr>
+<tr class="separator:ad355b4b11283e606d5d5b54be97cae86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_independent_objects_from_infile"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_independent_objects_from_infile')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_independent_objects_from_infile.html">IndependentObjectsFromInfile</a></td></tr>
 <tr class="memitem:a24102a44ab251ff4f0ff81675c6da1a9 inherit pub_methods_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top"><a id="a24102a44ab251ff4f0ff81675c6da1a9" name="a24102a44ab251ff4f0ff81675c6da1a9"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>IndependentObjectsFromInfile</b> (<a class="el" href="class_input_matrices.html">InputMatrices</a> matrices_from_input_file, SolverMethod _solver_method=SolverMethod::PseudoSpectral, <a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a> _pim=PreferredInterpolationMethods::BandLimited)</td></tr>
@@ -278,11 +282,9 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><b>gamma</b></td></t
 <tr class="memitem:a6bc1d3ab69240cff7f556d948f2d7116 inherit pub_attribs_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top"><a id="a6bc1d3ab69240cff7f556d948f2d7116" name="a6bc1d3ab69240cff7f556d948f2d7116"></a>
 <a class="el" href="class_grid_labels.html">GridLabels</a>&#160;</td><td class="memItemRight" valign="bottom"><b>input_grid_labels</b></td></tr>
 <tr class="separator:a6bc1d3ab69240cff7f556d948f2d7116 inherit pub_attribs_class_independent_objects_from_infile"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad196f274d7c184fbc43c1f09877defa9 inherit pub_attribs_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top"><a id="ad196f274d7c184fbc43c1f09877defa9" name="ad196f274d7c184fbc43c1f09877defa9"></a>
-<a class="el" href="cell__coordinate_8h.html#a41ec7d2990479010bb9935ed9af25fa7">IJKDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>IJK_tot</b></td></tr>
+<tr class="memitem:ad196f274d7c184fbc43c1f09877defa9 inherit pub_attribs_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top"><a class="el" href="cell__coordinate_8h.html#a41ec7d2990479010bb9935ed9af25fa7">IJKDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_independent_objects_from_infile.html#ad196f274d7c184fbc43c1f09877defa9">IJK_tot</a></td></tr>
 <tr class="separator:ad196f274d7c184fbc43c1f09877defa9 inherit pub_attribs_class_independent_objects_from_infile"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec7dac53fadbcffa51a8fd14b83bf34e inherit pub_attribs_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top"><a id="aec7dac53fadbcffa51a8fd14b83bf34e" name="aec7dac53fadbcffa51a8fd14b83bf34e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Nsteps</b></td></tr>
+<tr class="memitem:aec7dac53fadbcffa51a8fd14b83bf34e inherit pub_attribs_class_independent_objects_from_infile"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_independent_objects_from_infile.html#aec7dac53fadbcffa51a8fd14b83bf34e">Nsteps</a></td></tr>
 <tr class="separator:aec7dac53fadbcffa51a8fd14b83bf34e inherit pub_attribs_class_independent_objects_from_infile"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

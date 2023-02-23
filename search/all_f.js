@@ -8,5 +8,6 @@ var searchData=
   ['output_5fmatrices_2eh_5',['output_matrices.h',['../output__matrices_8h.html',1,'']]],
   ['output_5fmatrix_5fpointers_2eh_6',['output_matrix_pointers.h',['../output__matrix__pointers_8h.html',1,'']]],
   ['outputmatrices_7',['OutputMatrices',['../class_output_matrices.html',1,'']]],
-  ['outputmatrixpointers_8',['OutputMatrixPointers',['../class_output_matrix_pointers.html',1,'']]]
+  ['outputmatrixpointers_8',['OutputMatrixPointers',['../class_output_matrix_pointers.html',1,'']]],
+  ['outputs_9',['outputs',['../class_simulation_manager.html#a4034155dbd006f564c9a71722c863dd5',1,'SimulationManager']]]
 ];

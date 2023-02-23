@@ -19,5 +19,6 @@ var searchData=
   ['is_5fclose_16',['is_close',['../unit__test__utils_8h.html#a00dad5b07457b9b24f3db85e61380560',1,'tdms_tests']]],
   ['is_5fclose_5for_5fbetter_17',['is_close_or_better',['../unit__test__utils_8h.html#a67474340285eef027c6a5b9afc46754a',1,'tdms_tests']]],
   ['is_5fdispersive_18',['is_dispersive',['../class_dispersive_multi_layer.html#a626cafc6fa2adc83e0e96e09ee1b2eb5',1,'DispersiveMultiLayer']]],
-  ['is_5fdispersive_5fmedium_19',['is_dispersive_medium',['../class_loop_variables.html#a00906c91a3e838ef9e371d775b8205f3',1,'LoopVariables']]]
+  ['is_5fdispersive_5fmedium_19',['is_dispersive_medium',['../class_loop_variables.html#a00906c91a3e838ef9e371d775b8205f3',1,'LoopVariables']]],
+  ['is_5fempty_20',['is_empty',['../class_source.html#a57b80a50bef6067852f5179a9d327bdc',1,'Source']]]
 ];

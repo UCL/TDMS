@@ -139,7 +139,7 @@ Collaboration diagram for SimulationManager:</div>
 <area shape="rect" href="class_grid_labels.html" title=" " alt="" coords="338,881,422,907"/>
 <area shape="rect" href="class_output_matrices.html" title="Handles the data that is written to the output file, and the associated native C++ classes and dataty..." alt="" coords="1037,1384,1148,1409"/>
 <area shape="rect" href="structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="361,931,399,956"/>
-<area shape="rect" href="class_source.html" title=" " alt="" coords="739,815,801,840"/>
+<area shape="rect" href="class_source.html" title="The Source class stores values of the Source field across a particular plane." alt="" coords="739,815,801,840"/>
 <area shape="rect" href="class_grating_structure.html" title=" " alt="" coords="508,960,625,985"/>
 <area shape="rect" href="class_matrix.html" title=" " alt="" coords="35,1287,131,1312"/>
 <area shape="rect" href="class_vertices.html" title=" " alt="" coords="345,1496,415,1521"/>
@@ -171,9 +171,8 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="cell__coordinate_8h.html#a41ec7d2990479010bb9935ed9af25fa7">IJKDimensions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>n_Yee_cells</b> ()</td></tr>
 <tr class="memdesc:aa06710f1d1c4e82e8a31758bd05dadee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetch the number of Yee cells in each dimension. <br /></td></tr>
 <tr class="separator:aa06710f1d1c4e82e8a31758bd05dadee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac799adabec9bb78a53b9a67518cc4bfa"><td class="memItemLeft" align="right" valign="top"><a id="ac799adabec9bb78a53b9a67518cc4bfa" name="ac799adabec9bb78a53b9a67518cc4bfa"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> ()</td></tr>
-<tr class="memdesc:ac799adabec9bb78a53b9a67518cc4bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the time-stepping algorithm given the current inputs. <br /></td></tr>
+<tr class="memitem:ac799adabec9bb78a53b9a67518cc4bfa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ac799adabec9bb78a53b9a67518cc4bfa">execute</a> ()</td></tr>
+<tr class="memdesc:ac799adabec9bb78a53b9a67518cc4bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the time-stepping algorithm given the current inputs.  <br /></td></tr>
 <tr class="separator:ac799adabec9bb78a53b9a67518cc4bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7a217988b68e0dc86f1f723551f6a0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ad7a217988b68e0dc86f1f723551f6a0c">post_loop_processing</a> ()</td></tr>
 <tr class="memdesc:ad7a217988b68e0dc86f1f723551f6a0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform additional (mostly conditional) computations on the outputs, depending on the simulation inputs and run specifications.  <br /></td></tr>
@@ -193,42 +192,74 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a72f86d5883b3733a0109178cd04f97bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a72f86d5883b3733a0109178cd04f97bc">prepare_output</a> (const mxArray *fieldsample, const mxArray *campssample)</td></tr>
 <tr class="memdesc:a72f86d5883b3733a0109178cd04f97bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates MATLAB memory blocks that will be iteratively updated in the <a class="el" href="class_simulation_manager.html#ac799adabec9bb78a53b9a67518cc4bfa" title="Run the time-stepping algorithm given the current inputs.">execute()</a> method, and assigns array sizes for writing purposes later.  <br /></td></tr>
 <tr class="separator:a72f86d5883b3733a0109178cd04f97bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee579ba07a451a8a2d21272d3e7b322"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a5ee579ba07a451a8a2d21272d3e7b322">E_source_update_steadystate</a> (double time_H, AxialDirection parallel, bool C_axis, bool zero_plane, bool is_conductive, int cell_b, int cell_c, int array_ind, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:a5ee579ba07a451a8a2d21272d3e7b322"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update electric-split field components and current densities AT A PARTICULAR CELL in steady-state after an E-field timestep has been performed.  <br /></td></tr>
+<tr class="separator:a5ee579ba07a451a8a2d21272d3e7b322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc2b9e4181368fa7b13973552a2c5f55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#adc2b9e4181368fa7b13973552a2c5f55">H_source_update_steadystate</a> (double time_E, AxialDirection parallel, bool zero_plane, bool C_axis, int array_ind, int cell_b, int cell_c)</td></tr>
+<tr class="memdesc:adc2b9e4181368fa7b13973552a2c5f55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update magnetic-split field components AT A PARTICULAR CELL in steady-state after an H-field timestep has been performed.  <br /></td></tr>
+<tr class="separator:adc2b9e4181368fa7b13973552a2c5f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac42c1d990fbf807fdecda3a26e00647d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ac42c1d990fbf807fdecda3a26e00647d">E_source_update_all_steadystate</a> (double time_H, bool is_conductive, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:ac42c1d990fbf807fdecda3a26e00647d"><td class="mdescLeft">&#160;</td><td class="mdescRight">[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.  <br /></td></tr>
+<tr class="separator:ac42c1d990fbf807fdecda3a26e00647d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6849a444e3634b67ba0f26e969d754f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a6849a444e3634b67ba0f26e969d754f2">H_source_update_all_steadystate</a> (double time_E)</td></tr>
+<tr class="memdesc:a6849a444e3634b67ba0f26e969d754f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.  <br /></td></tr>
+<tr class="separator:a6849a444e3634b67ba0f26e969d754f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcc495dd63ee1f6f53cf97dbd2b363d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#abcc495dd63ee1f6f53cf97dbd2b363d8">E_Isource_update_steadystate</a> (double time_H, bool is_conductive, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:abcc495dd63ee1f6f53cf97dbd2b363d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:abcc495dd63ee1f6f53cf97dbd2b363d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c33168eaa259b41d2a98dd57ea66bae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a1c33168eaa259b41d2a98dd57ea66bae">E_Jsource_update_steadystate</a> (double time_H, bool is_conductive, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:a1c33168eaa259b41d2a98dd57ea66bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:a1c33168eaa259b41d2a98dd57ea66bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88b42eed545266cdf48d2b34c61339b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a88b42eed545266cdf48d2b34c61339b8">E_Ksource_update_steadystate</a> (double time_H, bool is_conductive, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:a88b42eed545266cdf48d2b34c61339b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:a88b42eed545266cdf48d2b34c61339b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20b6fa5977adcdbe9f8b4e30d32f228b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a20b6fa5977adcdbe9f8b4e30d32f228b">H_Isource_update_steadystate</a> (double time_E)</td></tr>
+<tr class="memdesc:a20b6fa5977adcdbe9f8b4e30d32f228b"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:a20b6fa5977adcdbe9f8b4e30d32f228b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4b76f282d7ff99ab8c35203dd042afa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#aa4b76f282d7ff99ab8c35203dd042afa">H_Jsource_update_steadystate</a> (double time_E)</td></tr>
+<tr class="memdesc:aa4b76f282d7ff99ab8c35203dd042afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:aa4b76f282d7ff99ab8c35203dd042afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab73901ee4f8d825c4c714ddbc6ba978c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ab73901ee4f8d825c4c714ddbc6ba978c">H_Ksource_update_steadystate</a> (double time_E)</td></tr>
+<tr class="memdesc:ab73901ee4f8d825c4c714ddbc6ba978c"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.    <br /></td></tr>
+<tr class="separator:ab73901ee4f8d825c4c714ddbc6ba978c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4487131d7c52c3114d0a7090ef1d528"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ae4487131d7c52c3114d0a7090ef1d528">update_source_terms_pulsed</a> (double time_H, bool is_conductive, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_c, <a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;J_s)</td></tr>
+<tr class="memdesc:ae4487131d7c52c3114d0a7090ef1d528"><td class="mdescLeft">&#160;</td><td class="mdescRight">[E-FIELD UPDATES] Performs the updates to the electric-split field components nad current density fields after an E-field timestep has been performed, in accordance with the source terms.  <br /></td></tr>
+<tr class="separator:ae4487131d7c52c3114d0a7090ef1d528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a078f377f32745a741dd884b263c794a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a078f377f32745a741dd884b263c794a5">update_source_terms_pulsed</a> (double time_E, int tind)</td></tr>
+<tr class="memdesc:a078f377f32745a741dd884b263c794a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs the updates to the magnetic-split field components and current density fields after an H-field timestep has been performed, in accordance with the source terms.  <br /></td></tr>
+<tr class="separator:a078f377f32745a741dd884b263c794a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a95e115f0339563f15def5c568a613445"><td class="memItemLeft" align="right" valign="top"><a id="a95e115f0339563f15def5c568a613445" name="a95e115f0339563f15def5c568a613445"></a>
-<a class="el" href="class_objects_from_infile.html">ObjectsFromInfile</a>&#160;</td><td class="memItemRight" valign="bottom"><b>inputs</b></td></tr>
+<tr class="memitem:a95e115f0339563f15def5c568a613445"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_objects_from_infile.html">ObjectsFromInfile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a95e115f0339563f15def5c568a613445">inputs</a></td></tr>
 <tr class="separator:a95e115f0339563f15def5c568a613445"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5819c4aafcf7f6bbbdf77d68ee83b893"><td class="memItemLeft" align="right" valign="top"><a id="a5819c4aafcf7f6bbbdf77d68ee83b893" name="a5819c4aafcf7f6bbbdf77d68ee83b893"></a>
 <a class="el" href="class_loop_timers.html">LoopTimers</a>&#160;</td><td class="memItemRight" valign="bottom"><b>timers</b></td></tr>
+<tr class="memdesc:a5819c4aafcf7f6bbbdf77d68ee83b893"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timers for tracking the execution of the simulation. <br /></td></tr>
 <tr class="separator:a5819c4aafcf7f6bbbdf77d68ee83b893"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eceece4573c3bae86c2d03b1c9bae79"><td class="memItemLeft" align="right" valign="top"><a id="a9eceece4573c3bae86c2d03b1c9bae79" name="a9eceece4573c3bae86c2d03b1c9bae79"></a>
 <a class="el" href="class_p_s_t_d_variables.html">PSTDVariables</a>&#160;</td><td class="memItemRight" valign="bottom"><b>PSTD</b></td></tr>
+<tr class="memdesc:a9eceece4573c3bae86c2d03b1c9bae79"><td class="mdescLeft">&#160;</td><td class="mdescRight">PSTD-solver-specific variables. <br /></td></tr>
 <tr class="separator:a9eceece4573c3bae86c2d03b1c9bae79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c60804c3f2833b724c1f9730b5f9aa8"><td class="memItemLeft" align="right" valign="top"><a id="a2c60804c3f2833b724c1f9730b5f9aa8" name="a2c60804c3f2833b724c1f9730b5f9aa8"></a>
 <a class="el" href="class_f_d_t_d_bootstrapper.html">FDTDBootstrapper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>FDTD</b></td></tr>
+<tr class="memdesc:a2c60804c3f2833b724c1f9730b5f9aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">FDTD bootstrapping variables. <br /></td></tr>
 <tr class="separator:a2c60804c3f2833b724c1f9730b5f9aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4034155dbd006f564c9a71722c863dd5"><td class="memItemLeft" align="right" valign="top"><a id="a4034155dbd006f564c9a71722c863dd5" name="a4034155dbd006f564c9a71722c863dd5"></a>
-<a class="el" href="class_output_matrices.html">OutputMatrices</a>&#160;</td><td class="memItemRight" valign="bottom"><b>outputs</b></td></tr>
+<tr class="memitem:a4034155dbd006f564c9a71722c863dd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_output_matrices.html">OutputMatrices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a4034155dbd006f564c9a71722c863dd5">outputs</a></td></tr>
 <tr class="separator:a4034155dbd006f564c9a71722c863dd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdd6cac19585e2a731cdbca0462fd687"><td class="memItemLeft" align="right" valign="top"><a id="abdd6cac19585e2a731cdbca0462fd687" name="abdd6cac19585e2a731cdbca0462fd687"></a>
-<a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a>&#160;</td><td class="memItemRight" valign="bottom"><b>pim</b></td></tr>
-<tr class="separator:abdd6cac19585e2a731cdbca0462fd687"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9ae940d3e351b57df783febde3ab8bf"><td class="memItemLeft" align="right" valign="top"><a id="aa9ae940d3e351b57df783febde3ab8bf" name="aa9ae940d3e351b57df783febde3ab8bf"></a>
-SolverMethod&#160;</td><td class="memItemRight" valign="bottom"><b>solver_method</b></td></tr>
+<tr class="memitem:aa9ae940d3e351b57df783febde3ab8bf"><td class="memItemLeft" align="right" valign="top">SolverMethod&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#aa9ae940d3e351b57df783febde3ab8bf">solver_method</a></td></tr>
 <tr class="separator:aa9ae940d3e351b57df783febde3ab8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdd6cac19585e2a731cdbca0462fd687"><td class="memItemLeft" align="right" valign="top"><a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#abdd6cac19585e2a731cdbca0462fd687">pim</a></td></tr>
+<tr class="separator:abdd6cac19585e2a731cdbca0462fd687"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25f04982a49730efda9ccf429d656cba"><td class="memItemLeft" align="right" valign="top"><a id="a25f04982a49730efda9ccf429d656cba" name="a25f04982a49730efda9ccf429d656cba"></a>
 <a class="el" href="class_e_h_vec.html">EHVec</a>&#160;</td><td class="memItemRight" valign="bottom"><b>eh_vec</b></td></tr>
 <tr class="memdesc:a25f04982a49730efda9ccf429d656cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO. <br /></td></tr>
 <tr class="separator:a25f04982a49730efda9ccf429d656cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6bc5f6902f9250a896630f574b2e80a"><td class="memItemLeft" align="right" valign="top"><a id="af6bc5f6902f9250a896630f574b2e80a" name="af6bc5f6902f9250a896630f574b2e80a"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>ramp_width</b> = 4.</td></tr>
+<tr class="memitem:af6bc5f6902f9250a896630f574b2e80a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#af6bc5f6902f9250a896630f574b2e80a">ramp_width</a> = 4.</td></tr>
 <tr class="separator:af6bc5f6902f9250a896630f574b2e80a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b27bf917fbfdf46bd4d584ee270e5c4"><td class="memItemLeft" align="right" valign="top"><a id="a2b27bf917fbfdf46bd4d584ee270e5c4" name="a2b27bf917fbfdf46bd4d584ee270e5c4"></a>
-std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>E_norm</b></td></tr>
+<tr class="memitem:a2b27bf917fbfdf46bd4d584ee270e5c4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a2b27bf917fbfdf46bd4d584ee270e5c4">E_norm</a></td></tr>
 <tr class="separator:a2b27bf917fbfdf46bd4d584ee270e5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60b80896212ce5c3f6ed76c8647dcf6b"><td class="memItemLeft" align="right" valign="top"><a id="a60b80896212ce5c3f6ed76c8647dcf6b" name="a60b80896212ce5c3f6ed76c8647dcf6b"></a>
-std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>H_norm</b></td></tr>
+<tr class="memitem:a60b80896212ce5c3f6ed76c8647dcf6b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a60b80896212ce5c3f6ed76c8647dcf6b">H_norm</a></td></tr>
 <tr class="separator:a60b80896212ce5c3f6ed76c8647dcf6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -236,6 +267,373 @@ std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRi
 <p>Takes in the contents of the input file and produces the output in the outputs member, so that it can be written to the specified output file.</p>
 <p>Attributes are private to avoid external alterations to their content and potential reassignment of MATLAB pointers, resulting in leaking memory. The outputs can be accessed through a fetch-method within <a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a> if necessary. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="abcc495dd63ee1f6f53cf97dbd2b363d8" name="abcc495dd63ee1f6f53cf97dbd2b363d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcc495dd63ee1f6f53cf97dbd2b363d8">&#9670;&#160;</a></span>E_Isource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::E_Isource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1c33168eaa259b41d2a98dd57ea66bae" name="a1c33168eaa259b41d2a98dd57ea66bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c33168eaa259b41d2a98dd57ea66bae">&#9670;&#160;</a></span>E_Jsource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::E_Jsource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a88b42eed545266cdf48d2b34c61339b8" name="a88b42eed545266cdf48d2b34c61339b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88b42eed545266cdf48d2b34c61339b8">&#9670;&#160;</a></span>E_Ksource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::E_Ksource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac42c1d990fbf807fdecda3a26e00647d" name="ac42c1d990fbf807fdecda3a26e00647d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac42c1d990fbf807fdecda3a26e00647d">&#9670;&#160;</a></span>E_source_update_all_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::E_source_update_all_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[E-FIELD UPDATES] Performs updates to the electric-split field components and current density fields after an E-field timestep has been performed, in accordance with the I,J, and K-source terms. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5ee579ba07a451a8a2d21272d3e7b322" name="a5ee579ba07a451a8a2d21272d3e7b322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee579ba07a451a8a2d21272d3e7b322">&#9670;&#160;</a></span>E_source_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::E_source_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">AxialDirection&#160;</td>
+          <td class="paramname"><em>parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>C_axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>zero_plane</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cell_b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cell_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>array_ind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update electric-split field components and current densities AT A PARTICULAR CELL in steady-state after an E-field timestep has been performed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">parallel</td><td>The axis to which the plane of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> term is parallel. EG X = Isource, Y = Jsource, etc </td></tr>
+    <tr><td class="paramname">C_axis</td><td>Whether we are updating terms along the C-axis (true) or B-axis (false) of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> plane. See <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> doc for axis information. </td></tr>
+    <tr><td class="paramname">zero_plane</td><td>Whether we are updating terms on the 0-plane (true) or the 1-plane (false). EG I0 would have this input as true, whereas J1 as false. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">cell_b,cell_c</td><td>The coordinates (cell_a, cell_b, cell_c) of the Yee cell in which we are updating the field. See the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> doc for notation information. </td></tr>
+    <tr><td class="paramname">array_ind</td><td>The index of the various material property arrays that correspond to this particular Yee cell, and thus update equation. </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Dispersive parameter. = inputs.matched_layer.kappa.{x,y,z}</p>
+<p>NOTE: if dealing with Ksource, then the index used to fetch the gamma parameter is k = inputs.K1.index or inputs.K0.index, depending on whether we are updating in the zero_plnae or not. If dealing with Isource or Jsource, cell_c (which = the k index) is the index for the gamma parameter. See <a href="https://github.com/UCL/TDMS/issues/225">https://github.com/UCL/TDMS/issues/225</a></p>
+<p>Dispersive parameter. Pulls values from inputs.matched_layer.gamma</p>
+<p>Value of the source term in Yee cell (cell_a, cell_b, cell_c)</p>
+<p>The split-field cell index to update</p>
+<p><a class="el" href="class_field.html">Field</a> updates are signed based on the component, plane, and axis. [0] = E_s sign, [1] = J_c sign, [2] = J_s sign</p>
+<p>This is the index that is to be passed to the (relevent) <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> instance, to recover the source value at the relevant Yee cell.</p>
+<p>cell_b and cell_c need to be offset by the corresponding {IJK}0.index before we can retrieve the source value.</p>
+
+</div>
+</div>
+<a id="ac799adabec9bb78a53b9a67518cc4bfa" name="ac799adabec9bb78a53b9a67518cc4bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac799adabec9bb78a53b9a67518cc4bfa">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::execute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run the time-stepping algorithm given the current inputs. </p>
+<p>Common phase term in update equations</p>
+<p>Common amplitude term in update equations</p>
+<p>Common amplitude factor in update equations</p>
+<p>Common phase term in update equations</p>
+
+</div>
+</div>
 <a id="af8036a1a95ed44c19ad3e18993a8358b" name="af8036a1a95ed44c19ad3e18993a8358b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af8036a1a95ed44c19ad3e18993a8358b">&#9670;&#160;</a></span>extract_phasor_norms()</h2>
 
@@ -285,6 +683,229 @@ std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRi
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a20b6fa5977adcdbe9f8b4e30d32f228b" name="a20b6fa5977adcdbe9f8b4e30d32f228b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20b6fa5977adcdbe9f8b4e30d32f228b">&#9670;&#160;</a></span>H_Isource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::H_Isource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at.   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa4b76f282d7ff99ab8c35203dd042afa" name="aa4b76f282d7ff99ab8c35203dd042afa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4b76f282d7ff99ab8c35203dd042afa">&#9670;&#160;</a></span>H_Jsource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::H_Jsource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at.   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab73901ee4f8d825c4c714ddbc6ba978c" name="ab73901ee4f8d825c4c714ddbc6ba978c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab73901ee4f8d825c4c714ddbc6ba978c">&#9670;&#160;</a></span>H_Ksource_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::H_Ksource_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms.   </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at.   </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6849a444e3634b67ba0f26e969d754f2" name="a6849a444e3634b67ba0f26e969d754f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6849a444e3634b67ba0f26e969d754f2">&#9670;&#160;</a></span>H_source_update_all_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::H_source_update_all_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[H-FIELD UPDATES] Performs updates to the magnetic-split field components after an H-field timestep has been performed, in accordance with the I,J, and K-source terms. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="adc2b9e4181368fa7b13973552a2c5f55" name="adc2b9e4181368fa7b13973552a2c5f55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc2b9e4181368fa7b13973552a2c5f55">&#9670;&#160;</a></span>H_source_update_steadystate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::H_source_update_steadystate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">AxialDirection&#160;</td>
+          <td class="paramname"><em>parallel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>zero_plane</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>C_axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>array_ind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cell_b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cell_c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update magnetic-split field components AT A PARTICULAR CELL in steady-state after an H-field timestep has been performed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at </td></tr>
+    <tr><td class="paramname">parallel</td><td>The axis to which the plane of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> term is parallel. EG X = Isource, Y = Jsource, etc </td></tr>
+    <tr><td class="paramname">C_axis</td><td>Whether we are updating terms along the C-axis (true) or B-axis (false) of the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> plane. See <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> doc for axis information. </td></tr>
+    <tr><td class="paramname">zero_plane</td><td>Whether we are updating terms on the 0-plane (true) or the 1-plane (false). EG I0 would have this input as true, whereas J1 as false. </td></tr>
+    <tr><td class="paramname">array_ind</td><td>The index of the various material property arrays that correspond to this particular Yee cell, and thus update equation. </td></tr>
+    <tr><td class="paramname">cell_b,cell_c</td><td>The coordinates (cell_a, cell_b, cell_c) of the Yee cell in which we are updating the field. See the <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> doc for notation information. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Common phase factor that appears in update equations</p>
+<p>Common amplitude factor that appears in update equations</p>
+<p>D.b.{x,y,z} constant that appears in the update equations</p>
+<p>Value of the source term in Yee cell (cell_a, cell_b, cell_c)</p>
+<p>The split-field cell index to update</p>
+<p>This is the index that is to be passed to the (relevent) <a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> instance, to recover the source value at the relevant Yee cell.</p>
+<p>cell_b and cell_c need to be offset by the corresponding {IJK}0.index before we can retrieve the source value.</p>
+<p><a class="el" href="class_field.html">Field</a> updates are signed based on the component, plane, and axis</p>
 
 </div>
 </div>
@@ -391,6 +1012,126 @@ std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
+<a id="a078f377f32745a741dd884b263c794a5" name="a078f377f32745a741dd884b263c794a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a078f377f32745a741dd884b263c794a5">&#9670;&#160;</a></span>update_source_terms_pulsed() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::update_source_terms_pulsed </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_E</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[H-FIELD UPDATES] Performs the updates to the magnetic-split field components and current density fields after an H-field timestep has been performed, in accordance with the source terms. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_E</td><td>The time the electric field is currently sitting at. </td></tr>
+    <tr><td class="paramname">tind</td><td>The current iteration number </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Simulation dimensions</p>
+<p>The material constant that appears in the update equation</p>
+<p>Common amplitude factor in update equations</p>
+<p>Common phase term in update equations</p>
+<p><a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> term index to read from</p>
+<p>split-field cell index to update</p>
+
+</div>
+</div>
+<a id="ae4487131d7c52c3114d0a7090ef1d528" name="ae4487131d7c52c3114d0a7090ef1d528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4487131d7c52c3114d0a7090ef1d528">&#9670;&#160;</a></span>update_source_terms_pulsed() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::update_source_terms_pulsed </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time_H</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_conductive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_current_density_split_field.html">CurrentDensitySplitField</a> &amp;&#160;</td>
+          <td class="paramname"><em>J_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>[E-FIELD UPDATES] Performs the updates to the electric-split field components nad current density fields after an E-field timestep has been performed, in accordance with the source terms. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">time_H</td><td>The time the magnetic field is currently sitting at. </td></tr>
+    <tr><td class="paramname">is_conductive</td><td>Whether the medium is conductive (so J_c needs to be updated) </td></tr>
+    <tr><td class="paramname">J_c</td><td>The current density in the conductive medium </td></tr>
+    <tr><td class="paramname">J_s</td><td>The current density in the dispersive medium </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Exit now if Ksource is empty, to avoid seg-faults</p>
+<p>Simulation dimensions</p>
+<p>The material constant that appears in the update equation</p>
+<p>Conductive aux of the cell being updated</p>
+<p>Dispersion prefactor in update equations</p>
+<p>Common amplitude factor in update equations</p>
+<p>Common phase term in update equations</p>
+<p><a class="el" href="class_source.html" title="The Source class stores values of the Source field across a particular plane.">Source</a> term index to read from</p>
+<p>split-field cell index to update</p>
+<p>The update to apply to the split-field</p>
+
+</div>
+</div>
 <a id="aa0a2180ed8c7a94c457fe3a2e2f17883" name="aa0a2180ed8c7a94c457fe3a2e2f17883"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0a2180ed8c7a94c457fe3a2e2f17883">&#9670;&#160;</a></span>write_outputs_to_file()</h2>
 
@@ -436,10 +1177,176 @@ std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2b27bf917fbfdf46bd4d584ee270e5c4" name="a2b27bf917fbfdf46bd4d584ee270e5c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b27bf917fbfdf46bd4d584ee270e5c4">&#9670;&#160;</a></span>E_norm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::complex&lt;double&gt; &gt; SimulationManager::E_norm</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Holds the {E,H}-field phasors norm at each extraction frequency </p>
+
+</div>
+</div>
+<a id="a60b80896212ce5c3f6ed76c8647dcf6b" name="a60b80896212ce5c3f6ed76c8647dcf6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60b80896212ce5c3f6ed76c8647dcf6b">&#9670;&#160;</a></span>H_norm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::complex&lt;double&gt; &gt; SimulationManager::H_norm</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p></p>
+<p>Holds the {E,H}-field phasors norm at each extraction frequency   </p>
+
+</div>
+</div>
+<a id="a95e115f0339563f15def5c568a613445" name="a95e115f0339563f15def5c568a613445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e115f0339563f15def5c568a613445">&#9670;&#160;</a></span>inputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_objects_from_infile.html">ObjectsFromInfile</a> SimulationManager::inputs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The input objects that are generated from an input file </p>
+
+</div>
+</div>
+<a id="a4034155dbd006f564c9a71722c863dd5" name="a4034155dbd006f564c9a71722c863dd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4034155dbd006f564c9a71722c863dd5">&#9670;&#160;</a></span>outputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_output_matrices.html">OutputMatrices</a> SimulationManager::outputs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Output object that will contain the results of this simulation, given the input file </p>
+
+</div>
+</div>
+<a id="abdd6cac19585e2a731cdbca0462fd687" name="abdd6cac19585e2a731cdbca0462fd687"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdd6cac19585e2a731cdbca0462fd687">&#9670;&#160;</a></span>pim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a> SimulationManager::pim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The interpolation methods to use in this simulation </p>
+
+</div>
+</div>
+<a id="af6bc5f6902f9250a896630f574b2e80a" name="af6bc5f6902f9250a896630f574b2e80a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6bc5f6902f9250a896630f574b2e80a">&#9670;&#160;</a></span>ramp_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double SimulationManager::ramp_width = 4.</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Width of the ramp when introducing the waveform in steady state mode </p>
+
+</div>
+</div>
+<a id="aa9ae940d3e351b57df783febde3ab8bf" name="aa9ae940d3e351b57df783febde3ab8bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9ae940d3e351b57df783febde3ab8bf">&#9670;&#160;</a></span>solver_method</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SolverMethod SimulationManager::solver_method</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The solver method to use in this simulation </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/simulation_manager/<a class="el" href="simulation__manager_8h_source.html">simulation_manager.h</a></li>
 <li>tdms/src/simulation_manager/<a class="el" href="execute__simulation_8cpp.html">execute_simulation.cpp</a></li>
 <li>tdms/src/simulation_manager/simulation_manager.cpp</li>
+<li>tdms/src/simulation_manager/source_updates_pulsed.cpp</li>
+<li>tdms/src/simulation_manager/source_updates_steadystate.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

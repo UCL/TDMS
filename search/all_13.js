@@ -45,11 +45,12 @@ var searchData=
   ['time_5fellapsed_5fby_42',['time_ellapsed_by',['../class_loop_timers.html#abeb1f977c02702ca9a3878224db3dcba',1,'LoopTimers']]],
   ['timer_43',['Timer',['../class_timer.html',1,'']]],
   ['timer_2eh_44',['timer.h',['../timer_8h.html',1,'']]],
-  ['to_5fnumpy_5farray_45',['to_numpy_array',['../classutils_1_1_h_d_f5_file.html#a826fe99c9118607b22b50e8fca74f903',1,'utils::HDF5File']]],
-  ['to_5fstring_46',['to_string',['../utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d',1,'utils.cpp']]],
-  ['traverse_47',['traverse',['../classutils_1_1_h_d_f5_file.html#a0a2c855533cfd35cf547513633283b99',1,'utils::HDF5File']]],
-  ['triangulatecuboid_48',['triangulateCuboid',['../mesh__base_8h.html#af542151614a30a9fea3279e6730463fd',1,'mesh_base.cpp']]],
-  ['triangulateplane_49',['triangulatePlane',['../mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9',1,'mesh_base.cpp']]],
-  ['triangulateplaneskip_50',['triangulatePlaneSkip',['../mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b',1,'mesh_base.cpp']]],
-  ['tuple_5fto_5fcomplex_51',['tuple_to_complex',['../classutils_1_1_h_d_f5_file.html#ae753941e40e01f077105e98e18129700',1,'utils::HDF5File']]]
+  ['timers_45',['timers',['../class_simulation_manager.html#a5819c4aafcf7f6bbbdf77d68ee83b893',1,'SimulationManager']]],
+  ['to_5fnumpy_5farray_46',['to_numpy_array',['../classutils_1_1_h_d_f5_file.html#a826fe99c9118607b22b50e8fca74f903',1,'utils::HDF5File']]],
+  ['to_5fstring_47',['to_string',['../utils_8h.html#ad1ffbdd26f55043c6d816c6854ea586d',1,'utils.cpp']]],
+  ['traverse_48',['traverse',['../classutils_1_1_h_d_f5_file.html#a0a2c855533cfd35cf547513633283b99',1,'utils::HDF5File']]],
+  ['triangulatecuboid_49',['triangulateCuboid',['../mesh__base_8h.html#af542151614a30a9fea3279e6730463fd',1,'mesh_base.cpp']]],
+  ['triangulateplane_50',['triangulatePlane',['../mesh__base_8h.html#a33e5a5bb9c09e69af86409399ddfdce9',1,'mesh_base.cpp']]],
+  ['triangulateplaneskip_51',['triangulatePlaneSkip',['../mesh__base_8h.html#a5f577c512f3cce916d1effaf7275d46b',1,'mesh_base.cpp']]],
+  ['tuple_5fto_5fcomplex_52',['tuple_to_complex',['../classutils_1_1_h_d_f5_file.html#ae753941e40e01f077105e98e18129700',1,'utils::HDF5File']]]
 ];

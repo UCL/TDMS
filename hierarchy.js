@@ -101,6 +101,7 @@ var hierarchy =
     [ "SimulationManager", "class_simulation_manager.html", null ],
     [ "SimulationParameters", "class_simulation_parameters.html", null ],
     [ "Source", "class_source.html", null ],
+    [ "SourceIndex", "struct_source_index.html", null ],
     [ "SurfacePhasors", "class_surface_phasors.html", null ],
     [ "SurfaceSpacingStride", "struct_surface_spacing_stride.html", null ],
     [ "TDFieldExporter2D", "class_t_d_field_exporter2_d.html", null ],

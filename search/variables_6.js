@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['ml_5fconst_5ffn_5fmax_5fpointwise_5ferror_0',['ML_const_fn_max_pointwise_error',['../test__interpolation__functions_8cpp.html#a1290791884206a5d9c9da07e64555c07',1,'test_interpolation_functions.cpp']]],
-  ['mx_1',['mx',['../class_field_sample.html#adc368ad5a8930a7799762f4626cd9d55',1,'FieldSample']]]
+  ['j_0',['j',['../structijk.html#a7a66fbfcdc7bf760066d5f0022a0f0d0',1,'ijk::j()'],['../class_dimensions.html#a4b567fbfafc87814144935ebe74b434b',1,'Dimensions::j()'],['../class_field_sample.html#a6e51837a579289219732946696a78266',1,'FieldSample::j()']]]
 ];

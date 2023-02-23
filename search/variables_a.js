@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['xy_0',['xy',['../class_split_field.html#af1b03f0edae0a1089db41a3710157840',1,'SplitField']]],
-  ['xz_1',['xz',['../class_split_field.html#aaa622b8e9536e7bd472ff24c49b6f590',1,'SplitField']]]
+  ['outputs_0',['outputs',['../class_simulation_manager.html#a4034155dbd006f564c9a71722c863dd5',1,'SimulationManager']]]
 ];
