@@ -75,10 +75,10 @@ public:
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
-  IJKDimensions IJK_tot;//< total number of Yee cells in the x,y,z directions
-                        // respectively
-  int Nsteps;           //< Number of dfts to perform before checking for phasor
-                        // convergence
+  IJKDimensions IJK_tot;//!< total number of Yee cells in the x,y,z directions
+                        //!< respectively
+  int Nsteps;//!< Number of dfts to perform before checking for phasor
+             //!< convergence
 
   IndependentObjectsFromInfile(
           InputMatrices matrices_from_input_file,
@@ -139,6 +139,12 @@ public:
                     SolverMethod _solver_method = SolverMethod::PseudoSpectral,
                     PreferredInterpolationMethods _pim =
                             PreferredInterpolationMethods::BandLimited);
+
+  /** @brief Determine whether the {IJK}source terms are empty (true) or not
+   * (false) */
+  bool all_sources_are_empty() {
+    return Isource.is_empty() && Jsource.is_empty() && Ksource.is_empty();
+  }
 
   ~ObjectsFromInfile();
 };
