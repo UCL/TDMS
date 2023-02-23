@@ -199,7 +199,9 @@ class GenerationData:
         These variables typically serve a purpose outside the generation process itself (EG specifying directories, locations to write to, etc).
         """
         # Fetch the location of the input file that generates the binary .mat input
-        self.input_file = Path(self._generation_options["input_file"])
+        self.input_file = Path(
+            LOCATION_OF_THIS_FILE, self._generation_options["input_file"]
+        )
         if not self.input_file.exists():
             raise RuntimeError(f"{self.input_file} does not exist")
         # fetch the spatial obstacles
@@ -224,8 +226,10 @@ class GenerationData:
         bscan_args = BScanArguments(self.test_dir, self.input_file)
         return MATLABCommand(bscan_args)
 
-    def generate(self) -> None:
-        """Generate the input data to the test, as specified by this instance's member values."""
+    def generate(self) -> int:
+        """Generate the input data to the test, as specified by this instance's member values.
+
+        Returns the exit code of the sequence of matlab commands that were run."""
         # ensure that the directory to place the output into exists, or create it otherwise
         self._find_or_create_test_dir()
 
@@ -235,4 +239,4 @@ class GenerationData:
         # cleanup auxillary .mat files that are placed into this directory
         for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
             os.remove(aux_mat)
-        return
+        return self.matlab_command.return_code
