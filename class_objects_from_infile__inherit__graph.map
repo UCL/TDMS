@@ -1,0 +1,4 @@
+<map id="ObjectsFromInfile" name="ObjectsFromInfile">
+<area shape="rect" id="node1" title="Class that handles the creation of C++ arrays from the matrices passed in an InputMatrices object,..." alt="" coords="41,79,166,104"/>
+<area shape="rect" id="node2" href="$class_independent_objects_from_infile.html" title="Class that constructs C++ arrays from an InputMatrices object and the SolverMethod enum." alt="" coords="5,5,201,31"/>
+</map>

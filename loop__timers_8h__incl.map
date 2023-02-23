@@ -1,6 +1,6 @@
 <map id="tdms/include/simulation_manager/loop_timers.h" name="tdms/include/simulation_manager/loop_timers.h">
-<area shape="rect" id="node1" title="Declares the class that handles the timing of the main loop and subprocesses of the main loop." alt="" coords="42,5,222,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,64,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="89,95,175,121"/>
-<area shape="rect" id="node4" href="$timer_8h.html" title="Class wrapper for timing with OpenMP&#39;s wall timing." alt="" coords="199,95,267,121"/>
+<area shape="rect" id="node1" title="Declares the class that handles the timing of the main loop and subprocesses of the main loop." alt="" coords="43,5,204,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,93,60,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="84,93,163,119"/>
+<area shape="rect" id="node4" href="$timer_8h.html" title="Class wrapper for timing with OpenMP&#39;s wall timing." alt="" coords="187,93,249,119"/>
 </map>

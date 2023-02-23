@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classOutputMatrices.html" title="Handles the data that is written to the output file, and the associated native C++ classes and dataty..." alt="" coords="5,5,128,32"/>
+<area shape="rect" id="node1" href="$class_matrix_collection.html" title=" " alt="" coords="5,5,121,31"/>
+<area shape="rect" id="node2" href="$class_mat_file_matrix_collection.html" title=" " alt="" coords="169,5,328,31"/>
 </map>

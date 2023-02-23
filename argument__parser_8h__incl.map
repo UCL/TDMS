@@ -1,7 +1,7 @@
 <map id="tdms/include/argument_parser.h" name="tdms/include/argument_parser.h">
-<area shape="rect" id="node1" title="Parse the command line options." alt="" coords="33,5,207,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,64,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="89,95,151,121"/>
-<area shape="rect" id="node4" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="175,95,257,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="177,169,255,196"/>
+<area shape="rect" id="node1" title="Parse the command line options." alt="" coords="37,5,191,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,93,60,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="85,93,143,119"/>
+<area shape="rect" id="node4" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="167,93,242,119"/>
+<area shape="rect" id="node5" title=" " alt="" coords="169,167,240,192"/>
 </map>

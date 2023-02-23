@@ -1,0 +1,14 @@
+<map id="LoopVariables" name="LoopVariables">
+<area shape="rect" id="node1" title="Handles the setup of variables that will be scoped to the main iteration loop, however which require ..." alt="" coords="291,447,394,472"/>
+<area shape="rect" id="node2" href="$class_detector_sensitivity_arrays.html" title=" " alt="" coords="5,329,176,355"/>
+<area shape="rect" id="node3" href="$class_electric_field.html" title=" " alt="" coords="533,329,627,355"/>
+<area shape="rect" id="node4" href="$class_field.html" title=" " alt="" coords="555,255,605,280"/>
+<area shape="rect" id="node5" href="$class_grid.html" title=" " alt="" coords="433,93,479,119"/>
+<area shape="rect" id="node9" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="363,255,439,280"/>
+<area shape="rect" id="node6" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="437,5,475,31"/>
+<area shape="rect" id="node7" href="$class_x_y_z_tensor3_d.html" title=" " alt="" coords="503,93,670,119"/>
+<area shape="rect" id="node8" href="$class_electric_split_field.html" title=" " alt="" coords="200,329,320,355"/>
+<area shape="rect" id="node12" href="$class_current_density_split_field.html" title=" " alt="" coords="345,329,509,355"/>
+<area shape="rect" id="node10" href="$class_split_field_component.html" title=" " alt="" coords="266,93,409,119"/>
+<area shape="rect" id="node11" href="$class_tensor3_d.html" title=" " alt="" coords="267,5,407,31"/>
+</map>

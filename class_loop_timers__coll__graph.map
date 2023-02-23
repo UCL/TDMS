@@ -1,0 +1,4 @@
+<map id="LoopTimers" name="LoopTimers">
+<area shape="rect" id="node1" title="Class that handles the timers that monitor the performance of the program during the main loop,..." alt="" coords="5,108,96,133"/>
+<area shape="rect" id="node2" href="$class_timer.html" title="Stopwatch class." alt="" coords="23,5,78,31"/>
+</map>

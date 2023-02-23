@@ -5,7 +5,5 @@ var unit__test__utils_8h =
     [ "is_close", "unit__test__utils_8h.html#a00dad5b07457b9b24f3db85e61380560", null ],
     [ "is_close_or_better", "unit__test__utils_8h.html#a67474340285eef027c6a5b9afc46754a", null ],
     [ "near_zero", "unit__test__utils_8h.html#adc833b0a8f36a417c75de79ff5de23ab", null ],
-    [ "order_of_magnitude", "unit__test__utils_8h.html#a12003cdc9516464d1fc652843aaece93", null ],
-    [ "relative_mean_square_difference", "unit__test__utils_8h.html#a9be9a4ef33233df20c5b4cc3025e576c", null ],
-    [ "TOLERANCE", "unit__test__utils_8h.html#af3b5b78e57c60aab14aa3846d394b262", null ]
+    [ "relative_mean_square_difference", "unit__test__utils_8h.html#a9be9a4ef33233df20c5b4cc3025e576c", null ]
 ];

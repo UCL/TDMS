@@ -1,0 +1,8 @@
+<map id="ElectricSplitField" name="ElectricSplitField">
+<area shape="rect" id="node1" title=" " alt="" coords="27,329,147,355"/>
+<area shape="rect" id="node2" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="49,255,125,280"/>
+<area shape="rect" id="node3" href="$class_grid.html" title=" " alt="" coords="5,93,52,119"/>
+<area shape="rect" id="node4" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="9,5,48,31"/>
+<area shape="rect" id="node5" href="$class_split_field_component.html" title=" " alt="" coords="76,93,219,119"/>
+<area shape="rect" id="node6" href="$class_tensor3_d.html" title=" " alt="" coords="77,5,217,31"/>
+</map>

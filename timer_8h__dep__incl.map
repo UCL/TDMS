@@ -1,7 +1,7 @@
 <map id="tdms/include/timer.h" name="tdms/include/timer.h">
-<area shape="rect" id="node1" title="Class wrapper for timing with OpenMP&#39;s wall timing." alt="" coords="108,5,264,32"/>
-<area shape="rect" id="node2" href="$loop__timers_8h.html" title="Declares the class that handles the timing of the main loop and subprocesses of the main loop." alt="" coords="96,80,276,121"/>
-<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="68,169,304,211"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,266,148,293"/>
-<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="173,259,418,300"/>
+<area shape="rect" id="node1" title="Class wrapper for timing with OpenMP&#39;s wall timing." alt="" coords="101,5,240,31"/>
+<area shape="rect" id="node2" href="$loop__timers_8h.html" title="Declares the class that handles the timing of the main loop and subprocesses of the main loop." alt="" coords="90,79,251,119"/>
+<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="66,167,275,207"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,262,136,287"/>
+<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="161,255,381,295"/>
 </map>

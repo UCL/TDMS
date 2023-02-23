@@ -1,8 +1,8 @@
 <map id="tdms/tests/include/unit_test_utils.h" name="tdms/tests/include/unit_test_utils.h">
-<area shape="rect" id="node1" title="Functions common to multiple unit tests." alt="" coords="104,5,246,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="133,169,212,196"/>
-<area shape="rect" id="node3" title=" " alt="" coords="24,95,115,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="139,95,211,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="235,95,294,121"/>
-<area shape="rect" id="node6" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="318,95,400,121"/>
+<area shape="rect" id="node1" title="Functions common to multiple unit tests." alt="" coords="99,5,228,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="126,167,196,192"/>
+<area shape="rect" id="node3" title=" " alt="" coords="24,93,106,119"/>
+<area shape="rect" id="node4" title=" " alt="" coords="131,93,196,119"/>
+<area shape="rect" id="node5" title=" " alt="" coords="220,93,275,119"/>
+<area shape="rect" id="node6" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="300,93,374,119"/>
 </map>

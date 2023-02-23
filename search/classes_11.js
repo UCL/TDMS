@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['yamltestconfig_471',['YAMLTestConfig',['../classread__config_1_1YAMLTestConfig.html',1,'read_config']]],
-  ['yeecelldimensions_472',['YeeCellDimensions',['../structYeeCellDimensions.html',1,'']]]
+  ['yamltestconfig_0',['YAMLTestConfig',['../classread__config_1_1_y_a_m_l_test_config.html',1,'read_config']]],
+  ['yeecelldimensions_1',['YeeCellDimensions',['../struct_yee_cell_dimensions.html',1,'']]]
 ];

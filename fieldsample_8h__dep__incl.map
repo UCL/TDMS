@@ -1,10 +1,10 @@
 <map id="tdms/include/fieldsample.h" name="tdms/include/fieldsample.h">
-<area shape="rect" id="node1" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="241,5,440,32"/>
-<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="19,87,227,129"/>
-<area shape="rect" id="node6" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="251,80,430,136"/>
-<area shape="rect" id="node8" href="$test__FieldSample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="454,87,603,129"/>
-<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="5,184,241,225"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="52,281,195,307"/>
-<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="230,273,475,315"/>
-<area shape="rect" id="node7" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="265,184,464,225"/>
+<area shape="rect" id="node1" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="219,5,396,31"/>
+<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="17,86,203,126"/>
+<area shape="rect" id="node6" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="228,79,387,133"/>
+<area shape="rect" id="node8" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="411,86,545,126"/>
+<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="5,181,215,221"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="45,277,175,302"/>
+<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="208,269,428,309"/>
+<area shape="rect" id="node7" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="239,181,416,221"/>
 </map>

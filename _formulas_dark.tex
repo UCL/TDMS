@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\color{white}
+\pagecolor{black}
+\usepackage{newunicodechar}
+  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \newunicodechar{²}{${}^{2}$}% Superscript two
+  \newunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+$C$
+\pagebreak
+
+$C_{a,b,c}$
+\pagebreak
+
+$D$
+\pagebreak
+
+$D_{a,b}$
+\pagebreak
+
+$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot}
+|t[k][j][i]|^2 }$
+\pagebreak
+
+$ \frac{ \max_{i,j,k}(this[k][j][i] - other[k][j][i]) }{
+\max_{i,j,k}this[k][j][i] } $
+\pagebreak
+
+\end{document}

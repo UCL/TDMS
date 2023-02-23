@@ -1,0 +1,5 @@
+<map id="MaterialCollection" name="MaterialCollection">
+<area shape="rect" id="node1" title=" " alt="" coords="32,5,159,31"/>
+<area shape="rect" id="node2" href="$class_c_material.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="5,79,84,104"/>
+<area shape="rect" id="node3" href="$class_d_material.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="108,79,187,104"/>
+</map>

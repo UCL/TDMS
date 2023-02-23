@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['fdtdbootstrapper_396',['FDTDBootstrapper',['../classFDTDBootstrapper.html',1,'']]],
-  ['fdtdgridinitialiser_397',['fdtdGridInitialiser',['../classfdtdGridInitialiser.html',1,'']]],
-  ['field_398',['Field',['../classField.html',1,'']]],
-  ['fieldcomponentsvector_399',['FieldComponentsVector',['../classFieldComponentsVector.html',1,'']]],
-  ['fieldcomponentsvectortest_400',['FieldComponentsVectorTest',['../classFieldComponentsVectorTest.html',1,'']]],
-  ['fieldsample_401',['FieldSample',['../classFieldSample.html',1,'']]],
-  ['fieldsampletest_402',['FieldSampleTest',['../classFieldSampleTest.html',1,'']]],
-  ['frequencyextractvector_403',['FrequencyExtractVector',['../classFrequencyExtractVector.html',1,'']]],
-  ['frequencyextractvectortest_404',['FrequencyExtractVectorTest',['../classFrequencyExtractVectorTest.html',1,'']]],
-  ['frequencyvectors_405',['FrequencyVectors',['../classFrequencyVectors.html',1,'']]],
-  ['frequencyvectorstest_406',['FrequencyVectorsTest',['../classFrequencyVectorsTest.html',1,'']]],
-  ['fullfieldsnapshot_407',['FullFieldSnapshot',['../classFullFieldSnapshot.html',1,'']]],
-  ['fullfieldsnapshottest_408',['FullFieldSnapshotTest',['../classFullFieldSnapshotTest.html',1,'']]]
+  ['fdtdbootstrapper_0',['FDTDBootstrapper',['../class_f_d_t_d_bootstrapper.html',1,'']]],
+  ['fdtdgridinitialiser_1',['fdtdGridInitialiser',['../classfdtd_grid_initialiser.html',1,'']]],
+  ['field_2',['Field',['../class_field.html',1,'']]],
+  ['fieldcomponentsvector_3',['FieldComponentsVector',['../class_field_components_vector.html',1,'']]],
+  ['fieldcomponentsvectortest_4',['FieldComponentsVectorTest',['../class_field_components_vector_test.html',1,'']]],
+  ['fieldsample_5',['FieldSample',['../class_field_sample.html',1,'']]],
+  ['fieldsampletest_6',['FieldSampleTest',['../class_field_sample_test.html',1,'']]],
+  ['frequencyextractvector_7',['FrequencyExtractVector',['../class_frequency_extract_vector.html',1,'']]],
+  ['frequencyextractvectortest_8',['FrequencyExtractVectorTest',['../class_frequency_extract_vector_test.html',1,'']]],
+  ['frequencyvectors_9',['FrequencyVectors',['../class_frequency_vectors.html',1,'']]],
+  ['frequencyvectorstest_10',['FrequencyVectorsTest',['../class_frequency_vectors_test.html',1,'']]],
+  ['fullfieldsnapshot_11',['FullFieldSnapshot',['../class_full_field_snapshot.html',1,'']]],
+  ['fullfieldsnapshottest_12',['FullFieldSnapshotTest',['../class_full_field_snapshot_test.html',1,'']]]
 ];

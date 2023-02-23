@@ -1,0 +1,7 @@
+<map id="SplitField" name="SplitField">
+<area shape="rect" id="node1" title="A split field defined over a grid." alt="" coords="216,79,292,104"/>
+<area shape="rect" id="node3" href="$class_current_density_split_field.html" title=" " alt="" coords="5,152,169,177"/>
+<area shape="rect" id="node4" href="$class_electric_split_field.html" title=" " alt="" coords="194,152,314,177"/>
+<area shape="rect" id="node5" href="$class_magnetic_split_field.html" title=" " alt="" coords="339,152,468,177"/>
+<area shape="rect" id="node2" href="$class_grid.html" title=" " alt="" coords="231,5,277,31"/>
+</map>

@@ -1,8 +1,8 @@
 <map id="tdms/include/source.h" name="tdms/include/source.h">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,171,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="12,80,71,107"/>
-<area shape="rect" id="node3" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="95,80,174,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="11,155,71,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="96,155,173,181"/>
-<area shape="rect" id="node6" title=" " alt="" coords="198,155,261,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,156,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="9,79,64,104"/>
+<area shape="rect" id="node3" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="89,79,161,104"/>
+<area shape="rect" id="node4" title=" " alt="" coords="11,152,65,177"/>
+<area shape="rect" id="node5" title=" " alt="" coords="90,152,159,177"/>
+<area shape="rect" id="node6" title=" " alt="" coords="183,152,242,177"/>
 </map>

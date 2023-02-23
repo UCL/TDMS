@@ -1,7 +1,7 @@
 <map id="tdms/include/grid_labels.h" name="tdms/include/grid_labels.h">
-<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="32,5,225,32"/>
-<area shape="rect" id="node2" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="89,80,168,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,155,65,181"/>
-<area shape="rect" id="node4" title=" " alt="" coords="90,155,167,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="192,155,255,181"/>
+<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="33,5,206,31"/>
+<area shape="rect" id="node2" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="83,79,155,104"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,152,60,177"/>
+<area shape="rect" id="node4" title=" " alt="" coords="85,152,154,177"/>
+<area shape="rect" id="node5" title=" " alt="" coords="178,152,237,177"/>
 </map>
