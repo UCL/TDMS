@@ -2,7 +2,6 @@ import os
 import sys
 from glob import glob
 from pathlib import Path
-from typing import Union
 
 # Location of this file, which is where the tests are running from
 LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
@@ -12,7 +11,9 @@ path_to_input_generation = Path(LOCATION_OF_THIS_FILE, "data", "input_generation
 sys.path.insert(0, str(path_to_input_generation))
 
 import pytest
+import yaml
 from regenerate_all import regenerate_test
+from tdms_testing_class import TDMSSystemTest
 from utils import download_data
 
 # Dataset is stored at https://zenodo.org/record/7440616/
@@ -22,53 +23,56 @@ ZENODO_URL = "https://zenodo.org/record/7440616/files"
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # Find all config_XX.yaml files and hence infer all test cases that need to be run
-TEST_IDS = glob(str(Path(path_to_input_generation, "config_*.yaml")))
+TEST_IDS = glob(str(path_to_input_generation / "config_*.yaml"))
 for i, id in enumerate(TEST_IDS):
     # remove everything bar the ID from what we found
-    id = id.removeprefix(str(Path(path_to_input_generation, "config_")))
+    id = id.removeprefix(str(path_to_input_generation / "config_"))
     id = id.removesuffix(".yaml")
     TEST_IDS[i] = id
 # The number of tests will be useful to know later
 N_TESTS = len(TEST_IDS)
 
 
-def workflow(test_id: str, ZIP_PATH: Union[Path, str]) -> None:
+def workflow(test_id: str) -> None:
     """Performs all tdms runs contained in the system test arc_{test_id}. Assumes that reference data is present in the appropriate .zip folder within the /data directory.
 
     The workflow steps are as follows:
     1. Regenerate the input data for arc_{test_id}
     2. Perform each run of TDMS as specified by arc_{test_id}, comparing the output to the previously obtained references
-    3. Perform clean-up on generated outputs, so they are not saved to the cache and accidentally re-used
+    3. Perform clean-up on generated outputs and inputs, so they are not saved to the cache and accidentally re-used
     """
-    # Fetch config file location before beginning
-    config_file = Path(path_to_input_generation, f"config_{test_id}.yaml")
+    # Fetch config file location
+    config_file_path = path_to_input_generation / f"config_{test_id}.yaml"
+    # Fetch test run information
+    with open(config_file_path, "r") as opened_config_file:
+        # Read data into dictionary, and take the "tests" value
+        run_information = yaml.safe_load(opened_config_file)["tests"]
 
     # Regenerate the input data for arc_{test_id}, fail test if unsuccessful
-    regeneration_success = regenerate_test(config_file)
+    regeneration_success = regenerate_test(config_file_path)
     assert regeneration_success == 0, f"Data regeneration for arc_{test_id} failed!"
 
     # Perform each run of TDMS as specified by the config file - note: no longer in zipped dir so need to rework my old class :(
-    # config_for_tests = YAMLTestConfig()
-    # system_tests_in_this_folder = config_for_tests.run_list
+    system_test = TDMSSystemTest(test_id, run_information)
 
-    # for system_test in system_tests_in_this_folder:
-    #     # run test
-    #     system_test.run()
-    #     # load reference file
-    #     reference_file = HDF5File(system_test.get_reference_file_name())
-    #     # load output file
-    #     output_file = HDF5File(system_test.get_output_file_name())
-    #     # assert file contents match
-    #     # but continue to run the other tests in this zip file, even if we fail
-    #     with check:
-    #         test_passed, comparison_information = output_file.matches(
-    #             reference_file, return_message=True
-    #         )
-    #         assert (
-    #             test_passed
-    #         ), f"In {config_for_tests.test_id} -> {system_test.run_id}: {comparison_information}"
+    # Run all of the system tests
+    run_success = system_test.perform_all_runs()
 
-    # Perform clean-up on generated outputs
+    # TEAR-DOWN: remove the regenerated inputs and outputs from the data/input_generation/arc_{test_id} folder.
+    # To be safe, we can just remove all .mat files from this directory the the subdirectories, since these should be the only system-test TDMS artefacts
+    input_data_dump = str(path_to_input_generation / f"arc_{test_id}/*.mat")
+    mat_artefacts = glob(input_data_dump, recursive=True)
+    for mat_file in mat_artefacts:
+        os.remove(mat_file)
+
+    # Although we should have check-ed whether each run was a pass/fail, we can also assert that all runs need to pass here to report failures
+    failed_run_names = []
+    for i, success in enumerate(run_success):
+        if not success:
+            failed_run_names.append(system_test.tdms_runs[i].tdms_run.run_id)
+    assert all(
+        run_success
+    ), f"arc_{test_id} : Some runs were unsuccessful ({len(run_success)-sum(run_success)}/{len(run_success)}) :\n {failed_run_names}"
     return
 
 
@@ -91,15 +95,9 @@ def test_system(test_id) -> None:
     else:
         print(f"Using cache in {ZIP_PATH}")
 
-    # regenerate the input data for this particular test
-    workflow(test_id, ZIP_PATH)
-
-    # TEAR-DOWN: remove the regenerated inputs from the data/input_generation/arc_{test_id} folder.
-    # To be safe, we can just remove all .mat files from this directory the the subdirectories, since these should be the only system-test TDMS artefacts
-    input_data_dump = str(path_to_input_generation + f"/arc_{test_id}/*.mat")
-    mat_artefacts = glob(input_data_dump, recursive=True)
-    for mat_file in mat_artefacts:
-        os.remove(mat_file)
+    # Run the test workflow, for this test
+    workflow(test_id)
+    # End of system test
     return
 
 
