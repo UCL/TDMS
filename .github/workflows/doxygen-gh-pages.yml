@@ -1,15 +1,67 @@
-name: Doxygen GitHub Pages Deploy Action
+name: Run Doxygen and publish to GitHub pages
+
+# Generate the documentation on all merges to main, all pull requests, or by
+# manual workflow dispatch. The Doxygen job can be used as a CI check that all
+# functions are documented. The publish job only runs on new commits to the main
+# branch and actually pushes the generated html to the gh-pages branch (which
+# triggers a GitHub pages deployment). When things are a bit more stable, we can
+# only publish the website on release tags.
 on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
+
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  doxygen:
+    runs-on: macos-latest
     steps:
-      - uses: DenverCoder1/doxygen-github-pages-action@v1.2.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          folder: html
-          config_file: doc/Doxyfile
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: "true"
+
+    - name: Install Doxygen
+      run: brew install doxygen graphviz
+      shell: bash
+
+    - name: Run Doxygen
+      run: doxygen doc/Doxyfile
+      shell: bash
+
+    # Disabling jekyll ensures pages with underscores work on gh pages.
+    - name: Create .nojekyll
+      run: touch html/.nojekyll
+      shell: bash
+
+    - name: Upload the website
+      uses: actions/upload-artifact@v3
+      with:
+        name: tdms_website
+        path: html/*
+        retention-days: 1
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: doxygen
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download the content for deployment
+      uses: actions/download-artifact@v3
+      with:
+        name: tdms_website
+        path: html
+        # Recreate and download to the html directory just for tidiness sake.
+
+    - name: Commit to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        folder: html
