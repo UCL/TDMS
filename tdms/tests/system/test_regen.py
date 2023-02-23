@@ -55,9 +55,12 @@ def workflow(test_id: str) -> None:
             )
         run_information = INFO["tests"]
 
-    # Regenerate the input data for arc_{test_id}, fail test if unsuccessful
-    regeneration_success = regenerate_test(config_file_path)
-    assert regeneration_success == 0, f"Data regeneration for arc_{test_id} failed!"
+    # Regenerate the input data for arc_{test_id}
+    regeneration_success, stdout_dump = regenerate_test(config_file_path)
+    # Fail test if regeneration was unsuccessful
+    assert (
+        regeneration_success == 0
+    ), f"Data regeneration for arc_{test_id} failed! Dumping stdout below:\n {stdout_dump}"
 
     # Perform each run of TDMS as specified by the config file
     system_test = TDMSSystemTest(yaml_test_id, run_information)

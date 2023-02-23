@@ -12,11 +12,11 @@ TESTS_TO_REGEN = glob(LOCATION_OF_THIS_FILE + "/*.yaml")
 N_TESTS_TO_REGEN = len(TESTS_TO_REGEN)
 
 
-def regenerate_test(config_file_location: Union[Path, str]) -> int:
+def regenerate_test(config_file_location: Union[Path, str]) -> tuple[int, str]:
     """Given the config file of a particular test, regenerate the input data for that test."""
     regenerator = GenerationData(config_file_location)
     return_code = regenerator.generate()
-    return return_code
+    return return_code, regenerator.matlab_command.stdout
 
 
 def regenerate_all() -> None:
