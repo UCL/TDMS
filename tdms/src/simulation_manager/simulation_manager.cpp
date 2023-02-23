@@ -10,10 +10,8 @@ using namespace tdms_math_constants;
 SimulationManager::SimulationManager(InputMatrices in_matrices,
                                      SolverMethod _solver_method,
                                      PreferredInterpolationMethods _pim)
-    : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()) {
-  solver_method = _solver_method;
-  pim = _pim;
-
+    : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()),
+      solver_method(_solver_method), pim(_pim) {
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
@@ -77,31 +75,37 @@ void SimulationManager::prepare_output(const mxArray *fieldsample,
 }
 
 void SimulationManager::post_loop_processing() {
-  // normalise the phasors in the volume, if we extracted there
-  if (inputs.params.run_mode == RunMode::complete &&
-      inputs.params.exphasorsvolume) {
-    outputs.E.normalise_volume();
-    outputs.H.normalise_volume();
-  }
-
-  // normalise the phasors on the surface, if we extracted there
-  if (inputs.params.run_mode == RunMode::complete &&
-      inputs.params.exphasorssurface) {
-    spdlog::info("Surface phasors");
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
-                   imag(E_norm[ifx]));
+  // we only normalise if we were provided with at least one non-empty source
+  // term
+  if (!inputs.all_sources_are_empty()) {
+    // normalise the phasors in the volume, if we extracted there
+    if (inputs.params.run_mode == RunMode::complete &&
+        inputs.params.exphasorsvolume) {
+      outputs.E.normalise_volume();
+      outputs.H.normalise_volume();
     }
-  }
-  // normalise the phasors on the vertices, if we extracted at any
-  if (inputs.params.run_mode == RunMode::complete &&
-      outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
-    spdlog::info("Vertex phasors");
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-      outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx], H_norm[ifx]);
-      spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
-                   imag(E_norm[ifx]));
+
+    // normalise the phasors on the surface, if we extracted there
+    if (inputs.params.run_mode == RunMode::complete &&
+        inputs.params.exphasorssurface) {
+      spdlog::info("Surface phasors");
+      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+        outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx],
+                                                  H_norm[ifx]);
+        spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
+                     imag(E_norm[ifx]));
+      }
+    }
+    // normalise the phasors on the vertices, if we extracted at any
+    if (inputs.params.run_mode == RunMode::complete &&
+        outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
+      spdlog::info("Vertex phasors");
+      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+        outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx],
+                                                  H_norm[ifx]);
+        spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
+                     imag(E_norm[ifx]));
+      }
     }
   }
 
