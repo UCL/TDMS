@@ -40,5 +40,7 @@ GENERATE_TREEVIEW      = YES
 HTML_EXTRA_STYLESHEET  = doc/doxygen-awesome-css/doxygen-awesome.css
 
 # 'mainpage' gets put on the index page
+INPUT += README.md
+INPUT += CONTRIBUTING.md
 INPUT += doc/developers.md
-USE_MDFILE_AS_MAINPAGE = doc/developers.md
+USE_MDFILE_AS_MAINPAGE = README.md
