@@ -20,9 +20,9 @@
  * efficient and notationally-consistent manner.
  */
 struct SourceIndex {
-  int split_field_ID = 0,//!< Value in the i/x direction
-          cell_b = 0,    //!< Value in the j/y direction
-          cell_c = 0;    //!< Value in the k/z direction
+  int split_field_ID = 0,//!< Index of the split field
+          cell_b = 0,    //!< Index in the minor (B-)axis
+          cell_c = 0;    //!< Index in the major (C-)axis
 };
 
 /**
@@ -37,7 +37,7 @@ struct SourceIndex {
  * The Source data (real and imag) is indexed by 3 indices, accessed via
  * {real,imag}[cell_c][cell_b][split_field_ID].
  *
- * source_field_ID ranges between 0-7 inclusive.
+ * split_field_ID ranges between 0-7 inclusive.
  * TODO: Indices <-> sources need to be deduced from input file generator
  * functions.
  *
