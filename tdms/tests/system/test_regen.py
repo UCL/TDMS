@@ -2,6 +2,7 @@ import os
 import sys
 from glob import glob
 from pathlib import Path
+from warnings import warn
 
 # Location of this file, which is where the tests are running from
 LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
@@ -46,14 +47,20 @@ def workflow(test_id: str) -> None:
     # Fetch test run information
     with open(config_file_path, "r") as opened_config_file:
         # Read data into dictionary, and take the "tests" value
-        run_information = yaml.safe_load(opened_config_file)["tests"]
+        INFO = yaml.safe_load(opened_config_file)
+        yaml_test_id = INFO["test_id"]
+        if yaml_test_id != test_id:
+            warn(
+                f"{str(config_file_path)} implicit ID does not match config file description (found {test_id})"
+            )
+        run_information = INFO["tests"]
 
     # Regenerate the input data for arc_{test_id}, fail test if unsuccessful
     regeneration_success = regenerate_test(config_file_path)
     assert regeneration_success == 0, f"Data regeneration for arc_{test_id} failed!"
 
-    # Perform each run of TDMS as specified by the config file - note: no longer in zipped dir so need to rework my old class :(
-    system_test = TDMSSystemTest(test_id, run_information)
+    # Perform each run of TDMS as specified by the config file
+    system_test = TDMSSystemTest(yaml_test_id, run_information)
 
     # Run all of the system tests
     run_success = system_test.perform_all_runs()
@@ -99,7 +106,3 @@ def test_system(test_id) -> None:
     workflow(test_id)
     # End of system test
     return
-
-
-# I'm only here so Will can press F5 in VSCode to test this file, rather than switching windows to invoke pytest :) I will disappear soon
-test_system("01")
