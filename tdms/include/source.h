@@ -16,12 +16,14 @@
  * in a Source instance is indexed via
  * {real,imag}[cell_c][cell_b][split_field_ID].
  *
- * SourceIndex overlays the ijk struct for code re-use, via the association:
- * ijk.k => SourceIndex.cell_c
- * ijk.j => SourceIndex.cell_b
- * ijk.i => SourceIndex.split_field_ID
+ * SourceIndex is a container for indexing the Source.{real,imag} objects in an
+ * efficient and notationally-consistent manner.
  */
-typedef ijk SourceIndex;
+struct SourceIndex {
+  int split_field_ID = 0,//!< Value in the i/x direction
+          cell_b = 0,    //!< Value in the j/y direction
+          cell_c = 0;    //!< Value in the k/z direction
+};
 
 /**
  * @brief The Source class stores values of the Source field across a particular
@@ -58,7 +60,8 @@ public:
   bool is_empty() { return no_data_stored; }
 
   std::complex<double> operator[](SourceIndex index) {
-    return std::complex<double>(real[index.k][index.j][index.i],
-                                imag[index.k][index.j][index.i]);
+    return std::complex<double>(
+            real[index.cell_c][index.cell_b][index.split_field_ID],
+            imag[index.cell_c][index.cell_b][index.split_field_ID]);
   }
 };

@@ -1,6 +1,7 @@
 #include "simulation_manager/simulation_manager.h"
 
 #include "cell_coordinate.h"
+#include "source.h"
 
 using namespace std;
 using namespace tdms_phys_constants;
@@ -226,8 +227,8 @@ void SimulationManager::E_source_update_steadystate(
       // Dealing with Isource. j = cell_b, k = cell_c
       c_constant = inputs.C.b.x[array_ind];
 
-      s_index.j -= inputs.J0.index;
-      s_index.k -= inputs.K0.index;
+      s_index.cell_b -= inputs.J0.index;
+      s_index.cell_c -= inputs.K0.index;
       source_value = inputs.Isource[s_index];
 
       cell_to_update = {inputs.I0.index, cell_b, cell_c};
@@ -251,8 +252,8 @@ void SimulationManager::E_source_update_steadystate(
       // Dealing with Jsource. i = cell_b, k = cell_c
       c_constant = inputs.C.b.y[array_ind];
 
-      s_index.j -= inputs.I0.index;
-      s_index.k -= inputs.K0.index;
+      s_index.cell_b -= inputs.I0.index;
+      s_index.cell_c -= inputs.K0.index;
       source_value = inputs.Jsource[s_index];
 
       cell_to_update = {cell_b, inputs.J0.index, cell_c};
@@ -278,8 +279,8 @@ void SimulationManager::E_source_update_steadystate(
       // Dealing with Ksource. i = cell_b, j = cell_c
       c_constant = inputs.C.b.z[array_ind];
 
-      s_index.j -= inputs.I0.index;
-      s_index.k -= inputs.J0.index;
+      s_index.cell_b -= inputs.I0.index;
+      s_index.cell_c -= inputs.J0.index;
       source_value = inputs.Ksource[s_index];
 
       cell_to_update = {cell_b, cell_c, inputs.K0.index};
@@ -479,10 +480,10 @@ void SimulationManager::H_source_update_steadystate(
    we can retrieve the source value. */
   SourceIndex s_index = {0, cell_b, cell_c};
   // If working along the C-axis, split_field_ID is one greater than the B-axis
-  if (C_axis) { s_index.i += 1; }
+  if (C_axis) { s_index.split_field_ID += 1; }
   // If working along the {IJK}1 plane, split_field_Id is 4 greater than the
   // 0-plane
-  if (!zero_plane) { s_index.i += 4; }
+  if (!zero_plane) { s_index.split_field_ID += 4; }
 
   /*! Field updates are signed based on the component, plane, and axis */
   double update_sign = 1.;
@@ -495,8 +496,8 @@ void SimulationManager::H_source_update_steadystate(
       // Dealing with Isource
       d_constant = inputs.D.b.x[array_ind];
 
-      s_index.j -= inputs.J0.index;
-      s_index.k -= inputs.K0.index;
+      s_index.cell_b -= inputs.J0.index;
+      s_index.cell_c -= inputs.K0.index;
       source_value = inputs.Isource[s_index];
 
       cell_to_update.i = (zero_plane) ? inputs.I0.index - 1 : inputs.I1.index;
@@ -510,8 +511,8 @@ void SimulationManager::H_source_update_steadystate(
       // Dealing with Jsource
       d_constant = inputs.D.b.y[array_ind];
 
-      s_index.j -= inputs.I0.index;
-      s_index.k -= inputs.K0.index;
+      s_index.cell_b -= inputs.I0.index;
+      s_index.cell_c -= inputs.K0.index;
       source_value = inputs.Jsource[s_index];
 
       cell_to_update.i = cell_b;
@@ -525,8 +526,8 @@ void SimulationManager::H_source_update_steadystate(
       // Dealing wtih Ksource
       d_constant = inputs.D.b.z[array_ind];
 
-      s_index.j -= inputs.I0.index;
-      s_index.k -= inputs.J0.index;
+      s_index.cell_b -= inputs.I0.index;
+      s_index.cell_c -= inputs.J0.index;
       source_value = inputs.Ksource[s_index];
 
       cell_to_update.i = cell_b;
