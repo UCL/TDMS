@@ -69,7 +69,7 @@ public:
    * Initialise a vector of 1d discrete Fourier transform plans
    * @param n_threads Number of threads that will be used
    * @param size Length of the vector
-   * @param eh_vec // TODO: what is this?
+   * @param eh_vec TODO: what is this?
    */
   void initialise_fftw_plan(int n_threads, int size, EHVec &eh_vec);
 
@@ -77,22 +77,27 @@ public:
 };
 
 /**
- * A split field defined over a grid.
- * To reconstruct the components we have e.g.: Ex = Exy + Exz multiplied by
- * a phase factor
+ * @brief A split field defined over a grid.
+ *
+ * To reconstruct the components we have e.g.: Ex = Exy + Exz multiplied by a
+ * phase factor
  */
 class SplitField : public Grid {
 protected:
   virtual int delta_n() = 0;// TODO: no idea what this is or why it's needed
 
 public:
-  // Pointers (3D arrays) which hold the magnitude of the split field
-  // component at each grid point (i, j, k)
+  /*! Magnitude of the xy component at each grid point (i,j,k) */
   SplitFieldComponent xy;
+  /*! Magnitude of the xz component at each grid point (i,j,k) */
   SplitFieldComponent xz;
+  /*! Magnitude of the yx component at each grid point (i,j,k) */
   SplitFieldComponent yx;
+  /*! Magnitude of the yz component at each grid point (i,j,k) */
   SplitFieldComponent yz;
+  /*! Magnitude of the zx component at each grid point (i,j,k) */
   SplitFieldComponent zx;
+  /*! Magnitude of the zy component at each grid point (i,j,k) */
   SplitFieldComponent zy;
 
   /**
@@ -294,11 +299,11 @@ public:
   /**
    * Set the phasors for this field, given a split field. Result gives field
    * according to the exp(-iwt) convention
-   * @param F
-   * @param n
-   * @param omega
-   * @param dt
-   * @param Nt
+   * @param F The split-field to read values from
+   * @param n The current timestep
+   * @param omega Angular frequency
+   * @param dt Timestep
+   * @param Nt Number of timesteps in a sinusoidal period
    */
   void set_phasors(SplitField &F, int n, double omega, double dt, int Nt);
 
@@ -337,6 +342,7 @@ public:
                               int i_lower, int i_upper, int j_lower,
                               int j_upper, int k_lower, int k_upper,
                               Dimension mode = Dimension::THREE);
+  /*! @copydoc interpolate_over_range */
   void interpolate_over_range(mxArray *x_out, mxArray *y_out, mxArray *z_out,
                               Dimension mode = Dimension::THREE);
 

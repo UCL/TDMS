@@ -11,5 +11,3 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: ucl/composite-actions/pre-commit@v1
-        with:
-          python-version: '3.10'

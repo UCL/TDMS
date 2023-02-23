@@ -119,8 +119,8 @@ protected:
   when run_all_class_tests() is run, and do not bloat the log. If overriden, a
   test_ method should not alter ran_a_test
   */
-
   bool ran_a_test = true;
+
   /**
    * @brief Tests the behaviour of construction when passed an empty MATLAB
    * array
