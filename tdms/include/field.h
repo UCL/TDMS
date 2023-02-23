@@ -54,17 +54,39 @@ public:
   };
 };
 
+/**
+ * @brief An individual component of a `SplitField`.
+ * @sa `SplitField`, `Grid`
+ */
 class SplitFieldComponent : public Tensor3D<double> {
 public:
-  int n_threads = 1;// Number of threads this component was chunked with
-  fftw_plan *plan_f = nullptr;// Forward fftw plan
-  fftw_plan *plan_b = nullptr;// Backward fftw plan
+  int n_threads = 1;//!< Number of threads this component was chunked with
+  fftw_plan *plan_f = nullptr;//!< Forward fftw plan
+  fftw_plan *plan_b = nullptr;//!< Backward fftw plan
 
+  /**
+   * @brief Access the underlying 2D tensor.
+   *
+   * @param value The tensor index.
+   * @return double** The tensor.
+   */
   double **operator[](int value) const { return tensor[value]; };
+  /**
+   * @brief Access the tensor value.
+   *
+   * @param cell The coordinate (i, j, k) of the cell.
+   * @return double The value of that tensor component.
+   */
   double operator[](CellCoordinate cell) const {
     return tensor[cell.k][cell.j][cell.i];
   }
 
+  /**
+   * @brief Initialise the splot field component from a MATLAB tensor.
+   *
+   * @param tensor Pointer to the MATLAB tensor.
+   * @param dims The number of dimensions.
+   */
   void initialise_from_matlab(double ***tensor, Dimensions &dims);
 
   /**
@@ -79,9 +101,9 @@ public:
 };
 
 /**
- * A split field defined over a grid.
- * To reconstruct the components we have e.g.: Ex = Exy + Exz multiplied by
- * a phase factor
+ * @brief A split field defined over a grid.
+ * @details To reconstruct the components we have e.g.: Ex = Exy + Exz
+ * multiplied by a phase factor
  */
 class SplitField : public Grid {
 protected:
@@ -90,12 +112,12 @@ protected:
 public:
   // Pointers (3D arrays) which hold the magnitude of the split field
   // component at each grid point (i, j, k)
-  SplitFieldComponent xy;
-  SplitFieldComponent xz;
-  SplitFieldComponent yx;
-  SplitFieldComponent yz;
-  SplitFieldComponent zx;
-  SplitFieldComponent zy;
+  SplitFieldComponent xy;//!< The xy component.
+  SplitFieldComponent xz;//!< The xz component.
+  SplitFieldComponent yx;//!< The yx component.
+  SplitFieldComponent yz;//!< The yz component.
+  SplitFieldComponent zx;//!< The zx component.
+  SplitFieldComponent zy;//!< The zy component.
 
   /**
    * Default no arguments constructor
@@ -183,6 +205,10 @@ public:
                                   CellCoordinate cell) override;
 };
 
+/**
+ * @brief The split field for the magnetic field.
+ * @sa `SplitField`
+ */
 class MagneticSplitField : public SplitField {
 protected:
   int delta_n() override {
@@ -210,6 +236,10 @@ public:
                                   CellCoordinate cell) override;
 };
 
+/**
+ * @brief The split field for the current density.
+ * @sa `SplitField`
+ */
 class CurrentDensitySplitField : public SplitField {
 protected:
   int delta_n() override { return 0; }

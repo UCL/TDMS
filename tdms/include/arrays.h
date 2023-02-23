@@ -225,17 +225,21 @@ public:
   bool is_dispersive(int K_tot, double near_zero_tolerance = 1e-15);
 };
 
+/**
+ * @brief A matrix class of type T.
+ *
+ * @tparam T the type of the matrix elements.
+ */
 template<typename T>
 class Matrix {
 protected:
-  int n_rows = 0;
-  int n_cols = 0;
-  T **matrix = nullptr;
+  int n_rows = 0;      //!< The number of rows.
+  int n_cols = 0;      //!< The number of columns.
+  T **matrix = nullptr;//!< A pointer to the matrix as a C-array.
 
 public:
   /**
    * @brief Construct a new Matrix object, without assigned elements
-   *
    */
   Matrix() = default;
   /**
