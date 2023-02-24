@@ -6,6 +6,8 @@ from warnings import warn
 
 # Location of this file, which is where the tests are running from
 LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
+# This will determine whether or not we want to retain the regenerated input .mat files (if say, we are planning a new Zenodo upload). Recommended FALSE on CLI, TRUE locally if you're doing the update
+PRESERVE_FLAG = True
 
 # Hack the 1st - add the data/generation directory to the path so we can import from it
 path_to_input_generation = Path(LOCATION_OF_THIS_FILE, "data", "input_generation")
@@ -34,7 +36,7 @@ for i, id in enumerate(TEST_IDS):
 N_TESTS = len(TEST_IDS)
 
 
-def workflow(test_id: str) -> None:
+def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
     """Performs all tdms runs contained in the system test arc_{test_id}. Assumes that reference data is present in the appropriate .zip folder within the /data directory.
 
     The workflow steps are as follows:
@@ -67,10 +69,11 @@ def workflow(test_id: str) -> None:
 
     # TEAR-DOWN: remove the regenerated inputs and outputs from the data/input_generation/arc_{test_id} folder.
     # To be safe, we can just remove all .mat files from this directory the the subdirectories, since these should be the only system-test TDMS artefacts
-    input_data_dump = str(path_to_input_generation / f"arc_{test_id}/*.mat")
-    mat_artefacts = glob(input_data_dump, recursive=True)
-    for mat_file in mat_artefacts:
-        os.remove(mat_file)
+    if not PRESERVE_FLAG:
+        input_data_dump = str(path_to_input_generation / f"arc_{test_id}/*.mat")
+        mat_artefacts = glob(input_data_dump, recursive=True)
+        for mat_file in mat_artefacts:
+            os.remove(mat_file)
 
     # Although we should have check-ed whether each run was a pass/fail, we can also assert that all runs need to pass here to report failures
     failed_run_names = []
