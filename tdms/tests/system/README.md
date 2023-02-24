@@ -29,7 +29,7 @@ The current workflow of the system tests is:
 
 **The `test_regen.py` and `tdms_testing_class.py` will be replacing the `test_system.py` and `read_config.py` files when the input overhaul is complete.**
 
-The proposed workflow of a particular system test `arc_XX` is:
+The _proposed_ workflow of a particular system test `arc_XX` is:
 - Locally generate the reference inputs using the `data/input_generation` functionality.
     - `arc_XX` fails if its reference input cannot be successfully generated. This indicates a failure in the scripts and/or functions in the `data/input_generation/{bscan,matlab}` directories.
 - Fetch the reference outputs from [Zenodo](https://zenodo.org/record/7440616/files).
@@ -41,6 +41,8 @@ The proposed workflow of a particular system test `arc_XX` is:
 - `arc_XX` fails if any one of its runs fail. Failed runs are reported by name.
 - Reference inputs are cleaned up.
 - `arc_XX` passes if this step is reached successfully.
+
+Due to licensing issues regarding running `MATLAB` on GitHub runners, we cannot utilise `matlabengine` to regenerate the reference input data during CI. (Although we are currently thinking of removing the `MATLAB` dependency which will then enable us to resolve this issue). The work-in-progress `test_regen.py` workflow can still be run locally through `pytest`, however in addition to `requirements.txt` you will also need to [install `matlabengine`](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html). See the [MathWorks page](https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html) link for detailed requirements, however you will need (at least) `Python >= 3.8` and a licensed version of `MATLAB`.
 
 ## Generating Input Data for the System Tests
 
