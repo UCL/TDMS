@@ -1,14 +1,14 @@
 import os
 from glob import glob
 from pathlib import Path
-from subprocess import PIPE, Popen
+from subprocess import PIPE, Popen, run
 from typing import Union
 
 import yaml
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
-# MATLAB executable path
-MATLAB_PATH = "matlab"
+# MATLAB executable path - need to locate this...
+MATLAB_PATH = run(["which", "matlab"], stdout=PIPE).stdout.decode().removesuffix("\n")
 # Additional options for running matlab on the command-line
 MATLAB_OPTS = ["-nodisplay", "-nodesktop", "-nosplash", "-r"]
 # Paths to matlab functions not in LOCATION_OF_THIS_FILE

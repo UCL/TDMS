@@ -41,6 +41,10 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
 
+      - name: Check MATLAB is on the PATH
+        run: |
+          echo $(which matlab)
+
       - name: Install dependencies
         run: |
           sudo apt-get update
