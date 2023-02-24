@@ -44,7 +44,7 @@ jobs:
       - name: Check MATLAB is on the PATH and can be invoked
         run: |
           echo $(which matlab)
-          matlab -r -nosplash -nodesktop -nodisplay -r "disp('hello world')"
+          matlab -nosplash -nodesktop -nodisplay -r "disp('hello world')"
 
       - name: Install dependencies
         run: |
