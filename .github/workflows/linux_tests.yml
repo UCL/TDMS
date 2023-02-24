@@ -51,6 +51,12 @@ jobs:
         run: |
           pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
 
+      - name: MATLAB engine things
+        shell: bash
+        run: |
+          pip install matlabengine
+          python ${GITHUB_WORKSPACE}/tdms/tests/system/test_matlabengine.py
+
       - name: Create Build Environment
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
