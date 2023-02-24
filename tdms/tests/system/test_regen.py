@@ -87,9 +87,9 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
 
 # Run each system test that is currently saved in the repository, as identified through the config files
-@pytest.mark.skip(
-    reason="MATLAB doesn't run on GH runners. If you want to check that regenerating the input data still allows the tests to pass, run this locally and remove the skip mark."
-)
+# @pytest.mark.skip(
+#     reason="MATLAB doesn't run on GH runners. If you want to check that regenerating the input data still allows the tests to pass, run this locally and remove the skip mark."
+# )
 @pytest.mark.parametrize("test_id", TEST_IDS)
 def test_system(test_id) -> None:
     """Runs the system test arc_{test_id}, including fetching missing reference data from Zenodo.
