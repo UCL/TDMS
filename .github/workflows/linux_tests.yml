@@ -41,9 +41,10 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
 
-      - name: Check MATLAB is on the PATH
+      - name: Check MATLAB is on the PATH and can be invoked
         run: |
           echo $(which matlab)
+          matlab -r -nosplash -nodesktop -nodisplay -r "disp('hello world')"
 
       - name: Install dependencies
         run: |
