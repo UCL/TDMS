@@ -1,0 +1,20 @@
+test_id: '02'
+tests:
+  fs_bli:
+    input_file: pstd_fs_input.mat
+    reference: pstd_fs_bli_reference.mat
+  fs_cubic:
+    input_file: pstd_fs_input.mat
+    reference: pstd_fs_cubic_reference.mat
+    cubic_interpolation: True
+  cyl_bli:
+    input_file: pstd_cyl_input.mat
+    reference: pstd_cyl_bli_reference.mat
+  cyl_cubic:
+    input_file: pstd_cyl_input.mat
+    reference: pstd_cyl_cubic_reference.mat
+    cubic_interpolation: True
+input_generation:
+  input_file: input_file_02.m
+  spatial_obstacles: ["fs", "cyl"]
+  illumination_input_file:
