@@ -33,22 +33,111 @@ class BScanArguments:
     # The directory of the test whose input data is being generated
     test_directory: str
     # The path to the input file that defines the variables iteratefdtd_matrix.m takes in
-    input_filename: Union[str, Path]
+    input_filename: str
+    # The obstacles present in the simulations we are generating inputs for
+    obstacles: list[str]
+    # If the BScan call requires an illumination file to setup, provide a non-empty string here with the filename
+    # Otherwise, assume that no illumination setup is necessary
+    illfile_req: bool
 
-    def __init__(self, test_directory, input_filename) -> None:
+    def __init__(
+        self,
+        test_directory: Union[Path, str],
+        input_filename: Union[Path, str],
+        obstacles: list[str],
+        illfile: bool = False,
+    ) -> None:
         """Initialise by unpacking values, and assigning defaults if necessary."""
-        self.test_directory = test_directory
-        self.input_filename = input_filename
+        # Cast possible Path() to str() to guard against unsupported datatypes
+        self.test_directory = str(test_directory)
+        self.input_filename = str(input_filename)
+        self.obstacles = obstacles
+        self.illfile_req = illfile
+
         return
+
+    def _temp_filesetup_name(self) -> str:
+        """In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode.
+
+        Only occurs when illumination files are required in input-data regeneration. In this case, self.input_filename is passed to iteratefdtd_matrix in 'illsetup' mode.
+        """
+        # Input file name without the extension (.m)
+        raw_input_name = os.path.splitext(self.input_filename)[0]
+        # Append to filename an suitably unique extension
+        raw_input_name += "temp_filesetup_file____.m"
+        return raw_input_name
+
+    def _create_temp_filesetup(self) -> None:
+        """Generate the tempoaray file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables NOT to be present.
+
+        As such, the optimal way to get around this is to have Python copy the input_file (which in this instance is what needs to be used to setup the illumination), and then remove the definition of the efname & hfname variables in the copy to create the "filesetup" input.
+        """
+        # Copy the input_file (illumination-input) line-by-line to a temporary location for the filesetup-input
+        # Do not copy across the lines that define the efname and hfname variables
+        with open(self.input_filename, "r") as illumination_input:
+            with open(self._temp_filesetup_name(), "w") as filesetup_input:
+                for line in illumination_input:
+                    # Remove any potential whitespace padding from the beginning of the line
+                    stripped_line = line.lstrip()
+                    # Write line, provided efname or hfname are not defined on it
+                    if not (
+                        ("efname=" in stripped_line) or ("hfname=" in stripped_line)
+                    ):
+                        filesetup_input.write(line)
+        # filesetup_input is now ready, and identical to illumination_input save in the definition of efname and hfname
+        return
+
+    def non_freespace_obstacle(self) -> str:
+        """Returns the shape of the scattering object present in the non-freespace simulation, as a string.
+
+        Throws an error in the event that there is no such object, or if there are multiple such objects.
+        """
+        # Error if self.obstacles is not set
+        if not self.obstacles:
+            raise RuntimeError(f"Error: no obstacles specified in call to BScan!")
+        # Create a copy of obstacles so we don't overwrite our member variable
+        obstacles = list(self.obstacles)
+        # We should be able to pop out 'fs' now - if we can't then we should error
+        # We can use while here in case there are duplications of 'fs', as we self-update each time
+        while "fs" in obstacles:
+            obstacles.remove("fs")
+        # Now obstacles should be left with only 1 element (the desired obstacle), if not then the non-freespace obstacle is non-unique and we error
+        if len(obstacles) != 1:
+            raise RuntimeError(
+                f"Error: non-freespace obstacle is not unique ({obstacles})"
+            )
+        # If we didn't error, we can return the only element of obstacles, which is the non-fs obstacle
+        return obstacles[0]
 
     def run_bscan(self, engine: MatlabEngine) -> None:
         """Runs the run_bscan function in the MatlabEngine provided.
 
         The bscan/ and matlab/ directories are assumed to already be in the includepath of the engine instance, so that the run_bscan and supporting matlab files can be called.
         """
-        # function [] = run_bscan(test_directory, input_filename)
-        # Cast to str() to guard against Path instances slipping through
-        engine.run_bscan(str(self.test_directory), str(self.input_filename), nargout=0)
+        # If illumination file is needed, we need to copy the input file and remove the lines that define the efname and hfname as necessary
+        illfile_extra_file = ""
+        if self.illfile_req:
+            # If this is _not_ an empty string, we need to generate the illumination file from the input file
+            # It is essentially identical, but needs the efname and hfname variables to be:
+            # present in the workspace/file when calling with 'illsetup'
+            # absent from the workspace/file when calling with 'filesetup'
+            # Otherwise, the "input" file to the illsetup and input file for the .mat creation are identical. As such, the optimal way to get around this is to have Python pass the input_file via 'illsetup', then copy this file, remove the definition of the efname & hfname variables, then run 'filesetp' mode. We can then cleanup our "extra" file that we created.
+            illfile_extra_file = self._temp_filesetup_name()
+            self._create_temp_filesetup()
+
+        # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file)
+        # pass nargout=0 to indicate no value is to be returned to Python
+        engine.run_bscan(
+            self.test_directory,
+            self.input_filename,
+            self.non_freespace_obstacle(),
+            illfile_extra_file,
+            nargout=0,
+        )
+
+        # Cleanup the temporary illumination file, if we created it
+        if self.illfile_req:
+            os.remove(illfile_extra_file)
         return
 
 
@@ -152,6 +241,8 @@ class GenerationData:
     input_file: Path
     # The spatial obsticles that are present in the runs of this test
     obstacles: list[str]
+    # Whether or not we need to run iteratefdtd_matrix in illsetup mode as well as filesetup mode
+    illsetup_required: bool
 
     # The matlab instance that generates the input data for this test
     matlab_instance: MATLABEngineWrapper
@@ -200,6 +291,12 @@ class GenerationData:
             raise RuntimeError(f"{self.input_file} does not exist")
         # fetch the spatial obstacles
         self.obstacles = self._generation_options["spatial_obstacles"]
+        # determine if illsetup is required in addition to filesetup
+        if self._generation_options["illsetup"]:
+            self.illsetup_required = True
+        else:
+            # Cast things like None to bools, so typehints and behaviour is consistent
+            self.illsetup_required = False
         return
 
     def _find_or_create_test_dir(self) -> None:
@@ -217,7 +314,9 @@ class GenerationData:
 
     def _setup_matlab_instance(self) -> MATLABEngineWrapper:
         """Setup the matlab command that will generate the input data"""
-        bscan = BScanArguments(self.test_dir, self.input_file)
+        bscan = BScanArguments(
+            self.test_dir, self.input_file, self.obstacles, self.illsetup_required
+        )
         return MATLABEngineWrapper(bscan)
 
     def generate(self) -> None:

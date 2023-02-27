@@ -17,4 +17,4 @@ tests:
 input_generation:
   input_file: input_file_02.m
   spatial_obstacles: ["fs", "cyl"]
-  illumination_input_file:
+  illsetup:
