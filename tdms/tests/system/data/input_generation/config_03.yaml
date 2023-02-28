@@ -18,3 +18,4 @@ input_generation:
   input_file: input_file_03.m
   spatial_obstacles: ["fs", "sph"]
   illsetup: True
+  obstacle_radius: 5.e-6

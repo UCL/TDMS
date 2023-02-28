@@ -1,8 +1,21 @@
+# A string containing the test_id
 test_id: '01'
+# Indicates that what follows is information needed when performing the runs that make up this system test.
+# Tags within this block correspond to one run that forms part of this system test
+# The tags themselves are used as the names for each run, and should be unique
+# Paths to files must be relative to their location in the Zenodo .zip files this is to be downloaded
 tests:
+  # Indiates the start of another block, the information is which is only applied when performing this run of tdms
   fs_bli:
+    # The name of the .mat inut file that should be passed to the tdms executable
     input_file: pstd_fs_input.mat
+    # The name of the reference .mat output to comapre the output of the local tdms run to
     reference: pstd_fs_bli_reference.mat
+    # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present
+    cubic_interpolation: False
+    # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
+    fdtd_solver: False
+  # This defines another, independent run of tdms that is still part of the same system test.
   fs_cubic:
     input_file: pstd_fs_input.mat
     reference: pstd_fs_cubic_reference.mat
@@ -14,7 +27,14 @@ tests:
     input_file: pstd_cyl_input.mat
     reference: pstd_cyl_cubic_reference.mat
     cubic_interpolation: True
+# Indicates that what follows is information needed when regenerating the .mat inputs that are passed to tdms in the runs that consistute this test.
+# Paths to files should be relative to the tdms/tests/system/data/input_generation directory.
 input_generation:
+  # The file that is passed to iteratefdtd_matrix in run_bscan
   input_file: input_file_01.m
+  # List of strings specifying the spatial obstacles to setup for this test. One of these should be 'fs' for "freespace". The other obstacle(s) can be any of "sph" (sphere), "cyl" (cylindrical), "sc" (point-source)
   spatial_obstacles: ["fs", "cyl"]
-  illsetup:
+  # Whether iteratefdtd_matrix must be called in illsetup mode to setup the illumination file, prior to its call in filesetup mode. Defaults to False if not present or unpopulated
+  illsetup: False
+  # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. Defaults to 15.e-6 if not set.
+  obstacle_radius: 15.e-6

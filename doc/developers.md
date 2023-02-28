@@ -252,6 +252,7 @@ Subsequent runs of the tests will not re-download unless you manually delete the
 
 The system tests for `tdms` are configured with yaml files in the `data/input_generation/` directory.
 They are named `config_XX.yaml` where `XX` matches the ID of the system test, which themselves are named `arc_XX` by historical convention.
+These config files define a number of variables, parameters, and filenames that will be required when running the system tests - for a detailed breakdown of their syntax, see the annotated `config_01.yaml` file.
 This should also match the `test_id` field in the configuration file itself.
 The _reference outputs_ or _reference data_ are a collection of `.mat` files, produced from the _reference inputs_ by a trusted version of the `tdms` executable.
 We test for regression using these reference files.
@@ -264,9 +265,8 @@ In the scripts, a given execution is called by `tests.utils.run_tdms` which wrap
 #### Workflow of a System Test
 
 The workflow of a particular system test `arc_XX` is:
-- Locally generate the reference inputs using `data/input_generation/WHATISTHESCRIPTNAME.py`.
+- Locally generate the reference inputs using functionality in `data/input_generation/generate_test_data.py`.
     - `arc_XX` fails if its reference input cannot be successfully generated.
-        This indicates a failure in the scripts and/or functions in the `data/input_generation/{bscan,matlab}` directories.
 - Fetch the reference outputs from [Zenodo](https://zenodo.org/record/7440616/files).
 - For each run, named `run_id` in `arc_XX`:
     - Execute the call to `tdms` corresponding to `run_id`.
@@ -301,6 +301,6 @@ The `matlab/` directory contains functions that `run_bscan` will need to call on
 
 The `generate_test_input.py` file contains `.py` files that the system tests can invoke to regenerate the input data. Since the system test framework uses `pytest`, but the data generation requires `MATLAB` (for now), we use `Python` to read in and process the information that each test requires, and then call `run_bscan` with the appropriate commands from within Python.
 
-The `regenerate_all.py` file will work through all of the `config_tc.yaml` files in the directory and regenerate the input `.mat` data corresponding to each.
+The `regenerate_all.py` file will work through all of the `config_XX.yaml` files in the directory and regenerate the input `.mat` data corresponding to each.
 
 The remaining `config_XX.yaml` and `input_file_XX.m` files are as mentioned in [the previous section](#regeneration-of-the-data). These contain the information about each test that Python and `run_bscan` will need to regenerate the input files.

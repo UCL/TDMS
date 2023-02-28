@@ -1,6 +1,7 @@
 import os
 from glob import glob
 from pathlib import Path
+from typing import Literal
 
 import matlab.engine as matlab
 import yaml
@@ -15,6 +16,11 @@ MATLAB_EXTRA_PATHS = [
     os.path.abspath(LOCATION_OF_THIS_FILE + "/bscan"),
     os.path.abspath(LOCATION_OF_THIS_FILE + "/matlab"),
 ]
+# Default values to use when an optional argument is not present in a config.yaml file
+DEFAULT_VALUES = {
+    "obstacle": 'fs',
+    "obstacle_radius": 15.e-6,
+}
 
 def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
     """Generate the tempoaray file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables NOT to be present.
@@ -36,7 +42,7 @@ def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
     return
 
 def run_bscan(
-    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: str = 'fs', obstacle_radius: float = 15.e-6, illfile_required: bool = False) -> None:
+    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: Literal['fs', 'cyl', 'sph', 'sc'] = DEFAULT_VALUES["obstacle"], obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"], illfile_required: bool = False) -> None:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
     MatlabEngine cannot parse Path objects so file and directory paths must be cast to string when calling.
@@ -44,6 +50,14 @@ def run_bscan(
     The bscan/ and matlab/ directories are assumed to already be in the
     includepath of the engine instance, so that the run_bscan and supporting
     MATLAB files can be called.
+
+    The obstacle radius is the circular face radius for cylinders (cyl), sphere radius for spheres (sph), and is ignored by freespace (fs) and point-source (sc) obstacles.
+
+    :param input_filename: The path to the input file that defines the variables iteratefdtd_matrix reads in
+    :param engine: The MatlabEngine instance to call run_bscan within. If not provided, a new session will be started and ended once the call is complete.
+    :param obstacle: The obstacle that is present in the simulation.
+    :param obstacle_radius: Radius of the spatial obstacle in microns.
+    :param illfile_required: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
     """
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
     # This only occurs when illumination files are required in input-data regeneration.
@@ -128,6 +142,11 @@ def generate_test_input(
         )
     # If we didn't error, the only obstacle that remains is the non-freespace obstacle
     non_freespace_obstacle = non_freespace_obstacle[0]
+    # Fetch the obstacle radius if it is present, otherwise use the default value
+    if "obstacle_radius" in generation_info.keys() and (generation_info["obstacle_radius"] != None):
+        obstacle_radius = float(generation_info["obstacle_radius"])
+    else:
+        obstacle_radius = DEFAULT_VALUES["obstacle_radius"]
     # Fetch whether illsetup mode is required
     if generation_info["illsetup"]:
         illsetup_requred = True
@@ -142,7 +161,7 @@ def generate_test_input(
         # Start a new Matlab engine operating in the test directory
         engine = start_MatlabEngine_with_extra_paths(working_directory=test_dir)
 
-    run_bscan(test_dir, input_file, engine, non_freespace_obstacle, illsetup_requred)
+    run_bscan(test_dir, input_file, engine, non_freespace_obstacle, obstacle_radius, illsetup_requred)
 
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:
