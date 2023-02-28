@@ -36,7 +36,7 @@ def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
     return
 
 def run_bscan(
-    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: str = 'fs', illfile_required: bool = False) -> None:
+    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: str = 'fs', obstacle_radius: float = 15.e-6, illfile_required: bool = False) -> None:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
     MatlabEngine cannot parse Path objects so file and directory paths must be cast to string when calling.
@@ -56,8 +56,8 @@ def run_bscan(
         # Otherwise, the "input" file to the illsetup and input file for the .mat creation are identical. As such, the optimal way to get around this is to have Python pass the input_file via 'illsetup', then copy this file, remove the definition of the efname & hfname variables, then run 'filesetp' mode. We can then cleanup our "extra" file that we created.
         illfile_extra_file = os.path.splitext(input_filename)[0] + "temp_filesetup_file____.m"
         _create_temporary_filesetup(input_filename, illfile_extra_file)
-    # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file)
-    engine.run_bscan(str(test_directory), str(input_filename), obstacle, illfile_extra_file, nargout=0)
+    # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
+    engine.run_bscan(str(test_directory), str(input_filename), obstacle, illfile_extra_file, obstacle_radius, nargout=0)
 
     # Cleanup the illfile_extra_file, if it was created
     if illfile_required:
