@@ -16,18 +16,11 @@ if ~exist(dir_to_place_input_mats, 'dir')
     mkdir(dir_to_place_input_mats);
 end
 
-%% Generate auxillary arrays / matrices needed to setup the inputs
-
-% Define coordinates of the computational grid
-[x,y,z,lambda] = fdtd_bounds(input_filename);
-
 % Refractive index of obstacle
 refind = 1.42;
 
 % Insert obstacle, typically at the origin, by introducing the scattering matrix
-y = 0;
-[X,Y,Z] = ndgrid(x,y,z);
-I = scattering_matrix(X, Y, Z, obstacle_radius, non_fs_obstacle);
+I = scattering_matrix(input_filename, obstacle_radius, non_fs_obstacle);
 
 % Generate additional matrices
 inds = find(I(:));
@@ -46,13 +39,16 @@ save('gridfile_fs', 'composition_matrix', 'material_matrix');
 
 % This is the file that should be passed to iteratefdtd_matrix in filesetup mode
 filesetup_input_file = '';
+% This is the illfile that should be passed to iteratefdtd_matrix in filesetup mode. Empty string implies no illfile is needed, IE we didn't run in illsetup beforehand
+illfile_produced = '';
 % Setup illumination file if necessary
 if strcmp(illfile_extra_file, "")
     % This is empty, so we just call iteratefdtd_matrix immediately using input_filename
     filesetup_input_file = input_filename;
 else
     % We need a call to iteratefdtd_matrix in illsetup mode first
-    iteratefdtd_matrix(input_filename,'illsetup','illfile',obstacle_gridfile,'');
+    illfile_produced = 'illfile';
+    iteratefdtd_matrix(input_filename,'illsetup',illfile_produced,obstacle_gridfile,'');
     % Then call iteratefdtd_matrix in filesetup mode using illfile_extra_file as the input file
     filesetup_input_file = illfile_extra_file;
 end
@@ -62,7 +58,7 @@ obstacle_output_file = sprintf('%s/pstd_%s_input',dir_to_place_input_mats, non_f
 freespace_output_file = sprintf('%s/pstd_fs_input',dir_to_place_input_mats);
 
 % Call iteratefdtd_matrix in filesetup mode to generate input .mat files for tdms executable
-iteratefdtd_matrix(filesetup_input_file,'filesetup',obstacle_output_file,obstacle_gridfile,'');
-iteratefdtd_matrix(filesetup_input_file,'filesetup',freespace_output_file,'gridfile_fs.mat','');
+iteratefdtd_matrix(filesetup_input_file,'filesetup',obstacle_output_file,obstacle_gridfile,illfile_produced);
+iteratefdtd_matrix(filesetup_input_file,'filesetup',freespace_output_file,'gridfile_fs.mat',illfile_produced);
 
 end

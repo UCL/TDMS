@@ -23,26 +23,32 @@ DEFAULT_VALUES = {
 }
 
 def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
-    """Generate the tempoaray file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables NOT to be present.
-    As such, the optimal way to get around this is to have Python copy the input_file (which in this instance is what needs to be used to setup the illumination), and then remove the definition of the efname & hfname variables in the copy to create the "filesetup" input.
+    """Generate the temporary file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. 
+    
+    The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables TO to be present, but set to empty strings. As such, the optimal way to get around this is to have Python copy the input_file (which in this instance is what needs to be used to setup the illumination), and then change the definition of the efname & hfname variables to empty strings in the copied file to create the "filesetup" input.
     """
     # Copy the input_file (illumination-input) line-by-line to a temporary location for the filesetup-input
     # Do not copy across the lines that define the efname and hfname variables
     with open(input_filename, "r") as illumination_input:
         with open(temp_filesetup_name, "w") as filesetup_input:
             for line in illumination_input:
-                # Remove any potential whitespace padding from the beginning of the line
-                stripped_line = line.lstrip()
-                # Write line, provided efname or hfname are not defined on it
-                if not (
-                    ("efname=" in stripped_line) or ("hfname=" in stripped_line)
-                ):
-                    filesetup_input.write(line)
+                    # Remove any potential whitespace padding from the line
+                    # This avoids funny business if there's whitespace around the = symbol where {ef,hf}name are defined
+                    stripped_line = line.replace(" ", "")
+                    # Write line, provided efname or hfname are not defined on it
+                    if not (
+                        ("efname=" in stripped_line) or ("hfname=" in stripped_line)
+                    ):
+                        filesetup_input.write(line)
+                    elif "efname=" in stripped_line:
+                        filesetup_input.write("efname = '';\n")
+                    elif "hfname=" in stripped_line:
+                        filesetup_input.write("hfname = '';\n")
     # filesetup_input is now ready, and identical to illumination_input save in the definition of efname and hfname
     return
 
 def run_bscan(
-    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: Literal['fs', 'cyl', 'sph', 'sc'] = DEFAULT_VALUES["obstacle"], obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"], illfile_required: bool = False) -> None:
+    test_directory: Path | str, input_filename: Path | str, engine: MatlabEngine, obstacle: Literal['fs', 'cyl', 'sph', 'sc'] = DEFAULT_VALUES["obstacle"], obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"], illsetup: bool = False) -> None:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
     MatlabEngine cannot parse Path objects so file and directory paths must be cast to string when calling.
@@ -57,12 +63,12 @@ def run_bscan(
     :param engine: The MatlabEngine instance to call run_bscan within. If not provided, a new session will be started and ended once the call is complete.
     :param obstacle: The obstacle that is present in the simulation.
     :param obstacle_radius: Radius of the spatial obstacle in microns.
-    :param illfile_required: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
+    :param illsetup: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
     """
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
     # This only occurs when illumination files are required in input-data regeneration.
     illfile_extra_file = ""
-    if illfile_required:
+    if illsetup:
         # If this is _not_ an empty string, we need to generate the illumination file from the input file
         # It is essentially identical, but needs the efname and hfname variables to be:
         # present in the workspace/file when calling with 'illsetup'
@@ -74,7 +80,7 @@ def run_bscan(
     engine.run_bscan(str(test_directory), str(input_filename), obstacle, illfile_extra_file, obstacle_radius, nargout=0)
 
     # Cleanup the illfile_extra_file, if it was created
-    if illfile_required:
+    if illsetup:
         os.remove(illfile_extra_file)
     return
 
