@@ -18,3 +18,4 @@ input_generation:
   input_file: input_file_01.m
   spatial_obstacles: ["fs", "cyl"]
   illsetup:
+  obstacle_radius:

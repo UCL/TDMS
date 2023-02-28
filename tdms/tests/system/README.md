@@ -6,6 +6,48 @@ The system tests for `tdms` are specified through configuration files in the `da
 
 Each system test is named by the aforementioned `arc_XX` convention. A given system test `arc_XX` itself may consist of several _executions_ (or _runs_) of the `tdms` executable. Typically every system test has at least two runs; one for when there is no scattering object present, and one for when there is an obstacle. Other causes of additional runs might be due to the use of band-limited interpolation over cubic interpolation, for example. Each of these runs in turn has a reference input and reference output.
 
+## Test Config Files
+
+We use `.yaml` files to specify system tests and the parameters that must be passed into them. The syntax that we currently employ, along with an explanation of the expected content of each field/tag, is below.
+```yaml
+test_id: 'XX' # A string containing the test_id
+tests:
+  # Indicates that what follows is information needed when performing the runs that make up this system test
+  # Tags within this block correspond to one run that forms part of this system test
+  # The tags themselves are used as the names for each run, and should be unique
+  # Paths to files must be relative to their location in the Zenodo .zip file that is to be downloaded
+  fs_bli:
+    # This information is only required when performing this run of tdms.
+
+    # The name of the .mat input file that should be passed to the tdms executable.
+    input_file: input.mat
+    # The name of the reference .mat output to compare the output of the local tdms run to.
+    reference: reference.mat
+    # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present.
+    cubic_interpolation: True
+    # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
+    fdtd_solver: False
+  fs_cubic:
+    # This defines another run of tdms as part of this system test
+
+    input_file: input_2.mat # A different input file is to be used
+    reference: reference.mat # The same reference data is to be checked against
+    cubic_interpolation: False # This field can be left out and False will be inferred by pytest
+    fdtd_solver: True
+input_generation:
+  # Indicates that what follows is information needed when regenerating the .mat inputs that are passed to tdms in the runs that consistute this test.
+  # Paths to files should be relative to the tdms/tests/system/data/input_generation directory.
+
+  # The file that is passed to iteratefdtd_matrix in run_bscan
+  input_file: input_file_03.m
+  # List of strings specifying the spatial obstacles to setup for this test. One of these should be 'fs' for "freespace". The other obstacle(s) can be any of "sph" (sphere), "cyl" (cylindrical)
+  spatial_obstacles: ["fs", "sph"]
+  # Whether iteratefdtd_matrix must be called in illsetup mode to setup the illumination file, prior to its call in filesetup mode. Defaults to False if not present or unpopulated
+  illsetup: True
+  # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. Defaults to 15e-6 if not set.
+  obstacle_radius: 5e-6
+```
+
 ## Running the System Tests
 
 The system tests can be run locally in a virtual environment that has the `requirements.txt` installed, and on a system in which `MATLAB` is installed and is on the `$PATH` under the alias `matlab`. Simply invoke `pytest` on the `tdms/tests/system` directory:
@@ -52,9 +94,9 @@ The system tests rely on `.mat` input files that are presently generated through
 
 ### (Re)generation of the Data
 
-At a glance, (re)generating the input data for a particular test case, `arc_tc`, is a three step process:
-1. Determine variables, filenames, and the particular setup of `arc_tc`. For example, is an illumination file required? What are the spatial obstacles? What is the solver method? This information is stored in a `config_tc.yaml` file.
-1. Call the `run_bscan.m` function (and appropriate supporting functions in the `./matlab` folder) using the information provided from the first step to produce the `.mat` input files. Each test case is also pointed to an input file (`input_file_tc.m`) which defines test-specific variables (domain size, number of period cells, material properties, etc) which are too complex to specify in a `.yaml` file.
+At a glance, (re)generating the input data for a particular test case, `arc_XX`, is a three step process:
+1. Determine variables, filenames, and the particular setup of `arc_XX`. For example, is an illumination file required? What are the spatial obstacles? What is the solver method? This information is stored in a `config_tc.yaml` file.
+1. Call the `run_bscan.m` function (and appropriate supporting functions in the `./matlab` folder) using the information provided from the first step to produce the `.mat` input files. Each test case is also pointed to an input file (`input_file_XX.m`) which defines test-specific variables (domain size, number of period cells, material properties, etc) which are too complex to specify in a `.yaml` file.
 1. Clean up the auxillary `.mat` files that are generated by this process. In particular, any `gridfiles.mat`, illumination files, or other `.mat` files that are temporarily created when generating the input `.mat` file.
 
 ### Contents of the `data/input_generation` Directory (and subdirectories)
@@ -63,8 +105,8 @@ The `run_bscan` function is inside the `bscan/` directory.
 
 The `matlab/` directory contains functions that `run_bscan` will need to call on during the creation of the input data. This in particular includes the `iteratefdtd_matrix` function, which does the majority of the work in setting up gridfiles, illumination files, and the `.mat` inputs themselves.
 
-The `generate_test_input.py` file contains `.py` files that the system tests can invoke to regenerate the input data. Since the system test framework uses `pytest`, but the data generation requires `MATLAB` (for now), we use `Python` to read in and process the information that each test requires, and then call `run_bscan` with the appropriate commands from within Python.
+The `bscan_arguments.py` file contains Python classes that handle calling the `run_bscan` function in `MATLAB` through `Python`. In time, these classes will absorb the `run_bscan` method when the `MATLAB` header dependency is removed. The `generation_data.py` file defines the epynonomous class, one instance of which has the functionality to regenerate the input data for one system test. Since the system test framework uses `pytest`, but the data generation requires `MATLAB` (for now), we use `Python` to read in and process the information that each test requires, and then call `run_bscan` with the appropriate commands from within Python.
 
-The `regenerate_all.py` file will work through all of the `config_tc.yaml` files in the directory and regenerate the input `.mat` data corresponding to each.
+The `regenerate_all.py` file will work through all of the `config_XX.yaml` files in the directory and regenerate the input `.mat` data corresponding to each.
 
 The remaining `config_XX.yaml` and `input_file_XX.m` files are as mentioned in [the previous section](#regeneration-of-the-data). These contain the information about each test that Python and `run_bscan` will need to regenerate the input files.
