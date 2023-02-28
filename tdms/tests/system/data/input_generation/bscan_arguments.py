@@ -36,7 +36,7 @@ class BScanArguments:
     obstacles: list[str]
     # Flags whether the BScan call requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode
     # Default is False
-    illfile_req: bool
+    illsetup: bool
     # Radius of the spatial obstacle in microns (circular face radius for cyl, sphere radius for sph)
     # Default is 15.e-6
     obstacle_radius: float
@@ -74,10 +74,10 @@ class BScanArguments:
             )
 
         # Set optional fields to defaults if not present, or use values provided otherwise
-        if "illfile" in keys:
-            self.illfile_req = bool(input_generation_config["illfile"])
+        if "illsetup" in keys:
+            self.illsetup = bool(input_generation_config["illsetup"])
         else:
-            self.illfile_req = False
+            self.illsetup = False
         if "obstacle_radius" in keys and (
             input_generation_config["obstacle_radius"] != None
         ):
@@ -91,31 +91,36 @@ class BScanArguments:
     def _temp_filesetup_name(self) -> str:
         """In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode.
 
-        Only occurs when illumination files are required in input-data regeneration. In this case, self.input_filename is passed to iteratefdtd_matrix in 'illsetup' mode.
+        Only occurs when illumination files are required in input-data regeneration. In this case, self.input_file is passed to iteratefdtd_matrix in 'illsetup' mode.
         """
         # Input file name without the extension (.m)
-        raw_input_name = os.path.splitext(self.input_filename)[0]
+        raw_input_name = os.path.splitext(self.input_file)[0]
         # Append to filename an suitably unique extension
         raw_input_name += "temp_filesetup_file____.m"
         return raw_input_name
 
     def _create_temp_filesetup(self) -> None:
-        """Generate the tempoaray file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables NOT to be present.
+        """Generate the tempoaray file to be passed to iteratefdtd_matrix in filesetup mode when an illumination file has also been specified. The "filesetup" mode-file is essentially identical to it's counterpart, but needs the efname and hfname variables TO to be present, but set to empty strings.
 
-        As such, the optimal way to get around this is to have Python copy the input_file (which in this instance is what needs to be used to setup the illumination), and then remove the definition of the efname & hfname variables in the copy to create the "filesetup" input.
+        As such, the optimal way to get around this is to have Python copy the input_file (which in this instance is what needs to be used to setup the illumination), and then change the definition of the efname & hfname variables to empty strings in the copied file to create the "filesetup" input.
         """
         # Copy the input_file (illumination-input) line-by-line to a temporary location for the filesetup-input
         # Do not copy across the lines that define the efname and hfname variables
         with open(self.input_file, "r") as illumination_input:
             with open(self._temp_filesetup_name(), "w") as filesetup_input:
                 for line in illumination_input:
-                    # Remove any potential whitespace padding from the beginning of the line
-                    stripped_line = line.lstrip()
+                    # Remove any potential whitespace padding from the line
+                    # This avoids funny business if there's whitespace around the = symbol where {ef,hf}name are defined
+                    stripped_line = line.replace(" ", "")
                     # Write line, provided efname or hfname are not defined on it
                     if not (
                         ("efname=" in stripped_line) or ("hfname=" in stripped_line)
                     ):
                         filesetup_input.write(line)
+                    elif "efname=" in stripped_line:
+                        filesetup_input.write("efname = '';\n")
+                    elif "hfname=" in stripped_line:
+                        filesetup_input.write("hfname = '';\n")
         # filesetup_input is now ready, and identical to illumination_input save in the definition of efname and hfname
         return
 
@@ -148,7 +153,7 @@ class BScanArguments:
         """
         # If illumination file is needed, we need to copy the input file and remove the lines that define the efname and hfname as necessary
         illfile_extra_file = ""
-        if self.illfile_req:
+        if self.illsetup:
             # If this is _not_ an empty string, we need to generate the illumination file from the input file
             # It is essentially identical, but needs the efname and hfname variables to be:
             # present in the workspace/file when calling with 'illsetup'
@@ -169,7 +174,7 @@ class BScanArguments:
         )
 
         # Cleanup the temporary illumination file, if we created it
-        if self.illfile_req:
+        if self.illsetup:
             os.remove(illfile_extra_file)
         return
 
