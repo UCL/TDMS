@@ -1,11 +1,13 @@
-function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file)
+function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%This function generates the files used as input to the executeable
+%This function generates the files used as input to the executeable.
+% It is an overarching hope that the system tests will be converted to Python after MATLAB header dependency removal from the tdms source code. In which case, this function will become part of the Python BScanArguments class, and will not need the long list of input arguments that it currently depends on.
 
 % test_directory : Path to directory into which to place generated input files
 % input_filename : Path to the input file, defining run-specific dimensions, functions, etc
 % non_fs_obstacle: String, either 'sph', 'cyl', defining the shape of the obstacle present in the non-free-space simulation
 % illfile_extra_file: If present, we need to call iteratefdtd_matrix twice, once to setup the illumination and again to setup the .mat inputs. input_filename must be passed when iteratefdtd_matrix is in illsetup mode, and this file must be passed when it is in filesetup mode. If this variable contains an empty string, we simply need to pass input_filename to iteratefdtd_matrix in filesetup mode as usual.
+% obstacle_radius: The radius in microns of the obstacle (radius of the circular face for a cyl, radius of the sphere for sph)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Create directory into which to place the input files, if it doesn't exist already
@@ -19,15 +21,13 @@ end
 % Define coordinates of the computational grid
 [x,y,z,lambda] = fdtd_bounds(input_filename);
 
-% 15 micron radius
-rad = 15e-6;
 % Refractive index of obstacle
 refind = 1.42;
 
 % Insert obstacle, typically at the origin, by introducing the scattering matrix
 y = 0;
 [X,Y,Z] = ndgrid(x,y,z);
-I = scattering_matrix(X, Y, Z, rad, non_fs_obstacle);
+I = scattering_matrix(X, Y, Z, obstacle_radius, non_fs_obstacle);
 
 % Generate additional matrices
 inds = find(I(:));

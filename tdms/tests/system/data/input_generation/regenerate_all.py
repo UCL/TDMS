@@ -4,7 +4,7 @@ from glob import glob
 from pathlib import Path
 from typing import Union
 
-from generate_test_input import GenerationData
+from generation_data import GenerationData
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
