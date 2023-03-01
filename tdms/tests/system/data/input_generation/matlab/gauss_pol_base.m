@@ -5,8 +5,8 @@ function [wx, wy] = gauss_pol_base(th, ph, tight, var_val)
     end
     if ~exist('var_val', 'var')
         % Only one gets used, but it saves a comparison
-        OOES = 5e-6
-        FWHM = 25e-6
+        OOES = 5e-6;
+        FWHM = 25e-6;
     else
         % Only one gets used, but it saves a comparison
         OOES = var_val;

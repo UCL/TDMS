@@ -94,7 +94,7 @@ def test_system(test_id) -> None:
 
     Wraps the workflow() method, which actually does the bulk of the testing.
     """
-    print(f"\nRunning {test_id}", end=" | ")
+    print(f"\nRunning arc_{test_id}", end=" |\n\t")
 
     # the reference OUTPUT data should be at this location
     ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
