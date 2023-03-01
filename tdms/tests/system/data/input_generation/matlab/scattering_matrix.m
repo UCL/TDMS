@@ -1,10 +1,11 @@
-function [I] = scattering_matrix(file_with_coordinates, rad, obj_shape)
+function [I] = scattering_matrix(file_with_coordinates, obj_shape, rad)
     %% Setup the scattering matrix for the given object shape and grid cooordinates.
     % x, y, z: Vectors, the tensor/outer product of which forms the set of coordinates of the Yee cells we will be using
-    % rad: Radius of the sph object, or circular-face of a cyl object
     % obj_shape: The shape of the scattering object. Options are;
     %       sph : sphere
     %       cyl : cylinder
+    %       sc  : point-source at the origin
+    % rad: Radius of the sph object, or circular-face of a cyl object. Point sources ignore this input
 
     % Obtain coordinates of the computational grid
     [x,y,z,lambda] = fdtd_bounds(file_with_coordinates);
@@ -28,5 +29,8 @@ function [I] = scattering_matrix(file_with_coordinates, rad, obj_shape)
         I( X.^2 + Z.^2 < rad^2 ) = 1;
         I((end-3):end, 1, :) = 0;
         I(:, 1, (end-3):end) = 0;
+    elseif strcmp(obj_shape, 'sc')
+        %set the Yee cell at the origin to have an index of 1
+        I( (X==0) & (Y==0) & (Z==0) ) = 1;
     end
 end

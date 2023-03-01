@@ -40,11 +40,11 @@ input_generation:
 
   # The file that is passed to iteratefdtd_matrix in run_bscan
   input_file: input_file_03.m
-  # List of strings specifying the spatial obstacles to setup for this test. One of these should be 'fs' for "freespace". The other obstacle(s) can be any of "sph" (sphere), "cyl" (cylindrical)
+  # List of strings specifying the spatial obstacles to setup for this test. One of these should be 'fs' for "freespace". The other obstacle(s) can be any of "sph" (sphere), "cyl" (cylindrical), or "sc" (point-source at the origin)
   spatial_obstacles: ["fs", "sph"]
   # Whether iteratefdtd_matrix must be called in illsetup mode to setup the illumination file, prior to its call in filesetup mode. Defaults to False if not present or unpopulated
   illsetup: True
-  # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. Defaults to 15e-6 if not set.
+  # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. For "sc", this option is ignored. Defaults to 15e-6 if not set.
   obstacle_radius: 5e-6
 ```
 

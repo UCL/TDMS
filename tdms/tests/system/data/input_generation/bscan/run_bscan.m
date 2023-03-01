@@ -20,7 +20,7 @@ end
 refind = 1.42;
 
 % Insert obstacle, typically at the origin, by introducing the scattering matrix
-I = scattering_matrix(input_filename, obstacle_radius, non_fs_obstacle);
+I = scattering_matrix(input_filename, non_fs_obstacle, obstacle_radius);
 
 % Generate additional matrices
 inds = find(I(:));
