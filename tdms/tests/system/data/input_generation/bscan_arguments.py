@@ -1,6 +1,7 @@
 import os
+from io import StringIO
 from pathlib import Path
-from typing import Union
+from typing import Tuple, Union
 
 import matlab.engine as matlab
 from matlab.engine import MatlabEngine
@@ -146,10 +147,12 @@ class BScanArguments:
         # If we didn't error, we can return the only element of obstacles, which is the non-fs obstacle
         return obstacles[0]
 
-    def run_bscan(self, engine: MatlabEngine) -> None:
+    def run_bscan(self, engine: MatlabEngine) -> Tuple[StringIO, StringIO]:
         """Runs the run_bscan function in the MatlabEngine provided.
 
         The bscan/ and matlab/ directories are assumed to already be in the includepath of the engine instance, so that the run_bscan and supporting matlab files can be called.
+
+        Returns a tuple of the stdout and stderr from the engine upon executing this command.
         """
         # If illumination file is needed, we need to copy the input file and remove the lines that define the efname and hfname as necessary
         illfile_extra_file = ""
@@ -162,6 +165,10 @@ class BScanArguments:
             illfile_extra_file = self._temp_filesetup_name()
             self._create_temp_filesetup()
 
+        # prepare IO objects to save polluting the terminal
+        stdout_capture = StringIO()
+        stderr_capture = StringIO()
+
         # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
         # pass nargout=0 to indicate no value is to be returned to Python
         engine.run_bscan(
@@ -171,12 +178,14 @@ class BScanArguments:
             illfile_extra_file,
             self.obstacle_radius,
             nargout=0,
+            stdout=stdout_capture,
+            stderr=stderr_capture,
         )
 
         # Cleanup the temporary illumination file, if we created it
         if self.illsetup:
             os.remove(illfile_extra_file)
-        return
+        return stdout_capture, stderr_capture
 
 
 class MATLABEngineWrapper:
