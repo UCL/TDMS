@@ -54,8 +54,8 @@ else
 end
 
 % Names to save .mat files under
-obstacle_output_file = sprintf('%s/pstd_%s_input',dir_to_place_input_mats, non_fs_obstacle);
-freespace_output_file = sprintf('%s/pstd_fs_input',dir_to_place_input_mats);
+obstacle_output_file = sprintf('%s/%s_input',dir_to_place_input_mats, non_fs_obstacle);
+freespace_output_file = sprintf('%s/fs_input',dir_to_place_input_mats);
 
 % Call iteratefdtd_matrix in filesetup mode to generate input .mat files for tdms executable
 iteratefdtd_matrix(filesetup_input_file,'filesetup',obstacle_output_file,obstacle_gridfile,illfile_produced);
