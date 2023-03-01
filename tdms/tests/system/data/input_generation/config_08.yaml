@@ -1,17 +1,17 @@
 test_id: '08'
 tests:
   fs_bli:
-    input_file: in/pstd_fs_steady_fast.mat
+    input_file: pstd_fs_input.mat
     reference: pstd_fs_bli_reference.mat
   fs_cubic:
-    input_file: in/pstd_fs_steady_fast.mat
+    input_file: pstd_fs_input.mat
     reference: pstd_fs_cubic_reference.mat
     cubic_interpolation: True
   sph_bli:
-    input_file: in/pstd_sph_steady_fast.mat
+    input_file: pstd_sph_input.mat
     reference: pstd_sph_bli_reference.mat
   sph_cubic:
-    input_file: in/pstd_sph_steady_fast.mat
+    input_file: pstd_sph_input.mat
     reference: pstd_sph_cubic_reference.mat
     cubic_interpolation: True
 input_generation:
