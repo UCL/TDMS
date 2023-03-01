@@ -46,6 +46,8 @@ input_generation:
   illsetup: True
   # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. For "sc", this option is ignored. Defaults to 15e-6 if not set.
   obstacle_radius: 5e-6
+  # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
+  calc_tdfield: True
 ```
 
 ## Running the System Tests

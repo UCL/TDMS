@@ -41,6 +41,8 @@ class BScanArguments:
     # Radius of the spatial obstacle in microns (circular face radius for cyl, sphere radius for sph)
     # Default is 15.e-6
     obstacle_radius: float
+    # Whether calc_field_tdfield needs to be run prior to setting up the scattering matrix
+    calc_tdfield: bool
 
     def __init__(
         self, test_directory: Union[Path, str], input_generation_config: dict[str, any]
@@ -85,6 +87,10 @@ class BScanArguments:
             self.obstacle_radius = float(input_generation_config["obstacle_radius"])
         else:
             self.obstacle_radius = 15.0e-6
+        if "calc_tdfield" in keys:
+            self.calc_tdfield = bool(input_generation_config["calc_tdfield"])
+        else:
+            self.calc_tdfield = False
 
         # Setup complete, return
         return
@@ -169,7 +175,7 @@ class BScanArguments:
         stdout_capture = StringIO()
         stderr_capture = StringIO()
 
-        # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
+        # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius, calc_tdfield)
         # pass nargout=0 to indicate no value is to be returned to Python
         engine.run_bscan(
             self.test_directory,
@@ -177,6 +183,7 @@ class BScanArguments:
             self.non_freespace_obstacle(),
             illfile_extra_file,
             self.obstacle_radius,
+            self.calc_tdfield,
             nargout=0,
             stdout=stdout_capture,
             stderr=stderr_capture,
