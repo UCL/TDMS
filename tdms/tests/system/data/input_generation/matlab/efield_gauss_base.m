@@ -1,10 +1,7 @@
-function [E] = efield_gauss_base(X, Y, Z, tight, fstrat_method, gauss_pol_method)
+function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method)
     % Check for defaults MATLAB-style
     if ~exist('tight', 'var')
         tight = false;
-    end
-    if ~exist('fstrat_method', 'var')
-        fstrat_method = @focstratfield_general_pol_2d;
     end
     if ~exist('gauss_pol_method', 'var')
         gauss_pol_method = @(th, ph) gauss_pol_base(th, ph, false);
@@ -33,10 +30,10 @@ function [E] = efield_gauss_base(X, Y, Z, tight, fstrat_method, gauss_pol_method
     NA = 1;
 
     %first calculate normalisation
-    [EpN,Em] = fstrat_method([0 0 0],nvec,hvec,NA,lambda,ntheta,nphi,gauss_pol_method);
+    [EpN,Em] = focstratfield([0 0 0],nvec,hvec,NA,lambda,ntheta,nphi,gauss_pol_method);
 
     %calculate the field at the interface
-    [Ep,Em] = fstrat_method(vertices,nvec,hvec,NA,lambda,ntheta,nphi,gauss_pol_method);
+    [Ep,Em] = focstratfield(vertices,nvec,hvec,NA,lambda,ntheta,nphi,gauss_pol_method);
 
     %factor of 2 due to the modified source condition
     E{1} = 2*reshape(Ep(:,1)/EpN(1),size(X));
