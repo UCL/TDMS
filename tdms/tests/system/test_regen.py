@@ -71,7 +71,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
     # TEAR-DOWN: remove the regenerated inputs and outputs from the data/input_generation/arc_{test_id} folder.
     # To be safe, we can just remove all .mat files from this directory the the subdirectories, since these should be the only system-test TDMS artefacts
-    if not PRESERVE_FLAG:
+    if not preserve_inputs:
         input_data_dump = str(path_to_input_generation / f"arc_{test_id}/*.mat")
         mat_artefacts = glob(input_data_dump, recursive=True)
         for mat_file in mat_artefacts:
