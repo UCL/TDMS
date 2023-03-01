@@ -4,14 +4,11 @@
 %
 function [ex_coords, ey_coords, tvec_E, fvec_E, f_an, hwhm, to_l] = getsourcecoords(input_file)
 
-[fid_input,message] = fopen(input_file,'r');
+[fid_input,~] = fopen(input_file,'r');
 
-
-%%controls whether to use FDTD or PSTD
-useCD=0;
 %%
 %check if file was opened successfully
-if fid_input== -1
+if fid_input==-1
     error(sprintf('File %s could not be opened for reading',input_file));
 end
 

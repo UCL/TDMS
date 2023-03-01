@@ -77,8 +77,21 @@ class GenerationData:
 
         # generate the input data for this test
         self.matlab_instance.run()
+        # pull the working directory of the matlab engine for cleanup reasons
+        matlab_cwd = self.matlab_instance.cwd
 
-        # cleanup auxillary .mat files that are placed into this directory
-        for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
+        # cleanup auxillary .mat files that are placed into this directory and the matlab working directory
+        # create list of all files to cleanup - note that if the CWD of MATLAB and the directory containing this file are identical, there is no need to go through this process of removing duplicates
+        mat_files_dumped_here = sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat"))
+        mat_files_dumped_cwd = sorted(glob(matlab_cwd + "/*.mat"))
+        # create one list of all the .mat artefacts that we need to remove
+        dumped_mat_files = list(mat_files_dumped_here)
+        dumped_mat_files.extend(
+            mfile
+            for mfile in mat_files_dumped_cwd
+            if mfile not in mat_files_dumped_here
+        )
+        # purge .mat files
+        for aux_mat in dumped_mat_files:
             os.remove(aux_mat)
         return
