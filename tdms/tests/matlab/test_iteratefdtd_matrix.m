@@ -54,7 +54,7 @@ function testFileSetupInvalidIlluminationFile2DExi(testCase)
 end
 
 function runInTempoaryDirectory(testCase, func, exception)
-    addpath('../../matlab/', 'data/');
+    addpath('../system/data/input_generation/matlab', 'data/');
 
     oldFolder = cd(createTemporaryFolder(testCase));
     if (strlength(exception) > 0)

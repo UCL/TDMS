@@ -8,7 +8,7 @@ function [t0, hwhm] = fdtdduration(input_file)
     % t0
 
 %% Fetch the configuration information for this test
-[wavelengthwidth, f_an, espr] = get_from_input_file(input_file, struct(), 'wavelengthwidth', 'f_an', 'epsr');
+[wavelengthwidth, f_an, epsr] = get_from_input_file(input_file, struct(), 'wavelengthwidth', 'f_an', 'epsr');
 
 %% Define internal constants
 [~, ~, c] = import_constants;

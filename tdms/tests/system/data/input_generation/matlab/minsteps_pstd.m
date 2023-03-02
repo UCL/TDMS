@@ -12,7 +12,7 @@ function [n] = minsteps_pstd(input_file)
 
 %% Load / compute parameters required
 [~, ~, c] = import_constants;
-[t0, hwhm] = fdtdduration(inputfile);
+[t0, hwhm] = fdtdduration(input_file);
 
 % Adjust so that we have the pulse close to 0 at the interface
 t = 2*t0;
