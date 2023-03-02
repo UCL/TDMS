@@ -1,7 +1,7 @@
 function [saveas] = calc_field_tdfield(input_filename, saveas)
 
     if ~exist('saveas', 'var')
-        saveas = 'eivars.mat'
+        saveas = 'eivars.mat';
     end
 
     [~, ~, c] = import_constants;
@@ -45,5 +45,5 @@ function [saveas] = calc_field_tdfield(input_filename, saveas)
     eyi(:,:,:) = eyi_store(:,:,1,:);
 
     % Save to desired output file
-    save saveas exi eyi;
+    save(saveas, 'exi', 'eyi');
 end

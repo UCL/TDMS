@@ -260,7 +260,9 @@ class MATLABEngineWrapper:
         else:
             # Start the engine
             self.engine = matlab.start_matlab(MATLAB_STARTUP_OPTS)
-            # Pull the working directory for reference later
+            # Move to a suitable working directory, just to keep things tidy
+            self.engine.cd(LOCATION_OF_THIS_FILE)
+            # Pull the matlabengine working directory for reference later
             self.cwd = self.engine.pwd()
             # Add necessary paths
             self._addpath_commands()

@@ -26,7 +26,7 @@ end
 
 % Run calc_field_tdfield if we need to
 if calc_tdfield
-    tdfield_saved_to = calc_field_tdfield(input_filename);
+    tdfield_saved_to = calc_field_tdfield(input_filename, strcat(test_directory,'/eivars.mat'));
 end
 
 % Refractive index of obstacle
