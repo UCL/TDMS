@@ -1,28 +1,40 @@
-%function [dt_upper] = fdtdts(inputfile)
-%
-%Calculates the maximum allowable time step subject to the
-%stability criterion
-function [dt_upper] = fdtdts(inputfile)
+function [dt_upper] = fdtdts(input_file)
+    %% Calculates the maximum allowable time step, subject to the stability criterion
+    %% This corresponds to:
+    %% dt_upper = ( c * ( dx^{-2} + dy^{-2} + dx^{-2} ) )^{-1}.
+    % input_file    : Configuration file to read parameters from
+    %
+    % dt_upper      : Maximum allowable timestep
 
-[fid_input,message] = fopen(inputfile,'r');
+%% Fetch the configuration information for this test
 
-%check if file was opened successfully
-if fid_input== -1
+% Check that the input file can be found on the path
+if isfile(input_file)
+	% Run input file as a script to import variables into the workspace
+	run(input_file);
+else
+	% Throw error - config file cannot be found
     error(sprintf('File %s could not be opened for reading',input_file));
 end
 
-%proceed to_l read in config information
-current_line = fgets(fid_input);
-
-while current_line ~= -1
-    eval(current_line);
-    current_line = fgets(fid_input);
+% Check required variables have been set in the config file, and loaded
+% Note that lambda will be returned once it is imported from the input file
+required_variables = {'delta'};
+n_required_variables = length(required_variables);
+i = 1;
+% Search through all required variables and check they exist in the workspace
+% Throw error (and break loop early) if they are not found
+while i<=n_required_variables
+	if ~exist(required_variables{i}, 'var')
+		error(sprintf('Required variable %s not present in %s', required_variables{i}, input_file));
+		break
+	end
+	i = i + 1;
 end
 
-[epso muo c] = import_constants;
+%% Define internal constants
+[~, ~, c] = import_constants;
 
-if exist('delta') ~= 1
-    error('delta is not defined - cannot determine dt_upper');
-end
-
+%% Compute maximum permissable timestep
 dt_upper = 1/(c*sqrt(1/delta.x^2 + 1/delta.y^2 + 1/delta.z^2));
+end
