@@ -54,7 +54,7 @@ function testFileSetupInvalidIlluminationFile2DExi(testCase)
 end
 
 function runInTempoaryDirectory(testCase, func, exception)
-    addpath('../../matlab/', 'data/');
+    addpath('../system/data/input_generation/matlab', 'data/');
 
     oldFolder = cd(createTemporaryFolder(testCase));
     if (strlength(exception) > 0)
@@ -168,13 +168,13 @@ end
 
 % Edit an input file to define efname and hfname
 function defineEfnameHfnameIn(filename)
-    replaceInFile(filename, 'efname = ''''', 'efname = ''efield_gauss''');
+    replaceInFile(filename, 'efname = ''''', 'efname = ''efield_gauss_base''');
     replaceInFile(filename, 'hfname = ''''', 'hfname = ''hfield_focused_equiv''');
 end
 
 % Edit an input file to remove the definitions of efname and hfname
 function removeEfnameHfnameFrom(filename)
-    replaceInFile(filename, 'efname = ''efield_gauss''', 'efname = ''''');
+    replaceInFile(filename, 'efname = ''efield_gauss_base''', 'efname = ''''');
     replaceInFile(filename, 'hfname = ''hfield_focused_equiv''', 'hfname = ''''');
 end
 
