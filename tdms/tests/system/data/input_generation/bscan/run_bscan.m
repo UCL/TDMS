@@ -1,4 +1,4 @@
-function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius, calc_tdfield)
+function [freespace_output_file, obstacle_output_file] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius, calc_tdfield)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %This function generates the files used as input to the executeable.
 % It is an overarching hope that the system tests will be converted to Python after MATLAB header dependency removal from the tdms source code. In which case, this function will become part of the Python BScanArguments class, and will not need the long list of input arguments that it currently depends on.
@@ -26,7 +26,7 @@ end
 
 % Run calc_field_tdfield if we need to
 if calc_tdfield
-    tdfield_saved_to = calc_field_tdfield(input_filename);
+    tdfield_saved_to = calc_field_tdfield(input_filename, strcat(test_directory,'/eivars.mat'));
 end
 
 % Refractive index of obstacle
