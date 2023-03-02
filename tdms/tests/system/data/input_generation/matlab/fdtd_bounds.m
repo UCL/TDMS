@@ -19,7 +19,7 @@ end
 
 % Check required variables have been set in the config file, and loaded
 % Note that lambda will be returned once it is imported from the input file
-required_variables = {'delta','I','J','K','z_launch','illorigin','lambda'};
+required_variables = {'delta','I','J','K','illorigin','lambda'};
 n_required_variables = length(required_variables);
 i = 1;
 % Search through all required variables and check they exist in the workspace
