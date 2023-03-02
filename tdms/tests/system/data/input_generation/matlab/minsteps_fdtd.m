@@ -7,30 +7,8 @@ function [n] = minsteps_fdtd(input_file)
     % n             : Minimum number of timesteps that will need to be performed in a fdtd simulation
 
 %% Fetch the configuration information for this test
-
-% Check that the input file can be found on the path
-if isfile(input_file)
-	% Run input file as a script to import variables into the workspace
-	run(input_file);
-else
-	% Throw error - config file cannot be found
-    error(sprintf('File %s could not be opened for reading',input_file));
-end
-
-% Check required variables have been set in the config file, and loaded
-% Note that lambda will be returned once it is imported from the input file
-required_variables = {'delta','K','interface','f_an','epsr'};
-n_required_variables = length(required_variables);
-i = 1;
-% Search through all required variables and check they exist in the workspace
-% Throw error (and break loop early) if they are not found
-while i<=n_required_variables
-	if ~exist(required_variables{i}, 'var')
-		error(sprintf('Required variable %s not present in %s', required_variables{i}, input_file));
-		break
-	end
-	i = i + 1;
-end
+[delta, K, interface, epsr] = get_from_input_file(input_file, struct(), ...
+												'delta','K','interface','epsr');
 
 %% Load / compute parameters required
 [~, ~, c] = import_constants;
