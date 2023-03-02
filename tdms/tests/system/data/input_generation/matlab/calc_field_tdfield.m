@@ -1,14 +1,21 @@
 function [saveas] = calc_field_tdfield(input_filename, saveas)
+    %% Computes a time-domain illumination field that will be passed as an input to iteratefdtd_matrix.
+    %% The field is a plane wave, linearly polarised in the x-direction.
+    % input_filename : Name of the input file to read variables from
+    % saveas         : Name to save the resulting time-domain field to. Defaults to eivars.mat if not set.
 
+    %% Deduce optional inputs
     if ~exist('saveas', 'var')
         saveas = 'eivars.mat';
     end
 
+    %% Setup constants
     [~, ~, c] = import_constants;
     lambda0 = 1300e-9;
     omega0 = 2*pi*c/lambda0;
 
-    [ex_coords, ey_coords, tvec_E, fvec_E, f_an, hwhm, to_l] = getsourcecoords(input_filename);
+    % Pull information that we need from the input file (discard ey_coords and tvec_E)
+    [ex_coords, ~, ~, fvec_E, f_an, hwhm, to_l] = getsourcecoords(input_filename);
 
     lambdavec_E = c./fvec_E;
 
@@ -20,7 +27,7 @@ function [saveas] = calc_field_tdfield(input_filename, saveas)
     Exi = zeros(numel(ex_coords.x),numel(ex_coords.y),numel(ex_coords.z),numel(fvec_E));
     Eyi = zeros(numel(ex_coords.x),numel(ex_coords.y),numel(ex_coords.z),numel(fvec_E));
 
-    % Setup a plane wave, linearly polarised in the x-direction,
+    %% Setup a plane wave, linearly polarised in the x-direction
     for il=1:numel(lambdavec_E)
         Exi(:,1,1,il) = 2*exp(sqrt(-1)*2*pi/lambdavec_E(il)*1.35*(ex_coords.z-dz));
     end
@@ -44,6 +51,6 @@ function [saveas] = calc_field_tdfield(input_filename, saveas)
     eyi = zeros( size(eyi_store,1), size(eyi_store,2), size(eyi_store,4) );
     eyi(:,:,:) = eyi_store(:,:,1,:);
 
-    % Save to desired output file
+    %% Save to desired output file
     save(saveas, 'exi', 'eyi');
 end
