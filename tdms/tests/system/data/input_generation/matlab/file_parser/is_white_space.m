@@ -1,14 +1,16 @@
-%function [res] = is_white_space(str)
-%
-%res is set to 1 if str is just a blank line (ie, composed of white space or just a new line).
-%res is 0 otherwise.
-function [res] = is_white_space(str)
+function [tf] = is_white_space(str)
+    %% Returns 1 (true) if the str is entirely composed of whitespace and ends in a newline character.
+    %% Usage is intended for when reading input files, and skipping over blank lines.
+    % str   : String to check
+    %
+    % tf    : True/false result
 
-res = 1;
-
-counter = 1;
-while counter < length(str)
-    res = res & strncmp(str(counter),sprintf(' '),1);
-    counter = counter + 1;
+% Logical array of indices where whitespace occurs
+whitespace = isspace(str);
+% If everything in the string except the whitespace is a single newline character at the end
+if strcmp('\n', str(~whitespace)) && strcmp('\n', str(end-1:end))
+    tf = 1;
+else
+    tf = 0;
 end
-res = res & strncmp(str(counter),sprintf('\n'),1);
+end
