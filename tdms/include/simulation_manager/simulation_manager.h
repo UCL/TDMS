@@ -291,6 +291,11 @@ private:
   void end_of_iteration_steps(double &time_of_last_log, unsigned int tind,
                               ElectricField &E_copy);
 
+  /* execute() subfunctions that time-propagate fields */
+
+  void iterate_E_split(LoopVariables &lv);
+  void update_Exy(LoopVariables &lv);
+
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
                     PreferredInterpolationMethods _pim);
