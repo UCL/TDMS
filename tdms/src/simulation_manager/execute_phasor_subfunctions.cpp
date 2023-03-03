@@ -117,7 +117,7 @@ void SimulationManager::new_acquisition_period(int tind) {
     return;
   }
 
-  if ((inputs.params.source_mode == SourceMode::steadystate)) {
+  if (inputs.params.source_mode == SourceMode::steadystate) {
     // If we have hit the end of a harmonic period, we need to zero the
     // angular-norms and normalisation factors of the fields
     if ((tind % inputs.Nsteps) == 0) {
