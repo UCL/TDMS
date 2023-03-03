@@ -19,12 +19,12 @@ class BScanArguments:
     # Without these tags in the input_generation field of the config file, we cannot setup the test
     REQUIRED_FIELDS: list[str] = ["input_file"]
     # The defaults for the optional information from the config file
-    DEFAULTS: dict[str, Union[str, bool, float]] = {
-        "obstacle": "fs",
-        "illsetup": False,
-        "obstacle_radius": 15.0e-6,
-        "refind": 1.42,
-        "calc_tdfield": False,
+    DEFAULTS: dict[str, Tuple[Union[str, bool, float], type]] = {
+        "obstacle": ["fs", str],
+        "illsetup": [False, bool],
+        "obstacle_radius": [15.0e-6, float],
+        "refind": [1.42, float],
+        "calc_tdfield": [False, bool],
     }
 
     # The directory of the test whose input data is being generated
@@ -80,9 +80,13 @@ class BScanArguments:
         # Set optional fields to defaults if not present, or use values provided otherwise
         for optional_value in self.DEFAULTS.keys():
             if (optional_value in keys) and (config[optional_value] != None):
-                setattr(self, optional_value, config[optional_value])
+                # Overwrite with value provided in the config file
+                # Be sure to cast to the expected datatype beforehand (15e-6 comes in as a str, for example)
+                expecting_type = self.DEFAULTS[optional_value][1]
+                setattr(self, optional_value, expecting_type(config[optional_value]))
             else:
-                setattr(self, optional_value, self.DEFAULTS[optional_value])
+                # Use default value
+                setattr(self, optional_value, self.DEFAULTS[optional_value][0])
 
         # Setup complete, return
         return
