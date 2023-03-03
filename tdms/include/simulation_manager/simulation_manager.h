@@ -19,6 +19,9 @@
 #include "simulation_manager/objects_from_infile.h"
 #include "simulation_manager/pstd_variables.h"
 
+// threshold used to terminate the steady state iterations
+#define TOL 1e-6
+
 /**
  * @brief Manages the physics of TDMS and the simulation loop itself.
  *
@@ -207,6 +210,24 @@ private:
    * @param tind The current iteration number
    */
   void update_source_terms_pulsed(double time_E, int tind);
+
+  /* execute() subfunctions to break up main loop */
+
+  /**
+   * @brief Checks whether the phasors have converged in a steady-state
+   * simulation.
+   *
+   * E and H fields are zero'd in this method if convergence is reached. E_copy
+   * is updated to hold the converged values in this case.
+   *
+   * @param[inout] dft_counter The number of DFTs that have been performed since
+   * we began checking for convergence
+   * @param[inout] E_copy The field array that stores the phasors from the
+   * previous iteration.
+   * @return true If the phasors have converged
+   * @return false Phasors have not converged
+   */
+  bool check_phasor_convergence(int &dft_counter, ElectricField &E_copy);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,

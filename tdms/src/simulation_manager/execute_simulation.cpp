@@ -99,30 +99,11 @@ void SimulationManager::execute() {
        tind++) {
     time_E = ((double) (tind + 1)) * inputs.params.dt;
     time_H = time_E - inputs.params.dt / 2.;
-    // Extract phasors
-    if ((dft_counter == inputs.Nsteps) &&
-        (inputs.params.run_mode == RunMode::complete) &&
-        (inputs.params.source_mode == SourceMode::steadystate) &&
-        inputs.params.exphasorsvolume) {
 
-      dft_counter = 0;
-
-      double tol = outputs.E.normalised_difference(
-              loop_variables.E_at_previous_iteration);
-      if (tol < TOL) break;// required accuracy obtained
-
-      spdlog::debug("Phasor convergence: {} (actual) > {} (required)", tol,
-                    TOL);
-      loop_variables.E_at_previous_iteration.set_values_from(outputs.E);
-
-      outputs.E.zero();
-      outputs.H.zero();
-      spdlog::debug("Zeroed the phasors");
-
-      if (inputs.params.exphasorssurface) {
-        outputs.surface_phasors.zero_surface_EH();
-        spdlog::debug("Zeroed the surface components");
-      }
+    // Check for phasor convergence, break if achieved
+    if (check_phasor_convergence(dft_counter,
+                                 loop_variables.E_at_previous_iteration)) {
+      break;
     }
 
     if ((inputs.params.source_mode == SourceMode::steadystate) &&
