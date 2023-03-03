@@ -245,6 +245,16 @@ private:
    * @param tind The current iteration number
    */
   void extract_phasors(int &dft_counter, int tind);
+  /**
+   * @brief Computes the detector function.
+   *
+   * Presumably this is the functional form of the fields/phasors at the
+   * detector positions.
+   *
+   * @param tind The current iteraton number
+   * @param lv Variables required from the main loop
+   */
+  void compute_detector_functions(int tind, LoopVariables &lv);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
