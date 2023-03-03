@@ -19,7 +19,11 @@
 #include "simulation_manager/objects_from_infile.h"
 #include "simulation_manager/pstd_variables.h"
 
-// threshold used to terminate the steady state iterations
+// Whether or not to time execution of loop subtasks
+#define TIME_EXEC false
+// Whether or not to time the main loop execution
+#define TIME_MAIN_LOOP true
+// Threshold used to terminate the steady state iterations
 #define TOL 1e-6
 
 /**
@@ -228,6 +232,19 @@ private:
    * @return false Phasors have not converged
    */
   bool check_phasor_convergence(int &dft_counter, ElectricField &E_copy);
+  /**
+   * @brief Extracts the phasors in the volume, on the user-defined surface, and
+   * at user-defined vertices.
+   *
+   * If the user has not requested one or more of these extraction locations,
+   * the corresponding steps are skipped. If the RunMode is not complete, then
+   * this step is always bypassed.
+   *
+   * @param dft_counter The number of DFTs that have been performed since we
+   * began checking for convergence
+   * @param tind The current iteration number
+   */
+  void extract_phasors(int &dft_counter, int tind);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,

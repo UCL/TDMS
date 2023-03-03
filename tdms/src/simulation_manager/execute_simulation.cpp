@@ -15,13 +15,6 @@ using namespace std;
 using namespace tdms_math_constants;
 using namespace tdms_phys_constants;
 
-// whether of not to time execution
-#define TIME_EXEC false
-// time main loop
-#define TIME_MAIN_LOOP true
-// threshold used to terminate the steady state iterations
-#define TOL 1e-6
-
 void SimulationManager::execute() {
   // log the number of OMP threads being used
   spdlog::info("Using {} OMP threads", omp_get_max_threads());
@@ -106,68 +99,13 @@ void SimulationManager::execute() {
       break;
     }
 
-    if ((inputs.params.source_mode == SourceMode::steadystate) &&
-        (inputs.params.run_mode == RunMode::complete) &&
-        inputs.params.exphasorsvolume) {
-
-      outputs.E.set_phasors(inputs.E_s, dft_counter - 1, inputs.params.omega_an,
-                            inputs.params.dt, inputs.Nsteps);
-      outputs.H.set_phasors(inputs.H_s, dft_counter, inputs.params.omega_an,
-                            inputs.params.dt, inputs.Nsteps);
-
-      if (inputs.params.exphasorssurface) {
-        for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-          outputs.surface_phasors.extractPhasorsSurface(
-                  ifx, inputs.E_s, inputs.H_s, dft_counter,
-                  inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.Nsteps, inputs.params,
-                  inputs.params.intphasorssurface);
-        }
-        dft_counter++;
-      }
-
-    } else if ((inputs.params.source_mode == SourceMode::pulsed) &&
-               (inputs.params.run_mode == RunMode::complete) &&
-               inputs.params.exphasorsvolume) {
-      if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
-
-      if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
-        outputs.E.set_phasors(inputs.E_s, tind - 1, inputs.params.omega_an,
-                              inputs.params.dt, inputs.params.Npe);
-        outputs.H.set_phasors(inputs.H_s, tind, inputs.params.omega_an,
-                              inputs.params.dt, inputs.params.Npe);
-      }
-      if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
-    }
+    // Extract the volume, surface, and vertex phasors to the output
+    extract_phasors(dft_counter, tind);
 
     // Extract the fields at the sample locations
     if (outputs.fieldsample.all_vectors_are_non_empty()) {
       outputs.fieldsample.extract(inputs.E_s, inputs.params.pml,
                                   inputs.params.Nt);
-    }
-
-    // Extract phasors on the user-defined surface
-    if (inputs.params.source_mode == SourceMode::pulsed &&
-        inputs.params.run_mode == RunMode::complete &&
-        inputs.params.exphasorssurface) {
-      if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
-        for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-          outputs.surface_phasors.extractPhasorsSurface(
-                  ifx, inputs.E_s, inputs.H_s, tind,
-                  inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.Npe,
-                  inputs.params, inputs.params.intphasorssurface);
-        }
-      }
-    }
-    // Extract phasors at the user-defined vertices
-    if (inputs.params.source_mode == SourceMode::pulsed &&
-        inputs.params.run_mode == RunMode::complete &&
-        (outputs.vertex_phasors.there_are_vertices_to_extract_at()) &&
-        ((tind - inputs.params.start_tind) % inputs.params.Np == 0)) {
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-        outputs.vertex_phasors.extractPhasorsVertices(
-                ifx, inputs.E_s, inputs.H_s, tind,
-                inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params);
-      }
     }
 
     if (inputs.params.source_mode == SourceMode::pulsed &&
