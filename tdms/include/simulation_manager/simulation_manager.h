@@ -88,7 +88,7 @@ private:
    * @param tind The current timestep
    * @param Nt The number of timesteps in a sinusoidal period
    */
-  void extract_phasor_norms(int frequency_index, int tind, int Nt);
+  void extract_phasor_norms(int frequency_index, unsigned int tind, int Nt);
 
   /**
    * @brief Creates MATLAB memory blocks that will be iteratively updated in the
@@ -244,7 +244,7 @@ private:
    * began checking for convergence
    * @param tind The current iteration number
    */
-  void extract_phasors(int &dft_counter, int tind);
+  void extract_phasors(int &dft_counter, unsigned int tind);
   /**
    * @brief Computes the detector function.
    *
@@ -254,7 +254,7 @@ private:
    * @param tind The current iteraton number
    * @param lv Variables required from the main loop
    */
-  void compute_detector_functions(int tind, LoopVariables &lv);
+  void compute_detector_functions(unsigned int tind, LoopVariables &lv);
   /**
    * @brief Begin a new acquisition period: zero the angular-norms and field
    * normalisation factors.
@@ -271,7 +271,7 @@ private:
    *
    * @param tind The current iteration number
    */
-  void new_acquisition_period(int tind);
+  void new_acquisition_period(unsigned int tind);
   /**
    * @brief Run tasks at the end of an iteration, in preparation for the next.
    *
@@ -288,7 +288,7 @@ private:
    * @param[inout] E_copy The object that is storing the phasors from the
    * previous iteration, for use in convergence checking.
    */
-  void end_of_iteration_steps(double &time_of_last_log, int tind,
+  void end_of_iteration_steps(double &time_of_last_log, unsigned int tind,
                               ElectricField &E_copy);
 
 public:

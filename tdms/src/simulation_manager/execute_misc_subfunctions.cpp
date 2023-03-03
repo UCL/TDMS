@@ -1,7 +1,7 @@
-#include "simulation_manager.h"
+#include "simulation_manager/simulation_manager.h"
 
 void SimulationManager::end_of_iteration_steps(double &time_of_last_log,
-                                               int tind,
+                                               unsigned int tind,
                                                ElectricField &E_copy) {
   // If enough time has passed since the last write to the log
   if ((((double) time(NULL)) - time_of_last_log) > 1) {

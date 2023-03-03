@@ -4,8 +4,8 @@
 
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 
-void SimulationManager::extract_phasor_norms(int frequency_index, int tind,
-                                             int Nt) {
+void SimulationManager::extract_phasor_norms(int frequency_index,
+                                             unsigned int tind, int Nt) {
   double omega = inputs.f_ex_vec[frequency_index] * 2 * DCPI;
   E_norm[frequency_index] +=
           outputs.E.ft *
@@ -46,7 +46,7 @@ bool SimulationManager::check_phasor_convergence(int &dft_counter,
   return false;
 }
 
-void SimulationManager::extract_phasors(int &dft_counter, int tind) {
+void SimulationManager::extract_phasors(int &dft_counter, unsigned int tind) {
   // if we are not performing a complete run, these steps are skipped
   if (inputs.params.run_mode != RunMode::complete) { return; }
 
@@ -104,7 +104,7 @@ void SimulationManager::extract_phasors(int &dft_counter, int tind) {
   }
 }
 
-void SimulationManager::new_acquisition_period(int tind) {
+void SimulationManager::new_acquisition_period(unsigned int tind) {
   // These steps are un-neccessary if we are NOT doing ANY of the following:
   if (!(inputs.params.exphasorssurface ||// extracting phasors on the
                                          // user-defined surface

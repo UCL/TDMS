@@ -6,7 +6,7 @@ using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using tdms_phys_constants::LIGHT_V;
 using namespace std;
 
-void SimulationManager::compute_detector_functions(int tind,
+void SimulationManager::compute_detector_functions(unsigned int tind,
                                                    LoopVariables &lv) {
   /* This step is skipped if we are not running a pulsed simulation, in complete
   mode, with exdetintegral flagged, and are at an iteration number at which we
