@@ -11,43 +11,35 @@ Each system test is named by the aforementioned `arc_XX` convention. A given sys
 We use `.yaml` files to specify system tests and the parameters that must be passed into them. The syntax that we currently employ, along with an explanation of the expected content of each field/tag, is below.
 ```yaml
 test_id: 'XX' # A string containing the test_id
-tests:
-  # Indicates that what follows is information needed when performing the runs that make up this system test
-  # Tags within this block correspond to one run that forms part of this system test
-  # The tags themselves are used as the names for each run, and should be unique
-  # Paths to files must be relative to their location in the Zenodo .zip file that is to be downloaded
-  fs_bli:
-    # This information is only required when performing this run of tdms.
-
-    # The name of the .mat input file that should be passed to the tdms executable.
-    input_file: input.mat
-    # The name of the reference .mat output to compare the output of the local tdms run to.
-    reference: reference.mat
-    # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present.
-    cubic_interpolation: True
-    # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
-    fdtd_solver: False
-  fs_cubic:
-    # This defines another run of tdms as part of this system test
-
-    input_file: input_2.mat # A different input file is to be used
-    reference: reference.mat # The same reference data is to be checked against
-    cubic_interpolation: False # This field can be left out and False will be inferred by pytest
-    fdtd_solver: True
-input_generation:
-  # Indicates that what follows is information needed when regenerating the .mat inputs that are passed to tdms in the runs that consistute this test.
-  # Paths to files should be relative to the tdms/tests/system/data/input_generation directory.
+mat_file_1:
+  # The name of a .mat input file that needs to be (re) generated for this test to execute
+  # The remainder of this block contains properties that only apply when generating, or running tests using mat_file_1.mat as an input to tdms
 
   # The file that is passed to iteratefdtd_matrix in run_bscan
-  input_file: input_file_03.m
-  # List of strings specifying the spatial obstacles to setup for this test. One of these should be 'fs' for "freespace". The other obstacle(s) can be any of "sph" (sphere), "cyl" (cylindrical), or "sc" (point-source at the origin)
-  spatial_obstacles: ["fs", "sph"]
+  input_file: input_file_name.m
+  # One of fs (freespace), sph (sphere), cyl (cylinder), or sc (point-source at the origin). The shape of the scattering obstacle.
+  obstacle: fs
+  # The radius of obstacle in microns. For sph, the radius of the sphere. For cyl, the radius of the circular faces. For sc and fs, this option is ignored. Defaults to 15e-6 if not set.
+  obstacle_radius: 5e-6
+  # The refractive index of the scattering object. Not used in fs simulations. Defaults to 1.42 if not set.
+  refind: 1.42
   # Whether iteratefdtd_matrix must be called in illsetup mode to setup the illumination file, prior to its call in filesetup mode. Defaults to False if not present or unpopulated
   illsetup: True
-  # The radius of the non-freespace obstacle in microns. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. For "sc", this option is ignored. Defaults to 15e-6 if not set.
-  obstacle_radius: 5e-6
   # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
   calc_tdfield: True
+
+  # Starts a block which contains the details of all the runs within this system test that use mat_file_1 as their input
+  runs:
+    # Each key in this block defines the name of one run of tdms, using mat_file_1.mat as the input data
+    run_name_1:
+      # The name of the reference .mat output to compare the output of the local tdms run to.
+      reference: reference.mat
+      # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present.
+      cubic_interpolation: True
+      # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
+      fdtd_solver: False
+mat_file_2:
+  # Another block that declares another .mat file which needs to be generated, with the same syntax as the block above.
 ```
 
 ## Running the System Tests
