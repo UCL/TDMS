@@ -272,6 +272,24 @@ private:
    * @param tind The current iteration number
    */
   void new_acquisition_period(int tind);
+  /**
+   * @brief Run tasks at the end of an iteration, in preparation for the next.
+   *
+   * These tasks are:
+   * - Write to the log with the field residual if it has been long enough since
+   * the last write
+   * - Report on possible convergence failure (and set outputs accordingly)
+   * - Export fields if at a suitable iteration number
+   *
+   * @param[inout] time_of_last_log Time since we last wrote to the log file. If
+   * we write to the log file whilst running this method, this value is updated
+   * to the time of writing.
+   * @param[in] tind The current iteration number.
+   * @param[inout] E_copy The object that is storing the phasors from the
+   * previous iteration, for use in convergence checking.
+   */
+  void end_of_iteration_steps(double &time_of_last_log, int tind,
+                              ElectricField &E_copy);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,

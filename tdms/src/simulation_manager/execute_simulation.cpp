@@ -25,13 +25,12 @@ void SimulationManager::execute() {
 
   // DECLARE VARIABLES SCOPED TO THIS FUNCTION ONLY
   double rho;
-  double alpha_l, beta_l,
-          gamma_l;//< alpha, beta, gamma parameters of the layer the local
-                  // thread is examining
+  double alpha_l, beta_l, gamma_l;//< alpha, beta, gamma parameters of the layer
+                                  // the local thread is examining
   double kappa_l, sigma_l;//< kappa, sigma parameters of the layer the local
                           // thread is examining
-  double t0;//< (Real) time since the last iteration log was written to the
-            // screen
+  double time_of_last_log_write;//< (Real) time since the last iteration log was
+                                // written to the screen
 
   double Ca, Cb, Cc;// used by interpolation scheme
   // the C and D vars for free space and pml
@@ -78,7 +77,7 @@ void SimulationManager::execute() {
   double time_E, time_H;
 
   // fetch the current time for logging purposes
-  t0 = (double) time(NULL);
+  time_of_last_log_write = (double) time(NULL);
   spdlog::info("Starting main loop");
 
   if (TIME_MAIN_LOOP) { timers.start_timer(TimersTrackingLoop::MAIN); }
@@ -106,12 +105,13 @@ void SimulationManager::execute() {
     // Compute the detector function
     compute_detector_functions(tind, loop_variables);
 
-    if (inputs.params.run_mode == RunMode::complete)
-      if (inputs.params.dimension == THREE) {
-        // extract the phasors just above the line
-        FDTD.extract_phasors_in_plane(inputs.E_s, inputs.H_s, IJK_tot,
-                                      inputs.K0.index + 1, tind, inputs.params);
-      }
+
+    // Extract the phasors just above the line
+    if ((inputs.params.run_mode == RunMode::complete) &&
+        (inputs.params.dimension == THREE)) {
+      FDTD.extract_phasors_in_plane(inputs.E_s, inputs.H_s, IJK_tot,
+                                    inputs.K0.index + 1, tind, inputs.params);
+    }
 
     // Update equations for the E field
 
@@ -3185,29 +3185,12 @@ void SimulationManager::execute() {
     new_acquisition_period(tind);
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
-    if ((((double) time(NULL)) - t0) > 1) {
+    // Perform setup for next iteration
+    end_of_iteration_steps(time_of_last_log_write, tind,
+                           loop_variables.E_at_previous_iteration);
+  }
+  // end of main iteration loop
 
-      maxfield = max(inputs.E_s.largest_field_value(),
-                     inputs.H_s.largest_field_value());
-
-      spdlog::info("Iterating: tind = {0:d}, maxfield = {1:e}", tind, maxfield);
-      t0 = double(time(NULL));
-    }
-    if ((inputs.params.source_mode == SourceMode::steadystate) &&
-        (tind == (inputs.params.Nt - 1)) &&
-        (inputs.params.run_mode == RunMode::complete) &&
-        inputs.params.exphasorsvolume) {
-      spdlog::info("Iteration limit reached (no convergence): setting output "
-                   "fields to last "
-                   "complete DFT");
-      outputs.E.set_values_from(loop_variables.E_at_previous_iteration);
-    }
-    if (inputs.params.has_tdfdir && (tind % inputs.params.Np) == 0) {
-      spdlog::info("Exporting field...");
-      inputs.ex_td_field_exporter.export_field(inputs.E_s, inputs.skip_tdf,
-                                               tind);
-    }
-  }// end of main iteration loop
   if (TIME_MAIN_LOOP) {
     timers.end_timer(TimersTrackingLoop::MAIN);
     spdlog::info("Time elapsed in main loop (s): {0:e}",
