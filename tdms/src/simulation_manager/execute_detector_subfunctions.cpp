@@ -21,8 +21,8 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
   }
 
   // get the number of Yee cells in each axial direction
-  IJKDims IJK_tot = n_Yee_cells();
-  int I_tot = IJK_tot.I_tot(), J_tot = IJK_tot.J_tot();
+  IJKDimensions IJK_tot = n_Yee_cells();
+  int I_tot = IJK_tot.i, J_tot = IJK_tot.j;
 
   double phaseTermE;
   complex<double> cphaseTermE;
