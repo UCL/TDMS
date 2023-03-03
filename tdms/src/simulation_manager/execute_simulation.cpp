@@ -3180,95 +3180,9 @@ void SimulationManager::execute() {
     }
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
-    if (inputs.params.exphasorssurface || inputs.params.exphasorsvolume ||
-        inputs.params.exdetintegral ||
-        outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
-      if (inputs.params.source_mode == SourceMode::steadystate) {
-        /*
-    Each time a new acquisition period of harmonic illumination begins, all
-    complex amplitudes (volume, surface etc.) are set back to 0 since the
-    discrete Fourier transforms used to acquire these complex amplitudes starts
-    again. In particular, the returned complex amplitudes will have been
-    acquired during a single acquisition period of harmonic illumination. Note
-    that, as explained above, the acquisition period is actually three periods
-    of the harmonic waves fundamental period. The complex amplitudes are reset
-    to 0 using calls such as:
-
-    However, the normalisation factors are reset to 0 here.
-   */
-
-        if ((tind % inputs.Nsteps) == 0) {
-          outputs.E.angular_norm = 0.0;
-          outputs.H.angular_norm = 0.0;
-
-          for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-            E_norm[ifx] = 0.;
-            H_norm[ifx] = 0.;
-          }
-        }
-
-        /*In the calls below, the following two lines of code are equivalent up
-    to numerical precision:
-
-    E.add_to_angular_norm(fte, tind, Nsteps, params);
-    E.add_to_angular_norm(fte, tind % Nsteps, Nsteps, params);
-
-    To understand why, first consult the lines of code above:
-
-    Nsteps_tmp = ceil(2.*DCPI/omega_an[0]/dt[0]*3);
-    dt[0] = 2.*DCPI/omega_an[0]*3/Nsteps_tmp;
-    Nsteps = (int)lround(Nsteps_tmp);
-
-    Where dt and Nsteps are set. The reason for the factor of 3 is that we will
-    perform complex amplitude extraction over 3 fundamental periods of the
-    monochromatic source. We can then make the following statement:
-
-    T/dt*3=1/(f*dt)*3=Nsteps
-
-    where T and f (omega=2*pi*f) are the period and frequency of the
-    monochromatic source, respectively.
-
-    Then consider the argument of the exponentional function on phasor_norm,
-    called by add_to_angular_norm, where tind=n is used:
-
-    i*omega*((double) (n+1))*dt (where fmod(.,2*DCPI) is ignored since this will
-    not affect the result)
-
-    The argument of this function simplifies to:
-
-    i*omega*(tind+1)*dt=i*2*pi*f*(tind+1)*dt=i*2*pi*(tind+1)*3/Nsteps (using
-    f*dt=3/Nsteps)
-
-    Then, without loss of generallity, let tind = p*Nsteps + q, substituting
-    into the above
-
-    i*2*pi*(tind+1)*3/Nsteps = i*2*pi*(p*Nsteps + q)*3/Nsteps = i*2*pi*3*p +
-    i*2*pi*q*3/Nsteps
-
-    In which case exp(i*2*pi*3*p + i*2*pi*q*3/Nsteps) = exp(i*2*pi*q*3/Nsteps)
-
-    If instead we use tind % Nsteps=n, we see that n=q, leading to the same
-    exponential function as above. So the two cases are equivalent.
-   */
-
-        outputs.E.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
-        outputs.H.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
-
-        for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-          extract_phasor_norms(ifx, tind, inputs.Nsteps);
-        }
-      } else {
-        if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
-
-          outputs.E.add_to_angular_norm(tind, inputs.params.Npe, inputs.params);
-          outputs.H.add_to_angular_norm(tind, inputs.params.Npe, inputs.params);
-
-          for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
-            extract_phasor_norms(ifx, tind, inputs.params.Npe);
-          }
-        }
-      }
-    }
+    // If it is time for a new acquisition period, update the normalisation
+    // factors and extract phasors
+    new_acquisition_period(tind);
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     if ((((double) time(NULL)) - t0) > 1) {

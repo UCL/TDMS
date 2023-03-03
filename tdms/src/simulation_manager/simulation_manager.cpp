@@ -5,7 +5,6 @@
 #include "mesh_base.h"
 
 using namespace std;
-using namespace tdms_math_constants;
 
 SimulationManager::SimulationManager(InputMatrices in_matrices,
                                      SolverMethod _solver_method,
@@ -32,21 +31,6 @@ SimulationManager::SimulationManager(InputMatrices in_matrices,
 
   // setup the output object
   prepare_output(in_matrices["fieldsample"], in_matrices["campssample"]);
-}
-
-void SimulationManager::extract_phasor_norms(int frequency_index, int tind,
-                                             int Nt) {
-  double omega = inputs.f_ex_vec[frequency_index] * 2 * DCPI;
-  E_norm[frequency_index] +=
-          outputs.E.ft *
-          exp(fmod(omega * ((double) (tind + 1)) * inputs.params.dt, 2 * DCPI) *
-              IMAGINARY_UNIT) *
-          1. / ((double) Nt);
-  H_norm[frequency_index] +=
-          outputs.H.ft *
-          exp(fmod(omega * ((double) tind + 0.5) * inputs.params.dt, 2 * DCPI) *
-              IMAGINARY_UNIT) *
-          1. / ((double) Nt);
 }
 
 void SimulationManager::prepare_output(const mxArray *fieldsample,

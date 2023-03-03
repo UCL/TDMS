@@ -255,6 +255,23 @@ private:
    * @param lv Variables required from the main loop
    */
   void compute_detector_functions(int tind, LoopVariables &lv);
+  /**
+   * @brief Begin a new acquisition period: zero the angular-norms and field
+   * normalisation factors.
+   *
+   * Each time a new acquisition period of harmonic illumination begins, all
+   * complex amplitudes (volume, surface etc.) are set back to 0. This is
+   * because the discrete Fourier transforms used to acquire these complex
+   * amplitudes starts again.
+   *
+   * In particular, the returned complex amplitudes will have been acquired
+   * during a single acquisition period of harmonic illumination. Note that the
+   * acquisition period is actually three periods of the harmonic waves'
+   * fundamental period.
+   *
+   * @param tind The current iteration number
+   */
+  void new_acquisition_period(int tind);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
