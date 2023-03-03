@@ -195,8 +195,7 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
 
 void SimulationManager::update_Exz(LoopVariables &lv) {
   // Fetch simulation dimensions for easy access
-  int I_tot = n_Yee_cells().I_tot(), J_tot = n_Yee_cells().J_tot(),
-      K_tot = n_Yee_cells().K_tot();
+  int I_tot = n_Yee_cells().I_tot(), K_tot = n_Yee_cells().K_tot();
   // Get the thread number
   int n = omp_get_thread_num();
 
