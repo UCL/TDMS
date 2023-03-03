@@ -39,11 +39,6 @@ void SimulationManager::execute() {
 
   double maxfield = 0.;//< Max absolute value of the reisdual between fields
 
-  double phaseTermE;
-  complex<double> cphaseTermE;
-  double lambda_an_t;//< Wavelength of light in free space at the current
-                     // frequency
-
   int i, j, k;//< Loop variables
   int n;      //< The thread number of the local OMP thread
   int k_loc;  //< Local thread copy of the variable k
