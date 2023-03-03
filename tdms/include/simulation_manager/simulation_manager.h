@@ -293,8 +293,8 @@ private:
 
   /* execute() subfunctions that time-propagate fields */
 
-  void iterate_E_split(LoopVariables &lv);
   void update_Exy(LoopVariables &lv);
+  void update_Exz(LoopVariables &lv);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
