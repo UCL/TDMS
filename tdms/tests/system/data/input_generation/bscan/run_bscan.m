@@ -31,7 +31,7 @@ if options.calc_tdfield
 end
 
 % Insert obstacle, typically at the origin, by introducing the composition matrix
-composition_matrix = composition_matrix(input_filename, options.obstacle, options.obstacle_radius);
+composition_matrix = composition_matrix_builder(input_filename, options.obstacle, options.obstacle_radius);
 % Create the material matrix from the refractive index provided
 material_matrix = [1 options.refind^2 1 0 0 0     0     0     0 0 0];
 
@@ -49,7 +49,7 @@ if options.illsetup
     % Now prepare for filesetup mode
     filesetup_input_file = options.ill_filesetup;
 else
-    if options.calc_field_tdfield
+    if options.calc_tdfield
         % We don't need to call in illsetup mode, but do need to pass an illumination file
         illfile_mat = tdfield_saved_to;
     else
@@ -60,8 +60,7 @@ else
 end
 
 % Names to save .mat files under
-output_file = sprintf('%s/%s_input',dir_to_place_input_mats, non_fs_obstacle);
-freespace_output_file = sprintf('%s/fs_input',dir_to_place_input_mats);
+output_file = sprintf('%s/%s_input', dir_to_place_input_mats, options.obstacle);
 
 % Call iteratefdtd_matrix in filesetup mode to generate input .mat files for tdms executable
 iteratefdtd_matrix(filesetup_input_file, 'filesetup', options.output_name, gridfile, illfile_mat);

@@ -1,4 +1,4 @@
-function [composition_matrix] = composition_matrix(file_with_coordinates, obj_shape, rad)
+function [composition_matrix] = composition_matrix_builder(file_with_coordinates, obj_shape, rad)
     %% Setup the composition matrix for the given object shape and grid cooordinates.
     % x, y, z: Vectors, the tensor/outer product of which forms the set of coordinates of the Yee cells we will be using
     % obj_shape: The shape of the scattering object. Options are;

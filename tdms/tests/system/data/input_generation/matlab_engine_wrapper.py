@@ -43,7 +43,7 @@ class MATLABEngineWrapper:
             self.bscan_calls = [bscans]
         elif isinstance(bscans, list):
             # validate this is a list of BScanArguments and not some other datatype
-            non_bscan_items = sum([isinstance(b, BScanArguments) for b in bscans])
+            non_bscan_items = sum([(not isinstance(b, BScanArguments)) for b in bscans])
             if non_bscan_items > 0:
                 raise RuntimeError(
                     f"Error: not all inputs are BScan calls ({non_bscan_items}/{len(bscans)})"

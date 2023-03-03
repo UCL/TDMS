@@ -13,8 +13,7 @@ class BScanArguments:
 
     The bscan/run_bscan.m file contains the matlab function which generates the input data. Regrettably, we need to specify particular inputs to this script for each test, which requires us to translate the argument values as read from the config.yaml file into a long string of values in the correct order, which can in turn be called from matlab.
 
-    BScanArguments is essentially a glorified dictionary, it's members sharing the names of the input arguments to run_bscan. It's create_bscan_argument can be used to convert the values that need to be passed into a string of the form:
-    run_bscan(input_arguments_in_the_correct_order).
+    BScanArguments is essentially a glorified dictionary, it's members sharing the names of the input arguments to run_bscan. The run_bscan() method of this class calls the MATLAB function of the same name, given a running MATLAB engine.
     """
 
     # Without these tags in the input_generation field of the config file, we cannot setup the test
@@ -46,7 +45,7 @@ class BScanArguments:
     obstacle_radius: float
     # Refractive index of the non-freespace medium.
     # Default 1.42
-    ref_index: float
+    refind: float
     # Whether calc_field_tdfield needs to be run prior to setting up the scattering matrix
     calc_tdfield: bool
 
@@ -80,7 +79,7 @@ class BScanArguments:
 
         # Set optional fields to defaults if not present, or use values provided otherwise
         for optional_value in self.DEFAULTS.keys():
-            if optional_value in keys:
+            if (optional_value in keys) and (config[optional_value] != None):
                 setattr(self, optional_value, config[optional_value])
             else:
                 setattr(self, optional_value, self.DEFAULTS[optional_value])
@@ -147,7 +146,7 @@ class BScanArguments:
             "illsetup": self.illsetup,
             "ill_filesetup": self._temp_filesetup_name(),
             "obstacle_radius": self.obstacle_radius,
-            "refind": self.ref_index,
+            "refind": self.refind,
             "calc_tdfield": self.calc_tdfield,
             "output_name": self.matfile,
         }

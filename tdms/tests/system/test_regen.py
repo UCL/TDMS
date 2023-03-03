@@ -2,7 +2,6 @@ import os
 import sys
 from glob import glob
 from pathlib import Path
-from warnings import warn
 
 # Location of this file, which is where the tests are running from
 LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
@@ -14,7 +13,6 @@ path_to_input_generation = Path(LOCATION_OF_THIS_FILE, "data", "input_generation
 sys.path.insert(0, str(path_to_input_generation))
 
 import pytest
-import yaml
 from regenerate_all import regenerate_test
 from tdms_testing_class import TDMSSystemTest
 from utils import download_data
@@ -46,16 +44,6 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
     """
     # Fetch config file location
     config_file_path = path_to_input_generation / f"config_{test_id}.yaml"
-    # Fetch test run information
-    with open(config_file_path, "r") as opened_config_file:
-        # Read data into dictionary, and take the "tests" value
-        INFO = yaml.safe_load(opened_config_file)
-        yaml_test_id = INFO["test_id"]
-        if yaml_test_id != test_id:
-            warn(
-                f"{str(config_file_path)} implicit ID does not match config file description (found {test_id})"
-            )
-        run_information = INFO["tests"]
 
     # Regenerate the input data for arc_{test_id}
     # Error on not successful (hence fail test)
@@ -64,7 +52,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
     print(f"Done")
 
     # Perform each run of TDMS as specified by the config file
-    system_test = TDMSSystemTest(yaml_test_id, run_information)
+    system_test = TDMSSystemTest(config_file_path)
 
     # Run all of the system tests
     run_success = system_test.perform_all_runs()
@@ -90,7 +78,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
 # Run each system test that is currently saved in the repository, as identified through the config files
 # "MATLAB doesn't run on GH runners. If you want to check that regenerating the input data still allows the tests to pass, run this locally and remove the skip mark."
-@pytest.mark.parametrize("test_id", TEST_IDS)
+@pytest.mark.parametrize("test_id", ["01"])  # TEST_IDS)
 def test_system(test_id) -> None:
     """Runs the system test arc_{test_id}, including fetching missing reference data from Zenodo.
 

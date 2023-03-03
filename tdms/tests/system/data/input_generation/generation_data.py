@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import Union
 
 import yaml
-from bscan_arguments import BScanArguments, MATLABEngineWrapper
+from bscan_arguments import BScanArguments
+from matlab_engine_wrapper import MATLABEngineWrapper
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,6 +32,8 @@ class GenerationData:
 
     # The matlab instance that generates the input data for this test
     matlab_instance: MATLABEngineWrapper
+    # The .mat input files that we will produce
+    matfiles_to_produce: list[str]
 
     def __init__(
         self,
@@ -45,13 +48,15 @@ class GenerationData:
 
         # Get the ID of the test & thus the directory to save to
         self.test_id = config["test_id"]
-        self.test_dir = Path(test_dir, ("arc_" + self.test_id))
+        self.test_dir = Path(test_dir, f"arc_{self.test_id}")
 
-        # Information about how this test's input data is generated
-        self._generation_options = config["input_generation"]
+        # Determine the .mat files that we will be generating
+        # Non-"test_id" fields are the .mat input file names
+        self.matfiles_to_produce = list(config.keys())
+        self.matfiles_to_produce.remove("test_id")
 
         # Setup the command from the member variables
-        self.matlab_instance = self._setup_matlab_instance()
+        self.matlab_instance = self._setup_matlab_instance(config)
         return
 
     def _find_or_create_test_dir(self) -> None:
@@ -67,10 +72,32 @@ class GenerationData:
         # else, the directory already exists, we don't need to do anything
         return
 
-    def _setup_matlab_instance(self) -> MATLABEngineWrapper:
-        """Setup the matlab command that will generate the input data"""
-        bscan = BScanArguments(self.test_dir, self._generation_options)
-        return MATLABEngineWrapper(bscan)
+    def _setup_matlab_instance(self, config: dict[str, any]) -> MATLABEngineWrapper:
+        """Setup the BScan commands that will be run by the engine, using the information in the config file."""
+        # This is the list of BScan commands that this config file wants us to run
+        bscan_list = []
+        for mat_file in self.matfiles_to_produce:
+            bscan_list.append(BScanArguments(self.test_dir, mat_file, config[mat_file]))
+        # Return a matlab engine that is ready to run each of these commands
+        return MATLABEngineWrapper(bscan_list, str(self.test_dir))
+
+    def _cleanup(self) -> None:
+        """Cleanup auxillary .mat files that are placed into the working directory by the run_bscan function."""
+        # pull the working directory of the matlab engine for cleanup reasons
+        matlab_cwd = self.matlab_instance.cwd
+        # Create set of all files to cleanup
+        mat_files_dumped_here = set(glob(str(self.test_dir) + "/*.mat"))
+        mat_files_dumped_cwd = set(glob(matlab_cwd + "/*.mat"))
+        dumped_mat_files = mat_files_dumped_cwd | mat_files_dumped_here
+        # exclude the input files themselves from deletion
+        matfiles = [
+            f"{self.test_dir}/{matfile}.mat" for matfile in self.matfiles_to_produce
+        ]
+        dumped_mat_files = dumped_mat_files - set(matfiles)
+        # purge .mat files
+        for aux_mat in dumped_mat_files:
+            os.remove(aux_mat)
+        return
 
     def generate(self) -> None:
         """Generate the input data to the test, as specified by this instance's member values.
@@ -81,21 +108,7 @@ class GenerationData:
 
         # generate the input data for this test
         self.matlab_instance.run()
-        # pull the working directory of the matlab engine for cleanup reasons
-        matlab_cwd = self.matlab_instance.cwd
 
-        # cleanup auxillary .mat files that are placed into this directory and the matlab working directory
-        # create list of all files to cleanup - note that if the CWD of MATLAB and the directory containing this file are identical, there is no need to go through this process of removing duplicates
-        mat_files_dumped_here = sorted(glob(self.test_dir + "/*.mat"))
-        mat_files_dumped_cwd = sorted(glob(matlab_cwd + "/*.mat"))
-        # create one list of all the .mat artefacts that we need to remove
-        dumped_mat_files = list(mat_files_dumped_here)
-        dumped_mat_files.extend(
-            mfile
-            for mfile in mat_files_dumped_cwd
-            if mfile not in mat_files_dumped_here
-        )
-        # purge .mat files
-        for aux_mat in dumped_mat_files:
-            os.remove(aux_mat)
+        # cleanup auxillary .mat files
+        self._cleanup()
         return
