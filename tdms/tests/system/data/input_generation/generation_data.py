@@ -32,7 +32,11 @@ class GenerationData:
     # The matlab instance that generates the input data for this test
     matlab_instance: MATLABEngineWrapper
 
-    def __init__(self, config_file_location: Union[str, Path]) -> None:
+    def __init__(
+        self,
+        config_file_location: Union[str, Path],
+        test_dir: Union[Path, str] = LOCATION_OF_THIS_FILE,
+    ) -> None:
         """Initialise instance by reading information from a config file"""
         # Fetch config file and options
         self._config_file_location = Path(config_file_location)
@@ -41,7 +45,7 @@ class GenerationData:
 
         # Get the ID of the test & thus the directory to save to
         self.test_id = config["test_id"]
-        self.test_dir = Path(LOCATION_OF_THIS_FILE, ("arc_" + self.test_id))
+        self.test_dir = Path(test_dir, ("arc_" + self.test_id))
 
         # Information about how this test's input data is generated
         self._generation_options = config["input_generation"]
@@ -82,7 +86,7 @@ class GenerationData:
 
         # cleanup auxillary .mat files that are placed into this directory and the matlab working directory
         # create list of all files to cleanup - note that if the CWD of MATLAB and the directory containing this file are identical, there is no need to go through this process of removing duplicates
-        mat_files_dumped_here = sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat"))
+        mat_files_dumped_here = sorted(glob(self.test_dir + "/*.mat"))
         mat_files_dumped_cwd = sorted(glob(matlab_cwd + "/*.mat"))
         # create one list of all the .mat artefacts that we need to remove
         dumped_mat_files = list(mat_files_dumped_here)
