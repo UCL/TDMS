@@ -6,7 +6,7 @@ function [composition_matrix] = composition_matrix_builder(file_with_coordinates
     %       sph : sphere
     %       cyl : cylinder
     %       sc  : point-source at the origin
-    % rad: Radius of the sph object, or circular-face of a cyl object. Point sources ignore this input
+    % rad: Radius of the sph object, or circular-face of a cyl object. Point sources and freespace ignore this input
     %
     % composition_matrix : The composition matrix for the simulation domain
 

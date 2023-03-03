@@ -1,21 +1,19 @@
 test_id: '09'
-tests:
-  fs_bli:
-    input_file: fs_input.mat
-    reference: pstd_fs_bli_reference.mat
-  fs_cubic:
-    input_file: fs_input.mat
-    reference: pstd_fs_cubic_reference.mat
-    cubic_interpolation: True
-  sc_bli:
-    input_file: sc_input.mat
-    reference: pstd_sc_bli_reference.mat
-  sc_cubic:
-    input_file: sc_input.mat
-    reference: pstd_sc_cubic_reference.mat
-    cubic_interpolation: True
-input_generation:
+fs_input:
   input_file: input_file_09.m
-  spatial_obstacles: ["fs", "sc"]
-  illsetup: False
-  obstacle_radius: 0 # uses point source, so this is kind of redundant
+  obstacle: fs
+  runs:
+    fs_bli:
+      reference: pstd_fs_bli_reference.mat
+    fs_cubic:
+      reference: pstd_fs_cubic_reference.mat
+      cubic_interpolation: True
+sc_input:
+  input_file: input_file_09.m
+  obstacle: sc
+  runs:
+    sc_bli:
+      reference: pstd_sc_bli_reference.mat
+    sc_cubic:
+      reference: pstd_sc_cubic_reference.mat
+      cubic_interpolation: True

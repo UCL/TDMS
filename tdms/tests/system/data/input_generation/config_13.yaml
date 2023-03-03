@@ -1,25 +1,24 @@
 test_id: '13'
-tests:
-  fs_bli:
-    input_file: fs_input.mat
-    reference: fdtd_fs_bli_reference.mat
-    fdtd_solver: True
-  fs_cubic:
-    input_file: fs_input.mat
-    reference: fdtd_fs_cubic_reference.mat
-    cubic_interpolation: True
-    fdtd_solver: True
-  cyl_bli:
-    input_file: cyl_input.mat
-    reference: fdtd_cyl_bli_reference.mat
-    fdtd_solver: True
-  cyl_cubic:
-    input_file: cyl_input.mat
-    reference: fdtd_cyl_cubic_reference.mat
-    cubic_interpolation: True
-    fdtd_solver: True
-input_generation:
+fs_input:
   input_file: input_file_13.m
-  spatial_obstacles: ["fs", "cyl"]
-  illsetup: False
+  obstacle: fs
+  runs:
+    fs_bli:
+      reference: fdtd_fs_bli_reference.mat
+      fdtd_solver: True
+    fs_cubic:
+      reference: fdtd_fs_cubic_reference.mat
+      fdtd_solver: True
+      cubic_interpolation: True
+cyl_input:
+  input_file: input_file_13.m
+  obstacle: cyl
   obstacle_radius: 3e-6
+  runs:
+    cyl_bli:
+      reference: fdtd_cyl_bli_reference.mat
+      fdtd_solver: True
+    cyl_cubic:
+      reference: fdtd_cyl_cubic_reference.mat
+      fdtd_solver: True
+      cubic_interpolation: True
