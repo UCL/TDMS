@@ -5,7 +5,7 @@ fs_input:
   runs:
     fs_bli:
       reference: fdtd_fs_bli_reference.mat
-      fdtd_soler: True
+      fdtd_solver: True
     fs_cubic:
       reference: fdtd_fs_cubic_reference.mat
       fdtd_solver: True
