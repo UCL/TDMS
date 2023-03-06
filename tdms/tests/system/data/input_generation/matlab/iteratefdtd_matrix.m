@@ -1,20 +1,35 @@
 %function [fdtdgrid, Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out, Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
 %
 %input_file - file with input configuration information
-%operation  - either 'run', 'filesetup', 'gridsetup' or 'illsetup;. In the case of 'run',
-%             the FDTD simulation is completed. In the case of
-%             'filesetup', a mat file is written to file
-%             outfile. In the case of 'gridsetup' only the FDTD
-%             grid file is setup. In the case of 'illsetup' the illumination
-%             matrices are calculated and saved in matfile given by outfile.
-%outfile - the file that the above mentioned mat file is written to
+%operation  - either 'run', 'filesetup', 'gridsetup' or 'illsetup':
+%
+%       'run': FDTD simulation is directly executed (currently not
+%       supported)
+%
+%       'filesetup': A mat file is written to file outfile, ready
+%       for execution.
+%
+%       'gridsetup': Only the FDTD grid file is setup
+%
+%       'illsetup': The illumination matrices for pulsed
+%       illumination are calculated and saved in matfile given by
+%       outfile.
+%
+%outfile - the filename used to store output, as determined by the
+% particular operation chosen.
+%
 %material_file - the material may be specified as an argument or in
 %the input file. If it is specified by both, the one passed as a
 %function argument is used.
-%ill_file - mat file containing the source field. Source will not
-%be computed if this string is non empty.
+
+%ill_file - mat file containing the source field for either pulsed
+%illumination or time-domain illumination. If using time-domain
+%illumination, this file should contain a struct with two members,
+%exi and eyi. These can be either empty or have dimension
+%(I+Dxl+Dxu+1) x (J+Dyl+Dyu+1) x Nt
 function [fdtdgrid, Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out, Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
 %Edited 24/7/2003 to_l allow for different cell widths in each orthogonal direction
+
 %input the configuration information
 [fid_input,message] = fopen(input_file,'r');
 
@@ -43,7 +58,7 @@ if isempty(material_file)
     clear material_file;
 end
 %now need to_l check that all of the required variables have been set
-variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','intmethod','tdfdir','fieldsample','campssample'};
+variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','intmethod','tdfdir','fieldsample','campssample','usecd'};
 must_abort = 0; %assumes all variables have been defined
 for lvar = 1:length(variables)
     if exist(variables{lvar}) ~= 1
@@ -132,6 +147,9 @@ for lvar = 1:length(variables)
 	    fprintf(1,'Failed to define %s, setting campssample.vertices = [] and campssample.components = []\n',variables{lvar});
 	    campssample.vertices = [];
 	    campssample.components = [];
+	elseif strncmp(variables{lvar},'usecd',5)
+	    fprintf(1,'Failed to define %s, setting it to 1 (meaning the FDTD algorithm will be used)\n',variables{lvar});
+	    usecd=1;
 	else
 	    fprintf(1,'Failed to define %s\n',variables{lvar});
 	    must_abort = 1;
@@ -528,7 +546,7 @@ omega_an = 2*pi*f_an;
 lambda_an = c/(f_an*refractive_index);
 wave_num_an = 2*pi/lambda_an;%wave number in m^-1
 
-fprintf('Initialising source field...\n');
+fprintf('Initialising source field...');
 
 %Isource(:,1,1) = [Ey Ez Hy Hz Ey Ez Hy Hz]
 %Jsource(:,1,1) = [Ex Ez Hx Hz Ex Ez Hx Hz]
@@ -547,6 +565,7 @@ illorigin = illorigin + [Dxl Dyl Dzl];
 %however, if the sourcemode is pulsed then we must reset these
 %values to:
 
+
 if strncmp(sourcemode,'pulsed',6)
     interface.I0(1) = 1;
     interface.J0(1) = 1;
@@ -560,75 +579,290 @@ if strncmp(sourcemode,'pulsed',6)
     interface.K1(2) = 0;
 
     if (interface.K0(2)==0) & K~=0
-	    error('Running in pulsed mode with k0[0]=0, there is no point running');
+	error('Running in pulsed mode with k0[0]=0, there is no point running');
     end
 end
 
-if length(ill_file) > 0 %must have already computed the illumination source
-    fprintf('Loading illumination source from %s\n', ill_file);
-
+if length(ill_file) > 0%must have already computed the illumination source
     data = load(ill_file);
-    assert_are_not_defined(efname, hfname);
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
+    if numel(fieldnames_ill)==3
+	Isource = data.Isource;
+	Jsource = data.Jsource;
+	Ksource = data.Ksource;
+	[mI,nI,oI] = size(Isource);
+	[mJ,nJ,oJ] = size(Jsource);
+	[mK,nK,oK] = size(Ksource);
+	tdfield.exi = [];
+	tdfield.eyi = [];
 
-    if has_ijk_source_matricies(data)
+	%Now make sure that the source matrices have the correct
+	%dimensions
+	if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+	    (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
+	end
+    elseif numel(fieldnames_ill)==2
+%	exi = data.exi;
+%	eyi = data.eyi;
+	tdfield = data;
+	if (interface.I0(2) | interface.I1(2)) & (~isempty(efname)) & (~isempty(hfname))
+	    Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+	else
+	    Isource=[];
+	end
 
-        Isource = data.Isource;
-        Jsource = data.Jsource;
-        Ksource = data.Ksource;
+	if (interface.J0(2) | interface.J1(2)) & (~isempty(efname)) & (~isempty(hfname))
+	    Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
+	else
+	    Jsource = [];
+	end
 
-        tdfield.exi = [];
-        tdfield.eyi = [];
-        assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
+	if (interface.K0(2) | interface.K1(2)) & (~isempty(efname)) & (~isempty(hfname))
+	    Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
+	else
+	    Ksource = [];
+	end
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%If the user has specified field function names, they can
+        %also specify a pulsed field.
+	%
 
-    elseif has_exi_eyi(data)
+	if (~isempty(efname)) & (~isempty(hfname))
+	    %Set up the Isource field. This has to be defined on a 2d array
+	    %over the range (J0,J1)x(K0,K1). We calculate the field values
+	    %assuming an origin for the illumination
+	    i_source = interface.I0(1) - illorigin(1);
+	    j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
+	    k_source = (interface.K0(1):interface.K1(1)) - illorigin(3);
 
-        tdfield = data;
-        assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
 
-        if interface.I0(2) | interface.I1(2)
-            Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-        else
-            Isource=[];
-        end
+	    %Ey, I0
+	    if interface.I0(2)
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Isource(1,:,:) = source_field{2};
 
-        if interface.J0(2) | interface.J1(2)
-            Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-        else
-            Jsource = [];
-        end
+		%Ez, I0
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Isource(2,:,:) = source_field{3};
 
-        if interface.K0(2) | interface.K1(2)
-            Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
-        else
-            Ksource = [];
-        end
+		%Hy, I0
+		[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hy');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Isource(3,:,:) = source_field{2};
 
-    else;
-        error('TDMSException:InvalidIlluminationFile', ...
-             'Illumination file did not have the correct elements. Need either {Isource, Jsoruce, Ksource} or {exi, eyi}');
+
+		%Hz, I0
+		[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hz');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Isource(4,:,:) = source_field{3};
+	    end
+
+	    i_source = interface.I1(1) - illorigin(1);
+	    %Ey, I1
+	    if interface.I1(2)
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Isource(5,:,:) = source_field{2};
+
+		%Ez, I1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Isource(6,:,:) = source_field{3};
+
+		%Hy, I1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Isource(7,:,:) = source_field{2};
+
+		%Hz, I1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Isource(8,:,:) = source_field{3};
+	    end
+
+	    %Set up the Jsource field. This has to be defined on a 2d array
+	    %over the range (I0,I1)x(K0,K1). We calculate the field values
+	    %assuming an origin for the illumination
+	    i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
+	    j_source = interface.J0(1) - illorigin(2);
+	    k_source = (interface.K0(1):interface.K1(1))- illorigin(3);
+
+
+	    %Ey, J0
+	    if interface.J0(2)
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Jsource(1,:,:) = source_field{1};
+
+		%Ez, J0
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Jsource(2,:,:) = source_field{3};
+
+		%Hy, J0
+		[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hx');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Jsource(3,:,:) = source_field{1};
+
+		%Hz, J0
+		[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hz');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Jsource(4,:,:) = source_field{3};
+	    end
+
+	    j_source = interface.J1(1) - illorigin(2);
+	    %Ey, J1
+	    if interface.J1(2)
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Jsource(5,:,:) = source_field{1};
+
+		%Ez, J1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Jsource(6,:,:) = source_field{3};
+
+		%Hy, J1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Jsource(7,:,:) = source_field{1};
+
+		%Hz, J1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Jsource(8,:,:) = source_field{3};
+	    end
+
+	    %Set up the Ksource field. This has to be defined on a 2d array
+	    %over the range (I0,I1)x(J0,J1). We calculate the field values
+	    %assuming an origin for the illumination
+	    i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
+	    j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
+	    k_source = interface.K0(1) - illorigin(3);
+
+
+	    %Ex, K0
+	    if interface.K0(2)
+
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+		z = z + z_launch;
+		%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
+		[X,Y,Z] = ndgrid(x,y,z);
+		if usecd
+		    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		else
+		    eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+		end
+		Ksource(1,:,:) = source_field{1};
+
+		%Ey, K0
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		if usecd
+		    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		else
+		    eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+		end
+		Ksource(2,:,:) = source_field{2};
+		%Hx, K0
+		[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Ksource(3,:,:) = source_field{1};
+
+		%Hy, K0
+		[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hy');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Ksource(4,:,:) = source_field{2};
+	    end
+	    k_source = interface.K1(1) - illorigin(3);
+	    %Ex, K1
+	    if interface.K1(2)
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Ksource(5,:,:) = source_field{1};
+
+		%Ey, K1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+		Ksource(6,:,:) = source_field{2};
+
+		%Hx, K1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Ksource(7,:,:) = source_field{1};
+
+		%Hy, K1
+		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
+		z = z + z_launch;
+		[X,Y,Z] = ndgrid(x,y,z);
+		eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+		Ksource(8,:,:) = source_field{2};
+	    end
+	end
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
-
-else
-    assert_are_defined(efname, hfname);
-    fprintf('Creating Isource, Jsource, Ksource...');
-
+else%an illumination file has not been specified
     tdfield.exi = [];tdfield.eyi = [];
-    if interface.I0(2) | interface.I1(2)
+    if (interface.I0(2) | interface.I1(2))  & (~isempty(efname)) & (~isempty(hfname))
 	Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 	Isource=[];
     end
 
-    if interface.J0(2) | interface.J1(2)
+    if (interface.J0(2) | interface.J1(2))  & (~isempty(efname)) & (~isempty(hfname))
 	Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 	Jsource = [];
     end
 
-    if interface.K0(2) | interface.K1(2)
+    if (interface.K0(2) | interface.K1(2))  & (~isempty(efname)) & (~isempty(hfname))
 	Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
     else
 	Ksource = [];
@@ -644,7 +878,7 @@ else
 
 
     %Ey, I0
-    if interface.I0(2)
+    if interface.I0(2) & (~isempty(efname)) & (~isempty(hfname))
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
@@ -676,7 +910,7 @@ else
 
     i_source = interface.I1(1) - illorigin(1);
     %Ey, I1
-    if interface.I1(2)
+    if interface.I1(2) & (~isempty(efname)) & (~isempty(hfname))
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
@@ -714,7 +948,7 @@ else
 
 
     %Ey, J0
-    if interface.J0(2)
+    if interface.J0(2) & (~isempty(efname)) & (~isempty(hfname))
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
@@ -745,7 +979,7 @@ else
 
     j_source = interface.J1(1) - illorigin(2);
     %Ey, J1
-    if interface.J1(2)
+    if interface.J1(2) & (~isempty(efname)) & (~isempty(hfname))
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
@@ -783,20 +1017,28 @@ else
 
 
     %Ex, K0
-    if interface.K0(2)
+    if interface.K0(2) & (~isempty(efname)) & (~isempty(hfname))
 
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 	z = z + z_launch;
 	%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
 	[X,Y,Z] = ndgrid(x,y,z);
-	eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+	if usecd
+	    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+	else
+	    eval(sprintf('source_field = %s(X,Y,Z=delta.z/2);',efname ));
+	end
 	Ksource(1,:,:) = source_field{1};
 
 	%Ey, K0
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
-	eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+	if usecd
+	    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+	else
+	    eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+	end
 	Ksource(2,:,:) = source_field{2};
 	%Hx, K0
 	[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
@@ -814,7 +1056,7 @@ else
     end
     k_source = interface.K1(1) - illorigin(3);
     %Ex, K1
-    if interface.K1(2)
+    if interface.K1(2) & (~isempty(efname)) & (~isempty(hfname))
 	[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 	z = z + z_launch;
 	[X,Y,Z] = ndgrid(x,y,z);
@@ -842,11 +1084,8 @@ else
 	eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
 	Ksource(8,:,:) = source_field{2};
     end
-
-    fprintf('Done\n');
 end
-
-fprintf('Done initialising source field\n');
+fprintf('Done\n');
 
 if strncmp(operation,'illsetup',8)%save the source terms
     save(outfile,'Isource','Jsource','Ksource');
@@ -972,7 +1211,7 @@ else
 
     [m_outputs,n_outputs] = size(outputs_array);
     m_outputs
-    Nt
+Nt
     accumulate_output = cell(m_outputs, Nt);
 
     %now set the fdtdgrid to an initial state
@@ -1280,7 +1519,7 @@ else
 	     vers = version;
 	     campssample2 = campssample;
 	     if strncmp(operation,'filesetup',9)
-		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','intmethod','tdfield','tdfdir','fieldsample','campssample','-v7.3');%,'-V6');%'-v7.3');%,'-V6');
+		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','intmethod','tdfield','tdfdir','fieldsample','campssample','usecd','-v7.3');%,'-V6');%'-v7.3');%,'-V6');
 	     else
 		 save(outfile,'fdtdgrid');
 	     end
@@ -1321,90 +1560,4 @@ else
 	     facets = [];
 	     maxresfield = [];
 	 end
-end
-
-end
-
-function result = has_ijk_source_matricies(data)
-    fields = fieldnames(data);
-    if ~(numel(fields) == 3)
-        result = false;
-    else
-        result = strcmp(fields(1), 'Isource') & ...
-                 strcmp(fields(2), 'Jsource') & ...
-                 strcmp(fields(3), 'Ksource');
-    end
-end
-
-
-function result = has_exi_eyi(data)
-    fields = fieldnames(data);
-    if ~(numel(fields) == 2)
-        result = false;
-    else
-        result = strcmp(fields(1), 'exi') & ...
-                 strcmp(fields(2), 'eyi');
-    end
-end
-
-
-function assert_are_not_defined(efname, hfname)
-    assert(strlength(efname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'An efield should not be defined. Set efname to an empty string');
-    assert(strlength(hfname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'A hfield should not be defined. Set hfname to an empty string');
-end
-
-function assert_are_defined(efname, hfname)
-    assert(strlength(efname) > 0, ...
-        'TDMSException:IncompatibleInput', 'An efname must be defined');
-    assert(strlength(hfname) > 0, ...
-        'TDMSException:IncompatibleInput', 'A hfname must be defined');
-end
-
-function assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface)
-
-    [mI,nI,oI] = size(Isource);
-    [mJ,nJ,oJ] = size(Jsource);
-    [mK,nK,oK] = size(Ksource);
-
-    %Now make sure that the source matrices have the correct dimensions
-    if length(Isource) > 0  % Check that the Isource dimensions are correct
-        if ~( (mI==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Isource read in from %s might has incorrect dimenions');
-        end
-    end
-
-    if length(Jsource) > 0  % Check that the Jsource dimensions are correct
-        if ~( (mJ==8) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Jsource read in from %s might has incorrect dimenions');
-        end
-    end
-
-    if length(Ksource) > 0  % Check that the Ksource dimensions are correct
-        if ~( (mK==8) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Ksource read in from %s has incorrect dimenions');
-        end
-    end
-end
-
-function assert_exi_eyi_have_correct_dimensions(exi, eyi, I_tot, J_tot, Nt)
-
-    [mX,nX,oX] = size(exi);
-    [mY,nY,oY] = size(eyi);
-
-    if ~(mX == I_tot + 1 & nX == J_tot + 1 & oX == Nt)
-        error('TDMSException:InvalidIlluminationDimensions',...
-              sprintf('exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
-    end
-
-    if ~(mY == I_tot + 1 & nY == J_tot + 1 & oY == Nt)
-        error('TDMSException:InvalidIlluminationDimensions',...
-              sprintf('eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
-    end
 end

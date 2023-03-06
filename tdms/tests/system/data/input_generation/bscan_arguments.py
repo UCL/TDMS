@@ -71,7 +71,9 @@ class BScanArguments:
                 )
         # Set required fields, which exist if we got to here without throwing an error
         # Input file [check if file exists beforehand, and preppend the absolute path to the expected location]
-        path_to_input_file = Path(LOCATION_OF_THIS_FILE, config["input_file"])
+        path_to_input_file = Path(
+            LOCATION_OF_THIS_FILE, "input_files", config["input_file"]
+        )
         if not path_to_input_file.exists():
             raise RuntimeError(f"{path_to_input_file} does not exist")
         else:

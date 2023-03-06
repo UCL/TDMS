@@ -2,7 +2,7 @@
 
 **The system tests are currently being overhauled to provide a better workflow. This readme is subject to abrupt changes and updates whilst we perform this process.**
 
-The system tests for `tdms` are specified through configuration files in the `data/input_generation/` directory, (creatively) named `config_XX.yaml`. The `XX` in the configuration file name should match the ID of the system tests, which are named `arc_XX`, and should also match the `test_id` field in the configuration file itself (see [below]()). The _reference outputs_ or _reference data_ are a collection of `.mat` files that are produced by the `tdms` executable when provided a set collection of _reference inputs_, which are also `.mat` files. These reference inputs are in turn generated via a collection of `MATLAB` scripts and functions, which build inputs such as the incident electric field and computational grid as specified in the documentation.
+The system tests for `tdms` are specified through configuration files in the `config_files` directory, (creatively) named `config_XX.yaml`. The `XX` in the configuration file name should match the ID of the system tests, which are named `arc_XX`, and should also match the `test_id` field in the configuration file itself (see [below](#test-config-files)). The _reference outputs_ or _reference data_ are a collection of `.mat` files that are produced by the `tdms` executable when provided a set collection of _reference inputs_, which are also `.mat` files. These reference inputs are in turn generated via a collection of `MATLAB` scripts and functions, which build inputs such as the incident electric field and computational grid as specified in the documentation.
 
 Each system test is named by the aforementioned `arc_XX` convention. A given system test `arc_XX` itself may consist of several _executions_ (or _runs_) of the `tdms` executable. Typically every system test has at least two runs; one for when there is no scattering object present, and one for when there is an obstacle. Other causes of additional runs might be due to the use of band-limited interpolation over cubic interpolation, for example. Each of these runs in turn has a reference input and reference output.
 
@@ -15,7 +15,7 @@ mat_file_1:
   # The name of a .mat input file that needs to be (re) generated for this test to execute
   # The remainder of this block contains properties that only apply when generating, or running tests using mat_file_1.mat as an input to tdms
 
-  # The file that is passed to iteratefdtd_matrix in run_bscan
+  # The file that is passed to iteratefdtd_matrix in run_bscan. These paths are relative to the data/input_generation/input_files directory
   input_file: input_file_name.m
   # One of fs (freespace), sph (sphere), cyl (cylinder), or sc (point-source at the origin). The shape of the scattering obstacle.
   obstacle: fs
