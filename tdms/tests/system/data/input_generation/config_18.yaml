@@ -1,0 +1,18 @@
+test_id: "18"
+pstd_run:
+  input_file: input_file_18.m
+  obstacle: cyl
+  obstacle_radius: 2e-6
+  calc_tdfield: True # redundant?
+  runs:
+    pstd_run:
+      reference: pstd_cyl.mat
+fdtd_run:
+  input_file: input_file_18_nousecd.m
+  obstacle: cyl
+  obstacle_radius: 2e-6
+  calc_tdfield: True # redundant?
+  runs:
+    fdtd_run:
+      reference: fdtd_cyl.mat
+      fdtd_solver: True
