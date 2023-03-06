@@ -135,16 +135,13 @@ void LoopVariables::optimise_loop_J_range(const ObjectsFromInfile &data,
   bool ksource_nz[4];//< "k source non-zero"
   for (int icomp = 0; icomp < 4; icomp++) { ksource_nz[icomp] = false; }
 
-  if (data.IJK_tot.j == 0) {
-    for (int icomp = 0; icomp < 4; icomp++)
+  if ((data.IJK_tot.j == 0) && !(data.Ksource.is_empty())) {
+    for (int icomp = 0; icomp < 4; icomp++) {
       for (int ki = 0; ki < (data.IJK_tot.i + 1); ki++) {
-        ksource_nz[icomp] =
-                ksource_nz[icomp] ||
-                (fabs(data.Ksource.imag[0][ki - (data.I0.index)][icomp]) >
-                 non_zero_tol) ||
-                (fabs(data.Ksource.real[0][ki - (data.I0.index)][icomp]) >
-                 non_zero_tol);
+        ksource_nz[icomp] = abs(data.Ksource[{0, ki - data.I0.index, icomp}]) >
+                            non_zero_tol;
       }
+    }
   }
   /* We now know the following information:
     Ey and Hx receive an input from the source condition only if ksource_nz[2]

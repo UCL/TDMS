@@ -57,9 +57,9 @@ public:
   Source(const mxArray *ptr, int dim1, int dim2, const std::string &name);
 
   /** @brief Check if the source term is empty (true) or not (false) */
-  bool is_empty() { return no_data_stored; }
+  bool is_empty() const { return no_data_stored; }
 
-  std::complex<double> operator[](SourceIndex index) {
+  std::complex<double> operator[](SourceIndex index) const {
     return std::complex<double>(
             real[index.cell_c][index.cell_b][index.split_field_ID],
             imag[index.cell_c][index.cell_b][index.split_field_ID]);
