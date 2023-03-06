@@ -65,24 +65,6 @@ public:
   static bool is_a_flag_argument(std::string arg);
 
   /**
-   * @brief Check whether we were asked to use the finite-difference method.
-   * (the default is pseudospectral.)
-   *
-   * @return true if provided '-fd' or '--finite-difference'
-   * @return false otherwise
-   */
-  bool finite_difference() const;
-
-  /**
-   * @brief Check whether we were asked to use the cubic interpolation schemes
-   * over the BLi schemes (default is no)
-   *
-   * @return true if provided '-nbli' or '--no-band-limited'
-   * @return false otheriwse
-   */
-  bool cubic_interpolation() const;
-
-  /**
    * @brief Gets the input filename
    *
    * @return const char* the input filename
