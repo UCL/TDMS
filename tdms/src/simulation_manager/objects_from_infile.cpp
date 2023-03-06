@@ -182,15 +182,15 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
 }
 
 ObjectsFromInfile::~ObjectsFromInfile() {
-  if (I0.apply || I1.apply) {
+  if ((I0.apply || I1.apply) && !Isource.is_empty()) {
     free_cast_matlab_3D_array(Isource.imag, (K1.index - K0.index + 1));
     free_cast_matlab_3D_array(Isource.real, (K1.index - K0.index + 1));
   }
-  if (J0.apply || J1.apply) {
+  if ((J0.apply || J1.apply) && !Jsource.is_empty()) {
     free_cast_matlab_3D_array(Jsource.imag, (K1.index - K0.index + 1));
     free_cast_matlab_3D_array(Jsource.real, (K1.index - K0.index + 1));
   }
-  if (K0.apply || K1.apply) {
+  if ((K0.apply || K1.apply) && !Ksource.is_empty()) {
     free_cast_matlab_3D_array(Ksource.imag, (J1.index - J0.index + 1));
     free_cast_matlab_3D_array(Ksource.real, (J1.index - J0.index + 1));
   }
