@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include "globals.h"
 #include "mat_io.h"
 #include "matlabio.h"
@@ -55,15 +57,28 @@ public:
     auto ptr_to_intmethod = matGetVariable(mat_file, "intmethod");
     if (ptr_to_intmethod != nullptr) {
       int intmethod = int_cast_from_double_in(ptr_to_intmethod, "intmethod");
-      if (intmethod != 1) { pim = InterpolationMethod::BandLimited; }
+      if (intmethod != 1) {
+        pim = InterpolationMethod::BandLimited;
+        spdlog::info("Using band-limited interpolation where possible");
+      } else {
+        spdlog::info("Restricting to cubic interpolation");
+      }
     }
 
     // Set the solver method
     auto ptr_to_usecd = matGetVariable(mat_file, "usecd");
     if (ptr_to_usecd != nullptr) {
       int usecd = int_cast_from_double_in(ptr_to_usecd, "usecd");
-      if (usecd == 0) { solver_method = SolverMethod::PseudoSpectral; }
+      if (usecd == 0) {
+        solver_method = SolverMethod::PseudoSpectral;
+        spdlog::info("Using pseudospectral method (PSTD)");
+      } else {
+        spdlog::info("Using finite-difference method (FDTD)");
+      }
     }
+
+    // Close the input file
+    matClose(mat_file);
   }
 
   /*! @copydoc solver_method */

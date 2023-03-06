@@ -369,7 +369,7 @@ void SimulationManager::execute() {
 
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
           // FDTD, E_s.xy
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -693,10 +693,10 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.xy
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
         // E_s.xz updates
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 #pragma omp for
           for (k = 1; k < K_tot; k++)
             for (j = 0; j < loop_variables.J_loop_upper_bound_plus_1; j++)
@@ -1003,10 +1003,10 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.xz
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
         // E_s.yx updates
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
           // FDTD, E_s.yx
 #pragma omp for
           for (k = 0; k < (K_tot + 1); k++)
@@ -1341,10 +1341,10 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.yx
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
         // E_s.yz updates
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, E_s.yz
 #pragma omp for
           for (k = 1; k < K_tot; k++)
@@ -1667,13 +1667,13 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.yz
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
       }  // if(params.dimension==THREE || params.dimension==TE)
 
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 #pragma omp for
           // E_s.zx updates
           for (k = 0; k < K_tot; k++)
@@ -1992,7 +1992,7 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.zx
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
       else {
@@ -2102,7 +2102,7 @@ void SimulationManager::execute() {
       }
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
           // FDTD, E_s.zy
 #pragma omp for
           // E_s.zy updates
@@ -2429,7 +2429,7 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, E_s.zy
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
       else {
@@ -2591,7 +2591,7 @@ void SimulationManager::execute() {
 
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.xz
 #pragma omp for
           // H_s.xz updates
@@ -2696,10 +2696,10 @@ void SimulationManager::execute() {
             }
 
           // PSTD, H_s.xz
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
 
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.xy
 #pragma omp for
           // H_s.xy updates
@@ -2808,10 +2808,10 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, H_s.xy
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
 
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.yx
 #pragma omp for
           // H_s.yx updates
@@ -2923,7 +2923,7 @@ void SimulationManager::execute() {
           // PSTD, H_s.yx
         }
 
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.yz
 #pragma omp for
           // H_s.yz updates
@@ -3027,7 +3027,7 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, H_s.yz
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
       else {
@@ -3140,7 +3140,7 @@ void SimulationManager::execute() {
 
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.zy
 #pragma omp for
           // H_s.zy update
@@ -3249,11 +3249,11 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, H_s.zy
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
 
 
-        if (solver_method == SolverMethod::FiniteDifference) {
+        if (settings.solver() == SolverMethod::FiniteDifference) {
 // FDTD, H_s.zx
 #pragma omp for
           // H_s.zx update
@@ -3363,7 +3363,7 @@ void SimulationManager::execute() {
               }
             }
           // PSTD, H_s.zx
-        }// if (solver_method == DerivativeMethod::FiniteDifference) (else
+        }// if (settings.solver() == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
       }  //(params.dimension==THREE || params.dimension==TE)
     }    // end parallel

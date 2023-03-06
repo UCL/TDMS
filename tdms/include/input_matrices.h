@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include <spdlog/spdlog.h>
+
 #include "input_output_names.h"
 #include "mat_io.h"
 #include "matrix_collection.h"
@@ -16,7 +18,7 @@ class InputMatrices {
 private:
   // Pointers to arrays in C++ that will be populated by the MATLAB matrices
   // (default to nullptrs)
-  const mxArray *matrix_pointers[NMATRICES];
+  const mxArray *matrix_pointers[NMATRICES] = {nullptr};
 
   /**
    * @brief Assigns pointers to the matrices in an input file, based on those we
@@ -40,7 +42,10 @@ private:
 
 public:
   InputMatrices() = default;
-
+  InputMatrices(const char *mat_filename) { set_from_input_file(mat_filename); }
+  InputMatrices(const char *mat_filename, const char *gridfile) {
+    set_from_input_file(mat_filename, gridfile);
+  }
 
   /**
    * @brief Fetches the index of matrix_name in the

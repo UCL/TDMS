@@ -7,16 +7,25 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-SimulationManager::SimulationManager(InputMatrices in_matrices,
-                                     SolverMethod _solver_method,
-                                     InterpolationMethod _pim)
-    : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()),
-      solver_method(_solver_method), pim(_pim) {
+SimulationManager::SimulationManager(const char *input_file)
+    : settings(input_file), MATLAB_arrays(input_file),
+      inputs(MATLAB_arrays, settings), FDTD(n_Yee_cells()) {
+  _initialise_non_defaults();
+}
+
+SimulationManager::SimulationManager(const char *input_file,
+                                     const char *gridfile)
+    : settings(input_file), MATLAB_arrays(input_file, gridfile),
+      inputs(MATLAB_arrays, settings), FDTD(n_Yee_cells()) {
+  _initialise_non_defaults();
+}
+
+void SimulationManager::_initialise_non_defaults() {
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
   // setup PSTD variables, and any dependencies there might be
-  if (solver_method == SolverMethod::PseudoSpectral) {
+  if (settings.solver() == SolverMethod::PseudoSpectral) {
     int max_IJK = IJK_tot.max(), n_threads = omp_get_max_threads();
 
     PSTD.set_using_dimensions(IJK_tot);
@@ -31,7 +40,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices,
   H_norm = vector<complex<double>>(inputs.f_ex_vec.size(), 0);
 
   // setup the output object
-  prepare_output(in_matrices["fieldsample"], in_matrices["campssample"]);
+  prepare_output(MATLAB_arrays["fieldsample"], MATLAB_arrays["campssample"]);
 }
 
 void SimulationManager::extract_phasor_norms(int frequency_index, int tind,
@@ -63,7 +72,8 @@ void SimulationManager::prepare_output(const mxArray *fieldsample,
     has been extended so that interpolation is done at the end of the FDTD run
     and also to handle the case of when there is no PML in place more
     appropriatley*/
-  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels, pim);
+  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels,
+                                  settings.interpolation());
   // Setup the ID output
   bool need_Id_memory = (inputs.params.exdetintegral &&
                          inputs.params.run_mode == RunMode::complete);

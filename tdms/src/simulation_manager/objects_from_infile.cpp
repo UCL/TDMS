@@ -7,13 +7,12 @@
 #include "matlabio.h"
 // for init_grid_arrays
 #include "array_init.h"
-#include "input_file_settings.h"
 
 using tdms_math_constants::DCPI;
 
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(
-        InputMatrices matrices_from_input_file, SolverMethod _solver_method,
-        InterpolationMethod _pim)
+        InputMatrices matrices_from_input_file,
+        const InputFileSettings &settings)
     :// initialisation list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
@@ -30,9 +29,9 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       Ei(matrices_from_input_file["tdfield"])             // get tdfield
 {
   // set solver method
-  set_solver_method(_solver_method);
+  set_solver_method_variables(settings.solver());
   // set interpolation methods
-  set_interpolation_method(_pim);
+  set_interpolation_method_variables(settings.interpolation());
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -160,11 +159,9 @@ IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
 }
 
 ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                     SolverMethod _solver_method,
-                                     InterpolationMethod _pim)
+                                     const InputFileSettings &settings)
     :// build the independent objects first
-      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method,
-                                   _pim),
+      IndependentObjectsFromInfile(matrices_from_input_file, settings),
       // Source has no default constructor, and we need information from the
       // Iterator_IndependentObjectsFromInfile first
       Isource(matrices_from_input_file["Isource"], J1.index - J0.index + 1,
