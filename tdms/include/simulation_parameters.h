@@ -43,10 +43,6 @@ enum Dimension {
                       // components
 };
 
-// TODO: Reconcile this with the interpolation method toggle! This is already
-// something we can read in from the input file
-enum InterpolationMethod { null, cubic, band_limited };
-
 /**
  * @brief  A three-tuple of integers that contain the stride in each direction
  * to extract the phasors on.
@@ -102,9 +98,7 @@ public:
   bool air_interface_present = false;
   double air_interface = 0.0;//< TODO: what is this?!
   bool interp_mat_props =
-          false;//< Should the material properties be interpolated?
-  InterpolationMethod interp_method =
-          cubic;           //< Type of surface field interpolation to do
+          false;           //< Should the material properties be interpolated?
   bool exi_present = false;//< Is the time dependent x incident field present?
   bool eyi_present = false;//< Is the time dependent y incident field present?
   SurfaceSpacingStride spacing_stride;//< Surface stride for extracting phasors

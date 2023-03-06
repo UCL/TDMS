@@ -7,12 +7,13 @@
 #include "matlabio.h"
 // for init_grid_arrays
 #include "array_init.h"
+#include "input_file_settings.h"
 
 using tdms_math_constants::DCPI;
 
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(
         InputMatrices matrices_from_input_file, SolverMethod _solver_method,
-        PreferredInterpolationMethods _pim)
+        InterpolationMethod _pim)
     :// initialisation list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
@@ -160,7 +161,7 @@ IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
 
 ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
                                      SolverMethod _solver_method,
-                                     PreferredInterpolationMethods _pim)
+                                     InterpolationMethod _pim)
     :// build the independent objects first
       IndependentObjectsFromInfile(matrices_from_input_file, _solver_method,
                                    _pim),

@@ -9,7 +9,7 @@ using namespace tdms_math_constants;
 
 SimulationManager::SimulationManager(InputMatrices in_matrices,
                                      SolverMethod _solver_method,
-                                     PreferredInterpolationMethods _pim)
+                                     InterpolationMethod _pim)
     : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()),
       solver_method(_solver_method), pim(_pim) {
   // read number of Yee cells

@@ -10,7 +10,7 @@
 
 #include <complex>
 
-#include "globals.h"
+#include "input_file_settings.h"
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
@@ -186,5 +186,5 @@ const InterpolationScheme CBLst = InterpolationScheme(
  */
 const InterpolationScheme &
 best_scheme(int datapts_in_direction, int interpolation_position,
-            PreferredInterpolationMethods interpolation_methods =
-                    PreferredInterpolationMethods::BandLimited);
+            InterpolationMethod interpolation_methods =
+                    InterpolationMethod::BandLimited);
