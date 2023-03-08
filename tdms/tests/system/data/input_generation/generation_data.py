@@ -5,6 +5,7 @@ from typing import Union
 
 import yaml
 from bscan_arguments import BScanArguments
+from matfile_option_edit import MATFileOptionEdit
 from matlab_engine_wrapper import MATLABEngineWrapper
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
@@ -34,6 +35,10 @@ class GenerationData:
     matlab_instance: MATLABEngineWrapper
     # The .mat input files that we will produce
     matfiles_to_produce: list[str]
+    # The .mat files that need to be produced by running run_bscan
+    bscan_matfiles: list[str]
+    # The .mat files that will be produced by adjusting other generated .mat files
+    adjust_matfiles: list[MATFileOptionEdit]
 
     def __init__(
         self,
@@ -54,8 +59,18 @@ class GenerationData:
         # Non-"test_id" fields are the .mat input file names
         self.matfiles_to_produce = list(config.keys())
         self.matfiles_to_produce.remove("test_id")
+        self.bscan_matfiles = []
+        self.adjust_matfiles = []
+        # Now split these into two further lists - those input files which need to be produced via run_bscan, and those that need to be produced by "adjusting" other .mat files we'll generate
+        for mfile in self.matfiles_to_produce:
+            if "adjust" in config[mfile].keys():
+                self.adjust_matfiles.append(
+                    MATFileOptionEdit(self.test_dir, mfile, config[mfile])
+                )
+            else:
+                self.bscan_matfiles.append(mfile)
 
-        # Setup the command from the member variables
+        # Setup the MATLAB call from the information in the bscan_matfiles list
         self.matlab_instance = self._setup_matlab_instance(config)
         return
 
@@ -76,7 +91,7 @@ class GenerationData:
         """Setup the BScan commands that will be run by the engine, using the information in the config file."""
         # This is the list of BScan commands that this config file wants us to run
         bscan_list = []
-        for mat_file in self.matfiles_to_produce:
+        for mat_file in self.bscan_matfiles:
             bscan_list.append(BScanArguments(self.test_dir, mat_file, config[mat_file]))
         # Return a matlab engine that is ready to run each of these commands
         return MATLABEngineWrapper(bscan_list, str(self.test_dir))
@@ -103,12 +118,16 @@ class GenerationData:
         """Generate the input data to the test, as specified by this instance's member values.
 
         Returns the exit code of the sequence of matlab commands that were run."""
-        # ensure that the directory to place the output into exists, or create it otherwise
+        # Ensure that the directory to place the output into exists, or create it otherwise
         self._find_or_create_test_dir()
 
-        # generate the input data for this test
+        # Generate the input data from run_bscan
         self.matlab_instance.run()
 
-        # cleanup auxillary .mat files
+        # Generate the input data via adjustments to .mat files already produced
+        for adjust_file in self.adjust_matfiles:
+            adjust_file.adjust()
+
+        # Cleanup auxillary .mat files
         self._cleanup()
         return
