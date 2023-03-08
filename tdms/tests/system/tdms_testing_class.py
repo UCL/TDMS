@@ -131,7 +131,7 @@ class TDMSSystemTest:
         os.rmdir(self._dir_to_extract_refs_to())
         return
 
-    def perform_all_runs(self) -> list[bool]:
+    def perform_all_runs(self, cleanup_ref_outputs=True) -> list[bool]:
         """Execute all calls to tdms mandated by the runs in this system test, and compare the results to the reference data.
 
         Return a list of bools: True entries indicate a passing run, False entries indicate a failing run
@@ -164,6 +164,7 @@ class TDMSSystemTest:
             run_passes.append(test_passed)
 
         # Cleanup the .mat files we had to copy across
-        self._ref_file_cleanup()
+        if cleanup_ref_outputs:
+            self._ref_file_cleanup()
 
         return run_passes

@@ -8,12 +8,21 @@ Each system test is named by the aforementioned `arc_XX` convention. A given sys
 
 ## Test Config Files
 
-We use `.yaml` files to specify system tests and the parameters that must be passed into them. The syntax that we currently employ, along with an explanation of the expected content of each field/tag, is below.
+We use `.yaml` files to specify system tests and the parameters that must be passed into them. The first key that should be present in an input file is `test_id`, which should have a value of a string that provides the system test with a unique identifier - in our case, `config_XX.yaml`, the configuration file for the system test `arc_XX`, begins with
 ```yaml
-test_id: 'XX' # A string containing the test_id
-mat_file_1:
-  # The name of a .mat input file that needs to be (re) generated for this test to execute
-  # The remainder of this block contains properties that only apply when generating, or running tests using mat_file_1.mat as an input to tdms
+test_id: 'XX'
+```
+Note that the quotes are necessary to ensure that the `test_id` is not interpreted as an `int`, `bool`, etc.
+
+After the `test_id` key, all remaining keys should provide the filenames of the `.mat` input files that need to be produced for this system test to perform all of its runs. There are two ways to declare that a particular `.mat` input file needs to be regenerated; either by providing this information explicitly, or specifying another `.mat` input file to adjust.
+
+### Providing (re)generation information
+
+To declare an input `.mat` file `foo.mat` that needs to be generated, the configuration file should contain the key "`foo`". Within the `foo` value, we then specify additional parameters we need to know before we regenerate the input data. These parameters are detailed below:
+```yaml
+foo:
+  # Declares that the file foo.mat needs to be (re) generated for this test to execute its runs.
+  # The remainder of this block contains properties that only apply when generating, or running tests using foo.mat as an input to tdms
 
   # The file that is passed to iteratefdtd_matrix in run_bscan. These paths are relative to the data/input_generation/input_files directory
   input_file: input_file_name.m
@@ -27,10 +36,14 @@ mat_file_1:
   illsetup: True
   # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
   calc_tdfield: True
+  # One of pstd (pseudo-spectral time domain), fdtd (finite difference time domain). The time-propagation solver method to use. Defaults to fdtd if not present
+  solver_method: pstd
+  # One of cubic (cubic) or bli (band-limited). The interpolation method to use when extracting field values at spatial locations off the computational grid. Defaults to cubic if not present.
+  interpolation: cubic
 
-  # Starts a block which contains the details of all the runs within this system test that use mat_file_1 as their input
+  # This key starts another block, which contains the details of all the runs within this system test that use foo.mat as their input
   runs:
-    # Each key in this block defines the name of one run of tdms, using mat_file_1.mat as the input data
+    # Each key in this block defines the name of one run of tdms, using foo.mat as the input data
     run_name_1:
       # The name of the reference .mat output to compare the output of the local tdms run to.
       reference: reference.mat
@@ -38,8 +51,30 @@ mat_file_1:
       cubic_interpolation: True
       # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
       fdtd_solver: False
-mat_file_2:
-  # Another block that declares another .mat file which needs to be generated, with the same syntax as the block above.
+    run_name_2:
+      # This is another run of tdms using the same foo.mat input
+      reference: reference_2.mat
+      fdtd_solver: False
+```
+
+### "Adjust"-ing another input file
+
+The interpolation method and time-propagation solver methods used by `tdms` are controlled by two particular variables within the input `.mat` file. If one wishes to run `tdms` using the same numerical input data (incident fields, spatial grid, etc) but to toggle one of these options, it is inefficient to run the entire `run_bscan` function again. Instead, one can specify the "`adjust`" key rather than the "`input_file`" key after declaring a `.mat` input file:
+```yaml
+bar:
+  # Declares that the file bar.mat needs to be (re) generated for this test to execute its runs.
+  # The remainder of this block contains properties that only apply when generating, or running tests using bar.mat as an input to tdms
+
+  # The adjust keyword tells the program to copy the .mat input whose name matches the value of this key. In this instance, bar.mat will copy foo.mat, plus any alterations that we specify in the remainder of the block
+  adjust: foo
+  # We can then overwrite the interpolation and solver_method settings that were specified in foo.mat's declaration
+  # Note that if foo.mat _does not_ use the default value for (EG) `interpolation`, you _must_ explicitly specify `interpolation` as the default value here. In an adjust block, the absence of keys provides a default behaviour of "do not change" rather than "reset".
+  interpolation: cubic
+  solver_method: fdtd
+  # We then declare runs using bar.mat as an input in the usual manner
+  runs:
+    bar_run_1:
+      reference: bar_reference.mat
 ```
 
 ## Running the System Tests

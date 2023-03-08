@@ -43,7 +43,7 @@ if isempty(material_file)
     clear material_file;
 end
 %now need to_l check that all of the required variables have been set
-variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','intmethod','tdfdir','fieldsample','campssample'};
+variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','intmethod','tdfdir','fieldsample','campssample','usecd'};
 must_abort = 0; %assumes all variables have been defined
 for lvar = 1:length(variables)
     if exist(variables{lvar}) ~= 1
@@ -132,6 +132,9 @@ for lvar = 1:length(variables)
 	    fprintf(1,'Failed to define %s, setting campssample.vertices = [] and campssample.components = []\n',variables{lvar});
 	    campssample.vertices = [];
 	    campssample.components = [];
+	elseif strncmp(variables{lvar},'usecd',5)
+		fprintf(1,'Failed to define %s, setting it to 1 (FDTD will be used)\n',variables{lvar});
+		usecd = 1;
 	else
 	    fprintf(1,'Failed to define %s\n',variables{lvar});
 	    must_abort = 1;
@@ -1280,7 +1283,7 @@ else
 	     vers = version;
 	     campssample2 = campssample;
 	     if strncmp(operation,'filesetup',9)
-		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','intmethod','tdfield','tdfdir','fieldsample','campssample','-v7.3');%,'-V6');%'-v7.3');%,'-V6');
+		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','intmethod','tdfield','tdfdir','fieldsample','campssample','usecd','-v7.3');
 	     else
 		 save(outfile,'fdtdgrid');
 	     end
