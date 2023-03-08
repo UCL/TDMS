@@ -138,7 +138,7 @@ void LoopVariables::optimise_loop_J_range(const ObjectsFromInfile &data,
   if ((data.IJK_tot.j == 0) && !(data.Ksource.is_empty())) {
     for (int icomp = 0; icomp < 4; icomp++) {
       for (int ki = 0; ki < (data.IJK_tot.i + 1); ki++) {
-        ksource_nz[icomp] = abs(data.Ksource[{0, ki - data.I0.index, icomp}]) >
+        ksource_nz[icomp] = abs(data.Ksource[{icomp, ki - data.I0.index, 0}]) >
                             non_zero_tol;
       }
     }
