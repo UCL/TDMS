@@ -49,7 +49,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
     # Regenerate the input data for arc_{test_id}
     # Error on not successful (hence fail test)
-    print(f"Regenerating input data...", end="")
+    print(f"Regenerating input data...", end="", flush=True)
     regenerate_test(config_file_path)
     print(f"Done")
 
