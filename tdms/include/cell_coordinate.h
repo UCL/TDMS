@@ -19,8 +19,9 @@
  * in each coordinate direction, for example.
  */
 struct ijk {
-  // The values (by dimension) that the object contains
-  int i = 0, j = 0, k = 0;
+  int i = 0,    //!< Value in the i/x direction
+          j = 0,//!< Value in the j/y direction
+          k = 0;//!< Value in the k/z direction
 
   /** @brief Return the maximum of i,j,k */
   int max() const { return std::max(std::max(i, j), k); }
@@ -38,5 +39,5 @@ struct ijk {
 
 /* Synonyms for code readability */
 
-typedef ijk CellCoordinate;//< Index-coordinates (i,j,k) of a Yee cell
-typedef ijk IJKDimensions; //< Holds array dimensions (I_tot, J_tot, K_tot)
+typedef ijk CellCoordinate;//!< Index-coordinates (i,j,k) of a Yee cell
+typedef ijk IJKDimensions; //!< Holds array dimensions (I_tot, J_tot, K_tot)

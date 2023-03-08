@@ -1,6 +1,7 @@
 /**
  * @file dimensions.h
- * @brief
+ * @brief Defines a class that serves as an explicit converter between MATLAB
+ * pointers and array dimensions
  */
 #pragma once
 
@@ -8,9 +9,9 @@
 
 class Dimensions {
 private:
-  int i = 0;
-  int j = 0;
-  int k = 0;
+  int i = 0;//!< Extent of dimension 1
+  int j = 0;//!< Extent of dimension 2
+  int k = 0;//!< Extent of dimension 3
 
   bool are_nd(int n) const { return (bool(i) + bool(j) + bool(k)) == n; }
 

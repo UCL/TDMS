@@ -31,22 +31,26 @@
  */
 class SimulationManager {
 private:
-  ObjectsFromInfile
-          inputs;    //< The input objects that are generated from an input file
-  LoopTimers timers; //< Timers for tracking the execution of the simulation
-  PSTDVariables PSTD;//< PSTD-solver-specific variables
-  FDTDBootstrapper FDTD; //< FDTD bootstrapping variables
-  OutputMatrices outputs;//< Output object that will contain the results of this
-                         // simulation, given the input file
+  /*! The input objects that are generated from an input file */
+  ObjectsFromInfile inputs;
 
-  PreferredInterpolationMethods
-          pim;//< The interpolation methods to use in this simulation
-  SolverMethod solver_method;//< The solver method to use in this simulation
+  LoopTimers timers;    //!< Timers for tracking the execution of the simulation
+  PSTDVariables PSTD;   //!< PSTD-solver-specific variables
+  FDTDBootstrapper FDTD;//!< FDTD bootstrapping variables
 
-  EHVec eh_vec;//< TODO
+  /*! Output object that will contain the results of this simulation, given the
+   * input file */
+  OutputMatrices outputs;
 
-  double ramp_width = 4.;//< Width of the ramp when introducing the waveform in
-                         // steady state mode
+  /*! The solver method to use in this simulation */
+  SolverMethod solver_method;
+  /*! The interpolation methods to use in this simulation */
+  PreferredInterpolationMethods pim;
+
+  EHVec eh_vec;//!< TODO
+
+  /*! Width of the ramp when introducing the waveform in steady state mode */
+  double ramp_width = 4.;
   /**
    * @brief Evaluates the linear ramp function r(t)
    *
@@ -65,10 +69,10 @@ private:
     return std::min(1., t / (ramp_width * period));
   }
 
-  std::vector<std::complex<double>>
-          E_norm;//< Holds the E-field phasors norm at each extraction frequency
-  std::vector<std::complex<double>>
-          H_norm;//< Holds the H-field phasors norm at each extraction frequency
+  /*! Holds the {E,H}-field phasors norm at each extraction frequency */
+  std::vector<std::complex<double>> E_norm;
+  /*! @copydoc E_norm */
+  std::vector<std::complex<double>> H_norm;
   /**
    * @brief Extracts the phasors norms at the given frequency (index)
    *
@@ -87,6 +91,122 @@ private:
    * @param campssample The complex amplitude sample input from the input file
    */
   void prepare_output(const mxArray *fieldsample, const mxArray *campssample);
+
+  /**
+   * @brief Update electric-split field components and current densities AT A
+   * PARTICULAR CELL in steady-state after an E-field timestep has been
+   * performed.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param parallel The axis to which the plane of the Source term is parallel.
+   * EG X = Isource, Y = Jsource, etc
+   * @param C_axis Whether we are updating terms along the C-axis (true) or
+   * B-axis (false) of the Source plane. See Source doc for axis information.
+   * @param zero_plane Whether we are updating terms on the 0-plane (true) or
+   * the 1-plane (false). EG I0 would have this input as true, whereas J1 as
+   * false.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param cell_b,cell_c The coordinates (cell_a, cell_b, cell_c) of the Yee
+   * cell in which we are updating the field. See the Source doc for notation
+   * information.
+   * @param array_ind The index of the various material property arrays that
+   * correspond to this particular Yee cell, and thus update equation.
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
+  void E_source_update_steadystate(double time_H, AxialDirection parallel,
+                                   bool C_axis, bool zero_plane,
+                                   bool is_conductive, int cell_b, int cell_c,
+                                   int array_ind, CurrentDensitySplitField &J_c,
+                                   CurrentDensitySplitField &J_s);
+  /**
+   * @brief Update magnetic-split field components AT A
+   * PARTICULAR CELL in steady-state after an H-field timestep has been
+   * performed.
+   *
+   * @param time_E The time the electric field is currently sitting at
+   * @param parallel The axis to which the plane of the Source term is parallel.
+   * EG X = Isource, Y = Jsource, etc
+   * @param C_axis Whether we are updating terms along the C-axis (true) or
+   * B-axis (false) of the Source plane. See Source doc for axis information.
+   * @param zero_plane Whether we are updating terms on the 0-plane (true) or
+   * the 1-plane (false). EG I0 would have this input as true, whereas J1 as
+   * false.
+   * @param array_ind The index of the various material property arrays that
+   * correspond to this particular Yee cell, and thus update equation.
+   * @param cell_b,cell_c The coordinates (cell_a, cell_b, cell_c) of the Yee
+   * cell in which we are updating the field. See the Source doc for notation
+   * information.
+   */
+  void H_source_update_steadystate(double time_E, AxialDirection parallel,
+                                   bool zero_plane, bool C_axis, int array_ind,
+                                   int cell_b, int cell_c);
+  /**
+   * @brief [E-FIELD UPDATES] Performs updates to the electric-split field
+   * components and current density fields after an E-field timestep has been
+   * performed, in accordance with the I,J, and K-source terms.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
+  void E_source_update_all_steadystate(double time_H, bool is_conductive,
+                                       CurrentDensitySplitField &J_c,
+                                       CurrentDensitySplitField &J_s);
+  /**
+   * @brief [H-FIELD UPDATES] Performs updates to the magnetic-split field
+   * components after an H-field timestep has been performed, in accordance with
+   * the I,J, and K-source terms.
+   *
+   * @param time_E The time the electric field is currently sitting at.
+   */
+  void H_source_update_all_steadystate(double time_E);
+
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Isource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Jsource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc E_source_update_all_steadystate */
+  void E_Ksource_update_steadystate(double time_H, bool is_conductive,
+                                    CurrentDensitySplitField &J_c,
+                                    CurrentDensitySplitField &J_s);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Isource_update_steadystate(double time_E);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Jsource_update_steadystate(double time_E);
+  /*! @copydoc H_source_update_all_steadystate */
+  void H_Ksource_update_steadystate(double time_E);
+
+  /**
+   * @brief [E-FIELD UPDATES] Performs the updates to the electric-split field
+   * components nad current density fields after an E-field timestep has been
+   * performed, in accordance with the source terms.
+   *
+   * @param time_H The time the magnetic field is currently sitting at.
+   * @param is_conductive Whether the medium is conductive (so J_c needs to be
+   * updated)
+   * @param J_c The current density in the conductive medium
+   * @param J_s The current density in the dispersive medium
+   */
+  void update_source_terms_pulsed(double time_H, bool is_conductive,
+                                  CurrentDensitySplitField &J_c,
+                                  CurrentDensitySplitField &J_s);
+  /**
+   * @brief [H-FIELD UPDATES] Performs the updates to the magnetic-split field
+   * components and current density fields after an H-field timestep has been
+   * performed, in accordance with the source terms.
+   *
+   * @param time_E The time the electric field is currently sitting at.
+   * @param tind The current iteration number
+   */
+  void update_source_terms_pulsed(double time_E, int tind);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
