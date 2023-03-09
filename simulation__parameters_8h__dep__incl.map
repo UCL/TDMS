@@ -1,23 +1,23 @@
 <map id="tdms/include/simulation_parameters.h" name="tdms/include/simulation_parameters.h">
-<area shape="rect" id="node1" title="Classes collecting parameters for the simulation." alt="" coords="865,5,1023,45"/>
-<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="1121,93,1255,119"/>
-<area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="275,181,453,207"/>
-<area shape="rect" id="node5" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="613,277,800,317"/>
-<area shape="rect" id="node9" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="1370,269,1529,324"/>
-<area shape="rect" id="node12" href="$fdtd__bootstrapper_8h.html" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="5,174,200,214"/>
-<area shape="rect" id="node21" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="2249,93,2428,119"/>
-<area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="1175,174,1305,214"/>
-<area shape="rect" id="node10" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="1361,372,1538,412"/>
-<area shape="rect" id="node13" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="477,174,619,214"/>
-<area shape="rect" id="node14" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="1329,174,1465,214"/>
-<area shape="rect" id="node16" href="$test___field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="1540,174,1684,214"/>
-<area shape="rect" id="node17" href="$test___field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="1708,174,1929,214"/>
-<area shape="rect" id="node18" href="$test___split_field_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="1953,174,2124,214"/>
-<area shape="rect" id="node19" href="$test___split_field_component_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="644,174,881,214"/>
-<area shape="rect" id="node20" href="$test___t_d_field_exporter2_d_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="906,167,1099,221"/>
-<area shape="rect" id="node11" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="297,277,431,317"/>
-<area shape="rect" id="node6" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="813,372,1022,412"/>
-<area shape="rect" id="node7" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="852,467,983,493"/>
-<area shape="rect" id="node8" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="1015,460,1235,500"/>
-<area shape="rect" id="node15" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="1206,277,1346,317"/>
+<area shape="rect" id="node1" title="Classes collecting parameters for the simulation." alt="" coords="1443,5,1602,45"/>
+<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="874,93,1008,119"/>
+<area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="30,181,207,207"/>
+<area shape="rect" id="node5" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="330,277,517,317"/>
+<area shape="rect" id="node9" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="731,269,890,324"/>
+<area shape="rect" id="node12" href="$fdtd__bootstrapper_8h.html" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="1953,174,2148,214"/>
+<area shape="rect" id="node21" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="2222,93,2401,119"/>
+<area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="231,174,360,214"/>
+<area shape="rect" id="node10" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="856,372,1034,412"/>
+<area shape="rect" id="node13" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="436,174,579,214"/>
+<area shape="rect" id="node14" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="604,174,740,214"/>
+<area shape="rect" id="node16" href="$test___field_8cpp.html" title="Unit tests for the Field class and its subclasses (ElectricField, MagneticField)." alt="" coords="814,174,958,214"/>
+<area shape="rect" id="node17" href="$test___field__interpolation_8cpp.html" title="Tests interpolation of E&#45; and H&#45;fields and compares the errors against MATLAB benchmarks." alt="" coords="1033,174,1254,214"/>
+<area shape="rect" id="node18" href="$test___split_field_8cpp.html" title="Unit tests for the SplitField class and its subclasses (ElectricSplitField, MagneticSplitField)" alt="" coords="1278,174,1449,214"/>
+<area shape="rect" id="node19" href="$test___split_field_component_8cpp.html" title="Unit tests for SplitFieldComponent." alt="" coords="1473,174,1710,214"/>
+<area shape="rect" id="node20" href="$test___t_d_field_exporter2_d_8cpp.html" title="Unit tests for the TDFieldExporter2D class." alt="" coords="1735,167,1928,221"/>
+<area shape="rect" id="node11" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="51,277,186,317"/>
+<area shape="rect" id="node6" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="706,460,915,500"/>
+<area shape="rect" id="node7" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="688,555,818,581"/>
+<area shape="rect" id="node8" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="843,548,1063,588"/>
+<area shape="rect" id="node15" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="567,277,707,317"/>
 </map>

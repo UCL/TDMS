@@ -140,8 +140,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a616a0a2e9edb5ee42374611c2eea777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88c2e1c843986da2cce6a54379466bbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_field.html#a88c2e1c843986da2cce6a54379466bbb">set_phasors</a> (<a class="el" href="class_split_field.html">SplitField</a> &amp;F, int n, double omega, double dt, int Nt)</td></tr>
 <tr class="separator:a88c2e1c843986da2cce6a54379466bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top"><a id="a263a2ebc51f6e0dff6c60138b68c9e82" name="a263a2ebc51f6e0dff6c60138b68c9e82"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add_to_angular_norm</b> (int n, int Nt, <a class="el" href="class_simulation_parameters.html">SimulationParameters</a> &amp;params)</td></tr>
+<tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_field.html#a263a2ebc51f6e0dff6c60138b68c9e82">add_to_angular_norm</a> (int n, int Nt, <a class="el" href="class_simulation_parameters.html">SimulationParameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the phasor_norm of the current field and add it to the current norm-value.  <br /></td></tr>
 <tr class="separator:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bc0c1998f9ff31cb91341fb5400e815"><td class="memItemLeft" align="right" valign="top"><a id="a7bc0c1998f9ff31cb91341fb5400e815" name="a7bc0c1998f9ff31cb91341fb5400e815"></a>
 std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>phasor_norm</b> (double f, int n, double omega, double dt, int Nt)</td></tr>
@@ -284,6 +284,52 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a263a2ebc51f6e0dff6c60138b68c9e82" name="a263a2ebc51f6e0dff6c60138b68c9e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a263a2ebc51f6e0dff6c60138b68c9e82">&#9670;&#160;</a></span>add_to_angular_norm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Field::add_to_angular_norm </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>Nt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_simulation_parameters.html">SimulationParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the phasor_norm of the current field and add it to the current norm-value. </p>
+<p>Note that the calls: add_to_angular_norm(n, Nt, params), and add_to_angular_norm(n % Nt, Nt, params),</p>
+<p>are equivalent up to numerical precision when using n = tind, and Nt = Nsteps as set in the main simulation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>The number of timesteps INTO the current sinusoidal period </td></tr>
+    <tr><td class="paramname">Nt</td><td>The number of timesteps in a sinusoidal period </td></tr>
+    <tr><td class="paramname">params</td><td>The simulation parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aff629336b1c74036e8a9435bd9c65e70" name="aff629336b1c74036e8a9435bd9c65e70"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff629336b1c74036e8a9435bd9c65e70">&#9670;&#160;</a></span>allocate()</h2>
 

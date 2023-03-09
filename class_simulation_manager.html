@@ -186,9 +186,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:aac7ce99dd327acf44036a10089334c12"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#aac7ce99dd327acf44036a10089334c12">linear_ramp</a> (double t)</td></tr>
 <tr class="memdesc:aac7ce99dd327acf44036a10089334c12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates the linear ramp function r(t)  <br /></td></tr>
 <tr class="separator:aac7ce99dd327acf44036a10089334c12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8036a1a95ed44c19ad3e18993a8358b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#af8036a1a95ed44c19ad3e18993a8358b">extract_phasor_norms</a> (int frequency_index, int tind, int Nt)</td></tr>
-<tr class="memdesc:af8036a1a95ed44c19ad3e18993a8358b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the phasors norms at the given frequency (index)  <br /></td></tr>
-<tr class="separator:af8036a1a95ed44c19ad3e18993a8358b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab289a1d3d1d8bc5a5153dfc8a98d2cbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#ab289a1d3d1d8bc5a5153dfc8a98d2cbb">extract_phasor_norms</a> (int frequency_index, unsigned int tind, int Nt)</td></tr>
+<tr class="memdesc:ab289a1d3d1d8bc5a5153dfc8a98d2cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the phasors norms at the given frequency (index)  <br /></td></tr>
+<tr class="separator:ab289a1d3d1d8bc5a5153dfc8a98d2cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72f86d5883b3733a0109178cd04f97bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a72f86d5883b3733a0109178cd04f97bc">prepare_output</a> (const mxArray *fieldsample, const mxArray *campssample)</td></tr>
 <tr class="memdesc:a72f86d5883b3733a0109178cd04f97bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates MATLAB memory blocks that will be iteratively updated in the <a class="el" href="class_simulation_manager.html#ac799adabec9bb78a53b9a67518cc4bfa" title="Run the time-stepping algorithm given the current inputs.">execute()</a> method, and assigns array sizes for writing purposes later.  <br /></td></tr>
 <tr class="separator:a72f86d5883b3733a0109178cd04f97bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -228,6 +228,27 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a078f377f32745a741dd884b263c794a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a078f377f32745a741dd884b263c794a5">update_source_terms_pulsed</a> (double time_E, int tind)</td></tr>
 <tr class="memdesc:a078f377f32745a741dd884b263c794a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">[H-FIELD UPDATES] Performs the updates to the magnetic-split field components and current density fields after an H-field timestep has been performed, in accordance with the source terms.  <br /></td></tr>
 <tr class="separator:a078f377f32745a741dd884b263c794a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaef899d1bce708ba73d8cb70f179a326"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#aaef899d1bce708ba73d8cb70f179a326">check_phasor_convergence</a> (int &amp;dft_counter, <a class="el" href="class_electric_field.html">ElectricField</a> &amp;E_copy)</td></tr>
+<tr class="memdesc:aaef899d1bce708ba73d8cb70f179a326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the phasors have converged in a steady-state simulation.  <br /></td></tr>
+<tr class="separator:aaef899d1bce708ba73d8cb70f179a326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a237669ab1a2fbabcaa09ed30fd8fee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a1a237669ab1a2fbabcaa09ed30fd8fee">extract_phasors</a> (int &amp;dft_counter, unsigned int tind)</td></tr>
+<tr class="memdesc:a1a237669ab1a2fbabcaa09ed30fd8fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the phasors in the volume, on the user-defined surface, and at user-defined vertices.  <br /></td></tr>
+<tr class="separator:a1a237669ab1a2fbabcaa09ed30fd8fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4d591fe58dc9edfe685e2bb073ee1a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a8b4d591fe58dc9edfe685e2bb073ee1a">compute_detector_functions</a> (unsigned int tind, <a class="el" href="class_loop_variables.html">LoopVariables</a> &amp;lv)</td></tr>
+<tr class="memdesc:a8b4d591fe58dc9edfe685e2bb073ee1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the detector function.  <br /></td></tr>
+<tr class="separator:a8b4d591fe58dc9edfe685e2bb073ee1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7622d480f04adf85fc76709efd35ebd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a7622d480f04adf85fc76709efd35ebd2">new_acquisition_period</a> (unsigned int tind)</td></tr>
+<tr class="memdesc:a7622d480f04adf85fc76709efd35ebd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a new acquisition period: zero the angular-norms and field normalisation factors.  <br /></td></tr>
+<tr class="separator:a7622d480f04adf85fc76709efd35ebd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f39398a860032e8ae06beb53fecb1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_manager.html#a45f39398a860032e8ae06beb53fecb1b">end_of_iteration_steps</a> (double &amp;time_of_last_log, unsigned int tind, <a class="el" href="class_electric_field.html">ElectricField</a> &amp;E_copy)</td></tr>
+<tr class="memdesc:a45f39398a860032e8ae06beb53fecb1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run tasks at the end of an iteration, in preparation for the next.  <br /></td></tr>
+<tr class="separator:a45f39398a860032e8ae06beb53fecb1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bdc4428533029a272dac6f393633861"><td class="memItemLeft" align="right" valign="top"><a id="a1bdc4428533029a272dac6f393633861" name="a1bdc4428533029a272dac6f393633861"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_Exy</b> (<a class="el" href="class_loop_variables.html">LoopVariables</a> &amp;lv)</td></tr>
+<tr class="separator:a1bdc4428533029a272dac6f393633861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1be949b6fcd388b2ccce7b2769b84e"><td class="memItemLeft" align="right" valign="top"><a id="ada1be949b6fcd388b2ccce7b2769b84e" name="ada1be949b6fcd388b2ccce7b2769b84e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_Exz</b> (<a class="el" href="class_loop_variables.html">LoopVariables</a> &amp;lv)</td></tr>
+<tr class="separator:ada1be949b6fcd388b2ccce7b2769b84e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -267,6 +288,101 @@ Private Attributes</h2></td></tr>
 <p>Takes in the contents of the input file and produces the output in the outputs member, so that it can be written to the specified output file.</p>
 <p>Attributes are private to avoid external alterations to their content and potential reassignment of MATLAB pointers, resulting in leaking memory. The outputs can be accessed through a fetch-method within <a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a> if necessary. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aaef899d1bce708ba73d8cb70f179a326" name="aaef899d1bce708ba73d8cb70f179a326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaef899d1bce708ba73d8cb70f179a326">&#9670;&#160;</a></span>check_phasor_convergence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SimulationManager::check_phasor_convergence </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>dft_counter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_electric_field.html">ElectricField</a> &amp;&#160;</td>
+          <td class="paramname"><em>E_copy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether the phasors have converged in a steady-state simulation. </p>
+<p>E and H fields are zero'd in this method if convergence is reached. E_copy is updated to hold the converged values in this case.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">dft_counter</td><td>The number of DFTs that have been performed since we began checking for convergence </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">E_copy</td><td>The field array that stores the phasors from the previous iteration. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true If the phasors have converged </dd>
+<dd>
+false Phasors have not converged </dd></dl>
+
+</div>
+</div>
+<a id="a8b4d591fe58dc9edfe685e2bb073ee1a" name="a8b4d591fe58dc9edfe685e2bb073ee1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4d591fe58dc9edfe685e2bb073ee1a">&#9670;&#160;</a></span>compute_detector_functions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::compute_detector_functions </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>tind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_loop_variables.html">LoopVariables</a> &amp;&#160;</td>
+          <td class="paramname"><em>lv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the detector function. </p>
+<p>Presumably this is the functional form of the fields/phasors at the detector positions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tind</td><td>The current iteraton number </td></tr>
+    <tr><td class="paramname">lv</td><td>Variables required from the main loop </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="abcc495dd63ee1f6f53cf97dbd2b363d8" name="abcc495dd63ee1f6f53cf97dbd2b363d8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abcc495dd63ee1f6f53cf97dbd2b363d8">&#9670;&#160;</a></span>E_Isource_update_steadystate()</h2>
 
@@ -611,6 +727,63 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a45f39398a860032e8ae06beb53fecb1b" name="a45f39398a860032e8ae06beb53fecb1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f39398a860032e8ae06beb53fecb1b">&#9670;&#160;</a></span>end_of_iteration_steps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::end_of_iteration_steps </td>
+          <td>(</td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>time_of_last_log</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>tind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_electric_field.html">ElectricField</a> &amp;&#160;</td>
+          <td class="paramname"><em>E_copy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run tasks at the end of an iteration, in preparation for the next. </p>
+<p>These tasks are:</p><ul>
+<li>Write to the log with the field residual if it has been long enough since the last write</li>
+<li>Report on possible convergence failure (and set outputs accordingly)</li>
+<li>Export fields if at a suitable iteration number</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">time_of_last_log</td><td>Time since we last wrote to the log file. If we write to the log file whilst running this method, this value is updated to the time of writing. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tind</td><td>The current iteration number. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">E_copy</td><td>The object that is storing the phasors from the previous iteration, for use in convergence checking. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ac799adabec9bb78a53b9a67518cc4bfa" name="ac799adabec9bb78a53b9a67518cc4bfa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac799adabec9bb78a53b9a67518cc4bfa">&#9670;&#160;</a></span>execute()</h2>
 
@@ -634,8 +807,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="af8036a1a95ed44c19ad3e18993a8358b" name="af8036a1a95ed44c19ad3e18993a8358b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8036a1a95ed44c19ad3e18993a8358b">&#9670;&#160;</a></span>extract_phasor_norms()</h2>
+<a id="ab289a1d3d1d8bc5a5153dfc8a98d2cbb" name="ab289a1d3d1d8bc5a5153dfc8a98d2cbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab289a1d3d1d8bc5a5153dfc8a98d2cbb">&#9670;&#160;</a></span>extract_phasor_norms()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -652,7 +825,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>tind</em>, </td>
         </tr>
         <tr>
@@ -680,6 +853,52 @@ Private Attributes</h2></td></tr>
     <tr><td class="paramname">frequency_index</td><td>The index of the frequency (in inputs.f_ex_vec) to extract at </td></tr>
     <tr><td class="paramname">tind</td><td>The current timestep </td></tr>
     <tr><td class="paramname">Nt</td><td>The number of timesteps in a sinusoidal period </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1a237669ab1a2fbabcaa09ed30fd8fee" name="a1a237669ab1a2fbabcaa09ed30fd8fee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a237669ab1a2fbabcaa09ed30fd8fee">&#9670;&#160;</a></span>extract_phasors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::extract_phasors </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>dft_counter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>tind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Extracts the phasors in the volume, on the user-defined surface, and at user-defined vertices. </p>
+<p>If the user has not requested one or more of these extraction locations, the corresponding steps are skipped. If the RunMode is not complete, then this step is always bypassed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dft_counter</td><td>The number of DFTs that have been performed since we began checking for convergence </td></tr>
+    <tr><td class="paramname">tind</td><td>The current iteration number </td></tr>
   </table>
   </dd>
 </dl>
@@ -944,6 +1163,42 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
+
+</div>
+</div>
+<a id="a7622d480f04adf85fc76709efd35ebd2" name="a7622d480f04adf85fc76709efd35ebd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7622d480f04adf85fc76709efd35ebd2">&#9670;&#160;</a></span>new_acquisition_period()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimulationManager::new_acquisition_period </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>tind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Begin a new acquisition period: zero the angular-norms and field normalisation factors. </p>
+<p>Each time a new acquisition period of harmonic illumination begins, all complex amplitudes (volume, surface etc.) are set back to 0. This is because the discrete Fourier transforms used to acquire these complex amplitudes starts again.</p>
+<p>In particular, the returned complex amplitudes will have been acquired during a single acquisition period of harmonic illumination. Note that the acquisition period is actually three periods of the harmonic waves' fundamental period.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tind</td><td>The current iteration number </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1343,7 +1598,11 @@ Private Attributes</h2></td></tr>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/simulation_manager/<a class="el" href="simulation__manager_8h_source.html">simulation_manager.h</a></li>
+<li>tdms/src/simulation_manager/execute_detector_subfunctions.cpp</li>
+<li>tdms/src/simulation_manager/execute_misc_subfunctions.cpp</li>
+<li>tdms/src/simulation_manager/execute_phasor_subfunctions.cpp</li>
 <li>tdms/src/simulation_manager/<a class="el" href="execute__simulation_8cpp.html">execute_simulation.cpp</a></li>
+<li>tdms/src/simulation_manager/execute_update_Ex_split.cpp</li>
 <li>tdms/src/simulation_manager/simulation_manager.cpp</li>
 <li>tdms/src/simulation_manager/source_updates_pulsed.cpp</li>
 <li>tdms/src/simulation_manager/source_updates_steadystate.cpp</li>

@@ -2,6 +2,7 @@ var class_field =
 [
     [ "Field", "class_field.html#a49946f632ba55deabf6bc8cd5f100225", null ],
     [ "Field", "class_field.html#aebcda2e27b2a7abf93642e35bfd247dc", null ],
+    [ "add_to_angular_norm", "class_field.html#a263a2ebc51f6e0dff6c60138b68c9e82", null ],
     [ "allocate", "class_field.html#aff629336b1c74036e8a9435bd9c65e70", null ],
     [ "allocate_and_zero", "class_field.html#a15784ebeb6582788e6e6cd732f5dfc26", null ],
     [ "interpolate_over_range", "class_field.html#a9fb4dd9f724a61002b48057a9b174010", null ],
