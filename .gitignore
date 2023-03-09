@@ -2,6 +2,7 @@
 **build/
 **cmake-build**
 **.o
+compile_commands.json
 
 # pdf and documentation output
 **doc/masterdoc.pdf
