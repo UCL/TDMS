@@ -16,8 +16,16 @@
 #include "output_matrices/output_matrices.h"
 #include "simulation_manager/fdtd_bootstrapper.h"
 #include "simulation_manager/loop_timers.h"
+#include "simulation_manager/loop_variables.h"
 #include "simulation_manager/objects_from_infile.h"
 #include "simulation_manager/pstd_variables.h"
+
+// Whether or not to time execution of loop subtasks
+#define TIME_EXEC false
+// Whether or not to time the main loop execution
+#define TIME_MAIN_LOOP true
+// Threshold used to terminate the steady state iterations
+#define TOL 1e-6
 
 /**
  * @brief Manages the physics of TDMS and the simulation loop itself.
@@ -81,7 +89,7 @@ private:
    * @param tind The current timestep
    * @param Nt The number of timesteps in a sinusoidal period
    */
-  void extract_phasor_norms(int frequency_index, int tind, int Nt);
+  void extract_phasor_norms(int frequency_index, unsigned int tind, int Nt);
 
   /**
    * @brief Creates MATLAB memory blocks that will be iteratively updated in the
@@ -207,6 +215,87 @@ private:
    * @param tind The current iteration number
    */
   void update_source_terms_pulsed(double time_E, int tind);
+
+  /* execute() subfunctions to break up main loop */
+
+  /**
+   * @brief Checks whether the phasors have converged in a steady-state
+   * simulation.
+   *
+   * E and H fields are zero'd in this method if convergence is reached. E_copy
+   * is updated to hold the converged values in this case.
+   *
+   * @param[inout] dft_counter The number of DFTs that have been performed since
+   * we began checking for convergence
+   * @param[inout] E_copy The field array that stores the phasors from the
+   * previous iteration.
+   * @return true If the phasors have converged
+   * @return false Phasors have not converged
+   */
+  bool check_phasor_convergence(int &dft_counter, ElectricField &E_copy);
+  /**
+   * @brief Extracts the phasors in the volume, on the user-defined surface, and
+   * at user-defined vertices.
+   *
+   * If the user has not requested one or more of these extraction locations,
+   * the corresponding steps are skipped. If the RunMode is not complete, then
+   * this step is always bypassed.
+   *
+   * @param dft_counter The number of DFTs that have been performed since we
+   * began checking for convergence
+   * @param tind The current iteration number
+   */
+  void extract_phasors(int &dft_counter, unsigned int tind);
+  /**
+   * @brief Computes the detector function.
+   *
+   * Presumably this is the functional form of the fields/phasors at the
+   * detector positions.
+   *
+   * @param tind The current iteraton number
+   * @param lv Variables required from the main loop
+   */
+  void compute_detector_functions(unsigned int tind, LoopVariables &lv);
+  /**
+   * @brief Begin a new acquisition period: zero the angular-norms and field
+   * normalisation factors.
+   *
+   * Each time a new acquisition period of harmonic illumination begins, all
+   * complex amplitudes (volume, surface etc.) are set back to 0. This is
+   * because the discrete Fourier transforms used to acquire these complex
+   * amplitudes starts again.
+   *
+   * In particular, the returned complex amplitudes will have been acquired
+   * during a single acquisition period of harmonic illumination. Note that the
+   * acquisition period is actually three periods of the harmonic waves'
+   * fundamental period.
+   *
+   * @param tind The current iteration number
+   */
+  void new_acquisition_period(unsigned int tind);
+  /**
+   * @brief Run tasks at the end of an iteration, in preparation for the next.
+   *
+   * These tasks are:
+   * - Write to the log with the field residual if it has been long enough since
+   * the last write
+   * - Report on possible convergence failure (and set outputs accordingly)
+   * - Export fields if at a suitable iteration number
+   *
+   * @param[inout] time_of_last_log Time since we last wrote to the log file. If
+   * we write to the log file whilst running this method, this value is updated
+   * to the time of writing.
+   * @param[in] tind The current iteration number.
+   * @param[inout] E_copy The object that is storing the phasors from the
+   * previous iteration, for use in convergence checking.
+   */
+  void end_of_iteration_steps(double &time_of_last_log, unsigned int tind,
+                              ElectricField &E_copy);
+
+  /* execute() subfunctions that time-propagate fields */
+
+  void update_Exy(LoopVariables &lv);
+  void update_Exz(LoopVariables &lv);
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,

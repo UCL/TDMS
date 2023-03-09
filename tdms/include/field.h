@@ -308,6 +308,21 @@ public:
   void set_phasors(SplitField &F, int n, double omega, double dt, int Nt);
 
   // TODO: Docstring
+  /**
+   * @brief Compute the phasor_norm of the current field and add it to the
+   * current norm-value.
+   *
+   * Note that the calls:
+   * add_to_angular_norm(n, Nt, params), and
+   * add_to_angular_norm(n % Nt, Nt, params),
+   *
+   * are equivalent up to numerical precision when using n = tind, and Nt =
+   * Nsteps as set in the main simulation.
+   *
+   * @param n The number of timesteps INTO the current sinusoidal period
+   * @param Nt The number of timesteps in a sinusoidal period
+   * @param params The simulation parameters
+   */
   void add_to_angular_norm(int n, int Nt, SimulationParameters &params);
 
   // TODO: Docstring
