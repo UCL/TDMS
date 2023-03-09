@@ -12,8 +12,9 @@
 
 #include "arrays.h"
 #include "cell_coordinate.h"
-#include "globals.h"
+#include "input_matrices.h"
 #include "output_matrices/output_matrices.h"
+#include "settings_in_input_file.h"
 #include "simulation_manager/fdtd_bootstrapper.h"
 #include "simulation_manager/loop_timers.h"
 #include "simulation_manager/objects_from_infile.h"
@@ -31,6 +32,13 @@
  */
 class SimulationManager {
 private:
+  /*! Settings that are read from the input file, which affect the manner in
+   * which the simulation runs */
+  SettingsInInputFile settings;
+
+  /*! Pointers to MATLAB-native structures that contain input information */
+  InputMatrices MATLAB_arrays;
+
   /*! The input objects that are generated from an input file */
   ObjectsFromInfile inputs;
 
@@ -42,12 +50,14 @@ private:
    * input file */
   OutputMatrices outputs;
 
-  /*! The solver method to use in this simulation */
-  SolverMethod solver_method;
-  /*! The interpolation methods to use in this simulation */
-  PreferredInterpolationMethods pim;
-
   EHVec eh_vec;//!< TODO
+
+  /**
+   * @brief During initialisation, setup member variables whose default
+   * constructor options need to be changed based on other inputs recieved from
+   * the input file.
+   */
+  void _initialise_non_defaults();
 
   /*! Width of the ramp when introducing the waveform in steady state mode */
   double ramp_width = 4.;
@@ -209,8 +219,9 @@ private:
   void update_source_terms_pulsed(double time_E, int tind);
 
 public:
-  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
-                    PreferredInterpolationMethods _pim);
+  SimulationManager() = default;
+  SimulationManager(const char *input_file);
+  SimulationManager(const char *input_file, const char *gridfile);
 
   /** @brief Fetch the number of Yee cells in each dimension */
   IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }

@@ -80,7 +80,7 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
 
 void OutputMatrices::setup_EH_and_gridlabels(
         const SimulationParameters &params, const GridLabels &input_grid_labels,
-        PreferredInterpolationMethods pim) {
+        InterpolationMethod pim) {
   // set the interpolation methods
   set_interpolation_methods(pim);
 

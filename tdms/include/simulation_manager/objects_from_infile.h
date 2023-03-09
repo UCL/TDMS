@@ -17,6 +17,7 @@
 #include "grid_labels.h"
 #include "input_matrices.h"
 #include "interface.h"
+#include "settings_in_input_file.h"
 #include "shapes.h"
 #include "simulation_parameters.h"
 #include "source.h"
@@ -36,12 +37,13 @@
  */
 class IndependentObjectsFromInfile {
 public:
-  SolverMethod
-          solver_method;//< Either PSTD (default) or FDTD, the solver method
-  int skip_tdf;         //< Either 1 if we are using PSTD, or 6 if using FDTD
-  PreferredInterpolationMethods interpolation_methods =
-          BandLimited;//< Either band_limited or cubic, the preferred
-                      // interpolation methods
+  /*! Either FDTD (default) or PSTD, the solver method*/
+  SolverMethod solver_method;
+  /*! Either 1 if we are using PSTD, or 6 if using FDTD */
+  int skip_tdf;
+  /*! Either cubic (default) or band-limited, the preferred interpolation
+   * methods */
+  InterpolationMethod i_method = Cubic;
 
   SimulationParameters params;//< The parameters for this simulation
 
@@ -80,20 +82,15 @@ public:
   int Nsteps;//!< Number of dfts to perform before checking for phasor
              //!< convergence
 
-  IndependentObjectsFromInfile(
-          InputMatrices matrices_from_input_file,
-          SolverMethod _solver_method = SolverMethod::PseudoSpectral,
-          PreferredInterpolationMethods _pim =
-                  PreferredInterpolationMethods::BandLimited);
+  IndependentObjectsFromInfile(InputMatrices matrices_from_input_file,
+                               const SettingsInInputFile &settings);
 
   /** Set the solver method (FDTD / PSTD) and update dependent variables */
-  void set_solver_method(SolverMethod _sm) {
+  void set_solver_method_variables(SolverMethod _sm) {
     solver_method = _sm;
     if (solver_method == SolverMethod::FiniteDifference) {
-      spdlog::info("Using finite-difference method (FDTD)");
       skip_tdf = 6;
     } else if (solver_method == SolverMethod::PseudoSpectral) {
-      spdlog::info("Using pseudospectral method (PSTD)");
       skip_tdf = 1;
     } else {
       throw std::runtime_error("Solver method not recognised!");
@@ -102,15 +99,10 @@ public:
 
   /** Set the preferred method of interpolation, and update the fields about
    * this change */
-  void set_interpolation_method(PreferredInterpolationMethods _pim) {
-    interpolation_methods = _pim;
-    E_s.set_preferred_interpolation_methods(interpolation_methods);
-    H_s.set_preferred_interpolation_methods(interpolation_methods);
-    if (interpolation_methods == PreferredInterpolationMethods::BandLimited) {
-      spdlog::info("Using band-limited interpolation where possible");
-    } else {
-      spdlog::info("Restricting to cubic interpolation");
-    }
+  void set_interpolation_method(InterpolationMethod method) {
+    i_method = method;
+    E_s.set_preferred_interpolation_methods(i_method);
+    H_s.set_preferred_interpolation_methods(i_method);
   }
 
   ~IndependentObjectsFromInfile();
@@ -136,9 +128,7 @@ public:
           f_ex_vec;//< Vector of frequencies to extract field & phasors at
 
   ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                    SolverMethod _solver_method = SolverMethod::PseudoSpectral,
-                    PreferredInterpolationMethods _pim =
-                            PreferredInterpolationMethods::BandLimited);
+                    const SettingsInInputFile &settings);
 
   /** @brief Determine whether the {IJK}source terms are empty (true) or not
    * (false) */

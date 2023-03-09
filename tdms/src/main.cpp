@@ -17,34 +17,14 @@ int main(int nargs, char *argv[]) {
   spdlog::set_level(spdlog::level::info);
 #endif
 
-  InputMatrices matrix_inputs;
-
   auto args = ArgumentParser::parse_args(nargs, argv);
   args.check_files_can_be_accessed();
 
-  // now it is safe to use matlab routines to open the file and order the
-  // matrices
-  if (!args.has_grid_filename()) {
-    matrix_inputs.set_from_input_file(args.input_filename());
-  } else {
-    matrix_inputs.set_from_input_file(args.input_filename(),
-                                      args.grid_filename());
-  }
-
-  // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod solver_method = PseudoSpectral;// default
-  if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
-
-  // decide whether to toggle off the band-limited interpolation methods
-  PreferredInterpolationMethods preferred_interpolation_methods =
-          PreferredInterpolationMethods::BandLimited;// default
-  if (args.cubic_interpolation()) {
-    preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
-  }
-
-  // Handles the running of the simulation, given the inputs to the executable.
-  SimulationManager simulation(matrix_inputs, solver_method,
-                               preferred_interpolation_methods);
+  // Handles the running of the simulation, gives the inputs to the executable
+  SimulationManager simulation =
+          args.has_grid_filename() ? SimulationManager(args.input_filename(),
+                                                       args.grid_filename())
+                                   : SimulationManager(args.input_filename());
 
   // now run the time propagation code
   simulation.execute();

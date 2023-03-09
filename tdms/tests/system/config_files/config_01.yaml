@@ -9,7 +9,6 @@ fs_input:
   runs:
     fs_cubic:
       reference: pstd_fs_cubic_reference.mat
-      cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
@@ -26,7 +25,6 @@ cyl_input:
   runs:
     cyl_cubic:
       reference: pstd_cyl_cubic_reference.mat
-      cubic_interpolation: True
 cyl_input_bli:
   adjust: cyl_input
   interpolation: bli

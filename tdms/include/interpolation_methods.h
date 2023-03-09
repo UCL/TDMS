@@ -1,5 +1,5 @@
 /**
- * @file interpolation_methods.h
+ * @file interpolation_method.h
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief InterpScheme class methods and supporting functions
  *
@@ -10,7 +10,7 @@
 
 #include <complex>
 
-#include "globals.h"
+#include "settings_in_input_file.h"
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
@@ -181,10 +181,10 @@ const InterpolationScheme CBLst = InterpolationScheme(
  * @param interpolation_position Interpolation is to be performed to the
  * midpoint of the datapoints indexed with (interpolation_position-1) and
  * (interpolation_position)
- * @param interpolation_methods The preferred interpolation methods to use
+ * @param interpolation_method The preferred interpolation methods to use
  * @return const InterpolationScheme&
  */
 const InterpolationScheme &
 best_scheme(int datapts_in_direction, int interpolation_position,
-            PreferredInterpolationMethods interpolation_methods =
-                    PreferredInterpolationMethods::BandLimited);
+            InterpolationMethod interpolation_method =
+                    InterpolationMethod::BandLimited);

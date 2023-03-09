@@ -101,7 +101,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d,
         // this is a 2D simulation
         // we simply interpolate the Hx field in the z-direction to get the
         // field value at the centre
-        c_scheme = &(best_scheme(tot.k, k, pim));
+        c_scheme = &(best_scheme(tot.k, k, i_method));
         for (int kk = c_scheme->first_nonzero_coeff;
              kk <= c_scheme->last_nonzero_coeff; kk++) {
           int cell_k = k - c_scheme->number_of_datapoints_to_left + kk;
@@ -110,8 +110,8 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d,
         }
         return c_scheme->interpolate(data_for_first_scheme);
       } else {
-        c_scheme = &(best_scheme(tot.k, k, pim));
-        b_scheme = &(best_scheme(tot.j, j, pim));
+        c_scheme = &(best_scheme(tot.k, k, i_method));
+        b_scheme = &(best_scheme(tot.j, j, i_method));
 
         if (c_scheme->is_better_than(*b_scheme)) {
           // we will be interpolating in the z-direction first, then in y
@@ -174,8 +174,8 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d,
       break;
     case Y:
       // Associations: a = y, b = z, c = x
-      c_scheme = &(best_scheme(tot.i, i, pim));
-      b_scheme = &(best_scheme(tot.k, k, pim));
+      c_scheme = &(best_scheme(tot.i, i, i_method));
+      b_scheme = &(best_scheme(tot.k, k, i_method));
 
       if (b_scheme->is_better_than(*c_scheme)) {
         // we will be interpolating in the z-direction first, then in x
@@ -239,7 +239,7 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d,
         // this is a 2D simulation
         // we simply interpolate the Hx field in the z-direction to get the
         // field value at the centre
-        b_scheme = &(best_scheme(tot.i, i, pim));
+        b_scheme = &(best_scheme(tot.i, i, i_method));
         for (int ii = b_scheme->first_nonzero_coeff;
              ii <= b_scheme->last_nonzero_coeff; ii++) {
           int cell_i = i - b_scheme->number_of_datapoints_to_left + ii;
@@ -248,8 +248,8 @@ complex<double> MagneticField::interpolate_to_centre_of(AxialDirection d,
         }
         return b_scheme->interpolate(data_for_first_scheme);
       } else {
-        b_scheme = &(best_scheme(tot.i, i, pim));
-        c_scheme = &(best_scheme(tot.j, j, pim));
+        b_scheme = &(best_scheme(tot.i, i, i_method));
+        c_scheme = &(best_scheme(tot.j, j, i_method));
 
         if (c_scheme->is_better_than(*b_scheme)) {
           // we will be interpolating in the y-direction first, then in x
@@ -334,7 +334,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
       if (tot.j <= 1) {
         // in a 2D simulation, we must interpolate in the z-direction to recover
         // Hx, due to the magnetic-field offsets from the centre
-        b_scheme = &(best_scheme(tot.k, k, pim));
+        b_scheme = &(best_scheme(tot.k, k, i_method));
         // now fill the interpolation data
         // i - (scheme.number_of_datapoints_to_left) is the index of the Yee
         // cell that plays the role of v0 in the interpolation
@@ -349,8 +349,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
         return b_scheme->interpolate(data_for_first_scheme);
       } else {
         // Associations: a = x, b = y, c = z
-        c_scheme = &(best_scheme(tot.k, k, pim));
-        b_scheme = &(best_scheme(tot.j, j, pim));
+        c_scheme = &(best_scheme(tot.k, k, i_method));
+        b_scheme = &(best_scheme(tot.j, j, i_method));
 
         if (c_scheme->is_better_than(*b_scheme)) {
           // we will be interpolating in the z-direction first, then in y
@@ -413,8 +413,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
       // we can always interpolate in two directions for Hy, since even in a 2D
       // simulation the x- and z-directions still exist Associations: a = y, b =
       // z, c = x
-      c_scheme = &(best_scheme(tot.i, i, pim));
-      b_scheme = &(best_scheme(tot.k, k, pim));
+      c_scheme = &(best_scheme(tot.i, i, i_method));
+      b_scheme = &(best_scheme(tot.k, k, i_method));
 
       if (b_scheme->is_better_than(*c_scheme)) {
         // we will be interpolating in the z-direction first, then in x
@@ -474,7 +474,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
       if (tot.j <= 1) {
         // in a 2D simulation, we must interpolate in the x-direction to recover
         // Hz, due to the magnetic-field offsets from the centre
-        b_scheme = &(best_scheme(tot.i, i, pim));
+        b_scheme = &(best_scheme(tot.i, i, i_method));
         // now fill the interpolation data
         // i - (scheme.number_of_datapoints_to_left) is the index of the Yee
         // cell that plays the role of v0 in the interpolation
@@ -489,8 +489,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
         return b_scheme->interpolate(data_for_first_scheme);
       } else {
         // Associations: a = z, b = x, c = y
-        b_scheme = &(best_scheme(tot.i, i, pim));
-        c_scheme = &(best_scheme(tot.j, j, pim));
+        b_scheme = &(best_scheme(tot.i, i, i_method));
+        c_scheme = &(best_scheme(tot.j, j, i_method));
 
         if (c_scheme->is_better_than(*b_scheme)) {
           // we will be interpolating in the y-direction first, then in x
