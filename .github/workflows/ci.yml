@@ -98,7 +98,7 @@ jobs:
           cmake -E make_directory ${{ runner.workspace }}/build
 
       - name: Compile with Werror on Ubuntu and MacOS (not Windows)
-        if: ${{ contains(matrix.os, 'macos') }} || ${{ contains(matrix.os, 'ubuntu')}}
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: echo "CXXFLAGS=-Werror" >> $GITHUB_ENV
 
       - name: Configure TDMS
@@ -188,5 +188,5 @@ jobs:
         working-directory: ${{ runner.workspace }}
         shell: bash
         run: |
-          export OMP_NUM_THREADS=1
+          export OMP_NUM_THREADS=2
           pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
