@@ -88,5 +88,6 @@ IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
 bool HDF5Base::is_ok() const {
   // TODO: check for file health might be unnessicary fiven we've constructed
   // the object.
-  return file_->isAccessible(filename_) && file_->isHdf5(filename_);
+  return file_->isHdf5(filename_);
+  // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
 }
