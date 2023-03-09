@@ -8,12 +8,14 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <H5Cpp.h>
 #include <spdlog/spdlog.h>
 
+#include "arrays.h"
 #include "cell_coordinate.h"
 
 /**
@@ -70,8 +72,8 @@ public:
    * @param dataname The name of the data table.
    * @return IJKDimensions The dimensions of the data.
    */
-  IJKDimensions shape_of(const std::string &dataname) const;
-  // std::vector<hsize_t> shape_of(const std::string &dataname) const;
+  // IJKDimensions shape_of(const std::string &dataname) const;
+  std::vector<hsize_t> shape_of(const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
@@ -119,6 +121,33 @@ public:
     dataset.read(data, datatype);
     spdlog::trace("Read successful.");
   }
+
+  template<typename T>
+  void read(const std::string &dataset_name, Matrix<T> &data_location) const {
+    spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
+
+    std::vector<hsize_t> dimensions = shape_of(dataset_name);
+    if (dimensions.size() != 2) {
+      throw std::runtime_error(
+              "Cannot read " + dataset_name + " into a 2D matrix, it has " +
+              std::to_string(dimensions.size()) + " dimensions");
+    }
+    int n_rows = dimensions[0];
+    int n_cols = dimensions[1];
+
+    SPDLOG_DEBUG("n_rows = {}; n_cols = {}", n_rows, n_cols);
+    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
+    read(dataset_name, buff);
+
+    data_location.allocate(n_rows, n_cols);
+    for (unsigned int i = 0; i < n_rows; i++) {
+      for (unsigned int j = 0; j < n_cols; j++) {
+        data_location[i][j] = buff[i * n_cols + j];
+      }
+    }
+
+    return;
+  }
 };
 
 class HDF5Writer : public HDF5Base {
@@ -141,4 +170,27 @@ public:
    */
   void write(const std::string &dataname, double *data, int size,
              hsize_t *dimensions);
+
+  /**
+   * @brief Write `data` to the file with `dataname`.
+   *
+   * @param dataname The name of the data table.
+   * @param data The data itself.
+   * @param size The size of the data array.
+   * @param dimensions The number of dimensions of the array.
+   */
+  template<typename T>
+  void write(const std::string &dataname, const Matrix<T> &data) {
+    int n_cols = data.get_n_cols();
+    int n_rows = data.get_n_rows();
+    hsize_t dimension[2] = {static_cast<hsize_t>(n_rows),
+                            static_cast<hsize_t>(n_cols)};
+    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
+    for (unsigned int i = 0; i < n_rows; i++) {
+      for (unsigned int j = 0; j < n_cols; j++) {
+        buff[i * n_cols + j] = data[i][j];
+      }
+    }
+    write(dataname, buff, 2, dimension);
+  }
 };

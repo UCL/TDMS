@@ -272,6 +272,9 @@ public:
     }
   };
 
+  int get_n_cols() const { return n_cols; }
+  int get_n_rows() const { return n_rows; }
+
   /**
    * Destructor. Must be defined in the header
    */
