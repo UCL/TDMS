@@ -70,8 +70,10 @@ void HDF5Base::ls() const {
   return;
 }
 
-// std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
-IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
+// IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
+// return to_ijk(dimensions);
+std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
+  SPDLOG_DEBUG("shape_of");
 
   // get the dataset and dataspace (contains dimensionality info)
   H5::DataSet dataset = file_->openDataSet(dataname);
@@ -81,12 +83,11 @@ IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
   int rank = dataspace.getSimpleExtentNdims();
   std::vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
-  // vector is the size in each dimension i, j(, k)
-  return to_ijk(dimensions);
+  return dimensions;
 }
 
 bool HDF5Base::is_ok() const {
-  // TODO: check for file health might be unnessicary fiven we've constructed
+  // TODO: check for file health might be unnessicary given we've constructed
   // the object.
   return file_->isHdf5(filename_);
   // return file_->isAccessible(filename_) && file_->isHdf5(filename_);

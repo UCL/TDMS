@@ -15,6 +15,7 @@
 #include <spdlog/spdlog.h>
 
 // tdms
+#include "arrays.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
@@ -122,6 +123,59 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
     f3.read("testdata2", data);
     CHECK(data[0] == Catch::Approx(54321.));
+  }
+
+  // teardown - remove temporary directory and all files
+  SPDLOG_DEBUG("Removing temporary directory.");
+  std::filesystem::remove_all(tmp);
+}
+
+TEST_CASE("Test w/r TDMS objects") {
+  // test-case wide setup - temporary directory
+  auto tmp = create_tmp_dir();
+
+  SECTION("5-element 1D array") {
+    double to_write[5] = {1 / 137.0, 3.0, 2.71215, 3.14159, 916.0};
+    double read_back[5];
+    {
+      hsize_t dimensions[1] = {5};
+      HDF5Writer f1(tmp.string() + "/five_elements.h5");
+      f1.write("five_elements", to_write, 1, dimensions);
+    }
+    {
+      HDF5Reader f2(tmp.string() + "/five_elements.h5");
+      f2.read("five_elements", read_back);
+    }
+    for (unsigned int i = 0; i < 5; i++) {
+      CHECK(to_write[i] == Catch::Approx(read_back[i]));
+    }
+  }
+
+  SECTION("5-by-6 2D array") {
+    SPDLOG_INFO("5-by-6 2D array");
+    Matrix<double> counting_matrix(5, 6);
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 6; j++) { counting_matrix[i][j] = 6. * i + j; }
+    }
+    Matrix<double> read_back;
+
+    {
+      HDF5Writer f1(tmp.string() + "/five-by-six.h5");
+      f1.write("five-by-six", counting_matrix);
+    }
+    {
+      SPDLOG_DEBUG("About to read...");
+      HDF5Reader f2(tmp.string() + "/five-by-six.h5");
+      f2.read("five-by-six", read_back);
+    }
+
+    for (unsigned int i = 0; i < 5; i++) {
+      for (unsigned int j = 0; j < 6; j++) {
+        SPDLOG_INFO("Checking {} == {}", counting_matrix[i][j],
+                    read_back[i][j]);
+        CHECK(counting_matrix[i][j] == Catch::Approx(read_back[i][j]));
+      }
+    }
   }
 
   // teardown - remove temporary directory and all files
