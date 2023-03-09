@@ -1,10 +1,30 @@
 #include "hdf5_io.h"
+#include "cell_coordinate.h"
 
 #include <exception>
 #include <iostream>
 
 #include <H5Cpp.h>
+#include <H5public.h>
 #include <spdlog/spdlog.h>
+
+/**
+ * @brief Convert from a vector of HDF5's hsize_t back to our struct of ints.
+ * @note Local scope utility function as only this code needs to interact with
+ * the HDF5 H5Cpp library.
+ *
+ * @param dimensions a 1, 2, or 3 element vector of dimensions.
+ * @return ijk The dimensions in a struct.
+ */
+ijk to_ijk(const std::vector<hsize_t> dimensions) {
+  unsigned int rank = dimensions.size();
+  ijk out;
+  if (rank > 0) out.i = (int) dimensions[0];
+  if (rank > 1) out.j = (int) dimensions[1];
+  if (rank > 2) out.k = (int) dimensions[2];
+  if (rank > 3) spdlog::warn("Rank > 3");
+  return out;
+}
 
 /******************************************************************************
  * HDF5Writer
@@ -50,7 +70,8 @@ void HDF5Base::ls() const {
   return;
 }
 
-std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
+// std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
+IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
 
   // get the dataset and dataspace (contains dimensionality info)
   H5::DataSet dataset = file_->openDataSet(dataname);
@@ -60,10 +81,12 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
   int rank = dataspace.getSimpleExtentNdims();
   std::vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
-
   // vector is the size in each dimension i, j(, k)
-  return dimensions;
+  return to_ijk(dimensions);
 }
 
-
-bool HDF5Base::is_ok() const { return true; }
+bool HDF5Base::is_ok() const {
+  // TODO: check for file health might be unnessicary fiven we've constructed
+  // the object.
+  return file_->isAccessible(filename_) && file_->isHdf5(filename_);
+}

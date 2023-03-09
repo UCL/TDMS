@@ -19,6 +19,12 @@
 
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
 
+TEST_CASE("Wrong datatype passed to ijk.") {
+  auto tmp = create_tmp_dir();
+  HDF5Writer r(tmp.string() + "/why.h5");
+  // r.data_dump("x");
+}
+
 TEST_CASE("Test file I/O construction/destruction.") {
 
   // test-case wide setup - temporary directory

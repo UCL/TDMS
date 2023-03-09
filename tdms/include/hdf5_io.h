@@ -14,6 +14,8 @@
 #include <H5Cpp.h>
 #include <spdlog/spdlog.h>
 
+#include "cell_coordinate.h"
+
 /**
  * @brief The base class for HDF5 I/O.
  * @details Common functionality and wraps handling the std::unique_ptr to hold
@@ -66,10 +68,10 @@ public:
    * @brief Return shape/dimensionality information about the array data stored
    * with `name`.
    * @param dataname The name of the data table.
-   * @return std::vector<hsize_t> The dimensions of the data.
+   * @return IJKDimensions The dimensions of the data.
    */
-  std::vector<hsize_t> shape_of(const std::string &dataname) const;
-
+  IJKDimensions shape_of(const std::string &dataname) const;
+  // std::vector<hsize_t> shape_of(const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
@@ -92,7 +94,7 @@ public:
   /**
    * @brief Construct a new HDF5Reader for a named file.
    * @param filename The name of the file.
-   * @throws XX if file is not found.
+   * @throws H5::FileIException if the file can't be created.
    */
   HDF5Reader(const std::string &filename)
       : HDF5Base(filename, H5F_ACC_RDONLY) {}
@@ -106,26 +108,14 @@ public:
   void read(const std::string &dataset_name, T *data) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
 
-    // get the dataset and dataspace (contains dimensionality info)
+    // get the dataset and dataspace
     H5::DataSet dataset = file_->openDataSet(dataset_name);
     H5::DataSpace dataspace = dataset.getSpace();
-    spdlog::debug("Created dataspace");
-
-    // need to get the number of matrix dimensions (rank) so that we can
-    // dynamically allocate `dimensions`
-    int rank = dataspace.getSimpleExtentNdims();
-    spdlog::debug("Rank of dataspace: {}", rank);
-    hsize_t *dimensions = new hsize_t[rank];
-    dataspace.getSimpleExtentDims(dimensions);
-    spdlog::debug("Got dimensions");
 
     // now get the data type
     H5::DataType datatype = dataset.getDataType();
-    spdlog::debug("Got datatype");
     dataset.read(data, datatype);
-    spdlog::debug("Read");
-
-    delete[] dimensions;
+    spdlog::trace("Read successful.");
   }
 };
 
@@ -135,6 +125,7 @@ public:
   /**
    * @brief Construct a new HDF5Writer, creates a file.
    * @param filename The name of the file to be created.
+   * @throws H5::FileIException if the file can't be created.
    */
   HDF5Writer(const std::string &filename) : HDF5Base(filename, H5F_ACC_TRUNC) {}
 
