@@ -108,7 +108,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       spdlog::debug("Will not write out the time-domain fields.");
 
     } else {
-      ex_td_field_exporter.folder_name = dir.c_str();
+      ex_td_field_exporter.folder_name = dir;
       spdlog::debug("Will write the time-domain fields to '{}'.",
                     ex_td_field_exporter.folder_name);
 
