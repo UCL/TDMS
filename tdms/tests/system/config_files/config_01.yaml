@@ -2,10 +2,6 @@ test_id: '01'
 fs_input:
   input_file: input_file_01.m
   obstacle: fs
-  obstacle_radius:
-  illsetup:
-  refind:
-  solver_method: pstd
   runs:
     fs_cubic:
       reference: pstd_fs_cubic_reference.mat
@@ -18,10 +14,6 @@ fs_bli_input:
 cyl_input:
   input_file: input_file_01.m
   obstacle: cyl
-  obstacle_radius:
-  illsetup:
-  refind: 1.42
-  solver_method: pstd
   runs:
     cyl_cubic:
       reference: pstd_cyl_cubic_reference.mat

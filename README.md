@@ -98,7 +98,6 @@ tdms [options] infile outfile
 tdms [options] infile gridfile outfile
 Options:
 -h:	Display this help message
--fd, --finite-difference:	Use the finite-difference solver, instead of the pseudo-spectral method.
 -q:	Quiet operation. Silence all logging
 -m:	Minimise output file size by not saving vertex and facet information
 ```
@@ -107,9 +106,27 @@ The basic workflow is with two arguments, an input file as specified by
 [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output
 file name to be created.
 
-You can choose two possible solver methods: either pseudo-spectral time-domain
-(PSTD, the default) or finite-difference (FDTD, with option
-`--finite-difference`).
+### Executable / simulation options
+
+`tdms` has a couple of options that change the algorithms that will be used at various points in the code.
+
+#### Solver Methods
+
+You can choose two possible solver methods to conduct the time-propagation portion of the simulation: either finite-difference time domain (FDTD) or psuedo-spectral time-domain (PSTD).
+The method used is governed by the `usecd` variable in the `infile` passed to `tdms`;
+- `usecd = 1` will result in FDTD being used,
+- `usecd = 0` will result in PSTD being used.
+If `usecd` is not provided in the `infile`, FDTD will be used.
+
+#### Interpolation Methods
+
+You may choose between two possible methods for interpolating field values away from the computational grid, which are used when extracting field values across a user-defined surface or at user-defined vertices.
+Your choices are cubic interpolation, which uses four datapoints during interpolation and fits a cubic polynomial through them, and band-limited interpolation [FIXME] with 8 datapoints.
+Band-limited interpolation provides superior accuracy over cubic interpolation when the longest wavelength of interest is of the same order, but slightly less than, the dimensions of the Yee cell over 6.
+The interpolation method used is controlled by the `intmethod` variable in the `infile` passed to `tdms`;
+- `intmethod = 1` will result in cubic interpolation,
+- `intmethod = 2` will result in band-limited interpolation.
+If `intmethod` is not provided in the `infile`, cubic interpolation will be used.
 
 ### Parallelism
 

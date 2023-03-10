@@ -2,11 +2,9 @@ test_id: '09'
 fs_input:
   input_file: input_file_09.m
   obstacle: fs
-  solver_method: pstd
   runs:
     fs_cubic:
       reference: pstd_fs_cubic_reference.mat
-      cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
@@ -16,11 +14,9 @@ fs_bli_input:
 sc_input:
   input_file: input_file_09.m
   obstacle: sc
-  solver_method: pstd
   runs:
     sc_cubic:
       reference: pstd_sc_cubic_reference.mat
-      cubic_interpolation: True
 sc_bli_input:
   adjust: sc_input
   interpolation: bli
