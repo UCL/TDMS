@@ -4,10 +4,7 @@
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
 
-[![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml)
-[![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml)
-[![doc](https://img.shields.io/badge/PDF-latest-orange.svg?style=flat)](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
-# TDMS
+# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml)
 
 > **Warning**
 > This repository is a _work in progress_. The API will change without notice
@@ -16,10 +13,12 @@ would be duplicated) everything else in README.md is also the project homepage. 
 
 # Time-Domain Maxwell Solver
 
-TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for
-solving Maxwell's equations to simulate light propagation through a medium. See
-the [pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf)
-for further details.
+TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving
+Maxwell's equations to simulate light propagation through a medium. See the
+[pdf documentation](https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf) for
+further details.
+
+![The normed z-component of the H field incident on a cylinder](doc/assets/HzNormBanner.png)
 
 
 ## Compilation
@@ -38,8 +37,8 @@ $ cmake .. \
 # -DBUILD_TESTING=ON
 $ make install
 ```
-where lines need to be commented in and the paths modified if cmake cannot (1)
-find MATLAB, (2) find FFTW or (3) install to the default install prefix.
+where lines need to be commented in and the paths modified if cmake cannot
+(1) find MATLAB, (2) find FFTW or (3) install to the default install prefix.
 
 <details>
 <summary>Mac specific instructions</summary>
@@ -65,15 +64,15 @@ arch -x86_64 /usr/local/bin/brew install llvm
 
 ## Usage
 
-Once the executable has been compiled and installed, `tdms` should be in the
-`PATH`.  Check that installation worked with
+Once the executable has been compiled and installed, `tdms` should be in the `PATH`.
+Check that installation worked with
 
 ```bash
 $ tdms -h
 ```
 
-You can invoke it directly or call it from a MATLAB script.  We recommend that
-beginners with MATLAB installed start with the demonstration MATLAB script.
+You can invoke it directly or call it from a MATLAB script.
+We recommend that beginners with MATLAB installed start with the demonstration MATLAB script.
 
 ### To run the demonstration code
 
@@ -101,19 +100,15 @@ Options:
 -m:	Minimise output file size by not saving vertex and facet information
 ```
 
-The basic workflow is with two arguments, an input file as specified by
-[`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output
-file name to be created.
+The basic workflow is with two arguments, an input file as specified by [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output file name to be created.
 
-You can choose two possible solver methods: either pseudo-spectral time-domain
-(PSTD, the default) or finite-difference (FDTD, with option
-`--finite-difference`).
+You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
 
 ### Parallelism
 
-TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The
-maximum number of threads can be set with the `OMP_NUM_THREADS` environment
-variable.  For example, to use 4 threads, in a bash shell, use:
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The maximum
+number of threads can be set with the `OMP_NUM_THREADS` environment variable.
+For example, to use 4 threads, in a bash shell, use:
 
 ```bash
 $ export OMP_NUM_THREADS=4
@@ -121,7 +116,24 @@ $ export OMP_NUM_THREADS=4
 
 Before calling the `tdms` executable.
 
+## Acknowledgements
+
+The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's [Department for Medical Physics and Bioengineering](https://ucl.ac.uk/medphys) and [Centre for Advanced Research Computing](https://ucl.ac.uk/arc) with generous funding from [the Royal Society](https://royalsociety.org).
+
+![medphys](doc/assets/biomedlogo.png)&nbsp;![arc](doc/assets/arclogo.png)
+
+<!--
+## Citation
+
+If you used TDMS in your research and found it helpful, please cite us: [zenodo/FIXME](https://zenodo.org/).
+```tex
+\bibitem{
+    author="Munro, P and others",
+    title="TDMS: the Time-Domain Maxwell solver",
+}
+```
+-->
+
 ## Want to contribute?
 
-We're very grateful for bug reports, feature requests and pull requests. Please
-see our [contribution guidelines](./CONTRIBUTING.md).
+We're grateful for bug reports, feature requests and pull requests. Please see our [contribution guidelines](https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html).
