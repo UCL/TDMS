@@ -36,10 +36,6 @@ foo:
   illsetup: True
   # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
   calc_tdfield: True
-  # One of pstd (pseudo-spectral time domain), fdtd (finite difference time domain). The time-propagation solver method to use. Defaults to fdtd if not present
-  solver_method: pstd
-  # One of cubic (cubic) or bli (band-limited). The interpolation method to use when extracting field values at spatial locations off the computational grid. Defaults to cubic if not present.
-  interpolation: cubic
 
   # This key starts another block, which contains the details of all the runs within this system test that use foo.mat as their input
   runs:
@@ -47,14 +43,9 @@ foo:
     run_name_1:
       # The name of the reference .mat output to compare the output of the local tdms run to.
       reference: reference.mat
-      # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present.
-      cubic_interpolation: True
-      # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
-      fdtd_solver: False
     run_name_2:
       # This is another run of tdms using the same foo.mat input
       reference: reference_2.mat
-      fdtd_solver: False
 ```
 
 ### "Adjust"-ing another input file
@@ -67,10 +58,15 @@ bar:
 
   # The adjust keyword tells the program to copy the .mat input whose name matches the value of this key. In this instance, bar.mat will copy foo.mat, plus any alterations that we specify in the remainder of the block
   adjust: foo
+
   # We can then overwrite the interpolation and solver_method settings that were specified in foo.mat's declaration
   # Note that if foo.mat _does not_ use the default value for (EG) `interpolation`, you _must_ explicitly specify `interpolation` as the default value here. In an adjust block, the absence of keys provides a default behaviour of "do not change" rather than "reset".
+
+  # One of pstd (pseudo-spectral time domain), fdtd (finite difference time domain). The time-propagation solver method to use. Defaults to fdtd if not present
+  solver_method: pstd
+  # One of cubic (cubic) or bli (band-limited). The interpolation method to use when extracting field values at spatial locations off the computational grid. Defaults to cubic if not present.
   interpolation: cubic
-  solver_method: fdtd
+
   # We then declare runs using bar.mat as an input in the usual manner
   runs:
     bar_run_1:

@@ -43,7 +43,7 @@ if isempty(material_file)
     clear material_file;
 end
 %now need to_l check that all of the required variables have been set
-variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','intmethod','tdfdir','fieldsample','campssample','usecd'};
+variables = {'delta','I','J','K','n','R0','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','dt','epsr','mur','f_an','Nt','interface','material_file','efname','hfname','wavelengthwidth','z_launch','illorigin','runmode','sourcemode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','dimension','multilayer','kappa_max','vc_vec','wp_vec','structure','f_ex_vec','exdetintegral','k_det_obs','NA_det','beta_det','detmodevec','detsensefun','air_interface','intmatprops','use_bli','tdfdir','fieldsample','campssample','use_pstd'};
 must_abort = 0; %assumes all variables have been defined
 for lvar = 1:length(variables)
     if exist(variables{lvar}) ~= 1
@@ -116,9 +116,9 @@ for lvar = 1:length(variables)
 	elseif strncmp(variables{lvar},'intmatprops',13)
 	    fprintf(1,'Failed to define %s, setting it to 1\n',variables{lvar});
 	    intmatprops = 1;
-	elseif strncmp(variables{lvar},'intmethod',9)
-	    fprintf(1,'Failed to define %s, setting it to 1\n',variables{lvar});
-	    intmethod = 1;
+	elseif strncmp(variables{lvar},'use_bli',9)
+	    fprintf(1,'Failed to define %s, setting it to 0\n',variables{lvar});
+	    use_bli = 0;
 	elseif strncmp(variables{lvar},'tdfdir',6)
 	    fprintf(1,'Failed to define %s, setting it to empty string\n',variables{lvar});
 	    tdfdir = '';
@@ -132,9 +132,9 @@ for lvar = 1:length(variables)
 	    fprintf(1,'Failed to define %s, setting campssample.vertices = [] and campssample.components = []\n',variables{lvar});
 	    campssample.vertices = [];
 	    campssample.components = [];
-	elseif strncmp(variables{lvar},'usecd',5)
-		fprintf(1,'Failed to define %s, setting it to 1 (FDTD will be used)\n',variables{lvar});
-		usecd = 1;
+	elseif strncmp(variables{lvar},'use_pstd',5)
+		fprintf(1,'Failed to define %s, setting it to 0 (FDTD will be used)\n',variables{lvar});
+		use_pstd = 0;
 	else
 	    fprintf(1,'Failed to define %s\n',variables{lvar});
 	    must_abort = 1;
@@ -339,12 +339,10 @@ if ( mod( (phasorsurface(2) - phasorsurface(1)),phasorinc(1) ) | mod( (phasorsur
     error('incorrect specification of phasorinc');
 end
 
-%check that intmethod has valid values, ie, either 1 or 2
-%1 = cubic
-%2 = band limited
-if ~( intmethod==1 | intmethod==2)
-    error('incorrect specification of intmethod');
-end
+% Cast band-limited to a boolean value
+use_bli = all(logical(use_bli));
+% Cast use_pstd to a boolean value
+use_pstd = all(logical(use_pstd));
 
 
 %this is really just for completeness
@@ -1283,7 +1281,7 @@ else
 	     vers = version;
 	     campssample2 = campssample;
 	     if strncmp(operation,'filesetup',9)
-		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','intmethod','tdfield','tdfdir','fieldsample','campssample','usecd','-v7.3');
+		 save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','use_bli','tdfield','tdfdir','fieldsample','campssample','use_pstd','-v7.3');
 	     else
 		 save(outfile,'fdtdgrid');
 	     end

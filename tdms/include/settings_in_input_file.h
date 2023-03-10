@@ -6,11 +6,11 @@
 #include "matlabio.h"
 
 /*! Solver methods implemented for time-propagation of the simulation */
-enum SolverMethod { PseudoSpectral = 0, FiniteDifference = 1 };
+enum SolverMethod { FiniteDifference = 0, PseudoSpectral = 1 };
 
 /*! Interpolation methods that can be used to extract field values at Yee cell
  * centres */
-enum InterpolationMethod { Cubic = 1, BandLimited = 2 };
+enum InterpolationMethod { Cubic = 0, BandLimited = 1 };
 
 /**
  * @brief Class that handles retrieval of optional variables from the input
@@ -19,14 +19,15 @@ enum InterpolationMethod { Cubic = 1, BandLimited = 2 };
  */
 class SettingsInInputFile {
 private:
-  /*! Solver method for the time-propagation code. Reads from usecd in the input
-   * file. If usecd is not present, or equal to 1, we use FDTD, otherwise PSTD
+  /*! Solver method for the time-propagation code. Toggled via use_pstd in the
+   * input file. If use_pstd is not present, or equal to 0, we use FDTD,
+   * otherwise PSTD.
    */
   SolverMethod solver_method = SolverMethod::FiniteDifference;
   /*! The interpolation methods to use when extracting field values at Yee cell
-   * centres. Reads from intmethod in the input file. If not present, or equal
-   * to 1, we use Cubic interpolation, otherwise we prioritise band-limited
-   * interpolation */
+   * centres. Toggled via use_bli in the input file. If not present, or equal
+   * to 0, we use cubic interpolation, otherwise we prioritise band-limited
+   * interpolation. */
   InterpolationMethod interpolation_method = InterpolationMethod::Cubic;
 
 public:
@@ -46,10 +47,10 @@ public:
     MATFile *mat_file = matOpen(input_filename, "r");
 
     // Set the preferred interpolation methods
-    auto ptr_to_intmethod = matGetVariable(mat_file, "intmethod");
-    if (ptr_to_intmethod != nullptr) {
-      int intmethod = int_cast_from_double_in(ptr_to_intmethod, "intmethod");
-      if (intmethod != 1) {
+    auto ptr_to_use_bli = matGetVariable(mat_file, "use_bli");
+    if (ptr_to_use_bli != nullptr) {
+      bool use_bli = bool_in(ptr_to_use_bli, "use_bli");
+      if (use_bli) {
         interpolation_method = InterpolationMethod::BandLimited;
         spdlog::info("Using band-limited interpolation where possible");
       } else {
@@ -58,10 +59,10 @@ public:
     }
 
     // Set the solver method
-    auto ptr_to_usecd = matGetVariable(mat_file, "usecd");
-    if (ptr_to_usecd != nullptr) {
-      int usecd = int_cast_from_double_in(ptr_to_usecd, "usecd");
-      if (usecd == 0) {
+    auto ptr_to_use_pstd = matGetVariable(mat_file, "use_pstd");
+    if (ptr_to_use_pstd != nullptr) {
+      bool use_pstd = bool_in(ptr_to_use_pstd, "use_pstd");
+      if (use_pstd) {
         solver_method = SolverMethod::PseudoSpectral;
         spdlog::info("Using pseudospectral method (PSTD)");
       } else {

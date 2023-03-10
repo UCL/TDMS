@@ -113,20 +113,23 @@ file name to be created.
 #### Solver Methods
 
 You can choose two possible solver methods to conduct the time-propagation portion of the simulation: either finite-difference time domain (FDTD) or psuedo-spectral time-domain (PSTD).
-The method used is governed by the `usecd` variable in the `infile` passed to `tdms`;
-- `usecd = 1` will result in FDTD being used,
-- `usecd = 0` will result in PSTD being used.
-If `usecd` is not provided in the `infile`, FDTD will be used.
+The method used is toggled with the `use_pstd` variable in the `infile` passed to `tdms`;
+- `use_pstd = 0` will result in FDTD being used,
+- `use_pstd = 1` will result in PSTD being used.
+If `use_pstd` is not provided in the `infile`, FDTD will be used.
 
 #### Interpolation Methods
 
 You may choose between two possible methods for interpolating field values away from the computational grid, which are used when extracting field values across a user-defined surface or at user-defined vertices.
 Your choices are cubic interpolation, which uses four datapoints during interpolation and fits a cubic polynomial through them, and band-limited interpolation [FIXME] with 8 datapoints.
-Band-limited interpolation provides superior accuracy over cubic interpolation when the longest wavelength of interest is of the same order, but slightly less than, the dimensions of the Yee cell over 6.
-The interpolation method used is controlled by the `intmethod` variable in the `infile` passed to `tdms`;
-- `intmethod = 1` will result in cubic interpolation,
-- `intmethod = 2` will result in band-limited interpolation.
-If `intmethod` is not provided in the `infile`, cubic interpolation will be used.
+The interpolation method used is controlled by the `use_bli` (use _Band-Limited Interpolation_) variable in the `infile` passed to `tdms`;
+- `use_bli = 0` will result in cubic interpolation,
+- `use_bli = 1` will result in band-limited interpolation.
+If `use_bli` is not provided in the `infile`, cubic interpolation will be used.
+
+Band-limited interpolation provides superior accuracy over cubic interpolation when the longest wavelength of interest is of the same order as, but less than (approximately), the dimensions of the Yee cell divided 6.
+In small simulations that use fewer than 8 Yee cells in a given dimension, it is impossible to use band-limited interpolation in those dimensions.
+Instead, specifying the use of band-limited interpolation in these cases will enforce its use where possible, and cubic will be used in places where it cannot be applied.
 
 ### Parallelism
 

@@ -121,6 +121,11 @@ bool bool_cast_from_double_in(const mxArray *ptr, const std::string &name) {
   return !mxIsEmpty(ptr) && (bool) double_in(ptr, name);
 }
 
+bool bool_in(const mxArray *ptr, const string &name) {
+  if (mxIsLogicalScalar(ptr)) { return *mxGetPr(ptr); }
+  throw runtime_error(name + " was expected to be a bool but was not");
+}
+
 string string_in(const mxArray *ptr, const string &name) {
 
   if (mxIsChar(ptr)) {

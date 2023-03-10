@@ -1,7 +1,7 @@
-%specify the interpolation method (1 or not present - cubic, 2 - bandlimited)
-intmethod = 1;
-%specify the solver method (1 or not present - FDTD, 0 - PSTD)
-%IN THIS TEST, WE CHECK THAT THE DEFAULT IS PICKED UP! usecd = 0;
+% If 1, use band-limited interpolation over cubic
+use_bli = 0;
+% If 1, use pstd timestepping over fdtd
+% LEAVE OUT FOR THIS TEST - SEE IF DEFAULT IS PICKED UP use_pstd = 0;
 
 %these are not involved in the formal input file spec
 lambda = 1300e-9;
