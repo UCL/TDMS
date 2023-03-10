@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <spdlog/spdlog.h>
+
 #include "matlabio.h"
 using std::string;
 
