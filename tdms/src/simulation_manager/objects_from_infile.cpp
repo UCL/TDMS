@@ -100,8 +100,8 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // Get tdfdir - check what's going on here in a second
   ex_td_field_exporter = TDFieldExporter2D();
   if (mxIsChar(matrices_from_input_file["tdfdir"])) {
-    ex_td_field_exporter.folder_name =
-            string_in(matrices_from_input_file["tdfdir"], "tdfdir").c_str();
+    std::string dir = string_in(matrices_from_input_file["tdfdir"], "tdfdir");
+    ex_td_field_exporter.folder_name = dir.c_str();
 
     int Ni_tdf = 0, Nk_tdf = 0;
     for (int k = 0; k < IJK_tot.k; k++)
@@ -112,8 +112,12 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
     spdlog::info("Ni_tdf = {0:d}, Nk_tdf = {1:d}", Ni_tdf, Nk_tdf);
 
     if (!are_equal(ex_td_field_exporter.folder_name, "")) {
+      spdlog::debug("Will write the TD fields to '{}'.",
+                    ex_td_field_exporter.folder_name);
       params.has_tdfdir = true;
       ex_td_field_exporter.allocate(Ni_tdf, Nk_tdf);
+    } else {
+      spdlog::debug("Will not write out the TD fields.");
     }
   }
 
