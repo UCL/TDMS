@@ -97,21 +97,29 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
     params.z_obs = input_grid_labels.z[params.k_det_obs];
   }
 
-  // Get tdfdir - check what's going on here in a second
+  // Get 'tdfdir' - this is the directory name to write the time-domain fields
+  // into. If it's an empty string, then don't write out the TD fields at all.
+  // Only write out every `skip_tdf` fields.
   ex_td_field_exporter = TDFieldExporter2D();
   if (mxIsChar(matrices_from_input_file["tdfdir"])) {
-    ex_td_field_exporter.folder_name =
-            string_in(matrices_from_input_file["tdfdir"], "tdfdir").c_str();
+    std::string dir = string_in(matrices_from_input_file["tdfdir"], "tdfdir");
 
-    int Ni_tdf = 0, Nk_tdf = 0;
-    for (int k = 0; k < IJK_tot.k; k++)
-      if ((k % skip_tdf) == 0) Nk_tdf++;
+    if (dir == "") {
+      spdlog::debug("Will not write out the time-domain fields.");
 
-    for (int i = 0; i < IJK_tot.i; i++)
-      if ((i % skip_tdf) == 0) Ni_tdf++;
-    spdlog::info("Ni_tdf = {0:d}, Nk_tdf = {1:d}", Ni_tdf, Nk_tdf);
+    } else {
+      ex_td_field_exporter.folder_name = dir;
+      spdlog::debug("Will write the time-domain fields to '{}'.",
+                    ex_td_field_exporter.folder_name);
 
-    if (!are_equal(ex_td_field_exporter.folder_name, "")) {
+      int Ni_tdf = 0, Nk_tdf = 0;
+      for (int k = 0; k < IJK_tot.k; k++)
+        if ((k % skip_tdf) == 0) Nk_tdf++;
+
+      for (int i = 0; i < IJK_tot.i; i++)
+        if ((i % skip_tdf) == 0) Ni_tdf++;
+      spdlog::debug("Ni_tdf = {0:d}, Nk_tdf = {1:d}", Ni_tdf, Nk_tdf);
+
       params.has_tdfdir = true;
       ex_td_field_exporter.allocate(Ni_tdf, Nk_tdf);
     }

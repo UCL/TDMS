@@ -522,7 +522,7 @@ private:
 public:
   mxArray *matlab_array = nullptr;
   double **array = nullptr;
-  const char *folder_name = nullptr;
+  std::string folder_name = "";
 
   /**
    * Allocate the arrays to hold the field
