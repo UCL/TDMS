@@ -1,8 +1,10 @@
 #include "field.h"
 
 #include <stdexcept>
+#include <string>
 
 #include "matlabio.h"
+using std::string;
 
 void TDFieldExporter2D::allocate(int _nI, int _nK) {
 
@@ -37,11 +39,10 @@ void TDFieldExporter2D::export_field(SplitField &F, int stride,
     i += stride;
   }
 
-  char toutputfilename[512];
-  snprintf(toutputfilename, 512, "%s/ex_%06d.mat", folder_name, iteration);
-  fprintf(stderr, "time domain output: %s\n", toutputfilename);
-
-  auto toutfile = matOpen(toutputfilename, "w");
-  matPutVariable(toutfile, "ex_tdf", (mxArray *) matlab_array);
-  matClose(toutfile);
+  // set up and write to MATLAB file
+  string file_name = folder_name + "ex_" + std::to_string(iteration) + ".mat";
+  spdlog::debug("Writing time-domain output to: {}", file_name);
+  auto output_file = matOpen(file_name.c_str(), "w");
+  matPutVariable(output_file, "ex_tdf", (mxArray *) matlab_array);
+  matClose(output_file);
 }
