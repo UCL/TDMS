@@ -22,12 +22,20 @@ engine: MatlabEngine = matlab.start_matlab(MATLAB_STARTUP_OPTS)
 
 
 class BScanArguments:
-    """Class to tidily contain the input arguments that need to be passed into the MATLAB function of the same name, to generate the input data.
-
-    The bscan/run_bscan.m file contains the matlab function which generates the input data. Regrettably, we need to specify particular inputs to this script for each test, which requires us to translate the argument values as read from the config.yaml file into a long string of values in the correct order, which can in turn be called from matlab.
-
-    BScanArguments is essentially a glorified dictionary, it's members sharing the names of the input arguments to run_bscan. It's create_bscan_argument can be used to convert the values that need to be passed into a string of the form:
-    run_bscan(input_arguments_in_the_correct_order).
+    """
+    Class to group the input arguments that need to be passed into the MATLAB
+    function of the same name, to generate the input data.
+    
+    The bscan/run_bscan.m file contains the matlab function which generates the
+    input data. Regrettably, we need to specify particular inputs to this script
+    for each test, which requires us to translate the argument values as read
+    from the config.yaml file into a long string of values in the correct order,
+    which can in turn be called from MATLAB.
+    
+    BScanArguments is essentially a glorified dictionary, its members share
+    the names of the input arguments to run_bscan. Its create_bscan_argument
+    can be used to convert the values that need to be passed into a string of
+    the form: run_bscan(input_arguments_in_the_correct_order).
     """
 
     # The directory of the test whose input data is being generated
@@ -43,8 +51,10 @@ class BScanArguments:
 
     def run_bscan(self, engine: MatlabEngine) -> None:
         """Runs the run_bscan function in the MatlabEngine provided.
-
-        The bscan/ and matlab/ directories are assumed to already be in the includepath of the engine instance, so that the run_bscan and supporting matlab files can be called.
+        
+        The bscan/ and matlab/ directories are assumed to already be in the
+        includepath of the engine instance, so that the run_bscan and supporting
+        MATLAB files can be called.
         """
         # function [] = run_bscan(test_directory, input_filename)
         # Cast to str() to guard against Path instances slipping through
@@ -53,12 +63,19 @@ class BScanArguments:
 
 
 class MATLABEngineWrapper:
-    """When we regenerate input data, we always need to add the bscan/ and matlab/ directories to the MATLAB instance's search path. correspondingly, we always want to kill the MATLAB instance after running the run_bscan function and generating the data.
-
-    This class serves as a wrapper for that purpose. It stores instance(s) of the BScanArguments class, which it will run in sequence between the aforementioned addpath() setup and then engine shutdown. The .run() method performs exactly this.
+    """
+    When we regenerate input data, we always need to add the bscan/ and matlab/
+    directories to the MATLAB instance's search path. We also always want to
+    kill the MATLAB instance after the run_bscan function and generating the
+    data.
+    
+    This class is a wrapper for that purpose. It stores instance(s) of the
+    BScanArguments class, which it will run in sequence between the
+    aforementioned addpath() setup and then engine shutdown. The .run() method
+    performs exactly this.
     """
 
-    # List containing the subsequent matlab commands to be executed by the interpreter
+    # List of MATLAB commands to be executed by the interpreter
     bscan_calls: list[BScanArguments]
 
     # The MATLAB session that will run
@@ -101,9 +118,13 @@ class MATLABEngineWrapper:
         return
 
     def run(self, kill_on_complete: bool = True) -> None:
-        """Run the bscan arguments saved to the instance, in the same session.
-
-        Engine is terminated if kill_on_complete is True, otherwise the engine is left running and manual cleanup is needed. It can be useful for debugging to leave the engine running, however it is recommended to stop it after we have finished using it.
+        """
+        Run the bscan arguments saved to the instance, in the same session.
+        
+        The engine is terminated if kill_on_complete is True, otherwise, it's
+        left running and manual cleanup is needed. It can be useful for
+        debugging to leave the engine running, however it is recommended to stop
+        it after we have finished using it.
         """
         # If we have no bscan arguments to run, don't bother starting the engine and report this
         if len(self.bscan_calls) == 0:
@@ -127,13 +148,18 @@ class MATLABEngineWrapper:
 
 
 class GenerationData:
-    """Handles the information and processes related to creating the input data for a particular test case.
-
-    Information is read from a config.yaml file, and the contents of the "generation" field are validated against what is expected.
-
-    From this information, the call to run_bscan is created. This command is the equivalent of running the old run_{pstd,fdtd}_bscan.m scripts on the test in question, however it is now sufficiently generalised so that we do not need an individual run file for each test.
-
-    The input data for the particular test can then be generated using the .generate() method on the class instance.
+    """
+    Handles the information and processes related to creating the input data for
+    a particular test case.
+    
+    Reads from a config.yaml file, and validates contents of the "generation"
+    field. Then construct the call to run_bscan.  Equivalent to running the old
+    run_{pstd,fdtd}_bscan.m scripts on the test in question, however it is now
+    sufficiently generalised so that we do not need an individual run file for
+    each test.
+    
+    The input data for the particular test can then be generated using the
+    .generate() method on the class instance.
     """
 
     # Location of the config file in case we need to go back to it
