@@ -4,10 +4,9 @@ from glob import glob
 from pathlib import Path
 from typing import Union
 
-from generate_test_input import GenerationData
+from data.input_generation.generate_test_input import GenerationData
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
-
 TESTS_TO_REGEN = glob(LOCATION_OF_THIS_FILE + "/*.yaml")
 N_TESTS_TO_REGEN = len(TESTS_TO_REGEN)
 

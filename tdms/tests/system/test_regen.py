@@ -1,23 +1,21 @@
 import os
-import sys
 from glob import glob
 from pathlib import Path
 from warnings import warn
+
+import pytest
+import yaml
+from data.input_generation.regenerate_all import regenerate_test
+from tdms_testing_class import TDMSSystemTest
+from utils import download_data
 
 # Location of this file, which is where the tests are running from
 LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
 # This will determine whether or not we want to retain the regenerated input .mat files (if say, we are planning a new Zenodo upload). Recommended FALSE on CLI, TRUE locally if you're doing the update
 PRESERVE_FLAG = True
 
-# Hack the 1st - add the data/generation directory to the path so we can import from it
+# Path to the directory containing files we need to read from
 path_to_input_generation = Path(LOCATION_OF_THIS_FILE, "data", "input_generation")
-sys.path.insert(0, str(path_to_input_generation))
-
-import pytest
-import yaml
-from regenerate_all import regenerate_test
-from tdms_testing_class import TDMSSystemTest
-from utils import download_data
 
 # Dataset is stored at https://zenodo.org/record/7440616/
 # ccaegra@ucl.ac.uk (William Graham, @willGraham01) has access.

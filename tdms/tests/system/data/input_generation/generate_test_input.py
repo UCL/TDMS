@@ -25,13 +25,13 @@ class BScanArguments:
     """
     Class to group the input arguments that need to be passed into the MATLAB
     function of the same name, to generate the input data.
-    
+
     The bscan/run_bscan.m file contains the matlab function which generates the
     input data. Regrettably, we need to specify particular inputs to this script
     for each test, which requires us to translate the argument values as read
     from the config.yaml file into a long string of values in the correct order,
     which can in turn be called from MATLAB.
-    
+
     BScanArguments is essentially a glorified dictionary, its members share
     the names of the input arguments to run_bscan. Its create_bscan_argument
     can be used to convert the values that need to be passed into a string of
@@ -41,24 +41,26 @@ class BScanArguments:
     # The directory of the test whose input data is being generated
     test_directory: str
     # The path to the input file that defines the variables iteratefdtd_matrix.m takes in
-    input_filename: Union[str, Path]
+    input_filename: str
 
-    def __init__(self, test_directory, input_filename) -> None:
+    def __init__(
+        self, test_directory: Union[Path, str], input_filename: Union[Path, str]
+    ) -> None:
         """Initialise by unpacking values, and assigning defaults if necessary."""
-        self.test_directory = test_directory
-        self.input_filename = input_filename
+        self.test_directory = str(test_directory)
+        self.input_filename = str(input_filename)
         return
 
     def run_bscan(self, engine: MatlabEngine) -> None:
         """Runs the run_bscan function in the MatlabEngine provided.
-        
+
         The bscan/ and matlab/ directories are assumed to already be in the
         includepath of the engine instance, so that the run_bscan and supporting
         MATLAB files can be called.
         """
         # function [] = run_bscan(test_directory, input_filename)
         # Cast to str() to guard against Path instances slipping through
-        engine.run_bscan(str(self.test_directory), str(self.input_filename), nargout=0)
+        engine.run_bscan(self.test_directory, self.input_filename, nargout=0)
         return
 
 
@@ -68,7 +70,7 @@ class MATLABEngineWrapper:
     directories to the MATLAB instance's search path. We also always want to
     kill the MATLAB instance after the run_bscan function and generating the
     data.
-    
+
     This class is a wrapper for that purpose. It stores instance(s) of the
     BScanArguments class, which it will run in sequence between the
     aforementioned addpath() setup and then engine shutdown. The .run() method
@@ -112,15 +114,10 @@ class MATLABEngineWrapper:
             self.engine.addpath(path)
         return
 
-    def _stop_engine(self) -> None:
-        """Kills engine if it is still running."""
-        self.engine.quit()
-        return
-
     def run(self, kill_on_complete: bool = True) -> None:
         """
         Run the bscan arguments saved to the instance, in the same session.
-        
+
         The engine is terminated if kill_on_complete is True, otherwise, it's
         left running and manual cleanup is needed. It can be useful for
         debugging to leave the engine running, however it is recommended to stop
@@ -143,7 +140,7 @@ class MATLABEngineWrapper:
 
             # If requested, kill the instance
             if kill_on_complete:
-                self._stop_engine()
+                self.engine.quit()
         return
 
 
@@ -151,13 +148,13 @@ class GenerationData:
     """
     Handles the information and processes related to creating the input data for
     a particular test case.
-    
+
     Reads from a config.yaml file, and validates contents of the "generation"
     field. Then construct the call to run_bscan.  Equivalent to running the old
     run_{pstd,fdtd}_bscan.m scripts on the test in question, however it is now
     sufficiently generalised so that we do not need an individual run file for
     each test.
-    
+
     The input data for the particular test can then be generated using the
     .generate() method on the class instance.
     """

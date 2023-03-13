@@ -32,7 +32,7 @@ I( :, 1, (end-3):end) = 0;
 inds = find(I(:));
 [ii,jj,kk] = ind2sub(size(I), inds);
 composition_matrix = [ii jj kk ones(size(ii))];
-material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
+material_matrix = [1 refind^2 1 0 0 0 0 0 0 0 0];
 
 save('gridfile_cyl', 'composition_matrix', 'material_matrix');
 %setup free space matrix and save
