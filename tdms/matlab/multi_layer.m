@@ -1,6 +1,6 @@
 %[S] = multi_layer( zvec, nvec, lambda0, theta0, sp)
 %
-%Caculate the characteristic matrix of a multlayer structure 
+%Caculate the characteristic matrix of a multlayer structure
 %specified as per the following:
 %
 % zvec =    [z1    z2   ... zN]
@@ -8,7 +8,7 @@
 % lambda0: wavelength in air
 % theta0: angle of incidence of plane wave in radians
 % sp: 'TE' or 'TM'. 'TE' is taken to mean that the electric vector
-%                        in perpendicular to the plane in which the 
+%                        in perpendicular to the plane in which the
 %                        wave propagates and 'TM' is the case when
 %                        the electric field vector is in, or
 %                        parallel to, the plane in which the wave
@@ -26,7 +26,7 @@ function [S] = multi_layer( zvec, nvec, lambda0, theta0, sp)
 	if numel(nvec)-numel(zvec) ~= 1
 	    error('nvec should have one more element that zvec');
 	end
-	    
+
 theta_vec=asin(nvec(1)*sin(theta0)./nvec);
 
 st=sin(theta_vec);

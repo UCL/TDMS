@@ -25,14 +25,14 @@ depicted below in Figure
 This depicts an $3\times3\times3$ array that would be index according
 to:
 
-\begin{verbatim} 
->> array(i,j,k) 
+\begin{verbatim}
+>> array(i,j,k)
 \end{verbatim}
 in matlab. Then the array could be pictured as being composed of rows
 indexed by $i$, columns indexed by $j$ and layers indexed by $k$. The
 address of a particular element \verb1array(i,j,k)1 in memory is thus given by:
 
-\begin{verbatim} 
+\begin{verbatim}
 (mArray +k*nrows*ncols+ j*nrows + i)
 \end{verbatim}
 
@@ -50,13 +50,13 @@ index is \verb1i1 which is used to traverse along the row. The code
 for performing this is included below.
 
 \begin{verbatim}
-/*Casts a 3-dimensional array such that it may be indexed according to the 
+/*Casts a 3-dimensional array such that it may be indexed according to the
   usual array indexing scheme array[k,j,i].
 
   array is a point to a matlab 3 dimensional array
   nrows the number of rows in the array
   ncols the number of columns in the array
-  nlayers the number of layers, each of dimension nrows*ncols 
+  nlayers the number of layers, each of dimension nrows*ncols
 
 */
 
@@ -67,7 +67,7 @@ double ***castMatlab3DArray(double *array, int nrows, int ncols, int nlayers){
   p = (double ***)malloc((unsigned) (nlayers*sizeof(double **)));
   for(k =0; k<nlayers;k++)
     p[k] = (double **)malloc((unsigned) (ncols*sizeof(double *)));
-  
+
   for(k =0; k<nlayers;k++)
     for(j =0; j<ncols;j++)
       p[k][j] = (array + k*nrows*ncols+ j*nrows);

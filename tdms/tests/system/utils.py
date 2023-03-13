@@ -2,18 +2,18 @@
 Common utilities for running TDMS system tests
 """
 import os
-import h5py
 import shutil
-import numpy as np
-
 from dataclasses import dataclass
-from urllib import request
-from platform import system
-from typing import Union
-from pathlib import Path
-from zipfile import ZipFile
 from functools import wraps
-from subprocess import Popen, PIPE
+from pathlib import Path
+from platform import system
+from subprocess import PIPE, Popen
+from typing import Generator, Tuple, Union
+from urllib import request
+from zipfile import ZipFile
+
+import h5py
+import numpy as np
 
 executable_name = "tdms.exe" if system() == "Windows" else "tdms"
 executable_path = shutil.which(executable_name)
@@ -36,7 +36,22 @@ class HDF5File(dict):
         super().__init__()
 
         with h5py.File(filepath, "r") as file:
-            self.update({k: self.to_numpy_array(v) for k, v in file.items()})
+            self.update({k: self.to_numpy_array(v) for k, v in self.traverse(file)})
+
+    def traverse(
+        self, file_or_group: Union[h5py.File, h5py.Group], prefix: str = ""
+    ) -> Generator[Tuple[str, h5py.Dataset], None, None]:
+        """
+        Traverse the hdf5 file, when a group is encountered also traverse the
+        group (get all datasets).
+        """
+        for key in file_or_group.keys():
+            item = file_or_group[key]
+            path = f"{prefix}/{key}" if prefix else key
+            if isinstance(item, h5py.Dataset):
+                yield (path, item)
+            elif isinstance(item, h5py.Group):
+                yield from self.traverse(item, path)
 
     def to_numpy_array(self, dataset: h5py.Dataset) -> np.ndarray:
         """Convert a hdf5 dataset into a numpy array"""
@@ -60,11 +75,11 @@ class HDF5File(dict):
 
         return array.reshape(shape)
 
-    def matches(self, other: "HDF5File", rtol=1e-10) -> bool:
+    def matches(self, other: "HDF5File", rtol=1e-10, return_message=False) -> bool:
         """
-        Does this file match another. All arrays must be within a rtol
+        Does this file match another? All arrays must be within a rtol
         to the other, where rtol is the relative difference between the two
-        arrays
+        arrays.
         """
 
         for key, value in self.items():
@@ -75,15 +90,26 @@ class HDF5File(dict):
             other_value = other[key]
 
             if value.shape != other_value.shape:
-                return False  # Shapes did not match
+                # Shapes did not match
+                info_message = f"Array shape in {key} was not the same. {value.shape} ≠ {other_value.shape}"
+                if return_message:
+                    return False, info_message
+                else:
+                    return False
 
             r_ms_diff = relative_mean_squared_difference(value, other_value)
             if r_ms_diff > rtol:
-                print(f"{key} was not within {rtol} to the reference. "
-                      f"relative MSD = {r_ms_diff:.8f})")
-                return False
-
-        return True
+                # rms difference was too great
+                info_message = f"{key} was not within {rtol} to the reference. Relative MSD = {r_ms_diff:.8f}"
+                if return_message:
+                    return False, info_message
+                else:
+                    print(info_message)
+                    return False
+        if return_message:
+            return True, "No differences detected"
+        else:
+            return True
 
 
 def relative_mean_squared_difference(a: np.ndarray, b: np.ndarray) -> float:
@@ -148,8 +174,10 @@ def run_tdms(*args) -> Result:
     """
 
     if executable_path is None:
-        raise AssertionError("Failed to run tdms. Not found in either current "
-                             "working directory or $PATH")
+        raise AssertionError(
+            "Failed to run tdms. Not found in either current "
+            "working directory or $PATH"
+        )
 
     p = Popen([executable_path, *args], stdout=PIPE)
     stdout, _ = p.communicate()

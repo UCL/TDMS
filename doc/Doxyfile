@@ -1,0 +1,46 @@
+# Doxyfile 1.9.5
+
+# This file describes the settings to be used by the documentation system
+# doxygen (www.doxygen.org) for a the tdms project.
+#
+# Options are documented at https://www.doxygen.nl/manual/config.html
+# or by running
+# doxygen -g DefaultTemplateDoxyfile
+# (it generates a Doxyfile with *a lot* of comments).
+#
+# You can run
+# doxygen -x docs/Doxyfile
+# to compare the used configuration file with the template configuration file.
+
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "TDMS"
+PROJECT_BRIEF          = "Time Domain Maxwell Solver"
+# Blank == no logo
+PROJECT_LOGO           =
+# Blank == Write output to current dir.
+OUTPUT_DIRECTORY       =
+# Input directories to search for files
+INPUT                  = tdms/include/ tdms/src/ tdms/tests/unit/ tdms/tests/include tdms/tests/system
+# Recurse through input directories to find subdirectories
+RECURSIVE              = YES
+FILE_PATTERNS          = *.cpp \
+                         *.h \
+                         *.py
+GENERATE_LATEX         = NO
+# Allow Doxygen to build graphs for class inheritance, etc
+HAVE_DOT               = YES
+
+# also document private member functions?
+EXTRACT_PRIVATE        = YES
+
+STRIP_CODE_COMMENTS    = NO
+
+# doxygen awesome
+GENERATE_TREEVIEW      = YES
+HTML_EXTRA_STYLESHEET  = doc/doxygen-awesome-css/doxygen-awesome.css
+
+# 'mainpage' gets put on the index page
+INPUT += README.md
+INPUT += CONTRIBUTING.md
+INPUT += doc/developers.md
+USE_MDFILE_AS_MAINPAGE = README.md

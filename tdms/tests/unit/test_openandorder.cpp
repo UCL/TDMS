@@ -1,9 +1,16 @@
-#include "catch2/catch_test_macros.hpp"
+/**
+ * @file test_openandorder.cpp
+ * @brief Tests of the argument parsing and file I/O.
+ */
 #include "argument_parser.h"
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace std;
 
-
+/**
+ * @brief Test that the argument parser recovers the input arguments provided.
+ */
 TEST_CASE("Test argument parsing") {
 
   const char *input_args[] = {"tdms", "-h"};

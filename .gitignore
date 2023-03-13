@@ -1,11 +1,23 @@
+# build output
 **build/
-**doc/masterdoc.pdf
-.idea/
+**cmake-build**
 **.o
-**.DS_store
-**.mat
+compile_commands.json
+
+# pdf and documentation output
+**doc/masterdoc.pdf
+**-eps-converted-to.pdf
+html/
+
+# (py)tests and test data
 **.pyc
 **/.pytest_cache/
-**cmake-build**
 tdms/tests/system/data
-**-eps-converted-to.pdf
+**.mat
+
+# text editor files
+.idea/
+.vscode/
+
+# MacOS
+**.DS_store

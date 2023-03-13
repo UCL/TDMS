@@ -34,7 +34,7 @@ for lvar = 1:length(variables)
 	    z_launch = 0;
 	else
 	    fprintf(1,'Failed to define %s\n',variables{lvar});
-	    must_abort = 1;    
+	    must_abort = 1;
 	end
     end
 end

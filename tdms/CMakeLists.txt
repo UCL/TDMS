@@ -2,37 +2,34 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tdms LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
 
 # Allow building with testing, and default to off
 option(BUILD_TESTING "" OFF)
 include(CTest)
 
+# Allow user to specify git access protocol (default to https)
+option(GIT_SSH "" OFF)
+if(GIT_SSH)
+    set(GITHUB_PREFIX git@github.com:)
+else()
+    set(GITHUB_PREFIX https://github.com/)
+endif()
+
+
 # Allow RPATH on mac
 set(CMAKE_MACOSX_RPATH TRUE)
+
+# Add -fPIC flag
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Append the cmake/ directory to the search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/targets.cmake)
 
 # and the  include directories for the project
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include/)
 include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
-
-
-# Command line options for CMake ----------------------------------------------
-# Type of derivatives to use
-set(DERIVATIVE_TYPE "PS" CACHE STRING "Type of derivatives to compute.
-Either Use pseudo spectral (PS) or finite differences (FD).
-Options: {FD, PS}")
-set_property(CACHE DERIVATIVE_TYPE PROPERTY STRINGS "FD" "PS")
-get_property(x CACHE DERIVATIVE_TYPE PROPERTY STRINGS)
-if (NOT DERIVATIVE_TYPE IN_LIST x)
-    message(FATAL_ERROR "Cannot set DERIVATIVE_TYPE=${DERIVATIVE_TYPE}. Options: ${x}")
-endif()
-
-if (${DERIVATIVE_TYPE} STREQUAL FD)
-    set(DFLAG "-DFDFLAG")
-endif()
 
 
 # Matlab ----------------------------------------------------------------------
@@ -53,7 +50,7 @@ include_directories(${FFTW_INCLUDE_DIRS})
 
 
 # OpenMP + libc++ -------------------------------------------------------------
-if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_package(OpenMP_Mac REQUIRED)
     find_package(Lib_CXX_Mac)
 else()
@@ -61,20 +58,38 @@ else()
 endif()
 
 
+# spdlog ----------------------------------------------------------------------
+find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
+if(NOT spdlog_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(spdlog
+	    GIT_REPOSITORY ${GITHUB_PREFIX}gabime/spdlog
+            GIT_TAG v1.11.0
+            )
+    FetchContent_MakeAvailable(spdlog)
+endif()
+
+# Set the active logging level to debug if required
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
+        OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Test")
+    message(FATAL_ERROR "CMAKE_BUILT_TYPE \"Test\" is not recognised.
+    Did you mean -DBUILD_TESTING=ON ?")
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+else()
+    add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+endif()
+
 # TDMS target -----------------------------------------------------------------
-set(SOURCES
-    src/argument_parser.cpp
-    src/fdtd_grid_initialiser.cpp
-    src/interpolate.cpp
-    src/iterator.cpp
-    src/interpolation_methods.cpp
-    src/matrix_collection.cpp
-    src/mesh_base.cpp
-    src/numeric.cpp
-    src/numerical_derivative.cpp
-    src/utils.cpp
-    matlabio/matlabio.cpp
-    )
+
+# wildcard to find all *.cpp files in the src directory except for main.cpp
+# (which we don't want for the testing target)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp")
+
+# TODO: can delete this line when matlabio is removed.
+set(SOURCES ${SOURCES} matlabio/matlabio.cpp)
 
 if (BUILD_TESTING)
     test_target()
@@ -102,10 +117,14 @@ install(TARGETS tdms)
 if (BUILD_TESTING)
     enable_testing()
 
-    add_executable(tdms_tests
-            tests/unit/test_openandorder.cpp
-            tests/unit/test_interpolate.cpp)
+    # find all .cpp files in the unit tests directory (and subdirectories).
+    file(GLOB_RECURSE UNIT_TEST_SRC "${CMAKE_SOURCE_DIR}/tests/unit/test_*.cpp")
 
+    add_executable(tdms_tests "${UNIT_TEST_SRC}")
+
+    # add the additional include directories to the tdms_tests target
+    target_include_directories(tdms_tests PRIVATE "${CMAKE_SOURCE_DIR}/tests/include")
+    # link additional libraries for testing
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
             tdms_lib
