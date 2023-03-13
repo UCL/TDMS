@@ -582,7 +582,6 @@ if length(ill_file) > 0 %must have already computed the illumination source
     fprintf('Loading illumination source from %s\n', ill_file);
 
     data = load(ill_file);
-    %assert_are_not_defined(efname, hfname);
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
@@ -597,28 +596,29 @@ if length(ill_file) > 0 %must have already computed the illumination source
         assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
     elseif has_exi_eyi(data)
 
+		non_empty_eh_names = (~isempty(efname)) && (~isempty(hfname));
         tdfield = data;
         assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
 
-        if interface.I0(2) | interface.I1(2)
+        if (interface.I0(2) | interface.I1(2)) && non_empty_eh_names
             Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
         else
             Isource=[];
         end
 
-        if interface.J0(2) | interface.J1(2)
+        if (interface.J0(2) | interface.J1(2)) && non_empty_eh_names
             Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
         else
             Jsource = [];
         end
 
-        if interface.K0(2) | interface.K1(2)
+        if (interface.K0(2) | interface.K1(2)) && non_empty_eh_names
             Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
         else
             Ksource = [];
         end
 
-		if (~isempty(efname)) && (~isempty(hfname)) %TSTK THIS NEEDS RECONCILING!!!!!!!!!! WE ASSERT THESE DON'T EXIST ABOVE!
+		if non_empty_eh_names
 			%Set up the Isource field. This has to be defined on a 2d array
 			%over the range (J0,J1)x(K0,K1). We calculate the field values
 			%assuming an origin for the illumination
@@ -842,20 +842,21 @@ else
 
     fprintf('Creating Isource, Jsource, Ksource...');
 
+	non_empty_eh_names = (~isempty(efname)) && (~isempty(hfname));
     tdfield.exi = [];tdfield.eyi = [];
-    if interface.I0(2) | interface.I1(2)
+    if (interface.I0(2) | interface.I1(2)) && non_empty_eh_names
 		Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 		Isource=[];
     end
 
-    if interface.J0(2) | interface.J1(2)
+    if (interface.J0(2) | interface.J1(2)) && non_empty_eh_names
 		Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 		Jsource = [];
     end
 
-    if interface.K0(2) | interface.K1(2)
+    if (interface.K0(2) | interface.K1(2)) && non_empty_eh_names
 		Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
     else
 		Ksource = [];
@@ -869,7 +870,7 @@ else
     j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
     k_source = (interface.K0(1):interface.K1(1)) - illorigin(3);
 
-	if (~isempty(efname)) && (~isempty(hfname))
+	if non_empty_eh_names
 		%Ey, I0
 		if interface.I0(2)
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
@@ -1015,14 +1016,22 @@ else
 			z = z + z_launch;
 			%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			if use_pstd
+				eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+			else
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			end
 			Ksource(1,:,:) = source_field{1};
 
 			%Ey, K0
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			if use_pstd
+				eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+			else
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			end
 			Ksource(2,:,:) = source_field{2};
 			%Hx, K0
 			[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
