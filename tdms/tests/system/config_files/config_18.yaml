@@ -8,7 +8,7 @@ fdtd_input:
     fdtd_run:
       reference: fdtd_cyl.mat
 pstd_input:
-  adjust: fdtd_run
+  adjust: fdtd_input
   solver_method: pstd
   runs:
     fdtd_run:
