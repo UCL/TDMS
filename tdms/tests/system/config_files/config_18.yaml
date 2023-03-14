@@ -6,10 +6,10 @@ fdtd_input:
   calc_tdfield: True
   runs:
     fdtd_run:
-      reference: fdtd_cyl.mat
+      reference: fdtd_out.mat
 pstd_input:
   adjust: fdtd_input
   solver_method: pstd
   runs:
-    fdtd_run:
-      reference: pstd_cyl.mat
+    pstd_run:
+      reference: pstd_out.mat

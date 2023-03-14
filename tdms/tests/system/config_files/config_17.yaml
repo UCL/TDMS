@@ -6,7 +6,7 @@ cyl_3a:
   calc_tdfield: True
   runs:
     case_3a:
-      reference: pstd_cyl.mat
+      reference: empty_ehname_out.mat
 cyl_3b:
   input_file: input_file_17.m
   obstacle: cyl
@@ -14,7 +14,7 @@ cyl_3b:
   calc_tdfield: True
   runs:
     case_3b:
-      reference: pstd_cyl.mat
+      reference: tdfield_out.mat
 cyl_2:
   input_file: input_file_17.m
   obstacle: cyl
@@ -22,18 +22,18 @@ cyl_2:
   illsetup: True
   runs:
     case_2:
-      reference: pstd_cyl.mat
+      reference: populated_ehname_out.mat
 cyl_1a:
   input_file: input_file_17.m
   obstacle: cyl
   obstacle_radius: 2e-6
   runs:
     case_1a:
-      reference: pstd_cyl.mat
+      reference: populated_ehname_out.mat
 cyl_1b:
   input_file: input_file_17_emptyeh.m
   obstacle: cyl
   obstacle_radius: 2e-6
   runs:
     case_1b:
-      reference: pstd_cyl.mat
+      reference: empty_ehname_out.mat

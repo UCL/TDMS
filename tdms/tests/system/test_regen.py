@@ -32,12 +32,7 @@ for i, id in enumerate(TEST_IDS):
     id = id.removeprefix(str(path_to_config_files / "config_"))
     id = id.removesuffix(".yaml")
     TEST_IDS[i] = id
-print("!!! Ignoring arc_17 & 18 if present !!!")
-if "17" in TEST_IDS:
-    TEST_IDS.remove("17")
-if "18" in TEST_IDS:
-    TEST_IDS.remove("18")
-# The number of tests will be useful to know later
+# The number of tests might be useful to know later
 N_TESTS = len(TEST_IDS)
 
 
