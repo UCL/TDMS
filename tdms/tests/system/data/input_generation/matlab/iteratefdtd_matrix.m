@@ -42,11 +42,11 @@ end
 current_line = fgets(fid_input);
 while current_line ~= -1
     if ~isempty(findstr('material_file',current_line))
-	if isempty(material_file) | ((~isempty(material_file)) & (findstr('material_file',current_line)>findstr('%',current_line)))
-	    eval(current_line);
-	else
-	    fprintf(1,'material_file specified as argument and in %s, using %s\n',input_file,material_file);
-	end
+		if isempty(material_file) | ((~isempty(material_file)) & (findstr('material_file',current_line)>findstr('%',current_line)))
+			eval(current_line);
+		else
+			fprintf(1,'material_file specified as argument and in %s, using %s\n',input_file,material_file);
+		end
     else
 	eval(current_line);
     end

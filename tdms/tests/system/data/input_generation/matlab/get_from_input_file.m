@@ -19,7 +19,7 @@ if isfile(input_file)
 	run(input_file);
 else
 	% Throw error - config file cannot be found
-    error(sprintf('File %s could not be opened for reading',input_file));
+    error('File %s could not be opened for reading',input_file);
 end
 
 %% Determine if the variables loaded in can be retrieved
@@ -38,7 +38,7 @@ for i=1:n_variables
             end
         end
         % we we got to here, the variable was not optional but wasn't found in the input file - throw error
-        error(sprintf('Required variable %s not present in %s', required_variables{i}, input_file));
+        error('Required variable %s not present in %s', varargin{i}, input_file);
     end
 end
 end
