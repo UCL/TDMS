@@ -1,7 +1,7 @@
 % If 1, use band-limited interpolation over cubic
 use_bli = 0;
 % If 1, use pstd timestepping over fdtd
-use_pstd = 1;
+use_pstd = 0;
 
 %these are not involved in the formal input file spec
 lambda = 1300e-9;
