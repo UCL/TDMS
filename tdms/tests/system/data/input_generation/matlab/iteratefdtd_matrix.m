@@ -30,6 +30,11 @@
 function [fdtdgrid, Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out, Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iteratefdtd_matrix(input_file,operation,outfile,material_file,ill_file)
 %Edited 24/7/2003 to_l allow for different cell widths in each orthogonal direction
 
+%% "run" operation is not currently supported, so let's flag this here rather than right at the end of the file
+if strncmp(operation,'run',3)
+	error('%s mode is not currently supported', operation);
+end
+
 %% Fetch variables from input file
 % Required variables
 [delta, I, J, K, n, R0, ...
@@ -48,6 +53,8 @@ phasorsurface, exdetintegral, outputs_array] = get_from_input_file(input_file, s
 % Fetch additional requirements if exdetintegral is present and 1
 if exdetintegral == 1
 	[k_det_obs, NA_det, beta_det, detmodevec, detsensefun] = get_from_input_file(input_file, struct(), 'k_det_obs', 'NA_det', 'beta_det', 'detmodevec', 'detsensefun');
+	% Interpret detsensefun as a function, rather than a string via sprintf
+	detsensefun = str2func(detsensefun);
 end
 
 % If the user has not specified the matieral file as an input, attempt to obtain it from the input_file
@@ -335,7 +342,7 @@ if numel(f_ex_vec) > 1 && ~(size(f_ex_vec,1)==1 || size(f_ex_vec,2)==1)
 	error('f_ex_vec should be a vector (ie, a matrix with one singleton dimension)');
 end
 
-%check correctness of detector sensitivity evaluation parameters
+% Check correctness of detector sensitivity evaluation parameters
 if ~(exdetintegral==0 || exdetintegral==1)
     error('exdetintegral should take a boolean value (0 or 1)');
 elseif exdetintegral==1
@@ -362,8 +369,8 @@ if ~isempty(air_interface) && air_interface > -illorigin(3)*delta.z
 	error('Error: air_interface is intended to be defined outside of the simulation space (z=%e), in the negative z-direction, however it is at z=%e',-illorigin(3)*delta.z,air_interface);
 end
 
-%% End of error checking, begin setup of .mat file output
-
+%% End of error checking, begin source term computations
+% Construct the computational grid
 fprintf('Allocating grid...');
 fdtdgrid = initialisesplitgrid(I,J,K,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu);
 fprintf('Done\n');
@@ -373,13 +380,11 @@ fprintf('Done\n');
 % We now implement an incident planewave using a total/scattered field formulation.
 % For k<K1 we have scattered and for k>=K1 we have total.
 % The field is coupled into system by means of update equations to_l maintain consistency.
-
 refractive_index = sqrt(real(epsr(1)));
 omega_an = 2*pi*f_an;
 lambda_an = c/(f_an*refractive_index);
 
 fprintf('Initialising source field...\n');
-
 % Offset the illumination origin to be in global coordinates
 illorigin = illorigin + [Dxl Dyl Dzl];
 % Now need to adjust interface to be in global coordinates, unless we are using a pulsed source.
@@ -419,13 +424,14 @@ if ~isempty(hfname)
 	hfname = str2func(hfname);
 end
 
-if length(ill_file) > 0 %must have already computed the illumination source
+if ~isempty(ill_file)
+	% illfile has been supplied,
+	% We must have already computed the illumination source
+	% As such, we have a data file with elemenets Isource, Jsource, and Ksource,
+	% _OR_ a datafile with exi and eyi
     fprintf('Loading illumination source from %s\n', ill_file);
 
     data = load(ill_file);
-    %here we can have a data file with elemenets Isource, Jsource
-    %and Ksource *or* exi and eyi
-    fieldnames_ill = fieldnames(data);
 
     if has_ijk_source_matricies(data)
         Isource = data.Isource;
@@ -440,19 +446,19 @@ if length(ill_file) > 0 %must have already computed the illumination source
         tdfield = data;
         assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
 
-        if (interface.I0(2) | interface.I1(2)) && non_empty_eh_names
+        if (interface.I0(2) || interface.I1(2)) && non_empty_eh_names
             Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
         else
             Isource=[];
         end
 
-        if (interface.J0(2) | interface.J1(2)) && non_empty_eh_names
+        if (interface.J0(2) || interface.J1(2)) && non_empty_eh_names
             Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
         else
             Jsource = [];
         end
 
-        if (interface.K0(2) | interface.K1(2)) && non_empty_eh_names
+        if (interface.K0(2) || interface.K1(2)) && non_empty_eh_names
             Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
         else
             Ksource = [];
@@ -683,19 +689,19 @@ else
     fprintf('Creating Isource, Jsource, Ksource...');
 
     tdfield.exi = [];tdfield.eyi = [];
-    if (interface.I0(2) | interface.I1(2)) && non_empty_eh_names
+    if (interface.I0(2) || interface.I1(2)) && non_empty_eh_names
 		Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 		Isource=[];
     end
 
-    if (interface.J0(2) | interface.J1(2)) && non_empty_eh_names
+    if (interface.J0(2) || interface.J1(2)) && non_empty_eh_names
 		Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
     else
 		Jsource = [];
     end
 
-    if (interface.K0(2) | interface.K1(2)) && non_empty_eh_names
+    if (interface.K0(2) || interface.K1(2)) && non_empty_eh_names
 		Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
     else
 		Ksource = [];
@@ -967,75 +973,49 @@ else
 		fprintf(1, 'dt being changed from %.5e to %.5e to ensure stability\n',dt,dt_upper*0.95);
 		dt = dt_upper*0.95;
     end
-    %setup a guassian pulse g(t) = exp(-pi*(( (t-to_l)/(hwhm) )^2))
+    % Setup a guassian pulse g(t) = exp(-pi*(( (t-to_l)/(hwhm) )^2))
     hwhm = lambda_an^2/((c/refractive_index)*wavelengthwidth)*2*sqrt(log(2)/pi);
     to_l = hwhm*sqrt(log(1e8)/pi);
-    %to_u = to_l + (K1-K0)*delta.z/c;
-    to_u = to_l + (interface.K1(1)-interface.K0(1))*delta.z/c;
 
     %complete_pulse = 1 means that a guassian pulse is launched. complete_pulse = 0
     %means that the leading edge of the incident field is guassian however incident
     %field becomes steady state when the pulse reaches its peak
-    complete_pulse = 1;
+    %complete_pulse = 1;
 
-    %generate the update constants
+    % Generate the constants in the simulation update equations
     fprintf('Initialising update terms [free space and pml]...');
-
-    [sigma, C, D, freespace, conductive_aux, dispersive_aux] = initialiseupdateterms(R0, I, J, K, Dxl, ...
+    [~, C, D, freespace, conductive_aux, dispersive_aux] = initialiseupdateterms(R0, I, J, K, Dxl, ...
 						     Dxu, Dyl, Dyu, Dzl, ...
 						     Dzu, n, delta, dt, ...
 						     epsr, mur, multilayer, omega_an, kappa_max,vc_vec,wp_vec);
     fprintf('Done\n');
 
     fprintf('Initialising update terms [reading grid composition from %s]...',material_file);
-    iteratefdtd_matrix_path = which('iteratefdtd_matrix');
-    file_parser_path = sprintf('%s/file_parser',iteratefdtd_matrix_path(1:(findstr(iteratefdtd_matrix_path,'iteratefdtd_matrix')-1)));
-    addpath(file_parser_path);
     [material_matrix,composition_matrix] = read_material_data(material_file);
-    rmpath(file_parser_path);
 
-    %now update the update parameters to take account of the material
-    %composition specified in material_file
-
+    % Now update the update-parameters, taking account of the material composition in material_file
     [Cmaterial, Dmaterial, fdtdgrid] = updateupdateterms(Dxl,Dyl, Dzl, dt, delta, material_matrix, composition_matrix, fdtdgrid);
-
-    %now we setup the alpha, beta and gamma terms for the
-    %dispersive materials.
-
-    %first we have to so some sorting and ordering since the
-    %material matrix might not be in order and may have gaps
+    % Setup the alpha, beta and gamma terms for the dispersive materials
+	disp_params = struct('alpha',[],'beta',[],'gamma',[]);
+    % Begin by sorting and ordering, since the material matrix might not be in order and may have gaps
     if ~isempty(material_matrix)
 		mat_inds = material_matrix(:,1);
 
 		vc = zeros(1,max(mat_inds));
 		wp = zeros(1,max(mat_inds));
-		epsr_vec = zeros(1,max(mat_inds));
-
 
 		vc(mat_inds) = material_matrix(:,4);
 		wp(mat_inds) = material_matrix(:,5);
-		epsr_vec(mat_inds) = material_matrix(:,2);
 
 		disp_params.alpha = 4./(vc*dt + 2);
 		disp_params.beta = (vc*dt-2)./(vc*dt+2);
-	%	disp_params.gamma =2.*epsr_vec*epso.*wp.*wp*dt*dt./(vc*dt+2);
-			disp_params.gamma =2.*epso.*wp.*wp*dt*dt./(vc*dt+2);
-    else
-		disp_params.alpha = [];
-		disp_params.beta =  [];
-		disp_params.gamma = [];
+		disp_params.gamma =2.*epso.*wp.*wp*dt*dt./(vc*dt+2);
     end
-
     fprintf('Done\n');
 
-    %time vectors
-    %tvec_E = (1:Nt)*dt;     %tvec_E is the time that the incident E-field is required
-    %tvec_H = tvec_E-dt/2;   %tvec_H is the time that the incident H-field is required
-
-    %now set up the cartesian axis coordinates of the entire grid
-    %including the PML. This is done so that the internal indexing
-    %scheme of the FDTD grid also indexes the coordinates of the grid
-
+    % Set up the cartesian axis coordinates of the entire grid, including the PML.
+	% This is done so that the internal indexing scheme of the FDTD grid also indexes the coordinates of the grid.
+	grid_labels = struct();
     x_grid_label = ((1:(I_tot + 1)) - illorigin(1))*delta.x;
     y_grid_label = ((1:(J_tot + 1)) - illorigin(2))*delta.y;
     z_grid_label = ((1:(K_tot + 1)) - illorigin(3))*delta.z + z_launch;
@@ -1043,51 +1023,38 @@ else
     grid_labels.y_grid_labels = y_grid_label;
     grid_labels.z_grid_labels = z_grid_label;
 
-    [m_outputs,n_outputs] = size(outputs_array);
-    m_outputs
-    Nt
-    accumulate_output = cell(m_outputs, Nt);
-
-    %now set the fdtdgrid to an initial state
-    fprintf('Initialising the field values...');
-    t_init_E = 0;
-    t_init_H = 0.5*dt;
-    phasetermE = exp(sqrt(-1)*omega_an*t_init_E);
-    phasetermH = exp(sqrt(-1)*omega_an*t_init_H);
-
-    fprintf('Done\n');
-    %end setting fdtdgrid
-
-    %now setup detector integral data, if required
+    % Now setup detector integral data, if required
+	% Provide defaults if exdetintegral is not set to 1
+	f_vec = struct('fx_vec',[],'fy_vec',[]);
+	Pupil = [];
+	k_det_obs_global = [];
+	D_tilde = struct('Dx_tilde',[],'Dy_tilde',[]);
     if exdetintegral == 1
-		%fx_vec, fy_vec
 		fx_vec = (0:(I-1))/I/delta.x;
 		fy_vec = (0:(J-1))/J/delta.y;
 
-		fx_vec(find(fx_vec>1/2/delta.x)) = fx_vec(find(fx_vec>1/2/delta.x)) - 1/delta.x;
-		fy_vec(find(fy_vec>1/2/delta.y)) = fy_vec(find(fy_vec>1/2/delta.y)) - 1/delta.y;
+		fx_vec(fx_vec>1/2/delta.x) = fx_vec(fx_vec>1/2/delta.x) - 1/delta.x;
+		fy_vec(fy_vec>1/2/delta.y) = fy_vec(fy_vec>1/2/delta.y) - 1/delta.y;
 
 		f_vec.fx_vec = fx_vec;
 		f_vec.fy_vec = fy_vec;
 
-		%FX, FY
-		[FX,FY]=ndgrid(fx_vec,fy_vec);
+		% FX, FY
+		[FX,FY] = ndgrid(fx_vec,fy_vec);
 
-		%Pupil - correct for for both cases of with and without an
-			%air interface
+		% Pupil - correct for for both cases of with and without an air interface
 		Pupil = double( sqrt( (lambda_an*FX).^2+(lambda_an*FY).^2)< NA_det/refractive_index );
 
-		%k_det_obs_global
+		% k_det_obs_global
 		k_det_obs_global = k_det_obs + Dzl;
 
-		%Dx_tilde, Dy_tilde
-		%Handle 2D case
+		% Dx_tilde, Dy_tilde
+		% Handle 2D case
 		if I==0
 			i_obs = 1-(illorigin(1)-Dxl);
 		else
 			i_obs = (1:I)-(illorigin(1)-Dxl);
 		end
-
 		if J==0
 			j_obs = 1-(illorigin(2)-Dyl);
 		else
@@ -1095,49 +1062,37 @@ else
 		end
 
 		for im=1:numel(detmodevec)
-
 			[x,y,z] = yeeposition(i_obs,j_obs,k_det_obs-illorigin(3)+Dzl,delta,'Ex');
-			%x and y are as defined in the sample space. We need to generate x
-			%and y in the detector space which may be done as
+			% x and y are as defined in the sample space. We need to generate x
+			% and y in the detector space which may be done as
 
 			if numel(x)>1
 				x = -1*(x(1) - (0:(numel(x)-1))*diff(x(1:2)) + numel(x)*diff(x(1:2)));
 			end
-
 			if numel(y)>1
 				y = -1*(y(1) - (0:(numel(y)-1))*diff(y(1:2)) + numel(y)*diff(y(1:2)));
 			end
 
-			[X,Y,Z] = ndgrid(x,y,z);
-
-			%%%%%%%%%%%%%%%
-			%xx = x;
-			%yx = y;
-			%%%%%%%%%%%%%%%
-
-			eval(sprintf('Dx = %s(X,Y,beta_det,detmodevec(im));', detsensefun));
-
+			[X,Y,~] = ndgrid(x,y,z);
+			Dx = detsensefun(X, Y, beta_det, detmodevec(im));
 			if im==1
 				Dx_tilde = zeros(numel(detmodevec),size(Dx,1),size(Dx,2));
 			end
 			Dx_tilde(im,[1 fliplr(2:end)],[1 fliplr(2:end)]) = ifft2(Dx);
 
-
 			[x,y,z] = yeeposition(i_obs,j_obs,k_det_obs-illorigin(3)+Dzl,delta,'Ey');
-			%x and y are as defined in the sample space. We need to generate x
-			%and y in the detector space which may be done as
+			% x and y are as defined in the sample space. We need to generate x
+			% and y in the detector space which may be done as
 
 			if numel(x)>1
 				x = -1*(x(1) - (0:(numel(x)-1))*diff(x(1:2)) + numel(x)*diff(x(1:2)));
 			end
-
 			if numel(y)>1
 				y = -1*(y(1) - (0:(numel(y)-1))*diff(y(1:2)) + numel(y)*diff(y(1:2)));
 			end
 
-			z_obs = z;
-			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('Dy = %s(X,Y,beta_det,detmodevec(im));', detsensefun));
+			[X,Y,~] = ndgrid(x,y,z);
+			Dy = detsensefun(X, Y, beta_det, detmodevec(im));
 			if im==1
 				Dy_tilde = zeros(numel(detmodevec),size(Dy,1),size(Dy,2));
 			end
@@ -1146,157 +1101,42 @@ else
 
 		D_tilde.Dx_tilde = reshape(Dx_tilde,numel(detmodevec),size(Dy,1),size(Dy,2));
 		D_tilde.Dy_tilde = reshape(Dy_tilde,numel(detmodevec),size(Dy,1),size(Dy,2));
-		%save detvars Dx Dx_tilde fx_vec fy_vec xx yx i_obs j_obs;
-    else
-		Pupil = [];
-
-		k_det_obs_global = [];
-
-		f_vec.fx_vec = [];
-		f_vec.fy_vec = [];
-
-		D_tilde.Dx_tilde = [];
-		D_tilde.Dy_tilde = [];
     end
-    %finished seting up detector integral data, if required
-
-    %save detdata Dy_tilde Dx_tilde Pupil fx_vec fy_vec;
-
-    %begin iterations
-    tic; %start the clock ticking
-	 %for tind = 1:Nt
-
-	tind_start = 1;
-	tind_end   = 1; %the case of runmode = 'complete'
-	if strncmp(runmode,'analyse',7)
-	    tind_end = Nt;
-	end
 
 	if strncmp(operation,'run',3)
-	    %first get the path
-	    wd = pwd;
-	    unify_match = strfind(wd,'dispersive');
-	    dash_match = strfind(wd,'\');
-	    if isempty(dash_match)
-			dash_match = strfind(wd,'/');
-	    end
-	    [min_match,inds] = find(unify_match<dash_match);
-	    addpath(sprintf('%siterater',wd(1:dash_match(inds(1)))));
-	    fprintf(1,'Starting iterations\n');
-	    tic;
-	    for tind = tind_start:tind_end
-			if(toc > 1)
-				fprintf(1,'Done %d of %d\n',tind-tind_start,length(tind_start:tind_end));
-				tic;
-			end
-
-			%Must ensure that the iwave_l values are complex
-			if interface.I0(2) | interface.I1(2)
-				Isource = complex(real(Isource),imag(Isource));
-			end
-			if interface.J0(2) | interface.J1(2)
-				Jsource = complex(real(Jsource),imag(Jsource));
-			end
-			if interface.K0(2) | interface.K1(2)
-				Ksource = complex(real(Ksource),imag(Ksource));
-			end
-
-			if strncmp(runmode,'analyse',7)
-				%[Ex_out, Ey_out, Ez_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs] =
-				%iterater(Cmaterial,Dmaterial,C,D,freespace,interface,Isource,Jsource,Ksource,tvec_E,
-				%tvec_H,omega_an,to_l,hwhm,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu,double(strcmp(lower_boundary_update,'true')),tind,dt,tind-1,sourcemode,runmode);
-				[Ex_out, Ey_out, Ez_out, Hx_out, Hy_out, Hz_out, Ex_bs,Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out,Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iterater(fdtdgrid,Cmaterial,Dmaterial,C,D,freespace,disp_params,delta,interface,Isource,Jsource,Ksource,grid_labels,omega_an,to_l,hwhm,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu,tind,dt,tind-1,sourcemode,runmode,exphasorsvolume,exphasorssurface,phasorsurface,phasorinc,dimension,conductive_aux,dispersive_aux,structure,f_ex_vec);
-			else
-				%[Ex_out, Ey_out, Ez_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs] =
-				%iterater(Cmaterial,Dmaterial,C,D,freespace,interface,Isource,Jsource,Ksource,tvec_E,
-				%tvec_H,omega_an,to_l,hwhm,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu,double(strcmp(lower_boundary_update,'true')),Nt,dt,0,sourcemode,runmode);
-				[Ex_out, Ey_out, Ez_out,  Hx_out, Hy_out, Hz_out, Ex_bs, Ey_bs, Hx_bs, Hy_bs, x_out, y_out, z_out,Ex_i, Ey_i, Ez_i, Hx_i, Hy_i, Hz_i,x_i,y_i,z_i,vertices,camplitudes,facets,maxresfield] = iterater(fdtdgrid,Cmaterial,Dmaterial,C,D,freespace,disp_params,delta,interface,Isource,Jsource,Ksource,grid_labels,omega_an,to_l,hwhm,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu,Nt,dt,0,sourcemode,runmode,exphasorsvolume,exphasorssurface,phasorsurface,phasorinc,dimension,conductive_aux,dispersive_aux,structure,f_ex_vec);
-			end
-
-			if strncmp(runmode,'analyse',7)
-				for lvar=1:length(outputs_array)
-					%t_output_matrix = 0;
-					start_cell = outputs_array{lvar}{3};
-					end_cell = outputs_array{lvar}{4};
-					if ~isempty(findstr(outputs_array{lvar}{5},'x'))
-						t_output_matrix.Ex = squeeze(fdtdgrid.Exy(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Exz(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-						t_output_matrix.Hx = ...
-							squeeze(fdtdgrid.Hxy(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Hxz(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-					end
-					if ~isempty(findstr(outputs_array{lvar}{5},'y'))
-						t_output_matrix.Ey = squeeze(fdtdgrid.Eyx(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Eyz(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-						t_output_matrix.Hy = squeeze(fdtdgrid.Hyx(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Hyz(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-					end
-					if ~isempty(findstr(outputs_array{lvar}{5},'z'))
-						t_output_matrix.Ez = squeeze(fdtdgrid.Ezx(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Ezy(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-						t_output_matrix.Hz = squeeze(fdtdgrid.Hzx(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)) + fdtdgrid.Hzy(start_cell(1):end_cell(1),start_cell(2):end_cell(2),start_cell(3):end_cell(3)));
-					end
-					if strcmp(outputs_array{lvar}{6},'dump')
-						fr = t_output_matrix;
-						fid = fopen(sprintf('%s.mat',outputs_array{lvar}{1}),'a');
-						if fid ~= -1
-							fclose(fid);
-							save(sprintf('%s%d',outputs_array{lvar}{1},tind),'fr');
-						else
-							fprintf('Failed to open %s.mat for reading - skipping\n',outputs_array{lvar}{1});
-						end
-					else
-						accumulate_output{lvar}{tind}= t_output_matrix;
-					end
-				end
-			end
-		end %for tind
-
-		%save the accumulated field files
-		if strncmp(runmode,'analyse',7)
-			for lvar=1:length(outputs_array)
-				if strcmp(outputs_array{lvar}{6},'accumulate')
-					fr = accumulate_output{lvar};
-					fid = fopen(sprintf('%s.mat',outputs_array{lvar}{1}),'a');
-					if fid ~= -1
-						fclose(fid);
-						save(outputs_array{lvar}{1},'fr');
-					else
-						fprintf('Failed to open %s.mat for reading - skipping\n',outputs_array{lvar}{1});
-					end
-				end
-			end
-		end
-
-		fprintf(1,'%f per iteration\n',toc/Nt);
+	    error('%s mode is not currently supported', operation);
 	else
 		fprintf(1,'Writing %s...',outfile);
-		%we don't want to save the whole grid here just the materials
+		% We don't want to save the whole grid here, just the materials
+		% So preserve them, then remake fdtdgrid, and include the sizes for allocating field arrays
 		materials = fdtdgrid.materials;
-		clear fdtdgrid;
-		fdtdgrid.materials = materials;
-		%add in the information for allocating the field arrays
-		fdtdgrid.I_tot = I_tot;
-		fdtdgrid.J_tot = J_tot;
-		fdtdgrid.K_tot = K_tot;
-
-		%now save the file
-		%iterater(fdtdgrid,Cmaterial,Dmaterial,C,D,freespace,interface,Isource,Jsource,Ksource,tvec_E,
-		%tvec_H,omega_an,to_l,hwhm,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu,double(strcmp(lower_boundary_update,'true')),Nt,dt,0,sourcemode,runmode);
-		%added the one to avoid a bug in casting to double -
-			%clashed with release 13.
+		fdtdgrid = struct('materials', materials, 'I_tot', I_tot, 'J_tot', J_tot, 'K_tot', K_tot);
 
 		tind = 0;
 
-		if interface.I0(2) | interface.I1(2)
+		if interface.I0(2) || interface.I1(2)
 			Isource = complex(real(Isource),imag(Isource));
 		end
-		if interface.J0(2) | interface.J1(2)
+		if interface.J0(2) || interface.J1(2)
 			Jsource = complex(real(Jsource),imag(Jsource));
 		end
-		if interface.K0(2) | interface.K1(2)
+		if interface.K0(2) || interface.K1(2)
 			Ksource = complex(real(Ksource),imag(Ksource));
 		end
 
-		vers = version;
-		campssample2 = campssample;
-		if strncmp(operation,'filesetup',9)
-			save(outfile,'fdtdgrid','Cmaterial','Dmaterial','C','D','freespace','interface','Isource','Jsource','Ksource','grid_labels','omega_an','to_l','hwhm','Dxl','Dxu','Dyl','Dyu','Dzl','Dzu','Nt','dt','tind','sourcemode','runmode','exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc','disp_params','delta','dimension','conductive_aux','dispersive_aux','structure','f_ex_vec','exdetintegral','f_vec','Pupil','D_tilde','k_det_obs_global','air_interface','intmatprops','use_bli','tdfield','tdfdir','fieldsample','campssample','use_pstd','-v7.3');
+		if strcmp(operation,'filesetup')
+			save(outfile,...
+			'fdtdgrid','Cmaterial','Dmaterial','C','D',...
+			'freespace','interface','Isource','Jsource','Ksource',...
+			'grid_labels','omega_an','to_l','hwhm','Dxl',...
+			'Dxu','Dyl','Dyu','Dzl','Dzu',...
+			'Nt','dt','tind','sourcemode','runmode',...
+			'exphasorsvolume','exphasorssurface','intphasorssurface','phasorsurface','phasorinc',...
+			'disp_params','delta','dimension','conductive_aux','dispersive_aux',...
+			'structure','f_ex_vec','exdetintegral','f_vec','Pupil',...
+			'D_tilde','k_det_obs_global','air_interface','intmatprops','use_bli',...
+			'tdfield','tdfdir','fieldsample','campssample','use_pstd',...
+			'-v7.3');
 		else
 			save(outfile,'fdtdgrid');
 		end
@@ -1351,7 +1191,6 @@ function result = has_ijk_source_matricies(data)
     end
 end
 
-
 function result = has_exi_eyi(data)
     fields = fieldnames(data);
     if ~(numel(fields) == 2)
@@ -1362,65 +1201,32 @@ function result = has_exi_eyi(data)
     end
 end
 
-
-function assert_are_not_defined(efname, hfname)
-    assert(strlength(efname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'An efield should not be defined. Set efname to an empty string');
-    assert(strlength(hfname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'A hfield should not be defined. Set hfname to an empty string');
-end
-
-function assert_are_defined(efname, hfname)
-    assert(strlength(efname) > 0, ...
-        'TDMSException:IncompatibleInput', 'An efname must be defined');
-    assert(strlength(hfname) > 0, ...
-        'TDMSException:IncompatibleInput', 'A hfname must be defined');
-end
-
 function assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface)
+	target_I_dims = [8 interface.J1(1) - interface.J0(1) + 1 interface.K1(1) - interface.K0(1) + 1];
+	target_J_dims = [8 interface.I1(1) - interface.I0(1) + 1 interface.K1(1) - interface.K0(1) + 1];
+	target_K_dims = [8 interface.I1(1) - interface.I0(1) + 1 interface.J1(1) - interface.J0(1) + 1];
 
-    [mI,nI,oI] = size(Isource);
-    [mJ,nJ,oJ] = size(Jsource);
-    [mK,nK,oK] = size(Ksource);
-
-    %Now make sure that the source matrices have the correct dimensions
-    if length(Isource) > 0  % Check that the Isource dimensions are correct
-        if ~( (mI==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Isource read in from %s might has incorrect dimenions');
-        end
+	if ~isempty(Isource) && any(size(Isource) ~= target_I_dims)
+		error('TDMSException:InvalidIlluminationDimensions',...
+			'Isource read in has incorrect dimenions');
+	end
+    if ~isempty(Jsource) && any(size(Jsource) ~= target_J_dims)
+		error('TDMSException:InvalidIlluminationDimensions',...
+			'Jsource read in has incorrect dimenions');
     end
-
-    if length(Jsource) > 0  % Check that the Jsource dimensions are correct
-        if ~( (mJ==8) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Jsource read in from %s might has incorrect dimenions');
-        end
-    end
-
-    if length(Ksource) > 0  % Check that the Ksource dimensions are correct
-        if ~( (mK==8) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-            error('TDMSException:InvalidIlluminationDimensions',...
-                  'Ksource read in from %s has incorrect dimenions');
-        end
+    if ~isempty(Ksource) && any(size(Ksource) ~= target_K_dims)
+		error('TDMSException:InvalidIlluminationDimensions',...
+			'Ksource read in incorrect dimenions');
     end
 end
 
 function assert_exi_eyi_have_correct_dimensions(exi, eyi, I_tot, J_tot, Nt)
+	target_dims = [I_tot J_tot Nt];
 
-    [mX,nX,oX] = size(exi);
-    [mY,nY,oY] = size(eyi);
-
-    if ~(mX == I_tot + 1 & nX == J_tot + 1 & oX == Nt)
-        error('TDMSException:InvalidIlluminationDimensions',...
-              sprintf('exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
-    end
-
-    if ~(mY == I_tot + 1 & nY == J_tot + 1 & oY == Nt)
-        error('TDMSException:InvalidIlluminationDimensions',...
-              sprintf('eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt));
+    if any(size(exi) ~= target_dims)
+        error('TDMSException:InvalidIlluminationDimensions', 'exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
+	elseif any(size(eyi) ~= target_dims)
+        error('TDMSException:InvalidIlluminationDimensions', 'eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
     end
 end
 
