@@ -130,7 +130,7 @@ for lvar = 1:length(variables)
 	elseif strncmp(variables{lvar},'intmatprops',13)
 	    fprintf(1,'Failed to define %s, setting it to 1\n',variables{lvar});
 	    intmatprops = 1;
-	elseif strncmp(variables{lvar},'use_bli',9)
+	elseif strncmp(variables{lvar},'use_bli',7)
 	    fprintf(1,'Failed to define %s, setting it to 0\n',variables{lvar});
 	    use_bli = 0;
 	elseif strncmp(variables{lvar},'tdfdir',6)
@@ -146,7 +146,7 @@ for lvar = 1:length(variables)
 	    fprintf(1,'Failed to define %s, setting campssample.vertices = [] and campssample.components = []\n',variables{lvar});
 	    campssample.vertices = [];
 	    campssample.components = [];
-	elseif strncmp(variables{lvar},'use_pstd',5)
+	elseif strncmp(variables{lvar},'use_pstd',8)
 		fprintf(1,'Failed to define %s, setting it to 0 (FDTD will be used)\n',variables{lvar});
 		use_pstd = 0;
 	else
