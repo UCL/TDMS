@@ -383,6 +383,9 @@ fprintf('Initialising source field...\n');
 % Offset the illumination origin to be in global coordinates
 illorigin = illorigin + [Dxl Dyl Dzl];
 % Now need to adjust interface to be in global coordinates, unless we are using a pulsed source.
+% The K-interface variables are always set to global coordinates though
+interface.K0(1) = interface.K0(1) + Dzl;
+interface.K1(1) = interface.K1(1) + Dzl;
 if strncmp(sourcemode,'pulsed',6)
 	% For a pulsed source, the interfaces need to be hard-reset
     interface.I0(1) = 1;
@@ -404,8 +407,6 @@ else
 	interface.I1(1) = interface.I1(1) + Dxl;
 	interface.J0(1) = interface.J0(1) + Dyl;
 	interface.J1(1) = interface.J1(1) + Dyl;
-	interface.K0(1) = interface.K0(1) + Dzl;
-	interface.K1(1) = interface.K1(1) + Dzl;
 end
 
 % Setup the source terms
