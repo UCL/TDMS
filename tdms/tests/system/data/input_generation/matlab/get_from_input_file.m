@@ -29,16 +29,20 @@ for i=1:n_variables
         varargout{i} = eval(varargin{i});
     else
         % variable not found, but was it optional?
+        was_optional = false;
         for j=1:n_optionals
             if strcmp(varargin{i}, optional_vars{j})
                 % this was optional, assign the default value
                 varargout{i} = optionals.(optional_vars{j});
                 % stop searching to see if this variable was optional
+                was_optional = true;
                 break
             end
         end
-        % we we got to here, the variable was not optional but wasn't found in the input file - throw error
-        error('Required variable %s not present in %s', varargin{i}, input_file);
+        if ~was_optional
+            % we we got to here, the variable was not optional but wasn't found in the input file - throw error
+            error('Required variable %s not present in %s', varargin{i}, input_file);
+        end
     end
 end
 end

@@ -66,7 +66,7 @@ outputs_array ={};
 %these are the function names used to generate the field
 g_pol_method = @(th, ph) gauss_pol_base(th, ph, true, 10e-6);
 e_field_method = @(X,Y,Z) efield_gauss_base(X,Y,Z,true,g_pol_method);
-efname = 'e_field_method';
+efname = '@(X,Y,Z) efield_gauss_base(X,Y,Z,true,@(th, ph) gauss_pol_base(th, ph, true, 10e-6))';
 hfname = 'hfield_focused_equiv';
 %efname = '';
 %hfname = '';

@@ -155,7 +155,7 @@ if ~isempty(campssample)
 		error('campssample must have exactly two fields (components and vertices)');
 	elseif ~isfield(campssample, 'components')
 		error('campssample does not have a components field');
-	elseif ~isfield(campssample, 'verticies')
+	elseif ~isfield(campssample, 'vertices')
 		error('camppsample does not have a vertices field');
 	end
 
@@ -175,9 +175,9 @@ for lvar = 1:length(interface_field)
     end
 end
 % Now check that the entries for I0...K1 are valid
-interface_component_valid(interface.I0, interface.I1, I);
-interface_component_valid(interface.J0, interface.J1, J);
-interface_component_valid(interface.K0, interface.K1, K);
+interface_component_valid(interface.I0, interface.I1, I, 1);
+interface_component_valid(interface.J0, interface.J1, J, 1);
+interface_component_valid(interface.K0, interface.K1, K, 1);
 
 % Check that sourcemode is valid
 if ~(strcmp(sourcemode,'pulsed') || strcmp(sourcemode,'steadystate'))
@@ -409,6 +409,15 @@ else
 end
 
 % Setup the source terms
+non_empty_eh_names = (~isempty(efname)) && (~isempty(hfname));
+% Turn hfname and efname into function (handles) if they are populated
+if ~isempty(efname)
+	efname = str2func(efname);
+end
+if ~isempty(hfname)
+	hfname = str2func(hfname);
+end
+
 if length(ill_file) > 0 %must have already computed the illumination source
     fprintf('Loading illumination source from %s\n', ill_file);
 
@@ -427,7 +436,6 @@ if length(ill_file) > 0 %must have already computed the illumination source
         assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
     elseif has_exi_eyi(data)
 
-		non_empty_eh_names = (~isempty(efname)) && (~isempty(hfname));
         tdfield = data;
         assert_exi_eyi_have_correct_dimensions(data.exi, data.eyi, I_tot, J_tot, Nt);
 
@@ -462,28 +470,28 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Isource(1,:,:) = source_field{2};
 
 				%Ez, I0
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Isource(2,:,:) = source_field{3};
 
 				%Hy, I0
 				[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hy');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Isource(3,:,:) = source_field{2};
 
 				%Hz, I0
 				[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hz');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Isource(4,:,:) = source_field{3};
 			end
 
@@ -493,28 +501,28 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Isource(5,:,:) = source_field{2};
 
 				%Ez, I1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Isource(6,:,:) = source_field{3};
 
 				%Hy, I1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Isource(7,:,:) = source_field{2};
 
 				%Hz, I1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Isource(8,:,:) = source_field{3};
 			end
 
@@ -531,28 +539,28 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Jsource(1,:,:) = source_field{1};
 
 				%Ez, J0
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Jsource(2,:,:) = source_field{3};
 
 				%Hy, J0
 				[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hx');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Jsource(3,:,:) = source_field{1};
 
 				%Hz, J0
 				[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hz');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Jsource(4,:,:) = source_field{3};
 			end
 
@@ -562,28 +570,28 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Jsource(5,:,:) = source_field{1};
 
 				%Ez, J1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Jsource(6,:,:) = source_field{3};
 
 				%Hy, J1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Jsource(7,:,:) = source_field{1};
 
 				%Hz, J1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Jsource(8,:,:) = source_field{3};
 			end
 
@@ -602,9 +610,9 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
 				[X,Y,Z] = ndgrid(x,y,z);
 				if use_pstd
-					eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+					source_field = efname(X, Y, Z-delta.z/2);
 				else
-					eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+					source_field = efname(X, Y, Z);
 				end
 				Ksource(1,:,:) = source_field{1};
 
@@ -613,23 +621,23 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
 				if use_pstd
-					eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+					source_field = efname(X, Y, Z-delta.z/2);
 				else
-					eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+					source_field = efname(X, Y, Z);
 				end
 				Ksource(2,:,:) = source_field{2};
 				%Hx, K0
 				[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Ksource(3,:,:) = source_field{1};
 
 				%Hy, K0
 				[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hy');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Ksource(4,:,:) = source_field{2};
 			end
 
@@ -639,28 +647,28 @@ if length(ill_file) > 0 %must have already computed the illumination source
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Ksource(5,:,:) = source_field{1};
 
 				%Ey, K1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 				Ksource(6,:,:) = source_field{2};
 
 				%Hx, K1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Ksource(7,:,:) = source_field{1};
 
 				%Hy, K1
 				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
 				z = z + z_launch;
 				[X,Y,Z] = ndgrid(x,y,z);
-				eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+				source_field = hfname(X, Y, Z);
 				Ksource(8,:,:) = source_field{2};
 			end
 		end
@@ -673,7 +681,6 @@ else
 
     fprintf('Creating Isource, Jsource, Ksource...');
 
-	non_empty_eh_names = (~isempty(efname)) && (~isempty(hfname));
     tdfield.exi = [];tdfield.eyi = [];
     if (interface.I0(2) | interface.I1(2)) && non_empty_eh_names
 		Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
@@ -707,21 +714,21 @@ else
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Isource(1,:,:) = source_field{2};
 
 			%Ez, I0
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Isource(2,:,:) = source_field{3};
 
 			%Hy, I0
 			[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hy');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Isource(3,:,:) = source_field{2};
 
 
@@ -729,7 +736,7 @@ else
 			[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hz');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Isource(4,:,:) = source_field{3};
 		end
 
@@ -739,28 +746,28 @@ else
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Isource(5,:,:) = source_field{2};
 
 			%Ez, I1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Isource(6,:,:) = source_field{3};
 
 			%Hy, I1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Isource(7,:,:) = source_field{2};
 
 			%Hz, I1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Isource(8,:,:) = source_field{3};
 		end
 
@@ -777,28 +784,28 @@ else
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Jsource(1,:,:) = source_field{1};
 
 			%Ez, J0
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Jsource(2,:,:) = source_field{3};
 
 			%Hy, J0
 			[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hx');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Jsource(3,:,:) = source_field{1};
 
 			%Hz, J0
 			[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hz');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Jsource(4,:,:) = source_field{3};
 			end
 
@@ -808,28 +815,28 @@ else
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Jsource(5,:,:) = source_field{1};
 
 			%Ez, J1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Jsource(6,:,:) = source_field{3};
 
 			%Hy, J1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Jsource(7,:,:) = source_field{1};
 
 			%Hz, J1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Jsource(8,:,:) = source_field{3};
 		end
 
@@ -848,9 +855,9 @@ else
 			%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
 			[X,Y,Z] = ndgrid(x,y,z);
 			if use_pstd
-				eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+				source_field = efname(X, Y, Z-delta.z/2);
 			else
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 			end
 			Ksource(1,:,:) = source_field{1};
 
@@ -859,23 +866,23 @@ else
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
 			if use_pstd
-				eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+				source_field = efname(X, Y, Z-delta.z/2);
 			else
-				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				source_field = efname(X, Y, Z);
 			end
 			Ksource(2,:,:) = source_field{2};
 			%Hx, K0
 			[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Ksource(3,:,:) = source_field{1};
 
 			%Hy, K0
 			[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hy');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Ksource(4,:,:) = source_field{2};
 			end
 
@@ -885,28 +892,28 @@ else
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Ksource(5,:,:) = source_field{1};
 
 			%Ey, K1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+			source_field = efname(X, Y, Z);
 			Ksource(6,:,:) = source_field{2};
 
 			%Hx, K1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Ksource(7,:,:) = source_field{1};
 
 			%Hy, K1
 			[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
 			z = z + z_launch;
 			[X,Y,Z] = ndgrid(x,y,z);
-			eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+			source_field = hfname(X, Y, Z);
 			Ksource(8,:,:) = source_field{2};
 		end
 	end
@@ -1423,10 +1430,6 @@ function interface_component_valid(C0, C1, upper, lower)
 	% 	C0(2) and C1(2) are both non zero AND:
 	%		lower <= C0(1) <= C1(1) <= upper
 	%	C0(2) OR C1(2) is zero
-	if ~exists('lower', 'var')
-		lower = 1;
-	end
-
 	if C0(2) && C1(2)
 		if C0(1) < lower
 			error('Interface component less than %d', lower);
