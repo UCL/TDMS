@@ -10,6 +10,7 @@ LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_yee_position() -> None:
+    """Test yee_position against it's MATLAB counterpart, yeeposition."""
     # MATLABEngine needs float dtype otherwise attempts integer multiplication for some reason...
     i_int = np.arange(0, 8, step=1)
     i_float = np.arange(0, 8, step=1, dtype=float)

@@ -11,6 +11,7 @@ LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_planewave_Z() -> None:
+    """Test planewave_Z against it's MATLAB counterpart, efield_plane"""
     engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
 
     # Scalars into meshgrid
@@ -42,6 +43,7 @@ def test_planewave_Z() -> None:
 
 
 def test_zero_field() -> None:
+    """Test that zero_field returns a list of 3 empty arrays of the expected size."""
     target_shape = (3, 1, 5)
 
     null_field = zero_field(target_shape)
