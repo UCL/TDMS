@@ -1,9 +1,11 @@
 import os
 
 import numpy as np
+import pytest
 from pytest_check import check
 
 from ..matlab_engine.matlab_engine import create_engine_for_testing
+from ..misc_functions.gauss_legendre import gauss_legendre
 from ..misc_functions.yee_cell_position import yee_position
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
@@ -46,5 +48,29 @@ def test_yee_position() -> None:
             assert np.all(
                 z_py == z_mat
             ), f"Error: z co-ords for {component}-component don't match"
+
+    return
+
+
+@pytest.mark.parametrize("n_samples, a, b", [(19, -1.0, 1.0), (20, 0.0, 1.0)])
+def test_gauss_legendre(n_samples: int, a: float, b: float) -> None:
+    """gauss_legendre should be equivalent to it's MATLAB counterpart, gauss_legendre.
+
+    We confirm this by computing the sample points and weights over the interval [-1,1] for an odd number of sample points. Since the function operates by then transforming these coordinates and points onto the interval requested, coincidence in the [-1,1] case should ensure coincidence in all other cases. However, we check this for the [0,1] interval with an even number of sample points to be safe
+    """
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    mat_coords, mat_weights = engine.gauss_legendre(a, b, float(n_samples), nargout=2)
+    mat_coords = np.array(mat_coords)
+    mat_weights = np.array(mat_weights)
+    engine.quit()
+
+    py_coords, py_weights = gauss_legendre(n_samples, a, b)
+
+    assert np.all(
+        np.isclose(py_coords, mat_coords)
+    ), f"Coords different when n_samples={n_samples} over range [{a},{b}]"
+    assert np.all(
+        np.isclose(py_weights, mat_weights)
+    ), f"Weights different when n_samples={n_samples} over range [{a},{b}]"
 
     return
