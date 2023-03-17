@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from ..matlab_engine.matlab_engine import create_engine_for_testing
+from ..source_fields.gauss_pol import gauss_pol_FWHM, gauss_pol_OOES
 from ..source_fields.planewave import planewave_Z
 from ..source_fields.zero_field import zero_field
 
@@ -48,5 +49,34 @@ def test_zero_field() -> None:
 
     assert all(component.shape == target_shape for component in null_field)
     assert sum(np.sum(component) for component in null_field) == 0.0
+
+    return
+
+
+def test_gauss_pol() -> None:
+    """
+    gauss_pol_OOES is designed to be equivalent to gauss_pol_base with tight = True.
+    gauss_pol_FWHM is designed to be equivalent to gauss_pol_base with tight = False.
+    """
+    # Setup variables
+    OOES = 7.5e-6
+    FWHM = 21.5e-6
+    theta = np.linspace(0.0, 2.0 * np.pi, num=15, endpoint=False)
+    phi = np.linspace(0.0, 2.0 * np.pi, num=17, endpoint=False)
+    THETA, PHI = np.meshgrid(theta, phi, indexing="ij")
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    mat_OOES = engine.gauss_pol_base(THETA, PHI, True, OOES, nargout=1)
+    mat_FWHM = engine.gauss_pol_base(THETA, PHI, False, FWHM, nargout=1)
+    engine.quit()
+
+    mat_OOES = np.array(mat_OOES)
+    mat_FWHM = np.array(mat_FWHM)
+
+    py_OOES = gauss_pol_OOES(THETA, OOES)
+    py_FWHM = gauss_pol_FWHM(THETA, FWHM)
+
+    assert np.all(np.isclose(py_OOES, mat_OOES))
+    assert np.all(np.isclose(py_FWHM, mat_FWHM))
 
     return
