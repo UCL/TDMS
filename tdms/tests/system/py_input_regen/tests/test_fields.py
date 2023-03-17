@@ -2,10 +2,11 @@ import os
 
 import numpy as np
 
+from ..fields.detector import gaussian_detector
+from ..fields.gauss_pol import gauss_pol_FWHM, gauss_pol_OOES
+from ..fields.planewave import planewave_Z
+from ..fields.zero_field import zero_field
 from ..matlab_engine.matlab_engine import create_engine_for_testing
-from ..source_fields.gauss_pol import gauss_pol_FWHM, gauss_pol_OOES
-from ..source_fields.planewave import planewave_Z
-from ..source_fields.zero_field import zero_field
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
@@ -80,5 +81,31 @@ def test_gauss_pol() -> None:
 
     assert np.all(np.isclose(py_OOES, mat_OOES))
     assert np.all(np.isclose(py_FWHM, mat_FWHM))
+
+    return
+
+
+def test_gaussian_detector() -> None:
+    """gaussian_detector is tested against it's MATLAB counterpart, gaussian_detfun."""
+    x = np.linspace(0, 1, num=20, endpoint=True)
+    y = np.linspace(1, 2, num=15, endpoint=True)
+    X, Y = np.meshgrid(x, y, indexing="ij")
+    beta = 25.0 / 36.0
+    modal_range = np.arange(0, 31, step=1, dtype=float) * 1.0e-6
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    for m, mode in enumerate(modal_range):
+        # MATLAB function takes the index in the allowed modal range,
+        # rather than the raw value itself.
+        # Also need to offset because of indexing conventions.
+        mat_output = engine.gaussian_detfun(X, Y, beta, m + 1)
+        mat_output = np.array(mat_output)
+
+        py_output = gaussian_detector(X, Y, beta, mode)
+
+        assert np.all(
+            np.isclose(py_output, mat_output)
+        ), f"Detector values different at {mode} ({m}-th value in range)"
+    engine.quit()
 
     return
