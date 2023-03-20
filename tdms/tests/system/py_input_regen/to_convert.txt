@@ -4,7 +4,7 @@ calc_field_tdfield ->
 composition_matrix_builder -> [ERRORING] bscan.build_composition_matrix
 efield_gauss_base ->
 efield_plane -> fields.planewave
-fdtd_bounds ->
+fdtd_bounds -> misc_functions.fdtd_bounds [NO LONGER RETURNS lambda]
 fdtdduration -> timestepping
 fdtdts -> timestepping
 focstratfield ->

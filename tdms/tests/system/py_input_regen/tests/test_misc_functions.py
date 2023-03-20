@@ -6,6 +6,7 @@ import pytest
 from pytest_check import check
 
 from ..matlab_engine.matlab_engine import create_engine_for_testing
+from ..misc_functions.fdtd_bounds import fdtd_grid_coords
 from ..misc_functions.gauss_legendre import gauss_legendre
 from ..misc_functions.multi_layer import multi_layer
 from ..misc_functions.yee_cell_position import yee_position
@@ -106,7 +107,48 @@ def test_multi_layer(polarisation: Literal["TE", "TM"]) -> None:
 
             py_matrix = multi_layer(zvec, nvec, wavelength, theta0, polarisation)
 
-            assert np.all(np.isclose(py_matrix, mat_matrix))
+            assert np.all(
+                np.isclose(py_matrix, mat_matrix)
+            ), f"Composition matrices differ at angle {theta0}"
     engine.quit()
+
+    return
+
+
+def test_fdtd_bounds() -> None:
+    """fdtd_grid_coords should be equivalent to the MATLAB method fdtd_bounds when the inputs from the input file match those provided to the Python function.
+
+    MATLAB function takes an input file as argument. Choice is somewhat arbitrary, so we use input_file_08.m
+    """
+    MFILE = os.path.abspath(
+        LOCATION_OF_THIS_FILE
+        + "../../../data/input_generation/input_files/input_file_08.m"
+    )
+    # Variables in the input_file that Python will need to read
+    delta = {
+        "x": 1300.0e-9 / 8.0,
+        "y": 1300.0e-9 / 8.0,
+        "z": 1300.0e-9 / 8.0,
+    }
+    I = 32
+    J = 32
+    K = 16
+    illorigin = np.array(np.floor([I / 2, J / 2, K / 2]))
+    # z_launch is 0, no test exists where this is non-zero
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    # MATLAB function also reads the wavelength from the input file, which we don't need here
+    x_mat, y_mat, z_mat, _ = engine.fdtd_bounds(MFILE, nargout=4)
+    x_mat = np.array(x_mat)
+    y_mat = np.array(y_mat)
+    z_mat = np.array(z_mat)
+    engine.quit()
+
+    x_py, y_py, z_py = fdtd_grid_coords(delta, I, J, K, illorigin)
+
+    with check:
+        assert np.all(np.isclose(x_py, x_mat)), f"Grid coordinates in x differ."
+        assert np.all(np.isclose(y_py, y_mat)), f"Grid coordinates in y differ."
+        assert np.all(np.isclose(z_py, z_mat)), f"Grid coordinates in z differ."
 
     return
