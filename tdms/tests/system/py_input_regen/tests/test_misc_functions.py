@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 
 import numpy as np
 import pytest
@@ -6,6 +7,7 @@ from pytest_check import check
 
 from ..matlab_engine.matlab_engine import create_engine_for_testing
 from ..misc_functions.gauss_legendre import gauss_legendre
+from ..misc_functions.multi_layer import multi_layer
 from ..misc_functions.yee_cell_position import yee_position
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
@@ -72,5 +74,39 @@ def test_gauss_legendre(n_samples: int, a: float, b: float) -> None:
     assert np.all(
         np.isclose(py_weights, mat_weights)
     ), f"Weights different when n_samples={n_samples} over range [{a},{b}]"
+
+    return
+
+
+@pytest.mark.parametrize("polarisation", ["TM", "TE"])
+def test_multi_layer(polarisation: Literal["TE", "TM"]) -> None:
+    """multi_layer should be equivalent to it's MATLAB counterpart, also named multi_layer.
+
+    We test (via parameterisation) both the TE and TM polarisation settings.
+    """
+    wavelength = 1300e-9
+    # Refractive indices to trial
+    nvec = np.array([1.0, 1.35, 2.25])
+    # Angles to sweep over in one test
+    incidence_angles = np.linspace(0, 2 * np.pi, num=10, endpoint=False)
+    # Some arbitrary "layer heights" to use
+    zvec = np.arange(nvec.size - 1, dtype=float) * 1.5
+
+    # Assert that nvec must have one more element that zvec
+    with pytest.raises(RuntimeError):
+        multi_layer(np.arange(nvec.size), nvec, wavelength, 0.0, polarisation)
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    with check:
+        for theta0 in incidence_angles:
+            mat_matrix = engine.multi_layer(
+                zvec, nvec, wavelength, theta0, polarisation, nargout=1
+            )
+            mat_matrix = np.array(mat_matrix)
+
+            py_matrix = multi_layer(zvec, nvec, wavelength, theta0, polarisation)
+
+            assert np.all(np.isclose(py_matrix, mat_matrix))
+    engine.quit()
 
     return
