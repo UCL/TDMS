@@ -2,7 +2,7 @@ from typing import Literal, Tuple, Union
 
 import numpy as np
 
-from .misc_functions.physical_constants import C
+from .physical_constants import C
 
 
 def gaussian_pulse_parameters(
