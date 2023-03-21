@@ -120,10 +120,6 @@ class Interface(UserDict):
         """
         P0 = plane + "0"
         P1 = plane + "1"
-        if not (self.non_zero_interface(P0) and self.non_zero_interface(P1)):
-            raise ValueError(
-                f"One of these planes has no boundary condition! {P0}: {self.non_zero_interface(P0)}, {P1}: {self.non_zero_interface(P1)}"
-            )
         return np.arange(self[P0][0], self[P1][0] + 1, step=1, dtype=int)
 
     def non_zero_interface(

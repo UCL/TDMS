@@ -1,6 +1,9 @@
+[] indicates notes
+** indicates WIProgress
+
 tdms/tests/system/data/input_generation/bscan/run_bscan.m
 
-calc_field_tdfield ->
+calc_field_tdfield -> **planewave.time_domain_planewave_X [Since this is what it actually is, depends on getsourcecoords]
 composition_matrix_builder -> [ERRORING] bscan.build_composition_matrix
 efield_gauss_base ->
 efield_plane -> fields.planewave
@@ -12,7 +15,7 @@ gaussian_detfun -> fields.detector
 gauss_legendre -> misc_functions.gauss_legendre
 gauss_pol_base -> fields.gauss_pol
 get_from_input_file ->
-getsourcecoords ->
+getsourcecoords -> source_grid_coords [Now generalised to any plane and components that we need, rather than just K0 (although this is the default). Some variables that were previously fetched are not fetched any more, and should be produced elsewhere]
 hfield_focused_equiv -> fields.zero_field
 import_constants -> physical_constants
 initialisesplitgrid ->
@@ -25,3 +28,5 @@ multi_layer -> misc_functions.multi_layer
 read_material_data ->
 updateupdateterms ->
 yeeposition -> misc_functions.yee_cell_position
+
+TO TEST: Interface object.

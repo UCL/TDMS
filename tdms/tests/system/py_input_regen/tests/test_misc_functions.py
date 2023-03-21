@@ -5,8 +5,9 @@ import numpy as np
 import pytest
 from pytest_check import check
 
+from ..interface import Interface
 from ..matlab_engine.matlab_engine import create_engine_for_testing
-from ..misc_functions.fdtd_bounds import fdtd_grid_coords
+from ..misc_functions.fdtd_bounds import fdtd_grid_coords, source_grid_coords
 from ..misc_functions.gauss_legendre import gauss_legendre
 from ..misc_functions.multi_layer import multi_layer
 from ..misc_functions.yee_cell_position import yee_position
@@ -150,5 +151,60 @@ def test_fdtd_bounds() -> None:
         assert np.all(np.isclose(x_py, x_mat)), f"Grid coordinates in x differ."
         assert np.all(np.isclose(y_py, y_mat)), f"Grid coordinates in y differ."
         assert np.all(np.isclose(z_py, z_mat)), f"Grid coordinates in z differ."
+
+    return
+
+
+def test_source_grid_coords() -> None:
+    """
+    source_grid_coords should produce the same coordinates for the Ex and Ey components on the K0 plane as the MATLAB equivalent getsourcecoords.
+
+    We test against input_file_10.m because this test requires calc_tdfield, thus will require this method to be called.
+    """
+    MFILE = os.path.abspath(
+        LOCATION_OF_THIS_FILE
+        + "../../../data/input_generation/input_files/input_file_10.m"
+    )
+    # Variables in the input_file that Python will need to read
+    delta = {
+        "x": 1300.0e-9 / 6.0,
+        "y": 1300.0e-9 / 6.0,
+        "z": 1300.0e-9 / 6.0,
+    }
+    PML = {
+        "Dxl": 10,
+        "Dxu": 10,
+        "Dyl": 0,
+        "Dyu": 0,
+        "Dzl": 10,
+        "Dzu": 10,
+    }
+    I = 64
+    J = 0
+    K = 64
+    interface = Interface(
+        i0=[5, 0], i1=[I - 5, 0], j0=[5, 0], j1=[J - 5, 0], k0=[10, 1], k1=[K - 5, 0]
+    )
+    illorigin = np.array(np.floor([I / 2, J / 2, K / 2]))
+    sourcemode = "pulsed"
+    # z_launch is 0, no test exists where this is non-zero
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    # We only produce the first two outputs, ex_coords and ey_coords, with our converted source_grid_coords function.
+    mat_ex, mat_ey = engine.getsourcecoords(MFILE, nargout=2)
+    engine.quit()
+
+    # By default, source_grid_coords extracts coords on K0, for the Ex and Ey coordinates
+    py_ex, py_ey = source_grid_coords(
+        delta, PML, interface, illorigin, sourcemode, I=I, J=J, K=K
+    )
+
+    for axis in ["x", "y", "z"]:
+        assert np.all(
+            np.isclose(py_ex[axis], mat_ex[axis])
+        ), f"Ex coords along axis {axis} do not match."
+        assert np.all(
+            np.isclose(py_ey[axis], mat_ey[axis])
+        ), f"Ey coords along axis {axis} do not match."
 
     return

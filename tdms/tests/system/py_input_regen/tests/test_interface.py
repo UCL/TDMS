@@ -52,11 +52,9 @@ def test_validation_and_cell_ranges() -> None:
     i = Interface(k0=[1, 1], k1=[10, 1], j0=[0, 0], j1=[4, 1])
     # This validation will pass, since both J0 and J1 are not non-zero planes and so are ignored.
     i.validate_against_n_cells(K=10, J=2)
-    # We should be able to pull out the cell range over K too
+    # We should be able to pull out the cell range over K and J though
     assert np.all(i.cell_range("K") == np.arange(1, 10 + 1, step=1, dtype=int))
-    # However, we shouldn't be able to extract the cell range over J
-    with pytest.raises(ValueError):
-        i.cell_range("J")
+    assert np.all(i.cell_range("J") == np.arange(0, 4 + 1, step=1, dtype=int))
 
     # Now, "activate" the J plane and check for inequality errors
     with pytest.raises(ValueError):

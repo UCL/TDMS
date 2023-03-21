@@ -9,7 +9,9 @@ def yee_position(
     k: Union[int, np.ndarray],
     delta: dict[str, float],
     component: Literal["Ex", "Ey", "Ez", "Hx", "Hy", "Hz"] = "Ex",
-) -> Tuple[Union[int, np.ndarray], Union[int, np.ndarray], Union[int, np.ndarray]]:
+) -> Tuple[
+    Union[float, np.ndarray], Union[float, np.ndarray], Union[float, np.ndarray]
+]:
     """Calculate the position in Cartesian space of the field component associated to the Yee cell with index (i,j,k).
 
     E-field components are offset by 0.5 * the Yee cell extent in that dimension.
