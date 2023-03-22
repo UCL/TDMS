@@ -16,6 +16,16 @@ def gaussian_1D(X: np.ndarray, mean: float = 0.0, variance: float = 1.0) -> np.n
     return np.exp(-XX)
 
 
+def half_width_half_maximum(variance: float) -> float:
+    """Compute the half-width at half-maximum (HWHM) of the Gaussian
+        G(x) = G(x) = exp( -((x-x_mean)/x_variance)**2 ),
+    which is analytically defined as
+        HWHM = variance * sqrt(log(2)),
+    where log() is the natural logarithm.
+    """
+    return variance * np.sqrt(np.log(2.0))
+
+
 def gaussian_2D(
     X: np.ndarray,
     Y: np.ndarray,

@@ -1,6 +1,7 @@
 from typing import Literal, Tuple, Union
 
 import numpy as np
+from numpy.fft import fftshift, ifftshift
 
 from .physical_constants import C
 
@@ -100,3 +101,30 @@ def min_timesteps_fdtd(
     min_timesteps = np.ceil(min_time / timestep_being_used)
 
     return min_timesteps
+
+
+def time_vector(Nt: int, dt: float, include_initial_time: bool = False) -> np.ndarray:
+    """Given the number of timesteps and the timestep interval itself, return a vector of the absolute times that the ELECTRIC field will be simulated at.
+
+    The initial time (t = 0) is not included in the vector unless the corresponding flag is set to True.
+
+    :param Nt: Number of timesteps to perform in the simulation.
+    :param dt: Timestep interval.
+    :param include_initial_time: If True, include time 0 in the vector that is returned. Otherwise do not.
+    :returns: Absolute times that the E-field will be computed at, as a 1D array of floats.
+    """
+    return np.arange(int(not include_initial_time), Nt + 1, step=1, dtype=float) * dt
+
+
+def frequency_vector(Nt: int, dt: float) -> np.ndarray:
+    """Compute the vector of frequency components given the number of timesteps and the timestep interval itself."""
+    freq_vector = np.arange(0, Nt, step=1, dtype=float) / (Nt * dt)
+    freq_vector = fftshift(freq_vector)
+    # Locate the central frequency and readjust 1st half of vector for offset
+    central_freq = np.argwhere(freq_vector == 0)[0][0]
+    freq_vector[0:central_freq] -= (
+        freq_vector[central_freq - 1] + freq_vector[central_freq + 1]
+    )
+    # Return to frequency domain
+    freq_vector = ifftshift(freq_vector)
+    return freq_vector

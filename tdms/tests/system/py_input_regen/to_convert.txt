@@ -3,7 +3,7 @@
 
 tdms/tests/system/data/input_generation/bscan/run_bscan.m
 
-calc_field_tdfield -> **planewave.time_domain_planewave_X [Since this is what it actually is, depends on getsourcecoords]
+calc_field_tdfield -> planewave.planewave_polarised_X
 composition_matrix_builder -> [ERRORING] bscan.build_composition_matrix
 efield_gauss_base ->
 efield_plane -> fields.planewave

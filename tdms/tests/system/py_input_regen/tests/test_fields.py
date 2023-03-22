@@ -4,9 +4,12 @@ import numpy as np
 
 from ..fields.detector import gaussian_detector
 from ..fields.gauss_pol import gauss_pol_FWHM, gauss_pol_OOES
-from ..fields.planewave import planewave_Z
+from ..fields.planewave import planewave_polarised_X, planewave_Z
 from ..fields.zero_field import zero_field
+from ..interface import Interface
 from ..matlab_engine.matlab_engine import create_engine_for_testing
+from ..misc_functions.fdtd_bounds import source_grid_coords
+from ..timestepping import frequency_vector
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 
@@ -107,5 +110,90 @@ def test_gaussian_detector() -> None:
             np.isclose(py_output, mat_output)
         ), f"Detector values different at {mode} ({m}-th value in range)"
     engine.quit()
+
+    return
+
+
+def test_planewave_polarised_X() -> None:
+    """planewave_polarised_X should produce the same Exi field as it's MATLAB counterpart, calc_field_tdfield.
+
+    Input file 10 is chosen since arc_10 requires the use of calc_field_tdfield in it's setup.
+    """
+    MFILE = os.path.abspath(
+        LOCATION_OF_THIS_FILE
+        + "../../../data/input_generation/input_files/input_file_10.m"
+    )
+    # Where to place the output that MATLAB produces, so we can clean it up later
+    DUMP_EIVARS = os.path.abspath(LOCATION_OF_THIS_FILE + "eivars_dump.mat")
+    # Variables in the input_file that Python will need to read
+    delta = {
+        "x": 1300.0e-9 / 6.0,
+        "y": 1300.0e-9 / 6.0,
+        "z": 1300.0e-9 / 6.0,
+    }
+    PML = {
+        "Dxl": 10,
+        "Dxu": 10,
+        "Dyl": 0,
+        "Dyu": 0,
+        "Dzl": 10,
+        "Dzu": 10,
+    }
+    I = 64
+    J = 0
+    K = 64
+    refractive_index = 1.35
+    dt = 2.0 * 0.95 * delta["x"] * refractive_index / (np.sqrt(2.0) * np.pi * 3e8)
+    Nt = 2000
+    freq_vector = frequency_vector(Nt, dt)
+    f_an = np.arcsin(2.0 * np.pi * 2.997924580105029e8 * dt / (2.0 * 1300e-9)) / (
+        np.pi * dt
+    )
+    interface = Interface(
+        i0=[5, 0], i1=[I - 5, 0], j0=[5, 0], j1=[J - 5, 0], k0=[10, 1], k1=[K - 5, 0]
+    )
+    wavelength_width = 120e-9
+    illorigin = np.array(np.floor([I / 2, J / 2, K / 2]))
+    sourcemode = "pulsed"
+
+    engine = create_engine_for_testing(LOCATION_OF_THIS_FILE)
+    engine.calc_field_tdfield(MFILE, DUMP_EIVARS, nargout=0)
+    mat_Exi = engine.load(DUMP_EIVARS, "exi")["exi"]
+    engine.quit()
+    # Cleanup the "output file" that calc_field_fdfield produces with the field values, after we have loaded the values in
+    os.remove(DUMP_EIVARS)
+    # Convert to numpy arrays
+    mat_Exi = np.array(mat_Exi)
+
+    # Call Python planewave_polarised_X, which should produce the same output for Exi
+    ex_coords = source_grid_coords(
+        delta,
+        PML,
+        interface,
+        illorigin,
+        sourcemode,
+        I=I,
+        J=J,
+        K=K,
+        requested_components=["Ex"],
+    )[0]
+    dz = delta["z"] / 2
+
+    py_Exi = planewave_polarised_X(
+        ex_coords, freq_vector, refractive_index, f_an, wavelength_width, dz=dz
+    )
+
+    # py_Exi returns an array that retains the shape of the coordinate array (IE no flattening takes place)
+    assert np.all(
+        py_Exi.shape
+        == (ex_coords["x"].size, ex_coords["y"].size, ex_coords["z"].size, Nt)
+    )
+    # Assert that, after flattening dimensions of size 1, the arrays have the same shape.
+    # This needs to be done because the matlab function assumes that the input lies exclusively on the K0 plane, and thus collapses dimensions automatically.
+    assert np.squeeze(py_Exi).shape == np.squeeze(mat_Exi).shape
+    # Assert that the contents of the arrays are the same
+    py_Exi = np.squeeze(py_Exi)
+    mat_Exi = np.squeeze(mat_Exi)
+    assert np.all(np.isclose(py_Exi, mat_Exi))
 
     return
