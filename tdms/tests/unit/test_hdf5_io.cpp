@@ -5,9 +5,11 @@
 #include "hdf5_io.h"
 
 // std
+#include <cstdlib>
 #include <ctime>
 #include <filesystem>
 #include <random>
+#include <string>
 
 // external
 #include <catch2/catch_approx.hpp>
@@ -20,6 +22,8 @@
 #include "unit_test_utils.h"
 
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
+
+const std::string source_dir = std::string(std::getenv("CMAKE_SOURCE_DIR"));
 
 TEST_CASE("Wrong datatype passed to ijk.") {
   auto tmp = create_tmp_dir();
@@ -185,10 +189,9 @@ TEST_CASE("Test w/r TDMS objects") {
 }
 
 TEST_CASE("Read from example input") {
-  HDF5Reader MATFile(
-          "/Users/scnlf/projects/558-tdms/hdf5/build/pstd_fs_input.mat");
-  // std::filesystem::env(CMAKE_SOURCE_DIR) +
-  // "tests/unit/testdata/pstd_fs_input.mat"
+  std::string small_fdtdgrid_loc(source_dir +
+                                 "/tests/system/unit/small_fdtdgrid.mat");
+  HDF5Reader MATFile(small_fdtdgrid_loc);
 
   SECTION("Read FDTD grid") {
     fdtdGridInitialiser gridinitialiser;
