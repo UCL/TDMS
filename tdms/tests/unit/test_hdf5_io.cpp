@@ -199,8 +199,9 @@ TEST_CASE("Read from example input") {
   HDF5Reader MATFile(TESTDATA);
 
   SECTION("Read FDTD grid") {
-    fdtdGridInitialiser gridinitialiser;
-    MATFile.read(gridinitialiser);
+    // fdtdGridInitialiser gridinitialiser;
+    mxArray *ptr_to_fdtd_grid = nullptr;
+    MATFile.read("fdtdgrid", ptr_to_fdtd_grid);
     // CHECK();
   }
 }

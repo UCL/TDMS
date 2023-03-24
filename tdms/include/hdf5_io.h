@@ -149,13 +149,14 @@ public:
     return;
   }
 
-  void read(const fdtdGridInitialiser &initialiser,
-            const std::string &dataset_name = "fdtdgrid") const {
+  /*
+  //void read(const std::string &dataset_name, mxArray*) const {
 
     // This method will take in the fdtdGridInit... object, assign the pointer
     // member, and then run the object's
     return;
   }
+  */
 };
 
 class HDF5Writer : public HDF5Base {
