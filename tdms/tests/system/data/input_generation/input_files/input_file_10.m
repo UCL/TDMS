@@ -1,3 +1,8 @@
+%specify the interpolation method (1 or not present - cubic, 2 - bandlimited)
+intmethod = 1;
+%specify the solver method (1 or not present - FDTD, 0 - PSTD)
+usecd = 0;
+
 %these are not involved in the formal input file spec
 lambda = 1300e-9;
 
