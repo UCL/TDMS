@@ -84,6 +84,12 @@ else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
+# Compile definintions
+if (CMAKE_SOURCE_DIR)
+    add_compile_definitions(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    message(STATUS "Unit tests will use ${CMAKE_SOURCE_DIR} as a reference for finding data files.")
+endif()
+
 # TDMS target -----------------------------------------------------------------
 
 # wildcard to find all *.cpp files in the src directory except for main.cpp
