@@ -17,6 +17,7 @@
 
 #include "arrays.h"
 #include "cell_coordinate.h"
+#include "fdtd_grid_initialiser.h"
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -145,7 +146,14 @@ public:
         data_location[i][j] = buff[i * n_cols + j];
       }
     }
+    return;
+  }
 
+  void read(const fdtdGridInitialiser &initialiser,
+            const std::string &dataset_name = "fdtdgrid") const {
+
+    // This method will take in the fdtdGridInit... object, assign the pointer
+    // member, and then run the object's
     return;
   }
 };
