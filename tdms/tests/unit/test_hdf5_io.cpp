@@ -16,6 +16,7 @@
 
 // tdms
 #include "arrays.h"
+#include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
@@ -181,4 +182,16 @@ TEST_CASE("Test w/r TDMS objects") {
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
   std::filesystem::remove_all(tmp);
+}
+
+TEST_CASE("Read from example input") {
+  HDF5Reader MATFile("/home/ccaegra/Documents/TDMS/tdms/tests/system/data/"
+                     "input_generation/arc_01_reference/pstd_fs_input.mat");
+
+  SECTION("Read FDTD grid") {
+    fdtdGridInitialiser gridinitialiser();
+    MATFile.read(gridinitialiser);
+
+    // CHECK();
+  }
 }
