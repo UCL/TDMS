@@ -36,7 +36,7 @@ function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method)
         nphi = [];
     end
     % dz/2 term due to the modified source condition
-    vertices = [X(:) Y(:) Z(:)-dz/2];
+    vertices = [X(:) Y(:) Z(:)];
     nvec = refind;
     hvec = [];
     NA = 1;
@@ -47,6 +47,6 @@ function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method)
     % Then calculate the field at the interface
     [Ep,Em] = focstratfield(vertices,nvec,hvec,NA,lambda,ntheta,nphi,gauss_pol_method);
     % Multiply by due to the modified source condition
-    E{1} = 2*reshape(Ep(:,1)/EpN(1),size(X));
-    E{2} = 2*reshape(Ep(:,2)/EpN(1),size(X));
+    E{1} = reshape(Ep(:,1)/EpN(1),size(X));
+    E{2} = reshape(Ep(:,2)/EpN(1),size(X));
 end
