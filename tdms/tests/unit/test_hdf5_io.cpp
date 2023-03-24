@@ -21,9 +21,7 @@
 #include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
-using tdms_tests::create_tmp_dir;// unit_test_utils.h
-
-const std::string source_dir = std::string(std::getenv("CMAKE_SOURCE_DIR"));
+using tdms_tests::create_tmp_dir;
 
 TEST_CASE("Wrong datatype passed to ijk.") {
   auto tmp = create_tmp_dir();
@@ -189,8 +187,11 @@ TEST_CASE("Test w/r TDMS objects") {
 }
 
 TEST_CASE("Read from example input") {
-  std::string small_fdtdgrid_loc(source_dir +
-                                 "/tests/system/unit/small_fdtdgrid.mat");
+  auto cwd = std::filesystem::current_path();
+  spdlog::info("CWD was determined to be: {}", std::string(cwd));
+  std::string small_fdtdgrid_loc(cwd /
+                                 "../tests/system/unit/small_fdtdgrid.mat");
+  spdlog::info("I'm going to try and find: {}", small_fdtdgrid_loc);
   HDF5Reader MATFile(small_fdtdgrid_loc);
 
   SECTION("Read FDTD grid") {
