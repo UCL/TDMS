@@ -185,13 +185,14 @@ TEST_CASE("Test w/r TDMS objects") {
 }
 
 TEST_CASE("Read from example input") {
-  HDF5Reader MATFile("/home/ccaegra/Documents/TDMS/tdms/tests/system/data/"
-                     "input_generation/arc_01_reference/pstd_fs_input.mat");
+  HDF5Reader MATFile(
+          "/Users/scnlf/projects/558-tdms/hdf5/build/pstd_fs_input.mat");
+  // std::filesystem::env(CMAKE_SOURCE_DIR) +
+  // "tests/unit/testdata/pstd_fs_input.mat"
 
   SECTION("Read FDTD grid") {
-    fdtdGridInitialiser gridinitialiser();
+    fdtdGridInitialiser gridinitialiser;
     MATFile.read(gridinitialiser);
-
     // CHECK();
   }
 }
