@@ -15,9 +15,9 @@
 class fdtdGridInitialiser {
 
 private:
-  const mxArray *pointer;        //< Pointer to the array
-  const char *mat_filename;      //< Filename of the MATLAB file
-  std::vector<mwSize> dimensions;//< The dimensions of the array
+  const mxArray *pointer = nullptr;          //< Pointer to the array
+  const char *mat_filename = nullptr;        //< Filename of the MATLAB file
+  std::vector<mwSize> dimensions = {0, 0, 0};//< The dimensions of the array
 
   /**
    * @brief Get a value from a integer attribute of the FDTD grid defined in a
@@ -29,6 +29,8 @@ private:
   mwSize value_of_attribute(const std::string &key);
 
 public:
+  /** @brief Construct a new fdtd Grid Initialiser object */
+  fdtdGridInitialiser() {}
   /**
    * @brief Construct a new fdtd Grid Initialiser object
    *
