@@ -132,10 +132,11 @@ If you used TDMS in your research and found it helpful, please cite this work.
 <summary>BibTEX</summary>
 
 ```bibtex
-@misc{tdms,
-  author       = Munro, Peter and others,
-  title        = {TDMS - The Time-Domain Maxwell Solver},
-  url          = {https://github.com/UCL/TDMS}
+@software{tdms,
+    author  = {Munro, Peter and others},
+    license = {GPL-3.0},
+    title   = {{TDMS - Time Domain Maxwell Solver}},
+    URL     = {https://github.com/UCL/TDMS}
 }
 ```
 
