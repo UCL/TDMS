@@ -125,6 +125,9 @@ Before calling the `tdms` executable.
 
 If you used TDMS in your research and found it helpful, please cite this work.
 <!-- [zenodo/FIXME](https://zenodo.org/) -->
+
+<!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
+<!-- [contact_address)[mailto:FIXME] -->
 <details>
 <summary>BibTEX</summary>
 
