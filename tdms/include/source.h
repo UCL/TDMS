@@ -64,4 +64,22 @@ public:
             real[index.cell_c][index.cell_b][index.split_field_ID],
             imag[index.cell_c][index.cell_b][index.split_field_ID]);
   }
+
+  /**
+   * @brief Return the value at the index provided if the Source is nonempty,
+   * otherwise return 0 if the Source is empty.
+   *
+   * This is for use in the update equations, where the split-H field requires
+   * updating by a non-zero offset despite
+   *
+   * @param index Element to access (if it exists)
+   * @return std::complex<double>
+   */
+  std::complex<double> value_or_zero_if_empty(SourceIndex index) const {
+    if (is_empty()) {
+      return std::complex<double>(0., 0.);
+    } else {
+      return operator[](index);
+    }
+  }
 };
