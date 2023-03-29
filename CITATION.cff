@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+title: TDMS - Time Domain Maxwell Solver
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Peter
+    family-names: Munro
+    affiliation: University College London
+    orcid: 'https://orcid.org/0000-0001-9306-3673'
+  - given-names: Sam
+    family-names: Cunliffe
+    affiliation: University College London
+    orcid: 'https://orcid.org/0000-0003-0167-8641'
+  - given-names: Mosè
+    family-names: Giordano
+    orcid: 'https://orcid.org/0000-0002-7218-2873'
+    affiliation: University College London
+  - given-names: William
+    family-names: Graham
+    affiliation: University College London
+    orcid: 'https://orcid.org/0000-0003-0058-263X'
+  - given-names: Emmanouil
+    family-names: Kriezis
+    email: mkriezis@auth.gr
+    affiliation: Aristotle University of Thessaloniki
+    orcid: 'https://orcid.org/0000-0001-6407-2810'
+  - given-names: Peter
+    family-names: Török
+    email: peter.torok@ntu.edu.sg
+    affiliation: Nanyang Technological University
+  - given-names: Tom
+    family-names: Young
+    affiliation: University College London
+    orcid: 'https://orcid.org/0000-0002-8432-7769'
+repository-code: 'https://github.com/UCL/TDMS'
+url: 'https://github-pages.ucl.ac.uk/TDMS'
+keywords:
+  - time-domain
+  - maxwell-equations-solver
+license: GPL-3.0

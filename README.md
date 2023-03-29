@@ -121,6 +121,36 @@ $ export OMP_NUM_THREADS=4
 
 Before calling the `tdms` executable.
 
+## Citation
+
+If you used TDMS in your research and found it helpful, please cite this work.
+<!-- [zenodo/FIXME](https://zenodo.org/) -->
+
+<!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
+<!-- [contact_address)[mailto:FIXME] -->
+<details>
+<summary>BibTEX</summary>
+
+```bibtex
+@software{tdms,
+    author  = {Munro, Peter and others},
+    license = {GPL-3.0},
+    title   = {{TDMS - Time Domain Maxwell Solver}},
+    URL     = {https://github.com/UCL/TDMS}
+}
+```
+
+</details>
+<details>
+<summary>LaTeX</summary>
+
+```tex
+\bibitem{tdms}
+P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
+```
+
+</details>
+
 ## Want to contribute?
 
 We're very grateful for bug reports, feature requests and pull requests. Please
