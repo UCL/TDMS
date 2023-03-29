@@ -32,24 +32,25 @@ var NAVTREE =
         [ "To run standalone", "index.html#autotoc_md4", null ],
         [ "Parallelism", "index.html#autotoc_md5", null ]
       ] ],
-      [ "Want to contribute?", "index.html#autotoc_md6", null ]
+      [ "Citation", "index.html#autotoc_md6", null ],
+      [ "Want to contribute?", "index.html#autotoc_md7", null ]
     ] ],
     [ "Contribution Guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", null ],
     [ "Developer documentation", "md_doc_developers.html", [
-      [ "What?", "md_doc_developers.html#autotoc_md13", [
-        [ "Dependencies", "md_doc_developers.html#autotoc_md14", null ],
-        [ "Code style and other admin", "md_doc_developers.html#autotoc_md15", null ],
+      [ "What?", "md_doc_developers.html#autotoc_md14", [
+        [ "Dependencies", "md_doc_developers.html#autotoc_md15", null ],
+        [ "Code style and other admin", "md_doc_developers.html#autotoc_md16", null ],
         [ "Compiling and debugging", "md_doc_developers.html#compiling", null ],
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md16", null ]
+        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md17", null ]
       ] ],
-      [ "Where's the main?", "md_doc_developers.html#autotoc_md17", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md18", [
-        [ "Initialisation (step 2)", "md_doc_developers.html#autotoc_md19", null ],
-        [ "Running the Main Loop (step 3)", "md_doc_developers.html#autotoc_md20", null ],
-        [ "Post-Processing (step 4)", "md_doc_developers.html#autotoc_md21", null ],
-        [ "Write out and Tear Down (step 5)", "md_doc_developers.html#autotoc_md22", null ]
+      [ "Where's the main?", "md_doc_developers.html#autotoc_md18", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md19", [
+        [ "Initialisation (step 2)", "md_doc_developers.html#autotoc_md20", null ],
+        [ "Running the Main Loop (step 3)", "md_doc_developers.html#autotoc_md21", null ],
+        [ "Post-Processing (step 4)", "md_doc_developers.html#autotoc_md22", null ],
+        [ "Write out and Tear Down (step 5)", "md_doc_developers.html#autotoc_md23", null ]
       ] ],
-      [ "Testing", "md_doc_developers.html#autotoc_md23", [
+      [ "Testing", "md_doc_developers.html#autotoc_md24", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
         [ "System", "md_doc_developers.html#system-tests", null ]
       ] ]
