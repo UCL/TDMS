@@ -2,6 +2,8 @@
 intmethod = 1;
 %specify the solver method (1 or not present - FDTD, 0 - PSTD)
 usecd = 1;
+%whether we are using a compact source condition
+compactsource = 1;
 
 %these are not involved in the formal input file spec
 lambda = 1300e-9;
@@ -68,7 +70,7 @@ outputs_array ={};
 g_pol_method = @(th, ph) gauss_pol_base(th, ph, true);
 e_field_method = @(X,Y,Z) efield_gauss_base(X,Y,Z,true,g_pol_method);
 efname = 'e_field_method';
-hfname = 'hfield_focused_equiv';
+hfname = '';%'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres
 z_launch = 0;
