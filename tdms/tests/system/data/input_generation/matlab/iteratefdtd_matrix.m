@@ -625,281 +625,273 @@ if length(ill_file) > 0%must have already computed the illumination source
     %here we can have a data file with elemenets Isource, Jsource
     %and Ksource *or* exi and eyi
     fieldnames_ill = fieldnames(data);
-    if numel(fieldnames_ill)==3%Case Isource, Jsource and Ksource specified
-	Isource = data.Isource;
-	Jsource = data.Jsource;
-	Ksource = data.Ksource;
-	[mI,nI,oI] = size(Isource);
-	[mJ,nJ,oJ] = size(Jsource);
-	[mK,nK,oK] = size(Ksource);
-	tdfield.exi = [];
-	tdfield.eyi = [];
+    if has_ijk_source_matricies(data)
+		%Case Isource, Jsource and Ksource specified
+		Isource = data.Isource;
+		Jsource = data.Jsource;
+		Ksource = data.Ksource;
 
-	%Now make sure that the source matrices have the correct
-	%dimensions
-	if ~( (mI==8) & (mJ==8) & (mK==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
-	    (fprintf(1,'Illumination matrices read in from %s might have incorrect dimenions',ill_file));
-	end
-    elseif numel(fieldnames_ill)==2%Case exi and eyi specified
-%	exi = data.exi;
-%	eyi = data.eyi;
-	tdfield = data;
-	if (interface.I0(2) | interface.I1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
-	    Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Isource=[];
-	end
+		tdfield.exi = [];
+		tdfield.eyi = [];
+		assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface);
 
-	if (interface.J0(2) | interface.J1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
-	    Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
-	else
-	    Jsource = [];
-	end
-
-	if (interface.K0(2) | interface.K1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
-	    Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
-	else
-	    Ksource = [];
-	end
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%If the user has specified field function names, they can
-        %also specify a pulsed field.
-	%
-
-	if (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
-	    %Set up the Isource field. This has to be defined on a 2d array
-	    %over the range (J0,J1)x(K0,K1). We calculate the field values
-	    %assuming an origin for the illumination
-	    i_source = interface.I0(1) - illorigin(1);
-	    j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
-	    k_source = (interface.K0(1):interface.K1(1)) - illorigin(3);
-
-
-	    %Ey, I0
-	    if interface.I0(2)
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Isource(1,:,:) = source_field{2};
-
-		%Ez, I0
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Isource(2,:,:) = source_field{3};
-
-		if (~isempty(hfname))
-		    %Hy, I0
-		    [x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hy');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Isource(3,:,:) = source_field{2};
-
-
-		    %Hz, I0
-		    [x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hz');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Isource(4,:,:) = source_field{3};
-		end
-	    end
-
-	    i_source = interface.I1(1) - illorigin(1);
-	    %Ey, I1
-	    if interface.I1(2)
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Isource(5,:,:) = source_field{2};
-
-		%Ez, I1
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Isource(6,:,:) = source_field{3};
-
-		if (~isempty(hfname))
-		    %Hy, I1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Isource(7,:,:) = source_field{2};
-
-		    %Hz, I1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Isource(8,:,:) = source_field{3};
-		end
-	    end
-
-	    %Set up the Jsource field. This has to be defined on a 2d array
-	    %over the range (I0,I1)x(K0,K1). We calculate the field values
-	    %assuming an origin for the illumination
-	    i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
-	    j_source = interface.J0(1) - illorigin(2);
-	    k_source = (interface.K0(1):interface.K1(1))- illorigin(3);
-
-
-	    %Ey, J0
-	    if interface.J0(2)
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Jsource(1,:,:) = source_field{1};
-
-		%Ez, J0
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Jsource(2,:,:) = source_field{3};
-
-		if (~isempty(hfname))
-		    %Hy, J0
-		    [x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hx');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Jsource(3,:,:) = source_field{1};
-
-		    %Hz, J0
-		    [x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hz');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Jsource(4,:,:) = source_field{3};
-		end
-	    end
-
-	    j_source = interface.J1(1) - illorigin(2);
-	    %Ey, J1
-	    if interface.J1(2)
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Jsource(5,:,:) = source_field{1};
-
-		%Ez, J1
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Jsource(6,:,:) = source_field{3};
-
-		if (~isempty(hfname))
-		    %Hy, J1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Jsource(7,:,:) = source_field{1};
-
-		    %Hz, J1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Jsource(8,:,:) = source_field{3};
-		end
-	    end
-
-	    %Set up the Ksource field. This has to be defined on a 2d array
-	    %over the range (I0,I1)x(J0,J1). We calculate the field values
-	    %assuming an origin for the illumination
-	    i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
-	    j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
-	    k_source = interface.K0(1) - illorigin(3);
-
-
-	    %Ex, K0
-	    if interface.K0(2)
-
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
-		z = z + z_launch;
-		%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
-		[X,Y,Z] = ndgrid(x,y,z);
-		if ~compactsource
-		    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		    Ksource(1,:,:) = source_field{1};
+	elseif has_exi_eyi(data)
+		%Case exi and eyi specified
+		tdfield = data;
+		assert_exi_eyi_have_correct_dimensions(data, I_tot, J_tot, Nt);
+		if (interface.I0(2) | interface.I1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
+			Isource = zeros(8,interface.J1(1) - interface.J0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
 		else
-		    eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
-		    Ksource(1,:,:) = 2*source_field{1};
+			Isource=[];
 		end
 
-
-		%Ey, K0
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		if ~compactsource
-		    eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		    Ksource(2,:,:) = source_field{2};
+		if (interface.J0(2) | interface.J1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
+			Jsource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.K1(1) - interface.K0(1) + 1);
 		else
-		    eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
-		    Ksource(2,:,:) = 2*source_field{2};
+			Jsource = [];
 		end
 
-
-		if (~isempty(hfname))
-		    %Hx, K0
-		    [x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Ksource(3,:,:) = source_field{1};
-
-		    %Hy, K0
-		    [x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hy');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Ksource(4,:,:) = source_field{2};
+		if (interface.K0(2) | interface.K1(2)) & (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
+			Ksource = zeros(8,interface.I1(1) - interface.I0(1) + 1, interface.J1(1) - interface.J0(1) + 1);
+		else
+			Ksource = [];
 		end
-	    end
-	    k_source = interface.K1(1) - illorigin(3);
-	    %Ex, K1
-	    if interface.K1(2)
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Ksource(5,:,:) = source_field{1};
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%If the user has specified field function names, they can
+			%also specify a pulsed field.
+		%
 
-		%Ey, K1
-		[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
-		z = z + z_launch;
-		[X,Y,Z] = ndgrid(x,y,z);
-		eval(sprintf('source_field = %s(X,Y,Z);',efname ));
-		Ksource(6,:,:) = source_field{2};
+		if (~isempty(efname))% hfname may be empty or non-empty  & (~isempty(hfname))
+			%Set up the Isource field. This has to be defined on a 2d array
+			%over the range (J0,J1)x(K0,K1). We calculate the field values
+			%assuming an origin for the illumination
+			i_source = interface.I0(1) - illorigin(1);
+			j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
+			k_source = (interface.K0(1):interface.K1(1)) - illorigin(3);
 
-		if (~isempty(hfname))
-		    %Hx, K1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Ksource(7,:,:) = source_field{1};
 
-		    %Hy, K1
-		    [x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
-		    z = z + z_launch;
-		    [X,Y,Z] = ndgrid(x,y,z);
-		    eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
-		    Ksource(8,:,:) = source_field{2};
+			%Ey, I0
+			if interface.I0(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Isource(1,:,:) = source_field{2};
+
+				%Ez, I0
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Isource(2,:,:) = source_field{3};
+
+				if (~isempty(hfname))
+					%Hy, I0
+					[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hy');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Isource(3,:,:) = source_field{2};
+
+
+					%Hz, I0
+					[x,y,z] = yeeposition(i_source-1,j_source,k_source,delta,'Hz');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Isource(4,:,:) = source_field{3};
+				end
+	    	end
+
+			i_source = interface.I1(1) - illorigin(1);
+			%Ey, I1
+			if interface.I1(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Isource(5,:,:) = source_field{2};
+
+				%Ez, I1
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Isource(6,:,:) = source_field{3};
+
+				if (~isempty(hfname))
+					%Hy, I1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Isource(7,:,:) = source_field{2};
+
+					%Hz, I1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Isource(8,:,:) = source_field{3};
+				end
+	    	end
+
+			%Set up the Jsource field. This has to be defined on a 2d array
+			%over the range (I0,I1)x(K0,K1). We calculate the field values
+			%assuming an origin for the illumination
+			i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
+			j_source = interface.J0(1) - illorigin(2);
+			k_source = (interface.K0(1):interface.K1(1))- illorigin(3);
+
+			%Ey, J0
+			if interface.J0(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Jsource(1,:,:) = source_field{1};
+
+				%Ez, J0
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Jsource(2,:,:) = source_field{3};
+
+				if (~isempty(hfname))
+					%Hy, J0
+					[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hx');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Jsource(3,:,:) = source_field{1};
+
+					%Hz, J0
+					[x,y,z] = yeeposition(i_source,j_source-1,k_source,delta,'Hz');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Jsource(4,:,:) = source_field{3};
+				end
+	    	end
+
+			j_source = interface.J1(1) - illorigin(2);
+			%Ey, J1
+			if interface.J1(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Jsource(5,:,:) = source_field{1};
+
+				%Ez, J1
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ez');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Jsource(6,:,:) = source_field{3};
+
+				if (~isempty(hfname))
+					%Hy, J1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Jsource(7,:,:) = source_field{1};
+
+					%Hz, J1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hz');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Jsource(8,:,:) = source_field{3};
+				end
+	    	end
+
+			%Set up the Ksource field. This has to be defined on a 2d array
+			%over the range (I0,I1)x(J0,J1). We calculate the field values
+			%assuming an origin for the illumination
+			i_source = (interface.I0(1):interface.I1(1)) - illorigin(1);
+			j_source = (interface.J0(1):interface.J1(1)) - illorigin(2);
+			k_source = interface.K0(1) - illorigin(3);
+
+
+			%Ex, K0
+			if interface.K0(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+				z = z + z_launch;
+				%fprintf(1,'%d %d %d %e\n',i_source,j_source,k_source,z);
+				[X,Y,Z] = ndgrid(x,y,z);
+				if ~compactsource
+					eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+					Ksource(1,:,:) = source_field{1};
+				else
+					eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+					Ksource(1,:,:) = 2*source_field{1};
+				end
+
+				%Ey, K0
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				if ~compactsource
+					eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+					Ksource(2,:,:) = source_field{2};
+				else
+					eval(sprintf('source_field = %s(X,Y,Z-delta.z/2);',efname ));
+					Ksource(2,:,:) = 2*source_field{2};
+				end
+
+				if (~isempty(hfname))
+					%Hx, K0
+					[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hx');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Ksource(3,:,:) = source_field{1};
+
+					%Hy, K0
+					[x,y,z] = yeeposition(i_source,j_source,k_source-1,delta,'Hy');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Ksource(4,:,:) = source_field{2};
+				end
+			end
+
+			k_source = interface.K1(1) - illorigin(3);
+	    	%Ex, K1
+	    	if interface.K1(2)
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ex');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Ksource(5,:,:) = source_field{1};
+
+				%Ey, K1
+				[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Ey');
+				z = z + z_launch;
+				[X,Y,Z] = ndgrid(x,y,z);
+				eval(sprintf('source_field = %s(X,Y,Z);',efname ));
+				Ksource(6,:,:) = source_field{2};
+
+				if (~isempty(hfname))
+					%Hx, K1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hx');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Ksource(7,:,:) = source_field{1};
+
+					%Hy, K1
+					[x,y,z] = yeeposition(i_source,j_source,k_source,delta,'Hy');
+					z = z + z_launch;
+					[X,Y,Z] = ndgrid(x,y,z);
+					eval(sprintf('source_field = %s(X,Y,Z);',hfname ));
+					Ksource(8,:,:) = source_field{2};
+				end
+	    	end
 		end
-	    end
-	end
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
 else%an illumination file has not been specified
@@ -1631,4 +1623,90 @@ Nt
 	     facets = [];
 	     maxresfield = [];
 	 end
+end
+
+end
+
+function result = has_ijk_source_matricies(data)
+    fields = fieldnames(data);
+    if ~(numel(fields) == 3)
+        result = false;
+    else
+        result = strcmp(fields(1), 'Isource') & ...
+                 strcmp(fields(2), 'Jsource') & ...
+                 strcmp(fields(3), 'Ksource');
+    end
+end
+
+
+function result = has_exi_eyi(data)
+    fields = fieldnames(data);
+    if ~(numel(fields) == 2)
+        result = false;
+    else
+        result = strcmp(fields(1), 'exi') & ...
+                 strcmp(fields(2), 'eyi');
+    end
+end
+
+
+function assert_are_not_defined(efname, hfname)
+    assert(strlength(efname) == 0, ...
+        'TDMSException:IncompatibleInput', ...
+        'An efield should not be defined. Set efname to an empty string');
+    assert(strlength(hfname) == 0, ...
+        'TDMSException:IncompatibleInput', ...
+        'A hfield should not be defined. Set hfname to an empty string');
+end
+
+function assert_are_defined(efname, hfname)
+    assert(strlength(efname) > 0, ...
+        'TDMSException:IncompatibleInput', 'An efname must be defined');
+    assert(strlength(hfname) > 0, ...
+        'TDMSException:IncompatibleInput', 'A hfname must be defined');
+end
+
+function assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface)
+
+    [mI,nI,oI] = size(Isource);
+    [mJ,nJ,oJ] = size(Jsource);
+    [mK,nK,oK] = size(Ksource);
+
+    %Now make sure that the source matrices have the correct dimensions
+    if length(Isource) > 0  % Check that the Isource dimensions are correct
+        if ~( (mI==8) & (nI==(interface.J1(1) - interface.J0(1) + 1)) & (oI==(interface.K1(1) - interface.K0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Isource read in from %s might has incorrect dimenions');
+        end
+    end
+
+    if length(Jsource) > 0  % Check that the Jsource dimensions are correct
+        if ~( (mJ==8) & (nJ==(interface.I1(1) - interface.I0(1) + 1)) & (oJ==(interface.K1(1) - interface.K0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Jsource read in from %s might has incorrect dimenions');
+        end
+    end
+
+    if length(Ksource) > 0  % Check that the Ksource dimensions are correct
+        if ~( (mK==8) & (nK==(interface.I1(1) - interface.I0(1) + 1)) & (oK==(interface.J1(1) - interface.J0(1) + 1)))
+            error('TDMSException:InvalidIlluminationDimensions',...
+                  'Ksource read in from %s has incorrect dimenions');
+        end
+    end
+end
+
+function assert_exi_eyi_have_correct_dimensions(data, I_tot, J_tot, Nt)
+
+	required_size = [I_tot+1 J_tot+1 Nt];
+	disp(size(data.exi));
+
+	if ~all(size(data.exi) == required_size)
+        error('TDMSException:InvalidIlluminationDimensions',...
+              'exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
+    end
+
+    if ~all(size(data.eyi) == required_size)
+        error('TDMSException:InvalidIlluminationDimensions',...
+              'eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
+    end
 end

@@ -1,4 +1,7 @@
 % Sample input file for a 2D simulation required to call iteratefdtd_matrix
+% This input file in particular explicitly defines all of the source-related terms, so that the testing suite can change them on the fly as the tests run.
+usecd = 0;
+compactsource = 0;
 
 lambda = 1300e-9;
 
