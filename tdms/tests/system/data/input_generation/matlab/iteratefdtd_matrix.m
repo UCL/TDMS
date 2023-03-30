@@ -549,15 +549,20 @@ fprintf(1,'exipresent: %d\n',exipresent);
 %values
 
 if ~usecd & ~compactsource
-    error('A compact source must be used when not using central differences');
+    error('TDMSException:IncompatibleSourceInput', ...
+	'A compact source must be used when not using central differences');
 elseif compactsource & ~isempty(hfname)
-    error('When using a compact source, the magnetic field input file must be empty');
+    error('TDMSException:IncompatibleSourceInput', ...
+	'When using a compact source, the magnetic field input file must be empty');
 elseif ~exipresent & compactsource & isempty(efname)
-    error('When using a compact source, the electric field input file must be non-empty');
+    error('TDMSException:IncompatibleSourceInput', ...
+	'When using a compact source, the electric field input file must be non-empty');
 elseif ~exipresent & usecd & ~compactsource & ~(~isempty(efname) & ~isempty(hfname))
-    error('When using central differences and a non-compact source condition, both the electric and magnetic field input files must be non-empty');
+    error('TDMSException:IncompatibleSourceInput', ...
+	'When using central differences and a non-compact source condition, both the electric and magnetic field input files must be non-empty');
 elseif exipresent & usecd & ~compactsource & (~isempty(efname) & isempty(hfname) | isempty(efname) & ~isempty(hfname))
-    error('When specifying exi and/or eyi, along with a non-compact source, the electric and magnetic field input files should both be non-empty or both empty');
+    error('TDMSException:IncompatibleSourceInput', ...
+	'When specifying exi and/or eyi, along with a non-compact source, the electric and magnetic field input files should both be non-empty or both empty');
 end
 
 fprintf('Allocating grid...');
