@@ -8,15 +8,16 @@ end
 function testInvalidIlluminationSourceIJKErrors(testCase)
     input_file = 'pstd_input_file_2D.m';
     run_in_temporary_directory(testCase, ...
-    @()createInputWithInvalidIlluminationSourceIJ(input_file), ...
+    @()createInputWithInvalidIJKSource(input_file), ...
     'TDMSException:InvalidIlluminationFile');
 end
 
-function createInputWithInvalidIlluminationSourceIJ(input_file)
+function createInputWithInvalidIJKSource(input_file)
 
     gridfile = 'gridfile.mat';
     create_gridfile(gridfile);
     set_compactsource(input_file, 1);
+    set_efname(input_file, 1);
 
     Isource = zeros(size(1));
     Jsource = zeros(size(1));
@@ -27,138 +28,103 @@ function createInputWithInvalidIlluminationSourceIJ(input_file)
     'tmp_input',gridfile,'invalid_illumnation_file.mat');
 end
 
-function testInvalidIlluminationSourceExiEyiErrors(testCase)
-    run_in_temporary_directory(testCase, ...
-        @()createInputWithInvalidIlluminationSourceExi(), ...
-        'TDMSException:InvalidIlluminationFile');
-end
-
-function testInvalidStateWithIlluminationAndEField(testCase)
-    run_in_temporary_directory(testCase, ...
-        @()createInputWithIlluminationAndEField(), ...
-        'TDMSException:IncompatibleInput');
-end
-
 function testFileSetupValidIlluminationFile2DSource(testCase)
     run_in_temporary_directory(testCase, ...
-            @()createInputWithValidIlluminationSource2D(), ...
+            @()createInputWithValidIlluminationSource2D('pstd_input_file_2D.m'), ...
             '');
+end
+
+function createInputWithValidIlluminationSource2D(input_file)
+    set_compactsource(input_file, 1);
+    set_usecd(input_file, 0);
+    set_efname(input_file, 1);
+
+    gridfile = 'gridfile.mat';
+    illfile = 'illumination.mat';
+    create_gridfile(gridfile);
+    create_illumination_file(illfile, input_file, gridfile);
+
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
 end
 
 function testFileSetupInvalidIlluminationFile2D(testCase)
     run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidDimensions2D(), ...
+            @()createInputIlluminationSourceWithInvalidDimensions2D('pstd_input_file_2D.m'), ...
             'TDMSException:InvalidIlluminationDimensions');
 end
 
+function createInputIlluminationSourceWithInvalidDimensions2D(input_file)
+    set_compactsource(input_file, 1);
+    set_usecd(input_file, 0);
+    set_efname(input_file, 1);
+
+    gridfile = 'gridfile.mat';
+    create_gridfile(gridfile);
+    illfile = 'illumination.mat';
+    create_illumination_file(illfile, input_file, gridfile);
+
+    % Cannot generate the input with an invalid dimension size
+    replace_in_file(input_file, 'I = 256;', 'I = 264;');
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
+end
+
+% refactor with the 2d thing above, since it's now the same test functionally just parameterised by the 2d/3d ness
 function testFileSetupValidIlluminationFile3D(testCase)
     run_in_temporary_directory(testCase, ...
-            @()createInputWithValidIlluminationSource3D(), ...
+            @()createInputWithValidIlluminationSource3D('pstd_input_file_3D.m'), ...
             '');
 end
 
+function createInputWithValidIlluminationSource3D(input_file)
+    set_compactsource(input_file, 1);
+    set_usecd(input_file, 0);
+    set_efname(input_file, 1);
+
+    gridfile = 'gridfile.mat';
+    create_gridfile(gridfile);
+    illfile = 'illumination.mat';
+    create_illumination_file(illfile, input_file, gridfile);
+
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile, illfile);
+end
+
+% Refactor with it's 2d counterpart above (use same input file and just change the IJK values, since that's like the only difference!)
 function testFileSetupInvalidIlluminationFile3D(testCase)
     run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidDimensions3D(), ...
+            @()createInputIlluminationSourceWithInvalidDimensions3D('pstd_input_file_3D.m'), ...
             'TDMSException:InvalidIlluminationDimensions');
+end
+
+function createInputIlluminationSourceWithInvalidDimensions3D(input_file)
+    set_compactsource(input_file, 1);
+    set_usecd(input_file, 0);
+    set_efname(input_file, 1);
+
+    gridfile = 'gridfile.mat';
+    create_gridfile(gridfile);
+    illfile = 'illumination.mat';
+    create_illumination_file(illfile, input_file, gridfile);
+
+    % Cannot generate the input with an invalid dimension size
+    replace_in_file(input_file, 'I = 128;', 'I = 138;');
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
 end
 
 function testFileSetupInvalidIlluminationFile2DExi(testCase)
     run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidExiDimensions2D(), ...
+            @()createInputIlluminationSourceWithInvalidExiDimensions2D('pstd_input_file_2D.m'), ...
             'TDMSException:InvalidIlluminationDimensions');
 end
 
-function createInputWithValidIlluminationSource2D()
+function createInputIlluminationSourceWithInvalidExiDimensions2D(input_file)
+    set_compactsource(input_file, 1);
+
     gridfile = 'gridfile.mat';
     create_gridfile(gridfile);
-    createIlluminaionFileFrom('pstd_input_file_2D.m');
+    tdfield = 'tdfield.mat';
+    % In 2D, we are expecting TDfields of size 227 x 1 x 500.
+    % This will create fields of size 1 x 1 x 500
+    create_tdfield_data(tdfield, 1);
 
-    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup','input_file',gridfile,'illfile.mat');
-end
-
-function createInputWithValidIlluminationSource3D()
-
-    create_gridfile();
-    createIlluminaionFileFrom('pstd_input_file_3D.m');
-
-    [~] = iteratefdtd_matrix('pstd_input_file_3D.m','filesetup','input_file','gridfile.mat','illfile.mat');
-end
-
-function createInputIlluminationSourceWithInvalidDimensions2D()
-
-    create_gridfile();
-    createIlluminaionFileFrom('pstd_input_file_2D.m');
-
-    % Cannot generate the input with an invalid dimension size
-    replace_in_file('pstd_input_file_2D.m', 'I = 256;', 'I = 264;');
-    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup','input_file','gridfile.mat','illfile.mat');
-end
-
-function createInputIlluminationSourceWithInvalidDimensions3D()
-
-    create_gridfile();
-    createIlluminaionFileFrom('pstd_input_file_3D.m');
-
-    % Cannot generate the input with an invalid dimension size
-    replace_in_file('pstd_input_file_3D.m', 'I = 128;', 'I = 138;');
-    [~] = iteratefdtd_matrix('pstd_input_file_3D.m','filesetup','input_file','gridfile.mat','illfile.mat');
-end
-
-
-function createInputWithInvalidIlluminationSourceExi()
-
-    create_gridfile();
-    exi = zeros(277, 277, 500);
-    % Illumnation file must both exi and eyi
-    save(sprintf('invalid_illumnation_file'), 'exi', 'exi');
-
-    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup',...
-    'tmp_input','gridfile.mat','invalid_illumnation_file.mat');
-end
-
-function createInputWithIlluminationAndEField()
-
-    create_gridfile();
-    replace_in_file('pstd_input_file_2D.m', 'efname = ''''', 'efname = ''tmp''')
-
-    % creates a valid illumnation file
-    exi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
-    eyi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
-    save(sprintf('illumnation_file'), 'exi', 'eyi');
-
-    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup',...
-    'tmp_input','gridfile.mat','illumnation_file.mat');
-end
-
-function createInputIlluminationSourceWithInvalidExiDimensions2D()
-
-    create_gridfile();
-
-    % creates an invalid illumnation file
-    exi = zeros(1, 277, 500);  % I_tot + 1, J_tot + 1, Nt
-    eyi = zeros(277, 277, 500);  % I_tot + 1, J_tot + 1, Nt
-    save(sprintf('invalid_illumnation_file'), 'exi', 'eyi');
-
-    [~] = iteratefdtd_matrix('pstd_input_file_2D.m','filesetup',...
-    'tmp_input','gridfile.mat','invalid_illumnation_file.mat');
-end
-
-% Create a valid illumination file
-function createIlluminaionFileFrom(filename)
-    defineEfnameHfnameIn(filename);
-    [~] = iteratefdtd_matrix(filename,'illsetup','illfile','gridfile.mat','');
-    removeEfnameHfnameFrom(filename);
-end
-
-% Edit an input file to define efname and hfname
-function defineEfnameHfnameIn(filename)
-    replace_in_file(filename, 'efname = ''''', 'efname = ''efield_gauss_base''');
-    replace_in_file(filename, 'hfname = ''''', 'hfname = ''hfield_focused_equiv''');
-end
-
-% Edit an input file to remove the definitions of efname and hfname
-function removeEfnameHfnameFrom(filename)
-    replace_in_file(filename, 'efname = ''efield_gauss_base''', 'efname = ''''');
-    replace_in_file(filename, 'hfname = ''hfield_focused_equiv''', 'hfname = ''''');
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile, tdfield);
 end

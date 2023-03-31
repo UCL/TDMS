@@ -532,37 +532,30 @@ if ~isempty(air_interface)
 end
 
 %here we need to establish if exi and eyi have been passed
-exipresent=0;
-if length(ill_file) > 0%must have already computed the illumination source
-    data = load(ill_file);
-    %here we can have a data file with elemenets Isource, Jsource
-    %and Ksource *or* exi and eyi
-    fieldnames_ill = fieldnames(data);
-    clear data;
-    if numel(fieldnames_ill)==2
-	exipresent=1;
-    end
+exipresent = has_exi_eyi(ill_file);
+if exipresent
+	fprintf('Found time-domain field provided in %s', ill_file);
+else
+	fprintf('No time-domain field was provided in %s', ill_file);
 end
-fprintf(1,'exipresent: %d\n',exipresent);
 
 %check that compactsource, usecd and exipresent have compatible
 %values
-
 if ~usecd & ~compactsource
     error('TDMSException:IncompatibleSourceInput', ...
-	'A compact source must be used when not using central differences');
+	'A compact source must be used when not using central differences.');
 elseif compactsource & ~isempty(hfname)
     error('TDMSException:IncompatibleSourceInput', ...
-	'When using a compact source, the magnetic field input file must be empty');
+	'When using a compact source, the magnetic field input file must be empty.');
 elseif ~exipresent & compactsource & isempty(efname)
-    error('TDMSException:IncompatibleSourceInput', ...
-	'When using a compact source, the electric field input file must be non-empty');
+	error('TDMSException:IncompatibleSourceInput', ...
+	'When not using a time-domain illumination, and using a compact source, the electric field input file must be non-empty.');
 elseif ~exipresent & usecd & ~compactsource & ~(~isempty(efname) & ~isempty(hfname))
-    error('TDMSException:IncompatibleSourceInput', ...
-	'When using central differences and a non-compact source condition, both the electric and magnetic field input files must be non-empty');
+	error('TDMSException:IncompatibleSourceInput', ...
+	'When not using a time-domain illumination nor a compact source, you must use central differences and provide both the source electric (efname) and magnetic (hfname) field.');
 elseif exipresent & usecd & ~compactsource & (~isempty(efname) & isempty(hfname) | isempty(efname) & ~isempty(hfname))
     error('TDMSException:IncompatibleSourceInput', ...
-	'When specifying exi and/or eyi, along with a non-compact source, the electric and magnetic field input files should both be non-empty or both empty');
+	'When using a time-domain field but not a compact source, the electric and magnetic field input files should both be non-empty or both empty.');
 end
 
 fprintf('Allocating grid...');
@@ -893,6 +886,9 @@ if length(ill_file) > 0%must have already computed the illumination source
 	    	end
 		end
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	else
+		error('TDMSException:InvalidIlluminationFile', ...
+		'Illumination file did not have the correct elements. Need either {Isource, Jsource, Ksource} or {exi, eyi}.');
     end
 else%an illumination file has not been specified
     tdfield.exi = [];tdfield.eyi = [];
@@ -1638,32 +1634,21 @@ function result = has_ijk_source_matricies(data)
     end
 end
 
-
-function result = has_exi_eyi(data)
-    fields = fieldnames(data);
+function tf = has_exi_eyi(illumination)
+	% If passed the illumination filename rather than the data structure loaded from it
+	if isempty(illumination) && ischar(illumination)
+		tf = false;
+		return;
+	elseif ischar(illumination)
+		fields = fieldnames(load(illumination));
+	else
+    	fields = fieldnames(illumination);
+	end
     if ~(numel(fields) == 2)
-        result = false;
+        tf = false;
     else
-        result = strcmp(fields(1), 'exi') & ...
-                 strcmp(fields(2), 'eyi');
+        tf = strcmp(fields(1), 'exi') && strcmp(fields(2), 'eyi');
     end
-end
-
-
-function assert_are_not_defined(efname, hfname)
-    assert(strlength(efname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'An efield should not be defined. Set efname to an empty string');
-    assert(strlength(hfname) == 0, ...
-        'TDMSException:IncompatibleInput', ...
-        'A hfield should not be defined. Set hfname to an empty string');
-end
-
-function assert_are_defined(efname, hfname)
-    assert(strlength(efname) > 0, ...
-        'TDMSException:IncompatibleInput', 'An efname must be defined');
-    assert(strlength(hfname) > 0, ...
-        'TDMSException:IncompatibleInput', 'A hfname must be defined');
 end
 
 function assert_source_has_correct_dimensions(Isource, Jsource, Ksource, interface)
@@ -1701,12 +1686,12 @@ function assert_exi_eyi_have_correct_dimensions(data, I_tot, J_tot, Nt)
 	disp(size(data.exi));
 
 	if ~all(size(data.exi) == required_size)
-        error('TDMSException:InvalidIlluminationDimensions',...
+        error('TDMSException:InvalidIlluminationDimensions', ...
               'exi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
     end
 
     if ~all(size(data.eyi) == required_size)
-        error('TDMSException:InvalidIlluminationDimensions',...
+        error('TDMSException:InvalidIlluminationDimensions', ...
               'eyi must have dimensions (%d, %d, %d)', I_tot + 1, J_tot + 1, Nt);
     end
 end
