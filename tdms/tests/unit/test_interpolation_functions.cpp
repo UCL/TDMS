@@ -17,10 +17,12 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
+#include "input_flags.h"
 #include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
 using Catch::Approx;
+using tdms_flags::InterpolationMethod;
 using tdms_tests::euclidean;
 using tdms_tests::is_close_or_better;
 using namespace std;
@@ -288,7 +290,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = analytic_function(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
+      InterpolationScheme scheme =
+              best_scheme(nSamples, i + 1, InterpolationMethod::BandLimited);
       f_interp[i] = scheme.interpolate(
               f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values
@@ -313,7 +316,8 @@ TEST_CASE("BLi: MATLAB benchmarking") {
     f_data[nSamples - 1] = complex_fn(xi[nSamples - 1]);
     // perform interpolation
     for (int i = 0; i < nSamples - 1; i++) {
-      InterpolationScheme scheme = best_scheme(nSamples, i + 1);
+      InterpolationScheme scheme =
+              best_scheme(nSamples, i + 1, InterpolationMethod::BandLimited);
       f_interp[i] = scheme.interpolate(
               f_data, i + 1 - scheme.number_of_datapoints_to_left);
       // Compare interpolated values to the true values

@@ -12,9 +12,11 @@
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
+#include "input_flags.h"
 #include "unit_test_utils.h"
 
 using namespace std;
+using tdms_flags::InterpolationMethod;
 using tdms_tests::euclidean;
 using tdms_tests::order_of_magnitude;
 
@@ -113,7 +115,8 @@ TEST_CASE("Benchmark: BLi is better than cubic interpolation") {
     for (int i = 0; i < n_datapts - 1; i++) {
       // we checked earlier that BLi should always be available, so this is
       // always a BLi scheme
-      InterpolationScheme use_scheme = best_scheme(n_datapts - 1, i);
+      InterpolationScheme use_scheme =
+              best_scheme(n_datapts - 1, i, InterpolationMethod::BandLimited);
       // to be on the safe side, check that we have a BLi scheme. BLi schemes
       // are always strictly better than CUBIC_INTERP_MIDDLE, and not equal or
       // worse.
