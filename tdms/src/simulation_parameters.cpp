@@ -121,13 +121,6 @@ void SimulationParameters::unpack_from_input_matrices(
     air_interface = double_in(in_matrices["air_interface"], "air_interface");
   }
 
-  // get intmethod
-  if (!mxIsEmpty(in_matrices["intmethod"])) {
-    interp_method = InterpolationMethod(
-            int_cast_from_double_in(in_matrices["intmethod"], "intmethod"));
-  }
-  spdlog::info("intmethod = " + to_string(interp_method));
-
   // get the time-domain field
   IncidentField Ei(in_matrices["tdfield"]);
   exi_present = Ei.x.has_elements();
