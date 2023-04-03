@@ -53,7 +53,7 @@ private:
   /*! The solver method to use in this simulation */
   SolverMethod solver_method;
   /*! The interpolation methods to use in this simulation */
-  PreferredInterpolationMethods pim;
+  InterpolationMethod pim;
 
   EHVec eh_vec;//!< TODO
 
@@ -299,7 +299,7 @@ private:
 
 public:
   SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
-                    PreferredInterpolationMethods _pim);
+                    InterpolationMethod _pim);
 
   /** @brief Fetch the number of Yee cells in each dimension */
   IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }

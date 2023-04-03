@@ -175,14 +175,14 @@ bool InterpolationScheme::is_better_than(const InterpolationScheme &s) const {
 
 const InterpolationScheme &
 best_scheme(int datapts_in_direction, int interpolation_position,
-            PreferredInterpolationMethods interpolation_methods) {
+            InterpolationMethod interpolation_methods) {
   // interpolation is impossible with fewer than 4 datapoints in a dimension
   if (datapts_in_direction < 4) {
     throw out_of_range("Error: domain axis has <4 datapoints, cubic and "
                        "bandlimited interpolation "
                        "impossible.\n");
   } else if ((datapts_in_direction < 8) ||
-             (interpolation_methods == PreferredInterpolationMethods::Cubic)) {
+             (interpolation_methods == InterpolationMethod::Cubic)) {
     // we are restricted to cubic interpolation
     if (interpolation_position <= 0 ||
         interpolation_position >= datapts_in_direction) {

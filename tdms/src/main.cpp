@@ -36,10 +36,10 @@ int main(int nargs, char *argv[]) {
   if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
 
   // decide whether to toggle off the band-limited interpolation methods
-  PreferredInterpolationMethods preferred_interpolation_methods =
-          PreferredInterpolationMethods::BandLimited;// default
+  InterpolationMethod preferred_interpolation_methods =
+          InterpolationMethod::BandLimited;// default
   if (args.cubic_interpolation()) {
-    preferred_interpolation_methods = PreferredInterpolationMethods::Cubic;
+    preferred_interpolation_methods = InterpolationMethod::Cubic;
   }
 
   // Handles the running of the simulation, given the inputs to the executable.

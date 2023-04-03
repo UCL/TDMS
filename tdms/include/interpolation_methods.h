@@ -186,5 +186,5 @@ const InterpolationScheme CBLst = InterpolationScheme(
  */
 const InterpolationScheme &
 best_scheme(int datapts_in_direction, int interpolation_position,
-            PreferredInterpolationMethods interpolation_methods =
-                    PreferredInterpolationMethods::BandLimited);
+            InterpolationMethod interpolation_methods =
+                    InterpolationMethod::BandLimited);

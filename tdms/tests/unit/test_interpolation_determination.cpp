@@ -81,7 +81,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
   */
   SECTION("Only cubic interpolation") {
     SPDLOG_INFO("Interpolation scheme selection: band-limited disallowed");
-    PreferredInterpolationMethods pim = Cubic;
+    InterpolationMethod pim = Cubic;
     REQUIRE_THROWS_AS(best_scheme(N, 0, pim), out_of_range);
     all_schemes_correct =
             all_schemes_correct &&
