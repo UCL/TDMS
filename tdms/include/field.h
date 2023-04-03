@@ -31,9 +31,10 @@
  */
 class Grid {
 protected:
-  // the preferred interpolation methods (pim) for interpolating between the
-  // grid values, default is BandLimited
-  tdms_flags::InterpolationMethod pim = tdms_flags::InterpolationMethod::Cubic;
+  // the preferred interpolation methods (interpolation_method) for
+  // interpolating between the grid values, default is BandLimited
+  tdms_flags::InterpolationMethod interpolation_method =
+          tdms_flags::InterpolationMethod::Cubic;
 
 public:
   // The {IJK}_tot values of this grid
@@ -50,7 +51,7 @@ public:
    */
   void
   set_preferred_interpolation_methods(tdms_flags::InterpolationMethod _pim) {
-    pim = _pim;
+    interpolation_method = _pim;
   };
 };
 

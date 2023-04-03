@@ -83,21 +83,24 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
   */
   SECTION("Only cubic interpolation") {
     SPDLOG_INFO("Interpolation scheme selection: band-limited disallowed");
-    InterpolationMethod pim = InterpolationMethod::Cubic;
-    REQUIRE_THROWS_AS(best_scheme(N, 0, pim), out_of_range);
+    InterpolationMethod interpolation_method = InterpolationMethod::Cubic;
+    REQUIRE_THROWS_AS(best_scheme(N, 0, interpolation_method), out_of_range);
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, 1, pim).get_priority() == CUBIC_INTERP_FIRST);
+            (best_scheme(N, 1, interpolation_method).get_priority() ==
+             CUBIC_INTERP_FIRST);
     for (int i = 2; i <= N - 2; i++) {
       all_schemes_correct =
               all_schemes_correct &&
-              (best_scheme(N, i, pim).get_priority() == CUBIC_INTERP_MIDDLE);
+              (best_scheme(N, i, interpolation_method).get_priority() ==
+               CUBIC_INTERP_MIDDLE);
     }
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, N - 1, pim).get_priority() == CUBIC_INTERP_LAST);
+            (best_scheme(N, N - 1, interpolation_method).get_priority() ==
+             CUBIC_INTERP_LAST);
     REQUIRE(all_schemes_correct);
-    REQUIRE_THROWS_AS(best_scheme(N, N, pim), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(N, N, interpolation_method), out_of_range);
   }
 
   /* If 4 <= N < 8 we fall back on cubic interpolation

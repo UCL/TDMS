@@ -94,11 +94,13 @@ public:
    *
    * @param params The simulation parameters for this run
    * @param input_grid_labels The grid labels obtained from the input file
-   * @param pim The interpolation methods to use on the field values
+   * @param interpolation_method The interpolation methods to use on the field
+   * values
    */
-  void setup_EH_and_gridlabels(const SimulationParameters &params,
-                               const GridLabels &input_grid_labels,
-                               tdms_flags::InterpolationMethod pim);
+  void
+  setup_EH_and_gridlabels(const SimulationParameters &params,
+                          const GridLabels &input_grid_labels,
+                          tdms_flags::InterpolationMethod interpolation_method);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
@@ -106,9 +108,10 @@ public:
    */
   IJKDimensions get_E_dimensions() const { return E.tot; }
   // set the interpolation method for the E and H fields
-  void set_interpolation_methods(tdms_flags::InterpolationMethod pim) {
-    E.set_preferred_interpolation_methods(pim);
-    H.set_preferred_interpolation_methods(pim);
+  void set_interpolation_methods(
+          tdms_flags::InterpolationMethod interpolation_method) {
+    E.set_preferred_interpolation_methods(interpolation_method);
+    H.set_preferred_interpolation_methods(interpolation_method);
   }
 
   SurfacePhasors
