@@ -1,8 +1,8 @@
-%specify the interpolation method (1 or not present - cubic, 2 - bandlimited)
-intmethod = 1;
-%specify the solver method (1 or not present - FDTD, 0 - PSTD)
-usecd = 0;
-%whether we are using a compact source condition
+% Whether to use band-limited interpolation over cubic interpolation
+use_bli = 0;
+% Whether to use the PSTD method over the FDTD method
+use_pstd = 1;
+% Whether we are using a compact source condition
 compactsource = 1;
 
 %these are not involved in the formal input file spec
