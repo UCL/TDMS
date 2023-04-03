@@ -42,9 +42,9 @@ Nt = 5000;
 %Nt = 550;
 
 %water
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 %frequency in Hz
@@ -68,7 +68,7 @@ outputs_array ={};
 %these are the function names used to generate the field
 g_pol_method = @(th, ph) gauss_pol_base(th, ph, true);
 e_field_method = @(X,Y,Z) efield_gauss_base(X,Y,Z,true,g_pol_method);
-efname = 'e_field_method';
+efname = '@(X,Y,Z) efield_gauss_base(X,Y,Z,true,@(th, ph) gauss_pol_base(th, ph, true))';
 hfname = '';%'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres

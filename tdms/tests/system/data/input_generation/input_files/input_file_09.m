@@ -43,9 +43,9 @@ Nt = 50; %set for quick test to generate algorithmically correct
 %Nt = 1000; %required to generate physically correct results
 
 %water
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 %frequency in Hz

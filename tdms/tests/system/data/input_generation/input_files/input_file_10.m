@@ -42,9 +42,9 @@ Nt = 2000;
 %Nt=12000;
 
 %water
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 %frequency in Hz

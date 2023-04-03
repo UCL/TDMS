@@ -1,6 +1,6 @@
 function create_tdfield_data(output_name, I_tot, J_tot, Nt)
     %% Creates valid time-domain field data and saves it to a .mat folder.
-    % The field created is just an array of 0s of the correct size [I_tot+1, J_tot+1, Nt].
+    % The field created is just an array of 0s of size [I_tot+1, J_tot+1, Nt].
 
     % The input file we are using will accept td-fields of dimensions
     % 277-1-500 as valid inputs, which are the defaults set here.

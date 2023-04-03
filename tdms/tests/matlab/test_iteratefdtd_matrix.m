@@ -1,40 +1,42 @@
 % Define the tests as all the locally defined functions
-function tests = test_iteratefdtd_matrix_function
+function tests = test_iteratefdtd_matrix
     tests = functiontests(localfunctions);
 end
 
 % These tests check cases where iteratefdtd_matrix recieves a valid combination of input arguments from the input file, but those values themselves are incorrect. This covers array shapes, field members not being present, and other such things that assume _existence_ of the variable itself.
 
-function testInvalidIlluminationSourceIJKErrors(testCase)
-    input_file = 'pstd_input_file_2D.m';
+function testIJKSource_not_defined(testCase)
+    %% When one of Isource, Jsource or Ksource is not defined in a source file that should contain all three, an error should be raised.
     run_in_temporary_directory(testCase, ...
-    @()createInputWithInvalidIJKSource(input_file), ...
+    @()create_source_missing_K('pstd_input_file_2D.m'), ...
     'TDMSException:InvalidIlluminationFile');
 end
 
-function createInputWithInvalidIJKSource(input_file)
+function create_source_missing_K(input_file)
+    set_compactsource(input_file, 1);
+    set_efname(input_file, 1);
 
     gridfile = 'gridfile.mat';
     create_gridfile(gridfile);
-    set_compactsource(input_file, 1);
-    set_efname(input_file, 1);
 
     Isource = zeros(size(1));
     Jsource = zeros(size(1));
-    % Illumnation file must also have a Ksource tensor
-    save(sprintf('invalid_illumnation_file'), 'Isource', 'Jsource', 'Jsource');
+    % Illumnation file must also have a Ksource tensor to be valid, deliberately don't include here.
+    save('invalid_illumnation_file', 'Isource', 'Jsource', 'Jsource');
 
-    iteratefdtd_matrix(input_file,'filesetup',...
-    'tmp_input',gridfile,'invalid_illumnation_file.mat');
+    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,'invalid_illumnation_file.mat');
 end
 
-function testFileSetupValidIlluminationFile2DSource(testCase)
-    run_in_temporary_directory(testCase, ...
-            @()createInputWithValidIlluminationSource2D('pstd_input_file_2D.m'), ...
-            '');
+function testValid_inputs(testCase)
+    %% Test that input files for 2D and 3D simulations that we expect to pass, do indeed pass.
+    two_dimensions = 'pstd_input_file_2D.m';
+    run_in_temporary_directory(testCase, @()create_valid_input(two_dimensions), '');
+
+    three_dimensions = 'pstd_input_file_3D.m';
+    run_in_temporary_directory(testCase, @()create_valid_input(three_dimensions), '');
 end
 
-function createInputWithValidIlluminationSource2D(input_file)
+function create_valid_input(input_file)
     set_compactsource(input_file, 1);
     set_usecd(input_file, 0);
     set_efname(input_file, 1);
@@ -47,13 +49,20 @@ function createInputWithValidIlluminationSource2D(input_file)
     iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
 end
 
-function testFileSetupInvalidIlluminationFile2D(testCase)
+function testInvalid_illumination_dimensions(testCase)
+    %% Test that if the dimensionality of the grid does not match the illumination arrays provided, an error is raised.
+    two_dimensions = 'pstd_input_file_2D.m';
     run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidDimensions2D('pstd_input_file_2D.m'), ...
+            @()create_souce_with_wrong_dims(two_dimensions, 2), ...
+            'TDMSException:InvalidIlluminationDimensions');
+
+    three_dimensions = 'pstd_input_file_3D.m';
+    run_in_temporary_directory(testCase, ...
+            @()create_souce_with_wrong_dims(three_dimensions, 3), ...
             'TDMSException:InvalidIlluminationDimensions');
 end
 
-function createInputIlluminationSourceWithInvalidDimensions2D(input_file)
+function create_souce_with_wrong_dims(input_file, n_dimensions)
     set_compactsource(input_file, 1);
     set_usecd(input_file, 0);
     set_efname(input_file, 1);
@@ -63,60 +72,24 @@ function createInputIlluminationSourceWithInvalidDimensions2D(input_file)
     illfile = 'illumination.mat';
     create_illumination_file(illfile, input_file, gridfile);
 
-    % Cannot generate the input with an invalid dimension size
-    replace_in_file(input_file, 'I = 256;', 'I = 264;');
+    % Change the grid size specified in the input file,
+    % so the source dimensions are now invalid
+    if n_dimensions == 2
+        replace_in_file(input_file, 'I = 256;', 'I = 264;');
+    elseif n_dimensions == 3
+        replace_in_file(input_file, 'I = 128;', 'I = 138;');
+    end
     iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
 end
 
-% refactor with the 2d thing above, since it's now the same test functionally just parameterised by the 2d/3d ness
-function testFileSetupValidIlluminationFile3D(testCase)
+function testInvalid_tdfield_dimensions(testCase)
+    %% Test that passing in a pre-computed time-domain field with the incorrect dimensions throws an error.
     run_in_temporary_directory(testCase, ...
-            @()createInputWithValidIlluminationSource3D('pstd_input_file_3D.m'), ...
-            '');
-end
-
-function createInputWithValidIlluminationSource3D(input_file)
-    set_compactsource(input_file, 1);
-    set_usecd(input_file, 0);
-    set_efname(input_file, 1);
-
-    gridfile = 'gridfile.mat';
-    create_gridfile(gridfile);
-    illfile = 'illumination.mat';
-    create_illumination_file(illfile, input_file, gridfile);
-
-    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile, illfile);
-end
-
-% Refactor with it's 2d counterpart above (use same input file and just change the IJK values, since that's like the only difference!)
-function testFileSetupInvalidIlluminationFile3D(testCase)
-    run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidDimensions3D('pstd_input_file_3D.m'), ...
+            @()create_tdfield_with_wrong_dims('pstd_input_file_2D.m'), ...
             'TDMSException:InvalidIlluminationDimensions');
 end
 
-function createInputIlluminationSourceWithInvalidDimensions3D(input_file)
-    set_compactsource(input_file, 1);
-    set_usecd(input_file, 0);
-    set_efname(input_file, 1);
-
-    gridfile = 'gridfile.mat';
-    create_gridfile(gridfile);
-    illfile = 'illumination.mat';
-    create_illumination_file(illfile, input_file, gridfile);
-
-    % Cannot generate the input with an invalid dimension size
-    replace_in_file(input_file, 'I = 128;', 'I = 138;');
-    iteratefdtd_matrix(input_file,'filesetup','tmp_input',gridfile,illfile);
-end
-
-function testFileSetupInvalidIlluminationFile2DExi(testCase)
-    run_in_temporary_directory(testCase, ...
-            @()createInputIlluminationSourceWithInvalidExiDimensions2D('pstd_input_file_2D.m'), ...
-            'TDMSException:InvalidIlluminationDimensions');
-end
-
-function createInputIlluminationSourceWithInvalidExiDimensions2D(input_file)
+function create_tdfield_with_wrong_dims(input_file)
     set_compactsource(input_file, 1);
 
     gridfile = 'gridfile.mat';

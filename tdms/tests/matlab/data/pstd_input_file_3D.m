@@ -28,9 +28,9 @@ dt = 2/sqrt(3)/pi*delta.x/(3e8/1.35)*.95;
 
 Nt = 500;
 
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 f_an = asin( 2*pi/1300e-9*2.997924580105029e+08*dt/2)/(pi*dt);
