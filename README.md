@@ -146,6 +146,14 @@ P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://githu
 
 </details>
 
+## Acknowledgements
+
+The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's [Medical Physics and Biomedical Engineering](https://ucl.ac.uk/medphys) and [Centre for Advanced Research Computing](https://ucl.ac.uk/arc) with generous funding from the [Royal Society](https://royalsociety.org).
+
+![medphys](doc/assets/biomedlogo.png)&nbsp;![arc](doc/assets/arclogo.png)
+
+Development of this software has previously benefited from funding from the [Commonwealth Scholarships Commission](https://cscuk.fcdo.gov.uk/about-us/scholarships-and-fellowships/), the [Engineering and Physical Sciences Research Council](https://www.ukri.org/councils/epsrc/), and the [Australian Research Council](https://www.arc.gov.au/).
+
 ## Want to contribute?
 
 We're grateful for bug reports, feature requests and pull requests. Please see our [contribution guidelines](https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html).
