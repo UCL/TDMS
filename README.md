@@ -116,23 +116,35 @@ $ export OMP_NUM_THREADS=4
 
 Before calling the `tdms` executable.
 
-## Acknowledgements
-
-The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's [Department for Medical Physics and Bioengineering](https://ucl.ac.uk/medphys) and [Centre for Advanced Research Computing](https://ucl.ac.uk/arc) with generous funding from [the Royal Society](https://royalsociety.org).
-
-![medphys](doc/assets/biomedlogo.png)&nbsp;![arc](doc/assets/arclogo.png)
-
-<!--
 ## Citation
 
-If you used TDMS in your research and found it helpful, please cite us: [zenodo/FIXME](https://zenodo.org/).
-```tex
-\bibitem{
-    author="Munro, P and others",
-    title="TDMS: the Time-Domain Maxwell solver",
+If you used TDMS in your research and found it helpful, please cite this work.
+<!-- [zenodo/FIXME](https://zenodo.org/) -->
+
+<!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
+<!-- [contact_address)[mailto:FIXME] -->
+<details>
+<summary>BibTEX</summary>
+
+```bibtex
+@software{tdms,
+    author  = {Munro, Peter and others},
+    license = {GPL-3.0},
+    title   = {{TDMS - Time Domain Maxwell Solver}},
+    URL     = {https://github.com/UCL/TDMS}
 }
 ```
--->
+
+</details>
+<details>
+<summary>LaTeX</summary>
+
+```tex
+\bibitem{tdms}
+P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
+```
+
+</details>
 
 ## Want to contribute?
 
