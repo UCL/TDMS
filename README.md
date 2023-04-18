@@ -100,7 +100,8 @@ Options:
 -m:	Minimise output file size by not saving vertex and facet information
 ```
 
-The basic workflow is with two arguments, an input file as specified by [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m), and an output file name to be created.
+The basic workflow is with two arguments; an input file containing source fields, material composition, material properties and other simulation parameters as detailed in the documentation, and an output file name to be created.
+The [`iterate_fdtd_matrix.m`](./tdms/matlab/iteratefdtd_matrix.m) script can be used to produce a valid input file from a MATLAB script and source-field functions. 
 
 You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
 
