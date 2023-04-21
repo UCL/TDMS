@@ -6,7 +6,7 @@ from warnings import warn
 import pytest
 import yaml
 from data.input_generation.regenerate_all import regenerate_test
-from tdms_testing_class import TDMSSystemTest
+from tdms_testing_class import run_system_test
 from utils import download_data
 
 # Location of this file, which is where the tests are running from
@@ -44,7 +44,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
     """
     # Fetch config file location
     config_file_path = path_to_input_generation / f"config_{test_id}.yaml"
-    # Fetch test run information
+    # Fetch test run information, warn if there is an ID inconsistency
     with open(config_file_path, "r") as opened_config_file:
         # Read data into dictionary, and take the "tests" value
         INFO = yaml.safe_load(opened_config_file)
@@ -53,17 +53,12 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
             warn(
                 f"{str(config_file_path)} implicit ID does not match config file description (found {test_id})"
             )
-        run_information = INFO["tests"]
 
-    # Regenerate the input data for arc_{test_id}
-    # Error on not successful (hence fail test)
+    # Regenerate the input data for arc_{test_id}, error (hence fail) if not successful
     regenerate_test(config_file_path)
 
     # Perform each run of TDMS as specified by the config file
-    system_test = TDMSSystemTest(yaml_test_id, run_information)
-
-    # Run all of the system tests
-    run_success = system_test.perform_all_runs()
+    run_success = run_system_test(config_file_path)
 
     # TEAR-DOWN: remove the regenerated inputs and outputs from the data/input_generation/arc_{test_id} folder.
     # To be safe, we can just remove all .mat files from this directory the the subdirectories, since these should be the only system-test TDMS artefacts
@@ -75,9 +70,9 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
     # Although we should have check-ed whether each run was a pass/fail, we can also assert that all runs need to pass here to report failures
     failed_run_names = []
-    for i, success in enumerate(run_success):
-        if not success:
-            failed_run_names.append(system_test.tdms_runs[i].tdms_run.run_id)
+    for run_id, passed in run_success.items():
+        if not passed:
+            failed_run_names.append(run_id)
     assert all(
         run_success
     ), f"arc_{test_id} : Some runs were unsuccessful ({len(run_success)-sum(run_success)}/{len(run_success)}) :\n {failed_run_names}"
@@ -92,7 +87,7 @@ def test_system(test_id) -> None:
 
     Wraps the workflow() method, which actually does the bulk of the testing.
     """
-    print(f"\nRunning {test_id}", end=" | ")
+    print(f"\nRunning {test_id}", end=" | ", flush=True)
 
     # the reference OUTPUT data should be at this location
     ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
