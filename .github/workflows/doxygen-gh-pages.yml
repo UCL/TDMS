@@ -37,7 +37,7 @@ jobs:
       shell: bash
 
     - name: Manually copy over assets
-      # Preserve their directory structure to keep README's image references!
+      # Preserve the directory structure to keep README's image references!
       run: |
         mkdir -p html/doc/assets
         cp -R doc/assets/*.png html/doc/assets

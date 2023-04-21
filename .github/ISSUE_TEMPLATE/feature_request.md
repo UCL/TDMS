@@ -14,7 +14,7 @@ assignees: ''
 * Relates to # (issue number)
 
 **Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I want to use this for ...
+A clear and concise description of what the problem is. E.g. I want to use this for ...
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.

@@ -11,7 +11,7 @@ assignees: ''
 Your best short description of what the bug is. [E.g. the z-component of the H field is not normalized correctly.]
 
 **To Reproduce**
-Steps to reproduce the behavior, and any input files (you can either attach them by dragging and dropping here into the issue, or upload them somewhere public)
+Steps to reproduce the behavior, and any input files (you can either attach them by dragging and dropping here into the issue, or upload them somewhere public).
 
 For example:
 1. Run this first '....'
@@ -20,7 +20,7 @@ For example:
 4. See error by checking...
 
 **Expected behavior**
-What you expected to happen (if it's not already obvious from the context.)
+What you expected to happen (if it's not already obvious from the context).
 
 **Plots**
 If applicable, add output plots to help explain your problem.

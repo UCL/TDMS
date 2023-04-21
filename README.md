@@ -20,7 +20,7 @@ For further details about the method, please refer to the [PDF documentation](ht
 
 ## Getting started
 
-To use TDMS, it needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed before compiling TDMS.
+To use TDMS, it needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
 To install, follow these steps:
 
 ```bash
@@ -73,7 +73,7 @@ in a new terminal.
 ## How to run
 
 You can run TDMS either directly or from a MATLAB script.
-For beginners, we recommend starting with the demonstration MATLAB script. which you can find in the `examples/arc_01` directory.
+For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
 
@@ -89,7 +89,7 @@ export OMP_NUM_THREADS=4 # for example
 
 ## Citation
 
-If you use TDMS in your research and found it helpful, please cite this work.
+If you used TDMS in your research and found it helpful, please cite this work.
 <!-- [zenodo/FIXME](https://zenodo.org/) -->
 
 <!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
