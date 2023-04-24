@@ -18,7 +18,7 @@ class TDMSRun:
     tdms [OPTIONS] [input_file] [gridfile] [output_file]
 
     that is required as part of a single system test.
-    The run() command executes the above call to TDMS
+    The execute() command executes the above call to TDMS
     """
 
     # ID of this run for diagnostics/debug
