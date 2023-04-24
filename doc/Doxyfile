@@ -15,32 +15,30 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "TDMS"
 PROJECT_BRIEF          = "Time Domain Maxwell Solver"
-# Blank == no logo
-PROJECT_LOGO           =
-# Blank == Write output to current dir.
-OUTPUT_DIRECTORY       =
-# Input directories to search for files
-INPUT                  = tdms/include/ tdms/src/ tdms/tests/unit/ tdms/tests/include tdms/tests/system
-# Recurse through input directories to find subdirectories
-RECURSIVE              = YES
-FILE_PATTERNS          = *.cpp \
-                         *.h \
-                         *.py
+PROJECT_LOGO           = # Blank == No logo.
+OUTPUT_DIRECTORY       = # Blank == Write output to current dir.
+INPUT                  = tdms/include tdms/src tdms/tests/unit
+FILE_PATTERNS          = *.cpp *.h *.py
 GENERATE_LATEX         = NO
-# Allow Doxygen to build graphs for class inheritance, etc
-HAVE_DOT               = YES
 
 # also document private member functions?
 EXTRACT_PRIVATE        = YES
-
 STRIP_CODE_COMMENTS    = NO
+
+# make behavior useful a CI test: warn undocumented
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
 
 # doxygen awesome
 GENERATE_TREEVIEW      = YES
 HTML_EXTRA_STYLESHEET  = doc/doxygen-awesome-css/doxygen-awesome.css
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
 
-# 'mainpage' gets put on the index page
-INPUT += README.md
-INPUT += CONTRIBUTING.md
-INPUT += doc/developers.md
+# 'mainpage' gets put on the index page and all markdown pages need adding to
+# the INPUT list - they get added to the ToC in alphabetical order before the
+# classes and files sections of a normal doxygen page; and in the "Related
+# pages" section in the top bar.
+INPUT                 += README.md CONTRIBUTING.md doc/developers.md
 USE_MDFILE_AS_MAINPAGE = README.md
