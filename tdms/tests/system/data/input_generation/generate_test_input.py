@@ -33,9 +33,19 @@ def run_bscan(
     return
 
 
-def start_MatlabEngine_with_extra_paths() -> MatlabEngine:
-    """Starts a new MatlabEngine and adds the bscan/ and matlab/ folders to its path, which are required to be in scope when regenerating the input data."""
+def start_MatlabEngine_with_extra_paths(
+    working_directory: str | Path | None = None,
+) -> MatlabEngine:
+    """Starts a new MatlabEngine and adds the bscan/ and matlab/ folders to its path, which are required to be in scope when regenerating the input data.
+
+    :param working_directory: The working directory to start the MatlabEngine in. Should be an absolute path. Defaults to the working directory of the currently executing script if not passed.
+    :returns: MatlabEngine instance with the additional bscan/ and matlab/ files on the MATLABPATH.
+    """
     engine = matlab.start_matlab(MATLAB_STARTUP_OPTS)
+    # Change to requested working directory if provided
+    if working_directory:
+        engine.cd(str(working_directory))
+    # Append tdms scripts and functions to MATLABPATH
     for path in MATLAB_EXTRA_PATHS:
         engine.addpath(path)
     return engine
@@ -76,16 +86,17 @@ def generate_test_input(
     obstacles = generation_info["spatial_obstacles"]
 
     # Determine if we need to create our own MATLAB session
+    # Explicit instance check since MatlabEngine may not have implicit casts/ interpretations
     engine_provided = isinstance(engine, MatlabEngine)
     if not engine_provided:
-        # Explicit instance check since MatlabEngine may not have implicit casts/ interpretations
-        engine = start_MatlabEngine_with_extra_paths()
+        # Start a new Matlab engine operating in the test directory
+        engine = start_MatlabEngine_with_extra_paths(working_directory=test_dir)
 
     run_bscan(test_dir, input_file, engine)
 
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:
         engine.quit()
-    # cleanup auxillary .mat files that are placed into this directory
+    # Cleanup auxillary .mat files that are placed into this directory
     for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
         os.remove(aux_mat)

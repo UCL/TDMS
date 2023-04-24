@@ -2,9 +2,8 @@ import os
 import sys
 from glob import glob
 from pathlib import Path
-from typing import Union
 
-from .generate_test_input import (
+from data.input_generation.generate_test_input import (
     generate_test_input,
     start_MatlabEngine_with_extra_paths,
 )
@@ -12,12 +11,6 @@ from .generate_test_input import (
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 TESTS_TO_REGEN = glob(LOCATION_OF_THIS_FILE + "/*.yaml")
 N_TESTS_TO_REGEN = len(TESTS_TO_REGEN)
-
-
-def regenerate_test(config_file_location: Union[Path, str]) -> None:
-    """Given the config file of a particular test, regenerate the input data for that test in a seperate MATLAB session."""
-    generate_test_input(config_file_location)
-    return
 
 
 def regenerate_all() -> None:
@@ -31,7 +24,7 @@ def regenerate_all() -> None:
         config_file_loc = Path(test_case)
         print(f"Regenerating ({i+1}/{N_TESTS_TO_REGEN}) {config_file_loc}")
         # Regenerate input data
-        regenerate_test(config_file_loc, engine)
+        generate_test_input(config_file_loc, engine)
 
     # Quit the engine we started
     engine.quit()

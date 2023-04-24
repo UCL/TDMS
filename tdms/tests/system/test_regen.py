@@ -5,7 +5,9 @@ from warnings import warn
 
 import pytest
 import yaml
-from data.input_generation.regenerate_all import regenerate_test
+from data.input_generation.generate_test_input import (
+    generate_test_input as regenerate_test,
+)
 from tdms_testing_class import run_system_test
 from utils import download_data
 
