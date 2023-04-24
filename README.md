@@ -34,6 +34,7 @@ $ cmake ../tdms \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
 $ make install
 ```
+
 If CMake cannot find MATLAB, FFTW, or install to the default installat prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
 
 <details>
