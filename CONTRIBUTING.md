@@ -2,7 +2,7 @@
 
 ## Bugs
 
-🐛 If you've spotted a bug or want to request a feature please [send an issue through github](https://github.com/UCL/TDMS/issues/new).
+🐛 If you've spotted a bug or want to request a feature please [send an issue through github](https://github.com/UCL/TDMS/issues/new/choose).
 Please choose the "bug" or "feature" template (as appropriate) and fill it out with much information as you can.
 We really appreciate bug reports and feature requests.
 Thanks!
