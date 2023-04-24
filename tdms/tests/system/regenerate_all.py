@@ -9,7 +9,7 @@ from data.input_generation.generate_test_input import (
 )
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
-TESTS_TO_REGEN = glob(LOCATION_OF_THIS_FILE + "/*.yaml")
+TESTS_TO_REGEN = glob(LOCATION_OF_THIS_FILE + "/data/input_generation/*.yaml")
 N_TESTS_TO_REGEN = len(TESTS_TO_REGEN)
 
 
