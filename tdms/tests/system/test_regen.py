@@ -8,7 +8,7 @@ import yaml
 from data.input_generation.generate_test_input import (
     generate_test_input as regenerate_test,
 )
-from tdms_testing_class import run_system_test
+from run_system_test import run_system_test
 from utils import download_data
 
 # Location of this file, which is where the tests are running from
