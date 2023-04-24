@@ -15,7 +15,7 @@ var searchData=
   ['complex_5fmult_5fvec_12',['complex_mult_vec',['../numerical__derivative_8h.html#a217eabdfd29264b5cea1535b19662996',1,'numerical_derivative.cpp']]],
   ['complex_5fvector_13',['complex_vector',['../structcomplex__vector.html',1,'']]],
   ['concisetriangulatecuboid_14',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
-  ['contribution_20guidelines_15',['Contribution Guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
+  ['contribution_20guidelines_15',['Contribution guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
   ['create_5fvertex_5flist_16',['create_vertex_list',['../class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
   ['cubic_5finterpolation_17',['cubic_interpolation',['../class_argument_namespace.html#aedbab63bb61218f7a39f1d60c0c258ac',1,'ArgumentNamespace']]],
   ['cuboid_18',['Cuboid',['../class_cuboid.html',1,'']]],

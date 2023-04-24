@@ -95,16 +95,11 @@ $(document).ready(function(){initNavTree('md_doc_developers.html',''); initResiz
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Welcome to the developer documentation for TDMS, the Time Domain Maxwell Solver. These pages contain the C++ API documentation as well as some other useful information for developers.</p>
-<ul>
-<li>🐣 If you are a new user, you probably want to start with the project's <a href="https://github.com/UCL/TDMS/blob/main/README.md">README.md</a> on github. There are installation and "getting started" instructions.</li>
-<li>🐛 If you've spotted a bug or want to request a feature, we have a short <a href="https://github.com/UCL/TDMS/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>. Then please <a href="https://github.com/UCL/TDMS/issues">send an issue through github</a>.</li>
-<li>If you want to contribute to the development (🚀!) and have read <a href="https://github.com/UCL/TDMS/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>, you're in the right place.</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md15"></a>
-What?</h1>
-<p>The physics background and numerical methods used by TDMS are described in <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">this pdf document</a> (the source is in <a href="https://github.com/UCL/TDMS/blob/main/doc/latex">doc/latex</a>). In terms of the code, <code>tdms</code> is a C++ binary that can be installed in your path. We build with <a href="https://cmake.org/">CMake</a> to be moderately platform-independent. We run continuous integration builds and tests on Windows, Ubuntu, and MacOS.</p>
-<h2><a class="anchor" id="autotoc_md16"></a>
-Dependencies</h2>
+<h1><a class="anchor" id="autotoc_md11"></a>
+Developers' introduction to TDMS</h1>
+<p>The physics background and numerical methods used by TDMS are described in <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">this pdf document</a> (the source is in <a href="https://github.com/UCL/TDMS/blob/main/doc/latex">doc/latex</a>). In terms of the code, <code>tdms</code> is a C++ binary that can be installed in the <code>PATH</code>. We build with <a href="https://cmake.org/">CMake</a> to be moderately platform-independent. We run continuous integration builds and tests on Windows, Ubuntu, and MacOS.</p>
+<h1><a class="anchor" id="autotoc_md12"></a>
+Dependencies</h1>
 <p>We depend on ...</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a> for parallelization.</li>
@@ -112,8 +107,8 @@ Dependencies</h2>
 <li><a href="https://github.com/gabime/spdlog">spdlog</a> for logging (this is installed automatically by a CMake <a href="https://cmake.org/cmake/help/latest/module/FetchContent.html">FetchContent</a> if not found).</li>
 <li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a> since we read in and write out MATLAB format files. We are actually thinking of removing this as a strict dependency (<a href="https://github.com/UCL/TDMS/issues/70">#70</a>).</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md17"></a>
-Code style and other admin</h2>
+<h1><a class="anchor" id="code-style-and-doxygen"></a>
+Code style and other admin</h1>
 <p>We try to stick to <a href="https://google.github.io/styleguide/cppguide.html">Google style C++</a> wherever practicable. There is one exception: we prefer <code>#pragma once</code> at the top of each header (because it's one line rather than three and is almost the standard anyway).</p>
 <p>Please keep doxygen-style comments in the <b>headers</b>. </p><div class="fragment"><div class="line"><span class="comment">/**</span></div>
 <div class="line"><span class="comment"> * Add two numbers together</span></div>
@@ -132,18 +127,22 @@ Code style and other admin</h2>
 </div><!-- fragment --><p> You can quickly check the documentation for your changes look correct with: </p><div class="fragment"><div class="line">doxygen doc/Doxygen</div>
 <div class="line">firefox html/index.html # or your web browser of choice</div>
 </div><!-- fragment --><p> You should be able to find and read what you've changed. Don't worry about doxygen for the source files (although obviously please do write helpful comments there). We <em>have</em> been putting doxygen comments in the <a class="el" href="md_doc_developers.html#unit-testing">unit-test</a> source files wherever sensible.</p>
-<p>For Python code (e.g. in the <a class="el" href="md_doc_developers.html#system-tests">system tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a> to enforce the code style. To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">python -m pip install pre-commit</div>
+<h2><a class="anchor" id="pre-commit"></a>
+Linters and automatic code style</h2>
+<p>For C++ we've found <a href="https://clang.llvm.org/docs/ClangFormat.html">ClangFormat</a> works well. For Python code (e.g. in the <a class="el" href="md_doc_developers.html#system-tests">system tests</a>) we use <a href="https://black.readthedocs.io/en/stable/">black</a>.</p>
+<p>To apply automatic code styling to staged changes in git we recommend <a href="https://pre-commit.com/"><code>pre-commit</code></a>. If you don't have it already: </p><div class="fragment"><div class="line">python -m pip install pre-commit</div>
 </div><!-- fragment --><p>Then from the root repository directory you can add the pre-commit hooks with </p><div class="fragment"><div class="line">ls .git/hooks</div>
 <div class="line">pre-commit install</div>
 <div class="line">ls .git/hooks</div>
-</div><!-- fragment --><h2><a class="anchor" id="compiling"></a>
-Compiling and debugging</h2>
-<p>Once you've checked the code out, compile with: </p><div class="fragment"><div class="line">cd tdms</div>
-<div class="line">mkdir build; cd build</div>
-<div class="line">cmake .. \</div>
+</div><!-- fragment --><h1><a class="anchor" id="compiling"></a>
+Compiling and debugging</h1>
+<p>Once you've checked the code out, compile with: </p><div class="fragment"><div class="line">mkdir build; cd build</div>
+<div class="line">cmake ../tdms \</div>
 <div class="line"># -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \</div>
 <div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
-<div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
+<div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \</div>
+<div class="line"># -DBUILD_TESTING=ON \</div>
+<div class="line"># -DCMAKE_BUILD_TYPE=Debug</div>
 <div class="line">make install</div>
 </div><!-- fragment --><p> You may need to help CMake find MATLAB/fftw etc.</p>
 <ul>
@@ -159,11 +158,11 @@ Compiling and debugging</h2>
 <div class="line">spdlog::debug(<span class="stringliteral">&quot;Send help&quot;</span>);</div>
 </div><!-- fragment --></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md18"></a>
+<h2><a class="anchor" id="autotoc_md13"></a>
 Compiling on UCL's Myriad cluster</h2>
 <details >
 <summary >
-Details</summary>
+Myriad instructions</summary>
 <p></p>
 <blockquote class="doxtable">
 <p>&zwj;<b>Warning</b> These instructions are a bit experimental. Please use with care (and report anything that's wrong here)! </p>
@@ -188,26 +187,18 @@ Details</summary>
 </div><!-- fragment --><p> it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead.</p>
 <p></p>
 </details>
-<h1><a class="anchor" id="autotoc_md19"></a>
+<h1><a class="anchor" id="autotoc_md14"></a>
 Where's the main?</h1>
 <p>The C++ <code>main</code> function is in <code><a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a></code> however the main algorithm code is in the <code>execute()</code> method of the <code>SimulationManager</code> class, in <code>execute_simulation.cpp</code>.</p>
 <p>Broadly speaking, the <code>main</code> function - and thus a call to (or execution of) <code>tdms</code> - can be broken down into the following steps:</p><ol type="1">
 <li>Parse the input arguments</li>
-</ol>
-<ol type="1">
 <li>Prepare the simulation by creating an instance of <code>SimulationManager</code></li>
-</ol>
-<ol type="1">
 <li>Run the _main loop_. The <em>main loop</em> is meant to mean "the (implementation of) the time-stepping algorithm which TDMS uses", and is contained in the <code>execute()</code> method of the <code>SimulationManager</code> class.</li>
-</ol>
-<ol type="1">
 <li>Perform post-loop processing on the outputs, having completed the main loop (extraction of phasors, computing derived quantities, etc).</li>
-</ol>
-<ol type="1">
 <li>Write the outputs and tear-down memory.</li>
 </ol>
 <p>The <code>SimulationManager</code> class governs steps 2 through 5.</p>
-<h1><a class="anchor" id="autotoc_md20"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Code organisation of the TDMS algorithm</h1>
 <p>An instance of <code>SimulationManager</code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code>SimulationManager</code> instance):</p><ul>
 <li><code>ObjectsFromInfile</code> (<code>inputs</code>): Handles conversion of any input arrays to native <code>C++</code> objects, and any variables that are derived directly from the input file supplied to <code>tdms</code> on the command line.</li>
@@ -216,20 +207,20 @@ Code organisation of the TDMS algorithm</h1>
 <li><code>LoopTimers</code> (<code>timers</code>): Controls timing (and logging execution times) of the main loop and subprocesses therein.</li>
 </ul>
 <p>The role of <code>SimulationManager</code> is to handle how these objects interact in the main loop.</p>
-<h2><a class="anchor" id="autotoc_md21"></a>
-Initialisation (step 2)</h2>
+<h2><a class="anchor" id="autotoc_md16"></a>
+2. Initialisation</h2>
 <p><code>SimulationManager</code> instances begin by initialising the <code>inputs</code> attribute. Based on this attribute, they set up <code>PSTD</code>/<code>FDTD</code> variables and prepare the <code>outputs</code> object for writing. Some members of the <code>outputs</code> objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the <code>outputs</code> object that require information <em>from</em> the main loop are prepared (dimensions are determined, etc) at this stage but not set.</p>
-<h2><a class="anchor" id="autotoc_md22"></a>
-Running the Main Loop (step 3)</h2>
+<h2><a class="anchor" id="autotoc_md17"></a>
+3. Running the Main Loop</h2>
 <p>Once initialised, the <code>execute()</code> method can be called. This will create an instance of <code>LoopVariables</code> that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the <code>execute()</code> method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. <code>timers</code> track the speed of execution of the main loop, and report to the logging.</p>
-<h2><a class="anchor" id="autotoc_md23"></a>
-Post-Processing (step 4)</h2>
+<h2><a class="anchor" id="autotoc_md18"></a>
+4. Post-Processing</h2>
 <p>Upon completing <code>execute()</code> successfully, the <code>post_loop_processing()</code> method of <code>SimulationManager</code> writes the data to the <code>outputs</code> attributes that were not used as buffers during the main loop.</p>
-<h2><a class="anchor" id="autotoc_md24"></a>
-Write out and Tear Down (step 5)</h2>
+<h2><a class="anchor" id="autotoc_md19"></a>
+5. Write out and Tear Down</h2>
 <p>From here, the <code>write_outputs()</code> method exports the data in <code>outputs</code> to the desired file.</p>
 <p>At this point, the instance of <code>SimulationManager</code> can be allowed to go out of scope. In practice, <code>main()</code> terminates here and the destructor handles the tear-down of <code>MATLAB</code> memory blocks.</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
+<h1><a class="anchor" id="testing"></a>
 Testing</h1>
 <p>We have two <a href="https://en.wikipedia.org/wiki/Software_testing#Testing_levels">levels of tests</a>: unit tests, and full system tests.</p>
 <h2><a class="anchor" id="unit-testing"></a>

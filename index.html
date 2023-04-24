@@ -97,62 +97,45 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="textblock"><p><a class="anchor" id="md_README"></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Time-Domain Maxwell Solver</h1>
-<p>TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving Maxwell's equations to simulate light propagation through a medium. See the <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">pdf documentation</a> for further details.</p>
+<p>TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for simulating light propagation through a medium by solving Maxwell's equations. For further details about the method, please refer to the <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">PDF documentation</a>.</p>
 <p><img src="doc/assets/HzNormBanner.png" alt="The normed z-component of the H field incident on a cylinder" class="inline"/></p>
 <h2><a class="anchor" id="autotoc_md1"></a>
-Compilation</h2>
-<p>TDMS needs to be built against <a href="https://www.fftw.org/">FFTW</a> and <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, thus both need to be downloaded and installed prior to compiling TDMS. Install with</p>
-<div class="fragment"><div class="line">$ cd tdms</div>
+Getting started</h2>
+<p>To use TDMS, it needs to be built against <a href="https://www.fftw.org/">FFTW</a> and <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, which must be downloaded and installed first. To install, follow these steps:</p>
+<div class="fragment"><div class="line">$ git clone git@github.com:UCL/TDMS.git</div>
+<div class="line">$ cd TDMS</div>
+<div class="line">$ git checkout v1.0.0 # the stable version</div>
 <div class="line">$ mkdir build; cd build</div>
-<div class="line">$ cmake .. \</div>
+<div class="line">$ cmake ../tdms \</div>
 <div class="line"># -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \</div>
 <div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
-<div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \</div>
-<div class="line"># -DBUILD_TESTING=ON</div>
+<div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
 <div class="line">$ make install</div>
-</div><!-- fragment --><p> where lines need to be commented in and the paths modified if cmake cannot (1) find MATLAB, (2) find FFTW or (3) install to the default install prefix.</p>
+</div><!-- fragment --><p>If CMake cannot find MATLAB, FFTW, or install to the default installat prefix, uncomment the relevant line(s) and modify the path(s) accordingly.</p>
 <details >
 <summary >
-Mac specific instructions</summary>
+Mac-specific instructions</summary>
 <p></p>
-<p>To compile on a Mac an x86 compiler with libraries for OpenMP are required, which can be installed using <a href="https://brew.sh/">brew</a> with <code>brew install llvm</code> then (optionally) set the following cmake arguments</p>
+<p>To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP. You can install these using <a href="https://brew.sh">Homebrew</a> with the command:</p>
+<div class="fragment"><div class="line">brew install llvm</div>
+</div><!-- fragment --><p>After installing with Homebrew, you may need to set the following CMake arguments:</p>
 <div class="fragment"><div class="line">-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++</div>
 <div class="line">-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/</div>
 <div class="line">-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm</div>
-</div><!-- fragment --><p>On an ARM Mac install the x86 version of brew with </p><div class="fragment"><div class="line">arch -x86_64 zsh</div>
+</div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew. To do so, use the following commands:</p>
+<div class="fragment"><div class="line">arch -x86_64 zsh</div>
 <div class="line">arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
 <div class="line">arch -x86_64 /usr/local/bin/brew install llvm</div>
 </div><!-- fragment --> </details>
+<p>You can check that <code>tdms</code> was installed correctly and is in your <code>PATH</code> by running: </p><div class="fragment"><div class="line">tdms --help</div>
+</div><!-- fragment --><p> in a new terminal.</p>
 <h2><a class="anchor" id="autotoc_md2"></a>
-Usage</h2>
-<p>Once the executable has been compiled and installed, <code>tdms</code> should be in the <code>PATH</code>. Check that installation worked with</p>
-<div class="fragment"><div class="line">$ tdms -h</div>
-</div><!-- fragment --><p>You can invoke it directly or call it from a MATLAB script. We recommend that beginners with MATLAB installed start with the demonstration MATLAB script.</p>
-<h3><a class="anchor" id="autotoc_md3"></a>
-To run the demonstration code</h3>
-<p>Move into directory <a href="./examples/arc_01/"><code>examples/arc_01</code></a>, launch MATLAB and run the MATLAB script:</p>
-<p><a href="./examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a></p>
-<p>This script will generate the input to the executable, run the executable and display sample output.</p>
-<h3><a class="anchor" id="autotoc_md4"></a>
-To run standalone</h3>
-<p>You can also run <code>tdms</code> from the command line...</p>
-<div class="fragment"><div class="line">$ tdms --help</div>
-<div class="line">Usage:</div>
-<div class="line">tdms [options] infile outfile</div>
-<div class="line">tdms [options] infile gridfile outfile</div>
-<div class="line">Options:</div>
-<div class="line">-h: Display this help message</div>
-<div class="line">-fd, --finite-difference:   Use the finite-difference solver, instead of the pseudo-spectral method.</div>
-<div class="line">-q: Quiet operation. Silence all logging</div>
-<div class="line">-m: Minimise output file size by not saving vertex and facet information</div>
-</div><!-- fragment --><p>The basic workflow is with two arguments; an input file containing source fields, material composition, material properties and other simulation parameters as detailed in the documentation, and an output file name to be created. The <a href="./tdms/matlab/iteratefdtd_matrix.m"><code>iterate_fdtd_matrix.m</code></a> script can be used to produce a valid input file from a MATLAB script and source-field functions.</p>
-<p>You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option <code>--finite-difference</code>).</p>
-<h3><a class="anchor" id="autotoc_md5"></a>
-Parallelism</h3>
-<p>TDMS is parallelised with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. The maximum number of threads can be set with the <code>OMP_NUM_THREADS</code> environment variable. For example, to use 4 threads, in a bash shell, use:</p>
-<div class="fragment"><div class="line">$ export OMP_NUM_THREADS=4</div>
-</div><!-- fragment --><p>Before calling the <code>tdms</code> executable.</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+How to run</h2>
+<p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <code>examples/arc_01</code> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>. This script will generate the input to TDMS, run TDMS, and display sample output.</p>
+<p>If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name. You can choose between two solver methods: pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option <code>--finite-difference</code>).</p>
+<p>TDMS is parallelized with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. You can set the maximum number of threads using the <code>OMP_NUM_THREADS</code> environment variable before calling the TDMS executable.</p>
+<div class="fragment"><div class="line">export OMP_NUM_THREADS=4 # for example</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md3"></a>
 Citation</h2>
 <p>If you used TDMS in your research and found it helpful, please cite this work.</p>
 <details >
@@ -162,7 +145,7 @@ BibTEX</summary>
 <div class="fragment"><div class="line">@software{tdms,</div>
 <div class="line">    author  = {Munro, Peter and others},</div>
 <div class="line">    license = {GPL-3.0},</div>
-<div class="line">    title   = {{TDMS - Time Domain Maxwell Solver}},</div>
+<div class="line">    title   = {{TDMS - The Time-Domain Maxwell Solver}},</div>
 <div class="line">    URL     = {https://github.com/UCL/TDMS}</div>
 <div class="line">}</div>
 </div><!-- fragment --><p></p>
@@ -175,14 +158,14 @@ LaTeX</summary>
 <div class="line">P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.</div>
 </div><!-- fragment --><p></p>
 </details>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md4"></a>
 Acknowledgements</h2>
 <p>The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's <a href="https://ucl.ac.uk/medphys">Medical Physics and Biomedical Engineering</a> and <a href="https://ucl.ac.uk/arc">Centre for Advanced Research Computing</a> with generous funding from the <a href="https://royalsociety.org">Royal Society</a>.</p>
 <p><img src="doc/assets/biomedlogo.png" alt="medphys" class="inline"/>&#160;<img src="doc/assets/arclogo.png" alt="arc" class="inline"/></p>
 <p>Development of this software has previously benefited from funding from the <a href="https://cscuk.fcdo.gov.uk/about-us/scholarships-and-fellowships/">Commonwealth Scholarships Commission</a>, the <a href="https://www.ukri.org/councils/epsrc/">Engineering and Physical Sciences Research Council</a>, and the <a href="https://www.arc.gov.au/">Australian Research Council</a>.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md5"></a>
 Want to contribute?</h2>
-<p>We're grateful for bug reports, feature requests and pull requests. Please see our <a href="https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a>. </p>
+<p>We're grateful for bug reports, feature requests, and pull requests. Please see our <a href="https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a> (we also have some <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html">developer documentation</a>). </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

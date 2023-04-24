@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TDMS: Contribution Guidelines</title>
+<title>TDMS: Contribution guidelines</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,36 +91,34 @@ $(document).ready(function(){initNavTree('md__c_o_n_t_r_i_b_u_t_i_n_g.html','');
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Contribution Guidelines </div></div>
+  <div class="headertitle"><div class="title">Contribution guidelines </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2><a class="anchor" id="autotoc_md10"></a>
-New features/Issues</h2>
-<p>To suggest a new feature or report an issue please use the <a href="https://github.com/UCL/TDMS/issues">issues</a> board providing details of either the feature or the bug.</p>
-<p>For bugs, please provide detailed steps to reproduce, your operating system, and what you expected to happen.</p>
-<p>To contribute to the code base please</p><ol type="1">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md7"></a>
+Bugs</h1>
+<p>🐛 If you've spotted a bug or want to request a feature please <a href="https://github.com/UCL/TDMS/issues/new">send an issue through github</a>. Please choose the "bug" or "feature" template (as appropriate) and fill it out with much information as you can. We really appreciate bug reports and feature requests. Thanks!</p>
+<h1><a class="anchor" id="autotoc_md8"></a>
+Code contribution</h1>
+<p>🚀 If you want to contribute code, or you have reported a bug and think you have a fix, then please:</p>
+<ol type="1">
 <li><a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">fork</a> this repository,</li>
-<li>commit and push the changes to your fork</li>
-<li>and submit a <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">pull request</a> (PR) against the <em>main</em> branch, being mindful of the guidelines below.</li>
-</ol>
-<h2><a class="anchor" id="autotoc_md11"></a>
-Pull requests</h2>
-<p>PRs should follow the following guidelines</p>
-<ul>
-<li>Contain a <b>context</b> or <b>description</b> of the change</li>
-<li>Include any useful hints for reviewers</li>
-<li>Be focused on a single feature or fix, i.e. a logically consistent set of changes</li>
-<li>Not be excessively large, ideally touching 100s not 1000s of lines</li>
-<li>Add additional tests to ensure the correct functionality</li>
-<li>Should pass all system and unit tests run on GitHub Actions CI</li>
-<li>Follow the code style and have documentation as appropriate</li>
+<li>make your changes and check they compile,</li>
+<li>commit and push the changes to your fork<ul>
+<li>(optional but appreciated) <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#pre-commit">setup and run pre-commit</a> which automates our code tidyup,</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md12"></a>
-Tests</h2>
-<p>Tests are located in <a href="./tdms/tests"><code>tdms/tests</code></a> and include both unit and system tests. These must pass locally and on CI for a change to be merged.</p>
-<h2><a class="anchor" id="autotoc_md13"></a>
-Developer documentation</h2>
-<p>We have some more detailed <a href="https://github-pages.ucl.ac.uk/TDMS">developer documentation</a> (C++ class structure, code style, etc) on our <code>gh-pages</code> site. </p>
+</li>
+<li>and submit a <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">pull request</a> (PR) against the <code>main</code> branch.</li>
+</ol>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Pull requests</h2>
+<p>When you're submitting a PR please give as much context as possible and link to any issues of relevance. You can use our PR template as a starting point, but here are some guidelines we try to follow:</p>
+<ul>
+<li>Focus on a single feature or bug fix. One set of logically consistent changes per PR.</li>
+<li>Ideally a PR should touch 100s, not 1000s, of lines.</li>
+<li><a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#testing">Add test(s)</a> to ensure the correct functionality or which reproduce the bug and demonstrate the fix.</li>
+<li>Document your code changes, <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#code-style-and-doxygen">we use doxygen for C++</a>.</li>
+</ul>
+<p>You can find more information in our <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html">developer and API documentation</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

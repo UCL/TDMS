@@ -26,32 +26,35 @@ var NAVTREE =
 [
   [ "TDMS", "index.html", [
     [ "Time-Domain Maxwell Solver", "index.html#autotoc_md0", [
-      [ "Compilation", "index.html#autotoc_md1", null ],
-      [ "Usage", "index.html#autotoc_md2", [
-        [ "To run the demonstration code", "index.html#autotoc_md3", null ],
-        [ "To run standalone", "index.html#autotoc_md4", null ],
-        [ "Parallelism", "index.html#autotoc_md5", null ]
-      ] ],
-      [ "Citation", "index.html#autotoc_md6", null ],
-      [ "Acknowledgements", "index.html#autotoc_md7", null ],
-      [ "Want to contribute?", "index.html#autotoc_md8", null ]
+      [ "Getting started", "index.html#autotoc_md1", null ],
+      [ "How to run", "index.html#autotoc_md2", null ],
+      [ "Citation", "index.html#autotoc_md3", null ],
+      [ "Acknowledgements", "index.html#autotoc_md4", null ],
+      [ "Want to contribute?", "index.html#autotoc_md5", null ]
     ] ],
-    [ "Contribution Guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", null ],
+    [ "Contribution guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", [
+      [ "Bugs", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md7", null ],
+      [ "Code contribution", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md8", [
+        [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md9", null ]
+      ] ]
+    ] ],
     [ "Developer documentation", "md_doc_developers.html", [
-      [ "What?", "md_doc_developers.html#autotoc_md15", [
-        [ "Dependencies", "md_doc_developers.html#autotoc_md16", null ],
-        [ "Code style and other admin", "md_doc_developers.html#autotoc_md17", null ],
-        [ "Compiling and debugging", "md_doc_developers.html#compiling", null ],
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md18", null ]
+      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md11", null ],
+      [ "Dependencies", "md_doc_developers.html#autotoc_md12", null ],
+      [ "Code style and other admin", "md_doc_developers.html#code-style-and-doxygen", [
+        [ "Linters and automatic code style", "md_doc_developers.html#pre-commit", null ]
       ] ],
-      [ "Where's the main?", "md_doc_developers.html#autotoc_md19", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md20", [
-        [ "Initialisation (step 2)", "md_doc_developers.html#autotoc_md21", null ],
-        [ "Running the Main Loop (step 3)", "md_doc_developers.html#autotoc_md22", null ],
-        [ "Post-Processing (step 4)", "md_doc_developers.html#autotoc_md23", null ],
-        [ "Write out and Tear Down (step 5)", "md_doc_developers.html#autotoc_md24", null ]
+      [ "Compiling and debugging", "md_doc_developers.html#compiling", [
+        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md13", null ]
       ] ],
-      [ "Testing", "md_doc_developers.html#autotoc_md25", [
+      [ "Where's the main?", "md_doc_developers.html#autotoc_md14", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md15", [
+        [ "2. Initialisation", "md_doc_developers.html#autotoc_md16", null ],
+        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md17", null ],
+        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md18", null ],
+        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md19", null ]
+      ] ],
+      [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
         [ "System", "md_doc_developers.html#system-tests", null ]
       ] ]
@@ -82,7 +85,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"index.html#autotoc_md6"
+"input__matrices_8h.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
