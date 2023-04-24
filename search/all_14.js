@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['unit_5ftest_5futils_2eh_0',['unit_test_utils.h',['../unit__test__utils_8h.html',1,'']]],
-  ['unpack_5ffrom_5finput_5fmatrices_1',['unpack_from_input_matrices',['../class_simulation_parameters.html#a05d8c16f873435e51e8e32ff48fe353b',1,'SimulationParameters']]],
-  ['update_5fsource_5fterms_5fpulsed_2',['update_source_terms_pulsed',['../class_simulation_manager.html#ae4487131d7c52c3114d0a7090ef1d528',1,'SimulationManager::update_source_terms_pulsed(double time_H, bool is_conductive, CurrentDensitySplitField &amp;J_c, CurrentDensitySplitField &amp;J_s)'],['../class_simulation_manager.html#a078f377f32745a741dd884b263c794a5',1,'SimulationManager::update_source_terms_pulsed(double time_E, int tind)']]],
-  ['update_5fsurface_5feh_3',['update_surface_EH',['../class_surface_phasors.html#ae4b5f4f6c42b194c9256bf2c5f93e53b',1,'SurfacePhasors']]],
-  ['update_5fvertex_5fcamplitudes_4',['update_vertex_camplitudes',['../class_vertex_phasors.html#a440fef465a4124c7ddc2c9c30a07cc1d',1,'VertexPhasors']]],
-  ['utils_5',['utils',['../namespaceutils.html',1,'']]],
-  ['utils_2eh_6',['utils.h',['../utils_8h.html',1,'']]]
+  ['validate_5fassigned_5fpointers_0',['validate_assigned_pointers',['../class_input_matrices.html#a6c585c28a30d17c03eefe1cb440a467e',1,'InputMatrices']]],
+  ['value_5fof_5fattribute_1',['value_of_attribute',['../classfdtd_grid_initialiser.html#ac73ca0b90f34e6d8cf13e95891696429',1,'fdtdGridInitialiser']]],
+  ['vector_2',['Vector',['../class_vector.html',1,'']]],
+  ['vector_3c_20double_20_3e_3',['Vector&lt; double &gt;',['../class_vector.html',1,'']]],
+  ['vector_3c_20int_20_3e_4',['Vector&lt; int &gt;',['../class_vector.html',1,'']]],
+  ['vertex_5fphasors_2eh_5',['vertex_phasors.h',['../vertex__phasors_8h.html',1,'']]],
+  ['vertexphasors_6',['VertexPhasors',['../class_vertex_phasors.html',1,'VertexPhasors'],['../class_vertex_phasors.html#aae6207412f686aa39eef314d2fcacd14',1,'VertexPhasors::VertexPhasors()']]],
+  ['vertices_7',['Vertices',['../class_vertices.html',1,'']]]
 ];

@@ -98,6 +98,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <h1><a class="anchor" id="autotoc_md0"></a>
 Time-Domain Maxwell Solver</h1>
 <p>TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for solving Maxwell's equations to simulate light propagation through a medium. See the <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">pdf documentation</a> for further details.</p>
+<p><img src="doc/assets/HzNormBanner.png" alt="The normed z-component of the H field incident on a cylinder" class="inline"/></p>
 <h2><a class="anchor" id="autotoc_md1"></a>
 Compilation</h2>
 <p>TDMS needs to be built against <a href="https://www.fftw.org/">FFTW</a> and <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, thus both need to be downloaded and installed prior to compiling TDMS. Install with</p>
@@ -144,7 +145,7 @@ To run standalone</h3>
 <div class="line">-fd, --finite-difference:   Use the finite-difference solver, instead of the pseudo-spectral method.</div>
 <div class="line">-q: Quiet operation. Silence all logging</div>
 <div class="line">-m: Minimise output file size by not saving vertex and facet information</div>
-</div><!-- fragment --><p>The basic workflow is with two arguments, an input file as specified by <a href="./tdms/matlab/iteratefdtd_matrix.m"><code>iterate_fdtd_matrix.m</code></a>, and an output file name to be created.</p>
+</div><!-- fragment --><p>The basic workflow is with two arguments; an input file containing source fields, material composition, material properties and other simulation parameters as detailed in the documentation, and an output file name to be created. The <a href="./tdms/matlab/iteratefdtd_matrix.m"><code>iterate_fdtd_matrix.m</code></a> script can be used to produce a valid input file from a MATLAB script and source-field functions.</p>
 <p>You can choose two possible solver methods: either pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option <code>--finite-difference</code>).</p>
 <h3><a class="anchor" id="autotoc_md5"></a>
 Parallelism</h3>
@@ -175,8 +176,13 @@ LaTeX</summary>
 </div><!-- fragment --><p></p>
 </details>
 <h2><a class="anchor" id="autotoc_md7"></a>
+Acknowledgements</h2>
+<p>The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's <a href="https://ucl.ac.uk/medphys">Medical Physics and Biomedical Engineering</a> and <a href="https://ucl.ac.uk/arc">Centre for Advanced Research Computing</a> with generous funding from the <a href="https://royalsociety.org">Royal Society</a>.</p>
+<p><img src="doc/assets/biomedlogo.png" alt="medphys" class="inline"/>&#160;<img src="doc/assets/arclogo.png" alt="arc" class="inline"/></p>
+<p>Development of this software has previously benefited from funding from the <a href="https://cscuk.fcdo.gov.uk/about-us/scholarships-and-fellowships/">Commonwealth Scholarships Commission</a>, the <a href="https://www.ukri.org/councils/epsrc/">Engineering and Physical Sciences Research Council</a>, and the <a href="https://www.arc.gov.au/">Australian Research Council</a>.</p>
+<h2><a class="anchor" id="autotoc_md8"></a>
 Want to contribute?</h2>
-<p>We're very grateful for bug reports, feature requests and pull requests. Please see our <a class="el" href="md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a>. </p>
+<p>We're grateful for bug reports, feature requests and pull requests. Please see our <a href="https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a>. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

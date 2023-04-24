@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['idvariables_0',['IDVariables',['../class_i_d_variables.html',1,'']]],
-  ['ijk_1',['ijk',['../structijk.html',1,'']]],
-  ['incidentfield_2',['IncidentField',['../class_incident_field.html',1,'']]],
-  ['incidentfieldtest_3',['IncidentFieldTest',['../class_incident_field_test.html',1,'']]],
-  ['independentobjectsfrominfile_4',['IndependentObjectsFromInfile',['../class_independent_objects_from_infile.html',1,'']]],
-  ['inputmatrices_5',['InputMatrices',['../class_input_matrices.html',1,'']]],
-  ['interfacecomponent_6',['InterfaceComponent',['../class_interface_component.html',1,'']]],
-  ['interpolationscheme_7',['InterpolationScheme',['../class_interpolation_scheme.html',1,'']]]
+  ['magneticfield_0',['MagneticField',['../class_magnetic_field.html',1,'']]],
+  ['magneticsplitfield_1',['MagneticSplitField',['../class_magnetic_split_field.html',1,'']]],
+  ['materialcollection_2',['MaterialCollection',['../class_material_collection.html',1,'']]],
+  ['matfilematrixcollection_3',['MatFileMatrixCollection',['../class_mat_file_matrix_collection.html',1,'']]],
+  ['matrix_4',['Matrix',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20double_20_3e_5',['Matrix&lt; double &gt;',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20fftw_5fcomplex_20_3e_6',['Matrix&lt; fftw_complex &gt;',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20int_20_3e_7',['Matrix&lt; int &gt;',['../class_matrix.html',1,'']]],
+  ['matrixcollection_8',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
 ];

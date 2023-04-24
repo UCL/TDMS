@@ -100,10 +100,10 @@ $(document).ready(function(){initNavTree('md_doc_developers.html',''); initResiz
 <li>🐛 If you've spotted a bug or want to request a feature, we have a short <a href="https://github.com/UCL/TDMS/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>. Then please <a href="https://github.com/UCL/TDMS/issues">send an issue through github</a>.</li>
 <li>If you want to contribute to the development (🚀!) and have read <a href="https://github.com/UCL/TDMS/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>, you're in the right place.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 What?</h1>
 <p>The physics background and numerical methods used by TDMS are described in <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">this pdf document</a> (the source is in <a href="https://github.com/UCL/TDMS/blob/main/doc/latex">doc/latex</a>). In terms of the code, <code>tdms</code> is a C++ binary that can be installed in your path. We build with <a href="https://cmake.org/">CMake</a> to be moderately platform-independent. We run continuous integration builds and tests on Windows, Ubuntu, and MacOS.</p>
-<h2><a class="anchor" id="autotoc_md15"></a>
+<h2><a class="anchor" id="autotoc_md16"></a>
 Dependencies</h2>
 <p>We depend on ...</p>
 <ul>
@@ -112,7 +112,7 @@ Dependencies</h2>
 <li><a href="https://github.com/gabime/spdlog">spdlog</a> for logging (this is installed automatically by a CMake <a href="https://cmake.org/cmake/help/latest/module/FetchContent.html">FetchContent</a> if not found).</li>
 <li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a> since we read in and write out MATLAB format files. We are actually thinking of removing this as a strict dependency (<a href="https://github.com/UCL/TDMS/issues/70">#70</a>).</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md16"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Code style and other admin</h2>
 <p>We try to stick to <a href="https://google.github.io/styleguide/cppguide.html">Google style C++</a> wherever practicable. There is one exception: we prefer <code>#pragma once</code> at the top of each header (because it's one line rather than three and is almost the standard anyway).</p>
 <p>Please keep doxygen-style comments in the <b>headers</b>. </p><div class="fragment"><div class="line"><span class="comment">/**</span></div>
@@ -159,7 +159,7 @@ Compiling and debugging</h2>
 <div class="line">spdlog::debug(<span class="stringliteral">&quot;Send help&quot;</span>);</div>
 </div><!-- fragment --></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md18"></a>
 Compiling on UCL's Myriad cluster</h2>
 <details >
 <summary >
@@ -188,17 +188,17 @@ Details</summary>
 </div><!-- fragment --><p> it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead.</p>
 <p></p>
 </details>
-<h1><a class="anchor" id="autotoc_md18"></a>
+<h1><a class="anchor" id="autotoc_md19"></a>
 Where's the main?</h1>
-<p>The C++ <code>main</code> function is in <code><a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a></code> however the main algorithm code is in the <code>execute()</code> method of the <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> class, in <code><a class="el" href="execute__simulation_8cpp.html" title="Code for performing the time-stepping algorithm for the physical process TDMS models.">execute_simulation.cpp</a></code>.</p>
+<p>The C++ <code>main</code> function is in <code><a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a></code> however the main algorithm code is in the <code>execute()</code> method of the <code>SimulationManager</code> class, in <code>execute_simulation.cpp</code>.</p>
 <p>Broadly speaking, the <code>main</code> function - and thus a call to (or execution of) <code>tdms</code> - can be broken down into the following steps:</p><ol type="1">
 <li>Parse the input arguments</li>
 </ol>
 <ol type="1">
-<li>Prepare the simulation by creating an instance of <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code></li>
+<li>Prepare the simulation by creating an instance of <code>SimulationManager</code></li>
 </ol>
 <ol type="1">
-<li>Run the _main loop_. The <em>main loop</em> is meant to mean "the (implementation of) the time-stepping algorithm which TDMS uses", and is contained in the <code>execute()</code> method of the <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> class.</li>
+<li>Run the _main loop_. The <em>main loop</em> is meant to mean "the (implementation of) the time-stepping algorithm which TDMS uses", and is contained in the <code>execute()</code> method of the <code>SimulationManager</code> class.</li>
 </ol>
 <ol type="1">
 <li>Perform post-loop processing on the outputs, having completed the main loop (extraction of phasors, computing derived quantities, etc).</li>
@@ -206,30 +206,30 @@ Where's the main?</h1>
 <ol type="1">
 <li>Write the outputs and tear-down memory.</li>
 </ol>
-<p>The <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> class governs steps 2 through 5.</p>
-<h1><a class="anchor" id="autotoc_md19"></a>
+<p>The <code>SimulationManager</code> class governs steps 2 through 5.</p>
+<h1><a class="anchor" id="autotoc_md20"></a>
 Code organisation of the TDMS algorithm</h1>
-<p>An instance of <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> instance):</p><ul>
-<li><code><a class="el" href="class_objects_from_infile.html" title="Class that handles the creation of C++ arrays from the matrices passed in an InputMatrices object,...">ObjectsFromInfile</a></code> (<code>inputs</code>): Handles conversion of any input arrays to native <code>C++</code> objects, and any variables that are derived directly from the input file supplied to <code>tdms</code> on the command line.</li>
-<li><code><a class="el" href="class_output_matrices.html" title="Handles the data that is written to the output file, and the associated native C++ classes and dataty...">OutputMatrices</a></code> (<code>outputs</code>): Handles data storage for the outputs and the process of writing the output file.</li>
-<li><code><a class="el" href="class_p_s_t_d_variables.html" title="Handles allocation and tear-down of memory/variables required when running a PSTD simulation....">PSTDVariables</a></code> (<code>PSTD</code>) and <code><a class="el" href="class_f_d_t_d_bootstrapper.html" title="Class that handles the FDTD bootstrapping variables.">FDTDBootstrapper</a></code> (<code>FDTD</code>): Handle variables that are only required for the pseudo-spectral and finite-difference solver methods, respectively.</li>
-<li><code><a class="el" href="class_loop_timers.html" title="Class that handles the timers that monitor the performance of the program during the main loop,...">LoopTimers</a></code> (<code>timers</code>): Controls timing (and logging execution times) of the main loop and subprocesses therein.</li>
+<p>An instance of <code>SimulationManager</code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code>SimulationManager</code> instance):</p><ul>
+<li><code>ObjectsFromInfile</code> (<code>inputs</code>): Handles conversion of any input arrays to native <code>C++</code> objects, and any variables that are derived directly from the input file supplied to <code>tdms</code> on the command line.</li>
+<li><code>OutputMatrices</code> (<code>outputs</code>): Handles data storage for the outputs and the process of writing the output file.</li>
+<li><code>PSTDVariables</code> (<code>PSTD</code>) and <code>FDTDBootstrapper</code> (<code>FDTD</code>): Handle variables that are only required for the pseudo-spectral and finite-difference solver methods, respectively.</li>
+<li><code>LoopTimers</code> (<code>timers</code>): Controls timing (and logging execution times) of the main loop and subprocesses therein.</li>
 </ul>
-<p>The role of <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> is to handle how these objects interact in the main loop.</p>
-<h2><a class="anchor" id="autotoc_md20"></a>
-Initialisation (step 2)</h2>
-<p><code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> instances begin by initialising the <code>inputs</code> attribute. Based on this attribute, they set up <code>PSTD</code>/<code>FDTD</code> variables and prepare the <code>outputs</code> object for writing. Some members of the <code>outputs</code> objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the <code>outputs</code> object that require information <em>from</em> the main loop are prepared (dimensions are determined, etc) at this stage but not set.</p>
+<p>The role of <code>SimulationManager</code> is to handle how these objects interact in the main loop.</p>
 <h2><a class="anchor" id="autotoc_md21"></a>
-Running the Main Loop (step 3)</h2>
-<p>Once initialised, the <code>execute()</code> method can be called. This will create an instance of <code><a class="el" href="class_loop_variables.html" title="Handles the setup of variables that will be scoped to the main iteration loop, however which require ...">LoopVariables</a></code> that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the <code>execute()</code> method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. <code>timers</code> track the speed of execution of the main loop, and report to the logging.</p>
+Initialisation (step 2)</h2>
+<p><code>SimulationManager</code> instances begin by initialising the <code>inputs</code> attribute. Based on this attribute, they set up <code>PSTD</code>/<code>FDTD</code> variables and prepare the <code>outputs</code> object for writing. Some members of the <code>outputs</code> objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the <code>outputs</code> object that require information <em>from</em> the main loop are prepared (dimensions are determined, etc) at this stage but not set.</p>
 <h2><a class="anchor" id="autotoc_md22"></a>
-Post-Processing (step 4)</h2>
-<p>Upon completing <code>execute()</code> successfully, the <code>post_loop_processing()</code> method of <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> writes the data to the <code>outputs</code> attributes that were not used as buffers during the main loop.</p>
+Running the Main Loop (step 3)</h2>
+<p>Once initialised, the <code>execute()</code> method can be called. This will create an instance of <code>LoopVariables</code> that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the <code>execute()</code> method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. <code>timers</code> track the speed of execution of the main loop, and report to the logging.</p>
 <h2><a class="anchor" id="autotoc_md23"></a>
+Post-Processing (step 4)</h2>
+<p>Upon completing <code>execute()</code> successfully, the <code>post_loop_processing()</code> method of <code>SimulationManager</code> writes the data to the <code>outputs</code> attributes that were not used as buffers during the main loop.</p>
+<h2><a class="anchor" id="autotoc_md24"></a>
 Write out and Tear Down (step 5)</h2>
 <p>From here, the <code>write_outputs()</code> method exports the data in <code>outputs</code> to the desired file.</p>
-<p>At this point, the instance of <code><a class="el" href="class_simulation_manager.html" title="Manages the physics of TDMS and the simulation loop itself.">SimulationManager</a></code> can be allowed to go out of scope. In practice, <code>main()</code> terminates here and the destructor handles the tear-down of <code>MATLAB</code> memory blocks.</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
+<p>At this point, the instance of <code>SimulationManager</code> can be allowed to go out of scope. In practice, <code>main()</code> terminates here and the destructor handles the tear-down of <code>MATLAB</code> memory blocks.</p>
+<h1><a class="anchor" id="autotoc_md25"></a>
 Testing</h1>
 <p>We have two <a href="https://en.wikipedia.org/wiki/Software_testing#Testing_levels">levels of tests</a>: unit tests, and full system tests.</p>
 <h2><a class="anchor" id="unit-testing"></a>
@@ -249,11 +249,12 @@ Unit</h2>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> * Maybe go into details about the test setup.</span></div>
 <div class="line"><span class="comment"> */</span></div>
-<div class="line">TEST_CASE(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
+<div class="line"><a class="code hl_function" href="test___b_li__vs__cubic__interpolation_8cpp.html#ae2da8b03fb4b6f44dd7cc21624ecac00">TEST_CASE</a>(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
 <div class="line">    <span class="comment">// set up function calls or whatever</span></div>
 <div class="line">    REQUIRE_THROW(&lt;something&gt;);</div>
 <div class="line">    CHECK(&lt;something&gt;);</div>
 <div class="line">}</div>
+<div class="ttc" id="atest___b_li__vs__cubic__interpolation_8cpp_html_ae2da8b03fb4b6f44dd7cc21624ecac00"><div class="ttname"><a href="test___b_li__vs__cubic__interpolation_8cpp.html#ae2da8b03fb4b6f44dd7cc21624ecac00">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;Benchmark: BLi is better than cubic interpolation&quot;)</div><div class="ttdoc">We will check that BLi gives a better approximation than cubic interpolation.</div><div class="ttdef"><b>Definition:</b> test_BLi_vs_cubic_interpolation.cpp:44</div></div>
 </div><!-- fragment --><p> The doxygen-style comments will be included in this developer documentation.</p>
 <p>To run the unit tests, <a class="el" href="md_doc_developers.html#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.</p>

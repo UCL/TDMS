@@ -1,8 +1,0 @@
-var searchData=
-[
-  ['xyztensor3d_0',['XYZTensor3D',['../class_x_y_z_tensor3_d.html',1,'']]],
-  ['xyztensor3d_3c_20double_20_3e_1',['XYZTensor3D&lt; double &gt;',['../class_x_y_z_tensor3_d.html',1,'']]],
-  ['xyztensor3dtest_2',['XYZTensor3DTest',['../class_x_y_z_tensor3_d_test.html',1,'']]],
-  ['xyzvectors_3',['XYZVectors',['../class_x_y_z_vectors.html',1,'']]],
-  ['xyzvectorstest_4',['XYZVectorsTest',['../class_x_y_z_vectors_test.html',1,'']]]
-];

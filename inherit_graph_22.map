@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_input_matrices.html" title="Allows us to handle the MATLAB arrays from the input file in a human&#45;readable format." alt="" coords="5,5,107,31"/>
+<area shape="rect" id="node1" href="$class_matrix.html" title=" " alt="" coords="5,31,101,56"/>
+<area shape="rect" id="node2" href="$class_grating_structure.html" title=" " alt="" coords="149,5,267,31"/>
+<area shape="rect" id="node3" href="$class_vertices.html" title=" " alt="" coords="173,55,243,80"/>
 </map>

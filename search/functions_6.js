@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['fdtdgridinitialiser_0',['fdtdGridInitialiser',['../classfdtd_grid_initialiser.html#a68572b27a73480baa213baf93360f7cf',1,'fdtdGridInitialiser']]],
-  ['field_1',['Field',['../class_field.html#a49946f632ba55deabf6bc8cd5f100225',1,'Field::Field()=default'],['../class_field.html#aebcda2e27b2a7abf93642e35bfd247dc',1,'Field::Field(int I_total, int J_total, int K_total)']]],
-  ['finite_5fdifference_2',['finite_difference',['../class_argument_namespace.html#a7334784d24819031d41ed914a8ac058e',1,'ArgumentNamespace']]],
-  ['first_5fderivative_3',['first_derivative',['../numerical__derivative_8h.html#afe9a657c7bc11de6dc694550f01d2e23',1,'numerical_derivative.cpp']]],
-  ['frobenius_4',['frobenius',['../class_tensor3_d.html#a68b2ad27844616772a714b8294985db6',1,'Tensor3D']]]
+  ['get_5fmx_5fcamplitudes_0',['get_mx_camplitudes',['../class_vertex_phasors.html#abb10ea6279793d7cbb854a1540bc59e9',1,'VertexPhasors']]],
+  ['get_5fmx_5fsurface_5famplitudes_1',['get_mx_surface_amplitudes',['../class_surface_phasors.html#aa98d67114d17cb7c164d4f85a97a29ae',1,'SurfacePhasors']]],
+  ['get_5fn_5fsurface_5fvertices_2',['get_n_surface_vertices',['../class_surface_phasors.html#a27092b12c7b1e09f092309629dba5f98',1,'SurfacePhasors']]],
+  ['get_5fpriority_3',['get_priority',['../class_interpolation_scheme.html#aa2f89ae59a2b4c2b4aea0aaa0331fb12',1,'InterpolationScheme']]],
+  ['get_5fvertex_5flist_4',['get_vertex_list',['../class_surface_phasors.html#a5d72902641b9e845c8820731cf66fb5a',1,'SurfacePhasors']]],
+  ['grid_5ffilename_5',['grid_filename',['../class_argument_namespace.html#a75b3ea55ae247796f2e6be7f9654dfc6',1,'ArgumentNamespace']]]
 ];

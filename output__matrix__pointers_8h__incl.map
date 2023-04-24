@@ -1,8 +1,0 @@
-<map id="tdms/include/output_matrices/output_matrix_pointers.h" name="tdms/include/output_matrices/output_matrix_pointers.h">
-<area shape="rect" id="node1" title="Declares a class that allows for memory&#45;management of pointers to the output arrays (OutputMatrixPoin..." alt="" coords="154,5,317,60"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,108,84,133"/>
-<area shape="rect" id="node3" title=" " alt="" coords="159,181,213,207"/>
-<area shape="rect" id="node4" title=" " alt="" coords="254,181,313,207"/>
-<area shape="rect" id="node5" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="160,108,311,133"/>
-<area shape="rect" id="node6" title=" " alt="" coords="386,108,455,133"/>
-</map>

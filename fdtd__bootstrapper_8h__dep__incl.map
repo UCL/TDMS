@@ -1,6 +1,0 @@
-<map id="tdms/include/simulation_manager/fdtd_bootstrapper.h" name="tdms/include/simulation_manager/fdtd_bootstrapper.h">
-<area shape="rect" id="node1" title="Handles the boostrapping variables used in the FDTD solver." alt="" coords="73,5,268,45"/>
-<area shape="rect" id="node2" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="66,93,275,133"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,189,136,214"/>
-<area shape="rect" id="node4" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="161,181,381,221"/>
-</map>

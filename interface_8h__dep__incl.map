@@ -1,8 +1,0 @@
-<map id="tdms/include/interface.h" name="tdms/include/interface.h">
-<area shape="rect" id="node1" title=" " alt="" coords="110,5,271,31"/>
-<area shape="rect" id="node2" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="111,79,270,133"/>
-<area shape="rect" id="node3" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="166,181,343,221"/>
-<area shape="rect" id="node4" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="23,269,233,309"/>
-<area shape="rect" id="node6" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="161,357,381,397"/>
-<area shape="rect" id="node5" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,365,136,390"/>
-</map>

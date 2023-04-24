@@ -103,24 +103,14 @@ $(document).ready(function(){initNavTree('class_field.html',''); initResizable()
 <div class="dynheader">
 Inheritance diagram for Field:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_field__inherit__graph.png" border="0" usemap="#a_field_inherit__map" alt="Inheritance graph"/></div>
-<map name="a_field_inherit__map" id="a_field_inherit__map">
-<area shape="rect" title=" " alt="" coords="89,79,139,104"/>
-<area shape="rect" href="class_electric_field.html" title=" " alt="" coords="5,152,100,177"/>
-<area shape="rect" href="class_magnetic_field.html" title=" " alt="" coords="124,152,227,177"/>
-<area shape="rect" href="class_grid.html" title=" " alt="" coords="91,5,137,31"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="class_field__inherit__graph.svg" width="232" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Field:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_field__coll__graph.png" border="0" usemap="#a_field_coll__map" alt="Collaboration graph"/></div>
-<map name="a_field_coll__map" id="a_field_coll__map">
-<area shape="rect" title=" " alt="" coords="101,196,151,221"/>
-<area shape="rect" href="class_grid.html" title=" " alt="" coords="5,93,52,119"/>
-<area shape="rect" href="structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="9,5,48,31"/>
-<area shape="rect" href="class_x_y_z_tensor3_d.html" title=" " alt="" coords="76,93,243,119"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="class_field__coll__graph.svg" width="248" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -143,9 +133,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_field.html#a263a2ebc51f6e0dff6c60138b68c9e82">add_to_angular_norm</a> (int n, int Nt, <a class="el" href="class_simulation_parameters.html">SimulationParameters</a> &amp;params)</td></tr>
 <tr class="memdesc:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the phasor_norm of the current field and add it to the current norm-value.  <br /></td></tr>
 <tr class="separator:a263a2ebc51f6e0dff6c60138b68c9e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bc0c1998f9ff31cb91341fb5400e815"><td class="memItemLeft" align="right" valign="top"><a id="a7bc0c1998f9ff31cb91341fb5400e815" name="a7bc0c1998f9ff31cb91341fb5400e815"></a>
+<tr class="memitem:a94d339e875247ee17f93f23b346dcca0"><td class="memItemLeft" align="right" valign="top"><a id="a94d339e875247ee17f93f23b346dcca0" name="a94d339e875247ee17f93f23b346dcca0"></a>
 std::complex&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>phasor_norm</b> (double f, int n, double omega, double dt, int Nt)</td></tr>
-<tr class="separator:a7bc0c1998f9ff31cb91341fb5400e815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a94d339e875247ee17f93f23b346dcca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a865cfb4be5000462a8a4f94a40934695"><td class="memItemLeft" align="right" valign="top"><a id="a865cfb4be5000462a8a4f94a40934695" name="a865cfb4be5000462a8a4f94a40934695"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>phase</b> (int n, double omega, double dt)=0</td></tr>
 <tr class="separator:a865cfb4be5000462a8a4f94a40934695"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -558,7 +548,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::complex&lt;double&gt; The interpolated field value </dd></dl>
 
-<p>Implemented in <a class="el" href="class_electric_field.html#a3a9741874d3052f05a5915578b2c8d50">ElectricField</a>, and <a class="el" href="class_magnetic_field.html#aada30f9d56c302e165f54806c496f464">MagneticField</a>.</p>
+<p>Implemented in <a class="el" href="class_electric_field.html#adfe2bd8f63e90bab886996d8e2a498a7">ElectricField</a>, and <a class="el" href="class_magnetic_field.html#ac8a1981f077527cbfb93f1e2dd4a8560">MagneticField</a>.</p>
 
 </div>
 </div>
@@ -839,9 +829,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>tdms/include/<a class="el" href="field_8h_source.html">field.h</a></li>
-<li>tdms/src/fields/base.cpp</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

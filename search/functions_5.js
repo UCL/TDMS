@@ -1,22 +1,8 @@
 var searchData=
 [
-  ['e_5fisource_5fupdate_5fsteadystate_0',['E_Isource_update_steadystate',['../class_simulation_manager.html#abcc495dd63ee1f6f53cf97dbd2b363d8',1,'SimulationManager']]],
-  ['e_5fjsource_5fupdate_5fsteadystate_1',['E_Jsource_update_steadystate',['../class_simulation_manager.html#a1c33168eaa259b41d2a98dd57ea66bae',1,'SimulationManager']]],
-  ['e_5fksource_5fupdate_5fsteadystate_2',['E_Ksource_update_steadystate',['../class_simulation_manager.html#a88b42eed545266cdf48d2b34c61339b8',1,'SimulationManager']]],
-  ['e_5fsource_5fupdate_5fall_5fsteadystate_3',['E_source_update_all_steadystate',['../class_simulation_manager.html#ac42c1d990fbf807fdecda3a26e00647d',1,'SimulationManager']]],
-  ['e_5fsource_5fupdate_5fsteadystate_4',['E_source_update_steadystate',['../class_simulation_manager.html#a5ee579ba07a451a8a2d21272d3e7b322',1,'SimulationManager']]],
-  ['electricsplitfield_5',['ElectricSplitField',['../class_electric_split_field.html#ab379644ec7a0c53fea9d86519aa1cba6',1,'ElectricSplitField']]],
-  ['end_6',['end',['../class_timer.html#accef2f2b25869fbca2947a56b494d2a0',1,'Timer']]],
-  ['end_5fof_5fiteration_5fsteps_7',['end_of_iteration_steps',['../class_simulation_manager.html#a45f39398a860032e8ae06beb53fecb1b',1,'SimulationManager']]],
-  ['end_5ftimer_8',['end_timer',['../class_loop_timers.html#af292a1a50eb9cc745bff0292ab12a515',1,'LoopTimers']]],
-  ['error_5fon_5fmemory_5fassigned_9',['error_on_memory_assigned',['../class_output_matrix_pointers.html#a35f101b82188ec681720772e7bbe0a48',1,'OutputMatrixPointers']]],
-  ['euclidean_10',['euclidean',['../unit__test__utils_8h.html#abe0c56a5030a5274c5d3a5f93a4747ba',1,'tdms_tests']]],
-  ['execute_11',['execute',['../class_simulation_manager.html#ac799adabec9bb78a53b9a67518cc4bfa',1,'SimulationManager']]],
-  ['export_5ffield_12',['export_field',['../class_t_d_field_exporter2_d.html#acc25ca6d93da4b602d87ea96d709fd7f',1,'TDFieldExporter2D']]],
-  ['extract_13',['extract',['../class_field_sample.html#ab3eac231b85e434098bbd2d4a5814d36',1,'FieldSample']]],
-  ['extract_5fphasor_5fnorms_14',['extract_phasor_norms',['../class_simulation_manager.html#ab289a1d3d1d8bc5a5153dfc8a98d2cbb',1,'SimulationManager']]],
-  ['extract_5fphasors_15',['extract_phasors',['../class_simulation_manager.html#a1a237669ab1a2fbabcaa09ed30fd8fee',1,'SimulationManager']]],
-  ['extract_5fphasors_5fin_5fplane_16',['extract_phasors_in_plane',['../class_f_d_t_d_bootstrapper.html#ac451b9a0370d8f9d79eebb32c07f9ab1',1,'FDTDBootstrapper']]],
-  ['extractphasorssurface_17',['extractPhasorsSurface',['../class_surface_phasors.html#a698362f4563916176d7aea5579723afc',1,'SurfacePhasors']]],
-  ['extractphasorsvertices_18',['extractPhasorsVertices',['../class_vertex_phasors.html#a0914585579857a5067800c755e71ebd6',1,'VertexPhasors']]]
+  ['fdtdgridinitialiser_0',['fdtdGridInitialiser',['../classfdtd_grid_initialiser.html#a68572b27a73480baa213baf93360f7cf',1,'fdtdGridInitialiser']]],
+  ['field_1',['Field',['../class_field.html#a49946f632ba55deabf6bc8cd5f100225',1,'Field::Field()=default'],['../class_field.html#aebcda2e27b2a7abf93642e35bfd247dc',1,'Field::Field(int I_total, int J_total, int K_total)']]],
+  ['finite_5fdifference_2',['finite_difference',['../class_argument_namespace.html#a7334784d24819031d41ed914a8ac058e',1,'ArgumentNamespace']]],
+  ['first_5fderivative_3',['first_derivative',['../numerical__derivative_8h.html#afe9a657c7bc11de6dc694550f01d2e23',1,'numerical_derivative.cpp']]],
+  ['frobenius_4',['frobenius',['../class_tensor3_d.html#a68b2ad27844616772a714b8294985db6',1,'Tensor3D']]]
 ];

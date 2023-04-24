@@ -1,32 +1,29 @@
 <map id="tdms/tests/unit/test_FieldSample.cpp" name="tdms/tests/unit/test_FieldSample.cpp">
-<area shape="rect" id="node1" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="361,5,496,45"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,328,207,353"/>
-<area shape="rect" id="node3" title=" " alt="" coords="320,328,433,353"/>
-<area shape="rect" id="node4" href="$array__test__class_8h.html" title="Defines the abstract class for testing objects defined in arrays.h." alt="" coords="260,93,389,119"/>
-<area shape="rect" id="node14" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="849,93,947,119"/>
-<area shape="rect" id="node28" href="$unit__test__utils_8h.html" title="Functions common to multiple unit tests." alt="" coords="1463,328,1578,353"/>
-<area shape="rect" id="node5" href="$abstract__array__test__class_8h_source.html" title=" " alt="" coords="256,240,391,280"/>
-<area shape="rect" id="node6" title=" " alt="" coords="597,475,652,500"/>
-<area shape="rect" id="node7" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="906,328,975,353"/>
-<area shape="rect" id="node8" title=" " alt="" coords="1363,475,1433,500"/>
-<area shape="rect" id="node9" title=" " alt="" coords="1005,401,1084,427"/>
-<area shape="rect" id="node10" title=" " alt="" coords="1108,401,1171,427"/>
-<area shape="rect" id="node11" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="1398,401,1473,427"/>
-<area shape="rect" id="node12" title=" " alt="" coords="898,401,981,427"/>
-<area shape="rect" id="node13" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="715,401,772,427"/>
-<area shape="rect" id="node15" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="1109,167,1167,192"/>
-<area shape="rect" id="node23" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="739,247,903,273"/>
-<area shape="rect" id="node16" href="$cell__coordinate_8h.html" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="1030,247,1150,273"/>
-<area shape="rect" id="node18" href="$dimensions_8h.html" title="Defines a class that serves as an explicit converter between MATLAB pointers and array dimensions." alt="" coords="1225,247,1323,273"/>
-<area shape="rect" id="node19" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="973,475,1045,500"/>
-<area shape="rect" id="node17" title=" " alt="" coords="1053,328,1127,353"/>
-<area shape="rect" id="node20" title=" " alt="" coords="895,548,949,573"/>
-<area shape="rect" id="node21" title=" " alt="" coords="974,548,1043,573"/>
-<area shape="rect" id="node22" title=" " alt="" coords="1067,548,1126,573"/>
-<area shape="rect" id="node24" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="617,328,736,353"/>
-<area shape="rect" id="node25" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="283,401,433,427"/>
-<area shape="rect" id="node27" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="509,401,639,427"/>
-<area shape="rect" id="node26" title=" " alt="" coords="447,475,506,500"/>
-<area shape="rect" id="node29" title=" " alt="" coords="1598,401,1681,427"/>
-<area shape="rect" id="node30" title=" " alt="" coords="1705,401,1771,427"/>
+<area shape="rect" id="node1" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="372,5,507,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,93,207,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="188,313,301,339"/>
+<area shape="rect" id="node4" title=" " alt="" coords="513,93,643,119"/>
+<area shape="rect" id="node5" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="390,93,489,119"/>
+<area shape="rect" id="node27" title=" " alt="" coords="667,93,782,119"/>
+<area shape="rect" id="node6" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="577,313,646,339"/>
+<area shape="rect" id="node14" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="605,167,663,192"/>
+<area shape="rect" id="node22" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="579,240,743,265"/>
+<area shape="rect" id="node7" title=" " alt="" coords="435,460,505,485"/>
+<area shape="rect" id="node8" title=" " alt="" coords="508,387,587,412"/>
+<area shape="rect" id="node9" title=" " alt="" coords="1000,460,1055,485"/>
+<area shape="rect" id="node10" title=" " alt="" coords="795,387,857,412"/>
+<area shape="rect" id="node11" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="358,387,433,412"/>
+<area shape="rect" id="node12" title=" " alt="" coords="882,387,965,412"/>
+<area shape="rect" id="node13" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="713,387,771,412"/>
+<area shape="rect" id="node15" href="$cell__coordinate_8h.html" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="282,240,402,265"/>
+<area shape="rect" id="node17" href="$dimensions_8h.html" title="Defines a class that serves as an explicit converter between MATLAB pointers and array dimensions." alt="" coords="1522,240,1621,265"/>
+<area shape="rect" id="node18" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="1423,460,1495,485"/>
+<area shape="rect" id="node16" title=" " alt="" coords="326,313,401,339"/>
+<area shape="rect" id="node19" title=" " alt="" coords="1345,533,1400,559"/>
+<area shape="rect" id="node20" title=" " alt="" coords="1425,533,1494,559"/>
+<area shape="rect" id="node21" title=" " alt="" coords="1518,533,1577,559"/>
+<area shape="rect" id="node23" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="1107,313,1225,339"/>
+<area shape="rect" id="node24" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="1091,387,1241,412"/>
+<area shape="rect" id="node26" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="1266,387,1397,412"/>
+<area shape="rect" id="node25" title=" " alt="" coords="1219,460,1278,485"/>
 </map>

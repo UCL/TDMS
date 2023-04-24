@@ -1,12 +1,6 @@
 <map id="tdms/include/grid_labels.h" name="tdms/include/grid_labels.h">
-<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="135,5,308,31"/>
-<area shape="rect" id="node2" href="$output__matrices_8h.html" title="Class handling the data structures to be written to the output file." alt="" coords="5,174,192,214"/>
-<area shape="rect" id="node6" href="$objects__from__infile_8h.html" title="Classes that unpack variables from the input files the TDMS executable recieves and initalise fields...." alt="" coords="381,167,539,221"/>
-<area shape="rect" id="node8" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="69,79,211,119"/>
-<area shape="rect" id="node9" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="236,79,372,119"/>
-<area shape="rect" id="node3" href="$simulation__manager_8h.html" title="Class that runs the physics of the TDMS executable, and produces an output. Implementation is split b..." alt="" coords="217,357,426,397"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="199,453,329,478"/>
-<area shape="rect" id="node5" href="$execute__simulation_8cpp.html" title="Code for performing the time&#45;stepping algorithm for the physical process TDMS models." alt="" coords="354,445,574,485"/>
-<area shape="rect" id="node7" href="$loop__variables_8h.html" title="Class that handles the setup of variables whose scope is limited to the main simulation loop,..." alt="" coords="371,269,549,309"/>
-<area shape="rect" id="node10" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="217,174,357,214"/>
+<area shape="rect" id="node1" title="Class to hold the labels of a Yee cell." alt="" coords="71,5,245,31"/>
+<area shape="rect" id="node2" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="5,79,148,119"/>
+<area shape="rect" id="node3" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="173,79,309,119"/>
+<area shape="rect" id="node4" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="171,167,311,207"/>
 </map>

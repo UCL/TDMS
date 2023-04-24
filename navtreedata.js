@@ -33,33 +33,27 @@ var NAVTREE =
         [ "Parallelism", "index.html#autotoc_md5", null ]
       ] ],
       [ "Citation", "index.html#autotoc_md6", null ],
-      [ "Want to contribute?", "index.html#autotoc_md7", null ]
+      [ "Acknowledgements", "index.html#autotoc_md7", null ],
+      [ "Want to contribute?", "index.html#autotoc_md8", null ]
     ] ],
     [ "Contribution Guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", null ],
     [ "Developer documentation", "md_doc_developers.html", [
-      [ "What?", "md_doc_developers.html#autotoc_md14", [
-        [ "Dependencies", "md_doc_developers.html#autotoc_md15", null ],
-        [ "Code style and other admin", "md_doc_developers.html#autotoc_md16", null ],
+      [ "What?", "md_doc_developers.html#autotoc_md15", [
+        [ "Dependencies", "md_doc_developers.html#autotoc_md16", null ],
+        [ "Code style and other admin", "md_doc_developers.html#autotoc_md17", null ],
         [ "Compiling and debugging", "md_doc_developers.html#compiling", null ],
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md17", null ]
+        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md18", null ]
       ] ],
-      [ "Where's the main?", "md_doc_developers.html#autotoc_md18", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md19", [
-        [ "Initialisation (step 2)", "md_doc_developers.html#autotoc_md20", null ],
-        [ "Running the Main Loop (step 3)", "md_doc_developers.html#autotoc_md21", null ],
-        [ "Post-Processing (step 4)", "md_doc_developers.html#autotoc_md22", null ],
-        [ "Write out and Tear Down (step 5)", "md_doc_developers.html#autotoc_md23", null ]
+      [ "Where's the main?", "md_doc_developers.html#autotoc_md19", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md20", [
+        [ "Initialisation (step 2)", "md_doc_developers.html#autotoc_md21", null ],
+        [ "Running the Main Loop (step 3)", "md_doc_developers.html#autotoc_md22", null ],
+        [ "Post-Processing (step 4)", "md_doc_developers.html#autotoc_md23", null ],
+        [ "Write out and Tear Down (step 5)", "md_doc_developers.html#autotoc_md24", null ]
       ] ],
-      [ "Testing", "md_doc_developers.html#autotoc_md24", [
+      [ "Testing", "md_doc_developers.html#autotoc_md25", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
         [ "System", "md_doc_developers.html#system-tests", null ]
-      ] ]
-    ] ],
-    [ "Namespaces", "namespaces.html", [
-      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
-      [ "Namespace Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
-        [ "Functions", "namespacemembers_func.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -67,8 +61,8 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -87,9 +81,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"abstract__array__test__class_8h_source.html",
-"class_output_matrices.html#a55b9b035e2c97ea39de9ffb3abf821a9",
-"functions_u.html"
+"annotated.html",
+"index.html#autotoc_md6"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['xy_0',['xy',['../class_split_field.html#af1b03f0edae0a1089db41a3710157840',1,'SplitField']]],
-  ['xyztensor3d_1',['XYZTensor3D',['../class_x_y_z_tensor3_d.html',1,'']]],
-  ['xyztensor3d_3c_20double_20_3e_2',['XYZTensor3D&lt; double &gt;',['../class_x_y_z_tensor3_d.html',1,'']]],
-  ['xyztensor3dtest_3',['XYZTensor3DTest',['../class_x_y_z_tensor3_d_test.html',1,'']]],
-  ['xyzvectors_4',['XYZVectors',['../class_x_y_z_vectors.html',1,'XYZVectors'],['../class_x_y_z_vectors.html#ac7a70de81450ec6321abc387e727935a',1,'XYZVectors::XYZVectors()']]],
-  ['xyzvectorstest_5',['XYZVectorsTest',['../class_x_y_z_vectors_test.html',1,'']]],
-  ['xz_6',['xz',['../class_split_field.html#aaa622b8e9536e7bd472ff24c49b6f590',1,'SplitField']]]
+  ['zero_0',['zero',['../class_split_field.html#a6367b936f626e63bcfe7eeff3ca01a54',1,'SplitField::zero()'],['../class_field.html#a5511a94b5f37a81ee7b3dacb83dd20b6',1,'Field::zero()']]],
+  ['zero_5fsurface_5feh_1',['zero_surface_EH',['../class_surface_phasors.html#afc6e9cca06ea4af80837bbc104b9d77b',1,'SurfacePhasors']]],
+  ['zx_2',['zx',['../class_split_field.html#ad43c2ab34b1a059d90c374bc49c48073',1,'SplitField']]],
+  ['zy_3',['zy',['../class_split_field.html#a1f011968382107ea2d18ec02541010ac',1,'SplitField']]]
 ];
