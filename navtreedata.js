@@ -56,7 +56,13 @@ var NAVTREE =
       ] ],
       [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
-        [ "System", "md_doc_developers.html#system-tests", null ]
+        [ "System", "md_doc_developers.html#system-tests", [
+          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md20", null ]
+        ] ],
+        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md21", [
+          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md22", null ],
+          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md23", null ]
+        ] ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
