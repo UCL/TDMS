@@ -81,6 +81,7 @@ else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
 endif()
 
+
 # TDMS target -----------------------------------------------------------------
 
 # wildcard to find all *.cpp files in the src directory except for main.cpp
@@ -113,6 +114,27 @@ endif()
 # Install ---------------------------------------------------------------------
 install(TARGETS tdms)
 
+
+# Code Coverage ---------------------------------------------------------------
+add_library(coverage_config INTERFACE)
+
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  message("Setting up code coverage.")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(coverage_config INTERFACE
+    -O0        # no optimization
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(coverage_config INTERFACE --coverage)
+  else()
+    target_link_libraries(coverage_config INTERFACE --coverage)
+  endif()
+endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+
+
 # Testing ---------------------------------------------------------------------
 if (BUILD_TESTING)
     enable_testing()
@@ -128,6 +150,7 @@ if (BUILD_TESTING)
     target_link_libraries(tdms_tests PRIVATE
             Catch2::Catch2WithMain
             tdms_lib
+            coverage_config
             )
 
     add_test(test_all tdms_tests)
