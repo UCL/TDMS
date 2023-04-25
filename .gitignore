@@ -1,4 +1,5 @@
 # build output
+build/
 **build/
 **cmake-build**
 **.o
@@ -18,6 +19,7 @@ tdms/tests/system/data
 # text editor files
 .idea/
 .vscode/
+.cache/
 
 # MacOS
 **.DS_store

@@ -43,7 +43,8 @@ jobs:
         # also test 'Release'.
         build_testing: [ON, OFF]
         exclude:
-          # Currently our tests don't compile in Windows so skip this.
+          # Currently our tests don't compile, and nor do we have a coverage
+          # build in Windows so skip this.
           - os: windows-latest
             build_testing: ON
 
@@ -60,7 +61,7 @@ jobs:
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libgomp1 python3
+          sudo apt-get install libfftw3-dev libgomp1 python3 lcov
 
       # -------------------------------------------------------------------------------
       # Windows
@@ -82,7 +83,7 @@ jobs:
       # MacOS
       - name: Install dependencies for MacOS
         if: ${{ contains(matrix.os, 'macos') }}
-        run: brew install fftw
+        run: brew install fftw lcov
 
       - name: Fix omp headers not linked on MacOS
         if: ${{ contains(matrix.os, 'macos') }}
@@ -108,6 +109,7 @@ jobs:
           cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
            -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DCODE_COVERAGE=${{ matrix.build_testing }} \
            ${DOMP_ROOT_MAC}
         # This 👆 env variable only exists on MacOS builds to fix the OMP
         # homebrew/PATH problem.
@@ -125,6 +127,23 @@ jobs:
         run: |
           export OMP_NUM_THREADS=1
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
+
+      - name: Run coverage analysis with lcov
+        if: matrix.build_testing == 'ON'
+        shell: bash
+        # Create the coverage summary, filter out dependencies' coverage then
+        # print human-readable summary in the build logs.
+        run: |
+          lcov --capture --directory ${{ runner.workspace }}/build/CMakeFiles/tdms_tests.dir/src --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '*/_deps/*' --output-file coverage.info
+          lcov --remove coverage.info '/Library/*' --output-file coverage.info
+          lcov --remove coverage.info '/Applications/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload coverage reports to Codecov
+        if: matrix.build_testing == 'ON'
+        uses: codecov/codecov-action@v3
 
       - name: Tar the build result to maintain permissions
         # https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files
