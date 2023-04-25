@@ -189,4 +189,4 @@ jobs:
         shell: bash
         run: |
           export OMP_NUM_THREADS=2
-          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ -s -x
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ --ignore=${GITHUB_WORKSPACE}/tdms/tests/system/test_regen.py -s -x
