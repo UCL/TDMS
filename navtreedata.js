@@ -56,6 +56,7 @@ var NAVTREE =
       ] ],
       [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
+        [ "Test coverage", "md_doc_developers.html#coverage", null ],
         [ "System", "md_doc_developers.html#system-tests", [
           [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md20", null ]
         ] ],

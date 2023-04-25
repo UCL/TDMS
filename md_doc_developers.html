@@ -142,11 +142,16 @@ Compiling and debugging</h1>
 <div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
 <div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \</div>
 <div class="line"># -DBUILD_TESTING=ON \</div>
+<div class="line"># -DCODE_COVERAGE=ON \</div>
 <div class="line"># -DCMAKE_BUILD_TYPE=Debug</div>
 <div class="line">make install</div>
 </div><!-- fragment --><p> You may need to help CMake find MATLAB/fftw etc.</p>
 <ul>
 <li>By default, build testing is turned off. You can turn it on with <code>-DBUILD_TESTING=ON</code>.</li>
+<li>By default, code coverage is disabled. You can enable it with <code>-DCODE_COVERAGE=ON</code>.<ul>
+<li><a class="el" href="md_doc_developers.html#coverage">Then follow some extra steps</a>.</li>
+</ul>
+</li>
 <li>Also by default, debug printout is off. Turn on with <code>-DCMAKE_BUILD_TYPE=Debug</code> or manually at some specific place in the code with: <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;spdlog/spdlog.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// ...</span></div>
@@ -249,6 +254,17 @@ Unit</h2>
 </div><!-- fragment --><p> The doxygen-style comments will be included in this developer documentation.</p>
 <p>To run the unit tests, <a class="el" href="md_doc_developers.html#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.</p>
+<h2><a class="anchor" id="coverage"></a>
+Test coverage</h2>
+<p>If you want to check the coverage of the unit tests, then build with <code>-DCODE_COVERAGE=ON</code>. Then when you run <code>ctest</code> or the <code>tdms_tests</code> executable, <a href="https://gcc.gnu.org/onlinedocs/gcc/Gcov-Data-Files.html">GCDA coverage files</a> are generated. They are not really for humans to parse but can be summarised with other tools. In our build system we use <a href="https://github.com/linux-test-project/lcov"><code>lcov</code></a>, a frontend for <code>gcov</code> reports. If you don't have <code>lcov</code>, you can install it with aptitude or homebrew (<code>sudo apt install lcov</code> or <code>brew install lcov</code>).</p>
+<p>To get a coverage report in the terminal: execute the unit tests and then confirm you generated .gcda files... </p><div class="fragment"><div class="line">./tdms_tests</div>
+<div class="line">find . --name &quot;*.gcda&quot;</div>
+</div><!-- fragment --><p> they're probably somewhere like <code>build/CMakeFiles/tdms.dir/src</code>.</p>
+<p>Then generate the coverage report with </p><div class="fragment"><div class="line">lcov --capture --directory ./CMakeFiles/tdms_tests.dir/src --output-file coverage.info</div>
+<div class="line">lcov --list coverage.info</div>
+</div><!-- fragment --><p> You'll notice it also counts the dependencies. You can filter these (<code>lcov --remove</code>) if you don't want them to appear in the statistics: </p><div class="fragment"><div class="line">lcov --remove coverage.info &#39;/usr/*&#39; --output-file coverage.info</div>
+<div class="line">lcov --remove coverage.info &#39;*/_deps/*&#39; --output-file coverage.info</div>
+</div><!-- fragment --><p>But you don't need to worry about this too much. When you open a pull-request, codecov will report. And you can browse the <a href="https://codecov.io/gh/UCL/TDMS">codecov TDMS pages online</a>.</p>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
 <p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/">zenodo</a>.</p>
