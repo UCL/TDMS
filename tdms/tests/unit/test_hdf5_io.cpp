@@ -201,7 +201,7 @@ TEST_CASE("Read from example input") {
   SECTION("Read FDTD grid") {
     // fdtdGridInitialiser gridinitialiser;
     mxArray *ptr_to_fdtd_grid = nullptr;
-    MATFile.read("fdtdgrid", ptr_to_fdtd_grid);
+    MATFile.read_struct("fdtdgrid");
     // CHECK();
   }
 }

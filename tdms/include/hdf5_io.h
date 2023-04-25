@@ -123,6 +123,15 @@ public:
     spdlog::trace("Read successful.");
   }
 
+  void read_struct(const std::string &struct_name) const {
+    spdlog::debug("Reading {} from file: {}", struct_name, filename_);
+
+    // Structs are saved as groups, so we need to fetch the group this struct is
+    // contained in
+    H5::Group structure_array = file_->openGroup(struct_name);
+    spdlog::info("Group as {} members", structure_array.getNumObjs());
+  }
+
   template<typename T>
   void read(const std::string &dataset_name, Matrix<T> &data_location) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
