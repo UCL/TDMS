@@ -83,12 +83,15 @@ cmake ../tdms \
 # -DFFTW_ROOT=/usr/local/fftw3/ \
 # -DCMAKE_INSTALL_PREFIX=$HOME/.local/ \
 # -DBUILD_TESTING=ON \
+# -DCODE_COVERAGE=ON \
 # -DCMAKE_BUILD_TYPE=Debug
 make install
 ```
 You may need to help CMake find MATLAB/fftw etc.
 
 - By default, build testing is turned off. You can turn it on with `-DBUILD_TESTING=ON`.
+- By default, code coverage is disabled. You can enable it with `-DCODE_COVERAGE=ON`.
+   - [Then follow some extra steps](#coverage).
 - Also by default, debug printout is off. Turn on with `-DCMAKE_BUILD_TYPE=Debug` or manually at some specific place in the code with:
 ```{.cpp}
 #include <spdlog/spdlog.h>
@@ -223,6 +226,38 @@ The doxygen-style comments will be included in this developer documentation.
 To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
 It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.
+
+### Test coverage {#coverage}
+
+If you want to check the coverage of the unit tests, then build with `-DCODE_COVERAGE=ON`.
+Then when you run `ctest` or the `tdms_tests` executable, [GCDA coverage files](https://gcc.gnu.org/onlinedocs/gcc/Gcov-Data-Files.html) are generated.
+They are not really for humans to parse but can be summarised with other tools.
+In our build system we use [`lcov`](https://github.com/linux-test-project/lcov), a frontend for `gcov` reports.
+If you don't have `lcov`, you can install it with aptitude or homebrew (`sudo apt install lcov` or `brew install lcov`).
+
+To get a coverage report in the terminal: execute the unit tests and then confirm you generated .gcda files...
+```{.sh}
+./tdms_tests
+find . --name "*.gcda"
+```
+they're probably somewhere like `build/CMakeFiles/tdms.dir/src`.
+
+Then generate the coverage report with
+```{.sh}
+lcov --capture --directory ./CMakeFiles/tdms_tests.dir/src --output-file coverage.info
+lcov --list coverage.info
+```
+You'll notice it also counts the dependencies.
+You can filter these (`lcov --remove`) if you don't want them to appear in the statistics:
+```{.sh}
+lcov --remove coverage.info '/usr/*' --output-file coverage.info
+lcov --remove coverage.info '*/_deps/*' --output-file coverage.info
+```
+
+But you don't need to worry about this too much.
+When you open a pull-request, codecov will report.
+And you can browse the [codecov TDMS pages online](https://codecov.io/gh/UCL/TDMS).
+
 
 ### System {#system-tests}
 
