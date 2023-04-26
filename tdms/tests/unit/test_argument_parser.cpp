@@ -1,5 +1,5 @@
 /**
- * @file test_openandorder.cpp
+ * @file test_argument_parser.cpp
  * @brief Tests of the argument parsing and file I/O.
  */
 #include "argument_parser.h"
