@@ -19,7 +19,7 @@ For example:
 3. Plot the resulting...
 4. See error by checking...
 
-**Expected behavior**
+**Expected behaviour**
 What you expected to happen (if it's not already obvious from the context).
 
 **Plots**
