@@ -4,6 +4,7 @@
  */
 #include "argument_parser.h"
 
+#include <algorithm>
 #include <stdexcept>
 #include <string>
 #include <vector>
