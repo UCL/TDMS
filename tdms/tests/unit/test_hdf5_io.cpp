@@ -18,7 +18,6 @@
 
 // tdms
 #include "arrays.h"
-#include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::create_tmp_dir;
@@ -186,6 +185,13 @@ TEST_CASE("Test w/r TDMS objects") {
   std::filesystem::remove_all(tmp);
 }
 
+/* The TESTDATA is a .mat file containing a single structure array, fdtdgrid.
+This structure array has a further 4 memebers:
+I_tot: 5.0, double,
+J_tot: 4.0, double,
+K_tot: 3.0, double,
+materials: uint8(I_tot, J_tot, K_tot), all values are 1.
+*/
 #ifdef CMAKE_SOURCE_DIR
 std::string TESTDATA(std::string(CMAKE_SOURCE_DIR) +
                      "/tests/unit/small_fdtdgrid.mat");
@@ -194,14 +200,23 @@ std::string TESTDATA(std::filesystem::current_path() /
                      "../tests/unit/small_fdtdgrid.mat");
 #endif
 
-TEST_CASE("Read from example input") {
+TEST_CASE("Read from a MATLAB struct") {
   spdlog::info("I'm going to try and find: {}", TESTDATA);
   HDF5Reader MATFile(TESTDATA);
 
-  SECTION("Read FDTD grid") {
-    // fdtdGridInitialiser gridinitialiser;
-    mxArray *ptr_to_fdtd_grid = nullptr;
-    MATFile.read_struct("fdtdgrid");
-    // CHECK();
+  SECTION("Read fields from an FDTD grid example") {
+    // Attempt to read in the dimensions of the fdtdgrid
+    // NOTE: This buffer has to be of a type that is stored in the array, this
+    // can't be int for example
+    double dimensions[3];
+    MATFile.read_field_from_struct("fdtdgrid", "I_tot", dimensions);
+    MATFile.read_field_from_struct("fdtdgrid", "J_tot", dimensions + 1);
+    MATFile.read_field_from_struct("fdtdgrid", "K_tot", dimensions + 2);
+    // REQUIRE that we read in dimensions 5 by 4 by 3
+    REQUIRE(((int) dimensions[0]) == 5);
+    REQUIRE(((int) dimensions[1]) == 4);
+    REQUIRE(((int) dimensions[2]) == 3);
+    // Now attempt to read the whole array in
+    std::vector<std::uint8_t> materials(0, 5 * 4 * 3);
   }
 }
