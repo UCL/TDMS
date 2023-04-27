@@ -24,8 +24,8 @@ DEFAULT_VALUES = {
 
 
 def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
-    """Generates a temporary file that will be used as input to iteratefdtd_matrix in filesetup mode, along with an illumination file. 
-    
+    """Generates a temporary file that will be used as input to iteratefdtd_matrix in filesetup mode, along with an illumination file.
+
     The file in filesetup mode is almost identical to the original input file, but with empty strings set for the efname and hfname variables. To achieve this, the input file (used to set up the illumination) is copied by Python, and the efname and hfname variables are modified to create the file in filesetup mode.
     """
     # Copy the input_file (illumination-input) line-by-line to a temporary location for the filesetup-input
@@ -37,7 +37,9 @@ def _create_temporary_filesetup(input_filename, temp_filesetup_name) -> None:
                 # This avoids funny business if there's whitespace around the = symbol where {ef,hf}name are defined
                 stripped_line = line.replace(" ", "")
                 # Write line, provided efname or hfname are not defined on it
-                if (("efname=" not in stripped_line) and ("hfname=" not in stripped_line)):
+                if ("efname=" not in stripped_line) and (
+                    "hfname=" not in stripped_line
+                ):
                     filesetup_input.write(line)
                 elif "efname=" in stripped_line:
                     filesetup_input.write("efname = '';\n")
