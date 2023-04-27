@@ -61,3 +61,4 @@ axis equal;
 figure;
 imagesc(dat_cyl.z_i, dat_cyl.x_i, abs(squeeze(dat_cyl.Hz_out)));
 axis equal;
+title('Normalised Hz component of the scattered field from a cylinder');
