@@ -1,9 +1,8 @@
 # A string containing the test_id
 test_id: '01'
-# Indicates that what follows is information needed when performing the runs that make up this system test.
-# Tags within this block correspond to one run that forms part of this system test
-# The tags themselves are used as the names for each run, and should be unique
-# Paths to files must be relative to their location in the Zenodo .zip files this is to be downloaded
+# This section contains information required for running the system test.
+# Each tag within this block corresponds to a unique run in the system test and is used as the name for that run.
+# When specifying file paths, please use relative paths with respect to their location in the downloaded Zenodo .zip files.
 tests:
   # Indiates the start of another block, the information is which is only applied when performing this run of tdms
   fs_bli:
