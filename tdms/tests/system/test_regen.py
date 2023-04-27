@@ -26,7 +26,7 @@ ZENODO_URL = "https://zenodo.org/record/7440616/files"
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # Find all config_XX.yaml files and hence infer all test cases that need to be run
-TEST_IDS = glob(str(path_to_input_generation / "config_*.yaml"))
+TEST_IDS = sorted(glob(str(path_to_input_generation / "config_*.yaml")))
 for i, id in enumerate(TEST_IDS):
     # remove everything bar the ID from what we found
     id = id.removeprefix(str(path_to_input_generation / "config_"))
