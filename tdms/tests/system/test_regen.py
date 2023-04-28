@@ -56,8 +56,11 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
                 f"{str(config_file_path)} implicit ID does not match config file description (found {test_id})"
             )
 
-    # Regenerate the input data for arc_{test_id}, error (hence fail) if not successful
+    # Regenerate the input data for arc_{test_id}
+    # Error on not successful (hence fail test)
+    print(f"Regenerating input data...", end="", flush=True)
     regenerate_test(config_file_path)
+    print(f"Done")
 
     # Perform each run of TDMS as specified by the config file
     run_success = run_system_test(config_file_path)
@@ -89,7 +92,11 @@ def test_system(test_id) -> None:
 
     Wraps the workflow() method, which actually does the bulk of the testing.
     """
-    print(f"\nRunning arc_{test_id}", end=" | ", flush=True)
+    string_to_indicate_test_start = f"Running arc_{test_id}"
+    test_header_padding = "=" * len(string_to_indicate_test_start)
+    print(f"\n{test_header_padding}")
+    print(string_to_indicate_test_start)
+    print(test_header_padding)
 
     # the reference OUTPUT data should be at this location
     ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
