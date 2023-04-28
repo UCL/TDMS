@@ -57,6 +57,7 @@ def run_bscan(
     obstacle: Literal["fs", "cyl", "sph", "sc"] = DEFAULT_VALUES["obstacle"],
     obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"],
     illsetup: bool = False,
+    calc_tdfiled: bool = False,
 ) -> Tuple[StringIO, StringIO]:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
@@ -73,6 +74,7 @@ def run_bscan(
     :param obstacle: The obstacle that is present in the simulation.
     :param obstacle_radius: Radius of the spatial obstacle in microns.
     :param illsetup: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
+    :param calc_tdfield: Flags whether run_bscan must setup a time-domain field and pass the resulting .mat file into iteratefdtd_matrix.
     :returns: (stdout, stderr) printed by the MatlabEngine whilst running.
     """
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
@@ -92,13 +94,14 @@ def run_bscan(
     matlab_stdout = StringIO()
     matlab_stderr = StringIO()
 
-    # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
+    # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius, calc_tdfield)
     engine.run_bscan(
         str(test_directory),
         str(input_filename),
         obstacle,
         illfile_extra_file,
         obstacle_radius,
+        calc_tdfield,
         nargout=0,
         stdout=matlab_stdout,
         stderr=matlab_stderr,
@@ -187,6 +190,11 @@ def generate_test_input(
     else:
         # Cast things like None to bools, so typehints and behaviour is consistent
         illsetup_required = False
+    # Fetch whether calc_tdfield is required
+    if ("calc_tdfield" in generation_info.keys()) and generation_info["calc_field"]:
+        calc_tdfield = True
+    else:
+        calc_tdfield = False
 
     # Determine if we need to create our own MATLAB session
     # Explicit instance check since MatlabEngine may not have implicit casts/ interpretations
