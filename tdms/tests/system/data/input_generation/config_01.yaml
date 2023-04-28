@@ -7,7 +7,7 @@ tests:
   # Indiates the start of another block, the information is which is only applied when performing this run of tdms
   fs_bli:
     # The name of the .mat inut file that should be passed to the tdms executable
-    input_file: pstd_fs_input.mat
+    input_file: fs_input.mat
     # The name of the reference .mat output to comapre the output of the local tdms run to
     reference: pstd_fs_bli_reference.mat
     # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present
@@ -16,14 +16,14 @@ tests:
     fdtd_solver: False
   # This defines another, independent run of tdms that is still part of the same system test.
   fs_cubic:
-    input_file: pstd_fs_input.mat
+    input_file: fs_input.mat
     reference: pstd_fs_cubic_reference.mat
     cubic_interpolation: True
   cyl_bli:
-    input_file: pstd_cyl_input.mat
+    input_file: cyl_input.mat
     reference: pstd_cyl_bli_reference.mat
   cyl_cubic:
-    input_file: pstd_cyl_input.mat
+    input_file: cyl_input.mat
     reference: pstd_cyl_cubic_reference.mat
     cubic_interpolation: True
 # Indicates that what follows is information needed when regenerating the .mat inputs that are passed to tdms in the runs that consistute this test.
