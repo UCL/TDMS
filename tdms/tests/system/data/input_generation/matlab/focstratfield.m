@@ -1,54 +1,24 @@
-%function [Ep,Em] = focstratfield_general_pol(vertices,nvec,hvec,NA,lambda,ntheta,nphi,polfun)
+function [Ep,Em] = focstratfield(vertices, nvec, hvec, NA, lambda, ntheta, nphi, polfun)
+%vertices N x 3 matrix of positions at which the field is to be calculated.
+%nvec     Vector of the form [n_0,n_1,...,n_N] defining the refractive indices of the layers of the stratified medium.
+%hvec     Vector of the form [h_1,h_2,...,h_N] defining the z locations of the unrotated stratified medium.
+%NA       Numerical aperture of the lens in medium n_0. If NA is a vector it must have two elements. In this case the first element specifies the inside of a transmitting annulus and the second element specifies the outer extent of the annulus.
+%lambda   Wavelength.
+%ntheta   Number of angles in theta to integrate over.
+%nphi     Number of angles in phi to integrate over.  If passed as [], a cylindrical lens is assumed, so only phi=0 and phi=pi are considered.
 %
-%Inputs:
-%vertices is an N x 3 matrix of positions at which the field is to
-%         be calculated
-%
-%nvec     is a vector of the form [n_0,n_1,...,n_N] defining the
-%         refractive indices of the layers of the stratified medium
-%
-%hvec     is a vector of the form [h_1,h_2,...,h_N] defining the
-%         z locations of the unrotated stratified medium
-%
-%NA       The numerical aperture of the lens in medium n_0. If NA
-%         is a vector it must have two elements. In this case the
-%         first element specifies the inside of a transmitting
-%         annulus and the second element specifies the outer extent
-%         of the annulus.
-%
-%lambda   wavelength
-%
-%ntheta   number of angles in theta to integrate over
-%
-%nphi     number of angles in phi to integrate over
-%         if nphi is set to [], it is assumed that a cylindrical
-%         lens is consisdered and so only phi=0 and phi=pi is considered.
-%
-%Output:
-%Ep       N x 3 matrix of forward propagating fields at each vertex
-%
-%Em       N x 3 matrix of backward propagating fields at each
-%         vertex
-%
-%Based on the theory published in ...
-function [Ep,Em] = focstratfield_general_pol(vertices,nvec,hvec,NA,lambda,ntheta,nphi,polfun)
+%Ep       N x 3 matrix of forward propagating fields at each vertex.
+%Em       N x 3 matrix of backward propagating fields at each vertex.
 
-%To do
-%1) Update reference to published paper above
-%2) Update equation numbers cited in comments below
+%% The following parameters are currently not set as the features they provide have not been fully tested
 
-%The following parameters are currently not set as the features
-%they provide have not been fully tested
-
-%theta_sm rotation angle of the stratified medium about z=zr
+% Rotation angle of the stratified medium about z=zr
 theta_sm=0;
 
-%zr       point on the optical axis about which stratified medium
-%         is rotated
+% Point on the optical axis about which stratified medium is rotated
 zr=0;
-%end of untested parameters
 
-%perform basic error checking
+%% Perform basic error checking
 %nvec must have one more element than hvec
 if numel(nvec) ~= numel(hvec)+1
     error('nvec must have one more element than hvec');
@@ -90,9 +60,10 @@ else
 	error('NA/nvec(1) must be < 1');
     end
 end
-%end of error checking
 
-%Determine the number of unique values of z
+%% Begin functional process
+
+% Determine the number of unique values of z
 [zplanelocs,iunique,imaptozloc] = unique(vertices(:,3));
 Nplanes = numel(zplanelocs);
 
@@ -105,10 +76,6 @@ Nplanes = numel(zplanelocs);
 %and z-axis, of plane waves considered in the angular
 %spectrum of focussed beam
 if isempty(nphi)
-    %[phi_vec1,phi_w1]=gauss_legendre(-1e-9,1e-9,10);
-    %[phi_vec2,phi_w2]=gauss_legendre(pi+-1e-9,pi+1e-9,10);
-    %phi_vec = [phi_vec1 phi_vec2];
-    %phi_w = [phi_w1 phi_w2];
     phi_vec = [0 pi];
     phi_w = [1 1]*1/2;
 else
@@ -165,6 +132,7 @@ if isempty(nphi)
 else
     WGAUSS = (sqrt(cos(THE)).*sin(THE));%.* WGAUSS;
 end
+
 %transformation matrix used to model rotation of medium, Eq(1)
 %except the rotation is being applied in the opposite
 %direction, hence opposing signs in the sine terms

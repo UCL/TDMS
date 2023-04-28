@@ -2,14 +2,14 @@
 lambda = 1300e-9;
 
 %size of Yee cell in metres
-delta.x = lambda/4;
-delta.y = lambda/4;
-delta.z = lambda/4;
+delta.x = lambda/16;
+delta.y = lambda/20;
+delta.z = lambda/15;
 
 
 %define the grid size, a square of side 1.5 wavelengths
 I = 128;
-J = 128;
+J = 160;
 K = 64;
 %K = 5500;
 
@@ -17,21 +17,22 @@ K = 64;
 n = 4;
 
 %maximum reflection at PML
-R0 = 1e-7;
+R0 = 1e-5;
 
 %number of PML cells in each direction
-Dxl = 10;
-Dxu = 10;
-Dyl = 0;
-Dyu = 0;
-Dzl = 10;
-Dzu = 10;
+Dxl = 20;
+Dxu = 20;
+Dyl = 20;
+Dyu = 20;
+Dzl = 20;
+Dzu = 20;
 
 %courant time step
-dt = 2/sqrt(3)/pi*delta.x/(3e8/1.35)*.95;
+dt = 1/(sqrt(1/delta.x^2 + 1/delta.y^2 + 1/delta.z^2)*(3e8/1.35))*.95;
 
 %define the number of time steps
-Nt = 200;
+%Nt = 1100; %required for physically correct result
+Nt = 200; %speeds up computation
 %Nt=12000;
 
 %water
@@ -59,7 +60,9 @@ interface.K1 = [K-5 0];
 outputs_array ={};
 
 %these are the function names used to generate the field
-efname = 'efield_gauss_base';
+g_pol_method = @(th, ph) gauss_pol_base(th, ph, true);
+e_field_method = @(X,Y,Z) efield_gauss_base(X,Y,Z,true,g_pol_method);
+efname = 'e_field_method';
 hfname = 'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres
@@ -133,17 +136,12 @@ k_vec = omega_vec/2.997924580105029e+08;
 f_ex_vec = asin( k_vec*2.997924580105029e+08*dt/2)/(pi*dt);
 
 %ignore all below here
-exdetintegral=0;
+exdetintegral=1;
 k_det_obs=10;
 %k_obs = k_det_obs;
-NA_det=(7e-3/2)/36e-3;
+NA_det=0.1;
 %NA = NA_det;
 beta_det=25/36;
-detmodevec=1:3;
-detsensefun='gaussian_d_telesto_matlab';
+detmodevec=1:31;
+detsensefun='gaussian_detfun';
 air_interface = [];
-
-det_trans_x = (-30:2:30)*1e-6;
-det_trans_y = (-30:2:30)*1e-6;
-
-illspecfun = '';

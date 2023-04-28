@@ -1,4 +1,4 @@
-test_id: '03'
+test_id: '08'
 tests:
   fs_bli:
     input_file: fs_input.mat
@@ -15,7 +15,7 @@ tests:
     reference: pstd_sph_cubic_reference.mat
     cubic_interpolation: True
 input_generation:
-  input_file: input_file_03.m
+  input_file: input_file_08.m
   spatial_obstacles: ["fs", "sph"]
   illsetup: True
-  obstacle_radius: 5e-6
+  obstacle_radius: 1e-6

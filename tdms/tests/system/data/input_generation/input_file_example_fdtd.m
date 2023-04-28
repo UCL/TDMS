@@ -8,9 +8,9 @@ delta.z = lambda/4;
 
 
 %define the grid size, a square of side 1.5 wavelengths
-I = 128;
-J = 128;
-K = 64;
+I = 256;
+J = 0;
+K = 256;
 %K = 5500;
 
 %order of the PML conductivity profile curve
@@ -28,10 +28,10 @@ Dzl = 10;
 Dzu = 10;
 
 %courant time step
-dt = 2/sqrt(3)/pi*delta.x/(3e8/1.35)*.95;
+dt = 2/sqrt(2)/pi*delta.x/(3e8/1.35)*.95;
 
 %define the number of time steps
-Nt = 200;
+Nt = 500;
 %Nt=12000;
 
 %water
@@ -90,29 +90,20 @@ exphasorsvolume = 1;
 
 %this determines whether or not to extract phasors around a
 %specified surface
-exphasorssurface = 1;
+exphasorssurface = 0;
 
 %this specifies a surface to extract the phasors at. These
 %quantities are in interior coordinate system;
 %has the form [I0 I1 J0 J1 K0 K1] which defines the extremes of a
 %cuboid wihch defines the surface to extract phasors at
 %These should be set so that the interpolation scheme can work
-phasorsurface = [5 I-5 5 J-5 5 K-5];
+phasorsurface = [5 I-5 1 1 20 K-5];
 
 %could be '3' 'TE' or 'TM'
 dimension = '3';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fieldsample.i = (I/2-4):(I/2+4);
-fieldsample.j = (J/2-4):(J/2+4);
-fieldsample.k = (K/2-4):(K/2+4);
-fieldsample.n = [2 4];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[ii,jj,kk] = ndgrid((I/2-4):(I/2+4),(J/2-4):(J/2+4),(K/2-4):(K/2+4));
-campssample.vertices = [ii(:) jj(:) kk(:)];
-campssample.components = [1 2 3];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Nlambda = 16;
+Nlambda = 512;
 lambda0 = 1300e-9;
 dlambda = 170e-9;
 b = 4*sqrt(log(2))*lambda0^2/(2*pi*3e8*dlambda);

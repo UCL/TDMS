@@ -62,7 +62,7 @@ interface.K1 = [K-5 0];
 outputs_array ={};
 
 %these are the function names used to generate the field
-efname = 'efield_gauss';
+efname = 'efield_gauss_base';
 hfname = 'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres

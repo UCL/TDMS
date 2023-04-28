@@ -2,15 +2,15 @@
 lambda = 1300e-9;
 
 %size of Yee cell in metres
-delta.x = lambda/4;
-delta.y = lambda/4;
-delta.z = lambda/4;
+delta.x = lambda/8;
+delta.y = lambda/8;
+delta.z = lambda/8;
 
 
 %define the grid size, a square of side 1.5 wavelengths
-I = 128;
-J = 128;
-K = 64;
+I = 32;
+J = 32;
+K = 16;
 %K = 5500;
 
 %order of the PML conductivity profile curve
@@ -22,8 +22,8 @@ R0 = 1e-7;
 %number of PML cells in each direction
 Dxl = 10;
 Dxu = 10;
-Dyl = 0;
-Dyu = 0;
+Dyl = 10;
+Dyu = 10;
 Dzl = 10;
 Dzu = 10;
 
@@ -31,8 +31,8 @@ Dzu = 10;
 dt = 2/sqrt(3)/pi*delta.x/(3e8/1.35)*.95;
 
 %define the number of time steps
-Nt = 200;
-%Nt=12000;
+Nt = 5000;
+%Nt = 550;
 
 %water
 epsr = [1.35^2];
@@ -59,7 +59,9 @@ interface.K1 = [K-5 0];
 outputs_array ={};
 
 %these are the function names used to generate the field
-efname = 'efield_gauss_base';
+g_pol_method = @(th, ph) gauss_pol_base(th, ph, true);
+e_field_method = @(X,Y,Z) efield_gauss_base(X,Y,Z,true,g_pol_method);
+efname = 'e_field_method';
 hfname = 'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres
@@ -82,7 +84,8 @@ runmode = 'complete';
 
 
 %this is the kind of source mode, can be 'steadystate' or
-sourcemode = 'pulsed';
+sourcemode = 'steadystate';
+%sourcemode = 'pulsed';
 
 %this determines whether or not to extract phasors in the volume of
 %the grid
@@ -126,8 +129,9 @@ lambda_min = 3e8*2*pi/omega_max;
 lambda_max = 3e8*2*pi/omega_min;
 
 
-omega_vec = linspace(omega_min,omega_max,Nlambda);
-k_vec = omega_vec/2.997924580105029e+08;
+%omega_vec = linspace(omega_min,omega_max,Nlambda);
+%k_vec = omega_vec/2.997924580105029e+08;
+k_vec = 2*pi/lambda;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 f_ex_vec = asin( k_vec*2.997924580105029e+08*dt/2)/(pi*dt);

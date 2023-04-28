@@ -1,7 +1,8 @@
 import os
 from glob import glob
+from io import StringIO
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Tuple
 
 import matlab.engine as matlab
 import yaml
@@ -56,7 +57,7 @@ def run_bscan(
     obstacle: Literal["fs", "cyl", "sph", "sc"] = DEFAULT_VALUES["obstacle"],
     obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"],
     illsetup: bool = False,
-) -> None:
+) -> Tuple[StringIO, StringIO]:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
     MatlabEngine cannot parse Path objects so file and directory paths must be cast to string when calling.
@@ -72,6 +73,7 @@ def run_bscan(
     :param obstacle: The obstacle that is present in the simulation.
     :param obstacle_radius: Radius of the spatial obstacle in microns.
     :param illsetup: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
+    :returns: (stdout, stderr) printed by the MatlabEngine whilst running.
     """
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
     # This only occurs when illumination files are required in input-data regeneration.
@@ -86,6 +88,10 @@ def run_bscan(
             os.path.splitext(input_filename)[0] + "temp_filesetup_file____.m"
         )
         _create_temporary_filesetup(input_filename, illfile_extra_file)
+    # Create IO objects to capture stdout and stderr from MatlabEngine, to avoid polluting the terminal
+    matlab_stdout = StringIO()
+    matlab_stderr = StringIO()
+
     # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
     engine.run_bscan(
         str(test_directory),
@@ -94,12 +100,15 @@ def run_bscan(
         illfile_extra_file,
         obstacle_radius,
         nargout=0,
+        stdout=matlab_stdout,
+        stderr=matlab_stderr,
     )
 
     # Cleanup the illfile_extra_file, if it was created
     if illsetup:
         os.remove(illfile_extra_file)
-    return
+    # Return stdout and stderr messages
+    return matlab_stdout, matlab_stderr
 
 
 def start_MatlabEngine_with_extra_paths(
@@ -173,7 +182,7 @@ def generate_test_input(
     else:
         obstacle_radius = DEFAULT_VALUES["obstacle_radius"]
     # Fetch whether illsetup mode is required
-    if generation_info["illsetup"]:
+    if ("illsetup" in generation_info.keys()) and generation_info["illsetup"]:
         illsetup_required = True
     else:
         # Cast things like None to bools, so typehints and behaviour is consistent
