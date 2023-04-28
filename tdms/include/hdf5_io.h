@@ -118,8 +118,7 @@ public:
     H5::DataSpace dataspace = dataset.getSpace();
 
     // now get the data type
-    H5::DataType datatype = dataset.getDataType();
-    dataset.read(data, datatype);
+    dataset.read(data, dataset.getDataType());
     spdlog::trace("Read successful.");
   }
 

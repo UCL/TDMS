@@ -20,6 +20,7 @@
 #include "arrays.h"
 #include "unit_test_utils.h"
 
+using namespace std;
 using tdms_tests::create_tmp_dir;
 
 TEST_CASE("Wrong datatype passed to ijk.") {
@@ -129,7 +130,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
-  std::filesystem::remove_all(tmp);
+  filesystem::remove_all(tmp);
 }
 
 TEST_CASE("Test w/r TDMS objects") {
@@ -182,41 +183,95 @@ TEST_CASE("Test w/r TDMS objects") {
 
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
-  std::filesystem::remove_all(tmp);
+  filesystem::remove_all(tmp);
 }
 
-/* The TESTDATA is a .mat file containing a single structure array, fdtdgrid.
-This structure array has a further 4 memebers:
-I_tot: 5.0, double,
-J_tot: 4.0, double,
-K_tot: 3.0, double,
-materials: uint8(I_tot, J_tot, K_tot), all values are 1.
+/* The TESTDATA is a .mat file containing a single structure array,
+example_struct. This structure array has the following data.
+
+MEMBER: value, MATLAB type
+double_no_decimal: 1.0, double
+double_half: 0.5, double
+string: 'tdms', char array
+boolean: 1, logical
+uint_345: 3 * 4 * 5 array of 1s, uint8
+double_22: [0.25, 0.5; 0.75, 1.], double
+complex_22: [0., -i; i, 0], complex
 */
 #ifdef CMAKE_SOURCE_DIR
-std::string TESTDATA(std::string(CMAKE_SOURCE_DIR) +
-                     "/tests/unit/small_fdtdgrid.mat");
+string TESTDATA(string(CMAKE_SOURCE_DIR) + "/tests/unit/structure_array.mat");
 #else
-std::string TESTDATA(std::filesystem::current_path() /
-                     "../tests/unit/small_fdtdgrid.mat");
+string TESTDATA(filesystem::current_path() /
+                "../tests/unit/structure_array.mat");
 #endif
 
+/** @brief Returns the char represented by a uint16 */
+char uint16_to_char(const uint16_t &repr) { return *((char *) &repr); }
+
+/**
+ * @brief Returns the string composed of the characters represented by
+ * subsequent uint16s.
+ *
+ * @param repr Buffer of uint16s that represent individual characters
+ * @param buffer_length Length of the buffer
+ * @return string The string composed of the converted characters
+ */
+string uint16s_to_string(uint16_t *repr, int buffer_length) {
+  string output;
+  for (int i = 0; i < buffer_length; i++) { output += uint16_to_char(repr[i]); }
+  return output;
+}
+
 TEST_CASE("Read from a MATLAB struct") {
-  spdlog::info("I'm going to try and find: {}", TESTDATA);
   HDF5Reader MATFile(TESTDATA);
 
-  SECTION("Read fields from an FDTD grid example") {
-    // Attempt to read in the dimensions of the fdtdgrid
-    // NOTE: This buffer has to be of a type that is stored in the array, this
-    // can't be int for example
-    double dimensions[3];
-    MATFile.read_field_from_struct("fdtdgrid", "I_tot", dimensions);
-    MATFile.read_field_from_struct("fdtdgrid", "J_tot", dimensions + 1);
-    MATFile.read_field_from_struct("fdtdgrid", "K_tot", dimensions + 2);
-    // REQUIRE that we read in dimensions 5 by 4 by 3
-    REQUIRE(((int) dimensions[0]) == 5);
-    REQUIRE(((int) dimensions[1]) == 4);
-    REQUIRE(((int) dimensions[2]) == 3);
-    // Now attempt to read the whole array in
-    std::vector<std::uint8_t> materials(0, 5 * 4 * 3);
+  SECTION("Read numeric scalars") {
+    /* Read scalar values from the MATLAB struct into the array. */
+    // Initialise with values distinct from the expected values
+    double one_half = 0., unity = 0.;
+    bool logical_read = false;
+    // Read values
+    MATFile.read_field_from_struct("example_struct", "double_half", &one_half);
+    MATFile.read_field_from_struct("example_struct", "double_no_decimal",
+                                   &unity);
+    MATFile.read_field_from_struct("example_struct", "boolean", &logical_read);
+    // Validate read in data
+    REQUIRE(one_half == Catch::Approx(0.5));
+    REQUIRE(unity == Catch::Approx(1.));
+    REQUIRE(int(unity) == 1);
+    REQUIRE(logical_read);
+  }
+
+  SECTION("Read array data") {
+    /* Read in the character array data */
+    // string field is set to "tdms". Note that MATLAB saves this as uint16s, so
+    // we need to convert manually...
+    {
+      uint16_t read_uints16[4];
+      MATFile.read_field_from_struct("example_struct", "string", read_uints16);
+      string tdms = uint16s_to_string(read_uints16, 4);
+      REQUIRE(tdms == "tdms");
+    }
+    // The uint 3*4*5 uint matrix contains only 1s
+    {
+      vector<uint8_t> uint_matrix(3 * 4 * 5, 0);
+      MATFile.read_field_from_struct("example_struct", "uint_345",
+                                     uint_matrix.data());
+      bool all_values_unity = true;
+      for (uint8_t &value : uint_matrix) {
+        if (value != 1) { all_values_unity = false; }
+      }
+      REQUIRE(all_values_unity);
+    }
+    // The double 2*2 matrix contains 0.25, 0.5, 0.75, 1.
+    {
+      double two_by_two[4];
+      MATFile.read_field_from_struct("example_struct", "double_22", two_by_two);
+      REQUIRE(two_by_two[0] == Catch::Approx(0.25));
+      REQUIRE(two_by_two[1] == Catch::Approx(0.75));
+      REQUIRE(two_by_two[2] == Catch::Approx(0.5));
+      REQUIRE(two_by_two[3] == Catch::Approx(1.0));
+    }
+    // The complex matrix is the Pauli-y matrix [0, -i; i, 0]
   }
 }
