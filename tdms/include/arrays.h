@@ -432,17 +432,29 @@ public:
   }
 };
 
+/**
+ * @brief Stores the fibre modes in the Fourier plane of the objective lens.
+ *
+ * The "Tilde" indicates that these quantities are in a Fourier plane relative
+ * to where the optical fibre is actually located, meaning that is has a Fourier
+ * relationship relative to the physical fibre mode(s).
+ */
 class DTilde {
 protected:
-  int n_det_modes = 0;
+  int n_det_modes = 0;//< Number of modes specified
   static void set_component(Tensor3D<std::complex<double>> &tensor,
                             const mxArray *ptr, const std::string &name,
                             int n_rows, int n_cols);
 
 public:
+  /** @brief Fetch the number of modes */
   inline int num_det_modes() const { return n_det_modes; };
 
+  /*! 3-dimensional vector of fibre modes indexed by (j, i, i_m).
+   * i and j index over the x and y plane respectively.
+   * i_m indexes the different modes specified in the input file.*/
   Tensor3D<std::complex<double>> x;
+  /*! @copydoc x */
   Tensor3D<std::complex<double>> y;
 
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
