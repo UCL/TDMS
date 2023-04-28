@@ -57,7 +57,7 @@ def run_bscan(
     obstacle: Literal["fs", "cyl", "sph", "sc"] = DEFAULT_VALUES["obstacle"],
     obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"],
     illsetup: bool = False,
-    calc_tdfiled: bool = False,
+    calc_tdfield: bool = False,
 ) -> Tuple[StringIO, StringIO]:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
@@ -215,8 +215,12 @@ def generate_test_input(
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:
         engine.quit()
-    # Cleanup auxillary .mat files that are placed into this directory
-    for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
+    # Cleanup auxillary .mat files that are placed into this directory, and the MATLAB working directory
+    matlab_working_directory = engine.cwd
+    auxillary_matfiles = set(glob(LOCATION_OF_THIS_FILE + "/*.mat")).union(
+        set(glob(matlab_working_directory + "/*.mat"))
+    )
+    for aux_mat in auxillary_matfiles:
         os.remove(aux_mat)
 
     return

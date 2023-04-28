@@ -206,6 +206,8 @@ class MATLABEngineWrapper:
 
     # The MATLAB session that will run
     engine: MatlabEngine
+    # The working directory this engine operated in. Useful for cleanup operations later
+    cwd: str
 
     def __init__(self, bscans: Union[BScanArguments, list[BScanArguments]]) -> None:
         """Initialise with the provided (list of) BScanArguments."""
@@ -230,6 +232,8 @@ class MATLABEngineWrapper:
             )
         # do not start the engine yet
         self.engine = None
+        # likewise, we do not know the working directory yet
+        self.cwd = None
         return
 
     def _addpath_commands(self) -> None:
@@ -256,6 +260,8 @@ class MATLABEngineWrapper:
         else:
             # Start the engine
             self.engine = matlab.start_matlab(MATLAB_STARTUP_OPTS)
+            # Pull the working directory for reference later
+            self.cwd = self.engine.pwd()
             # Add necessary paths
             self._addpath_commands()
 
