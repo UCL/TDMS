@@ -182,7 +182,7 @@ def generate_test_input(
     else:
         obstacle_radius = DEFAULT_VALUES["obstacle_radius"]
     # Fetch whether illsetup mode is required
-    if generation_info["illsetup"]:
+    if ("illsetup" in generation_info.keys()) and generation_info["illsetup"]:
         illsetup_required = True
     else:
         # Cast things like None to bools, so typehints and behaviour is consistent
