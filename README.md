@@ -35,7 +35,7 @@ $ cmake ../tdms \
 $ make install
 ```
 
-If CMake cannot find MATLAB, FFTW, or install to the default installat prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
+If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
 
 <details>
 <summary>Mac-specific instructions</summary>
