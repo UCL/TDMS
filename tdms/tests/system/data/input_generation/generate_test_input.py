@@ -57,7 +57,8 @@ def run_bscan(
     obstacle: Literal["fs", "cyl", "sph", "sc"] = DEFAULT_VALUES["obstacle"],
     obstacle_radius: float = DEFAULT_VALUES["obstacle_radius"],
     illsetup: bool = False,
-) -> Tuple[StringIO, StringIO]:
+    calc_tdfield: bool = False,
+) -> Tuple[list[str], StringIO, StringIO]:
     """Wrapper for running the run_bscan MATLAB function in the MATLAB engine provided.
 
     MatlabEngine cannot parse Path objects so file and directory paths must be cast to string when calling.
@@ -68,12 +69,15 @@ def run_bscan(
 
     The obstacle radius is the circular face radius for cylinders (cyl), sphere radius for spheres (sph), and is ignored by freespace (fs) and point-source (sc) obstacles.
 
+    The first output returned is the output of the run_bscan.m function, as a list. Additional outputs are the stdout and stderr of the MATLAB call.
+
     :param input_filename: The path to the input file that defines the variables iteratefdtd_matrix reads in
     :param engine: The MatlabEngine instance to call run_bscan within. If not provided, a new session will be started and ended once the call is complete.
     :param obstacle: The obstacle that is present in the simulation.
     :param obstacle_radius: Radius of the spatial obstacle in microns.
     :param illsetup: Flags whether run_bscan requires a call to iteratefdtd_matrix in illsetup mode as well as filesetup mode.
-    :returns: (stdout, stderr) printed by the MatlabEngine whilst running.
+    :param calc_tdfield: Flags whether run_bscan must setup a time-domain field and pass the resulting .mat file into iteratefdtd_matrix.
+    :returns: (run_bscan_output, stdout, stderr) produced by the MatlabEngine whilst running.
     """
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
     # This only occurs when illumination files are required in input-data regeneration.
@@ -92,14 +96,15 @@ def run_bscan(
     matlab_stdout = StringIO()
     matlab_stderr = StringIO()
 
-    # function [] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius)
-    engine.run_bscan(
+    # function [freespace_output_file, obstacle_output_file] = run_bscan(test_directory, input_filename, non_fs_obstacle, illfile_extra_file, obstacle_radius, calc_tdfield)
+    freespace_input_file, obstacle_input_file = engine.run_bscan(
         str(test_directory),
         str(input_filename),
         obstacle,
         illfile_extra_file,
         obstacle_radius,
-        nargout=0,
+        calc_tdfield,
+        nargout=2,
         stdout=matlab_stdout,
         stderr=matlab_stderr,
     )
@@ -108,7 +113,7 @@ def run_bscan(
     if illsetup:
         os.remove(illfile_extra_file)
     # Return stdout and stderr messages
-    return matlab_stdout, matlab_stderr
+    return [freespace_input_file, obstacle_input_file], matlab_stdout, matlab_stderr
 
 
 def start_MatlabEngine_with_extra_paths(
@@ -187,6 +192,11 @@ def generate_test_input(
     else:
         # Cast things like None to bools, so typehints and behaviour is consistent
         illsetup_required = False
+    # Fetch whether calc_tdfield is required
+    if ("calc_tdfield" in generation_info.keys()) and generation_info["calc_tdfield"]:
+        calc_tdfield = True
+    else:
+        calc_tdfield = False
 
     # Determine if we need to create our own MATLAB session
     # Explicit instance check since MatlabEngine may not have implicit casts/ interpretations
@@ -195,20 +205,31 @@ def generate_test_input(
         # Start a new Matlab engine operating in the test directory
         engine = start_MatlabEngine_with_extra_paths(working_directory=test_dir)
 
-    run_bscan(
+    generated_input_filenames, _, _ = run_bscan(
         test_dir,
         input_file,
         engine,
         non_freespace_obstacle,
         obstacle_radius,
         illsetup_required,
+        calc_tdfield,
     )
+    # Append .mat extension to the filenames of the inputs we created, if they are not there already
+    for i, file in enumerate(generated_input_filenames):
+        if file[-4:] != ".mat":
+            generated_input_filenames[i] += ".mat"
 
+    # Capture the working directory of the engine (for cleanup) before we quit the session
+    matlab_working_directory = engine.pwd(nargout=1)
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:
         engine.quit()
-    # Cleanup auxillary .mat files that are placed into this directory
-    for aux_mat in sorted(glob(LOCATION_OF_THIS_FILE + "/*.mat")):
+    # Cleanup auxillary .mat files that are placed into this directory, and the MATLAB working directory
+    auxillary_matfiles = (
+        set(glob(LOCATION_OF_THIS_FILE + "/*.mat"))
+        | set(glob(matlab_working_directory + "/*.mat"))
+    ) - set(generated_input_filenames)
+    for aux_mat in auxillary_matfiles:
         os.remove(aux_mat)
 
     return
