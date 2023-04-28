@@ -1,12 +1,12 @@
 <map id="tdms/tests/unit/test_argument_parser.cpp" name="tdms/tests/unit/test_argument_parser.cpp">
-<area shape="rect" id="node1" title="Tests of the argument parsing and file I/O." alt="" coords="231,5,381,45"/>
-<area shape="rect" id="node2" href="$argument__parser_8h.html" title="Parse the command line options." alt="" coords="64,93,193,119"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,167,60,192"/>
-<area shape="rect" id="node4" title=" " alt="" coords="195,167,254,192"/>
-<area shape="rect" id="node7" title=" " alt="" coords="269,93,343,119"/>
-<area shape="rect" id="node8" title=" " alt="" coords="368,93,447,119"/>
-<area shape="rect" id="node9" title=" " alt="" coords="471,93,539,119"/>
-<area shape="rect" id="node10" title=" " alt="" coords="563,93,764,119"/>
-<area shape="rect" id="node5" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="91,167,166,192"/>
-<area shape="rect" id="node6" title=" " alt="" coords="93,240,164,265"/>
+<area shape="rect" id="node1" title="Tests of the argument parsing and file I/O." alt="" coords="228,5,377,46"/>
+<area shape="rect" id="node2" href="$argument__parser_8h.html" title="Parse the command line options." alt="" coords="63,94,191,120"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,168,59,193"/>
+<area shape="rect" id="node4" title=" " alt="" coords="193,168,250,193"/>
+<area shape="rect" id="node7" title=" " alt="" coords="266,94,340,120"/>
+<area shape="rect" id="node8" title=" " alt="" coords="364,94,442,120"/>
+<area shape="rect" id="node9" title=" " alt="" coords="466,94,534,120"/>
+<area shape="rect" id="node10" title=" " alt="" coords="557,94,758,120"/>
+<area shape="rect" id="node5" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="90,168,163,193"/>
+<area shape="rect" id="node6" title=" " alt="" coords="92,241,162,267"/>
 </map>

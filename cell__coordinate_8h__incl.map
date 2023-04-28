@@ -1,5 +1,5 @@
 <map id="tdms/include/cell_coordinate.h" name="tdms/include/cell_coordinate.h">
-<area shape="rect" id="node1" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="21,5,220,31"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,79,119,104"/>
-<area shape="rect" id="node3" title=" " alt="" coords="143,79,218,104"/>
+<area shape="rect" id="node1" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="22,5,219,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,79,118,105"/>
+<area shape="rect" id="node3" title=" " alt="" coords="142,79,216,105"/>
 </map>

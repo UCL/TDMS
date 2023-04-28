@@ -1,12 +1,12 @@
 <map id="tdms/include/source.h" name="tdms/include/source.h">
-<area shape="rect" id="node1" title=" " alt="" coords="108,5,259,31"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,79,76,104"/>
-<area shape="rect" id="node3" title=" " alt="" coords="100,79,155,104"/>
-<area shape="rect" id="node4" href="$cell__coordinate_8h.html" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="179,79,299,104"/>
-<area shape="rect" id="node7" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="351,79,423,104"/>
-<area shape="rect" id="node5" title=" " alt="" coords="64,152,177,177"/>
-<area shape="rect" id="node6" title=" " alt="" coords="202,152,277,177"/>
-<area shape="rect" id="node8" title=" " alt="" coords="301,152,356,177"/>
-<area shape="rect" id="node9" title=" " alt="" coords="381,152,450,177"/>
-<area shape="rect" id="node10" title=" " alt="" coords="474,152,533,177"/>
+<area shape="rect" id="node1" title=" " alt="" coords="106,5,255,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,79,76,105"/>
+<area shape="rect" id="node3" title=" " alt="" coords="99,79,153,105"/>
+<area shape="rect" id="node4" href="$cell__coordinate_8h.html" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="177,79,296,105"/>
+<area shape="rect" id="node7" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="348,79,419,105"/>
+<area shape="rect" id="node5" title=" " alt="" coords="63,153,175,178"/>
+<area shape="rect" id="node6" title=" " alt="" coords="199,153,274,178"/>
+<area shape="rect" id="node8" title=" " alt="" coords="297,153,352,178"/>
+<area shape="rect" id="node9" title=" " alt="" coords="376,153,444,178"/>
+<area shape="rect" id="node10" title=" " alt="" coords="468,153,525,178"/>
 </map>

@@ -1,6 +1,6 @@
 <map id="tdms/include/interpolation_methods.h" name="tdms/include/interpolation_methods.h">
-<area shape="rect" id="node1" title="InterpScheme class methods and supporting functions." alt="" coords="258,5,429,45"/>
-<area shape="rect" id="node2" href="$test___b_li__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="5,93,215,133"/>
-<area shape="rect" id="node3" href="$test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="239,93,448,133"/>
-<area shape="rect" id="node4" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="473,93,657,133"/>
+<area shape="rect" id="node1" title="InterpScheme class methods and supporting functions." alt="" coords="257,5,426,46"/>
+<area shape="rect" id="node2" href="$test___b_li__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="5,94,214,135"/>
+<area shape="rect" id="node3" href="$test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="237,94,446,135"/>
+<area shape="rect" id="node4" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="470,94,653,135"/>
 </map>

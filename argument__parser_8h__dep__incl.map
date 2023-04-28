@@ -1,5 +1,5 @@
 <map id="tdms/include/argument_parser.h" name="tdms/include/argument_parser.h">
-<area shape="rect" id="node1" title="Parse the command line options." alt="" coords="76,5,231,45"/>
-<area shape="rect" id="node2" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,101,136,126"/>
-<area shape="rect" id="node3" href="$test__argument__parser_8cpp.html" title="Tests of the argument parsing and file I/O." alt="" coords="161,93,311,133"/>
+<area shape="rect" id="node1" title="Parse the command line options." alt="" coords="75,5,228,46"/>
+<area shape="rect" id="node2" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,102,135,127"/>
+<area shape="rect" id="node3" href="$test__argument__parser_8cpp.html" title="Tests of the argument parsing and file I/O." alt="" coords="159,94,309,135"/>
 </map>

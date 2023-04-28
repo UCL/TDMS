@@ -1,11 +1,11 @@
 <map id="tdms/include/cell_coordinate.h" name="tdms/include/cell_coordinate.h">
-<area shape="rect" id="node1" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="323,5,521,31"/>
-<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="272,79,407,104"/>
-<area shape="rect" id="node9" href="$source_8h.html" title=" " alt="" coords="431,79,581,104"/>
-<area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,152,135,192"/>
-<area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="159,159,336,185"/>
-<area shape="rect" id="node6" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="360,152,503,192"/>
-<area shape="rect" id="node7" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="527,152,663,192"/>
-<area shape="rect" id="node5" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="180,240,315,280"/>
-<area shape="rect" id="node8" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="525,240,665,280"/>
+<area shape="rect" id="node1" title="Container for {ijk} or {IJK} grouped variables." alt="" coords="322,5,519,31"/>
+<area shape="rect" id="node2" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="270,79,405,105"/>
+<area shape="rect" id="node9" href="$source_8h.html" title=" " alt="" coords="428,79,578,105"/>
+<area shape="rect" id="node3" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,153,134,193"/>
+<area shape="rect" id="node4" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="157,160,334,186"/>
+<area shape="rect" id="node6" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="358,153,501,193"/>
+<area shape="rect" id="node7" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="525,153,660,193"/>
+<area shape="rect" id="node5" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="178,241,313,282"/>
+<area shape="rect" id="node8" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="523,241,662,282"/>
 </map>
