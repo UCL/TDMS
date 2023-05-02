@@ -115,9 +115,21 @@ public:
     H5::DataSpace dataspace = dataset.getSpace();
 
     // now get the data type
-    H5::DataType datatype = dataset.getDataType();
-    dataset.read(data, datatype);
+    dataset.read(data, dataset.getDataType());
     spdlog::trace("Read successful.");
+  }
+
+  template<typename T>
+  void read_field_from_struct(const std::string &struct_name,
+                              const std::string &field_name, T *data) const {
+    spdlog::debug("Reading {} from file: {}", struct_name, filename_);
+
+    // Structs are saved as groups, so we need to fetch the group this struct is
+    // contained in
+    H5::Group structure_array = file_->openGroup(struct_name);
+    // Then fetch the requested data and read it into the buffer provided
+    H5::DataSet requested_field = structure_array.openDataSet(field_name);
+    requested_field.read(data, requested_field.getDataType());
   }
 
   template<typename T>
