@@ -67,9 +67,9 @@ def bscan_options(output_name: str, generation_info: dict[str, Any]) -> dict[str
     """
     # Assume the default values unless told otherwise
     options = dict(DEFAULT_VALUES)
-    # Populate the optional arguments that were passed
+    # Populate the optional arguments that were passed, ignoring empty fields
     for arg, passed_value in generation_info.items():
-        if arg in OPTIONAL_ARGS:
+        if (arg in OPTIONAL_ARGS) and (passed_value != None):
             options[arg] = passed_value
     # Populate the name of the .mat file that will be produced
     options["output_name"] = output_name
