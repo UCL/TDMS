@@ -1,50 +1,20 @@
-%function [x,y,z,lambda] = fdtd_bounds(input_file)
-%
-%input_file - file with input configuration information
-%
-%x, y and z are the grid labels of the interior space of the FDTD
-%grid.
-%
-%lambda is the wavelength in dielectric material
 function [x,y,z,lambda] = fdtd_bounds(input_file)
+	%% Compute vectors x, y, z defining the coordinates of the fdtd grid in the respective axial direction.
+	%% That is, the Cartesian product x \otimes y \otimes z is the set of all gridpoints (xi, yj, zk) in the fdtd grid.
+	% input_file	: The input file with configuration information.
+	%
+	% x, y, z		: Grid labels (spatial coodinates) of the interior space of the FDTD grid.
+	% lambda		: Wavelength of light in the dielectric material.
 
-%input the configuration information
-[fid_input,message] = fopen(input_file,'r');
+%% Fetch the configuration information for this test
+[delta,I,J,K,illorigin,lambda,z_launch] = get_from_input_file(input_file, struct('z_launch', 0), ...
+														'delta','I','J','K','illorigin','lambda','z_launch');
 
-%check if file was opened successfully
-if fid_input== -1
-    error(sprintf('File %s could not be opened for reading',input_file));
-end
-
-%proceed to_l read in config information
-current_line = fgets(fid_input);
-
-while current_line ~= -1
-    eval(current_line);
-    current_line = fgets(fid_input);
-end
-
-%now need to check that all of the required variables have been set
-variables = {'delta','I','J','K','z_launch','illorigin','lambda'};
-must_abort = 0; %assumes all variables have been defined
-for lvar = 1:length(variables)
-    if exist(variables{lvar}) ~= 1
-	if strncmp(variables(lvar),'z_launch',8)
-	    fprintf(1,'Failed to define %s, setting it to 0\n',variables{lvar});
-	    z_launch = 0;
-	else
-	    fprintf(1,'Failed to define %s\n',variables{lvar});
-	    must_abort = 1;
-	end
-    end
-end
-
-if must_abort
-    error('Not all variables were defined');
-end
-
-
+%% Now compute the fdtd grid coordinates along each axis. Values are (respective to each axial direction):
+% I, J, K 		: Number of gridpoints
+% delta,{x,y,z} : Spatial separation of the gridpoints
+% illorigin		: Location of the origin of the source field
 x = ((1:I) - illorigin(1))*delta.x;
 y = ((1:J) - illorigin(2))*delta.y;
 z = ((1:K) - illorigin(3))*delta.z + z_launch;
-lambda = lambda;
+end

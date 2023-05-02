@@ -1,65 +1,29 @@
-%function [fdtdgrid] = initialisesplitgrid(I,J,K,Dx,Dy,Dz)
-%
-%initialises a new FDTD grid for the split formulation with a PML.
-%EXCLUDING the PML there are I Yee cells
-%in the x-direction, J Yee cells in the y-direction
-%and K Yee cells in the z direction. When the PML is taken
-%into account there are:
-%
-%I+2*Dx cells in x direction
-%J+2*Dy cells in y direction
-%K+2*Dz cells in z direction
-%
-%Inputs -
-%
-%I - the number of Yee cells (excluding PML) in the x direction
-%J - the number of Yee cells (excluding PML) in the y direction
-%K - the number of Yee cells (excluding PML) in the z direction
-% Dx - Number of cells in x direction in a single PML layer
-% Dy - Number of cells in y direction in a single PML layer
-% Dz - Number of cells in z direction in a single PML layer
-%
-%Returns -
-%
-% fdtdgrid - a struct with 13 elements:
-%               fdtdgrid.Exy
-%               fdtdgrid.Exz
-%               fdtdgrid.Eyx
-%               fdtdgrid.Eyz
-%               fdtdgrid.Ezx
-%               fdtdgrid.Ezy
-%               fdtdgrid.Hxy
-%               fdtdgrid.Hxz
-%               fdtdgrid.Hyx
-%               fdtdgrid.Hyz
-%               fdtdgrid.Hzx
-%               fdtdgrid.Hzy
-%               fdtdgrid.material
-%
-%These are arrays of diemension (I+2*Dx+1)x(J+2*Dy+1)x(K+2*Dz+1)
-%and are intialised to 0. The first 12 are actual field quantities
-%whilst the final is a descriptor for a material type. A material
-%type of 0 means that the material is either free space or a pml
-%and the cell index may be used to index into the appropriate
-%vector for the update parameter. If it is greater than zero, the
-%update paramter is found by indexing into the material matrix.
-%
 function [fdtdgrid] = initialisesplitgrid(I,J,K,Dxl,Dxu,Dyl,Dyu,Dzl,Dzu)
+    %% Initialise a new FDTD grid for the split formulation with a PML.
+    %% EXCLUDING the PML there are (I,J,K) Yee cells in the (x,y,z)-directions. When the PML is taken into account there are
+    %% (I,J,K)+2*(Dx,Dy,Dz)
+    %% cells in the (x,y,z) direction.
+    % I, J, K       : Number of non- PML Yee cells x, y, z direction
+    % Dx, Dy, Dz    : Number of cells in x, y, z direction in a single PML layer
+    %
+    % fdtdgrid : 1-by-1 struct with 13 elements:
+    % Exy, Exz, Eyx, Eyz, Ezx, Ezy, Hxy, Hxz, Hyx, Hyz, Hzx, Hzy : The split-field components
+    % material                                                   : Flags whether the cell is PML or not
+    %
+    % These are arrays of diemension (I+2*Dx+1,J+2*Dy+1,K+2*Dz+1), and are intialised to 0.
+    % A material type of 0 means that the material is either free space or a pml cell, and the cell index may be used to index into the appropriate vector for the update parameter.
+    % If the material type is greater than zero, the update paramter is found by indexing into the material matrix.
 
-I = I + Dxl + Dxu;
-J = J + Dyl + Dyu;
-K = K + Dzl + Dzu;
+%% Compute total number of cells
+I_tot = I + Dxl + Dxu;
+J_tot = J + Dyl + Dyu;
+K_tot = K + Dzl + Dzu;
 
-fdtdgrid.Exy = zeros(I+1,J+1,K+1);
-%fdtdgrid.Exz = zeros(I+1,J+1,K+1);
-%fdtdgrid.Eyx = zeros(I+1,J+1,K+1);
-%fdtdgrid.Eyz = zeros(I+1,J+1,K+1);
-%fdtdgrid.Ezx = zeros(I+1,J+1,K+1);
-%fdtdgrid.Ezy = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hxy = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hxz = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hyx = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hyz = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hzx = zeros(I+1,J+1,K+1);
-%fdtdgrid.Hzy = zeros(I+1,J+1,K+1);
-fdtdgrid.materials = uint8(zeros(I+1,J+1,K+1));
+%% Create structure array
+split_field_components = {'Exy', 'Exz', 'Eyx', 'Eyz', 'Ezx', 'Ezy', 'Hxy', 'Hxz', 'Hyx', 'Hyz', 'Hzx', 'Hzy'};
+fdtdgrid = struct();
+for i=1:numel(split_field_components)
+    fdtdgrid.(split_field_components{i}) = zeros(I_tot+1,J_tot+1,K_tot+1);
+end
+fdtdgrid.materials = uint8(zeros(I_tot+1,J_tot+1,K_tot+1));
+end

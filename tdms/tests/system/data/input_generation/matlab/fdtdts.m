@@ -1,28 +1,17 @@
-%function [dt_upper] = fdtdts(inputfile)
-%
-%Calculates the maximum allowable time step subject to the
-%stability criterion
-function [dt_upper] = fdtdts(inputfile)
+function [dt_upper] = fdtdts(input_file)
+    %% Calculates the maximum allowable time step, subject to the stability criterion
+    %% This corresponds to:
+    %% dt_upper = ( c * ( dx^{-2} + dy^{-2} + dx^{-2} ) )^{-1}.
+    % input_file    : Configuration file to read parameters from
+    %
+    % dt_upper      : Maximum allowable timestep
 
-[fid_input,message] = fopen(inputfile,'r');
+%% Fetch the configuration information for this test
+delta = get_from_input_file(input_file, struct(), 'delta');
 
-%check if file was opened successfully
-if fid_input== -1
-    error(sprintf('File %s could not be opened for reading',input_file));
-end
+%% Define internal constants
+[~, ~, c] = import_constants;
 
-%proceed to_l read in config information
-current_line = fgets(fid_input);
-
-while current_line ~= -1
-    eval(current_line);
-    current_line = fgets(fid_input);
-end
-
-[epso muo c] = import_constants;
-
-if exist('delta') ~= 1
-    error('delta is not defined - cannot determine dt_upper');
-end
-
+%% Compute maximum permissable timestep
 dt_upper = 1/(c*sqrt(1/delta.x^2 + 1/delta.y^2 + 1/delta.z^2));
+end

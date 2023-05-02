@@ -1,56 +1,26 @@
-%function [n] = fdtdminsteps(inputfile)
-%
-%estimates the minmum number of steps required in a fdtd simulation
-%assuming the time step used is 0.95xmaximum time step and that the
-%trailing edge of the guassian pulse travels at the speed of
-%light. (dispersion free). Calculates the edge of the pulse travelling from
-%interface to end wall and back.
-function [n] = minsteps_pstd(inputfile)
+function [n] = minsteps_pstd(input_file)
+    %% Estimates the minmum number of steps required in a pstd simulation.
+    %% Assumes the time step used is 0.95 * maximum time step, and that the trailing edge of the guassian pulse travels at the speed of light (dispersion free).
+    %% Calculates the edge of the pulse travelling from the interface to the end wall and back.
+    % input_file    : Config file to read values from
+    %
+    % n             : Minimum number of timesteps that will need to be performed in a fdtd simulation
 
-[fid_input,message] = fopen(inputfile,'r');
+%% Fetch the configuration information for this test
+[delta,K,interface,dt,epsr] = get_from_input_file(input_file, struct(), ...
+														'delta','K','interface','dt','epsr');
 
-%check if file was opened successfully
-if fid_input== -1
-    error(sprintf('File %s could not be opened for reading',input_file));
-end
+%% Load / compute parameters required
+[~, ~, c] = import_constants;
+[t0, hwhm] = fdtdduration(input_file);
 
-%proceed to_l read in config information
-current_line = fgets(fid_input);
+% Adjust so that we have the pulse close to 0 at the interface
+t = 2*t0;
 
-while current_line ~= -1
-    eval(current_line);
-    current_line = fgets(fid_input);
-end
-
-[epso muo c] = import_constants;
-
-if exist('K') ~= 1
-    error('K is not defined - cannot determine n');
-end
-
-if exist('delta') ~= 1
-    error('delta is not defined - cannot determine n');
-end
-
-if exist('interface') ~= 1
-    error('interface is not defined - cannot determine n');
-end
-
-if exist('f_an') ~= 1
-    error('f_an is not defined - cannot determine n');
-end
-
-if exist('dt') ~= 1
-    error('dt is not defined - cannot determine n');
-end
-
-[to hwhm] = fdtdduration(inputfile);
-
-%have to have pulse reaching close to 0 at the interface
-t = 2*to;
-
-%now this has to propagate from the interface to the other edge of
-%the grid and then out again
+%% Compute timestep estimate
+% This pulse has to propagate from the interface, to the other edge of the grid, and then out again
+% This is the time that will be ellapsed
 t = t + (K-interface.K1(1))*delta.z/(c/sqrt(epsr(1))) + K*delta.z/(c/sqrt(epsr(1)));
-
+% Hence from the ellapsed time, we can compute the number of timesteps we need for the pulse to travel back & forth
 n = ceil(t/(0.95*dt));
+end
