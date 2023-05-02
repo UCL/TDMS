@@ -100,6 +100,11 @@ $(document).ready(function(){initNavTree('class_d_tilde.html',''); initResizable
   <div class="headertitle"><div class="title">DTilde Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Stores the fibre modes in the Fourier plane of the objective lens.  
+ <a href="class_d_tilde.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="arrays_8h_source.html">arrays.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for DTilde:</div>
 <div class="dyncontent">
@@ -111,6 +116,7 @@ Collaboration diagram for DTilde:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e9d2cf14b5b485a90bff7154bf74ecf"><td class="memItemLeft" align="right" valign="top"><a id="a9e9d2cf14b5b485a90bff7154bf74ecf" name="a9e9d2cf14b5b485a90bff7154bf74ecf"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>num_det_modes</b> () const</td></tr>
+<tr class="memdesc:a9e9d2cf14b5b485a90bff7154bf74ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetch the number of modes. <br /></td></tr>
 <tr class="separator:a9e9d2cf14b5b485a90bff7154bf74ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb4b839c5b62c9f84597abcc9e4b5f8d"><td class="memItemLeft" align="right" valign="top"><a id="aeb4b839c5b62c9f84597abcc9e4b5f8d" name="aeb4b839c5b62c9f84597abcc9e4b5f8d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>initialise</b> (const mxArray *ptr, int n_rows, int n_cols)</td></tr>
@@ -118,11 +124,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initialise</b> (const
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a233f21b11f30cd48c4a8292e1894dd5e"><td class="memItemLeft" align="right" valign="top"><a id="a233f21b11f30cd48c4a8292e1894dd5e" name="a233f21b11f30cd48c4a8292e1894dd5e"></a>
-<a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>x</b></td></tr>
+<tr class="memitem:a233f21b11f30cd48c4a8292e1894dd5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_tilde.html#a233f21b11f30cd48c4a8292e1894dd5e">x</a></td></tr>
 <tr class="separator:a233f21b11f30cd48c4a8292e1894dd5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05bf0a7b2981df8607d9f01fded94b97"><td class="memItemLeft" align="right" valign="top"><a id="a05bf0a7b2981df8607d9f01fded94b97" name="a05bf0a7b2981df8607d9f01fded94b97"></a>
-<a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>y</b></td></tr>
+<tr class="memitem:a05bf0a7b2981df8607d9f01fded94b97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_tilde.html#a05bf0a7b2981df8607d9f01fded94b97">y</a></td></tr>
 <tr class="separator:a05bf0a7b2981df8607d9f01fded94b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
@@ -137,6 +141,42 @@ Protected Attributes</h2></td></tr>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>n_det_modes</b> = 0</td></tr>
 <tr class="separator:a7e3682f8cdd4d37956a34ad0e67bcc85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Stores the fibre modes in the Fourier plane of the objective lens. </p>
+<p>The "Tilde" indicates that these quantities are in a Fourier plane relative to where the optical fibre is actually located, meaning that is has a Fourier relationship relative to the physical fibre mode(s). </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a233f21b11f30cd48c4a8292e1894dd5e" name="a233f21b11f30cd48c4a8292e1894dd5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233f21b11f30cd48c4a8292e1894dd5e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt;std::complex&lt;double&gt; &gt; DTilde::x</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>3-dimensional vector of fibre modes indexed by (j, i, i_m). i and j index over the x and y plane respectively. i_m indexes the different modes specified in the input file. </p>
+
+</div>
+</div>
+<a id="a05bf0a7b2981df8607d9f01fded94b97" name="a05bf0a7b2981df8607d9f01fded94b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bf0a7b2981df8607d9f01fded94b97">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_tensor3_d.html">Tensor3D</a>&lt;std::complex&lt;double&gt; &gt; DTilde::y</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p></p>
+<p>3-dimensional vector of fibre modes indexed by (j, i, i_m). i and j index over the x and y plane respectively. i_m indexes the different modes specified in the input file.   </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
 <li>tdms/src/arrays.cpp</li>

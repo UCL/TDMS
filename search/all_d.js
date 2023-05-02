@@ -9,6 +9,7 @@ var searchData=
   ['normalise_5fvertices_6',['normalise_vertices',['../class_vertex_phasors.html#a885ba9bda39b6c62b1a78395a1891d5a',1,'VertexPhasors']]],
   ['normalise_5fvolume_7',['normalise_volume',['../class_field.html#a616a0a2e9edb5ee42374611c2eea777e',1,'Field']]],
   ['normalised_5fdifference_8',['normalised_difference',['../class_field.html#aaa04cd96b3b916e16b6dbb4cdc98aa1a',1,'Field']]],
-  ['num_5fnonzero_5fcoeffs_9',['num_nonzero_coeffs',['../class_interpolation_scheme.html#a66152c3e66f87d9be1af1972dec74f77',1,'InterpolationScheme']]],
-  ['numerical_5fderivative_2eh_10',['numerical_derivative.h',['../numerical__derivative_8h.html',1,'']]]
+  ['num_5fdet_5fmodes_9',['num_det_modes',['../class_d_tilde.html#a9e9d2cf14b5b485a90bff7154bf74ecf',1,'DTilde']]],
+  ['num_5fnonzero_5fcoeffs_10',['num_nonzero_coeffs',['../class_interpolation_scheme.html#a66152c3e66f87d9be1af1972dec74f77',1,'InterpolationScheme']]],
+  ['numerical_5fderivative_2eh_11',['numerical_derivative.h',['../numerical__derivative_8h.html',1,'']]]
 ];

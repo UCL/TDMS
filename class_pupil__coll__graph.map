@@ -1,4 +1,4 @@
 <map id="Pupil" name="Pupil">
-<area shape="rect" id="node1" title=" " alt="" coords="40,79,90,105"/>
+<area shape="rect" id="node1" title="Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of t..." alt="" coords="40,79,90,105"/>
 <area shape="rect" id="node2" href="$class_matrix.html" title=" " alt="" coords="5,5,125,31"/>
 </map>

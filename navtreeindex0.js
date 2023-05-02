@@ -37,6 +37,9 @@ var NAVTREEINDEX0 =
 "class_d_collection_base.html":[3,0,10],
 "class_d_material.html":[3,0,14],
 "class_d_tilde.html":[3,0,15],
+"class_d_tilde.html#a05bf0a7b2981df8607d9f01fded94b97":[3,0,15,2],
+"class_d_tilde.html#a233f21b11f30cd48c4a8292e1894dd5e":[3,0,15,1],
+"class_d_tilde.html#a9e9d2cf14b5b485a90bff7154bf74ecf":[3,0,15,0],
 "class_detector_sensitivity_arrays.html":[3,0,11],
 "class_dimensions.html":[3,0,12],
 "class_dimensions.html#a484abda425a94fad407e77dcfad03abc":[3,0,12,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX0 =
 "index.html":[],
 "index.html#autotoc_md0":[0],
 "index.html#autotoc_md1":[0,0],
-"index.html#autotoc_md2":[0,1],
-"index.html#autotoc_md3":[0,2],
-"index.html#autotoc_md4":[0,3],
-"index.html#autotoc_md5":[0,4]
+"index.html#autotoc_md2":[0,1]
 };

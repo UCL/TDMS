@@ -97,6 +97,11 @@ $(document).ready(function(){initNavTree('class_pupil.html',''); initResizable()
   <div class="headertitle"><div class="title">Pupil Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of the PSTD simulation.  
+ <a href="class_pupil.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="arrays_8h_source.html">arrays.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Pupil:</div>
 <div class="dyncontent">
@@ -146,7 +151,11 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>n_cols</b></td></tr>
 double **&#160;</td><td class="memItemRight" valign="bottom"><b>matrix</b></td></tr>
 <tr class="separator:a167377d42f7e6e685f35bcdfca1383b3 inherit pro_attribs_class_matrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of the PSTD simulation. </p>
+<p>In particular, since the fibre modes are imaged onto a Fourier plane of both the physical fibre and the sample, the field scattered by the sample and collected by the objective lens can have only a finite spatial support in the aperature of the objective lens.</p>
+<p><a class="el" href="class_pupil.html" title="Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of t...">Pupil</a>[j][i] thus takes the value 1 for those (i,j) indices (note the order swapping) within the aperture of the lens. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>tdms/include/<a class="el" href="arrays_8h_source.html">arrays.h</a></li>
 <li>tdms/src/arrays.cpp</li>
 </ul>

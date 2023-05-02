@@ -15,7 +15,7 @@ var annotated_dup =
     [ "Dimensions", "class_dimensions.html", "class_dimensions" ],
     [ "DispersiveMultiLayer", "class_dispersive_multi_layer.html", "class_dispersive_multi_layer" ],
     [ "DMaterial", "class_d_material.html", null ],
-    [ "DTilde", "class_d_tilde.html", null ],
+    [ "DTilde", "class_d_tilde.html", "class_d_tilde" ],
     [ "EHVec", "class_e_h_vec.html", null ],
     [ "ElectricField", "class_electric_field.html", "class_electric_field" ],
     [ "ElectricSplitField", "class_electric_split_field.html", "class_electric_split_field" ],

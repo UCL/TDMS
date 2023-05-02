@@ -35,7 +35,7 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="class_pupil.html" target="_top" xlink:title=" ">
+<g id="a_node3"><a xlink:href="class_pupil.html" target="_top" xlink:title="Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of t...">
 <polygon fill="white" stroke="#666666" points="193.25,-19.25 155.5,-19.25 155.5,0 193.25,0 193.25,-19.25"/>
 <text text-anchor="middle" x="174.38" y="-5.75" font-family="Helvetica,sans-Serif" font-size="10.00">Pupil</text>
 </a>

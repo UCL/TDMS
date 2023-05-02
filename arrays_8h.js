@@ -17,7 +17,7 @@ var arrays_8h =
     [ "FrequencyVectors", "class_frequency_vectors.html", null ],
     [ "Pupil", "class_pupil.html", null ],
     [ "Tensor3D< T >", "class_tensor3_d.html", "class_tensor3_d" ],
-    [ "DTilde", "class_d_tilde.html", null ],
+    [ "DTilde", "class_d_tilde.html", "class_d_tilde" ],
     [ "IncidentField", "class_incident_field.html", null ],
     [ "FieldComponentsVector", "class_field_components_vector.html", "class_field_components_vector" ],
     [ "Vertices", "class_vertices.html", null ],
