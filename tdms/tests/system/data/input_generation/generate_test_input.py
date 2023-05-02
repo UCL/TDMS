@@ -70,7 +70,9 @@ def bscan_options(output_name: str, generation_info: dict[str, Any]) -> dict[str
     # Populate the optional arguments that were passed, ignoring empty fields
     for arg, passed_value in generation_info.items():
         if (arg in OPTIONAL_ARGS) and (passed_value != None):
-            options[arg] = passed_value
+            # We should cast to the correct type before storing the value, since MatlabEngine throws errors when it recieves the wrong datatypes
+            expected_type = type(DEFAULT_VALUES[arg])
+            options[arg] = expected_type(passed_value)
     # Populate the name of the .mat file that will be produced
     options["output_name"] = output_name
 
