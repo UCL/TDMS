@@ -330,7 +330,18 @@ public:
   void initialise(const mxArray *ptr);
 };
 
-// TODO: docstring
+/**
+ * @brief Defines the numerical aperture of the objective, assuming that the
+ * lens is centred on the origin of the PSTD simulation.
+ *
+ * In particular, since the fibre modes are imaged onto a Fourier plane of both
+ * the physical fibre and the sample, the field scattered by the sample and
+ * collected by the objective lens can have only a finite spatial support in the
+ * aperature of the objective lens.
+ *
+ * Pupil[j][i] thus takes the value 1 for those (i,j) indices (note the order
+ * swapping) within the aperture of the lens.
+ */
 class Pupil : public Matrix<double> {
 public:
   Pupil() = default;
@@ -421,17 +432,29 @@ public:
   }
 };
 
+/**
+ * @brief Stores the fibre modes in the Fourier plane of the objective lens.
+ *
+ * The "Tilde" indicates that these quantities are in a Fourier plane relative
+ * to where the optical fibre is actually located, meaning that is has a Fourier
+ * relationship relative to the physical fibre mode(s).
+ */
 class DTilde {
 protected:
-  int n_det_modes = 0;
+  int n_det_modes = 0;//< Number of modes specified
   static void set_component(Tensor3D<std::complex<double>> &tensor,
                             const mxArray *ptr, const std::string &name,
                             int n_rows, int n_cols);
 
 public:
+  /** @brief Fetch the number of modes */
   inline int num_det_modes() const { return n_det_modes; };
 
+  /*! 3-dimensional vector of fibre modes indexed by (j, i, i_m).
+   * i and j index over the x and y plane respectively.
+   * i_m indexes the different modes specified in the input file.*/
   Tensor3D<std::complex<double>> x;
+  /*! @copydoc x */
   Tensor3D<std::complex<double>> y;
 
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
