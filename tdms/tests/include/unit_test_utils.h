@@ -38,11 +38,13 @@ double_22: [0.25, 0.5; 0.75, 1.], double
 complex_22: [0., -i; i, 0], complex
 */
 #ifdef CMAKE_SOURCE_DIR
-inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
-                                   "/tests/unit/structure_array.mat");
+inline std::string
+        struct_testdata(std::string(CMAKE_SOURCE_DIR) +
+                        "/tests/unit/hdf5_io_tests/structure_array.mat");
 #else
-inline std::string struct_testdata(std::filesystem::current_path() /
-                                   "../tests/unit/structure_array.mat");
+inline std::string
+        struct_testdata(std::filesystem::current_path() /
+                        "../tests/unit/hdf5_io_tests/structure_array.mat");
 #endif
 
 }// namespace tdms_unit_test_data

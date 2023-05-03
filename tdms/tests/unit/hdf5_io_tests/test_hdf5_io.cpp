@@ -6,10 +6,7 @@
 #include "hdf5_io/hdf5_writer.h"
 
 // std
-#include <cstdlib>
-#include <ctime>
 #include <filesystem>
-#include <random>
 #include <string>
 
 // external
@@ -18,12 +15,10 @@
 #include <spdlog/spdlog.h>
 
 // tdms
-#include "arrays.h"
 #include "unit_test_utils.h"
 
 using namespace std;
-using tdms_tests::create_tmp_dir, tdms_tests::uint16s_to_string;
-using tdms_unit_test_data::struct_testdata;
+using tdms_tests::create_tmp_dir;
 
 TEST_CASE("Test file I/O construction/destruction.") {
   // test-case wide setup - temporary directory

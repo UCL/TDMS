@@ -1,5 +1,7 @@
 #include "hdf5_io/hdf5_writer.h"
 
+#include <spdlog/spdlog.h>
+
 using namespace std;
 
 void HDF5Writer::write(const string &dataset_name, double *data, int size,

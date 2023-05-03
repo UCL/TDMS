@@ -6,12 +6,7 @@
 #include "hdf5_io/hdf5_reader.h"
 #include "hdf5_io/hdf5_writer.h"
 
-// std
-#include <cstdlib>
-#include <ctime>
 #include <filesystem>
-#include <random>
-#include <string>
 
 // external
 #include <catch2/catch_approx.hpp>
@@ -21,6 +16,7 @@
 #include "arrays.h"
 #include "unit_test_utils.h"
 
+using std::filesystem::remove_all;
 using tdms_tests::create_tmp_dir;
 
 TEST_CASE("HDF5: Read/Write Matrix") {
@@ -56,5 +52,5 @@ TEST_CASE("HDF5: Read/Write Matrix") {
 
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
-  std::filesystem::remove_all(tmp);
+  remove_all(tmp);
 }
