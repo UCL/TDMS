@@ -18,6 +18,7 @@
 #include "arrays.h"
 #include "cell_coordinate.h"
 #include "fdtd_grid_initialiser.h"
+#include "interface.h"
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -161,14 +162,12 @@ public:
     return;
   }
 
-  /*
-  //void read(const std::string &dataset_name, mxArray*) const {
-
-    // This method will take in the fdtdGridInit... object, assign the pointer
-    // member, and then run the object's
-    return;
+  void read(const std::string &plane, InterfaceComponent *ic) const;
+  InterfaceComponent read(const std::string &plane) const {
+    InterfaceComponent ic;
+    read(plane, &ic);
+    return ic;
   }
-  */
 };
 
 class HDF5Writer : public HDF5Base {

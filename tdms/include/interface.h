@@ -27,10 +27,12 @@
  */
 class InterfaceComponent {
 public:
-  bool apply = false;//<! Whether or not a source or boundary condition is
-                     // applied at this interface.
-  int index = 0;//<! The value of the constant Yee-cell index for cells in this
-                // plane.
+  /*! Whether or not a source or boundary condition is applied at this
+   * interface */
+  bool apply = false;
+  /*! The value of the constant Yee-cell index for cells in this plane */
+  int index = 0;
 
+  InterfaceComponent() = default;
   InterfaceComponent(const mxArray *ptr, const std::string &name);
 };

@@ -1,5 +1,4 @@
 #include "hdf5_io.h"
-#include "cell_coordinate.h"
 
 #include <H5public.h>
 #include <iostream>
@@ -28,6 +27,7 @@ ijk to_ijk(const std::vector<hsize_t> dimensions) {
 /******************************************************************************
  * HDF5Writer
  */
+
 void HDF5Writer::write(const std::string &dataset_name, double *data, int size,
                        hsize_t *dimensions) {
   spdlog::debug("Writing {} to file: {}", dataset_name, filename_);
@@ -40,6 +40,21 @@ void HDF5Writer::write(const std::string &dataset_name, double *data, int size,
   H5::DataSet dataset = file_->createDataSet(dataset_name, datatype, dataspace);
   dataset.write(data, H5::PredType::NATIVE_DOUBLE);
   spdlog::trace("Write successful.");
+}
+
+/******************************************************************************
+ * HDF5Reader
+ */
+
+void HDF5Reader::read(const std::string &plane, InterfaceComponent *ic) const {
+  // Read the InterfaceComponent in as a 2-element double array
+  double read_buffer[2];
+  read_field_from_struct("interface", plane, read_buffer);
+  // The index that is read in should have 1 subtracted from it, to account for
+  // MATLAB indexing
+  ic->index = std::max((int) read_buffer[0] - 1, 0);
+  // The apply flag should be cast from the double that is read in
+  ic->apply = (bool) read_buffer[1];
 }
 
 /******************************************************************************
