@@ -21,7 +21,8 @@
 #include "unit_test_utils.h"
 
 using namespace std;
-using tdms_tests::create_tmp_dir;
+using tdms_tests::create_tmp_dir, tdms_tests::uint16s_to_string;
+using tdms_unit_test_data::struct_testdata;
 
 TEST_CASE("Wrong datatype passed to ijk.") {
   auto tmp = create_tmp_dir();
@@ -30,7 +31,6 @@ TEST_CASE("Wrong datatype passed to ijk.") {
 }
 
 TEST_CASE("Test file I/O construction/destruction.") {
-
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
@@ -133,7 +133,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   filesystem::remove_all(tmp);
 }
 
-TEST_CASE("Test w/r TDMS objects") {
+TEST_CASE("Test read/write wrt standard datatypes") {
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
@@ -154,76 +154,13 @@ TEST_CASE("Test w/r TDMS objects") {
     }
   }
 
-  SECTION("5-by-6 2D array") {
-    SPDLOG_INFO("5-by-6 2D array");
-    Matrix<double> counting_matrix(5, 6);
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 6; j++) { counting_matrix[i][j] = 6. * i + j; }
-    }
-    Matrix<double> read_back;
-
-    {
-      HDF5Writer f1(tmp.string() + "/five-by-six.h5");
-      f1.write("five-by-six", counting_matrix);
-    }
-    {
-      SPDLOG_DEBUG("About to read...");
-      HDF5Reader f2(tmp.string() + "/five-by-six.h5");
-      f2.read("five-by-six", read_back);
-    }
-
-    for (unsigned int i = 0; i < 5; i++) {
-      for (unsigned int j = 0; j < 6; j++) {
-        SPDLOG_INFO("Checking {} == {}", counting_matrix[i][j],
-                    read_back[i][j]);
-        CHECK(counting_matrix[i][j] == Catch::Approx(read_back[i][j]));
-      }
-    }
-  }
-
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
   filesystem::remove_all(tmp);
 }
 
-/* The TESTDATA is a .mat file containing a single structure array,
-example_struct. This structure array has the following data.
-
-MEMBER: value, MATLAB type
-double_no_decimal: 1.0, double
-double_half: 0.5, double
-string: 'tdms', char array
-boolean: 1, logical
-uint_345: 3 * 4 * 5 array of 1s, uint8
-double_22: [0.25, 0.5; 0.75, 1.], double
-complex_22: [0., -i; i, 0], complex
-*/
-#ifdef CMAKE_SOURCE_DIR
-string TESTDATA(string(CMAKE_SOURCE_DIR) + "/tests/unit/structure_array.mat");
-#else
-string TESTDATA(filesystem::current_path() /
-                "../tests/unit/structure_array.mat");
-#endif
-
-/** @brief Returns the char represented by a uint16 */
-char uint16_to_char(const uint16_t &repr) { return *((char *) &repr); }
-
-/**
- * @brief Returns the string composed of the characters represented by
- * subsequent uint16s.
- *
- * @param repr Buffer of uint16s that represent individual characters
- * @param buffer_length Length of the buffer
- * @return string The string composed of the converted characters
- */
-string uint16s_to_string(uint16_t *repr, int buffer_length) {
-  string output;
-  for (int i = 0; i < buffer_length; i++) { output += uint16_to_char(repr[i]); }
-  return output;
-}
-
 TEST_CASE("Read from a MATLAB struct") {
-  HDF5Reader MATFile(TESTDATA);
+  HDF5Reader MATFile(struct_testdata);
 
   SECTION("Read numeric scalars") {
     /* Read scalar values from the MATLAB struct into the array. */
