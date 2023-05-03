@@ -3,7 +3,8 @@
  * @brief Tests of the HDF5 file I/O functionality when reading/writing Matrix
  * objects.
  */
-#include "hdf5_io.h"
+#include "hdf5_io/hdf5_reader.h"
+#include "hdf5_io/hdf5_writer.h"
 
 // std
 #include <cstdlib>
@@ -15,7 +16,6 @@
 // external
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <spdlog/spdlog.h>
 
 // tdms
 #include "arrays.h"
@@ -23,7 +23,7 @@
 
 using tdms_tests::create_tmp_dir;
 
-TEST_CASE("HDF5: Read Matrix") {
+TEST_CASE("HDF5: Read/Write Matrix") {
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 

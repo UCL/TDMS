@@ -2,17 +2,9 @@
  * @file test_hdf5_io.cpp
  * @brief Tests of the HDF5 file I/O functionality.
  */
-#include "hdf5_io.h"
-
-// std
-// #include <cstdlib>
-// #include <ctime>
-// #include <filesystem>
-// #include <random>
-#include <string>
+#include "hdf5_io/hdf5_reader.h"
 
 // external
-// #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
