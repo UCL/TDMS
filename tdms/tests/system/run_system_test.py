@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+from warnings import warn
 from zipfile import ZipFile
 
 import yaml
@@ -68,7 +69,6 @@ def run_system_test(config_filepath: Path | str) -> dict[str, bool]:
 
     # Track the test's id (arc_{test_id}) and the information about the runs it contains
     test_id = test_information["test_id"]
-    run_information = test_information["tests"]
 
     # Infer the location of the input data and .zip archive
     input_data_folder = (
@@ -76,41 +76,60 @@ def run_system_test(config_filepath: Path | str) -> dict[str, bool]:
     )
     ref_data_zip_foler = ZipFile(ZIP_DIR / f"arc_{test_id}.zip", "r")
 
+    # Infer the names of the input files that make up this run
+    mat_inputs = [mfile for mfile in test_information.keys() if mfile != "test_id"]
+
     # Setup the runs that are part of this test, using the test_dict
     tdms_runs: list[TDMSRun] = []
     # These are reference files that have been pulled out of .zip archives and will need cleaning up afterwards
     # set() ensures that duplicate filenames will not be added if already present
     extracted_ref_files = set()
-    for run_name, run_info in run_information.items():
-        # Fetch the input file
-        input_file = input_data_folder / run_info["input_file"]
+    for mat_input_file in mat_inputs:
+        # If this input file is not used in any runs (it always should be, but it never hurts to check), then continue to the next element without running any tests
+        if "runs" in test_information[mat_input_file].keys():
+            # Perform each run that uses this file as it's input
+            path_to_input_m_file = input_data_folder / (
+                os.path.splitext(mat_input_file)[0] + ".mat"
+            )
 
-        # Create a suitable name for the output of the run, and recycle the input_data_folder for the location of the output
-        output_file = input_data_folder / f"output_{test_id}_{run_name}.mat"
+            runs = test_information[mat_input_file]["runs"]
+            # The dict itself contains many runs, so we need to loop again
+            for run_name, run_info in runs.items():
+                # Create a suitable name for the output of the run, and recycle the input_data_folder for the location of the output
+                output_file = input_data_folder / f"output_{test_id}_{run_name}.mat"
 
-        # Fetch the filename of the reference data that this run compares it's output to
-        ref_output = run_info["reference"]
-        extracted_ref_files.add(ref_output)
+                # Fetch the reference output that this run needs to compare to
+                ref_output = run_info["reference"]
+                extracted_ref_files.add(ref_output)
 
-        # Fetch the gridfile, if it exists
-        if "gridfile" in run_info.keys():
-            gridfile = run_info["gridfile"]
+                # Fetch the gridfile, if it exists
+                if "gridfile" in run_info.keys():
+                    gridfile = run_info["gridfile"]
+                else:
+                    gridfile = None
+
+                # Determine if there are any flags that need to be passed to the tdms run
+                run_flags = []
+                if "cubic_interpolation" in run_info.keys():
+                    if run_info["cubic_interpolation"]:
+                        run_flags += ["-c"]
+                if "fdtd_solver" in run_info.keys():
+                    if run_info["fdtd_solver"]:
+                        run_flags += ["--finite-difference"]
+
+                # Create the run and store it with the reference data file that it needs
+                tdms_runs.append(
+                    TDMSRun(
+                        run_name,
+                        path_to_input_m_file,
+                        output_file,
+                        gridfile,
+                        run_flags,
+                        ref_output,
+                    )
+                )
         else:
-            gridfile = None
-
-        # Determine if there are any flags that need to be passed to the tdms run
-        run_flags = []
-        if "cubic_interpolation" in run_info.keys():
-            if run_info["cubic_interpolation"]:
-                run_flags += ["-c"]
-        if "fdtd_solver" in run_info.keys():
-            if run_info["fdtd_solver"]:
-                run_flags += ["--finite-difference"]
-
-        # Create the run and store it with the reference data file that it needs
-        tdms_runs.append(
-            TDMSRun(run_name, input_file, output_file, gridfile, run_flags, ref_output)
-        )
+            warn(f"Input file {mat_input_file} corresponds to no TDMS runs")
 
     # Extract all unique reference data files from the .zip archive
     dir_to_extract_refs_to = str(input_data_folder / "reference_data")

@@ -9,6 +9,7 @@ import yaml
 from matlab.engine import MatlabEngine
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
+INPUT_M_FILE_LOCATION = LOCATION_OF_THIS_FILE + "/input_files/"
 # Additional options for running matlab on the command-line
 MATLAB_OPTS_LIST = ["-nodisplay", "-nodesktop", "-nosplash", "-r"]
 MATLAB_STARTUP_OPTS = " ".join(MATLAB_OPTS_LIST)
@@ -22,7 +23,9 @@ DEFAULT_VALUES = {
     "obstacle": "fs",
     "obstacle_radius": 15.0e-6,
     "illsetup": False,
-    "ill_filesetup": ".__TDMS_input_regen_extra_filesetup_file.m",
+    "ill_filesetup": os.path.abspath(
+        LOCATION_OF_THIS_FILE + "/.__TDMS_input_regen_extra_filesetup_file.m"
+    ),
     "refind": 1.42,
     "calc_tdfield": False,
 }
@@ -106,7 +109,9 @@ def run_bscan(
     :returns: (stdout, stderr) produced by the MatlabEngine whilst running.
     """
     # The .m input file that will be read by iteratefdtd_matrix
-    input_filename = generation_info["input_file"]
+    input_filename = os.path.abspath(
+        INPUT_M_FILE_LOCATION + generation_info["input_file"]
+    )
     # Create the options dictionary (which will be converted to a struct) to pass to run_bscan.m
     options = bscan_options(matfile_to_produce, generation_info)
     # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
@@ -172,12 +177,6 @@ def generate_test_input(
 
     # ID of the test we are generating input data for
     test_id = config_data["test_id"]
-    # Names of the .mat files to produce
-    mats_to_produce = [key for key in config_data.keys() if key != "test_id"]
-    # Append .mat extension to the filenames of the inputs to be created, if they are not there already
-    for i, file in enumerate(mats_to_produce):
-        if file[-4:] != ".mat":
-            mats_to_produce[i] += ".mat"
     # Absolute path to the directory into which the input data should be placed
     test_dir = Path(LOCATION_OF_THIS_FILE, "arc_" + test_id)
     # Ensure that the directory to place the output into exists, or create it otherwise
@@ -187,6 +186,15 @@ def generate_test_input(
     elif not test_dir.is_dir():
         raise RuntimeError(f"{test_dir} is not a directory!")
     # else: the directory already exists, we don't need to do anything
+
+    # Names of the .mat files to produce
+    mats_to_produce = [key for key in config_data.keys() if key != "test_id"]
+    # Some or all entries in mats_to_produce might be missing the .mat extension. Keeping the original key names from the config.yaml file is necessary for input generation purposes (else keyerrors are thrown) and MATLAB will auto-append the extension on saving, so there will be no name mismatches.
+    # However we need to make sure all our output files have the .mat extension provided, and are absolute paths, when we clean up after producing the outputs, otherwise they will be deleted along with other .mat artifacts.
+    mats_produced_with_extension = [str(test_dir / mfile) for mfile in mats_to_produce]
+    for i, file in enumerate(mats_produced_with_extension):
+        if file[-4:] != ".mat":
+            mats_produced_with_extension[i] += ".mat"
 
     # Determine if we need to create our own MATLAB session
     # Explicit instance check since MatlabEngine may not have implicit casts/ interpretations
@@ -206,8 +214,9 @@ def generate_test_input(
         engine.quit()
     # Cleanup auxillary .mat files that are placed into this directory, and the MATLAB working directory
     auxillary_matfiles = (
-        set(glob(test_dir + "/*.mat")) | set(glob(matlab_working_directory + "/*.mat"))
-    ) - set(mats_to_produce)
+        set(glob(str(test_dir) + "/*.mat"))
+        | set(glob(matlab_working_directory + "/*.mat"))
+    ) - set(mats_produced_with_extension)
     for aux_mat in auxillary_matfiles:
         os.remove(aux_mat)
 
