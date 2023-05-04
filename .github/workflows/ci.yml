@@ -58,7 +58,7 @@ jobs:
       - name: Run a MATLAB script
         uses: matlab-actions/run-command@v1
         with:
-          command: addpath('tdms/tests/unit/matlab_benchmark_scripts/'), benchmark_test_interpolation_functions
+          command: cd('tdms/tests/unit/matlab_benchmark_scripts/'), benchmark_test_interpolation_functions
 
       # -------------------------------------------------------------------------------
       # Ubuntu
