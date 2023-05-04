@@ -22,12 +22,32 @@ public:
       : HDF5Base(filename, H5F_ACC_RDONLY) {}
 
   /**
+   * @brief Read the dataset stored within a group into the buffer provided. Can
+   * be used to read MATLAB structs by treating the struct as the Group and
+   * field as the Dataset.
+   * @tparam T C++ datatype to read data into.
+   * @param group The Group within the file in which the dataset lives.
+   * @param dataset The name of the dataset to fetch data from.
+   * @param data The buffer into which to write the data.
+   */
+  template<typename T>
+  void read_dataset_in_group(const std::string &group,
+                             const std::string &dataset, T *data) const {
+    spdlog::debug("Reading {} from file: {}", group, filename_);
+
+    // Structs are saved as groups, so we need to fetch the group this struct is
+    // contained in
+    H5::Group structure_array = file_->openGroup(group);
+    // Then fetch the requested data and read it into the buffer provided
+    H5::DataSet requested_field = structure_array.openDataSet(dataset);
+    requested_field.read(data, requested_field.getDataType());
+  }
+
+  /**
    * @brief Reads a named dataset from the HDF5 file.
    * @param dataname The name of the datset to be read.
    * @param data A pointer to an array of correct size.
    */
-  // template <typename T>
-  // void read(const std::string &dataname, T *data) const;
   template<typename T>
   void read(const std::string &dataset_name, T *data) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
@@ -41,19 +61,13 @@ public:
     spdlog::trace("Read successful.");
   }
 
-  template<typename T>
-  void read_field_from_struct(const std::string &struct_name,
-                              const std::string &field_name, T *data) const {
-    spdlog::debug("Reading {} from file: {}", struct_name, filename_);
-
-    // Structs are saved as groups, so we need to fetch the group this struct is
-    // contained in
-    H5::Group structure_array = file_->openGroup(struct_name);
-    // Then fetch the requested data and read it into the buffer provided
-    H5::DataSet requested_field = structure_array.openDataSet(field_name);
-    requested_field.read(data, requested_field.getDataType());
-  }
-
+  /**
+   * @brief Reads a 2D-dataset into a Matrix object.
+   *
+   * @tparam T C++ datatype of the Matrix object
+   * @param dataset_name Name of the dataset to read data from
+   * @param data_location Matrix object buffer
+   */
   template<typename T>
   void read(const std::string &dataset_name, Matrix<T> &data_location) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
@@ -80,14 +94,36 @@ public:
     return;
   }
 
+  /**
+   * @brief Read an InterfaceComponent into the buffer provided.
+   *
+   * @param[in] plane The plane {I,J,K}{0,1} to read from the file.
+   * @param[out] ic InterfaceComponent reference to populate/overwrite.
+   */
   void read(const std::string &plane, InterfaceComponent *ic) const;
+  /**
+   * @brief Read an InterfaceComponent from the file.
+   *
+   * @param plane The plane {I,J,K}{0,1} to read from the file.
+   * @return InterfaceComponent corresponding to the requested plane.
+   */
   InterfaceComponent read(const std::string &plane) const {
     InterfaceComponent ic;
     read(plane, &ic);
     return ic;
   }
 
+  /**
+   * @brief Read FrequencyVectors into the buffer provided.
+   *
+   * @param[out] f_vec FrequencyVectors reference to populate/overwrite.
+   */
   void read(FrequencyVectors *f_vec) const;
+  /**
+   * @brief Read FrequencyVectors from the file.
+   *
+   * @return FrequencyVectors object containing the data from the input file.
+   */
   FrequencyVectors read() const {
     FrequencyVectors f_vec;
     read(&f_vec);
