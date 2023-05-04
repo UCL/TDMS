@@ -16,4 +16,4 @@ example_struct.complex_22 = [0., -1.i; 1.i, 0.];
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
 
-save("structure_array.mat", "example_struct", "-v7.3");
+save("matlab_data/structure_array.mat", "example_struct", "-v7.3");

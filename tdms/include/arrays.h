@@ -327,8 +327,8 @@ public:
 };
 
 struct FrequencyVectors {
-  vector<double> x;
-  vector<double> y;
+  std::vector<double> x;
+  std::vector<double> y;
 };
 
 // TODO: docstring

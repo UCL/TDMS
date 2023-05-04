@@ -39,6 +39,11 @@ private:
   void validate_assigned_pointers();
 
 public:
+  /*! Name of the input file from which MATLAB objects were extracted. Akward
+   * middle-child between full removal of MATLAB and the slow removal of class
+   * dependencies */
+  std::string input_filename;
+
   InputMatrices() = default;
 
 
