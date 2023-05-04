@@ -6,14 +6,14 @@ fs_input:
   solver_method: pstd
   runs:
     fs_cubic:
-      reference: pstd_fs_cubic_reference.mat
+      reference: fs_cubic_reference.mat
       cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
   runs:
     fs_bli:
-      reference: pstd_fs_bli_reference.mat
+      reference: fs_bli_reference.mat
 sph_input:
   input_file: input_file_08.m
   obstacle: sph
@@ -22,11 +22,11 @@ sph_input:
   solver_method: pstd
   runs:
     sph_cubic:
-      reference: pstd_sph_cubic_reference.mat
+      reference: sph_cubic_reference.mat
       cubic_interpolation: True
 sph_bli_input:
   adjust: sph_input
   interpolation: bli
   runs:
     sph_bli:
-      reference: pstd_sph_bli_reference.mat
+      reference: sph_bli_reference.mat

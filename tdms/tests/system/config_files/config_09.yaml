@@ -5,25 +5,25 @@ fs_input:
   solver_method: pstd
   runs:
     fs_cubic:
-      reference: pstd_fs_cubic_reference.mat
+      reference: fs_cubic_reference.mat
       cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
   runs:
     fs_bli:
-      reference: pstd_fs_bli_reference.mat
+      reference: fs_bli_reference.mat
 sc_input:
   input_file: input_file_09.m
   obstacle: sc
   solver_method: pstd
   runs:
     sc_cubic:
-      reference: pstd_sc_cubic_reference.mat
+      reference: sc_cubic_reference.mat
       cubic_interpolation: True
 sc_bli_input:
   adjust: sc_input
   interpolation: bli
   runs:
     sc_bli:
-      reference: pstd_sc_bli_reference.mat
+      reference: sc_bli_reference.mat

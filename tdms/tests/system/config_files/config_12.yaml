@@ -5,7 +5,7 @@ fs_input:
   illsetup: True
   runs:
     fs_cubic:
-      reference: fdtd_fs_cubic_reference.mat
+      reference: fs_cubic_reference.mat
       fdtd_solver: True
       cubic_interpolation: True
 fs_bli_input:
@@ -13,7 +13,7 @@ fs_bli_input:
   interpolation: bli
   runs:
     fs_bli:
-      reference: fdtd_fs_bli_reference.mat
+      reference: fs_bli_reference.mat
       fdtd_solver: True
 sph_input:
   input_file: input_file_12.m
@@ -22,7 +22,7 @@ sph_input:
   illsetup: True
   runs:
     sph_cubic:
-      reference: fdtd_sph_cubic_reference.mat
+      reference: sph_cubic_reference.mat
       fdtd_solver: True
       cubic_interpolation: True
 sph_bli_input:
@@ -30,5 +30,5 @@ sph_bli_input:
   interpolation: bli
   runs:
     sph_bli:
-      reference: fdtd_sph_bli_reference.mat
+      reference: sph_bli_reference.mat
       fdtd_solver: True
