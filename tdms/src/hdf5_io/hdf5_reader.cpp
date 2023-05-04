@@ -1,4 +1,8 @@
 #include "hdf5_io/hdf5_reader.h"
+#include "hdf5_io/hdf5_dimension.h"
+
+#include <algorithm>
+#include <stdexcept>
 
 using namespace std;
 
@@ -15,17 +19,17 @@ void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
 
 void HDF5Reader::read(FrequencyVectors *f_vec) const {
   // Allocate memory in f_vec
-  vector<hsize_t> x_dims = shape_of("f_vec", "fx_vec");
-  vector<hsize_t> y_dims = shape_of("f_vec", "fy_vec");
-  // Check that we have ONE DIMENSIONAL ARRAY! FOR NOW LETS JUST GET THE
-  // IMPLIMENTATION DONE
-  vector<hsize_t>::iterator x_size = max_element(x_dims.begin(), x_dims.end());
-  vector<hsize_t>::iterator y_size = max_element(y_dims.begin(), y_dims.end());
+  H5Dimension x_dims = shape_of("f_vec", "fx_vec");
+  H5Dimension y_dims = shape_of("f_vec", "fy_vec");
+  // Check that we have one dimensional arrays
+  if (!x_dims.is_1D() || !y_dims.is_1D()) {
+    throw runtime_error("f_vec members are not 1D arrays!");
+  }
   // Allocate memory - resize() must be used over reserve() to ensure enough
   // buffer when we read in, _and_ that size() correctly returns the number of
   // elements in the buffer.
-  f_vec->x.resize(*x_size);
-  f_vec->y.resize(*y_size);
+  f_vec->x.resize(x_dims.max_dim());
+  f_vec->y.resize(y_dims.max_dim());
   // Now read the data into the vectors
   read_field_from_struct("f_vec", "fx_vec", f_vec->x.data());
   read_field_from_struct("f_vec", "fy_vec", f_vec->y.data());
