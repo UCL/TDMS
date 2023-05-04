@@ -13,16 +13,7 @@
 #include <H5Cpp.h>
 
 #include "cell_coordinate.h"
-
-/**
- * @brief Convert from a vector of HDF5's hsize_t back to our struct of ints.
- * @note Local scope utility function as only this code needs to interact with
- * the HDF5 H5Cpp library.
- *
- * @param dimensions a 1, 2, or 3 element vector of dimensions.
- * @return ijk The dimensions in a struct.
- */
-ijk to_ijk(const std::vector<hsize_t> dimensions);
+#include "hdf5_io/hdf5_dimension.h"
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -76,9 +67,9 @@ public:
    * @brief Return shape/dimensionality information about the array data stored
    * with `name`.
    * @param dataname The name of the data table.
-   * @return IJKDimensions The dimensions of the data.
+   * @return The dimensions of the data.
    */
-  std::vector<hsize_t> shape_of(const std::string &dataname) const;
+  H5Dimension shape_of(const std::string &dataname) const;
   /**
    * @brief Return shape/dimensionality information about the array data stored
    * within a group.
@@ -86,10 +77,10 @@ public:
    * @param group_name The name of the HDF5 Group in which the data array is
    * stored.
    * @param dataname The name of the data array to check dimensions of.
-   * @return std::vector<hsize_t> The dimensions of the data.
+   * @return The dimensions of the data.
    */
-  std::vector<hsize_t> shape_of(const std::string &group_name,
-                                const std::string &dataname) const;
+  H5Dimension shape_of(const std::string &group_name,
+                       const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
