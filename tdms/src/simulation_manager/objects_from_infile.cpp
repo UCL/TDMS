@@ -17,18 +17,20 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C
       D(matrices_from_input_file["D"]),                // get D
-      I0(matrices_from_input_file["interface"], "I0"), // get the interface(s)
-      I1(matrices_from_input_file["interface"], "I1"),
-      J0(matrices_from_input_file["interface"], "J0"),
-      J1(matrices_from_input_file["interface"], "J1"),
-      K0(matrices_from_input_file["interface"], "K0"),
-      K1(matrices_from_input_file["interface"], "K1"),
       matched_layer(
               matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
       Ei(matrices_from_input_file["tdfield"])             // get tdfield
 {
   // HDF5Reader to extract data from the input file
   HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
+
+  // Read the interface components
+  I0 = INPUT_FILE.read("I0");
+  I1 = INPUT_FILE.read("I1");
+  J0 = INPUT_FILE.read("J0");
+  J1 = INPUT_FILE.read("J1");
+  K0 = INPUT_FILE.read("K0");
+  K1 = INPUT_FILE.read("K1");
 
   // set solver method
   set_solver_method(_solver_method);
