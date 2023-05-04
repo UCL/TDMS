@@ -9,7 +9,7 @@ using namespace std;
 void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
   // Read the InterfaceComponent in as a 2-element double array
   double read_buffer[2];
-  read_field_from_struct("interface", plane, read_buffer);
+  read_dataset_in_group("interface", plane, read_buffer);
   // The index that is read in should have 1 subtracted from it, to account for
   // MATLAB indexing
   ic->index = max((int) read_buffer[0] - 1, 0);
@@ -31,6 +31,6 @@ void HDF5Reader::read(FrequencyVectors *f_vec) const {
   f_vec->x.resize(x_dims.max_dim());
   f_vec->y.resize(y_dims.max_dim());
   // Now read the data into the vectors
-  read_field_from_struct("f_vec", "fx_vec", f_vec->x.data());
-  read_field_from_struct("f_vec", "fy_vec", f_vec->y.data());
+  read_dataset_in_group("f_vec", "fx_vec", f_vec->x.data());
+  read_dataset_in_group("f_vec", "fy_vec", f_vec->y.data());
 }

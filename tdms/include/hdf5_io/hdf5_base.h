@@ -65,13 +65,13 @@ public:
 
   /**
    * @brief Return shape/dimensionality information about the array data stored
-   * with `name`.
+   * with `dataname`.
    * @param dataname The name of the data table.
    * @return The dimensions of the data.
    */
   H5Dimension shape_of(const std::string &dataname) const;
   /**
-   * @brief Return shape/dimensionality information about the array data stored
+   * @brief Return shape/dimensionality information about array data stored
    * within a group.
    *
    * @param group_name The name of the HDF5 Group in which the data array is
