@@ -54,7 +54,7 @@ jobs:
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
-        
+
       - name: Run a MATLAB script
         uses: matlab-actions/run-matlab@v1
         with:
