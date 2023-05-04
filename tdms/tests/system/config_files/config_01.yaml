@@ -1,0 +1,48 @@
+# A string containing the test_id
+test_id: '01'
+# After the initial test_id key, all remaining keys are interpretted as the names of .mat files containing input data for one or more runs of TDMS that make up this system test.
+# If the .mat extension is ommitted from a key, it will be automatically appended by Python during the generation and testing process.
+# The key below indicates that we must generate a .mat input file called fs_input.mat, for example. The block it defines then contains the options for regenerating that file.
+fs_input:
+  # The file that is passed to iteratefdtd_matrix in run_bscan
+  input_file: input_file_01.m
+  # The obstacle that is present in the simulation. Should be one of "fs" (freespace), "sph" (sphere), "cyl" (cylindrical), "sc" (point-source)
+  obstacle: fs
+  # The radius of the non-freespace obstacle in microns, if applicable. For "sph", the radius of the sphere. For "cyl", the radius of the circular faces. Other obstacles ignore this input. Defaults to 15.e-6 if not set.
+  obstacle_radius: 15.e-6
+  # Whether iteratefdtd_matrix must be called in illsetup mode to setup the illumination file, prior to its call in filesetup mode. Defaults to False if not present or unpopulated
+  illsetup: False
+  # The (relative) refractive index of the scattering obstacle. Defaults to 1.42 if not provided.
+  refind: 1.42
+  # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
+  calc_tdfield: False
+  # This block defines the runs of tdms for which this .mat file is an input.
+  # Each tag defines the name of one particular run, and contains any runtime options that should be passed to TDMS for that particular run only.
+  # Runs can share the same name, however for debugging and descriptive purposes it is advisible to provide each run with a unique name.
+  runs:
+    # Defines a run called "fs_bli"; specifically this means that the (run) command
+    # tdms fs_input.mat output_{test_id}_fs_bli.mat
+    # will be executed as part of this system test.
+    fs_bli:
+      # The reference file to compare the output of the TDMS run to, to check that TDMS behaviour has not been changed unexpectedly.
+      reference: pstd_fs_bli_reference.mat
+      # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present
+      cubic_interpolation: False
+      # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
+      fdtd_solver: False
+    # Defines a second run, called "fs_cubic"
+    fs_cubic:
+      reference: pstd_fs_cubic_reference.mat
+      cubic_interpolation: True
+cyl_input:
+  input_file: input_file_01.m
+  obstacle: cyl
+  obstacle_radius:
+  illsetup:
+  refind: 1.42
+  runs:
+    cyl_bli:
+      reference: pstd_cyl_bli_reference.mat
+    cyl_cubic:
+      reference: pstd_cyl_cubic_reference.mat
+      cubic_interpolation: True

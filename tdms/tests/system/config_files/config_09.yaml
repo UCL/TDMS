@@ -1,0 +1,19 @@
+test_id: '09'
+fs_input:
+  input_file: input_file_09.m
+  obstacle: fs
+  runs:
+    fs_bli:
+      reference: pstd_fs_bli_reference.mat
+    fs_cubic:
+      reference: pstd_fs_cubic_reference.mat
+      cubic_interpolation: True
+sc_input:
+  input_file: input_file_09.m
+  obstacle: sc
+  runs:
+    sc_bli:
+      reference: pstd_sc_bli_reference.mat
+    sc_cubic:
+      reference: pstd_sc_cubic_reference.mat
+      cubic_interpolation: True

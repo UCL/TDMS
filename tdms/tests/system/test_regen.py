@@ -1,10 +1,8 @@
 import os
 from glob import glob
 from pathlib import Path
-from warnings import warn
 
 import pytest
-import yaml
 from data.input_generation.generate_test_input import (
     generate_test_input as regenerate_test,
 )
@@ -16,7 +14,9 @@ LOCATION_OF_THIS_FILE = Path(os.path.abspath(os.path.dirname(__file__)))
 # This will determine whether or not we want to retain the regenerated input .mat files (if say, we are planning a new Zenodo upload). Recommended FALSE on CLI, TRUE locally if you're doing the update
 PRESERVE_FLAG = True
 
-# Path to the directory containing files we need to read from
+# Location of the config files that contain test information
+path_to_config_files = Path(LOCATION_OF_THIS_FILE, "config_files")
+# The data/generation directory
 path_to_input_generation = Path(LOCATION_OF_THIS_FILE, "data", "input_generation")
 
 # Dataset is stored at https://zenodo.org/record/7440616/
@@ -26,10 +26,10 @@ ZENODO_URL = "https://zenodo.org/record/7440616/files"
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # Find all config_XX.yaml files and hence infer all test cases that need to be run
-TEST_IDS = sorted(glob(str(path_to_input_generation / "config_*.yaml")))
+TEST_IDS = sorted(glob(str(path_to_config_files / "config_*.yaml")))
 for i, id in enumerate(TEST_IDS):
     # remove everything bar the ID from what we found
-    id = id.removeprefix(str(path_to_input_generation / "config_"))
+    id = id.removeprefix(str(path_to_config_files / "config_"))
     id = id.removesuffix(".yaml")
     TEST_IDS[i] = id
 # The number of tests will be useful to know later
@@ -45,16 +45,7 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
     3. Perform clean-up on generated outputs and inputs, so they are not saved to the cache and accidentally re-used
     """
     # Fetch config file location
-    config_file_path = path_to_input_generation / f"config_{test_id}.yaml"
-    # Fetch test run information, warn if there is an ID inconsistency
-    with open(config_file_path, "r") as opened_config_file:
-        # Read data into dictionary, and take the "tests" value
-        INFO = yaml.safe_load(opened_config_file)
-        yaml_test_id = INFO["test_id"]
-        if yaml_test_id != test_id:
-            warn(
-                f"{str(config_file_path)} implicit ID does not match config file description (found {test_id})"
-            )
+    config_file_path = path_to_config_files / f"config_{test_id}.yaml"
 
     # Regenerate the input data for arc_{test_id}
     # Error on not successful (hence fail test)
