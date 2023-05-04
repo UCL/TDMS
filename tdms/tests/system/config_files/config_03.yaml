@@ -4,20 +4,30 @@ fs_input:
   obstacle: fs
   obstacle_radius: 5e-6
   illsetup: True
+  solver_method: pstd
   runs:
-    fs_bli:
-      reference: pstd_fs_bli_reference.mat
     fs_cubic:
       reference: pstd_fs_cubic_reference.mat
       cubic_interpolation: True
+fs_bli_input:
+  adjust: fs_input
+  interpolation: bli
+  runs:
+    fs_bli:
+      reference: pstd_fs_bli_reference.mat
 sph_input:
   input_file: input_file_03.m
   obstacle: sph
   obstacle_radius: 5e-6
   illsetup: True
+  solver_method: pstd
   runs:
-    sph_bli:
-      reference: pstd_sph_bli_reference.mat
     sph_cubic:
       reference: pstd_sph_cubic_reference.mat
       cubic_interpolation: True
+sph_bli_input:
+  adjust: sph_input
+  interpolation: bli
+  runs:
+    sph_bli:
+      reference: pstd_sph_bli_reference.mat

@@ -8,6 +8,8 @@ import matlab.engine as matlab
 import yaml
 from matlab.engine import MatlabEngine
 
+from .matfile_option_edit import MATFileOptionEdit
+
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 INPUT_M_FILE_LOCATION = LOCATION_OF_THIS_FILE + "/input_files/"
 # Additional options for running matlab on the command-line
@@ -206,8 +208,22 @@ def generate_test_input(
     matlab_working_directory = engine.pwd(nargout=1)
 
     # Loop over all input .mat files to be produced by this config file
+    # Input files that lack the "adjust" key require calls to run_bscan, and must be produced first.
+    bscan_matfiles = list(mats_to_produce)
+    adjust_matfiles = list(mats_to_produce)
     for matfile in mats_to_produce:
+        if (
+            "adjust" in config_data[matfile].keys()
+            and config_data[matfile]["adjust"] != None
+        ):
+            bscan_matfiles.pop(matfile)
+        else:
+            adjust_matfiles.pop(matfile)
+    # Those that possess the "adjust" key need to be done afterwards, to ensure the file they depend on is present.
+    for matfile in bscan_matfiles:
         _, _ = run_bscan(test_dir, matfile, config_data[matfile], engine)
+    for matfile in adjust_matfiles:
+        MATFileOptionEdit(test_dir, matfile, config_data[matfile]).adjust()
 
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:

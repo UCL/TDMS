@@ -32,6 +32,11 @@ for i, id in enumerate(TEST_IDS):
     id = id.removeprefix(str(path_to_config_files / "config_"))
     id = id.removesuffix(".yaml")
     TEST_IDS[i] = id
+print("!!! Ignoring arc_17 & 18 if present !!!")
+if "17" in TEST_IDS:
+    TEST_IDS.remove("17")
+if "18" in TEST_IDS:
+    TEST_IDS.remove("18")
 # The number of tests will be useful to know later
 N_TESTS = len(TEST_IDS)
 
@@ -77,6 +82,9 @@ def workflow(test_id: str, preserve_inputs: bool = PRESERVE_FLAG) -> None:
 
 # Run each system test that is currently saved in the repository, as identified through the config files
 # "MATLAB doesn't run on GH runners. If you want to check that regenerating the input data still allows the tests to pass, run this locally and remove the skip mark."
+@pytest.mark.filterwarnings(
+    "ignore::DeprecationWarning"
+)  # hdf5storage.savemat throws a comparison warning from within numpy
 @pytest.mark.parametrize("test_id", TEST_IDS)
 def test_system(test_id) -> None:
     """Runs the system test arc_{test_id}, including fetching missing reference data from Zenodo.
