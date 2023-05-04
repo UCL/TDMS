@@ -12,3 +12,7 @@ void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
   // The apply flag should be cast from the double that is read in
   ic->apply = (bool) read_buffer[1];
 }
+
+void HDF5Reader::read(FrequencyVectors *f_vec) const {
+  // Read each component of the vector into the respective Vector field
+}

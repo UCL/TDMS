@@ -86,4 +86,11 @@ public:
     read(plane, &ic);
     return ic;
   }
+
+  void read(FrequencyVectors *f_vec) const;
+  FrequencyVectors read() const {
+    FrequencyVectors f_vec;
+    read(&f_vec);
+    return f_vec;
+  }
 };
