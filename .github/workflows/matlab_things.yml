@@ -1,0 +1,22 @@
+name: MATLAB_things
+# This works to run MATLAB scripts, according to their documentation https://github.com/matlab-actions/run-command
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Run MATLAB scripts
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.3
+        
+      - name: Run a MATLAB script
+        uses: matlab-actions/run-matlab@v1
+        with:
+          command: addpath('tdms/tests/unit/matlab_benchmark_scripts/'), benchmark_test_interpolation_functions
