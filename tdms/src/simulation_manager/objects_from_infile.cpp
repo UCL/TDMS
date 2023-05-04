@@ -3,10 +3,9 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
-// For ptr_to_vector_in, ptr_to_vector_or_empty_in, int_cast_from_double_in
-#include "matlabio.h"
-// for init_grid_arrays
 #include "array_init.h"
+#include "hdf5_io/hdf5_reader.h"
+#include "matlabio.h"
 
 using tdms_math_constants::DCPI;
 
@@ -28,6 +27,9 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
               matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
       Ei(matrices_from_input_file["tdfield"])             // get tdfield
 {
+  // HDF5Reader to extract data from the input file
+  HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
+
   // set solver method
   set_solver_method(_solver_method);
   // set interpolation methods
@@ -82,7 +84,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   D_tilde = DTilde();
   // if exdetintegral is flagged, setup pupil, D_tilde, and f_vec accordingly
   if (params.exdetintegral) {
-    f_vec.initialise(matrices_from_input_file["f_vec"]);
+    f_vec = INPUT_FILE.read();
     pupil.initialise(matrices_from_input_file["Pupil"], f_vec.x.size(),
                      f_vec.y.size());
     D_tilde.initialise(matrices_from_input_file["D_tilde"], f_vec.x.size(),
