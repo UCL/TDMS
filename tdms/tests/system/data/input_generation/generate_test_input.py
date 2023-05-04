@@ -8,7 +8,7 @@ import matlab.engine as matlab
 import yaml
 from matlab.engine import MatlabEngine
 
-from .matfile_option_edit import MATFileOptionEdit
+from .matfile_option_edit import edit_mat_file
 
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 INPUT_M_FILE_LOCATION = LOCATION_OF_THIS_FILE + "/input_files/"
@@ -98,9 +98,6 @@ def run_bscan(
         stderr=matlab_stderr,
     )
 
-    # Cleanup the illfile_extra_file, if it was created
-    if options["illsetup"]:
-        os.remove(options["ill_filesetup"])
     # Return stdout and stderr messages
     return matlab_stdout, matlab_stderr
 
@@ -182,7 +179,7 @@ def generate_test_input(
     for matfile in bscan_matfiles:
         _, _ = run_bscan(test_dir, matfile, config_data[matfile], engine)
     for matfile in adjust_matfiles:
-        MATFileOptionEdit(test_dir, matfile, config_data[matfile]).adjust()
+        edit_mat_file(test_dir, matfile, config_data[matfile])
 
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:
