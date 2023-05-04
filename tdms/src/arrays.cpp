@@ -25,7 +25,7 @@ void XYZVectors::set_ptr(const char c, double *ptr) {
       break;
     }
     default:
-      throw std::runtime_error("Have no element " + to_string(c));
+      throw std::runtime_error("Have no element " + std::string(1, c));
   }
 }
 void XYZVectors::set_ptr(AxialDirection d, double *ptr) {

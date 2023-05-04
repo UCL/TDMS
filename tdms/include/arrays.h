@@ -30,7 +30,7 @@ public:
       case 'z':
         return z;
       default:
-        throw std::runtime_error("Have no element " + to_string(c));
+        throw std::runtime_error("Have no element " + std::string(1, c));
     }
   }
   T ***operator[](AxialDirection d) const {
@@ -42,7 +42,7 @@ public:
       case AxialDirection::Z:
         return z;
       default:
-        throw std::runtime_error("Have no element " + to_string(d));
+        throw std::runtime_error("Have no element " + std::to_string(d));
     }
   }
 
