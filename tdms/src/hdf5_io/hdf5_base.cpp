@@ -45,8 +45,6 @@ void HDF5Base::ls() const {
   return;
 }
 
-// IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
-// return to_ijk(dimensions);
 vector<hsize_t> HDF5Base::shape_of(const string &dataname) const {
   SPDLOG_DEBUG("shape_of");
 
@@ -56,6 +54,20 @@ vector<hsize_t> HDF5Base::shape_of(const string &dataname) const {
 
   // need the rank in order to declare the vector size
   int rank = dataspace.getSimpleExtentNdims();
+  vector<hsize_t> dimensions(rank);
+  dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
+  return dimensions;
+}
+
+vector<hsize_t> HDF5Base::shape_of(const string &group_name,
+                                   const string &dataname) const {
+  // Open the group that contains the dataset
+  H5::Group group = file_->openGroup(group_name);
+  // Get the DataSpace for the DataSet within the group
+  H5::DataSpace dataspace = group.openDataSet(dataname).getSpace();
+  // Fetch rank to declare the vector size
+  int rank = dataspace.getSimpleExtentNdims();
+  // Populate dimensions with array sizes
   vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
   return dimensions;

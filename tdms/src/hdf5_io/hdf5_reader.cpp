@@ -15,4 +15,17 @@ void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
 
 void HDF5Reader::read(FrequencyVectors *f_vec) const {
   // Read each component of the vector into the respective Vector field
+  // Allocate memory in f_vec
+  vector<hsize_t> x_dims = shape_of("f_vec", "fx_vec");
+  vector<hsize_t> y_dims = shape_of("f_vec", "fy_vec");
+  // Check that we have ONE DIMENSIONAL ARRAY! FOR NOW LETS JUST GET THE
+  // IMPLIMENTATION DONE
+  vector<hsize_t>::iterator x_size = max_element(x_dims.begin(), x_dims.end());
+  vector<hsize_t>::iterator y_size = max_element(y_dims.begin(), y_dims.end());
+  // Allocate memory
+  f_vec->x.reserve(*x_size);
+  f_vec->y.reserve(*y_size);
+  // Then we can just use our read_field_from_struct method to read the data in
+  read_field_from_struct("f_vec", "fx_vec", f_vec->x.data());
+  read_field_from_struct("f_vec", "fy_vec", f_vec->y.data());
 }

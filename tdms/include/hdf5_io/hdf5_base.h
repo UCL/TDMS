@@ -78,8 +78,18 @@ public:
    * @param dataname The name of the data table.
    * @return IJKDimensions The dimensions of the data.
    */
-  // IJKDimensions shape_of(const std::string &dataname) const;
   std::vector<hsize_t> shape_of(const std::string &dataname) const;
+  /**
+   * @brief Return shape/dimensionality information about the array data stored
+   * within a group.
+   *
+   * @param group_name The name of the HDF5 Group in which the data array is
+   * stored.
+   * @param dataname The name of the data array to check dimensions of.
+   * @return std::vector<hsize_t> The dimensions of the data.
+   */
+  std::vector<hsize_t> shape_of(const std::string &group_name,
+                                const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
