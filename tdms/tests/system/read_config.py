@@ -97,11 +97,7 @@ class TDMSSystemTest:
         This output can be passed to utils.run_tdms to run the tdms executable with the appropriate options.
         """
         tdms_call_options = []
-        # add optional flags
-        if self.fdtd_solver:
-            tdms_call_options.append("--finite-difference")
-        if self.cubic_interpolation:
-            tdms_call_options.append("-c")
+        # add optional CLI flags that need to be passed to TDMS here, by appending to tdms_call_options
 
         # add input/output file call TODO: what if we want to specify a gridfile (no tests currently do this)
         tdms_call_options.append(self.input_file)
