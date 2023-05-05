@@ -354,8 +354,7 @@ end
 
 % Check that a set of compatible options for defining the source terms have been passed in
 exipresent = has_exi_eyi(ill_file);
-using_fdtd = ~use_pstd;
-if ~using_fdtd && ~compactsource
+if use_pstd && ~compactsource
     error('TDMSException:IncompatibleSourceInput', ...
 	'A compact source must be used when not using central differences.');
 elseif compactsource && ~isempty(hfname)
@@ -364,10 +363,10 @@ elseif compactsource && ~isempty(hfname)
 elseif ~exipresent && compactsource && isempty(efname)
 	error('TDMSException:IncompatibleSourceInput', ...
 	'When not using a time-domain illumination, and using a compact source, the electric field input file must be non-empty.');
-elseif ~exipresent && using_fdtd && ~compactsource && ~(~isempty(efname) && ~isempty(hfname))
+elseif ~exipresent && ~use_pstd && ~compactsource && ~(~isempty(efname) && ~isempty(hfname))
 	error('TDMSException:IncompatibleSourceInput', ...
 	'When not using a time-domain illumination nor a compact source, you must use central differences and provide both the source electric (efname) and magnetic (hfname) field.');
-elseif exipresent && using_fdtd && ~compactsource && (~isempty(efname) && isempty(hfname) || isempty(efname) && ~isempty(hfname))
+elseif exipresent && ~use_pstd && ~compactsource && (~isempty(efname) && isempty(hfname) || isempty(efname) && ~isempty(hfname))
     error('TDMSException:IncompatibleSourceInput', ...
 	'When using a time-domain field but not a compact source, the electric and magnetic field input files should both be non-empty or both empty.');
 end

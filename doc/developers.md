@@ -320,10 +320,10 @@ The combinations and expected results are listed in the table below.
 | 1        | 0          | 1             | 1         | 0         | 0             |  |
 | 1        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
 | 1        | 0          | 1             | 0         | 0         | 0             |  |
-| 1        | 0          | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0          | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0          | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0          | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
 | 0        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
 | 0        | 1          | 1             | 1         | 0         | 0             |  |
 | 0        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
@@ -336,10 +336,10 @@ The combinations and expected results are listed in the table below.
 | 0        | 0          | 1             | 1         | 0         | 0             |  |
 | 0        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
 | 0        | 0          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 0          | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0          | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0          | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0          | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
 
 ### System {#system-tests}
 

@@ -1,7 +1,9 @@
-% Sample input file for a 2D simulation required to call iteratefdtd_matrix
-% This input file in particular explicitly defines all of the source-related terms, so that the testing suite can change them on the fly as the tests run.
-usecd = 0;
-compactsource = 0;
+% Whether to use band-limited interpolation over cubic interpolation
+use_bli = 0;
+% Whether to use the PSTD method over the FDTD method
+use_pstd = 0;
+% Whether we are using a compact source condition
+compactsource = 1;
 
 lambda = 1300e-9;
 
