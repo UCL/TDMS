@@ -6,5 +6,6 @@ var dir_35da79734557ee91ec31d6196f63b455 =
     [ "test_interpolation_determination.cpp", "test__interpolation__determination_8cpp.html", "test__interpolation__determination_8cpp" ],
     [ "test_interpolation_functions.cpp", "test__interpolation__functions_8cpp.html", "test__interpolation__functions_8cpp" ],
     [ "test_numerical_derivative.cpp", "test__numerical__derivative_8cpp.html", "test__numerical__derivative_8cpp" ],
+    [ "test_utils.cpp", "test__utils_8cpp.html", null ],
     [ "test_VertexPhasors.cpp", "test___vertex_phasors_8cpp.html", null ]
 ];
