@@ -32,7 +32,7 @@
 class Grid {
 protected:
   // the preferred interpolation methods (interpolation_method) for
-  // interpolating between the grid values, default is BandLimited
+  // interpolating between the grid values, default is Cubic
   tdms_flags::InterpolationMethod interpolation_method =
           tdms_flags::InterpolationMethod::Cubic;
 

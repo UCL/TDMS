@@ -4,6 +4,7 @@
 
 #include "numerical_derivative.h"
 
+using namespace tdms_flags;
 using namespace tdms_phys_constants;
 using namespace std;
 
