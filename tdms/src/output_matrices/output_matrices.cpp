@@ -5,6 +5,7 @@
 #include "mesh_base.h"
 
 using namespace tdms_matrix_names;
+using tdms_flags::InterpolationMethod;
 using namespace std;
 
 void OutputMatrices::compute_interpolated_fields(Dimension dimension) {

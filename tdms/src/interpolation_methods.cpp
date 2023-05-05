@@ -4,6 +4,7 @@
 #include <string>
 
 using namespace std;
+using tdms_flags::InterpolationMethod;
 
 InterpolationScheme::InterpolationScheme(scheme_value val) {
 

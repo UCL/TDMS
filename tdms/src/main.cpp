@@ -3,6 +3,7 @@
  * @brief The main function. Launches TDMS.
  */
 #include "argument_parser.h"
+#include "input_flags.h"
 #include "input_matrices.h"
 #include "simulation_manager/simulation_manager.h"
 
@@ -31,20 +32,12 @@ int main(int nargs, char *argv[]) {
                                       args.grid_filename());
   }
 
-  // decide which derivative method to use (PSTD or FDTD)
-  SolverMethod solver_method = PseudoSpectral;// default
-  if (args.finite_difference()) solver_method = SolverMethod::FiniteDifference;
-
-  // decide whether to toggle off the band-limited interpolation methods
-  InterpolationMethod preferred_interpolation_methods =
-          InterpolationMethod::BandLimited;// default
-  if (args.cubic_interpolation()) {
-    preferred_interpolation_methods = InterpolationMethod::Cubic;
-  }
+  // read flag-variables from the input file next
+  InputFlags flags_in_input_file(args.input_filename());
+  flags_in_input_file.report_flag_state();
 
   // Handles the running of the simulation, given the inputs to the executable.
-  SimulationManager simulation(matrix_inputs, solver_method,
-                               preferred_interpolation_methods);
+  SimulationManager simulation(matrix_inputs, flags_in_input_file);
 
   // now run the time propagation code
   simulation.execute();

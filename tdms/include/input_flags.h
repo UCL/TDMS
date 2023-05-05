@@ -13,23 +13,28 @@
 #include <string>
 #include <vector>
 
+#include <spdlog/spdlog.h>
+
 #include "mat_io.h"
 
 //! The maximum number of flags that could be present in the input file
 #define NFLAGS 2
 
 //! Namespace encompassing variables and enums related to flag values to be read
-//! from the input file
+//! from the input file. Enums classes are set so that the value corresponding
+//! to "true" is the corresponding option that is used when that flag is passed
+//! in the input file.
 namespace tdms_flags {
 //! Lists the flag-variables that can be present in the input file, but are not
 //! required to be present
 const std::vector<std::string> flag_variables = {"use_pstd", "use_bli"};
 
-//! The timestepping method to be used to forward-propagate the simulation
-enum SolverMethod { PseudoSpectral, FiniteDifference };
+//! The timestepping method to be used to forward-propagate the simulation.
+//! use_pstd is the corresponding flag.
+enum SolverMethod : bool { PseudoSpectral = true, FiniteDifference = false };
 //! The interpolation method to use when extracting field values at Yee
-//! cell centres
-enum InterpolationMethod { BandLimited, Cubic };
+//! cell centres. use_bli is the corresponding flag.
+enum InterpolationMethod : bool { BandLimited = true, Cubic = false };
 }// namespace tdms_flags
 
 class InputFlags {
@@ -68,8 +73,9 @@ private:
   bool fetch_flag_value(const std::string flag_name,
                         bool fail_on_not_found = false) const {
     MATFile *input_file = matOpen(input_filename.c_str(), "r");
+    bool return_value;
 
-    auto ptr_to_flag = matGetVariable(input_file, flag_name.c_str());
+    mxArray *ptr_to_flag = matGetVariable(input_file, flag_name.c_str());
     if (ptr_to_flag == nullptr) {
       // This flag was not present in the input file.
       // We either return the default value (0, flag not present), or we throw
@@ -78,12 +84,12 @@ private:
         throw std::runtime_error(flag_name + " was not present in " +
                                  input_filename);
       } else {
-        return false;
+        return_value = false;
       }
     } else if (mxIsLogicalScalar(ptr_to_flag)) {
       // The flag is present in the input file, and is a scalar boolean.
       // Return its value
-      return (bool) *mxGetPr(ptr_to_flag);
+      return_value = (bool) *mxGetPr(ptr_to_flag);
     } else {
       // The flag appears to be present, but is not scalar-valued. Throw
       // exception.
@@ -91,7 +97,10 @@ private:
                                ", but is not scalar.");
     }
 
+    // Cleanup MATLAB structs that are still in memory
     matClose(input_file);
+    mxDestroyArray(ptr_to_flag);
+    return return_value;
   }
 
 public:
@@ -120,5 +129,14 @@ public:
    */
   bool operator[](const std::string &flag_name) const {
     return flag_values[position_from_name(flag_name)];
+  }
+
+  /** @brief Prompts spdlog to report the value of every expected flag in the
+   * input file */
+  void report_flag_state() {
+    for (const std::string &flag : tdms_flags::flag_variables) {
+      spdlog::info("Read " + flag + ": {}",
+                   flag_values[position_from_name(flag)]);
+    }
   }
 };

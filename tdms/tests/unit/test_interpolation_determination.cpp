@@ -4,12 +4,14 @@
  * @brief Tests the logic that determines which interpolation schemes are
  * appropriate.
  */
+#include "input_flags.h"
 #include "interpolation_methods.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 using namespace std;
+using tdms_flags::InterpolationMethod;
 
 /**
  * @brief Test whether best_scheme correctly determines the appropriate
@@ -81,7 +83,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
   */
   SECTION("Only cubic interpolation") {
     SPDLOG_INFO("Interpolation scheme selection: band-limited disallowed");
-    InterpolationMethod pim = Cubic;
+    InterpolationMethod pim = InterpolationMethod::Cubic;
     REQUIRE_THROWS_AS(best_scheme(N, 0, pim), out_of_range);
     all_schemes_correct =
             all_schemes_correct &&

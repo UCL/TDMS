@@ -1,16 +1,18 @@
 #include "simulation_manager/simulation_manager.h"
 
 #include <omp.h>
+#include <spdlog/spdlog.h>
 
 #include "mesh_base.h"
 
 using namespace std;
+using namespace tdms_flags;
 
 SimulationManager::SimulationManager(InputMatrices in_matrices,
-                                     SolverMethod _solver_method,
-                                     InterpolationMethod _pim)
-    : inputs(in_matrices, _solver_method, _pim), FDTD(n_Yee_cells()),
-      solver_method(_solver_method), pim(_pim) {
+                                     const InputFlags &in_flags)
+    : solver_method(static_cast<SolverMethod>(in_flags["use_pstd"])),
+      i_method(static_cast<InterpolationMethod>(in_flags["use_bli"])),
+      inputs(in_matrices, in_flags), FDTD(n_Yee_cells()) {
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
@@ -47,7 +49,8 @@ void SimulationManager::prepare_output(const mxArray *fieldsample,
     has been extended so that interpolation is done at the end of the FDTD run
     and also to handle the case of when there is no PML in place more
     appropriatley*/
-  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels, pim);
+  outputs.setup_EH_and_gridlabels(inputs.params, inputs.input_grid_labels,
+                                  i_method);
   // Setup the ID output
   bool need_Id_memory = (inputs.params.exdetintegral &&
                          inputs.params.run_mode == RunMode::complete);

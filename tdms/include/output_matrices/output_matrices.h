@@ -10,6 +10,7 @@
 #include "field.h"
 #include "fieldsample.h"
 #include "grid_labels.h"
+#include "input_flags.h"
 #include "matrix.h"
 #include "output_matrices/id_variables.h"
 #include "output_matrices/output_matrix_pointers.h"
@@ -97,7 +98,7 @@ public:
    */
   void setup_EH_and_gridlabels(const SimulationParameters &params,
                                const GridLabels &input_grid_labels,
-                               InterpolationMethod pim);
+                               tdms_flags::InterpolationMethod pim);
   /**
    * @brief Get the dimensions of the electric (and magnetic) field.
    *
@@ -105,7 +106,7 @@ public:
    */
   IJKDimensions get_E_dimensions() const { return E.tot; }
   // set the interpolation method for the E and H fields
-  void set_interpolation_methods(InterpolationMethod pim) {
+  void set_interpolation_methods(tdms_flags::InterpolationMethod pim) {
     E.set_preferred_interpolation_methods(pim);
     H.set_preferred_interpolation_methods(pim);
   }

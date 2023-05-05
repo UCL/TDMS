@@ -9,7 +9,7 @@
 #include "arrays.h"
 #include "cell_coordinate.h"
 #include "dimensions.h"
-#include "globals.h"
+#include "input_flags.h"
 #include "mat_io.h"
 #include "simulation_parameters.h"
 
@@ -33,7 +33,7 @@ class Grid {
 protected:
   // the preferred interpolation methods (pim) for interpolating between the
   // grid values, default is BandLimited
-  InterpolationMethod pim = InterpolationMethod::BandLimited;
+  tdms_flags::InterpolationMethod pim = tdms_flags::InterpolationMethod::Cubic;
 
 public:
   // The {IJK}_tot values of this grid
@@ -48,7 +48,8 @@ public:
   /**
    * @brief Set the preferred interpolation methods
    */
-  void set_preferred_interpolation_methods(InterpolationMethod _pim) {
+  void
+  set_preferred_interpolation_methods(tdms_flags::InterpolationMethod _pim) {
     pim = _pim;
   };
 };
