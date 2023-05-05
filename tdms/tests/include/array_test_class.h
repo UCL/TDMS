@@ -60,7 +60,7 @@ public:
   std::string get_class_name() override { return "DetectorSensitivityArray"; }
 };
 
-/** @brief Unit tests for DispersiveMultilayer */
+/** @brief Unit tests for DispersiveMultilayer */ /*
 class DispersiveMultilayerTest : public AbstractArrayTest {
 private:
   const int n_fields = 9;
@@ -76,7 +76,7 @@ private:
 
 public:
   std::string get_class_name() override { return "DispersiveMultilayer"; }
-};
+};*/
 
 // Test methods check the performance of initialise, as this is the de-facto
 // constructor

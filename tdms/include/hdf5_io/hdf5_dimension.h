@@ -9,6 +9,7 @@ class H5Dimension : public std::vector<hsize_t> {
 public:
   H5Dimension() = default;
   H5Dimension(const H5::DataSpace &data_space);
+  H5Dimension(const H5::DataSet &data_set) : H5Dimension(data_set.getSpace()){};
 
   /**
    * @brief Whether these dimensions describe an array that is castable to a 1D
@@ -31,4 +32,11 @@ public:
    * @return hsize_t
    */
   hsize_t max_dim() const { return *std::max_element(begin(), end()); };
+
+  /** @brief The total number of elements (product of the dimensions) */
+  int number_of_elements() const {
+    int product = 1;
+    for (hsize_t axis_size : *this) { product *= axis_size; }
+    return product;
+  }
 };
