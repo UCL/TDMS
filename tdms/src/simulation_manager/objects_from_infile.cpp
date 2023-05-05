@@ -17,9 +17,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C
       D(matrices_from_input_file["D"]),                // get D
-      matched_layer(
-              matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
-      Ei(matrices_from_input_file["tdfield"])             // get tdfield
+      Ei(matrices_from_input_file["tdfield"])          // get tdfield
 {
   // HDF5Reader to extract data from the input file
   HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
@@ -31,6 +29,8 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   J1 = INPUT_FILE.read("J1");
   K0 = INPUT_FILE.read("K0");
   K1 = INPUT_FILE.read("K1");
+
+  INPUT_FILE.read(&matched_layer);
 
   // set solver method
   set_solver_method(_solver_method);
@@ -134,9 +134,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   }
 
   // work out if we have a dispersive background
-  if (params.is_disp_ml) {
-    params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.k);
-  }
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
 
   // Set dt so that an integer number of time periods fits within a sinusoidal
   // period
