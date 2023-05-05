@@ -304,40 +304,42 @@ The combinations and expected results are listed in the table below.
 
 \note `TD-field` is also known as `exi/eyi` in some docstrings.
 
-| TD-field | usecd | compactsource | efname    | hfname    | Raises error? | Error info |
-|:--------:|:-----:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
-| 1        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1     | 1             | 1         | 0         | 0             |  |
-| 1        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1     | 1             | 0         | 0         | 0             |  |
-| 1        | 1     | 0             | 1         | 1         | 0             |  |
-| 1        | 1     | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1     | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1     | 0             | 0         | 0         | 0             |  |
-| 1        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0     | 1             | 1         | 0         | 0             |  |
-| 1        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0     | 1             | 0         | 0         | 0             |  |
-| 1        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1     | 1             | 1         | 0         | 0             |  |
-| 0        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 1     | 0             | 1         | 1         | 0             |  |
-| 0        | 1     | 0             | 1         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 1     | 0             | 0         | 1         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 1     | 0             | 0         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0     | 1             | 1         | 0         | 0             |  |
-| 0        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+\note `usecd` was the legacy name for the variable that controlled which solver method to use in the timestepping algorithm. Previous convention was that `usecd = 1` (or not present) resulted in the use of FDTD. This has since been superceeded by the `use_pstd` flag which is `true` when PSTD is to be used, and FDTD will be used otherwise (such as when this flag is not present or set explicitly to `false`).
+
+| TD-field | Using FDTD | compactsource | efname    | hfname    | Raises error? | Error info |
+|:--------:|:----------:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
+| 1        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1          | 1             | 1         | 0         | 0             |  |
+| 1        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1          | 1             | 0         | 0         | 0             |  |
+| 1        | 1          | 0             | 1         | 1         | 0             |  |
+| 1        | 1          | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1          | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1          | 0             | 0         | 0         | 0             |  |
+| 1        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0          | 1             | 1         | 0         | 0             |  |
+| 1        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0          | 1             | 0         | 0         | 0             |  |
+| 1        | 0          | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0          | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0          | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0          | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1          | 1             | 1         | 0         | 0             |  |
+| 0        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 1          | 0             | 1         | 1         | 0             |  |
+| 0        | 1          | 0             | 1         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 1          | 0             | 0         | 1         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 1          | 0             | 0         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0          | 1             | 1         | 0         | 0             |  |
+| 0        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 0          | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0          | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0          | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0          | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
 
 ### System {#system-tests}
 
