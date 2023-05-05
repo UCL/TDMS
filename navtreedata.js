@@ -57,6 +57,7 @@ var NAVTREE =
       [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
         [ "Test coverage", "md_doc_developers.html#coverage", null ],
+        [ "MATLAB Units", "md_doc_developers.html#matlab-unit-tests", null ],
         [ "System", "md_doc_developers.html#system-tests", [
           [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md20", null ]
         ] ],
@@ -92,7 +93,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"index.html#autotoc_md3"
+"index.html#autotoc_md2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -265,6 +265,81 @@ Test coverage</h2>
 </div><!-- fragment --><p> You'll notice it also counts the dependencies. You can filter these (<code>lcov --remove</code>) if you don't want them to appear in the statistics: </p><div class="fragment"><div class="line">lcov --remove coverage.info &#39;/usr/*&#39; --output-file coverage.info</div>
 <div class="line">lcov --remove coverage.info &#39;*/_deps/*&#39; --output-file coverage.info</div>
 </div><!-- fragment --><p>But you don't need to worry about this too much. When you open a pull-request, codecov will report. And you can browse the <a href="https://codecov.io/gh/UCL/TDMS">codecov TDMS pages online</a>.</p>
+<h2><a class="anchor" id="matlab-unit-tests"></a>
+MATLAB Units</h2>
+<p>To run the unit tests, go to the <code>tdms/tests/matlab</code> directory and use the command:</p>
+<div class="fragment"><div class="line">matlab -batch run_tests</div>
+</div><!-- fragment --><p>In the <code>utils</code> folder, you'll find small MATLAB functions to edit the <code>data/pstd_input_file{2,3}D.m</code> files during the testing phase.</p>
+<p>The <code>iteratefdtd_matrix</code> function has different ways to generate source terms from an input file. However, some combinations of variables provided can be incompatible, resulting in errors or contradictory information. The unit test <code>test_iteratefdtd_matrix_source_combinations</code> goes through each possible combination of source-related inputs, checking for errors or valid input combinations. The combinations and expected results are listed in the table below.</p>
+<dl class="section note"><dt>Note</dt><dd><code>TD-field</code> is also known as <code>exi/eyi</code> in some docstrings.</dd></dl>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadCenter">TD-field   </th><th class="markdownTableHeadCenter">usecd   </th><th class="markdownTableHeadCenter">compactsource   </th><th class="markdownTableHeadCenter">efname   </th><th class="markdownTableHeadCenter">hfname   </th><th class="markdownTableHeadCenter">Raises error?   </th><th class="markdownTableHeadCenter">Error info    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not compact source, both efname and hfname must be specified    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not compact source, both efname and hfname must be specified    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Must specify efname if compact source and TD-field not specified    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Must specify efname if compact source and TD-field not specified    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource   </td></tr>
+</table>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
 <p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/">zenodo</a>.</p>
