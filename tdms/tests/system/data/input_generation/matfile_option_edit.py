@@ -1,10 +1,8 @@
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 from hdf5storage import loadmat, savemat
-
 
 
 @dataclass
@@ -18,7 +16,7 @@ class OverwriteWith:
     """
 
     # Flags whether or not to overwrite a value with self.value
-    write: bool
+    should_be_overwritten: bool
     # The value to write if we are intending to replace a value in a file
     value: bool | int | float | None
 
@@ -29,8 +27,8 @@ def edit_mat_file(
     options: dict[str, str | bool | int],
 ) -> None:
     """Create a new .mat file by copying an existing one and changing some TDMS "flag" variables according to options.
-    
-    The following `options` can be adjusted: 
+
+    The following `options` can be adjusted:
     - usecd: Default is 1 (FDTD). Set to 0 for PSTD.
     - intmethod: Default is 1 (cubic). Set to 2 for BLI.
 
@@ -83,10 +81,10 @@ def edit_mat_file(
     mat_data = loadmat(adjust_file)
 
     # Adjust usecd if necessary
-    if usecd.write:
+    if usecd.should_be_overwritten:
         mat_data["usecd"] = np.array([[usecd.value]], dtype=float)
     # Adjust intmethod if necessary
-    if intmethod.write:
+    if intmethod.should_be_overwritten:
         mat_data["intmethod"] = np.array([[intmethod.value]], dtype=float)
 
     # Write the data to the desired location - THROWS DEPRECATION WARNING FROM NUMPY!

@@ -258,25 +258,22 @@ But you don't need to worry about this too much.
 When you open a pull-request, codecov will report.
 And you can browse the [codecov TDMS pages online](https://codecov.io/gh/UCL/TDMS).
 
-### `MATLAB` Units {#matlab-unit-tests}
+### MATLAB Units {#matlab-unit-tests}
 
-The unit tests in the `tdms/tests/matlab` directory can be run with
+To run the unit tests, go to the `tdms/tests/matlab` directory and use the command:
 
 ```bash
 matlab -batch run_tests
 ```
 
-The `utils` folder is a collection of small MATLAB functions that allow us to edit the `data/pstd_input_file{2,3}D.m` files during the unit testing phase, without having to bloat the repository with an individual input file for each unit test.
+In the `utils` folder, you'll find small MATLAB functions to edit the `data/pstd_input_file{2,3}D.m` files during the testing phase.
 
-##### `test_iteratefdtd_matrix_source_combinations`
+The `iteratefdtd_matrix` function has different ways to generate source terms from an input file.
+However, some combinations of variables provided can be incompatible, resulting in errors or contradictory information.
+The unit test `test_iteratefdtd_matrix_source_combinations` goes through each possible combination of source-related inputs, checking for errors or valid input combinations.
+The combinations and expected results are listed in the table below.
 
-The `iteratefdtd_matrix` function has a number of ways to produce the source terms from the information provided to it in an `input_file.m`.
-Some combinations of the variables that _can_ be provided however are incompatible - either not providing sufficient information to generate the source fields, or providing contradictory information.
-
-As such, the unit test `test_iteratefdtd_matrix_source_combinations` (provided as `arc_19` in [#208](https://github.com/UCL/TDMS/issues/208)) explicitly works through each possible combination of source-related inputs and checks for the corresponding error (or checks that no error is raised in the event the combination of inputs is valid).
-The various combinations and expected results are listed in the table below.
-
-`TD-field` is also know as `exi/eyi` in some docstrings.
+\note `TD-field` is also known as `exi/eyi` in some docstrings.
 
 | TD-field | usecd | compactsource | efname    | hfname    | Raises error? | Error info |
 |:--------:|:-----:|:-------------:|:---------:|:---------:|:-------------:|:----------:|

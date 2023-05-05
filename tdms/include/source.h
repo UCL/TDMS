@@ -70,7 +70,8 @@ public:
    * otherwise return 0 if the Source is empty.
    *
    * This is for use in the update equations, where the split-H field requires
-   * updating by a non-zero offset despite
+   * updating by a non-zero offset despite potentially having no source terms
+   * provided.
    *
    * @param index Element to access (if it exists)
    * @return std::complex<double>
