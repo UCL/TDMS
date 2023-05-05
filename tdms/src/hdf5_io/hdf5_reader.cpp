@@ -34,3 +34,21 @@ void HDF5Reader::read(FrequencyVectors *f_vec) const {
   read_dataset_in_group("f_vec", "fx_vec", f_vec->x.data());
   read_dataset_in_group("f_vec", "fy_vec", f_vec->y.data());
 }
+
+void HDF5Reader::read(Cuboid *cube) const {
+  string cuboid_dataset = "phasorsurface";
+  // Check that we are reading in a 1D array with 6 elements
+  H5Dimension cuboid_dims(file_->openDataSet(cuboid_dataset).getSpace());
+  if (!(cuboid_dims.is_1D() && cuboid_dims.max_dim() == 6)) {
+    throw runtime_error(
+            "Error: phasorsurface is not a 1D vector of 6 elements");
+  }
+  // Read buffer then adjust for indexing offset between MATLAB and C++
+  // NOTE: Buffer is saved as doubles in .mat file, but we want to read as
+  // integers here.
+  double intermediate_buffer[6];
+  read(cuboid_dataset, intermediate_buffer);
+  for (int i = 0; i < 6; i++) {
+    cube->array[i] = (int) intermediate_buffer[i] - 1;
+  }
+}

@@ -19,10 +19,17 @@ namespace tdms_unit_test_data {
 inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
                                     "/tests/unit/matlab_benchmark_scripts/"
                                     "matlab_data/class_data.mat");
+inline std::string tdms_bad_object_data(std::string(CMAKE_SOURCE_DIR) +
+                                        "/tests/unit/matlab_benchmark_scripts/"
+                                        "matlab_data/bad_class_data.mat");
 #else
 inline std::string tdms_object_data(std::filesystem::current_path() /
                                     "../tests/unit/matlab_benchmark_scripts/"
                                     "matlab_data/class_data.mat");
+inline std::string
+        tdms_bad_object_data(std::filesystem::current_path() /
+                             "../tests/unit/matlab_benchmark_scripts/"
+                             "matlab_data/bad_class_data.mat");
 #endif
 
 /* The struct_testdata is a .mat file containing a single structure array,
