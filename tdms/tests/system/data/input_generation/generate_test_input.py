@@ -8,6 +8,8 @@ import matlab.engine as matlab
 import yaml
 from matlab.engine import MatlabEngine
 
+from .matfile_option_edit import edit_mat_file
+
 LOCATION_OF_THIS_FILE = os.path.dirname(os.path.abspath(__file__))
 INPUT_M_FILE_LOCATION = LOCATION_OF_THIS_FILE + "/input_files/"
 # Additional options for running matlab on the command-line
@@ -23,42 +25,10 @@ DEFAULT_VALUES = {
     "obstacle": "fs",
     "obstacle_radius": 15.0e-6,
     "illsetup": False,
-    "ill_filesetup": os.path.abspath(
-        LOCATION_OF_THIS_FILE + "/.__TDMS_input_regen_extra_filesetup_file.m"
-    ),
     "refind": 1.42,
     "calc_tdfield": False,
 }
 OPTIONAL_ARGS = DEFAULT_VALUES.keys()
-
-
-def _create_temporary_filesetup(file_to_remove_eh_name, file_to_place_into) -> None:
-    """Generates a temporary file that will be used as input to iteratefdtd_matrix in filesetup mode, along with an illumination file.
-
-    The file in filesetup mode is almost identical to the original input file, but with empty strings set for the efname and hfname variables. To achieve this, the input file (used to set up the illumination) is copied by Python, and the efname and hfname variables are modified to create the file in filesetup mode.
-
-    :param file_to_remove_eh_name: The name of the file to copy the lines of, removing efname and hfname.
-    :param file_to_place_into: The name of the file to write to.
-    """
-    # Copy the input_file (illumination-input) line-by-line to a temporary location for the filesetup-input
-    # Do not copy across the lines that define the efname and hfname variables
-    with open(file_to_remove_eh_name, "r") as illumination_input:
-        with open(file_to_place_into, "w") as filesetup_input:
-            for line in illumination_input:
-                # Remove any potential whitespace padding from the line
-                # This avoids funny business if there's whitespace around the = symbol where {ef,hf}name are defined
-                stripped_line = line.replace(" ", "")
-                # Write line, provided efname or hfname are not defined on it
-                if ("efname=" not in stripped_line) and (
-                    "hfname=" not in stripped_line
-                ):
-                    filesetup_input.write(line)
-                elif "efname=" in stripped_line:
-                    filesetup_input.write("efname = '';\n")
-                elif "hfname=" in stripped_line:
-                    filesetup_input.write("hfname = '';\n")
-    # filesetup_input is now ready, and identical to illumination_input save in the definition of efname and hfname
-    return
 
 
 def bscan_options(output_name: str, generation_info: dict[str, Any]) -> dict[str, Any]:
@@ -114,15 +84,6 @@ def run_bscan(
     )
     # Create the options dictionary (which will be converted to a struct) to pass to run_bscan.m
     options = bscan_options(matfile_to_produce, generation_info)
-    # In the event that illsetup is required for this run, generate the temporary name for the input file to be passed to iteratefdtd_matrix in filesetup mode
-    # This only occurs when illumination files are required in input-data regeneration.
-    if options["illsetup"]:
-        # We need to generate the illumination file from the input file.
-        # It is essentially identical, but needs the efname and hfname variables to be:
-        # present in the workspace/file when calling with 'illsetup'
-        # absent from the workspace/file when calling with 'filesetup'
-        # Otherwise, the "input" file to the illsetup and input file for the .mat creation are identical. As such, the optimal way to get around this is to have Python pass the input_file via 'illsetup', then copy this file, remove the definition of the efname & hfname variables, then run 'filesetp' mode. We can then cleanup our "extra" file that we created.
-        _create_temporary_filesetup(input_filename, options["ill_filesetup"])
     # Create IO objects to capture stdout and stderr from MatlabEngine, to avoid polluting the terminal
     matlab_stdout = StringIO()
     matlab_stderr = StringIO()
@@ -137,9 +98,6 @@ def run_bscan(
         stderr=matlab_stderr,
     )
 
-    # Cleanup the illfile_extra_file, if it was created
-    if options["illsetup"]:
-        os.remove(options["ill_filesetup"])
     # Return stdout and stderr messages
     return matlab_stdout, matlab_stderr
 
@@ -206,8 +164,22 @@ def generate_test_input(
     matlab_working_directory = engine.pwd(nargout=1)
 
     # Loop over all input .mat files to be produced by this config file
+    # Input files that lack the "adjust" key require calls to run_bscan, and must be produced first.
+    bscan_matfiles = list(mats_to_produce)
+    adjust_matfiles = list(mats_to_produce)
     for matfile in mats_to_produce:
+        if (
+            "adjust" in config_data[matfile].keys()
+            and config_data[matfile]["adjust"] != None
+        ):
+            bscan_matfiles.remove(matfile)
+        else:
+            adjust_matfiles.remove(matfile)
+    # Those that possess the "adjust" key need to be done afterwards, to ensure the file they depend on is present.
+    for matfile in bscan_matfiles:
         _, _ = run_bscan(test_dir, matfile, config_data[matfile], engine)
+    for matfile in adjust_matfiles:
+        edit_mat_file(test_dir, matfile, config_data[matfile])
 
     # Quit our temporary MATLAB session, if we started one
     if not engine_provided:

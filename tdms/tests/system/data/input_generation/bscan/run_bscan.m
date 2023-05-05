@@ -10,7 +10,6 @@ function [] = run_bscan(test_directory, input_filename, options)
 % Fieldname         | Description
 % obstacle          | String, either 'fs', 'sph', 'cyl', or 'sc', defining the shape of the obstacle present.
 % illsetup          | Bool, if False we do not need to call iteratefdtd_matrix in illsetup mode prior to filesetup mode. If True, we must do this, and the ill_filesetup field is populated.
-% ill_filesetup     | String, not used if illsetup is false. If illsetup is True, points to the input file iteratefdtd_matrix needs to read in filesetup mode. input_filename is the file that needs to be read in illsetup mode.
 % obstacle_radius   | Float, radius in microns of the obstacle (radius of the circular face for a cyl, radius of the sphere for sph).
 % calc_tdfield      | Bool, whether calc_field_tdfield needs to be run prior to setting the inputs.
 % refind            | Float, refractive index of the non-freespace portion of the medium
@@ -46,8 +45,6 @@ if options.illsetup
     % Need to run in illsetup mode first
     illfile_mat = 'illfile.mat';
     iteratefdtd_matrix(input_filename, 'illsetup', illfile_mat, gridfile, '');
-    % Now prepare for filesetup mode
-    filesetup_input_file = options.ill_filesetup;
 else
     if options.calc_tdfield
         % We don't need to call in illsetup mode, but do need to pass an illumination file
@@ -55,10 +52,8 @@ else
     else
         illfile_mat = '';
     end
-    % Pass in the original input file
-    filesetup_input_file = input_filename;
 end
 
 % Call iteratefdtd_matrix in filesetup mode to generate input .mat files for tdms executable
-iteratefdtd_matrix(filesetup_input_file, 'filesetup', options.output_name, gridfile, illfile_mat);
+iteratefdtd_matrix(input_filename, 'filesetup', options.output_name, gridfile, illfile_mat);
 end

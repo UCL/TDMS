@@ -2,18 +2,28 @@ test_id: '02'
 fs_input:
   input_file: input_file_02.m
   obstacle: fs
+  solver_method: pstd
+  runs:
+    fs_cubic:
+      reference: fs_cubic_reference.mat
+      cubic_interpolation: True
+fs_bli_input:
+  adjust: fs_input
+  interpolation: bli
   runs:
     fs_bli:
-      reference: pstd_fs_bli_reference.mat
-    fs_cubic:
-      reference: pstd_fs_cubic_reference.mat
-      cubic_interpolation: True
+      reference: fs_bli_reference.mat
 cyl_input:
   input_file: input_file_02.m
   obstacle: cyl
+  solver_method: pstd
+  runs:
+    cyl_cubic:
+      reference: cyl_cubic_reference.mat
+      cubic_interpolation: True
+cyl_bli_input:
+  adjust: cyl_input
+  interpolation: bli
   runs:
     cyl_bli:
-      reference: pstd_cyl_bli_reference.mat
-    cyl_cubic:
-      reference: pstd_cyl_cubic_reference.mat
-      cubic_interpolation: True
+      reference: cyl_bli_reference.mat

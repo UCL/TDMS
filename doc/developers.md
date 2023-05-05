@@ -258,6 +258,57 @@ But you don't need to worry about this too much.
 When you open a pull-request, codecov will report.
 And you can browse the [codecov TDMS pages online](https://codecov.io/gh/UCL/TDMS).
 
+### MATLAB Units {#matlab-unit-tests}
+
+To run the unit tests, go to the `tdms/tests/matlab` directory and use the command:
+
+```bash
+matlab -batch run_tests
+```
+
+In the `utils` folder, you'll find small MATLAB functions to edit the `data/pstd_input_file{2,3}D.m` files during the testing phase.
+
+The `iteratefdtd_matrix` function has different ways to generate source terms from an input file.
+However, some combinations of variables provided can be incompatible, resulting in errors or contradictory information.
+The unit test `test_iteratefdtd_matrix_source_combinations` goes through each possible combination of source-related inputs, checking for errors or valid input combinations.
+The combinations and expected results are listed in the table below.
+
+\note `TD-field` is also known as `exi/eyi` in some docstrings.
+
+| TD-field | usecd | compactsource | efname    | hfname    | Raises error? | Error info |
+|:--------:|:-----:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
+| 1        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1     | 1             | 1         | 0         | 0             |  |
+| 1        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1     | 1             | 0         | 0         | 0             |  |
+| 1        | 1     | 0             | 1         | 1         | 0             |  |
+| 1        | 1     | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1     | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1     | 0             | 0         | 0         | 0             |  |
+| 1        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0     | 1             | 1         | 0         | 0             |  |
+| 1        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0     | 1             | 0         | 0         | 0             |  |
+| 1        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 1        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1     | 1             | 1         | 0         | 0             |  |
+| 0        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 1     | 0             | 1         | 1         | 0             |  |
+| 0        | 1     | 0             | 1         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 1     | 0             | 0         | 1         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 1     | 0             | 0         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
+| 0        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0     | 1             | 1         | 0         | 0             |  |
+| 0        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
+| 0        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
 
 ### System {#system-tests}
 

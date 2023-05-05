@@ -1,3 +1,10 @@
+%specify the interpolation method (1 or not present - cubic, 2 - bandlimited)
+intmethod = 1;
+%specify the solver method (1 or not present - FDTD, 0 - PSTD)
+usecd = 0;
+%whether we are using a compact source condition
+compactsource = 1;
+
 %these are not involved in the formal input file spec
 lambda = 1300e-9;
 
@@ -35,9 +42,9 @@ Nt = 200;
 %Nt=12000;
 
 %water
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 %frequency in Hz
@@ -60,7 +67,7 @@ outputs_array ={};
 
 %these are the function names used to generate the field
 efname = 'efield_gauss_base';
-hfname = 'hfield_focused_equiv';
+hfname = '';%'hfield_focused_equiv';
 
 %this is the z value at which the field is launched, in metres
 z_launch = 0;

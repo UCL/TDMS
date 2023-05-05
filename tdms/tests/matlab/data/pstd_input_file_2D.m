@@ -1,4 +1,7 @@
 % Sample input file for a 2D simulation required to call iteratefdtd_matrix
+% This input file in particular explicitly defines all of the source-related terms, so that the testing suite can change them on the fly as the tests run.
+usecd = 0;
+compactsource = 0;
 
 lambda = 1300e-9;
 
@@ -25,9 +28,9 @@ dt = 2/sqrt(2)/pi*delta.x/(3e8/1.35)*.95;
 
 Nt = 500;
 
-epsr = [1.35^2];
-mur = [1];
-kappa_max = [1];
+epsr = 1.35^2;
+mur = 1;
+kappa_max = 1;
 multilayer = [];
 
 f_an = asin( 2*pi/1300e-9*2.997924580105029e+08*dt/2)/(pi*dt);

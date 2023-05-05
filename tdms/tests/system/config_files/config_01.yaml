@@ -16,6 +16,10 @@ fs_input:
   refind: 1.42
   # Whether the time-domain field needs to be computed prior to defining the scattering matrix and other material properties. Defaults to False if not present.
   calc_tdfield: False
+  # One of pstd (pseudo-spectral time domain), fdtd (finite difference time domain). The time-propagation solver method to use. Defaults to fdtd if not present.
+  solver_method: pstd
+  # One of cubic (cubic) or bli (band-limited). The interpolation method to use when extracting field values at spatial locations off the computational grid. Defaults to cubic if not present.
+  interpolation: cubic
   # This block defines the runs of tdms for which this .mat file is an input.
   # Each tag defines the name of one particular run, and contains any runtime options that should be passed to TDMS for that particular run only.
   # Runs can share the same name, however for debugging and descriptive purposes it is advisible to provide each run with a unique name.
@@ -23,26 +27,38 @@ fs_input:
     # Defines a run called "fs_bli"; specifically this means that the (run) command
     # tdms fs_input.mat output_{test_id}_fs_bli.mat
     # will be executed as part of this system test.
-    fs_bli:
+    fs_cubic:
       # The reference file to compare the output of the TDMS run to, to check that TDMS behaviour has not been changed unexpectedly.
-      reference: pstd_fs_bli_reference.mat
+      reference: fs_cubic_reference.mat
       # A bool indicating whether or not tdms should use the cubic interpolation switch -c or not in this run. Defaults to False if not present
-      cubic_interpolation: False
+      cubic_interpolation: True
       # A bool indicating whether or not tdms should use the fdtd solver method or not (in which case pstd is used). Defaults to False if not present.
       fdtd_solver: False
-    # Defines a second run, called "fs_cubic"
-    fs_cubic:
-      reference: pstd_fs_cubic_reference.mat
-      cubic_interpolation: True
+    # We could start another block here, defining another run that uses the fs_input.mat file.
+# Declares another input .mat file that needs to be created.
+fs_bli_input:
+  # The adjust syntax means that this input will use the same settings as the "fs_input.mat" file, unless they are explicitly overwritten in this block.
+  adjust: fs_input
+  # Input file is created with band-limited interpolation flagged. This takes higher proority over the "cubic" value provided in the "fs_input" block above, which we are adjusting.
+  interpolation: bli
+  # Runs using this input file, "fs_bli_input.mat" are declared in the same way as blocks that do not use the "adjust" syntax.
+  runs:
+    fs_bli:
+      reference: fs_bli_reference.mat
 cyl_input:
   input_file: input_file_01.m
   obstacle: cyl
   obstacle_radius:
   illsetup:
   refind: 1.42
+  solver_method: pstd
+  runs:
+    cyl_cubic:
+      reference: cyl_cubic_reference.mat
+      cubic_interpolation: True
+cyl_bli_input:
+  adjust: cyl_input
+  interpolation: bli
   runs:
     cyl_bli:
-      reference: pstd_cyl_bli_reference.mat
-    cyl_cubic:
-      reference: pstd_cyl_cubic_reference.mat
-      cubic_interpolation: True
+      reference: cyl_bli_reference.mat

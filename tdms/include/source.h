@@ -57,11 +57,30 @@ public:
   Source(const mxArray *ptr, int dim1, int dim2, const std::string &name);
 
   /** @brief Check if the source term is empty (true) or not (false) */
-  bool is_empty() { return no_data_stored; }
+  bool is_empty() const { return no_data_stored; }
 
-  std::complex<double> operator[](SourceIndex index) {
+  std::complex<double> operator[](SourceIndex index) const {
     return std::complex<double>(
             real[index.cell_c][index.cell_b][index.split_field_ID],
             imag[index.cell_c][index.cell_b][index.split_field_ID]);
+  }
+
+  /**
+   * @brief Return the value at the index provided if the Source is nonempty,
+   * otherwise return 0 if the Source is empty.
+   *
+   * This is for use in the update equations, where the split-H field requires
+   * updating by a non-zero offset despite potentially having no source terms
+   * provided.
+   *
+   * @param index Element to access (if it exists)
+   * @return std::complex<double>
+   */
+  std::complex<double> value_or_zero_if_empty(SourceIndex index) const {
+    if (this->is_empty()) {
+      return std::complex<double>(0., 0.);
+    } else {
+      return operator[](index);
+    }
   }
 };
