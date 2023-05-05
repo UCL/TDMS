@@ -46,11 +46,11 @@ def edit_mat_file(
     if "solver_method" in options:
         # If this key is present, we want to overwrite the value of usecd with the value provided
         if options["solver_method"] == "pstd":
-            # Overwrite use_pstd with 1 (pstd)
-            use_pstd = OverwriteWith(True, 1.0)
+            # Overwrite use_pstd with True (pstd)
+            use_pstd = OverwriteWith(True, True)
         elif options["solver_method"] == "fdtd":
-            # Overwrite use_pstd with 0 (fdtd, default)
-            use_pstd = OverwriteWith(True, 0.0)
+            # Overwrite use_pstd with False (fdtd, default)
+            use_pstd = OverwriteWith(True, False)
         else:
             raise RuntimeError(
                 f"Error: {options['solver_method']} is not a valid solver method"
@@ -63,11 +63,11 @@ def edit_mat_file(
     if "interpolation" in options:
         # We will be overwriting the value here
         if options["interpolation"] == "bli":
-            # Overwrite use_bli with 1 (band-limited)
-            use_bli = OverwriteWith(True, 1.0)
+            # Overwrite use_bli with True (band-limited)
+            use_bli = OverwriteWith(True, True)
         elif options["interpolation"] == "cubic":
-            # Overwrite use_bli with 0 (cubic, default)
-            use_bli = OverwriteWith(True, 0.0)
+            # Overwrite use_bli with False (cubic, default)
+            use_bli = OverwriteWith(True, False)
         else:
             raise RuntimeError(
                 f"Error: {options['interpolation']} is not a valid interpolation method"
@@ -81,10 +81,10 @@ def edit_mat_file(
 
     # Adjust use_pstd if necessary
     if use_pstd.should_be_overwritten:
-        mat_data["use_pstd"] = np.array([[use_pstd.value]], dtype=float)
+        mat_data["use_pstd"] = np.array([[use_pstd.value]], dtype=bool)
     # Adjust use_bli if necessary
     if use_bli.should_be_overwritten:
-        mat_data["use_bli"] = np.array([[use_bli.value]], dtype=float)
+        mat_data["use_bli"] = np.array([[use_bli.value]], dtype=bool)
 
     # Write the data to the desired location - THROWS DEPRECATION WARNING FROM NUMPY!
     savemat(to_produce, mat_data, format="7.3", store_python_metadata=False)
