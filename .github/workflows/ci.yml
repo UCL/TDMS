@@ -57,7 +57,7 @@ jobs:
       - name: Produce MATLAB unit test data
         uses: matlab-actions/run-command@v1
         with:
-          command: cd('tdms/tests/unit/matlab_benchmark_scripts/'), make_data_dir, create_structure_array, create_tdms_object_data
+          command: cd('tdms/tests/unit/matlab_benchmark_scripts/'), setup_unit_tests
 
       # -------------------------------------------------------------------------------
       # Ubuntu
