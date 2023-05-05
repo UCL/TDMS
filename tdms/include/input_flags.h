@@ -2,7 +2,7 @@
  * @file input_flags.h
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Organises enumerated constants, names, and classes for handling
- * flag-variables that are passed to TDMS in the input file. Such variables no
+ * flag-variables that are passed to TDMS in the input file. Such variables do
  * not contain numerical data for use in the simulation, but affect the manner
  * in which the simulation is performed.
  */

@@ -94,8 +94,8 @@ public:
    *
    * @param params The simulation parameters for this run
    * @param input_grid_labels The grid labels obtained from the input file
-   * @param interpolation_method The interpolation methods to use on the field
-   * values
+   * @param interpolation_method The interpolation method to be used when
+   * computing the field values
    */
   void
   setup_EH_and_gridlabels(const SimulationParameters &params,

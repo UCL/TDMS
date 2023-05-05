@@ -136,7 +136,6 @@ If you used TDMS in your research and found it helpful, please cite this work.
 ```tex
 \bibitem{tdms}
 P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
-[`run_pstd_bscan.m`](./examples/arc_01/run_pstd_bscan.m)
 ```
 
 </details>
