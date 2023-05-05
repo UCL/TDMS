@@ -64,7 +64,11 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // Get phasorsurface
   cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    cuboid.initialise(matrices_from_input_file["phasorsurface"], IJK_tot.j);
+    INPUT_FILE.read(&cuboid);
+    if (IJK_tot.j == 0 && cuboid[2] != cuboid[3]) {
+      throw std::runtime_error("In a 2D simulation, J0 should equal J1 in "
+                               "phasorsurface.");
+    }
   }
 
   // Get conductive_aux, and setup with pointers

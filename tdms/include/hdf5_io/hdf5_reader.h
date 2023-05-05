@@ -3,6 +3,7 @@
 #include "hdf5_io/hdf5_base.h"
 
 #include "arrays.h"
+#include "cuboid.h"
 #include "interface.h"
 
 /**
@@ -129,4 +130,13 @@ public:
     read(&f_vec);
     return f_vec;
   }
+
+  /**
+   * @brief
+   *
+   * Cuboid is just the phasorsurface array which is it's own dataset, but needs
+   * to be offset by -1 b/c indexing things
+   * @param cube
+   */
+  void read(Cuboid *cube) const;
 };
