@@ -5,19 +5,16 @@ from pathlib import Path
 import numpy as np
 from hdf5storage import loadmat, savemat
 
-LOCATION_OF_THIS_FILE = os.path.abspath(os.path.dirname(__file__))
 
 
 @dataclass
 class OverwriteWith:
-    """Small container class that will be used when overwriting the "flag" variables usecd and intmethod when a config file specifies an 'adjust' field.
+    """Small container class that will be used when overwriting the "flag" variables.
 
-    Intended workflow along the lines of:
-    intmethod = OverwriteWith(whether_to_overwrite, value_to_replace_with)
-    if intmethod.write:
-        h5data['intmethod'] = intmethod.value
-    else:
-        pass
+    Intended workflow:
+    >>> variable = OverwriteWith(whether_to_overwrite, value_to_replace_with)
+    >>> if variable.write:
+    >>>     h5data['variable'] = variable.value
     """
 
     # Flags whether or not to overwrite a value with self.value
@@ -31,15 +28,15 @@ def edit_mat_file(
     to_produce: Path | str,
     options: dict[str, str | bool | int],
 ) -> None:
-    """Produce a new .mat file by copying another .mat file and changing some of the TDMS "flag" variables according to the options provided.
+    """Create a new .mat file by copying an existing one and changing some TDMS "flag" variables according to options.
+    
+    The following `options` can be adjusted: 
+    - usecd: Default is 1 (FDTD). Set to 0 for PSTD.
+    - intmethod: Default is 1 (cubic). Set to 2 for BLI.
 
-    This function can adjust the values of the following variables:
-    - usecd: Default value is 1 (FDTD). 0 results in use of PSTD
-    - intmethod: Default value is 1 (cubic). 2 results in BLI
-
-    :param test_directory: Directory in which the existing .mat file to use as a basis is stored.
-    :param to_produce: Filename to write the edited .mat file to.
-    :param options: Dictionary specifying the variables to adjust and the new values to assign to them.
+    :param test_directory: Directory containing the existing .mat file to use as a basis.
+    :param to_produce: Filename for the edited .mat file.
+    :param options (dict): The variable names to adjust and their new values.
     """
     # Get name of input file to produce immediately
     to_produce = f"{str(test_directory)}/{str(to_produce)}"
@@ -48,7 +45,7 @@ def edit_mat_file(
 
     # Read the variable values that we want to override, provided they exist
     # Check if we want to overwrite the solver method
-    if "solver_method" in options.keys():
+    if "solver_method" in options:
         # If this key is present, we want to overwrite the value of usecd with the value provided
         if options["solver_method"] == "pstd":
             # Overwrite usecd with 0 (pstd)
@@ -66,7 +63,7 @@ def edit_mat_file(
         usecd = OverwriteWith(False, None)
 
     # Check if we want to overwrite the interpolation method
-    if "interpolation" in options.keys():
+    if "interpolation" in options:
         # We will be overwriting the value here
         if options["interpolation"] == "bli":
             # Overwrite intmethod with 2 (band-limited)

@@ -76,7 +76,7 @@ public:
    * @return std::complex<double>
    */
   std::complex<double> value_or_zero_if_empty(SourceIndex index) const {
-    if (is_empty()) {
+    if (this->is_empty()) {
       return std::complex<double>(0., 0.);
     } else {
       return operator[](index);
