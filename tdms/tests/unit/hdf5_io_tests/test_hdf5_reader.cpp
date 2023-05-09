@@ -6,11 +6,14 @@
  */
 #include "hdf5_io/hdf5_reader.h"
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+
+#include <spdlog/spdlog.h>
 
 #include "unit_test_utils.h"
 
@@ -77,14 +80,13 @@ TEST_CASE("HDF5: Read from a MATLAB struct") {
 TEST_CASE("HDF5Reader::read_dataset_in_group") {
   vector<double> read_buffer;
   read_buffer.reserve(12);
-
+  // Used to check that data has been read in correctly
   bool entries_read_correctly = true;
 
-  // MATLAB only saves as doubles
   SECTION(".mat files") {
     HDF5Reader Hfile(struct_testdata);
 
-    SECTION("Vector") {
+    SECTION("Vector [int32]") {
       // We do an extra loop over the entries here to ensure that our final
       // check confirms that both the int data and the doubles that they were
       // cast to are correct
@@ -95,10 +97,10 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
         read_buffer[i] = (double) int_buffer[i];
       }
     }
-    SECTION("Matrix") {
+    SECTION("Matrix [double]") {
       Hfile.read_dataset_in_group("read_in_test", "matrix", read_buffer.data());
     }
-    SECTION("Tensor") {
+    SECTION("Tensor [double]") {
       Hfile.read_dataset_in_group("read_in_test", "tensor", read_buffer.data());
     }
   }
@@ -106,24 +108,26 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
   SECTION(".hdf5 files") {
     HDF5Reader Hfile(hdf5_test_file);
 
-    SECTION("Vector [int]") {
+    // h5py saves int dtype at 64-bit integers
+    SECTION("Vector [int64]") {
       // We do an extra loop over the entries here to ensure that our final
       // check confirms that both the int data and the doubles that they were
       // cast to are correct
-      vector<int> int_buffer(12);
-      Hfile.read_dataset_in_group("read_in_test", "vector", int_buffer.data());
+      vector<int64_t> int_buffer(12);
+      Hfile.read_dataset_in_group("read_in_test", "vector_int",
+                                  int_buffer.data());
       for (int i = 0; i < 12; i++) {
         entries_read_correctly = entries_read_correctly && int_buffer[i] == i;
         read_buffer[i] = (double) int_buffer[i];
       }
     }
-
     SECTION("Matrix [double]") {
-      Hfile.read_dataset_in_group("read_in_data", "matrix", read_buffer.data());
+      Hfile.read_dataset_in_group("read_in_test", "matrix_double",
+                                  read_buffer.data());
     }
-
     SECTION("Tensor [double]") {
-      Hfile.read_dataset_in_group("read_in_data", "tensor", read_buffer.data());
+      Hfile.read_dataset_in_group("read_in_test", "tensor_double",
+                                  read_buffer.data());
     }
   }
 
