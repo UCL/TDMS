@@ -60,24 +60,6 @@ public:
   std::string get_class_name() override { return "DetectorSensitivityArray"; }
 };
 
-/** @brief Unit tests for DispersiveMultilayer */ /*
-class DispersiveMultilayerTest : public AbstractArrayTest {
-private:
-  const int n_fields = 9;
-  const char *fieldnames[9] = {"alpha",   "beta",    "gamma",
-                               "kappa_x", "kappa_y", "kappa_z",
-                               "sigma_x", "sigma_y", "sigma_z"};
-
-  void test_empty_construction() override;
-  void test_wrong_input_type() override;
-  void test_correct_construction() override;
-  // test: is_dispersive()
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "DispersiveMultilayer"; }
-};*/
-
 // Test methods check the performance of initialise, as this is the de-facto
 // constructor
 class DTildeTest : public AbstractArrayTest {
