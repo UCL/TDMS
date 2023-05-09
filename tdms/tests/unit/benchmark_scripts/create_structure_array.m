@@ -23,4 +23,4 @@ read_in_test.tensor = reshape(0:11, 2, 3, 2);
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
 
-save("unit_test_data/structure_array.mat", "example_struct", "-v7.3");
+save("unit_test_data/structure_array.mat", "-v7.3");
