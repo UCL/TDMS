@@ -17,30 +17,29 @@ namespace tdms_unit_test_data {
 
 #ifdef CMAKE_SOURCE_DIR
 inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
-                                    "/tests/unit/matlab_benchmark_scripts/"
+                                    "/tests/unit/benchmark_scripts/"
                                     "unit_test_data/class_data.mat");
 inline std::string tdms_bad_object_data(std::string(CMAKE_SOURCE_DIR) +
-                                        "/tests/unit/matlab_benchmark_scripts/"
-                                        "matlab_data/bad_class_data.mat");
+                                        "/tests/unit/benchmark_scripts/"
+                                        "unit_test_data/bad_class_data.mat");
 inline std::string hdf5_test_file(std::string(CMAKE_SOURCE_DIR) +
-                                  "/tests/unit/matlab_benchmark_scripts/"
-                                  "unit_test_data/hdf5_test_file.mat");
+                                  "/tests/unit/benchmark_scripts/"
+                                  "unit_test_data/hdf5_test_file.hdf5");
 inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
-                                   "/tests/unit/matlab_benchmark_scripts/"
+                                   "/tests/unit/benchmark_scripts/"
                                    "unit_test_data/structure_array.mat");
 #else
 inline std::string tdms_object_data(std::filesystem::current_path() /
-                                    "../tests/unit/matlab_benchmark_scripts/"
+                                    "../tests/unit/benchmark_scripts/"
                                     "unit_test_data/class_data.mat");
-inline std::string
-        tdms_bad_object_data(std::filesystem::current_path() /
-                             "../tests/unit/matlab_benchmark_scripts/"
-                             "unit_test_data/bad_class_data.mat");
-inline std::string hdf5_test_file(std::string(CMAKE_SOURCE_DIR) +
-                                  "../tests/unit/matlab_benchmark_scripts/"
-                                  "unit_test_data/hdf5_test_file.mat");
-inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
-                                   "../tests/unit/matlab_benchmark_scripts/"
+inline std::string tdms_bad_object_data(std::filesystem::current_path() /
+                                        "../tests/unit/benchmark_scripts/"
+                                        "unit_test_data/bad_class_data.mat");
+inline std::string hdf5_test_file(std::filesystem::current_path() /
+                                  "../tests/unit/benchmark_scripts/"
+                                  "unit_test_data/hdf5_test_file.hdf5");
+inline std::string struct_testdata(std::filesystem::current_path() /
+                                   "../tests/unit/benchmark_scripts/"
                                    "unit_test_data/structure_array.mat");
 #endif
 
