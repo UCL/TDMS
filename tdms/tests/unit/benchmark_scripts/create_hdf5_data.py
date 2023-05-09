@@ -12,7 +12,7 @@ FNAME_TO_CREATE = os.path.abspath(
 def create_hdf5_test_file() -> None:
     """ """
     # Create the directory for the file (if it doesn't exist), and the file itself
-    if not os.path.exists(os.path.splitext(FNAME_TO_CREATE)[0]):
+    if not os.path.exists(os.path.dirname(FNAME_TO_CREATE)):
         os.mkdir(os.path.dirname(FNAME_TO_CREATE))
     file = h5py.File(FNAME_TO_CREATE, "w")
 

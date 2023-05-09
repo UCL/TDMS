@@ -16,9 +16,9 @@
 
 using namespace std;
 using tdms_tests::uint16s_to_string;
-using tdms_unit_test_data::struct_testdata;
+using tdms_unit_test_data::struct_testdata, tdms_unit_test_data::hdf5_test_file;
 
-TEST_CASE("Read from a MATLAB struct") {
+TEST_CASE("HDF5: Read from a MATLAB struct") {
   HDF5Reader MATFile(struct_testdata);
 
   SECTION("Read numeric scalars") {
@@ -70,4 +70,66 @@ TEST_CASE("Read from a MATLAB struct") {
     }
     // The complex matrix is the Pauli-y matrix [0, -i; i, 0]
   }
+}
+
+/** @brief Test the performance of read_dataset_in_group, on both MATLAB files
+ * and HDF5 files */
+TEST_CASE("HDF5Reader::read_dataset_in_group") {
+  vector<double> read_buffer;
+  read_buffer.reserve(12);
+
+  bool entries_read_correctly = true;
+
+  // MATLAB only saves as doubles
+  SECTION(".mat files") {
+    HDF5Reader Hfile(struct_testdata);
+
+    SECTION("Vector") {
+      // We do an extra loop over the entries here to ensure that our final
+      // check confirms that both the int data and the doubles that they were
+      // cast to are correct
+      vector<int> int_buffer(12);
+      Hfile.read_dataset_in_group("read_in_test", "vector", int_buffer.data());
+      for (int i = 0; i < 12; i++) {
+        entries_read_correctly = entries_read_correctly && int_buffer[i] == i;
+        read_buffer[i] = (double) int_buffer[i];
+      }
+    }
+    SECTION("Matrix") {
+      Hfile.read_dataset_in_group("read_in_test", "matrix", read_buffer.data());
+    }
+    SECTION("Tensor") {
+      Hfile.read_dataset_in_group("read_in_test", "tensor", read_buffer.data());
+    }
+  }
+
+  SECTION(".hdf5 files") {
+    HDF5Reader Hfile(hdf5_test_file);
+
+    SECTION("Vector [int]") {
+      // We do an extra loop over the entries here to ensure that our final
+      // check confirms that both the int data and the doubles that they were
+      // cast to are correct
+      vector<int> int_buffer(12);
+      Hfile.read_dataset_in_group("read_in_test", "vector", int_buffer.data());
+      for (int i = 0; i < 12; i++) {
+        entries_read_correctly = entries_read_correctly && int_buffer[i] == i;
+        read_buffer[i] = (double) int_buffer[i];
+      }
+    }
+
+    SECTION("Matrix [double]") {
+      Hfile.read_dataset_in_group("read_in_data", "matrix", read_buffer.data());
+    }
+
+    SECTION("Tensor [double]") {
+      Hfile.read_dataset_in_group("read_in_data", "tensor", read_buffer.data());
+    }
+  }
+
+  for (int i = 0; i < 12; i++) {
+    entries_read_correctly =
+            entries_read_correctly && read_buffer[i] == Catch::Approx(i);
+  }
+  REQUIRE(entries_read_correctly);
 }
