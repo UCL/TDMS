@@ -3,6 +3,8 @@
  * @author William Graham
  * @brief template class for storing three-dimensional data arrays.
  */
+#pragma once
+
 #include <vector>
 
 #include "cell_coordinate.h"
@@ -45,10 +47,16 @@ public:
   T &operator()(int i, int j, int k) {
     return *(this->begin() + k * n_cols_ * n_rows_ + j * n_rows_ + i);
   }
+  T operator()(int i, int j, int k) const {
+    return *(this->begin() + k * n_cols_ * n_rows_ + j * n_rows_ + i);
+  }
 
   /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
    * element. */
-  T &operator[](ijk index_3d) {
+  T &operator[](const ijk &index_3d) {
+    return this->operator()(index_3d.i, index_3d.j, index_3d.k);
+  }
+  T operator[](const ijk &index_3d) const {
     return this->operator()(index_3d.i, index_3d.j, index_3d.k);
   }
 
