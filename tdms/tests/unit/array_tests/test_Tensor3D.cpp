@@ -57,7 +57,7 @@ void Tensor3DTest::test_other_methods() {
       for (int j = 0; j < n_cols; j++) {
         for (int i = 0; i < n_rows; i++) {
           allocated_and_zero =
-                  allocated_and_zero && (abs(t3d[k][j][i]) < TOLERANCE);
+                  allocated_and_zero && (abs(t3d[{i, j, k}]) < TOLERANCE);
         }
       }
     }
@@ -71,7 +71,7 @@ void Tensor3DTest::test_other_methods() {
     // 1, so the analytic norm is 16.
     for (int k = 0; k < n_layers; k++) {
       for (int j = 0; j < n_cols; j++) {
-        for (int i = 0; i < n_rows; i++) { t3d[k][j][i] = (i + j + k) % 2; }
+        for (int i = 0; i < n_rows; i++) { t3d[{i, j, k}] = (i + j + k) % 2; }
       }
     }
     // the analytic frobenuis norm of the tensor values

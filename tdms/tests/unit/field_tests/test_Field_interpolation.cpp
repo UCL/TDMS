@@ -112,12 +112,12 @@ TEST_CASE("E-field interpolation check") {
         E.imag.z[kk][jj][ii] = 0.;
         // assign to "time domain" ElectricSplitField - use weighting that sums
         // to 1 to check addition is behaving as planned
-        E_split.xy[kk][jj][ii] = x_comp_value;
-        E_split.xz[kk][jj][ii] = 0.;
-        E_split.yx[kk][jj][ii] = y_comp_value * .5;
-        E_split.yz[kk][jj][ii] = y_comp_value * .5;
-        E_split.zx[kk][jj][ii] = z_comp_value * .25;
-        E_split.zy[kk][jj][ii] = z_comp_value * .75;
+        E_split.xy[{ii, jj, kk}] = x_comp_value;
+        E_split.xz[{ii, jj, kk}] = 0.;
+        E_split.yx[{ii, jj, kk}] = y_comp_value * .5;
+        E_split.yz[{ii, jj, kk}] = y_comp_value * .5;
+        E_split.zx[{ii, jj, kk}] = z_comp_value * .25;
+        E_split.zy[{ii, jj, kk}] = z_comp_value * .75;
       }
     }
   }
@@ -160,8 +160,8 @@ TEST_CASE("E-field interpolation check") {
           double Ex_interp =
                   E.interpolate_to_centre_of(AxialDirection::X, current_cell)
                           .real();
-          Ex_error[kk][jj][ii - 1] = Ex_interp - Ex_exact;
-          Ex_split_error[kk][jj][ii - 1] = Ex_split_interp - Ex_exact;
+          Ex_error[{ii - 1, jj, kk}] = Ex_interp - Ex_exact;
+          Ex_split_error[{ii - 1, jj, kk}] = Ex_split_interp - Ex_exact;
         }
 
         // Ey interpolation
@@ -172,8 +172,8 @@ TEST_CASE("E-field interpolation check") {
           double Ey_interp =
                   E.interpolate_to_centre_of(AxialDirection::Y, current_cell)
                           .real();
-          Ey_error[kk][jj - 1][ii] = Ey_interp - Ey_exact;
-          Ey_split_error[kk][jj - 1][ii] = Ey_split_interp - Ey_exact;
+          Ey_error[{ii, jj - 1, kk}] = Ey_interp - Ey_exact;
+          Ey_split_error[{ii, jj - 1, kk}] = Ey_split_interp - Ey_exact;
         }
 
         // Ez interpolation
@@ -184,8 +184,8 @@ TEST_CASE("E-field interpolation check") {
           double Ez_interp =
                   E.interpolate_to_centre_of(AxialDirection::Z, current_cell)
                           .real();
-          Ez_error[kk - 1][jj][ii] = Ez_interp - Ez_exact;
-          Ez_split_error[kk - 1][jj][ii] = Ez_split_interp - Ez_exact;
+          Ez_error[{kk - 1, jj, ii}] = Ez_interp - Ez_exact;
+          Ez_split_error[{kk - 1, jj, ii}] = Ez_split_interp - Ez_exact;
         }
       }
     }
@@ -207,8 +207,8 @@ TEST_CASE("E-field interpolation check") {
       // as such, make a new array for safety
       double jk_errors[Nx - 1], jk_split_errors[Nx - 1];
       for (int ii = 0; ii < Nx - 1; ii++) {
-        jk_errors[ii] = Ex_error[kk][jj][ii];
-        jk_split_errors[ii] = Ex_split_error[kk][jj][ii];
+        jk_errors[ii] = Ex_error[{ii, jj, kk}];
+        jk_split_errors[ii] = Ex_split_error[{ii, jj, kk}];
       }
       // compute norm-error of this slice
       double jk_slice_error = euclidean(jk_errors, Nx - 1),
@@ -225,8 +225,8 @@ TEST_CASE("E-field interpolation check") {
     for (int kk = 0; kk < Nz; kk++) {
       double ik_errors[Ny - 1], ik_split_errors[Ny - 1];
       for (int jj = 0; jj < Ny - 1; jj++) {
-        ik_errors[jj] = Ey_error[kk][jj][ii];
-        ik_split_errors[jj] = Ey_split_error[kk][jj][ii];
+        ik_errors[jj] = Ey_error[{ii, jj, kk}];
+        ik_split_errors[jj] = Ey_split_error[{ii, jj, kk}];
       }
       double ik_slice_error = euclidean(ik_errors, Ny - 1),
              ik_split_slice_error = euclidean(ik_split_errors, Ny - 1);
@@ -241,8 +241,8 @@ TEST_CASE("E-field interpolation check") {
     for (int jj = 0; jj < Ny; jj++) {
       double ij_errors[Nz - 1], ij_split_errors[Nz - 1];
       for (int kk = 0; kk < Nz - 1; kk++) {
-        ij_errors[kk] = Ez_error[kk][jj][ii];
-        ij_split_errors[kk] = Ez_split_error[kk][jj][ii];
+        ij_errors[kk] = Ez_error[{ii, jj, kk}];
+        ij_split_errors[kk] = Ez_split_error[{ii, jj, kk}];
       }
       double ij_slice_error = euclidean(ij_errors, Nz - 1),
              ij_split_slice_error = euclidean(ij_split_errors, Nz - 1);
@@ -356,12 +356,12 @@ TEST_CASE("H-field interpolation check") {
         H.real.z[kk][jj][ii] = 0.;
         // assign to "time domain" ElectricSplitField - use weighting that sums
         // to 1 to check addition is behaving as planned
-        H_split.xy[kk][jj][ii] = x_comp_value;
-        H_split.xz[kk][jj][ii] = 0.;
-        H_split.yx[kk][jj][ii] = y_comp_value * .25;
-        H_split.yz[kk][jj][ii] = y_comp_value * .75;
-        H_split.zx[kk][jj][ii] = z_comp_value * .125;
-        H_split.zy[kk][jj][ii] = z_comp_value * .875;
+        H_split.xy[{ii, jj, kk}] = x_comp_value;
+        H_split.xz[{ii, jj, kk}] = 0.;
+        H_split.yx[{ii, jj, kk}] = y_comp_value * .25;
+        H_split.yz[{ii, jj, kk}] = y_comp_value * .75;
+        H_split.zx[{ii, jj, kk}] = z_comp_value * .125;
+        H_split.zy[{ii, jj, kk}] = z_comp_value * .875;
       }
     }
   }
@@ -405,8 +405,8 @@ TEST_CASE("H-field interpolation check") {
           double Hx_interp =
                   H.interpolate_to_centre_of(AxialDirection::X, current_cell)
                           .imag();
-          Hx_error[kk - 1][jj - 1][ii] = Hx_interp - Hx_exact;
-          Hx_split_error[kk - 1][jj - 1][ii] = Hx_split_interp - Hx_exact;
+          Hx_error[{ii, jj - 1, kk - 1}] = Hx_interp - Hx_exact;
+          Hx_split_error[{ii, jj - 1, kk - 1}] = Hx_split_interp - Hx_exact;
         }
 
         // Hy interpolation
@@ -417,8 +417,8 @@ TEST_CASE("H-field interpolation check") {
           double Hy_interp =
                   H.interpolate_to_centre_of(AxialDirection::Y, current_cell)
                           .imag();
-          Hy_error[kk - 1][jj][ii - 1] = Hy_interp - Hy_exact;
-          Hy_split_error[kk - 1][jj][ii - 1] = Hy_split_interp - Hy_exact;
+          Hy_error[{ii - 1, jj, kk - 1}] = Hy_interp - Hy_exact;
+          Hy_split_error[{ii - 1, jj, kk - 1}] = Hy_split_interp - Hy_exact;
         }
 
         // Hz interpolation
@@ -429,8 +429,8 @@ TEST_CASE("H-field interpolation check") {
           double Hz_interp =
                   H.interpolate_to_centre_of(AxialDirection::Z, current_cell)
                           .imag();
-          Hz_error[kk][jj - 1][ii - 1] = Hz_interp - Hz_exact;
-          Hz_split_error[kk][jj - 1][ii - 1] = Hz_split_interp - Hz_exact;
+          Hz_error[{ii - 1, jj - 1, kk}] = Hz_interp - Hz_exact;
+          Hz_split_error[{ii - 1, jj - 1, kk}] = Hz_split_interp - Hz_exact;
         }
       }
     }
