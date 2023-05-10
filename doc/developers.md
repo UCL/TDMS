@@ -215,7 +215,23 @@ The doxygen-style comments will be included in this developer documentation.
 
 To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
-It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.
+It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is covered by unit tests.
+
+#### Benchmark Scripts and Data Generation
+
+The `tdms/tests/unit/benchmarking` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
+
+A number of unit tests require the presence of a `.mat` or `.hdf5` file to read/write data from/to during testing.
+The locations of these files are coded into `tests/include/unit_test_utils.h`, but the files themselves are not committed to the repository.
+You can create the data files locally by running the `setup_unit_tests.m` and `create_hdf5_data.py` scripts locally when you wish to run the unit tests - the CI does this automatically on GitHub.
+Additional data can be "added" to that available to the unit tests by editing the content of the following scripts:
+- `create_hdf5_data.py` : Produces `hdf5_test_file.hdf5`; used when testing read/writing from `.hdf5` files.
+- `create_structure_array.m` : Produces `structure_array.mat`; used when testing reading/writing MATLAB `struct` arrays.
+- `create_tdms_object_data.m` : Produces `class_data.mat`; used when testing reading/writing `tdms` objects to/from `.mat` files.
+- `create_bad_tdms_object_data.m` : Produces `bad_class_data.mat`; used for testing failure cases when reading/writing `tdms` objects to/from `.mat` files.
+
+The `benchmark_` scripts perform band-limited interpolation (BLi) using `MATLAB`'s `interp` function.
+`TDMS`'s interpolation schemes are based off this `MATLAB` function (specficially, in the coefficients the scheme uses to interpolate), and are thus used to benchmark the accuracy of the scheme.
 
 ### System {#system-tests}
 
