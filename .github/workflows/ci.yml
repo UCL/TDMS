@@ -54,13 +54,18 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          cache: 'pip'
+
       # -------------------------------------------------------------------------------
       # Ubuntu
       - name: Install dependencies for Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libhdf5-dev libgomp1 python3
+          sudo apt-get install libfftw3-dev libhdf5-dev libgomp1
 
       # -------------------------------------------------------------------------------
       # Windows
@@ -128,10 +133,6 @@ jobs:
           command: cd('tdms/tests/unit/benchmark_scripts/'), setup_unit_tests
 
       - name: Produce hdf5 unit test data
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
         run: |
           pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
           python ${GITHUB_WORKSPACE}/tdms/tests/unit/benchmark_scripts/create_hdf5_data.py
