@@ -221,10 +221,9 @@ It's good practice, and reassuring for your pull-request reviewers, if new C++ f
 
 The `tdms/tests/unit/benchmarking` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
 
-A number of unit tests require the presence of a `.mat` or `.hdf5` file to read/write data from/to during testing.
-The locations of these files are coded into `tests/include/unit_test_utils.h`, but the files themselves are not committed to the repository.
-You can create the data files locally by running the `setup_unit_tests.m` and `create_hdf5_data.py` scripts locally when you wish to run the unit tests - the CI does this automatically on GitHub.
-Additional data can be "added" to that available to the unit tests by editing the content of the following scripts:
+The `C++` unit tests require the presence of a `.mat` or `.hdf5` file to read/write data from/to during testing.
+The locations of these files are coded into `tests/include/unit_test_utils.h`, but the files themselves are not committed to the repository - they can be created by running the `setup_unit_tests.m` and `create_hdf5_data.py` scripts.
+These scripts can then be updated to add/remove/edit the data available to the unit tests:
 - `create_hdf5_test_file.py` : Produces `hdf5_test_file.hdf5`; used when testing read/writing from `.hdf5` files.
 - `create_structure_array.m` : Produces `structure_array.mat`; used when testing reading/writing MATLAB `struct` arrays.
 - `create_class_data.m` : Produces `class_data.mat`; used when testing reading/writing `tdms` objects to/from `.mat` files.
