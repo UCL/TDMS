@@ -24,11 +24,7 @@ void SplitFieldComponent::initialise_fftw_plan(int n_threads, int size,
 
 void SplitFieldComponent::initialise_from_matlab(double ***tensor,
                                                  Dimensions &dims) {
-  this->tensor = tensor;
-  this->n_layers = dims[2];
-  this->n_cols = dims[1];
-  this->n_rows = dims[0];
-  this->is_matlab_initialised = true;
+  initialise(tensor, dims[2], dims[1], dims[0]);
 }
 
 SplitFieldComponent::~SplitFieldComponent() {
@@ -39,7 +35,6 @@ SplitFieldComponent::~SplitFieldComponent() {
     for (int i = 0; i < n_threads; i++) { fftw_destroy_plan(plan[i]); }
     free(plan);
   }
-  // superclass Tensor3D destructor removes tensor memory
 }
 
 void SplitField::allocate() {
@@ -80,9 +75,9 @@ double SplitField::largest_field_value() {
   for (int k = 0; k < (tot.k + 1); k++) {
     for (int j = 0; j < (tot.j + 1); j++) {
       for (int i = 0; i < (tot.i + 1); i++) {
-        double x_field = fabs(xy[k][j][i] + xz[k][j][i]);
-        double y_field = fabs(yx[k][j][i] + yz[k][j][i]);
-        double z_field = fabs(zx[k][j][i] + zy[k][j][i]);
+        double x_field = fabs(xy[{i, j, k}] + xz[{i, j, k}]);
+        double y_field = fabs(yx[{i, j, k}] + yz[{i, j, k}]);
+        double z_field = fabs(zx[{i, j, k}] + zy[{i, j, k}]);
         if (largest_value < x_field) { largest_value = x_field; }
         if (largest_value < y_field) { largest_value = y_field; }
         if (largest_value < z_field) { largest_value = z_field; }

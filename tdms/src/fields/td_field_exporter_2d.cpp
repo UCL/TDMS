@@ -35,7 +35,7 @@ void TDFieldExporter2D::export_field(SplitField &F, int stride,
   while (i < F.tot.i) {
     int k = 0;
     while (k < F.tot.k) {
-      array[k][i] = F.xy[k][0][i] + F.xz[k][0][i];
+      array[k][i] = F.xy[{i, 0, k}] + F.xz[{i, 0, k}];
       k += stride;
     }
     i += stride;

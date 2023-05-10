@@ -307,7 +307,6 @@ void IncidentField::set_component(Tensor3D<double> &component,
   int N = dims[0], M = dims[1], O = dims[2];
   component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M,
                        N);
-  component.is_matlab_initialised = true;
 
   cerr << "Got tdfield, dims=(" + to_string(N) + "," + to_string(M) + "," +
                   to_string(O) + ")"

@@ -60,9 +60,10 @@ public:
   int n_threads = 1;// Number of threads this component was chunked with
   fftw_plan *plan_f = nullptr;// Forward fftw plan
   fftw_plan *plan_b = nullptr;// Backward fftw plan
-
-  double **operator[](int value) const { return tensor[value]; };
-  double &operator[](ijk cell) const { return tensor[cell.k][cell.j][cell.i]; }
+  // Tensor3D should now do this automatically
+  // double **operator[](int value) const { return tensor[value]; };
+  // double &operator[](ijk cell) const { return tensor[cell.k][cell.j][cell.i];
+  // }
 
   void initialise_from_matlab(double ***tensor, Dimensions &dims);
 
