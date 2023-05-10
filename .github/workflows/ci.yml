@@ -136,7 +136,7 @@ jobs:
       - name: Produce hdf5 unit test data
         run: |
           pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
-          python ${GITHUB_WORKSPACE}/tdms/tests/unit/benchmark_scripts/create_hdf5_data.py
+          python ${GITHUB_WORKSPACE}/tdms/tests/unit/benchmark_scripts/create_hdf5_test_file.py
 
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
