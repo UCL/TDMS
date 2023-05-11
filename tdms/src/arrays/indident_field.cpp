@@ -17,8 +17,8 @@ void IncidentField::set_component(Tensor3D<double> &component,
   auto element = ptr_to_nd_array_in(ptr, 3, name, "tdfield");
   auto dims = mxGetDimensions(element);
   int N = dims[0], M = dims[1], O = dims[2];
-  component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M,
-                       N);
+  component.initialise(cast_matlab_3D_array(mxGetPr(element), N, M, O), O, M, N,
+                       true);
 
   spdlog::info("Got tdfield, dims=({},{},{})", N, M, O);
 }

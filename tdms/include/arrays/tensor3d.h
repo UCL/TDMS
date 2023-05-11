@@ -11,15 +11,14 @@
 
 /**
  * @brief Template class for storing three-dimensional data as a strided vector.
- * @details Three dimensional data is stored as a strided vector, with the
- * layers index being the slowest varying. That is, given the number of layers,
- * columns, and rows as n_layers, n_cols, n_rows respectively:
+ * @details Three dimensional data is stored as a strided vector, in row-major
+ * (C) format. The last listed dimension has the fastest varying index, and the
+ * first listed dimension has the slowest listed. Explicitly,
  *
- * this->(i, j, k) = this[k*n_columns*n_rows + j*n_rows + i].
+ * this->(i, j, k) = this[i*n_cols*n_layers + j*n_layers + k].
  *
- * This is consistent with the format in which array-like data is stored in hdf5
- * files, and MATLAB files.
- *
+ * This is consistent with the way hdf5 files store array-like data, see
+ * https://support.hdfgroup.org/HDF5/doc1.6/UG/12_Dataspaces.html.
  * @tparam T Numerical datatype
  */
 template<typename T>
@@ -45,10 +44,10 @@ public:
   /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
    * element. */
   T &operator()(int i, int j, int k) {
-    return *(this->begin() + k * n_cols_ * n_rows_ + j * n_rows_ + i);
+    return *(this->begin() + i * n_layers_ * n_cols_ + j * n_layers_ + k);
   }
   T operator()(int i, int j, int k) const {
-    return *(this->begin() + k * n_cols_ * n_rows_ + j * n_rows_ + i);
+    return *(this->begin() + i * n_layers_ * n_cols_ + j * n_layers_ + k);
   }
 
   /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
@@ -87,13 +86,28 @@ public:
    * @param buffer 3D buffer to read from
    * @param n_layers,n_cols,n_rows "Shape" of the read buffer to assign to this
    * tensor.
+   * @param buffer_leads_n_layers If true, the buffer to read from is
+   * assumed to have dimensions [n_layers][n_cols][n_rows]. If false, it is
+   * assumed to have the dimensions in reverse order,
+   * [n_rows][n_cols][n_layers].
    */
-  void initialise(T ***buffer, int n_layers, int n_cols, int n_rows) {
+  void initialise(T ***buffer, int n_layers, int n_cols, int n_rows,
+                  bool buffer_leads_n_layers = false) {
     this->allocate(n_layers, n_cols, n_rows);
-    for (int k = 0; k < n_layers_; k++) {
-      for (int j = 0; j < n_cols_; j++) {
-        for (int i = 0; i < n_rows_; i++) {
-          this->operator()(i, j, k) = buffer[k][j][i];
+    if (buffer_leads_n_layers) {
+      for (int k = 0; k < n_layers_; k++) {
+        for (int j = 0; j < n_cols_; j++) {
+          for (int i = 0; i < n_rows_; i++) {
+            this->operator()(i, j, k) = buffer[k][j][i];
+          }
+        }
+      }
+    } else {
+      for (int k = 0; k < n_layers_; k++) {
+        for (int j = 0; j < n_cols_; j++) {
+          for (int i = 0; i < n_rows_; i++) {
+            this->operator()(i, j, k) = buffer[i][j][k];
+          }
         }
       }
     }

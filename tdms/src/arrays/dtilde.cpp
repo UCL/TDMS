@@ -46,7 +46,7 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor,
 
   free_cast_matlab_3D_array(temp_re, n_cols);
   free_cast_matlab_3D_array(temp_im, n_cols);
-  tensor.initialise(p, n_cols, n_rows, n_det_modes);
+  tensor.initialise(p, n_cols, n_rows, n_det_modes, true);
 }
 
 void DTilde::initialise(const mxArray *ptr, int n_rows, int n_cols) {

@@ -24,7 +24,7 @@ void SplitFieldComponent::initialise_fftw_plan(int n_threads, int size,
 
 void SplitFieldComponent::initialise_from_matlab(double ***tensor,
                                                  Dimensions &dims) {
-  initialise(tensor, dims[2], dims[1], dims[0]);
+  initialise(tensor, dims[2], dims[1], dims[0], true);
 }
 
 SplitFieldComponent::~SplitFieldComponent() {
