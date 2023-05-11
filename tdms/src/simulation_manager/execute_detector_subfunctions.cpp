@@ -41,11 +41,11 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
       int m = j - inputs.params.pml.Dyl +
               (i - inputs.params.pml.Dxl) *
                       (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl);
-      lv.Ex_t.v[m][0] = inputs.E_s.xy[{i, j, inputs.params.k_det_obs}] +
-                        inputs.E_s.xz[{i, j, inputs.params.k_det_obs}];
+      lv.Ex_t.v[m][0] = inputs.E_s.xy(i, j, inputs.params.k_det_obs) +
+                        inputs.E_s.xz(i, j, inputs.params.k_det_obs);
       lv.Ex_t.v[m][1] = 0.;
-      lv.Ey_t.v[m][0] = inputs.E_s.yx[{i, j, inputs.params.k_det_obs}] +
-                        inputs.E_s.yz[{i, j, inputs.params.k_det_obs}];
+      lv.Ey_t.v[m][0] = inputs.E_s.yx(i, j, inputs.params.k_det_obs) +
+                        inputs.E_s.yz(i, j, inputs.params.k_det_obs);
       lv.Ey_t.v[m][1] = 0.;
     }
 
@@ -71,8 +71,8 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
          j++)
       for (int i = 0;
            i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
-        lv.Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x[{im, i, j}];
-        lv.Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y[{im, i, j}];
+        lv.Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x(im, i, j);
+        lv.Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y(im, i, j);
       }
 
       /* Now iterate over each frequency we are extracting phasors at.

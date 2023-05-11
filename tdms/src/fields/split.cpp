@@ -75,9 +75,9 @@ double SplitField::largest_field_value() {
   for (int k = 0; k < (tot.k + 1); k++) {
     for (int j = 0; j < (tot.j + 1); j++) {
       for (int i = 0; i < (tot.i + 1); i++) {
-        double x_field = fabs(xy[{i, j, k}] + xz[{i, j, k}]);
-        double y_field = fabs(yx[{i, j, k}] + yz[{i, j, k}]);
-        double z_field = fabs(zx[{i, j, k}] + zy[{i, j, k}]);
+        double x_field = fabs(xy(i, j, k) + xz(i, j, k));
+        double y_field = fabs(yx(i, j, k) + yz(i, j, k));
+        double z_field = fabs(zx(i, j, k) + zy(i, j, k));
         if (largest_value < x_field) { largest_value = x_field; }
         if (largest_value < y_field) { largest_value = y_field; }
         if (largest_value < z_field) { largest_value = z_field; }

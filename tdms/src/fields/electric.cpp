@@ -113,8 +113,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d,
       for (int ind = scheme->first_nonzero_coeff;
            ind <= scheme->last_nonzero_coeff; ind++) {
         interp_data[ind] =
-                xy[{i - scheme->number_of_datapoints_to_left + ind, j, k}] +
-                xz[{i - scheme->number_of_datapoints_to_left + ind, j, k}];
+                xy(i - scheme->number_of_datapoints_to_left + ind, j, k) +
+                xz(i - scheme->number_of_datapoints_to_left + ind, j, k);
       }
       // now run the interpolation scheme and place the result into the output
       return scheme->interpolate(interp_data);
@@ -123,7 +123,7 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d,
       // if we are in a 2D simulation, we just return the field value at cell
       // (i, 0, k) since there is no y-dimension to interpolate in.
       if (tot.j <= 1) {
-        return yx[{i, 0, k}] + yz[{i, 0, k}];
+        return yx(i, 0, k) + yz(i, 0, k);
       } else {// 3D simulation, interpolation is as normal
         scheme = &(best_scheme(tot.j, j, interpolation_method));
         // now fill the interpolation data
@@ -132,8 +132,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d,
         for (int ind = scheme->first_nonzero_coeff;
              ind <= scheme->last_nonzero_coeff; ind++) {
           interp_data[ind] =
-                  yx[{i, j - scheme->number_of_datapoints_to_left + ind, k}] +
-                  yz[{i, j - scheme->number_of_datapoints_to_left + ind, k}];
+                  yx(i, j - scheme->number_of_datapoints_to_left + ind, k) +
+                  yz(i, j - scheme->number_of_datapoints_to_left + ind, k);
         }
         // now run the interpolation scheme and place the result into the output
         return scheme->interpolate(interp_data);
@@ -146,8 +146,8 @@ double ElectricSplitField::interpolate_to_centre_of(AxialDirection d,
           for (int ind = scheme->first_nonzero_coeff;
                ind <= scheme->last_nonzero_coeff; ind++) {
             interp_data[ind] =
-                    zx[{i, j, k - scheme->number_of_datapoints_to_left + ind}] +
-                    zy[{i, j, k - scheme->number_of_datapoints_to_left + ind}];
+                    zx(i, j, k - scheme->number_of_datapoints_to_left + ind) +
+                    zy(i, j, k - scheme->number_of_datapoints_to_left + ind);
           }
           // now run the interpolation scheme and place the result into the
           // output

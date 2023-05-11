@@ -212,9 +212,9 @@ void Field::set_phasors(SplitField &F, int n, double omega, double dt, int Nt) {
       for (int j = jl; j <= ju; j++)
         for (int i = il; i <= iu; i++) {
 
-          x_m = F.xy[{i, j, k}] + F.xz[{i, j, k}];
-          y_m = F.yx[{i, j, k}] + F.yz[{i, j, k}];
-          z_m = F.zx[{i, j, k}] + F.zy[{i, j, k}];
+          x_m = F.xy(i, j, k) + F.xz(i, j, k);
+          y_m = F.yx(i, j, k) + F.yz(i, j, k);
+          z_m = F.zx(i, j, k) + F.zy(i, j, k);
 
           int di = i - il;
           int dj = j - jl;
