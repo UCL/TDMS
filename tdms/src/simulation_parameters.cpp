@@ -5,6 +5,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "arrays/incident_field.h"
+
 using namespace std;
 
 SimulationParameters::SimulationParameters() = default;
@@ -126,7 +128,8 @@ void SimulationParameters::unpack_from_input_matrices(
   exi_present = Ei.x.has_elements();
   eyi_present = Ei.y.has_elements();
 
-  // set_Np
+  // set_Np -> do we actually USE this? f_ex_vec goes out of scope immediately
+  // after...
   FrequencyExtractVector f_ex_vec(in_matrices["f_ex_vec"], omega_an);
   set_Np(f_ex_vec);
 }

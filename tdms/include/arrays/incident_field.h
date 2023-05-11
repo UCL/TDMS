@@ -1,3 +1,7 @@
+/**
+ * @file incident_field.h
+ * @brief Declaration for the IncidentField object.
+ */
 #pragma once
 
 #include <string>
