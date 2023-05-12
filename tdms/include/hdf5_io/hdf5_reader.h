@@ -1,9 +1,10 @@
 #pragma once
 
-#include "hdf5_io/hdf5_base.h"
+#include <spdlog/spdlog.h>
 
 #include "arrays.h"
 #include "cuboid.h"
+#include "hdf5_io/hdf5_base.h"
 #include "interface.h"
 
 /**
@@ -24,12 +25,14 @@ public:
 
   /**
    * @brief Read the dataset stored within a group into the buffer provided.
+   *
    * @details Can be used to read MATLAB structs by treating the struct as the
-   * Group and field as the Dataset.
-   * @tparam T C++ datatype to read data into.
-   * @param group The Group within the file in which the dataset lives.
+   *          Group and field as the Dataset.
+   *
+   * @tparam T      C++ datatype to read data into.
+   * @param group   The Group within the file in which the dataset lives.
    * @param dataset The name of the dataset to fetch data from.
-   * @param data The buffer into which to write the data.
+   * @param data    The buffer into which to write the data.
    */
   template<typename T>
   void read_dataset_in_group(const std::string &group,
