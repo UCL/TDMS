@@ -13,16 +13,6 @@
 
 using namespace std;
 
-ijk to_ijk(const std::vector<hsize_t> dimensions) {
-  unsigned int rank = dimensions.size();
-  ijk out;
-  if (rank > 0) out.i = (int) dimensions[0];
-  if (rank > 1) out.j = (int) dimensions[1];
-  if (rank > 2) out.k = (int) dimensions[2];
-  if (rank > 3) spdlog::warn("Rank > 3");
-  return out;
-}
-
 vector<string> HDF5Base::get_datanames() const {
   vector<string> names;
 

@@ -12,7 +12,6 @@
 
 #include <H5Cpp.h>
 
-#include "cell_coordinate.h"
 #include "hdf5_io/hdf5_dimension.h"
 
 /**
@@ -90,4 +89,18 @@ public:
    * @return false Otherwise.
    */
   bool is_ok() const;
+
+  /**
+   * @brief Checks if the group `group_name` exists in this file.
+   *
+   * @details Just wraps some ugly H5Lexists call from the C-API.
+   *          TODO: does this work if given 'group/subgroup' ?
+   *
+   * @param group_name Name of the group under root to search for
+   * @return true The group is present in the file, under root
+   * @return false Otherwise
+   */
+  bool group_exists(const std::string &group_name) const {
+    return H5Lexists(file_->getId(), group_name.c_str(), H5P_DEFAULT) > 0;
+  };
 };
