@@ -19,6 +19,7 @@
 
 using namespace std;
 using tdms_tests::create_tmp_dir;
+using tdms_unit_test_data::struct_testdata;
 
 TEST_CASE("Test file I/O construction/destruction.") {
   // test-case wide setup - temporary directory
@@ -147,4 +148,10 @@ TEST_CASE("Test read/write wrt standard datatypes") {
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
   filesystem::remove_all(tmp);
+}
+
+TEST_CASE("Test group can be found") {
+  HDF5Reader reader(struct_testdata);
+  REQUIRE(!reader.group_exists("group_doesnt_exist"));
+  REQUIRE(reader.group_exists("example_struct"));
 }
