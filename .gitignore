@@ -14,6 +14,7 @@ html/
 **/.pytest_cache/
 tdms/tests/system/data
 **.mat
+tdms/tests/unit/benchmark_scripts/unit_test_data/**
 
 # text editor files
 .idea/

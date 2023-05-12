@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include <spdlog/spdlog.h>
+
 using namespace std;
 
 void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
@@ -51,4 +53,29 @@ void HDF5Reader::read(Cuboid *cube) const {
   for (int i = 0; i < 6; i++) {
     cube->array[i] = (int) intermediate_buffer[i] - 1;
   }
+}
+
+void HDF5Reader::read(DispersiveMultiLayer *dml) const {
+  string group_name = "dispersive_aux";
+  // Deal with the case of an empty input
+  if (!file_->nameExists(group_name)) {
+    spdlog::info(group_name + " is not a group: assuming empty input");
+    return;
+  } else {
+    // This is a group - it should have 9 members and we can quickly check this
+    H5::Group dispersive_aux = file_->openGroup(group_name);
+    if (dispersive_aux.getNumObjs() != 9) {
+      throw runtime_error("dispersive_aux does not have exactly 9 members!");
+    }
+  }
+  // Assuming non-empty input, setup the data appropriately
+  read_dataset_in_group(group_name, "alpha", dml->alpha);
+  read_dataset_in_group(group_name, "beta", dml->beta);
+  read_dataset_in_group(group_name, "gamma", dml->gamma);
+  read_dataset_in_group(group_name, "kappa_x", dml->kappa.x);
+  read_dataset_in_group(group_name, "kappa_y", dml->kappa.y);
+  read_dataset_in_group(group_name, "kappa_z", dml->kappa.z);
+  read_dataset_in_group(group_name, "sigma_x", dml->sigma.x);
+  read_dataset_in_group(group_name, "sigma_y", dml->sigma.y);
+  read_dataset_in_group(group_name, "sigma_z", dml->sigma.z);
 }

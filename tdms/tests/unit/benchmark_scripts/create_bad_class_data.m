@@ -17,4 +17,4 @@ phasorsurface = [1; 4; 2; 5; 3; 6; 7;]; % 7 elements should throw an error
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
 
-save("matlab_data/bad_class_data.mat", "-v7.3");
+save("unit_test_data/bad_class_data.mat", "-v7.3");
