@@ -22,18 +22,31 @@
  * @tparam T Numerical datatype
  */
 template<typename T>
-class Tensor3D : public std::vector<T> {
+class Tensor3D {
+private:
+  /** @brief Convert a 3D (i,j,k) index to the corresponding index in the
+   * strided storage. */
+  int to_global_index(int i, int j, int k) const {
+    return i * n_layers_ * n_cols_ + j * n_layers_ + k;
+  }
+  int to_global_index(const ijk &index_3d) const {
+    return to_global_index(index_3d.i, index_3d.j, index_3d.k);
+  }
+
 protected:
   int n_layers_ = 0;
   int n_cols_ = 0;
   int n_rows_ = 0;
+
+  /*! Strided vector that will store the array data */
+  std::vector<T> data_;
 
   /*! The total number of elements, according to the dimension values currently
    * set. */
   int total_elements() const { return n_layers_ * n_cols_ * n_rows_; }
 
 public:
-  Tensor3D() : std::vector<T>(){};
+  Tensor3D() = default;
   Tensor3D(int n_layers, int n_cols, int n_rows) {
     allocate(n_layers, n_cols, n_rows);
   }
@@ -43,20 +56,18 @@ public:
 
   /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
    * element. */
-  T &operator()(int i, int j, int k) {
-    return *(this->begin() + i * n_layers_ * n_cols_ + j * n_layers_ + k);
-  }
+  T &operator()(int i, int j, int k) { return data_[to_global_index(i, j, k)]; }
   T operator()(int i, int j, int k) const {
-    return *(this->begin() + i * n_layers_ * n_cols_ + j * n_layers_ + k);
+    return data_[to_global_index(i, j, k)];
   }
 
   /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
    * element. */
   T &operator[](const ijk &index_3d) {
-    return this->operator()(index_3d.i, index_3d.j, index_3d.k);
+    return data_[to_global_index(index_3d)];
   }
   T operator[](const ijk &index_3d) const {
-    return this->operator()(index_3d.i, index_3d.j, index_3d.k);
+    return data_[to_global_index(index_3d)];
   }
 
   /**
@@ -64,7 +75,7 @@ public:
    * @details Strictly speaking, checks whether the total_elements() method
    * returns 0, indicating that this tensor has no size and thus no elements.
    */
-  bool has_elements() const { return this->total_elements() != 0; }
+  bool has_elements() const { return total_elements() != 0; }
 
   /**
    * @brief Allocate memory for this tensor given the dimensions passed.
@@ -76,7 +87,7 @@ public:
     n_layers_ = n_layers;
     n_cols_ = n_cols;
     n_rows_ = n_rows;
-    this->resize(this->total_elements());
+    data_.resize(total_elements());
   }
 
   /**
@@ -93,12 +104,12 @@ public:
    */
   void initialise(T ***buffer, int n_layers, int n_cols, int n_rows,
                   bool buffer_leads_n_layers = false) {
-    this->allocate(n_layers, n_cols, n_rows);
+    allocate(n_layers, n_cols, n_rows);
     if (buffer_leads_n_layers) {
       for (int k = 0; k < n_layers_; k++) {
         for (int j = 0; j < n_cols_; j++) {
           for (int i = 0; i < n_rows_; i++) {
-            this->operator()(i, j, k) = buffer[k][j][i];
+            operator()(i, j, k) = buffer[k][j][i];
           }
         }
       }
@@ -106,7 +117,7 @@ public:
       for (int k = 0; k < n_layers_; k++) {
         for (int j = 0; j < n_cols_; j++) {
           for (int i = 0; i < n_rows_; i++) {
-            this->operator()(i, j, k) = buffer[i][j][k];
+            operator()(i, j, k) = buffer[i][j][k];
           }
         }
       }
@@ -114,7 +125,7 @@ public:
   }
 
   /** @brief Set all elements in the tensor to 0. */
-  void zero() { std::fill(this->begin(), this->end(), 0); }
+  void zero() { std::fill(data_.begin(), data_.end(), 0); }
 
   /**
    * @brief Computes the Frobenius norm of the tensor.
@@ -130,7 +141,7 @@ public:
    */
   double frobenius() const {
     T norm_val = 0;
-    for (const T &element_value : *this) {
+    for (const T &element_value : data_) {
       norm_val += std::abs(element_value) * std::abs(element_value);
     }
     return std::sqrt(norm_val);

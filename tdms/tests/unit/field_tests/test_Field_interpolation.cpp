@@ -27,12 +27,12 @@ using tdms_tests::TOLERANCE;
 We will test the performance of BLi at interpolating a known field to the centre
 of each Yee cell, for both the E- and H- fields. The benchmark for success will
 be superior or equivalent error (Frobenius and 1D-dimension-wise norm) to that
-produced by MATLAB performing the same functionality. Frobenious error is the
+produced by MATLAB performing the same functionality. Frobenius error is the
 Frobenius norm of the 3D matrix whose (i,j,k)-th entry is the error in the
 interpolated value at Yee cell centre (i,j,k). The slice error, for a fixed j,k,
 is the norm-error of the 1D array of interpolated values along the axis (:,j,k).
 The maximum of this is then the max-slice error: keeping track of this ensures
-us that the behaviour of BLi is consistent, and does not dramaically
+us that the behaviour of BLi is consistent, and does not dramatically
 over-compensate in some areas and under-compensate in others.
 
 All tests will be performed with cell sizes Dx = 0.25, Dy = 0.1, Dz = 0.05, over
@@ -78,7 +78,7 @@ TEST_CASE("E-field interpolation check") {
 
   // setup the "split" E-field components
   ElectricSplitField E_split(Nx - 1, Ny - 1, Nz - 1);
-  E_split.allocate();// alocates Nx, Ny, Nz memory space here
+  E_split.allocate();// allocates Nx, Ny, Nz memory space here
   E_split.tot +=
           1;// correct the "number of datapoints" variable for these fields
   // setup for non-split field components
@@ -131,14 +131,12 @@ TEST_CASE("E-field interpolation check") {
   Ez_exact[k][j][i] is the field component at position (x_lower,y_lower,z_lower)
   + (i+0.5,j+0.5,k+0.5)*cellDims
   */
-  Tensor3D<double> Ex_error, Ex_split_error, Ey_error, Ey_split_error, Ez_error,
-          Ez_split_error;
-  Ex_error.allocate(Nz, Ny, Nx - 1);
-  Ex_split_error.allocate(Nz, Ny, Nx - 1);
-  Ey_error.allocate(Nz, Ny - 1, Nx);
-  Ey_split_error.allocate(Nz, Ny - 1, Nx);
-  Ez_error.allocate(Nz - 1, Ny, Nx);
-  Ez_split_error.allocate(Nz - 1, Ny, Nx);
+  Tensor3D<double> Ex_error(Nz, Ny, Nx - 1);
+  Tensor3D<double> Ex_split_error(Nz, Ny, Nx - 1);
+  Tensor3D<double> Ey_error(Nz, Ny - 1, Nx);
+  Tensor3D<double> Ey_split_error(Nz, Ny - 1, Nx);
+  Tensor3D<double> Ez_error(Nz - 1, Ny, Nx);
+  Tensor3D<double> Ez_split_error(Nz - 1, Ny, Nx);
   // now interpolate
   // note that we aren't interpolating to position 0 (before 1st point) or
   // N{x,y,z} (after last point)
@@ -184,8 +182,8 @@ TEST_CASE("E-field interpolation check") {
           double Ez_interp =
                   E.interpolate_to_centre_of(AxialDirection::Z, current_cell)
                           .real();
-          Ez_error(kk - 1, jj, ii) = Ez_interp - Ez_exact;
-          Ez_split_error(kk - 1, jj, ii) = Ez_split_interp - Ez_exact;
+          Ez_error(ii, jj, kk - 1) = Ez_interp - Ez_exact;
+          Ez_split_error(ii, jj, kk - 1) = Ez_split_interp - Ez_exact;
         }
       }
     }
@@ -295,7 +293,7 @@ TEST_CASE("E-field interpolation check") {
  *
  * Each component of the H-field will take the form
  * H_t(tt) = sin(2\pi tt) * exp(-tt^2)
- * The decision to make this function wholey imaginary is just to test whether
+ * The decision to make this function wholly imaginary is just to test whether
  * the imaginary part of the field is correctly picked up and worked with.
  *
  * We only test Fro-norm error metrics, since interpolation must occur along two
