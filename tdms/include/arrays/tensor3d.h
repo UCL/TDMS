@@ -131,8 +131,8 @@ public:
   double frobenius() const {
     T norm_val = 0;
     for (const T &element_value : *this) {
-      norm_val += abs(element_value) * abs(element_value);
+      norm_val += std::abs(element_value) * std::abs(element_value);
     }
-    return sqrt(norm_val);
+    return std::sqrt(norm_val);
   }
 };
