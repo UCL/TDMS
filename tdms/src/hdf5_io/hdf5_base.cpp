@@ -45,20 +45,19 @@ void HDF5Base::ls() const {
   return;
 }
 
-// IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
-// return to_ijk(dimensions);
-vector<hsize_t> HDF5Base::shape_of(const string &dataname) const {
-  SPDLOG_DEBUG("shape_of");
+H5Dimension HDF5Base::shape_of(const string &dataname) const {
+  // Get the dataspace (contains dimensionality info)
+  H5::DataSpace dataspace = file_->openDataSet(dataname).getSpace();
+  return H5Dimension(dataspace);
+}
 
-  // get the dataset and dataspace (contains dimensionality info)
-  H5::DataSet dataset = file_->openDataSet(dataname);
-  H5::DataSpace dataspace = dataset.getSpace();
-
-  // need the rank in order to declare the vector size
-  int rank = dataspace.getSimpleExtentNdims();
-  vector<hsize_t> dimensions(rank);
-  dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
-  return dimensions;
+H5Dimension HDF5Base::shape_of(const string &group_name,
+                               const string &dataname) const {
+  // Open the group that contains the dataset
+  H5::Group group = file_->openGroup(group_name);
+  // Get the DataSpace for the DataSet within the group
+  H5::DataSpace dataspace = group.openDataSet(dataname).getSpace();
+  return H5Dimension(dataspace);
 }
 
 bool HDF5Base::is_ok() const {

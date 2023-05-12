@@ -24,6 +24,7 @@ int InputMatrices::index_from_matrix_name(const string &matrix_name) {
 }
 
 void InputMatrices::set_from_input_file(const char *mat_filename) {
+  input_filename = std::string(mat_filename);
   MatrixCollection infile_expected(matrixnames_input_with_grid);
   MatFileMatrixCollection infile_contains(mat_filename);
   spdlog::info("Input file: " + string(mat_filename) +
@@ -51,6 +52,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename) {
 }
 void InputMatrices::set_from_input_file(const char *mat_filename,
                                         const char *gridfile) {
+  input_filename = std::string(mat_filename);
   MatrixCollection infile_expected(matrixnames_infile);
   MatFileMatrixCollection infile_contains(mat_filename);
   spdlog::info("Input file: " + string(mat_filename) +

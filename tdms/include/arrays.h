@@ -7,6 +7,7 @@
 #include <complex>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <fftw3.h>
 
@@ -325,12 +326,9 @@ public:
   double max();
 };
 
-class FrequencyVectors {
-public:
-  Vector<double> x;
-  Vector<double> y;
-
-  void initialise(const mxArray *ptr);
+struct FrequencyVectors {
+  std::vector<double> x;
+  std::vector<double> y;
 };
 
 // TODO: docstring

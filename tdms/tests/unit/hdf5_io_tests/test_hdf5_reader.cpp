@@ -27,10 +27,10 @@ TEST_CASE("Read from a MATLAB struct") {
     double one_half = 0., unity = 0.;
     bool logical_read = false;
     // Read values
-    MATFile.read_field_from_struct("example_struct", "double_half", &one_half);
-    MATFile.read_field_from_struct("example_struct", "double_no_decimal",
-                                   &unity);
-    MATFile.read_field_from_struct("example_struct", "boolean", &logical_read);
+    MATFile.read_dataset_in_group("example_struct", "double_half", &one_half);
+    MATFile.read_dataset_in_group("example_struct", "double_no_decimal",
+                                  &unity);
+    MATFile.read_dataset_in_group("example_struct", "boolean", &logical_read);
     // Validate read in data
     REQUIRE(one_half == Catch::Approx(0.5));
     REQUIRE(unity == Catch::Approx(1.));
@@ -44,15 +44,15 @@ TEST_CASE("Read from a MATLAB struct") {
     // we need to convert manually...
     {
       uint16_t read_uints16[4];
-      MATFile.read_field_from_struct("example_struct", "string", read_uints16);
+      MATFile.read_dataset_in_group("example_struct", "string", read_uints16);
       string tdms = uint16s_to_string(read_uints16, 4);
       REQUIRE(tdms == "tdms");
     }
     // The uint 3*4*5 uint matrix contains only 1s
     {
       vector<uint8_t> uint_matrix(3 * 4 * 5, 0);
-      MATFile.read_field_from_struct("example_struct", "uint_345",
-                                     uint_matrix.data());
+      MATFile.read_dataset_in_group("example_struct", "uint_345",
+                                    uint_matrix.data());
       bool all_values_unity = true;
       for (uint8_t &value : uint_matrix) {
         if (value != 1) { all_values_unity = false; }
@@ -62,7 +62,7 @@ TEST_CASE("Read from a MATLAB struct") {
     // The double 2*2 matrix contains 0.25, 0.5, 0.75, 1.
     {
       double two_by_two[4];
-      MATFile.read_field_from_struct("example_struct", "double_22", two_by_two);
+      MATFile.read_dataset_in_group("example_struct", "double_22", two_by_two);
       REQUIRE(two_by_two[0] == Catch::Approx(0.25));
       REQUIRE(two_by_two[1] == Catch::Approx(0.75));
       REQUIRE(two_by_two[2] == Catch::Approx(0.5));
