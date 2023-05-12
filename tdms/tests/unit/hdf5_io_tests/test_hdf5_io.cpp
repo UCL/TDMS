@@ -19,7 +19,8 @@
 
 using namespace std;
 using tdms_tests::create_tmp_dir;
-using tdms_unit_test_data::struct_testdata;
+using tdms_unit_test_data::struct_testdata,
+        tdms_unit_test_data::tdms_object_data;
 
 TEST_CASE("Test file I/O construction/destruction.") {
   // test-case wide setup - temporary directory
@@ -151,7 +152,14 @@ TEST_CASE("Test read/write wrt standard datatypes") {
 }
 
 TEST_CASE("Test group can be found") {
-  HDF5Reader reader(struct_testdata);
-  REQUIRE(!reader.group_exists("group_doesnt_exist"));
-  REQUIRE(reader.group_exists("example_struct"));
+  SECTION("Groups") {
+    HDF5Reader reader(struct_testdata);
+    REQUIRE(!reader.contains("group_doesnt_exist"));
+    REQUIRE(reader.contains("example_struct"));
+  }
+  SECTION("DataSets") {
+    HDF5Reader reader(tdms_object_data);
+    REQUIRE(reader.contains("phasorsurface"));
+    REQUIRE(!reader.contains("flibble"));
+  }
 }
