@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include <spdlog/spdlog.h>
-
 using namespace std;
 
 void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
