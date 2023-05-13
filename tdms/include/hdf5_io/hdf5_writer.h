@@ -68,6 +68,9 @@ public:
                               const std::string &dataset,
                               std::vector<T> data) const {
     spdlog::debug("Writing {} to file: {}", group, filename_);
+    // Infer the datatype to write to and throw error immediately if we cannot
+    // convert to it
+    H5::PredType write_data_as_type = to_hdf5_datatype<T>();
 
     // Create group if it does not exist
     H5::Group group_to_write_to;
@@ -86,13 +89,9 @@ public:
     hsize_t dims[1] = {data.size()};
     H5::DataSpace dimension_info(1, dims);
     H5::DataSet dataset_to_write_to = group_to_write_to.createDataSet(
-            dataset,
-            // to_hdf5_dtype(data),
-            H5::PredType::NATIVE_DOUBLE, dimension_info);
+            dataset, write_data_as_type, dimension_info);
 
-    dataset_to_write_to.write(data.data(),
-                              // to_hdf5_dtype(data),
-                              H5::PredType::NATIVE_DOUBLE);
+    dataset_to_write_to.write(data.data(), write_data_as_type);
 
     dataset_to_write_to.close();
     dimension_info.close();
@@ -100,6 +99,3 @@ public:
     return;
   }
 };
-
-// https://support.hdfgroup.org/HDF5/doc/RM/RM_H5T.html#Datatype-Equal <-
-// possible compare C++ types to HDF5 types?
