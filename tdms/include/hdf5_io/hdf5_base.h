@@ -7,12 +7,41 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <H5Cpp.h>
 
 #include "hdf5_io/hdf5_dimension.h"
+
+/**
+ * @brief Convert from C++ datatype T to a H5::PredType for HDF5 write out.
+ *
+ * TODO: Doesn't support complex doubles. Might need a compount datatype.
+ * Investigate how to read complex doubles first.
+ *
+ * @tparam T the native C++ type.
+ * @return H5::PredType The HDF5 type to save.
+ */
+template<typename T>
+H5::PredType to_hdf5_datatype() {
+
+  if (std::is_same<T, double>()) {
+    return H5::PredType::NATIVE_DOUBLE;
+  } else if (std::is_same<T, int>()) {
+    return H5::PredType::NATIVE_INT;
+  } else if (std::is_same<T, char>()) {
+    return H5::PredType::NATIVE_CHAR;
+  } else if (std::is_same<T, uint16_t>()) {
+    return H5::PredType::NATIVE_UINT16;
+  } else if (std::is_same<T, int16_t>()) {
+    return H5::PredType::NATIVE_INT16;
+  } else {
+    throw std::runtime_error("I don't know how to convert this datatype to "
+                             "something HDF5 wants");
+  }
+};
 
 /**
  * @brief The base class for HDF5 I/O.
