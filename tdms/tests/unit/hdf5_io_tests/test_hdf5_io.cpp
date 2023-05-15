@@ -19,7 +19,8 @@
 
 using namespace std;
 using tdms_tests::create_tmp_dir;
-using tdms_unit_test_data::struct_testdata,
+using tdms_unit_test_data::cant_find_test_data_message,
+        tdms_unit_test_data::struct_testdata,
         tdms_unit_test_data::tdms_object_data;
 
 TEST_CASE("Test file I/O construction/destruction.") {
@@ -151,15 +152,22 @@ TEST_CASE("Test read/write wrt standard datatypes") {
   filesystem::remove_all(tmp);
 }
 
-TEST_CASE("Test group can be found") {
+TEST_CASE("Test groups and datasets can be found") {
   SECTION("Groups") {
+    if (!std::filesystem::exists(struct_testdata))
+      SKIP(cant_find_test_data_message);
+    // TODO: make this a bit nicer and include instructions for how to create
+    // the testdata files (run this python script etc)
     HDF5Reader reader(struct_testdata);
     REQUIRE(!reader.contains("group_doesnt_exist"));
     REQUIRE(reader.contains("example_struct"));
   }
   SECTION("DataSets") {
+    if (!std::filesystem::exists(tdms_object_data))
+      SKIP(cant_find_test_data_message);
+    //"Test data file not created before running these unit tests.");
     HDF5Reader reader(tdms_object_data);
+    REQUIRE(!reader.contains("dataset_doesnt_exist"));
     REQUIRE(reader.contains("phasorsurface"));
-    REQUIRE(!reader.contains("flibble"));
   }
 }

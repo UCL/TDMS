@@ -13,9 +13,12 @@
 #include "unit_test_utils.h"
 
 using namespace std;
-using tdms_unit_test_data::struct_testdata;
+using tdms_unit_test_data::cant_find_test_data_message,
+        tdms_unit_test_data::struct_testdata;
 
 TEST_CASE("Fetch dimensions correctly") {
+  if (!std::filesystem::exists(struct_testdata))
+    SKIP(cant_find_test_data_message);
   HDF5Reader MATFile(struct_testdata);
 
   SECTION("2D array") {

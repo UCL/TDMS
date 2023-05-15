@@ -9,7 +9,8 @@
 
 #include "unit_test_utils.h"
 
-using tdms_unit_test_data::tdms_object_data,
+using tdms_unit_test_data::cant_find_test_data_message,
+        tdms_unit_test_data::tdms_object_data,
         tdms_unit_test_data::tdms_bad_object_data;
 
 /**
@@ -22,6 +23,8 @@ TEST_CASE("HDF5: Read Cuboid") {
   Cuboid cube;
 
   SECTION("Read into existing object") {
+    if (!std::filesystem::exists(tdms_object_data))
+      SKIP(cant_find_test_data_message);
     HDF5Reader MATFile(tdms_object_data);
     MATFile.read(&cube);
     // Check expected values, noting the -1 offset that is applied because of
@@ -33,6 +36,8 @@ TEST_CASE("HDF5: Read Cuboid") {
   }
 
   SECTION("Throw error if too many elements provided") {
+    if (!std::filesystem::exists(tdms_bad_object_data))
+      SKIP(cant_find_test_data_message);
     HDF5Reader MATFile(tdms_bad_object_data);
     // Error should be thrown due to incorrect dimensions
     REQUIRE_THROWS_AS(MATFile.read(&cube), std::runtime_error);

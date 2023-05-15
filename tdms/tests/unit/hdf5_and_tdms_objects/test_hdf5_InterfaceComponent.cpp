@@ -13,7 +13,8 @@
 #include "unit_test_utils.h"
 
 using namespace std;
-using tdms_unit_test_data::tdms_object_data;
+using tdms_unit_test_data::cant_find_test_data_message,
+        tdms_unit_test_data::tdms_object_data;
 
 /**
  * @brief Check that HDF5 can read an InterfaceComponent from a HDF5 file.
@@ -37,6 +38,8 @@ using tdms_unit_test_data::tdms_object_data;
  * _match_ those we expect from the data file.
  */
 TEST_CASE("HDF5: Read InterfaceComponent") {
+  if (!std::filesystem::exists(tdms_object_data))
+    SKIP(cant_find_test_data_message);
   HDF5Reader MATFile(tdms_object_data);
 
   SECTION("Read into existing InterfaceComponent") {

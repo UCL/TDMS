@@ -15,6 +15,11 @@ using tdms_math_constants::DCPI;
 
 namespace tdms_unit_test_data {
 
+inline std::string cant_find_test_data_message =
+        "Can't find the test data .hdf5/.mat, probably it wasn't generated "
+        "before running the unit-test suite. So skipping this test.";
+// TODO: add explaination 👆 of how to run the test data generation?
+
 #ifdef CMAKE_SOURCE_DIR
 inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
                                     "/tests/unit/benchmark_scripts/"
