@@ -18,10 +18,58 @@ For further details about the method, please refer to the [PDF documentation](ht
 
 ![The normed z-component of the H field incident on a cylinder](doc/assets/HzNormBanner.png)
 
+## Prerequisites
+
+We don't ship binaries at the moment, so to use TDMS, it has to be compiled.
+It needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
+
+<details>
+<summary>Windows prerequisite setup</summary>
+
+TDMS has been tested with **Windows subsystem for Linux (WSL)** and natively with the SDK on Windows 10.
+ 
+If you're a complete beginner we recommend you download the [Windows subsystem for Linux (WSL2)](https://learn.microsoft.com/en-gb/windows/wsl/install), or set up an linux virtual machine, and follow the linux instructions.
+If you can't (or don't want to) do this for some reason, you'll need to install the [Windows software developer kit (SDK)](https://developer.microsoft.com/en-gb/windows/downloads/windows-sdk/) which contains the Windows C++ compiler, [CMake](https://cmake.org/download/), and then [FFTW](https://www.fftw.org/), the latter works via [conda](https://anaconda.org/conda-forge/fftw).
+ 
+You'll also need [MATLAB](https://www.mathworks.com/products/matlab.html).
+Note: MATLAB inside WSL2 is not _officially_ supported but does work (and we still recommend this as the most straightforward).
+You may have to do [some setup to ensure your license key is recognised](https://uk.mathworks.com/matlabcentral/answers/1696925-matlab-licence-using-both-window11-and-wsl2).
+</details>
+
+<details>
+<summary>Linux and MacOS prerequisite setup</summary>
+
+Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP and FFTW.
+ 
+For Debian-based distributions this should be as simple as
+```{sh}
+sudo apt install git gcc cmake libfftw3-dev libgomp1
+```
+
+On MacOS you will need an x86 compiler with libraries for OpenMP.
+You'll need to download the latest [xcode tools](https://apps.apple.com/app/xcode).
+And everything else can be installed using [Homebrew](https://brew.sh) with the command:
+
+```{sh}
+brew install cmake fftw llvm
+```
+
+On an ARM Mac, you will need to install the x86 version of Homebrew.
+To do so, use the following commands:
+
+```{sh}
+arch -x86_64 zsh
+arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
+```
+------
+ 
+You'll need to download and install [MATLAB](https://www.mathworks.com/products/matlab.html), and take note where the headers are installed.
+</details>
+
 ## Getting started
 
-To use TDMS, it needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
-To install, follow these steps:
+To compile and install, follow these steps:
 
 ```bash
 $ git clone git@github.com:UCL/TDMS.git
@@ -40,14 +88,7 @@ If CMake cannot find MATLAB, FFTW, or install to the default installation prefix
 <details>
 <summary>Mac-specific instructions</summary>
 
-To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP.
-You can install these using [Homebrew](https://brew.sh) with the command:
-
-```{sh}
-brew install llvm
-```
-
-After installing with Homebrew, you may need to set the following CMake arguments:
+ After installing with Homebrew, you may need to set the following CMake arguments:
 
 ```{sh}
 -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
