@@ -43,8 +43,9 @@
  *         +------------>j
  *          J0        J1
  *
- * @param order specifies the direction of the surface normals of the triangles. This
- * can take only 2 possible values +1 or -1. They have the following meaning:
+ * @param order specifies the direction of the surface normals of the triangles.
+ * This can take only 2 possible values +1 or -1. They have the following
+ * meaning:
  *
  * order = 1 means that the surface normal for a triangle in the:
  *     xy plane will || to the z-axis
@@ -57,21 +58,30 @@
  * facet matrix.
  *
  * The space allocated by *vertexMatrix must be freed after use.
-*/
-void triangulatePlane(int I0, int I1, int J0, int J1, int K,int coordmap[], int order, mxArray **vertexMatrix);
-void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K,int coordmap[], int order, mxArray **vertexMatrix, int dI, int dJ);
+ */
+void triangulatePlane(int I0, int I1, int J0, int J1, int K, int coordmap[],
+                      int order, mxArray **vertexMatrix);
+void triangulatePlaneSkip(int I0, int I1, int J0, int J1, int K, int coordmap[],
+                          int order, mxArray **vertexMatrix, int dI, int dJ);
 /**
  * @brief
  *
- * @param vertexMatrix should be a 6 element array. Generates 6 arrays of facets using triangulatePlane.
- *  Each matrix is a plane of the cuboid which is defined by:
+ * @param vertexMatrix should be a 6 element array. Generates 6 arrays of facets
+ * using triangulatePlane. Each matrix is a plane of the cuboid which is defined
+ * by:
  *
+ * Each matrix is a plane of the cuboid which is defined by:
  * (I0,I1)x(J0,J1)x(K0,K1)
  *
  * Each vertexMatrix[i] should be destroyed after calling this function
+ *
+ * @param vertexMatrix 6-element array to write the triangulations to
+ * @param I0,I1,J0,J1,K0,K1 The Yee-cell indicies defining the cuboidal surface
  */
-void triangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix);
-void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertexMatrix, int dI, int dJ, int dK);
+void triangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
+                       mxArray **vertexMatrix);
+void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
+                           mxArray **vertexMatrix, int dI, int dJ, int dK);
 
 /**
  * @brief Generates a triangulation of a cuboid defined the surface of a regular
@@ -90,10 +100,14 @@ void triangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1, mxArr
  * @param vertices an array of vertices, each row is a numbered vertex.
  * @param facets an array of facets each of which is created using 3 vertex
  * indices. Each index is an index in to the vertices array.
+ * @param I0,I1,J0,J1,K0,K1 The Yee-cell indicies defining the cuboidal surface
  */
-void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1, mxArray **vertices,
-                              mxArray **facets);
-void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0, int K1,
-                                  SurfaceSpacingStride &spacing_stride, mxArray **vertices, mxArray **facets);
+void conciseTriangulateCuboid(int I0, int I1, int J0, int J1, int K0, int K1,
+                              mxArray **vertices, mxArray **facets);
+void conciseTriangulateCuboidSkip(int I0, int I1, int J0, int J1, int K0,
+                                  int K1,
+                                  const SurfaceSpacingStride &spacing_stride,
+                                  mxArray **vertices, mxArray **facets);
 
-void conciseCreateBoundary(int I0, int I1,int K0, int K1, mxArray **vertices, mxArray ** facets);
+void conciseCreateBoundary(int I0, int I1, int K0, int K1, mxArray **vertices,
+                           mxArray **facets);

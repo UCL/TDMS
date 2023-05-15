@@ -1,36 +1,31 @@
-# Contribution Guidelines
+# Contribution guidelines
 
-### New features/Issues
+## Bugs
 
-To suggest a new feature or report an issue please use the
-[issues](https://github.com/UCL/TDMS/issues) board providing details of either
-the feature or the bug.
+🐛 If you've spotted a bug or want to request a feature please [send an issue through github](https://github.com/UCL/TDMS/issues/new/choose).
+Please choose the "bug" or "feature" template (as appropriate) and fill it out with much information as you can.
+We really appreciate bug reports and feature requests.
+Thanks!
 
-For bugs, please provide detailed steps to reproduce, your operating system, and what you expected to happen.
+## Code contribution
 
-To contribute to the code base please
+🚀 If you want to contribute code, or you have reported a bug and think you have a fix, then please:
+
 1. [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
 this repository,
-2. commit and push the changes to your fork
-3. and submit a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) (PR) against the _main_ branch, being mindful of the guidelines below.
+2. make your changes and check they compile,
+3. commit and push the changes to your fork
+   + (optional but appreciated) [setup and run pre-commit](https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#pre-commit) which automates our code tidyup,
+4. and submit a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) (PR) against the `main` branch.
 
 ### Pull requests
 
-PRs should follow the following guidelines
+When you're submitting a PR please give as much context as possible and link to any issues of relevance.
+You can use our PR template as a starting point, but here are some guidelines we try to follow:
 
-- Contain a **context** or **description** of the change
-- Include any useful hints for reviewers
-- Be focused on a single feature or fix, i.e. a logically consistent set of changes
-- Not be excessively large, ideally touching 100s not 1000s of lines
-- Add additional tests to ensure the correct functionality
-- Should pass all system and unit tests run on GitHub Actions CI
-- Follow the code style and have documentation as appropriate
+- Focus on a single feature or bug fix. One set of logically consistent changes per PR.
+- Ideally a PR should touch 100s, not 1000s, of lines.
+- [Add test(s)](https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#testing) to ensure the correct functionality or which reproduce the bug and demonstrate the fix.
+- Document your code changes, [we use doxygen for C++](https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html#code-style-and-doxygen).
 
-### Tests
-
-Tests are located in [`tdms/tests`](./tdms/tests) and include both unit and system tests. These
-must pass locally and on CI for a change to be merged.
-
-### Developer documentation
-
-We have some more detailed [developer documentation](https://github-pages.ucl.ac.uk/TDMS) (C++ class structure, code style, etc) on our `gh-pages` site.
+You can find more information in our [developer and API documentation](https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html).

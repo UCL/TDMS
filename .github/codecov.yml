@@ -1,0 +1,12 @@
+# Configures some options for codecov
+# https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  precision: 0           # zero decimal places
+  round: nearest         # ... rounded sanely
+
+  status:
+    patch:
+      default:
+        threshold: 25%   # the patch check will allow up to 25% coverage drop
+                         # for lines changed or added

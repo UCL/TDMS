@@ -1,13 +1,14 @@
 /**
  * @file test_Field.cpp
- * @brief Unit tests for the Field class and its subclasses (ElectricField, MagneticField).
+ * @brief Unit tests for the Field class and its subclasses (ElectricField,
+ * MagneticField).
  *
  * NOTE: Interpolation methods are checked in a separate file for readability.
  */
 #include "field.h"
 
-#include <complex>
 #include <catch2/catch_test_macros.hpp>
+#include <complex>
 
 #include "globals.h"
 #include "unit_test_utils.h"
@@ -15,13 +16,14 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-using tdms_tests::TOLERANCE;
 using tdms_tests::is_close;
+using tdms_tests::TOLERANCE;
 
 TEST_CASE("Field: normalise_volume") {
 
   const int I_tot = 2, J_tot = 2, K_tot = 2;
-  // create a field (note electric or magnetic should be sufficient here as we are testing base class method)
+  // create a field (note electric or magnetic should be sufficient here as we
+  // are testing base class method)
   ElectricField F(I_tot, J_tot, K_tot);
   F.allocate_and_zero();
 
@@ -54,15 +56,18 @@ TEST_CASE("Field: normalise_volume") {
         // set x component to be 1 + i, so should normalise to 1.
         x_normalised_correctly =
                 (x_normalised_correctly &&
-                 (abs(F.real.x[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < TOLERANCE));
+                 (abs(F.real.x[k][j][i] - 1. +
+                      IMAGINARY_UNIT * (F.imag.x[k][j][i] - 0.)) < TOLERANCE));
         // set y component to be 2, so should normalise to be 1 - i
         y_normalised_correctly =
                 (y_normalised_correctly &&
-                 (abs(F.real.y[k][j][i] - 1. + IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < TOLERANCE));
+                 (abs(F.real.y[k][j][i] - 1. +
+                      IMAGINARY_UNIT * (F.imag.y[k][j][i] + 1.)) < TOLERANCE));
         // keep z components as 0
         z_normalised_correctly =
                 (z_normalised_correctly &&
-                 (abs(F.real.z[k][j][i] - 0. + IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < TOLERANCE));
+                 (abs(F.real.z[k][j][i] - 0. +
+                      IMAGINARY_UNIT * (F.imag.z[k][j][i] - 0.)) < TOLERANCE));
       }
     }
   }
@@ -85,7 +90,8 @@ TEST_CASE("ElectricField: angular norm addition") {
   params.dt = DT;
 
   // z = e^(iω(n+1)dt) / N_t
-  auto expected = exp(OMEGA * ((double) N + 1) * DT * IMAGINARY_UNIT) / ((double) N_T);
+  auto expected =
+          exp(OMEGA * ((double) N + 1) * DT * IMAGINARY_UNIT) / ((double) N_T);
 
   E.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(E.angular_norm, expected));
@@ -105,7 +111,8 @@ TEST_CASE("MagneticField: angular norm addition") {
   params.dt = DT;
 
   // z = e^(iω(n+1/2)dt) / N_t
-  auto expected = exp(OMEGA * ((double) N + 0.5) * DT * IMAGINARY_UNIT) / ((double) N_T);
+  auto expected = exp(OMEGA * ((double) N + 0.5) * DT * IMAGINARY_UNIT) /
+                  ((double) N_T);
 
   H.add_to_angular_norm(N, N_T, params);
   REQUIRE(is_close(H.angular_norm, expected));

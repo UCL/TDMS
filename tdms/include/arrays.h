@@ -5,14 +5,14 @@
 #pragma once
 
 #include <complex>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <fftw3.h>
 
+#include "globals.h"
 #include "matlabio.h"
 #include "utils.h"
-#include "globals.h"
 
 template<typename T>
 class XYZTensor3D {
@@ -21,25 +21,34 @@ public:
   T ***y = nullptr;
   T ***z = nullptr;
 
-  T*** operator[] (char c) const{
+  T ***operator[](char c) const {
     switch (c) {
-      case 'x': return x;
-      case 'y': return y;
-      case 'z': return z;
-      default: throw std::runtime_error("Have no element " + to_string(c));
+      case 'x':
+        return x;
+      case 'y':
+        return y;
+      case 'z':
+        return z;
+      default:
+        throw std::runtime_error("Have no element " + std::string(1, c));
     }
   }
-  T*** operator[] (AxialDirection d) const{
+  T ***operator[](AxialDirection d) const {
     switch (d) {
-      case AxialDirection::X: return x;
-      case AxialDirection::Y: return y;
-      case AxialDirection::Z: return z;
-      default: throw std::runtime_error("Have no element " + to_string(d));
+      case AxialDirection::X:
+        return x;
+      case AxialDirection::Y:
+        return y;
+      case AxialDirection::Z:
+        return z;
+      default:
+        throw std::runtime_error("Have no element " + std::to_string(d));
     }
   }
 
   /**
-   * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays
+   * @brief Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1)
+   * arrays
    *
    * @param I_total,J_total,K_total Dimensions of the tensor size to set
    */
@@ -62,9 +71,9 @@ public:
 
 class XYZVectors {
 public:
-  double* x = nullptr;
-  double* y = nullptr;
-  double* z = nullptr;
+  double *x = nullptr;
+  double *y = nullptr;
+  double *z = nullptr;
 
   /**
    * Default constructor
@@ -76,19 +85,48 @@ public:
    * @param c Character labeling the vector
    * @param ptr Pointer to assign
    */
-  void set_ptr(char c, double* ptr);
+  void set_ptr(char c, double *ptr);
   /**
    * Set the pointer for one of the vectors in this collection with a name of c
    * @param d AxialDirection labeling the vector
    * @param ptr Pointer to assign
    */
   void set_ptr(AxialDirection d, double *ptr);
+
+  /**
+   * @brief Determines whether all elements in the x, y, or z vector are less
+   * than a given value.
+   *
+   * @param comparison_value Value to compare elements to
+   * @param vector_length Number of elements to compare against
+   * @param component Vector to compare elements against; x, y, or z
+   * @param buffer_start Only compare elements between buffer_start (inclusive)
+   * and buffer_start+vector_length-1 (inclusive)
+   * @return true All elements are less than the comparison_value
+   * @return false At least one element is not less than the comparison_value
+   */
+  bool all_elements_less_than(double comparison_value, int vector_length,
+                              AxialDirection component,
+                              int buffer_start = 0) const;
+  /**
+   * @brief Determines whether all elements in the x, y, AND z vectors are less
+   * than a given value.
+   *
+   * @param comparison_value Value to compare elements to
+   * @param nx,ny,nz Number of elements in the nx, ny, and nz vectors
+   * respectively
+   * @return true All elements are less than the comparison_value
+   * @return false At least one element is not less than the comparison_value
+   */
+  bool all_elements_less_than(double comparison_value, int nx, int ny,
+                              int nz) const;
 };
 
 // TODO: docstring
-class MaterialCollection{
+class MaterialCollection {
 protected:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                               const std::string &prefix);
 };
 
 /**
@@ -113,7 +151,8 @@ public:
 /*! @copydoc CCollectionBase */
 class CCollection : public CCollectionBase {
 private:
-  void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                        const std::string &prefix);
 
 public:
   bool is_multilayer = false;
@@ -147,9 +186,10 @@ public:
 };
 
 /*! @copydoc DCollectionBase */
-class DCollection: public DCollectionBase{
+class DCollection : public DCollectionBase {
 private:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays, const std::string &prefix);
+  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+                               const std::string &prefix);
 
 public:
   explicit DCollection(const mxArray *ptr);
@@ -161,24 +201,36 @@ public:
   explicit DMaterial(const mxArray *ptr);
 };
 
-class DispersiveMultiLayer{
+class DispersiveMultiLayer {
 public:
-  double* alpha = nullptr;
-  double* beta = nullptr;
-  double* gamma = nullptr;
+  double *alpha = nullptr;
+  double *beta = nullptr;
+  double *gamma = nullptr;
   XYZVectors kappa;
   XYZVectors sigma;
 
 public:
   explicit DispersiveMultiLayer(const mxArray *ptr);
+
+  /**
+   * @brief Determines whether the (background) medium is dispersive
+   *
+   * @param K_tot Number of Yee cells in the z-direction (number of entries in
+   * this->gamma)
+   * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation)
+   * values
+   * @return true Background is dispersive
+   * @return false Background is not dispersive
+   */
+  bool is_dispersive(int K_tot, double near_zero_tolerance = 1e-15);
 };
 
 template<typename T>
-class Matrix{
+class Matrix {
 protected:
   int n_rows = 0;
   int n_cols = 0;
-  T** matrix = nullptr;
+  T **matrix = nullptr;
 
 public:
   /**
@@ -190,20 +242,19 @@ public:
    * @brief Construct a new Matrix object, providing the dimensions
    *
    * @param n_rows,n_cols Number of rows and columns in the matrix
-   * @param initial_value The initial value of the elements, defaults to 0 to avoid initalised but unassigned values
+   * @param initial_value The initial value of the elements, defaults to 0 to
+   * avoid initalised but unassigned values
    */
-  Matrix(int n_rows, int n_cols) {
-    allocate(n_rows, n_cols);
-  }
+  Matrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
 
-  inline T* operator[] (int value) const { return matrix[value]; }
+  inline T *operator[](int value) const { return matrix[value]; }
   /**
    * @brief Check whether this matrix has elements assigned
    *
    * @return true If this matrix has assigned elements
    * @return false This matrix is currently unassigned
    */
-  bool has_elements(){ return matrix != nullptr; };
+  bool has_elements() { return matrix != nullptr; };
 
   /**
    * Allocate the memory for this matrix
@@ -211,7 +262,7 @@ public:
    * @param n_rows Number of rows
    * @param n_cols Number of columns
    */
-  void allocate(int n_rows, int n_cols, T initial_value = 0){
+  void allocate(int n_rows, int n_cols, T initial_value = 0) {
     this->n_rows = n_rows;
     this->n_cols = n_cols;
 
@@ -224,7 +275,7 @@ public:
   /**
    * Destructor. Must be defined in the header
    */
-  ~Matrix(){
+  ~Matrix() {
     if (has_elements()) {
       for (int i = 0; i < n_rows; i++) { free(matrix[i]); }
       free(matrix);
@@ -232,7 +283,7 @@ public:
   };
 };
 
-class GratingStructure: public Matrix<int>{
+class GratingStructure : public Matrix<int> {
 
 public:
   GratingStructure(const mxArray *ptr, int I_tot);
@@ -241,10 +292,10 @@ public:
 };
 
 template<typename T>
-class Vector{
+class Vector {
 protected:
-  int n = 0;        // Number of elements
-  T* vector = nullptr; // Internal array
+  int n = 0;          // Number of elements
+  T *vector = nullptr;// Internal array
 
 public:
   Vector() = default;
@@ -259,19 +310,19 @@ public:
 
   bool has_elements() { return vector != nullptr; }
 
-  inline T operator[] (int value) const { return vector[value]; };
+  inline T operator[](int value) const { return vector[value]; };
 
   inline int size() const { return n; };
 };
 
-class FrequencyExtractVector: public Vector<double>{
+class FrequencyExtractVector : public Vector<double> {
 public:
   FrequencyExtractVector(const mxArray *ptr, double omega_an);
 
   double max();
 };
 
-class FrequencyVectors{
+class FrequencyVectors {
 public:
   Vector<double> x;
   Vector<double> y;
@@ -279,8 +330,19 @@ public:
   void initialise(const mxArray *ptr);
 };
 
-// TODO: docstring
-class Pupil: public Matrix<double>{
+/**
+ * @brief Defines the numerical aperture of the objective, assuming that the
+ * lens is centred on the origin of the PSTD simulation.
+ *
+ * In particular, since the fibre modes are imaged onto a Fourier plane of both
+ * the physical fibre and the sample, the field scattered by the sample and
+ * collected by the objective lens can have only a finite spatial support in the
+ * aperature of the objective lens.
+ *
+ * Pupil[j][i] thus takes the value 1 for those (i,j) indices (note the order
+ * swapping) within the aperture of the lens.
+ */
+class Pupil : public Matrix<double> {
 public:
   Pupil() = default;
 
@@ -290,32 +352,32 @@ public:
 };
 
 template<typename T>
-class Tensor3D{
+class Tensor3D {
 protected:
   int n_layers = 0;
   int n_cols = 0;
   int n_rows = 0;
-  T*** tensor = nullptr;
+  T ***tensor = nullptr;
 
 public:
   bool is_matlab_initialised = false;
 
   Tensor3D() = default;
 
-  Tensor3D(T*** tensor, int n_layers, int n_cols, int n_rows) {
+  Tensor3D(T ***tensor, int n_layers, int n_cols, int n_rows) {
     initialise(tensor, n_layers, n_cols, n_rows);
   }
 
-  void initialise(T*** _tensor, int _n_layers, int _n_cols, int _n_rows) {
+  void initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows) {
     tensor = _tensor;
     n_layers = _n_layers;
     n_cols = _n_cols;
     n_rows = _n_rows;
   }
 
-  inline T** operator[] (int value) const { return tensor[value]; };
+  inline T **operator[](int value) const { return tensor[value]; };
 
-  bool has_elements(){ return tensor != nullptr; };
+  bool has_elements() { return tensor != nullptr; };
 
   void zero() {
     for (int k = 0; k < n_layers; k++)
@@ -323,17 +385,17 @@ public:
         for (int i = 0; i < n_rows; i++) { tensor[k][j][i] = 0; }
   }
 
-  void allocate(int nK, int nJ, int nI){
+  void allocate(int nK, int nJ, int nI) {
     n_layers = nK, n_cols = nJ, n_rows = nI;
-    tensor = (T ***)malloc(n_layers * sizeof(T **));
+    tensor = (T ***) malloc(n_layers * sizeof(T **));
 
-    for(int k=0; k < n_layers; k++){
-      tensor[k] = (T **)malloc(n_cols * sizeof(T *));
+    for (int k = 0; k < n_layers; k++) {
+      tensor[k] = (T **) malloc(n_cols * sizeof(T *));
     }
 
-    for(int k=0; k < n_layers; k++){
-      for(int j=0; j < n_cols; j++){
-        tensor[k][j] = (T *)malloc(n_rows * sizeof(T));
+    for (int k = 0; k < n_layers; k++) {
+      for (int j = 0; j < n_cols; j++) {
+        tensor[k][j] = (T *) malloc(n_rows * sizeof(T));
       }
     }
   };
@@ -341,27 +403,28 @@ public:
   /**
    * @brief Computes the Frobenius norm of the tensor
    *
-   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot} |t[k][j][i]|^2 }\f$
+   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot}
+   * |t[k][j][i]|^2 }\f$
    */
   double frobenius() {
     T norm_val = 0;
     for (int i1 = 0; i1 < n_layers; i1++) {
       for (int i2 = 0; i2 < n_cols; i2++) {
-        for (int i3 = 0; i3 < n_rows; i3++) { norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]); }
+        for (int i3 = 0; i3 < n_rows; i3++) {
+          norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]);
+        }
       }
     }
     return sqrt(norm_val);
   }
 
-  ~Tensor3D(){
+  ~Tensor3D() {
     if (tensor == nullptr) return;
-    if (is_matlab_initialised){
+    if (is_matlab_initialised) {
       free_cast_matlab_3D_array(tensor, n_layers);
     } else {
       for (int k = 0; k < n_layers; k++) {
-        for (int j = 0; j < n_cols; j++) {
-          free(tensor[k][j]);
-        }
+        for (int j = 0; j < n_cols; j++) { free(tensor[k][j]); }
         free(tensor[k]);
       }
       free(tensor);
@@ -369,23 +432,38 @@ public:
   }
 };
 
-class DTilde{
+/**
+ * @brief Stores the fibre modes in the Fourier plane of the objective lens.
+ *
+ * The "Tilde" indicates that these quantities are in a Fourier plane relative
+ * to where the optical fibre is actually located, meaning that is has a Fourier
+ * relationship relative to the physical fibre mode(s).
+ */
+class DTilde {
 protected:
-  int n_det_modes = 0;
-  static void set_component(Tensor3D<std::complex<double>> &tensor, const mxArray *ptr,
-                     const std::string &name, int n_rows, int n_cols);
+  int n_det_modes = 0;//< Number of modes specified
+  static void set_component(Tensor3D<std::complex<double>> &tensor,
+                            const mxArray *ptr, const std::string &name,
+                            int n_rows, int n_cols);
+
 public:
+  /** @brief Fetch the number of modes */
   inline int num_det_modes() const { return n_det_modes; };
 
+  /*! 3-dimensional vector of fibre modes indexed by (j, i, i_m).
+   * i and j index over the x and y plane respectively.
+   * i_m indexes the different modes specified in the input file.*/
   Tensor3D<std::complex<double>> x;
+  /*! @copydoc x */
   Tensor3D<std::complex<double>> y;
 
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
 };
 
-class IncidentField{
+class IncidentField {
 protected:
-  void set_component(Tensor3D<double> &component, const mxArray *ptr, const std::string &name);
+  void set_component(Tensor3D<double> &component, const mxArray *ptr,
+                     const std::string &name);
 
 public:
   Tensor3D<double> x;
@@ -394,36 +472,11 @@ public:
   explicit IncidentField(const mxArray *ptr);
 };
 
-class FieldSample{
-
-private:
-  double**** tensor = nullptr;
-
-public:
-  mxArray* mx;       // Matlab array
-
-  Vector<int> i;     // Indices along the x-direction of locations at which to sample the field
-  Vector<int> j;     // Indices along the y-direction of locations at which to sample the field
-  Vector<int> k;     // Indices along the z-direction of locations at which to sample the field
-  Vector<double> n;  // Vector of the moments of the field to sample
-
-  explicit FieldSample(const mxArray *ptr);
-
-  bool all_vectors_are_non_empty() const{
-          return i.size() > 0 && j.size() > 0 && k.size() > 0 && n.size() > 0;
-  };
-
-  inline double*** operator[] (int value) const { return tensor[value]; };
-
-  ~FieldSample();
-};
-
 /**
  * List of field components as integers
  */
-class FieldComponentsVector: public Vector<int>{
+class FieldComponentsVector : public Vector<int> {
 public:
-
   FieldComponentsVector() = default;
 
   void initialise(const mxArray *ptr);
@@ -437,42 +490,25 @@ public:
   int index(int value);
 };
 
-class Vertices: public Matrix<int>{
+class Vertices : public Matrix<int> {
 public:
-
   Vertices() = default;
 
   void initialise(const mxArray *ptr);
 
-  int n_vertices(){ return n_rows; }
+  int n_vertices() { return n_rows; }
 
-  ~Vertices(){
-    if (has_elements()){
-      free_cast_matlab_2D_array(matrix);
-    }
+  ~Vertices() {
+    if (has_elements()) { free_cast_matlab_2D_array(matrix); }
     matrix = nullptr;
   };
 };
 
-/**
- * Complex amplitude samples. Abbreviated to CAmpSample in MATLAB code
- */
-class ComplexAmplitudeSample {
-
+class DetectorSensitivityArrays {
 public:
-  Vertices vertices;                 // N x 3 matrix of indices to sample
-  FieldComponentsVector components;  //
-
-  explicit ComplexAmplitudeSample(const mxArray *ptr);
-
-  int n_vertices(){ return vertices.n_vertices(); }
-};
-
-class DetectorSensitivityArrays{
-public:
-  fftw_complex* v = nullptr;            // Flat fftw vector
-  fftw_plan plan = nullptr;             // fftw plan for the setup
-  std::complex<double>** cm = nullptr;  // Column major matrix
+  fftw_complex *v = nullptr;          // Flat fftw vector
+  fftw_plan plan = nullptr;           // fftw plan for the setup
+  std::complex<double> **cm = nullptr;// Column major matrix
 
   void initialise(int n_rows, int n_cols);
 
@@ -482,12 +518,85 @@ public:
 /**
  * Matrix of c coefficients. See the pdf documentation for their definition
  */
-class CCoefficientMatrix: public Matrix<double>{};
+class CCoefficientMatrix : public Matrix<double> {};
 
 /**
  * Temporary storage 'vector'
  */
-class EHVec: public Matrix<fftw_complex>{
+class EHVec : public Matrix<fftw_complex> {
 public:
   ~EHVec();
+};
+
+/**
+ * Container for storing snapshots of the full-field
+ */
+class FullFieldSnapshot {
+public:
+  std::complex<double> Ex = 0.;//< x-component of the electric field
+  std::complex<double> Ey = 0.;//< y-component of the electric field
+  std::complex<double> Ez = 0.;//< z-component of the electric field
+  std::complex<double> Hx = 0.;//< x-component of the magnetic field
+  std::complex<double> Hy = 0.;//< y-component of the magnetic field
+  std::complex<double> Hz = 0.;//< z-component of the magnetic field
+
+  FullFieldSnapshot() = default;
+
+  /**
+   * @brief Return the component of the field corresponding to the index
+   * provided.
+   *
+   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.
+   * This is the indexing order that other storage containers use.
+   *
+   * Throws an error if provided an index <0 or >5.
+   *
+   * @param index Field component index to fetch
+   * @return std::complex<double> The field component
+   */
+  std::complex<double> operator[](int index) {
+    switch (index) {
+      case 0:
+        return Ex;
+        break;
+      case 1:
+        return Ey;
+        break;
+      case 2:
+        return Ez;
+        break;
+      case 3:
+        return Hx;
+        break;
+      case 4:
+        return Hy;
+        break;
+      case 5:
+        return Hz;
+        break;
+      default:
+        throw std::runtime_error("Index " + std::to_string(index) +
+                                 " does not correspond to a field component.");
+        break;
+    }
+  }
+
+  /**
+   * @brief Multiplies the electric field components by `factor`.
+   * @param factor to scale the field by
+   */
+  void multiply_E_by(std::complex<double> factor) {
+    Ex *= factor;
+    Ey *= factor;
+    Ez *= factor;
+  }
+  /**
+   * @brief Multiplies the magnetic field components by `factor`.
+   * @param factor to scale the field by
+   */
+  void multiply_H_by(std::complex<double> factor) {
+    Hx *= factor;
+    Hy *= factor;
+    Hz *= factor;
+  }
 };

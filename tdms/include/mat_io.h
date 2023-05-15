@@ -5,8 +5,8 @@
 #pragma once
 
 #include <mat.h>
-#include <mex.h>
 #include <matrix.h>
+#include <mex.h>
 // https://stackoverflow.com/questions/27069676/how-to-dynamically-create-an-array-of-mxarray-in-a-matlab-mex-file
 
 #ifdef CLUSTER

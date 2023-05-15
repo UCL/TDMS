@@ -1,3 +1,7 @@
 numpy
+scipy
 pytest
+pytest-check
 h5py
+hdf5storage
+pyyaml

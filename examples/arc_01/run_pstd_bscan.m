@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %start by defining the coordinates of the computational grid
-addpath('../../tdms/matlab');
+addpath('../../tdms/tests/system/data/input_generation/matlab');
 [x,y,z,lambda] = fdtd_bounds('pstd_input_file.m');
 
 %15 micron radius cylinder
@@ -56,3 +56,9 @@ subplot(2,1,2);
 imagesc(dat_fs.z_i,dat_fs.x_i,abs(squeeze(dat_cyl.Ex_i)));
 title('Focussed beam with scattering cylinder');
 axis equal;
+
+%%
+figure;
+imagesc(dat_cyl.z_i, dat_cyl.x_i, abs(squeeze(dat_cyl.Hz_out)));
+axis equal;
+title('Normalised Hz component of the scattered field from a cylinder');

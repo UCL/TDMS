@@ -20,7 +20,8 @@ void DetectorSensitivityArraysTest::test_correct_construction() {
   DetectorSensitivityArrays dsa;
   // default constructor should set everything to nullptrs
   // destructor uses fftw destroy, which handles nullptrs itself
-  bool all_are_nullptrs = (dsa.cm == nullptr) && (dsa.plan == nullptr) && (dsa.v == nullptr);
+  bool all_are_nullptrs =
+          (dsa.cm == nullptr) && (dsa.plan == nullptr) && (dsa.v == nullptr);
   REQUIRE(all_are_nullptrs);
 }
 
@@ -37,9 +38,12 @@ void DetectorSensitivityArraysTest::test_initialise_method() {
       dsa.v[j * n_rows + i][1] = dsa.cm[i][j].imag();
     }
   }
-  // we can call the fftw_plan execution, which should place the 2D FFT into dsa.v
-  // simply checking executation is sufficient, as fftw should cover whether the FFT is actually meaningful in what it puts out
+  // we can call the fftw_plan execution, which should place the 2D FFT into
+  // dsa.v simply checking executation is sufficient, as fftw should cover
+  // whether the FFT is actually meaningful in what it puts out
   REQUIRE_NOTHROW(fftw_execute(dsa.plan));
 }
 
-TEST_CASE("DetectorSensitivityArrays") { DetectorSensitivityArraysTest().run_all_class_tests(); }
+TEST_CASE("DetectorSensitivityArrays") {
+  DetectorSensitivityArraysTest().run_all_class_tests();
+}

@@ -1,0 +1,212 @@
+name: Build and test
+
+# The main C++ CI is split into three steps: lint, build, and system tests. The
+# linting and building are independent but we make the build wait so as not to
+# waste resources compiling and testing a commit which doesn't pass the linter.
+#
+# System tests are slow and need input data. To save caching, network, and job
+# time we only run the full system tests on Ubuntu (although this can easily be
+# changed).
+
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: always.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  linting:
+    name: Linting checks with pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ucl/composite-actions/pre-commit@v1
+
+  build:
+    name: ${{ matrix.build_type }} build on ${{ matrix.os }} with build testing ${{ matrix.build_testing }}
+    needs: linting
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Debug]
+        # Only Debug builds (so we have helpful debug output in our logs). Can
+        # also test 'Release'.
+        build_testing: [ON, OFF]
+        exclude:
+          # Currently our tests don't compile, and nor do we have a coverage
+          # build in Windows so skip this.
+          - os: windows-latest
+            build_testing: ON
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.3
+
+      # -------------------------------------------------------------------------------
+      # Ubuntu
+      - name: Install dependencies for Ubuntu
+        if: ${{ contains(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install libfftw3-dev libgomp1 python3 lcov
+
+      # -------------------------------------------------------------------------------
+      # Windows
+      - name: Install miniconda for Windows
+        if: ${{ contains(matrix.os, 'windows') }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+
+      - name: Install dependencies for Windows
+        if: ${{ contains(matrix.os, 'windows') }}
+        shell: pwsh
+        run: |
+          conda install fftw --yes
+          echo "FFTWDIR=C:\Miniconda\envs\test\Library" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      # -------------------------------------------------------------------------------
+      # MacOS
+      - name: Install dependencies for MacOS
+        if: ${{ contains(matrix.os, 'macos') }}
+        run: brew install fftw lcov
+
+      - name: Fix omp headers not linked on MacOS
+        if: ${{ contains(matrix.os, 'macos') }}
+        run: |
+          brew unlink libomp
+          brew link --force libomp
+          export DOMP_ROOT_MAC=-DOMP_ROOT=$(brew --prefix libomp)
+          echo "DOMP_ROOT_MAC=${DOMP_ROOT_MAC}" >> $GITHUB_ENV
+
+      # -------------------------------------------------------------------------------
+      - name: Create build environment
+        run: |
+          cmake -E make_directory ${{ runner.workspace }}/build
+
+      - name: Compile with Werror on Ubuntu and MacOS (not Windows)
+        if: ${{ !contains(matrix.os, 'windows') }}
+        run: echo "CXXFLAGS=-Werror" >> $GITHUB_ENV
+
+      - name: Configure TDMS
+        shell: bash
+        working-directory: ${{ runner.workspace }}/build
+        run: |
+          cmake ${GITHUB_WORKSPACE}/tdms -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+           -DBUILD_TESTING=${{ matrix.build_testing }} \
+           -DCODE_COVERAGE=${{ matrix.build_testing }} \
+           ${DOMP_ROOT_MAC}
+        # This 👆 env variable only exists on MacOS builds to fix the OMP
+        # homebrew/PATH problem.
+
+      - name: Build TDMS
+        working-directory: ${{ runner.workspace }}/build
+        shell: bash
+        run: |
+          cmake --build . --config ${{ matrix.build_type }}
+
+      - name: Run TDMS unit tests
+        if: matrix.build_testing == 'ON'
+        working-directory: ${{ runner.workspace }}/build
+        shell: bash
+        run: |
+          export OMP_NUM_THREADS=1
+          ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
+
+      - name: Run coverage analysis with lcov
+        if: matrix.build_testing == 'ON'
+        shell: bash
+        # Create the coverage summary, filter out dependencies' coverage then
+        # print human-readable summary in the build logs.
+        run: |
+          lcov --capture --directory ${{ runner.workspace }}/build/CMakeFiles/tdms_tests.dir/src --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '*/_deps/*' --output-file coverage.info
+          lcov --remove coverage.info '/Library/*' --output-file coverage.info
+          lcov --remove coverage.info '/Applications/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload coverage reports to Codecov
+        if: matrix.build_testing == 'ON'
+        uses: codecov/codecov-action@v3
+
+      - name: Tar the build result to maintain permissions
+        # https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files
+        # https://github.com/actions/upload-artifact/issues/38
+        if: ${{ !contains(matrix.os, 'windows') }}
+        working-directory: ${{ runner.workspace }}/build
+        run: tar -cvf tdms_build.tar tdms
+
+      - name: Upload build results
+        if: matrix.build_testing == 'OFF' && matrix.build_type == 'Debug'
+        # If we use the build with testing ON, we'd also need to copy over (and
+        # install) the libtdms.so so use the OFF build for simplicity.
+        uses: actions/upload-artifact@v3
+        with:
+          name: tdms_build_${{ matrix.os }}
+          path: ${{ runner.workspace }}/build/tdms_build.tar
+          retention-days: 1
+
+  # Only run the slow system tests on Ubuntu.
+  # Cache the input data to save network usage.
+  system-tests:
+    name: System tests ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest] #, macos-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.3
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python3 -m pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
+
+      - name: Download build result
+        uses: actions/download-artifact@v3
+        with:
+          name: tdms_build_${{ matrix.os }}
+          path: ${{ runner.workspace }}
+
+      - name: Untar
+        working-directory: ${{ runner.workspace }}
+        run: |
+          tar -xvf tdms_build.tar
+
+      - name: Setup cache of test data
+        id: cache-test-data
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/tdms/tests/system/data
+          key: test_data
+
+      - name: Run TDMS system tests
+        working-directory: ${{ runner.workspace }}
+        shell: bash
+        run: |
+          export OMP_NUM_THREADS=2
+          pytest ${GITHUB_WORKSPACE}/tdms/tests/system/ --ignore=${GITHUB_WORKSPACE}/tdms/tests/system/test_regen.py -s -x

@@ -1,7 +1,9 @@
 # build output
+build/
 **build/
 **cmake-build**
 **.o
+compile_commands.json
 
 # pdf and documentation output
 **doc/masterdoc.pdf
@@ -11,12 +13,13 @@ html/
 # (py)tests and test data
 **.pyc
 **/.pytest_cache/
-tdms/tests/system/data
+tdms/tests/system/data/*.zip
 **.mat
 
 # text editor files
 .idea/
 .vscode/
+.cache/
 
 # MacOS
 **.DS_store
