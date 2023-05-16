@@ -11,8 +11,7 @@
 #include "unit_test_utils.h"
 
 using Catch::Approx;
-using tdms_unit_test_data::cant_find_test_data_message,
-        tdms_unit_test_data::tdms_object_data,
+using tdms_unit_test_data::tdms_object_data,
         tdms_unit_test_data::tdms_bad_object_data;
 
 inline int EXPECTED_VEC_SIZE = 4;
@@ -35,8 +34,7 @@ TEST_CASE("HDF5: Read FrequencyVector") {
   FrequencyVectors f_vec;
 
   SECTION("Correct data") {
-    if (!std::filesystem::exists(tdms_object_data))
-      SKIP(cant_find_test_data_message);
+    tdms_unit_test_data::skip_if_missing(tdms_object_data);
     HDF5Reader MATFile(tdms_object_data);
 
     SECTION("Read into existing FrequencyVectors object") {
@@ -62,8 +60,7 @@ TEST_CASE("HDF5: Read FrequencyVector") {
 
   // Bad object data provides a 2D array for fx_vec component
   SECTION("Incorrect sizes") {
-    if (!std::filesystem::exists(tdms_bad_object_data))
-      SKIP(cant_find_test_data_message);
+    tdms_unit_test_data::skip_if_missing(tdms_bad_object_data);
     HDF5Reader MATFile(tdms_bad_object_data);
     REQUIRE_THROWS_AS(MATFile.read(&f_vec), std::runtime_error);
   }

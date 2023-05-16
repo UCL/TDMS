@@ -154,18 +154,13 @@ TEST_CASE("Test read/write wrt standard datatypes") {
 
 TEST_CASE("Test groups and datasets can be found") {
   SECTION("Groups") {
-    if (!std::filesystem::exists(struct_testdata))
-      SKIP(cant_find_test_data_message);
-    // TODO: make this a bit nicer and include instructions for how to create
-    // the testdata files (run this python script etc)
+    tdms_unit_test_data::skip_if_missing(struct_testdata);
     HDF5Reader reader(struct_testdata);
     REQUIRE(!reader.contains("group_doesnt_exist"));
     REQUIRE(reader.contains("example_struct"));
   }
   SECTION("DataSets") {
-    if (!std::filesystem::exists(tdms_object_data))
-      SKIP(cant_find_test_data_message);
-    //"Test data file not created before running these unit tests.");
+    tdms_unit_test_data::skip_if_missing(tdms_object_data);
     HDF5Reader reader(tdms_object_data);
     REQUIRE(!reader.contains("dataset_doesnt_exist"));
     REQUIRE(reader.contains("phasorsurface"));

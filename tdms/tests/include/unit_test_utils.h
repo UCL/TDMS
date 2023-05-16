@@ -4,21 +4,32 @@
  */
 #pragma once
 
+// std
 #include <complex>
 #include <filesystem>
 #include <random>
 #include <string>
 
+// external
+#include <catch2/catch_test_macros.hpp>
+
+// tdms
 #include "globals.h"
 
 using tdms_math_constants::DCPI;
 
 namespace tdms_unit_test_data {
 
-inline std::string cant_find_test_data_message =
-        "Can't find the test data .hdf5/.mat, probably it wasn't generated "
-        "before running the unit-test suite. So skipping this test.";
-// TODO: add explaination 👆 of how to run the test data generation?
+inline std::string cant_find_test_data_message("foo");
+
+inline void skip_if_missing(const std::string &expected_data_file) {
+  if (!std::filesystem::exists(expected_data_file)) {
+    // TODO: add explaination of how to run the test data generation?
+    SKIP("Can't find the test data .hdf5/.mat, probably it wasn't generated "
+         "before running the unit-test suite. So skipping this test.");
+  }
+}
+
 
 #ifdef CMAKE_SOURCE_DIR
 inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +

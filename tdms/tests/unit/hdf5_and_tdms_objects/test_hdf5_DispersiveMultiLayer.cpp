@@ -9,12 +9,10 @@
 
 using Catch::Approx;
 using namespace std;
-using tdms_unit_test_data::cant_find_test_data_message,
-        tdms_unit_test_data::tdms_object_data;
+using tdms_unit_test_data::tdms_object_data;
 
 TEST_CASE("HDF5: Read DispersiveMultiLayer") {
-  if (!std::filesystem::exists(tdms_object_data))
-    SKIP(cant_find_test_data_message);
+  tdms_unit_test_data::skip_if_missing(tdms_object_data);
   HDF5Reader MATFile(tdms_object_data);
   // read from dispersive_aux group
   DispersiveMultiLayer dml;

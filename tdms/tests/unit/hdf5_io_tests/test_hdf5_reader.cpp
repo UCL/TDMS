@@ -19,13 +19,10 @@
 
 using namespace std;
 using tdms_tests::uint16s_to_string;
-using tdms_unit_test_data::cant_find_test_data_message,
-        tdms_unit_test_data::struct_testdata,
-        tdms_unit_test_data::hdf5_test_file;
+using tdms_unit_test_data::struct_testdata, tdms_unit_test_data::hdf5_test_file;
 
 TEST_CASE("HDF5: Read from a MATLAB struct") {
-  if (!std::filesystem::exists(struct_testdata))
-    SKIP(cant_find_test_data_message);
+  tdms_unit_test_data::skip_if_missing(struct_testdata);
   HDF5Reader MATFile(struct_testdata);
 
   SECTION("Read numeric scalars") {
@@ -88,8 +85,7 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
   bool entries_read_correctly = true;
 
   SECTION(".mat files") {
-    if (!std::filesystem::exists(struct_testdata))
-      SKIP(cant_find_test_data_message);
+    tdms_unit_test_data::skip_if_missing(struct_testdata);
     HDF5Reader Hfile(struct_testdata);
 
     SECTION("Vector [int32]") {
@@ -112,8 +108,7 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
   }
 
   SECTION(".hdf5 files") {
-    if (!std::filesystem::exists(hdf5_test_file))
-      SKIP(cant_find_test_data_message);
+    tdms_unit_test_data::skip_if_missing(hdf5_test_file);
     HDF5Reader Hfile(hdf5_test_file);
 
     // h5py saves int dtype at 64-bit integers
