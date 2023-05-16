@@ -22,6 +22,7 @@ TEST_CASE("HDF5: Read Cuboid") {
   Cuboid cube;
 
   SECTION("Read into existing object") {
+    tdms_unit_test_data::skip_if_missing(tdms_object_data);
     HDF5Reader MATFile(tdms_object_data);
     MATFile.read(&cube);
     // Check expected values, noting the -1 offset that is applied because of
@@ -33,6 +34,7 @@ TEST_CASE("HDF5: Read Cuboid") {
   }
 
   SECTION("Throw error if too many elements provided") {
+    tdms_unit_test_data::skip_if_missing(tdms_bad_object_data);
     HDF5Reader MATFile(tdms_bad_object_data);
     // Error should be thrown due to incorrect dimensions
     REQUIRE_THROWS_AS(MATFile.read(&cube), std::runtime_error);

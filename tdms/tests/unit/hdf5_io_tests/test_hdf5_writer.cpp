@@ -20,7 +20,6 @@
 using Catch::Approx;
 using namespace std;
 using tdms_tests::create_tmp_dir;
-using tdms_unit_test_data::struct_testdata, tdms_unit_test_data::hdf5_test_file;
 
 TEST_CASE("HDF5Writer: Write doubles to a group.") {
 
@@ -35,27 +34,21 @@ TEST_CASE("HDF5Writer: Write doubles to a group.") {
 
   {
     HDF5Writer writer(file_name);
-
     {
       vector<double> write_me_out = {.0, .1, .2, .3, .4, .5, .6, .7, .8, .9};
-
       writer.write_dataset_to_group(group_name, double_dataset, write_me_out);
     }
     {
       vector<int> write_me_out = {0, 1, 2, 3, 4, 5};
-
       writer.write_dataset_to_group(group_name, int_dataset, write_me_out);
     }
-
     REQUIRE(writer.contains(group_name));
   }
 
   // Read data back to confirm entries are as expected
   {
     HDF5Reader reader(file_name);
-
     REQUIRE(reader.contains(group_name));
-
     {
       vector<double> read_back_in;
       reader.read_dataset_in_group(group_name, double_dataset, read_back_in);

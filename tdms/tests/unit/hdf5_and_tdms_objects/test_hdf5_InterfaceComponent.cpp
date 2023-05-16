@@ -37,6 +37,7 @@ using tdms_unit_test_data::tdms_object_data;
  * _match_ those we expect from the data file.
  */
 TEST_CASE("HDF5: Read InterfaceComponent") {
+  tdms_unit_test_data::skip_if_missing(tdms_object_data);
   HDF5Reader MATFile(tdms_object_data);
 
   SECTION("Read into existing InterfaceComponent") {
