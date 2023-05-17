@@ -107,8 +107,24 @@ Dependencies</h1>
 <li><a href="https://github.com/gabime/spdlog">spdlog</a> for logging (this is installed automatically by a CMake <a href="https://cmake.org/cmake/help/latest/module/FetchContent.html">FetchContent</a> if not found).</li>
 <li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a> since we read in and write out MATLAB format files. We are actually thinking of removing this as a strict dependency (<a href="https://github.com/UCL/TDMS/issues/70">#70</a>).</li>
 </ul>
-<h1><a class="anchor" id="code-style-and-doxygen"></a>
-Code style and other admin</h1>
+<h2><a class="anchor" id="autotoc_md13"></a>
+Versions</h2>
+<p>We follow <a href="https://semver.org">semantic versioning</a>: major, minor, patch. Major versions may contain changes to the API and UI, minor versions contain new features but preserve backwards-compatibility of UI, patches are bugfixes.</p>
+<p>So (for example) version v1.2.0 is major version 1, minor version 2, and the zeroth patch. v1.2.0 will be backwards-compatible with v1.1.99.</p>
+<p><b>Mechanics</b>: Version control is via <code>git tag</code>s on the <code>main</code> branch and propagated to the C++ source <a href="https://github.com/UCL/TDMS/blob/main/tdms/cmake/version_from_git.cmake">code via CMake</a>. Release notes are kept in the <a href="https://github.com/UCL/TDMS/releases">GitHub release page</a>.</p>
+<p>As well as official releases, a placeholder "version" is assigned to every commit on every development branch, or can be supplied at compile-time (which takes the highest precedence).</p>
+<div class="fragment"><div class="line">$ cmake .. &lt;usual cmake options&gt; -DTDMS_VERSION=this_version_string_will_be_highest_priority</div>
+<div class="line">$ make install</div>
+<div class="line">$ tdms --version</div>
+<div class="line">TDMS version: this_version_string_will_be_highest_priority</div>
+</div><!-- fragment --><p>If on a development branch then the placeholder version is <code>&lt;branchname&gt;_&lt;tag&gt;</code> if tagged, or <code>&lt;branchname&gt;_&lt;commit hash&gt;</code> if not tagged. This is useful when debugging problems introduced between commits (with the assistance of <code>git bisect</code>).</p>
+<div class="fragment"><div class="line">$ git checkout myfeaturebranch</div>
+<div class="line">$ cmake ..</div>
+<div class="line">$ make install</div>
+<div class="line">$ tdms --version</div>
+<div class="line">TDMS version: myfeaturebranch_a341ab</div>
+</div><!-- fragment --><h2><a class="anchor" id="code-style-and-doxygen"></a>
+Code style and other admin</h2>
 <p>We try to stick to <a href="https://google.github.io/styleguide/cppguide.html">Google style C++</a> wherever practicable. There is one exception: we prefer <code>#pragma once</code> at the top of each header (because it's one line rather than three and is almost the standard anyway).</p>
 <p>Please keep doxygen-style comments in the <b>headers</b>. </p><div class="fragment"><div class="line"><span class="comment">/**</span></div>
 <div class="line"><span class="comment"> * Add two numbers together</span></div>
@@ -163,7 +179,7 @@ Compiling and debugging</h1>
 <div class="line">spdlog::debug(<span class="stringliteral">&quot;Send help&quot;</span>);</div>
 </div><!-- fragment --></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Compiling on UCL's Myriad cluster</h2>
 <details >
 <summary >
@@ -192,7 +208,7 @@ Myriad instructions</summary>
 </div><!-- fragment --><p> it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead.</p>
 <p></p>
 </details>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Where's the main?</h1>
 <p>The C++ <code>main</code> function is in <code><a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a></code> however the main algorithm code is in the <code>execute()</code> method of the <code>SimulationManager</code> class, in <code>execute_simulation.cpp</code>.</p>
 <p>Broadly speaking, the <code>main</code> function - and thus a call to (or execution of) <code>tdms</code> - can be broken down into the following steps:</p><ol type="1">
@@ -203,7 +219,7 @@ Where's the main?</h1>
 <li>Write the outputs and tear-down memory.</li>
 </ol>
 <p>The <code>SimulationManager</code> class governs steps 2 through 5.</p>
-<h1><a class="anchor" id="autotoc_md15"></a>
+<h1><a class="anchor" id="autotoc_md16"></a>
 Code organisation of the TDMS algorithm</h1>
 <p>An instance of <code>SimulationManager</code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code>SimulationManager</code> instance):</p><ul>
 <li><code>ObjectsFromInfile</code> (<code>inputs</code>): Handles conversion of any input arrays to native <code>C++</code> objects, and any variables that are derived directly from the input file supplied to <code>tdms</code> on the command line.</li>
@@ -212,16 +228,16 @@ Code organisation of the TDMS algorithm</h1>
 <li><code>LoopTimers</code> (<code>timers</code>): Controls timing (and logging execution times) of the main loop and subprocesses therein.</li>
 </ul>
 <p>The role of <code>SimulationManager</code> is to handle how these objects interact in the main loop.</p>
-<h2><a class="anchor" id="autotoc_md16"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 2. Initialisation</h2>
 <p><code>SimulationManager</code> instances begin by initialising the <code>inputs</code> attribute. Based on this attribute, they set up <code>PSTD</code>/<code>FDTD</code> variables and prepare the <code>outputs</code> object for writing. Some members of the <code>outputs</code> objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the <code>outputs</code> object that require information <em>from</em> the main loop are prepared (dimensions are determined, etc) at this stage but not set.</p>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md18"></a>
 3. Running the Main Loop</h2>
 <p>Once initialised, the <code>execute()</code> method can be called. This will create an instance of <code>LoopVariables</code> that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the <code>execute()</code> method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. <code>timers</code> track the speed of execution of the main loop, and report to the logging.</p>
-<h2><a class="anchor" id="autotoc_md18"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 4. Post-Processing</h2>
 <p>Upon completing <code>execute()</code> successfully, the <code>post_loop_processing()</code> method of <code>SimulationManager</code> writes the data to the <code>outputs</code> attributes that were not used as buffers during the main loop.</p>
-<h2><a class="anchor" id="autotoc_md19"></a>
+<h2><a class="anchor" id="autotoc_md20"></a>
 5. Write out and Tear Down</h2>
 <p>From here, the <code>write_outputs()</code> method exports the data in <code>outputs</code> to the desired file.</p>
 <p>At this point, the instance of <code>SimulationManager</code> can be allowed to go out of scope. In practice, <code>main()</code> terminates here and the destructor handles the tear-down of <code>MATLAB</code> memory blocks.</p>
@@ -245,12 +261,12 @@ Unit</h2>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> * Maybe go into details about the test setup.</span></div>
 <div class="line"><span class="comment"> */</span></div>
-<div class="line"><a class="code hl_function" href="test__argument__parser_8cpp.html#a45fe347857b250e8d575563026c40435">TEST_CASE</a>(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
+<div class="line"><a class="code hl_function" href="test__argument__parser_8cpp.html#a4907558c7fcd2522c5394ecf8cd29558">TEST_CASE</a>(<span class="stringliteral">&quot;Write a meaningful test case name&quot;</span>) {</div>
 <div class="line">    <span class="comment">// set up function calls or whatever</span></div>
 <div class="line">    REQUIRE_THROW(&lt;something&gt;);</div>
 <div class="line">    CHECK(&lt;something&gt;);</div>
 <div class="line">}</div>
-<div class="ttc" id="atest__argument__parser_8cpp_html_a45fe347857b250e8d575563026c40435"><div class="ttname"><a href="test__argument__parser_8cpp.html#a45fe347857b250e8d575563026c40435">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;Test parsing help&quot;)</div><div class="ttdoc">Test that the argument namespace recovers the input arguments provided.</div><div class="ttdef"><b>Definition:</b> test_argument_parser.cpp:22</div></div>
+<div class="ttc" id="atest__argument__parser_8cpp_html_a4907558c7fcd2522c5394ecf8cd29558"><div class="ttname"><a href="test__argument__parser_8cpp.html#a4907558c7fcd2522c5394ecf8cd29558">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;Test namespace&quot;)</div><div class="ttdoc">Test that the argument namespace recovers the input arguments provided.</div><div class="ttdef"><b>Definition:</b> test_argument_parser.cpp:22</div></div>
 </div><!-- fragment --><p> The doxygen-style comments will be included in this developer documentation.</p>
 <p>To run the unit tests, <a class="el" href="md_doc_developers.html#compiling">compile</a> with <code>-DBUILD_TESTING=ON</code>. Then run <code>ctest</code> from the build directory or execute the test executable <code>./tdms_tests</code>.</p>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.</p>
@@ -352,7 +368,7 @@ System</h2>
 <p>When you run the tests for the first time, test data is downloaded to <code>tdms/tests/system/data</code> (and will be <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). These reference input files contain arrays for: the incident electric field, the computational grid, etc. which are needed by the simulation, and have been generated by a trusted version of the relevant MATLAB scripts. Subsequent runs of the tests will not re-download unless you manually delete the zip file(s).</p>
 <p>The system tests for <code>tdms</code> are configured with yaml files in the <code>data/input_generation/</code> directory. They are named <code>config_XX.yaml</code> where <code>XX</code> matches the ID of the system test, which themselves are named <code>arc_XX</code> by historical convention. These config files define a number of variables, parameters, and filenames that will be required when running the system tests - for a detailed breakdown of their syntax, see the annotated <code>config_01.yaml</code> file. This should also match the <code>test_id</code> field in the configuration file itself. The <em>reference outputs</em> or <em>reference data</em> are a collection of <code>.mat</code> files, produced from the <em>reference inputs</em> by a trusted version of the <code>tdms</code> executable. We test for regression using these reference files.</p>
 <p>A given system test typically has two calls to the <code>tdms</code> executable; one for when there is no scattering object present, and one for when there is some obstacle. More than two runs in a test might be due to the use of band-limited interpolation over cubic interpolation. Each call to the executable has a reference input and reference output. In the scripts, a given execution is called by <code>tests.utils.run_tdms</code> which wraps a <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">subprocess.Popen</a>.</p>
-<h3><a class="anchor" id="autotoc_md20"></a>
+<h3><a class="anchor" id="autotoc_md21"></a>
 Workflow of a System Test</h3>
 <p>The workflow of a particular system test <code>arc_XX</code> is:</p><ul>
 <li>Locally generate the reference inputs using functionality in <code>data/input_generation/generate_test_data.py</code>.<ul>
@@ -372,7 +388,7 @@ Workflow of a System Test</h3>
 <li><code>arc_XX</code> passes if this step is reached successfully.</li>
 </ul>
 <p>Due to <a href="https://github.com/matlab-actions/setup-matlab/issues/13">licensing issues regarding running <code>MATLAB</code> on GitHub runners</a>, we cannot use <code>matlabengine</code> to regenerate the reference input data during CI. (Although we are currently thinking of removing the <code>MATLAB</code> dependency which will then enable us to resolve this issue). The work-in-progress <code>test_regen.py</code> workflow can still be run locally through <code>pytest</code>, however in addition to <code>requirements.txt</code> you will also need to <a href="https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html">install <code>matlabengine</code></a>. See the <a href="https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html">MathWorks page</a> link for detailed requirements. You will need (at least) <code>Python &gt;= 3.8</code> and a licensed version of <code>MATLAB</code>.</p>
-<h2><a class="anchor" id="autotoc_md21"></a>
+<h2><a class="anchor" id="autotoc_md22"></a>
 Generating Input Data for the System Tests</h2>
 <p>The system tests rely on <code>.mat</code> input files that are generated through a series of MATLAB function calls and scripts. This directory contains the functionality to automatically (re)generate this input data, which serves two purposes:</p><ul>
 <li>The <code>.mat</code> <em>input</em> files do not need to be uploaded and fetched from Zenodo each time the system tests are run. They can be generated locally instead.<ul>
@@ -381,7 +397,7 @@ Generating Input Data for the System Tests</h2>
 </li>
 <li>We track changes to the way we handle inputs to <code>tdms</code>, and the system tests. Ensuring we test against unexpected behaviour due to input changes.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md22"></a>
+<h3><a class="anchor" id="autotoc_md23"></a>
 (Re)generation of the Data</h3>
 <p>(Re)generating the input data for a particular test case, <code>arc_XX</code>, is a three-step process:</p><ol type="1">
 <li>Determine variables, filenames, and the particular setup of <code>arc_XX</code>. This information is stored in the corresponding <code>config_XX.yaml</code> file. For example, is an illumination file required? What are the spatial obstacles? What is the solver method?</li>
@@ -392,7 +408,7 @@ Generating Input Data for the System Tests</h2>
 <ol type="1">
 <li>Clean up the auxillary <code>.mat</code> files that are generated by this process. In particular, any <code>gridfiles.mat</code>, illumination files, or other <code>.mat</code> files that are temporarily created when generating the input <code>.mat</code> file.</li>
 </ol>
-<h3><a class="anchor" id="autotoc_md23"></a>
+<h3><a class="anchor" id="autotoc_md24"></a>
 Contents of the &lt;tt&gt;data/input_generation&lt;/tt&gt; Directory (and subdirectories)</h3>
 <p>The <code>run_bscan</code> function is inside the <code>bscan/</code> directory.</p>
 <p>The <code>matlab/</code> directory contains functions that <code>run_bscan</code> will need to call on during the creation of the input data. This in particular includes the <code>iteratefdtd_matrix</code> function, which does the majority of the work in setting up gridfiles, illumination files, and the <code>.mat</code> inputs themselves.</p>
