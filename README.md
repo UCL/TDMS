@@ -78,15 +78,37 @@ For beginners, we recommend starting with the demonstration MATLAB script, which
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
 
+### On the command line
+
 If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name.
-You can choose between two solver methods: pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
+You can choose between two solver methods (finite-difference or pseudo-spectral) and two interpolation methods (cubic or band-limited) by setting the "flag" variables in the input file.
+TDMS will check whether the input file has a dataset that matches the name of these flags when it reads the inputs.
+At present, there are two flags that can be set in the input file:
+<details>
+<summary> `use_pstd` </summary>
+- If not provided, or provided as `false`, then the default timestepping method of finite-differences (FDTD) will be used.
+- If present and set to `true`, then `tdms` will use the pseudo-spectral (PSTD) method when performing simulation timesteps.
+</details>
+<details>
+<summary> `use_bli` </summary>
+- If not provided, or provided as `false`, then the default interpolation method of cubic interpolation will be used to obtain field values at the centres of Yee cells.
+- If present and set to `true`, then `tdms` will use band-limited interpolation when obtaining field values at Yee cell centres.
 
-TDMS is parallelized with [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
-You can set the maximum number of threads using the `OMP_NUM_THREADS` environment variable before calling the TDMS executable.
+\note Typically band-limited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest.
+Otherwise, cubic interpolation typically enjoys superior accuracy.
+</details>
 
-```{sh}
-export OMP_NUM_THREADS=4 # for example
+### Parallelism
+
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The
+maximum number of threads can be set with the `OMP_NUM_THREADS` environment
+variable.  For example, to use 4 threads, in a bash shell, use:
+
+```bash
+$ export OMP_NUM_THREADS=4
 ```
+
+</details>
 
 ## Citation
 
@@ -114,6 +136,7 @@ If you used TDMS in your research and found it helpful, please cite this work.
 ```tex
 \bibitem{tdms}
 P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
+[`run_pstd_bscan.m`](./examples/arc_01/run_pstd_bscan.m)
 ```
 
 </details>
