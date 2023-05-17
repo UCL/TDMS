@@ -14,7 +14,7 @@ namespace tdms {
 #ifdef TDMS_VERSION
 const std::string VERSION = std::string(TDMS_VERSION);
 #else
-const std::string VERSION = "development";
+const std::string VERSION = "v1";
 #endif
 
 }// namespace tdms
