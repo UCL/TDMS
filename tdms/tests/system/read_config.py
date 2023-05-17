@@ -178,7 +178,7 @@ class YAMLTestConfig:
         Each run (member of "tests") is identified by its test_name, which must not contain spaces. These typically follow a naming convention of {solver_method}_{spatial_object} (or the reverse); for example pstd_fs or cyl_fdtd. The name can be anything you like (it is not actually used by the interpreter other than for debugging readability purposes) but for this reason we advise against naming all the runs "foobar".
 
         Within each run are the fields input_file, reference, and (optionally) cubic_interpolation and fdtd_solver.
-        The latter two are bools indicating whether the corresponding tdms option (use cubic interpolation or the fdtd solver respectively) should be toggled on. If one of these fields is missing, the default value is False (use band-limited interpolation or pstd solver methods respectively).
+        The latter two are bools indicating whether the corresponding tdms option (use cubic interpolation or the fdtd solver respectively) should be toggled on. If one of these fields is missing, the default value is False (use bandlimited interpolation or pstd solver methods respectively).
         The input_file and reference fields are compulsory, and must specifiy the path (RELATIVE to the top level of the zipped directory) to the input file to be passed to the tdms executable, and the reference output to compare the generated output to. The generated output is named automatically.
 
         An example config file is below:

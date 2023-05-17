@@ -21,7 +21,7 @@
  *
  * MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!
  *
- * For band-limited schemes, we have 8 equidistant datapoints and can
+ * For bandlimited schemes, we have 8 equidistant datapoints and can
  * interpolate to the midpoint of any pair of consecutive points, or "half a
  * point spacing" to the right of the final data point. These "interpolation
  * positions" (interp positions) are marked with "o" below: v0   v1   v2   v3 v4

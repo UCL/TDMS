@@ -1,7 +1,7 @@
 /**
  * @file test_BLi_vs_cubic_interpolation.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
- * @brief Tests the performance of band-limited interpolation against cubic
+ * @brief Tests the performance of bandlimited interpolation against cubic
  * interpolation
  */
 #include "interpolation_methods.h"

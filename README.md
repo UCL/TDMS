@@ -81,7 +81,7 @@ This script will generate the input to TDMS, run TDMS, and display sample output
 ### On the command line
 
 If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name.
-You can choose between two solver methods: **finite-difference** or **pseudo-spectral**, as well as two interpolation methods: **cubic** or **band-limited**.
+You can choose between two solver methods: **finite-difference** or **pseudo-spectral**, as well as two interpolation methods: **cubic** or **bandlimited**.
 These options can be selected by setting the corresponding flag variables in the input file.
 When `tdms` reads the input, it will verify if the input file contains a dataset that matches the names of these flags.
 
@@ -94,9 +94,9 @@ There are two flags available for configuration in the input file.
 <details>
 <summary> `use_bli` </summary>
 - If not provided, or provided as `false`, then the default interpolation method of cubic interpolation will be used to obtain field values at the centres of Yee cells.
-- If present and set to `true`, then `tdms` will use band-limited interpolation (BLI) when obtaining field values at Yee cell centres.
+- If present and set to `true`, then `tdms` will use bandlimited interpolation (BLI) when obtaining field values at Yee cell centres.
 
-\note Typically band-limited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest.
+\note Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest.
 Otherwise, cubic interpolation typically enjoys superior accuracy.
 </details>
 
