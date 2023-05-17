@@ -140,6 +140,7 @@ jobs:
           cat coverage.xml
 
       - name: Upload coverage reports to Codecov
+        working-directory: ${{ runner.workspace }}/build
         if: matrix.build_testing == 'ON'
         uses: codecov/codecov-action@v3
 
