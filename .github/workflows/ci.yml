@@ -62,7 +62,7 @@ jobs:
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           sudo apt-get update
-          sudo apt-get install libfftw3-dev libgomp1 python3 lcov
+          sudo apt-get install libfftw3-dev libgomp1 python3 gcovr
 
       # -------------------------------------------------------------------------------
       # Windows
@@ -84,7 +84,7 @@ jobs:
       # MacOS
       - name: Install dependencies for MacOS
         if: ${{ contains(matrix.os, 'macos') }}
-        run: brew install fftw lcov
+        run: brew install fftw gcovr
 
       - name: Fix omp headers not linked on MacOS
         if: ${{ contains(matrix.os, 'macos') }}
@@ -129,18 +129,15 @@ jobs:
           export OMP_NUM_THREADS=1
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
-      - name: Run coverage analysis with lcov
+      - name: Run coverage analysis with gcovr
         if: matrix.build_testing == 'ON'
+        working-directory: ${{ runner.workspace }}/build
         shell: bash
         # Create the coverage summary, filter out dependencies' coverage then
         # print human-readable summary in the build logs.
         run: |
-          lcov --capture --directory ${{ runner.workspace }}/build/CMakeFiles/tdms_tests.dir/src --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' --output-file coverage.info
-          lcov --remove coverage.info '*/_deps/*' --output-file coverage.info
-          lcov --remove coverage.info '/Library/*' --output-file coverage.info
-          lcov --remove coverage.info '/Applications/*' --output-file coverage.info
-          lcov --list coverage.info
+          gcovr -r ${GITHUB_WORKSPACE}/tdms/{src,include,matlabio} . -o coverage.xml
+          cat coverage.xml
 
       - name: Upload coverage reports to Codecov
         if: matrix.build_testing == 'ON'
