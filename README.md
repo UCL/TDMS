@@ -100,14 +100,10 @@ There are two flags available for configuration in the input file.
 Otherwise, cubic interpolation typically enjoys superior accuracy.
 </details>
 
-### Parallelism
-
-TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP). The
-maximum number of threads can be set with the `OMP_NUM_THREADS` environment
-variable.  For example, to use 4 threads, in a bash shell, use:
-
-```bash
-$ export OMP_NUM_THREADS=4
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
+You can set the maximum number of threads using the `OMP_NUM_THREADS` environment variable before calling the TDMS executable.
+```{sh}
+$ export OMP_NUM_THREADS=4 # for example
 ```
 
 ## Citation
