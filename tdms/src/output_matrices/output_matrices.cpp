@@ -5,6 +5,7 @@
 #include "mesh_base.h"
 
 using namespace tdms_matrix_names;
+using tdms_flags::InterpolationMethod;
 using namespace std;
 
 void OutputMatrices::compute_interpolated_fields(Dimension dimension) {
@@ -80,9 +81,9 @@ void OutputMatrices::set_maxresfield(double maxfield, bool overwrite_existing) {
 
 void OutputMatrices::setup_EH_and_gridlabels(
         const SimulationParameters &params, const GridLabels &input_grid_labels,
-        PreferredInterpolationMethods pim) {
+        InterpolationMethod interpolation_method) {
   // set the interpolation methods
-  set_interpolation_methods(pim);
+  set_interpolation_methods(interpolation_method);
 
   /* Set the dimensions of the field
   If a PML is present, we allow for 2 "buffer" cells surrounding the PML, which

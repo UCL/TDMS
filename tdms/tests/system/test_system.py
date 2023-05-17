@@ -6,9 +6,9 @@ from pytest_check import check
 from read_config import YAMLTestConfig
 from utils import HDF5File, download_data, work_in_zipped_dir
 
-# Dataset is stored at https://zenodo.org/record/7440616/
+# Dataset is stored at https://zenodo.org/record/7899298/
 # ccaegra@ucl.ac.uk (William Graham, @willGraham01) has access.
-ZENODO_URL = "https://zenodo.org/record/7440616/files"
+ZENODO_URL = "https://zenodo.org/record/7899298/files"
 # directory in which to store the downloaded zip files
 ZIP_DESTINATION = Path(os.path.dirname(os.path.abspath(__file__)), "data")
 
@@ -64,11 +64,10 @@ def test_system(test_id, url) -> None:
     """
     print(f"\nRunning {test_id}", end=" | ")
 
-    # the data should be at this location
+    # The data should be at this location
     ZIP_PATH = ZIP_DESTINATION / f"arc_{test_id}.zip"
-    # download data if not present
+    # Download data if not present
     if not ZIP_PATH.exists():
-        print(f"Downloading from {url}")
         download_data(url, to=ZIP_PATH)
     else:
         print(f"Using cache in {ZIP_PATH}")

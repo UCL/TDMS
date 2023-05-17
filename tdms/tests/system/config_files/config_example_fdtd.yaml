@@ -5,27 +5,21 @@ fs_input:
   runs:
     fs_cubic:
       reference: fs_cubic_reference.mat
-      fdtd_solver: True
-      cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
   runs:
     fs_bli:
       reference: fs_bli_reference.mat
-      fdtd_solver: True
 cyl_input:
   input_file: input_file_example_fdtd.m
   obstacle: cyl
   runs:
     cyl_cubic:
       reference: cyl_cubic_reference.mat
-      fdtd_solver: True
-      cubic_interpolation: True
 cyl_bli_input:
   adjust: cyl_input
   interpolation: bli
   runs:
     cyl_bli:
       reference: cyl_bli_reference.mat
-      fdtd_solver: True

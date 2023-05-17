@@ -110,12 +110,10 @@ def run_system_test(config_filepath: Path | str) -> dict[str, bool]:
 
                 # Determine if there are any flags that need to be passed to the tdms run
                 run_flags = []
-                if "cubic_interpolation" in run_info.keys():
-                    if run_info["cubic_interpolation"]:
-                        run_flags += ["-c"]
-                if "fdtd_solver" in run_info.keys():
-                    if run_info["fdtd_solver"]:
-                        run_flags += ["--finite-difference"]
+                # For each flag that we want to pick up on from the config file,
+                # the following syntax can be used.
+                # if "config_member_indicating_flag" in run_info and run_info["config_member_indicating_flag"]:
+                #     run_flags += ["CLI_flag_string"]
 
                 # Create the run and store it with the reference data file that it needs
                 tdms_runs.append(

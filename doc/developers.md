@@ -304,45 +304,47 @@ The combinations and expected results are listed in the table below.
 
 \note `TD-field` is also known as `exi/eyi` in some docstrings.
 
-| TD-field | usecd | compactsource | efname    | hfname    | Raises error? | Error info |
-|:--------:|:-----:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
-| 1        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1     | 1             | 1         | 0         | 0             |  |
-| 1        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1     | 1             | 0         | 0         | 0             |  |
-| 1        | 1     | 0             | 1         | 1         | 0             |  |
-| 1        | 1     | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1     | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1     | 0             | 0         | 0         | 0             |  |
-| 1        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0     | 1             | 1         | 0         | 0             |  |
-| 1        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0     | 1             | 0         | 0         | 0             |  |
-| 1        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 1        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 1     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1     | 1             | 1         | 0         | 0             |  |
-| 0        | 1     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 1     | 0             | 1         | 1         | 0             |  |
-| 0        | 1     | 0             | 1         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 1     | 0             | 0         | 1         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 1     | 0             | 0         | 0         | 1             | If not TD-field and usecd, must specify both efname and hfname |
-| 0        | 0     | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0     | 1             | 1         | 0         | 0             |  |
-| 0        | 0     | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0     | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 0     | 0             | 1         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 1         | 0         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 0         | 1         | 1             | Cannot have not usecd & not compactsource |
-| 0        | 0     | 0             | 0         | 0         | 1             | Cannot have not usecd & not compactsource |
+\note `usecd` was the legacy name for the variable that controlled which solver method to use in the timestepping algorithm. Previous convention was that `usecd = 1` (or not present) resulted in the use of FDTD. This has since been superceeded by the `use_pstd` flag which is `true` when PSTD is to be used, and FDTD will be used otherwise (such as when this flag is not present or set explicitly to `false`).
+
+| TD-field | Using FDTD | compactsource | efname    | hfname    | Raises error? | Error info |
+|:--------:|:----------:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
+| 1        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1          | 1             | 1         | 0         | 0             |  |
+| 1        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 1          | 1             | 0         | 0         | 0             |  |
+| 1        | 1          | 0             | 1         | 1         | 0             |  |
+| 1        | 1          | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1          | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
+| 1        | 1          | 0             | 0         | 0         | 0             |  |
+| 1        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0          | 1             | 1         | 0         | 0             |  |
+| 1        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 1        | 0          | 1             | 0         | 0         | 0             |  |
+| 1        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 1        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1          | 1             | 1         | 0         | 0             |  |
+| 0        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 1          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 1          | 0             | 1         | 1         | 0             |  |
+| 0        | 1          | 0             | 1         | 0         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
+| 0        | 1          | 0             | 0         | 1         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
+| 0        | 1          | 0             | 0         | 0         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
+| 0        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0          | 1             | 1         | 0         | 0             |  |
+| 0        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
+| 0        | 0          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
+| 0        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
+| 0        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
 
 ### System {#system-tests}
 
 The full system tests are written in Python 3, and call the `tdms` executable for known inputs and compare to expected outputs.
-We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/).
+We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/record/7899298).
 
 There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before you are able to run the tests, which can be installed by executing:
 ```{.sh}
@@ -359,11 +361,13 @@ $ pytest ../tests/system/
 ```
 The [`test_system.py`](https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_system.py) script runs each system test in sequence.
 
-**[`test_regen.py`](https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_regen.py) and [`tdms_testing_class.py`](https://github.com/UCL/TDMS/blob/main/tdms/tests/system/tdms_testing_class.py.py) will replace `test_system.py` and `read_config.py` when the [input overhaul](https://github.com/UCL/TDMS/issues/70) is complete.**
-
-When you run the tests for the first time, test data is downloaded to `tdms/tests/system/data` (and will be [ignored by git](https://github.com/UCL/TDMS/blob/main/.gitignore)).
-These reference input files contain arrays for: the incident electric field, the computational grid, etc. which are needed by the simulation, and have been generated by a trusted version of the relevant MATLAB scripts.
+When you run the tests for the first time, the test data is downloaded to `tdms/tests/system/data` (and will be [ignored by git](https://github.com/UCL/TDMS/blob/main/.gitignore)).
 Subsequent runs of the tests will not re-download unless you manually delete the zip file(s).
+
+The test data contains reference input files which contain arrays for the incident electric field, the computational grid, and so on (needed by the simulation).
+The files have been generated by a trusted version of the relevant MATLAB scripts.
+The data also contains reference _output_ files which have been generated by a trusted version of TDMS - the system tests check output against reference outputs.
+I.e. regression testing: that new changes have preserved the functionality of TDMS.
 
 The system tests for `tdms` are configured with yaml files in the `data/input_generation/` directory.
 They are named `config_XX.yaml` where `XX` matches the ID of the system test, which themselves are named `arc_XX` by historical convention.

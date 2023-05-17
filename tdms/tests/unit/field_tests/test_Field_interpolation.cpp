@@ -13,10 +13,11 @@
 
 #include "cell_coordinate.h"
 #include "globals.h"
+#include "input_flags.h"
 #include "unit_test_utils.h"
 
 using namespace tdms_math_constants;
-
+using tdms_flags::InterpolationMethod;
 using tdms_tests::euclidean;
 using tdms_tests::is_close_or_better;
 using tdms_tests::TOLERANCE;
@@ -83,6 +84,9 @@ TEST_CASE("E-field interpolation check") {
   // setup for non-split field components
   ElectricField E(Nx, Ny, Nz);
   E.allocate();
+  // ensure BLI is being used!
+  E_split.set_preferred_interpolation_methods(InterpolationMethod::BandLimited);
+  E.set_preferred_interpolation_methods(InterpolationMethod::BandLimited);
 
   /* Compute the exact field and the "split field" components
   Ex[k][j][i] is the value of the field at position (x_lower,y_lower,z_lower) +
@@ -323,6 +327,9 @@ TEST_CASE("H-field interpolation check") {
           1;// correct the "number of datapoints" variable for these fields
   MagneticField H(Nx, Ny, Nz);
   H.allocate();
+  // ensure that BLI is being used!
+  H_split.set_preferred_interpolation_methods(InterpolationMethod::BandLimited);
+  H.set_preferred_interpolation_methods(InterpolationMethod::BandLimited);
 
   /* Compute the exact field and the "split field" components
   Hx_exact[k-1][j-1][i] is the value of the field at position

@@ -29,8 +29,8 @@ def edit_mat_file(
     """Create a new .mat file by copying an existing one and changing some TDMS "flag" variables according to options.
 
     The following `options` can be adjusted:
-    - usecd: Default is 1 (FDTD). Set to 0 for PSTD.
-    - intmethod: Default is 1 (cubic). Set to 2 for BLI.
+    - use_pstd: Default value is 0 (FDTD). 1 results in the use of PSTD.
+    - use_bli: Default value is 0 (cubic). 1 results in the use of BLI.
 
     :param test_directory: Directory containing the existing .mat file to use as a basis.
     :param to_produce: Filename for the edited .mat file.
@@ -46,46 +46,45 @@ def edit_mat_file(
     if "solver_method" in options:
         # If this key is present, we want to overwrite the value of usecd with the value provided
         if options["solver_method"] == "pstd":
-            # Overwrite usecd with 0 (pstd)
-            usecd = OverwriteWith(True, 0.0)
+            # Overwrite use_pstd with True (pstd)
+            use_pstd = OverwriteWith(True, True)
         elif options["solver_method"] == "fdtd":
-            # Overwrite usecd with 1 (fdtd, default)
-            usecd = OverwriteWith(True, 1.0)
+            # Overwrite use_pstd with False (fdtd, default)
+            use_pstd = OverwriteWith(True, False)
         else:
             raise RuntimeError(
                 f"Error: {options['solver_method']} is not a valid solver method"
             )
     else:
         # This key is not present, so we do not want to overwrite
-        # Note that the self.usecd.value variable will not be used in this case, so we can set it to anything
-        usecd = OverwriteWith(False, None)
+        use_pstd = OverwriteWith(False, None)
 
     # Check if we want to overwrite the interpolation method
     if "interpolation" in options:
         # We will be overwriting the value here
         if options["interpolation"] == "bli":
-            # Overwrite intmethod with 2 (band-limited)
-            intmethod = OverwriteWith(True, 2.0)
+            # Overwrite use_bli with True (bandlimited)
+            use_bli = OverwriteWith(True, True)
         elif options["interpolation"] == "cubic":
-            # Overwrite intmethod with 1 (cubic, default)
-            intmethod = OverwriteWith(True, 1.0)
+            # Overwrite use_bli with False (cubic, default)
+            use_bli = OverwriteWith(True, False)
         else:
             raise RuntimeError(
                 f"Error: {options['interpolation']} is not a valid interpolation method"
             )
     else:
         # Overwrite not requested
-        intmethod = OverwriteWith(False, None)
+        use_bli = OverwriteWith(False, None)
 
     # Load the .mat file that is to be adjusted
     mat_data = loadmat(adjust_file)
 
-    # Adjust usecd if necessary
-    if usecd.should_be_overwritten:
-        mat_data["usecd"] = np.array([[usecd.value]], dtype=float)
-    # Adjust intmethod if necessary
-    if intmethod.should_be_overwritten:
-        mat_data["intmethod"] = np.array([[intmethod.value]], dtype=float)
+    # Adjust use_pstd if necessary
+    if use_pstd.should_be_overwritten:
+        mat_data["use_pstd"] = np.array([[use_pstd.value]], dtype=bool)
+    # Adjust use_bli if necessary
+    if use_bli.should_be_overwritten:
+        mat_data["use_bli"] = np.array([[use_bli.value]], dtype=bool)
 
     # Write the data to the desired location - THROWS DEPRECATION WARNING FROM NUMPY!
     savemat(to_produce, mat_data, format="7.3", store_python_metadata=False)
