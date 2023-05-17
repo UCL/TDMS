@@ -49,8 +49,8 @@ public:
   /**
    * @brief Set the preferred interpolation methods
    */
-  void  set_preferred_interpolation_methods(tdms_flags::InterpolationMethod _pim) {
-    interpolation_method = _pim;
+  void set_preferred_interpolation_methods(tdms_flags::InterpolationMethod im) {
+    interpolation_method = im;
   };
 };
 
