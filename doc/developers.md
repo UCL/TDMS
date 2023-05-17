@@ -19,7 +19,36 @@ We depend on ...
 * [spdlog](https://github.com/gabime/spdlog) for logging (this is installed automatically by a CMake [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) if not found).
 * [MATLAB](https://www.mathworks.com/products/matlab.html) since we read in and write out MATLAB format files. We are actually thinking of removing this as a strict dependency ([#70](https://github.com/UCL/TDMS/issues/70)).
 
-## Code style and other admin {#code-style-and-doxygen}
+### Versions
+
+We follow [semantic versioning](https://semver.org): major, minor, patch.
+Major versions may contain changes to the API and UI, minor versions contain new features but preserve backwards-compatibility of UI, patches are bugfixes.
+
+So (for example) version v1.2.0 is major version 1, minor version 2, and the zeroth patch. v1.2.0 will be backwards-compatible with v1.1.99.
+
+**Mechanics**: Version control is via `git tag`s on the `main` branch and propagated to the C++ source [code via CMake](https://github.com/UCL/TDMS/blob/main/tdms/cmake/version_from_git.cmake).
+Release notes are kept in the [GitHub release page](https://github.com/UCL/TDMS/releases).
+
+As well as official releases, a placeholder "version" is assigned to every commit on every development branch, or can be supplied at compile-time (which takes the highest precedence).
+
+```{.sh}
+$ cmake .. <usual cmake options> -DTDMS_VERSION=this_version_string_will_be_highest_priority
+$ make install
+$ tdms --version
+TDMS version: this_version_string_will_be_highest_priority
+```
+
+If on a development branch then the placeholder version is `<branchname>_<tag>` if tagged, or `<branchname>_<commit hash>` if not tagged. This is useful when debugging problems introduced between commits (with the assistance of `git bisect`).
+
+```{.sh}
+$ git checkout myfeaturebranch
+$ cmake ..
+$ make install
+$ tdms --version
+TDMS version: myfeaturebranch_a341ab
+```
+
+### Code style and other admin {#code-style-and-doxygen}
 
 We try to stick to [Google style C++](https://google.github.io/styleguide/cppguide.html) wherever practicable. <!-- And we run `clang-format` and `cppclean` linters as part of our CI. -->
 There is one exception: we prefer `#pragma once` at the top of each header (because it's one line rather than three and is almost the standard anyway).

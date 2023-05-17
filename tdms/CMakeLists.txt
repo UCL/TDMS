@@ -82,6 +82,19 @@ else()
 endif()
 
 
+# TDMS version ----------------------------------------------------------------
+# if supplied via the cmake configuration (-DTDMS_VERSION=whatever_I_want) then
+# respect that, otherwise construct a version from a git tag or commit hash.
+if (NOT TDMS_VERSION)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_from_git.cmake)
+endif()
+
+if (TDMS_VERSION)
+    add_compile_definitions(TDMS_VERSION="${TDMS_VERSION}")
+    message(STATUS "Compiling TDMS version: ${TDMS_VERSION}")
+endif()
+
+
 # TDMS target -----------------------------------------------------------------
 
 # wildcard to find all *.cpp files in the src directory except for main.cpp

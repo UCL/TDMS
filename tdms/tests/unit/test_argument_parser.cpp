@@ -19,10 +19,18 @@ using std::vector;
  * @brief Test that the argument namespace recovers the input arguments
  * provided.
  */
-TEST_CASE("Test parsing help") {
-  const char *input_args[] = {"tdms", "-h"};
-  auto args = ArgumentNamespace(2, const_cast<char **>(input_args));
-  REQUIRE(args.have_flag("-h"));
+TEST_CASE("Test namespace") {
+
+  SECTION("Help") {
+    const char *input_args[] = {"tdms", "-h"};
+    auto args = ArgumentNamespace(2, const_cast<char **>(input_args));
+    REQUIRE(args.have_flag("-h"));
+  }
+  SECTION("Version") {
+    const char *input_args[] = {"tdms", "--version"};
+    auto args = ArgumentNamespace(2, const_cast<char **>(input_args));
+    REQUIRE(args.have_flag("--version"));
+  }
 }
 
 /** Drop the first and last component of an std::vector (needs size > 2!!). */
