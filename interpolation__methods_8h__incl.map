@@ -1,6 +1,14 @@
 <map id="tdms/include/interpolation_methods.h" name="tdms/include/interpolation_methods.h">
-<area shape="rect" id="node1" title="InterpScheme class methods and supporting functions." alt="" coords="5,5,175,46"/>
-<area shape="rect" id="node2" title=" " alt="" coords="18,168,88,193"/>
-<area shape="rect" id="node3" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="91,94,164,120"/>
-<area shape="rect" id="node4" title=" " alt="" coords="111,168,165,193"/>
+<area shape="rect" id="node1" title="InterpScheme class methods and supporting functions." alt="" coords="134,5,303,46"/>
+<area shape="rect" id="node2" title=" " alt="" coords="130,94,200,120"/>
+<area shape="rect" id="node3" href="$input__flags_8h.html" title="Organises enumerated constants, names, and classes for handling flag&#45;variables that are passed to TDM..." alt="" coords="224,94,320,120"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,168,80,193"/>
+<area shape="rect" id="node5" title=" " alt="" coords="103,168,182,193"/>
+<area shape="rect" id="node6" title=" " alt="" coords="205,168,259,193"/>
+<area shape="rect" id="node7" title=" " alt="" coords="283,168,341,193"/>
+<area shape="rect" id="node8" title=" " alt="" coords="365,168,477,193"/>
+<area shape="rect" id="node9" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="502,168,573,193"/>
+<area shape="rect" id="node10" title=" " alt="" coords="425,241,479,267"/>
+<area shape="rect" id="node11" title=" " alt="" coords="503,241,571,267"/>
+<area shape="rect" id="node12" title=" " alt="" coords="595,241,653,267"/>
 </map>

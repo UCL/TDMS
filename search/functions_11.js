@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['validate_5fassigned_5fpointers_0',['validate_assigned_pointers',['../class_input_matrices.html#a6c585c28a30d17c03eefe1cb440a467e',1,'InputMatrices']]],
-  ['value_5fof_5fattribute_1',['value_of_attribute',['../classfdtd_grid_initialiser.html#ac73ca0b90f34e6d8cf13e95891696429',1,'fdtdGridInitialiser']]],
-  ['value_5for_5fzero_5fif_5fempty_2',['value_or_zero_if_empty',['../class_source.html#a8725fcd1bf80786bb807c292422c2682',1,'Source']]],
-  ['vector_5fto_5farray_3',['vector_to_array',['../test__argument__parser_8cpp.html#a916cd668f77d0897a86d5ce2631ea030',1,'test_argument_parser.cpp']]],
-  ['vertexphasors_4',['VertexPhasors',['../class_vertex_phasors.html#aae6207412f686aa39eef314d2fcacd14',1,'VertexPhasors']]]
+  ['unpack_5ffrom_5finput_5fmatrices_0',['unpack_from_input_matrices',['../class_simulation_parameters.html#a05d8c16f873435e51e8e32ff48fe353b',1,'SimulationParameters']]],
+  ['update_5fsurface_5feh_1',['update_surface_EH',['../class_surface_phasors.html#ae4b5f4f6c42b194c9256bf2c5f93e53b',1,'SurfacePhasors']]],
+  ['update_5fvertex_5fcamplitudes_2',['update_vertex_camplitudes',['../class_vertex_phasors.html#a440fef465a4124c7ddc2c9c30a07cc1d',1,'VertexPhasors']]]
 ];

@@ -1,20 +1,17 @@
 <map id="tdms/include/globals.h" name="tdms/include/globals.h">
-<area shape="rect" id="node1" title="Type definitions and global constants." alt="" coords="812,5,963,31"/>
-<area shape="rect" id="node2" href="$argument__parser_8h.html" title="Parse the command line options." alt="" coords="157,79,311,120"/>
-<area shape="rect" id="node5" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="737,87,883,112"/>
-<area shape="rect" id="node6" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="636,256,771,282"/>
-<area shape="rect" id="node12" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="840,419,980,459"/>
-<area shape="rect" id="node15" href="$interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="1103,79,1272,120"/>
-<area shape="rect" id="node18" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="1465,168,1648,208"/>
+<area shape="rect" id="node1" title="Type definitions and global constants." alt="" coords="370,5,522,31"/>
+<area shape="rect" id="node2" href="$argument__parser_8h.html" title="Parse the command line options." alt="" coords="156,79,309,120"/>
+<area shape="rect" id="node5" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="477,87,623,112"/>
+<area shape="rect" id="node12" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="331,419,470,459"/>
+<area shape="rect" id="node15" href="$test__interpolation__functions_8cpp.html" title="Tests the performance of the interpolation functions, using 1D data mimicing a coordinate axes." alt="" coords="648,79,831,120"/>
 <area shape="rect" id="node3" href="$main_8cpp.html" title="The main function. Launches TDMS." alt="" coords="5,175,135,201"/>
 <area shape="rect" id="node4" href="$test__argument__parser_8cpp.html" title="Tests of the argument parsing and file I/O." alt="" coords="159,168,309,208"/>
-<area shape="rect" id="node8" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="271,338,448,363"/>
-<area shape="rect" id="node10" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="624,330,767,371"/>
-<area shape="rect" id="node11" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="790,330,926,371"/>
-<area shape="rect" id="node13" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="476,168,635,208"/>
-<area shape="rect" id="node7" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="471,330,600,371"/>
-<area shape="rect" id="node9" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="292,419,427,459"/>
-<area shape="rect" id="node14" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="435,256,612,282"/>
-<area shape="rect" id="node16" href="$test___b_li__vs__cubic__interpolation_8cpp.html" title="Tests the performance of band&#45;limited interpolation against cubic interpolation." alt="" coords="1001,168,1209,208"/>
-<area shape="rect" id="node17" href="$test__interpolation__determination_8cpp.html" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="1233,168,1441,208"/>
+<area shape="rect" id="node6" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="483,256,617,282"/>
+<area shape="rect" id="node8" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="865,338,1041,363"/>
+<area shape="rect" id="node10" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="698,330,840,371"/>
+<area shape="rect" id="node11" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="385,330,520,371"/>
+<area shape="rect" id="node13" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="619,168,777,208"/>
+<area shape="rect" id="node7" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="545,330,673,371"/>
+<area shape="rect" id="node9" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="886,419,1020,459"/>
+<area shape="rect" id="node14" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="641,256,819,282"/>
 </map>

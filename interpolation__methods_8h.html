@@ -103,11 +103,11 @@ $(document).ready(function(){initNavTree('interpolation__methods_8h.html',''); i
 <p>InterpScheme class methods and supporting functions.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;complex&gt;</code><br />
-<code>#include &quot;<a class="el" href="globals_8h_source.html">globals.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="input__flags_8h_source.html">input_flags.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for interpolation_methods.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="interpolation__methods_8h__incl.svg" width="180" height="199"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="interpolation__methods_8h__incl.svg" width="658" height="272"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -149,9 +149,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5a316672cbe856209bce5e43a380934b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_interpolation_scheme.html">InterpolationScheme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8h.html#a5a316672cbe856209bce5e43a380934b">best_scheme</a> (int datapts_in_direction, int interpolation_position, <a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a> interpolation_methods=PreferredInterpolationMethods::BandLimited)</td></tr>
-<tr class="memdesc:a5a316672cbe856209bce5e43a380934b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine the appropriate interpolation scheme to use, given the number of datapoints available and the position to which we wish to interpolate to.  <br /></td></tr>
-<tr class="separator:a5a316672cbe856209bce5e43a380934b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecad583ac967d8ca70df0fe066cd8512"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_interpolation_scheme.html">InterpolationScheme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interpolation__methods_8h.html#aecad583ac967d8ca70df0fe066cd8512">best_scheme</a> (int datapts_in_direction, int interpolation_position, <a class="el" href="namespacetdms__flags.html#aec980b8a4fd400ff95f0b23b2a30d34b">tdms_flags::InterpolationMethod</a> interpolation_methods=tdms_flags::InterpolationMethod::Cubic)</td></tr>
+<tr class="memdesc:aecad583ac967d8ca70df0fe066cd8512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine the appropriate interpolation scheme to use, given the number of datapoints available and the position to which we wish to interpolate to.  <br /></td></tr>
+<tr class="separator:aecad583ac967d8ca70df0fe066cd8512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -200,15 +200,15 @@ Variables</h2></td></tr>
 <p>Defines our order of preference for the use of the various schemes. </p>
 <p>There should never be an instance in which we wish to use BLi to position 7 - this will take us to a point OUTSIDE the computational domain. However for completion purposes (and if we find a use for it), it is included.</p>
 <p>MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!</p>
-<p>For band-limited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a
+<p>For bandlimited schemes, we have 8 equidistant datapoints and can interpolate to the midpoint of any pair of consecutive points, or "half a
 point spacing" to the right of the final data point. These "interpolation
 positions" (interp positions) are marked with "o" below: v0 v1 v2 v3 v4 v5 v6 v7 o o o o o o o o We label these interp positions with the index of the point to the left: a data point at interp position 0 is effectively a data point "v0.5", being at the midpoint of v0 and v1, for example. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a5a316672cbe856209bce5e43a380934b" name="a5a316672cbe856209bce5e43a380934b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a316672cbe856209bce5e43a380934b">&#9670;&#160;</a></span>best_scheme()</h2>
+<a id="aecad583ac967d8ca70df0fe066cd8512" name="aecad583ac967d8ca70df0fe066cd8512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecad583ac967d8ca70df0fe066cd8512">&#9670;&#160;</a></span>best_scheme()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -228,8 +228,8 @@ positions" (interp positions) are marked with "o" below: v0 v1 v2 v3 v4 v5 v6 v7
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6">PreferredInterpolationMethods</a>&#160;</td>
-          <td class="paramname"><em>interpolation_methods</em> = <code>PreferredInterpolationMethods::BandLimited</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacetdms__flags.html#aec980b8a4fd400ff95f0b23b2a30d34b">tdms_flags::InterpolationMethod</a>&#160;</td>
+          <td class="paramname"><em>interpolation_methods</em> = <code>tdms_flags::InterpolationMethod::Cubic</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

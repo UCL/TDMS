@@ -9,9 +9,5 @@ var globals_8h =
       [ "Hx", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a4716e899686aff8bf7099120f73dc3ce", null ],
       [ "Hy", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a1f0458a53eb8162e3010bf46ff2642c8", null ],
       [ "Hz", "globals_8h.html#ad5808a87728ffa9d8e3fe1b4f2e39736a43b850ae3da15898c866e455699adf10", null ]
-    ] ],
-    [ "PreferredInterpolationMethods", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6", [
-      [ "BandLimited", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6a457951a3c523f17bf4b0141e698ea04d", null ],
-      [ "Cubic", "globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6a7105ea83819b1af6af85747e20b462b4", null ]
     ] ]
 ];

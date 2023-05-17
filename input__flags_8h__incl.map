@@ -1,0 +1,12 @@
+<map id="tdms/include/input_flags.h" name="tdms/include/input_flags.h">
+<area shape="rect" id="node1" title="Organises enumerated constants, names, and classes for handling flag&#45;variables that are passed to TDM..." alt="" coords="208,5,336,46"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,94,80,120"/>
+<area shape="rect" id="node3" title=" " alt="" coords="103,94,182,120"/>
+<area shape="rect" id="node4" title=" " alt="" coords="205,94,259,120"/>
+<area shape="rect" id="node5" title=" " alt="" coords="283,94,341,120"/>
+<area shape="rect" id="node6" title=" " alt="" coords="365,94,477,120"/>
+<area shape="rect" id="node7" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="502,94,573,120"/>
+<area shape="rect" id="node8" title=" " alt="" coords="425,168,479,193"/>
+<area shape="rect" id="node9" title=" " alt="" coords="503,168,571,193"/>
+<area shape="rect" id="node10" title=" " alt="" coords="595,168,653,193"/>
+</map>

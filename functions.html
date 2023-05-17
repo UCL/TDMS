@@ -113,7 +113,6 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 <li>check_has_at_least_as_many_matrices_as()&#160;:&#160;<a class="el" href="class_matrix_collection.html#a2f3ef9f35d35a2d46911167648b1e0d3">MatrixCollection</a></li>
 <li>click()&#160;:&#160;<a class="el" href="class_timer.html#a8487935861016f5d7c6f1b46c74f5cbb">Timer</a></li>
 <li>create_vertex_list()&#160;:&#160;<a class="el" href="class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70">SurfacePhasors</a></li>
-<li>cubic_interpolation()&#160;:&#160;<a class="el" href="class_argument_namespace.html#aedbab63bb61218f7a39f1d60c0c258ac">ArgumentNamespace</a></li>
 <li>CurrentDensitySplitField()&#160;:&#160;<a class="el" href="class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90">CurrentDensitySplitField</a></li>
 </ul>
 
@@ -144,8 +143,9 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 
 <h3><a id="index_f" name="index_f"></a>- f -</h3><ul>
 <li>fdtdGridInitialiser()&#160;:&#160;<a class="el" href="classfdtd_grid_initialiser.html#a68572b27a73480baa213baf93360f7cf">fdtdGridInitialiser</a></li>
+<li>fetch_flag_value()&#160;:&#160;<a class="el" href="class_input_flags.html#a49f6ec2bb8fd3540806083851aacb786">InputFlags</a></li>
 <li>Field()&#160;:&#160;<a class="el" href="class_field.html#a49946f632ba55deabf6bc8cd5f100225">Field</a></li>
-<li>finite_difference()&#160;:&#160;<a class="el" href="class_argument_namespace.html#a7334784d24819031d41ed914a8ac058e">ArgumentNamespace</a></li>
+<li>flag_values&#160;:&#160;<a class="el" href="class_input_flags.html#a77a58c1de1c891a2974cc0cbb4011d35">InputFlags</a></li>
 <li>frobenius()&#160;:&#160;<a class="el" href="class_tensor3_d.html#a68b2ad27844616772a714b8294985db6">Tensor3D&lt; T &gt;</a></li>
 </ul>
 
@@ -176,8 +176,9 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 <li>index_from_matrix_name()&#160;:&#160;<a class="el" href="class_input_matrices.html#a8b204fbe65d6124bf41bf08ad14ce06b">InputMatrices</a></li>
 <li>initialise_fftw_plan()&#160;:&#160;<a class="el" href="class_split_field.html#a792343b412146ee62ea9bdeb77b2bbac">SplitField</a>, <a class="el" href="class_split_field_component.html#a1fc26ee4ab568697602cbc938da57065">SplitFieldComponent</a></li>
 <li>initialise_from()&#160;:&#160;<a class="el" href="class_grid_labels.html#a81c606e1c0dedff24b12ec68af1e22ee">GridLabels</a></li>
-<li>input_filename()&#160;:&#160;<a class="el" href="class_argument_namespace.html#a1bddfb193da659b05938b577db646ff4">ArgumentNamespace</a></li>
+<li>input_filename()&#160;:&#160;<a class="el" href="class_argument_namespace.html#a1bddfb193da659b05938b577db646ff4">ArgumentNamespace</a>, <a class="el" href="class_input_flags.html#ad984b867a78c66ab14d0242fd0a39753">InputFlags</a></li>
 <li>input_filenames()&#160;:&#160;<a class="el" href="class_argument_namespace.html#a6823ff8c993686da1770722aac6879ff">ArgumentNamespace</a></li>
+<li>InputFlags()&#160;:&#160;<a class="el" href="class_input_flags.html#a1e568fede39cfd229362961b5439b8b1">InputFlags</a></li>
 <li>interpolate()&#160;:&#160;<a class="el" href="class_interpolation_scheme.html#a6d650c07ba2bf6f9f0dc08f00571fea1">InterpolationScheme</a></li>
 <li>interpolate_over_range()&#160;:&#160;<a class="el" href="class_field.html#ad229a40d2caf451e88f0cdec639e274f">Field</a></li>
 <li>interpolate_to_centre_of()&#160;:&#160;<a class="el" href="class_current_density_split_field.html#a1927b82eafe3e1c81bd2511221d9d04a">CurrentDensitySplitField</a>, <a class="el" href="class_electric_field.html#adfe2bd8f63e90bab886996d8e2a498a7">ElectricField</a>, <a class="el" href="class_electric_split_field.html#a470a3b6d0922dd6678560bbcf6a1fceb">ElectricSplitField</a>, <a class="el" href="class_field.html#aaf0af96f1cf0951f79c87f38c9e9ae07">Field</a>, <a class="el" href="class_magnetic_field.html#ac8a1981f077527cbfb93f1e2dd4a8560">MagneticField</a>, <a class="el" href="class_magnetic_split_field.html#a8d55380a33963564647256ad92095a26">MagneticSplitField</a>, <a class="el" href="class_split_field.html#a1586fdfbc204001215769b754121fcae">SplitField</a></li>
@@ -234,13 +235,14 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 
 
 <h3><a id="index_o" name="index_o"></a>- o -</h3><ul>
-<li>operator[]()&#160;:&#160;<a class="el" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot</a>, <a class="el" href="class_input_matrices.html#a97d0923507c48adcebb5ec9f6d6204b0">InputMatrices</a></li>
+<li>operator[]()&#160;:&#160;<a class="el" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot</a>, <a class="el" href="class_input_flags.html#a8901aa82f29503cc36a04a50809777ef">InputFlags</a>, <a class="el" href="class_input_matrices.html#a97d0923507c48adcebb5ec9f6d6204b0">InputMatrices</a></li>
 <li>output_filename()&#160;:&#160;<a class="el" href="class_argument_namespace.html#a818341ac39c53db017b552800c51f771">ArgumentNamespace</a></li>
 </ul>
 
 
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
 <li>parse_args()&#160;:&#160;<a class="el" href="class_argument_parser.html#a206004e16b6841b14fb1483bcc816a2e">ArgumentParser</a></li>
+<li>position_from_name()&#160;:&#160;<a class="el" href="class_input_flags.html#a4188d8d296d2c8bf75042dd423e6e62b">InputFlags</a></li>
 <li>print()&#160;:&#160;<a class="el" href="structijk.html#a303de4f3ab8b9a14d368e0e128a634f7">ijk</a></li>
 <li>print_help_message()&#160;:&#160;<a class="el" href="class_argument_parser.html#a2fda5f34d8aa3d6394877c96ddf84347">ArgumentParser</a></li>
 <li>print_version()&#160;:&#160;<a class="el" href="class_argument_parser.html#ad4e2f59d9e56cf25f1fbea1b41aca22e">ArgumentParser</a></li>
@@ -249,6 +251,7 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 
 <h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
 <li>real&#160;:&#160;<a class="el" href="class_source.html#ae563dbfecd55e39706f0adc629cadd8b">Source</a></li>
+<li>report_flag_state()&#160;:&#160;<a class="el" href="class_input_flags.html#a87579b76144f43005795abf29d3416ee">InputFlags</a></li>
 </ul>
 
 
@@ -258,7 +261,7 @@ $(document).ready(function(){initNavTree('functions.html',''); initResizable(); 
 <li>set_from_matlab_array()&#160;:&#160;<a class="el" href="class_surface_phasors.html#aba42a247098976cbda44d8e9a405b151">SurfacePhasors</a></li>
 <li>set_matrix_pointer()&#160;:&#160;<a class="el" href="class_input_matrices.html#ab09ad4733b8a1ccd7c13aaaa86d410d3">InputMatrices</a></li>
 <li>set_phasors()&#160;:&#160;<a class="el" href="class_field.html#a88c2e1c843986da2cce6a54379466bbb">Field</a></li>
-<li>set_preferred_interpolation_methods()&#160;:&#160;<a class="el" href="class_grid.html#a58b6535bf88dece0c46c4ce472124c08">Grid</a></li>
+<li>set_preferred_interpolation_methods()&#160;:&#160;<a class="el" href="class_grid.html#ab2601d717eea736f6c1cf5f61a36d392">Grid</a></li>
 <li>set_ptr()&#160;:&#160;<a class="el" href="class_x_y_z_vectors.html#a8640f5a6e25c968f91aa2efdf386d11a">XYZVectors</a></li>
 <li>set_spacing_stride()&#160;:&#160;<a class="el" href="class_simulation_parameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">SimulationParameters</a></li>
 <li>set_values_from()&#160;:&#160;<a class="el" href="class_field.html#a9aaf9b68cac30ee0c2ad27ca15975f5b">Field</a></li>

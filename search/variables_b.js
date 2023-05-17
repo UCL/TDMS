@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['zx_0',['zx',['../class_split_field.html#ad43c2ab34b1a059d90c374bc49c48073',1,'SplitField']]],
-  ['zy_1',['zy',['../class_split_field.html#a1f011968382107ea2d18ec02541010ac',1,'SplitField']]]
+  ['y_0',['y',['../class_d_tilde.html#a05bf0a7b2981df8607d9f01fded94b97',1,'DTilde']]],
+  ['yx_1',['yx',['../class_split_field.html#ac2080d09c284cc3fd47d699ca95c80bb',1,'SplitField']]],
+  ['yz_2',['yz',['../class_split_field.html#a97498fcaa7d9c1cce6544d2bf20a7baa',1,'SplitField']]]
 ];

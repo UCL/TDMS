@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['preferredinterpolationmethods_0',['PreferredInterpolationMethods',['../globals_8h.html#a43ca166ad96e2b0a96dfde81d76479e6',1,'globals.h']]]
+  ['interpolationmethod_0',['InterpolationMethod',['../namespacetdms__flags.html#aec980b8a4fd400ff95f0b23b2a30d34b',1,'tdms_flags']]]
 ];

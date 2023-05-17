@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="test___b_li__vs__cubic__interpolation_8cpp.html" target="_top" xlink:title="Tests the performance of band&#45;limited interpolation against cubic interpolation.">
+<g id="a_node2"><a xlink:href="test___b_li__vs__cubic__interpolation_8cpp.html" target="_top" xlink:title="Tests the performance of bandlimited interpolation against cubic interpolation.">
 <polygon fill="white" stroke="#666666" points="156.25,-30.5 0,-30.5 0,0 156.25,0 156.25,-30.5"/>
 <text text-anchor="start" x="8" y="-17" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/tests/unit/test</text>
 <text text-anchor="middle" x="78.12" y="-5.75" font-family="Helvetica,sans-Serif" font-size="10.00">_BLi_vs_cubic_interpolation.cpp</text>

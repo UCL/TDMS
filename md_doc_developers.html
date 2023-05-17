@@ -95,10 +95,10 @@ $(document).ready(function(){initNavTree('md_doc_developers.html',''); initResiz
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Welcome to the developer documentation for TDMS, the Time Domain Maxwell Solver. These pages contain the C++ API documentation as well as some other useful information for developers.</p>
-<h1><a class="anchor" id="autotoc_md11"></a>
+<h1><a class="anchor" id="autotoc_md12"></a>
 Developers' introduction to TDMS</h1>
 <p>The physics background and numerical methods used by TDMS are described in <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">this pdf document</a> (the source is in <a href="https://github.com/UCL/TDMS/blob/main/doc/latex">doc/latex</a>). In terms of the code, <code>tdms</code> is a C++ binary that can be installed in the <code>PATH</code>. We build with <a href="https://cmake.org/">CMake</a> to be moderately platform-independent. We run continuous integration builds and tests on Windows, Ubuntu, and MacOS.</p>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md13"></a>
 Dependencies</h1>
 <p>We depend on ...</p>
 <ul>
@@ -107,7 +107,7 @@ Dependencies</h1>
 <li><a href="https://github.com/gabime/spdlog">spdlog</a> for logging (this is installed automatically by a CMake <a href="https://cmake.org/cmake/help/latest/module/FetchContent.html">FetchContent</a> if not found).</li>
 <li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a> since we read in and write out MATLAB format files. We are actually thinking of removing this as a strict dependency (<a href="https://github.com/UCL/TDMS/issues/70">#70</a>).</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Versions</h2>
 <p>We follow <a href="https://semver.org">semantic versioning</a>: major, minor, patch. Major versions may contain changes to the API and UI, minor versions contain new features but preserve backwards-compatibility of UI, patches are bugfixes.</p>
 <p>So (for example) version v1.2.0 is major version 1, minor version 2, and the zeroth patch. v1.2.0 will be backwards-compatible with v1.1.99.</p>
@@ -179,7 +179,7 @@ Compiling and debugging</h1>
 <div class="line">spdlog::debug(<span class="stringliteral">&quot;Send help&quot;</span>);</div>
 </div><!-- fragment --></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md14"></a>
+<h2><a class="anchor" id="autotoc_md15"></a>
 Compiling on UCL's Myriad cluster</h2>
 <details >
 <summary >
@@ -208,7 +208,7 @@ Myriad instructions</summary>
 </div><!-- fragment --><p> it's because the MATLAB module is interfering with the SSL certificates (and we clone over https by default). This issue is known and reported. As a workaround, we've added the build option <code>-DGIT_SSH=ON</code> to switch to <code>git clone</code> over ssh instead.</p>
 <p></p>
 </details>
-<h1><a class="anchor" id="autotoc_md15"></a>
+<h1><a class="anchor" id="autotoc_md16"></a>
 Where's the main?</h1>
 <p>The C++ <code>main</code> function is in <code><a class="el" href="main_8cpp.html" title="The main function. Launches TDMS.">main.cpp</a></code> however the main algorithm code is in the <code>execute()</code> method of the <code>SimulationManager</code> class, in <code>execute_simulation.cpp</code>.</p>
 <p>Broadly speaking, the <code>main</code> function - and thus a call to (or execution of) <code>tdms</code> - can be broken down into the following steps:</p><ol type="1">
@@ -219,7 +219,7 @@ Where's the main?</h1>
 <li>Write the outputs and tear-down memory.</li>
 </ol>
 <p>The <code>SimulationManager</code> class governs steps 2 through 5.</p>
-<h1><a class="anchor" id="autotoc_md16"></a>
+<h1><a class="anchor" id="autotoc_md17"></a>
 Code organisation of the TDMS algorithm</h1>
 <p>An instance of <code>SimulationManager</code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code>SimulationManager</code> instance):</p><ul>
 <li><code>ObjectsFromInfile</code> (<code>inputs</code>): Handles conversion of any input arrays to native <code>C++</code> objects, and any variables that are derived directly from the input file supplied to <code>tdms</code> on the command line.</li>
@@ -228,16 +228,16 @@ Code organisation of the TDMS algorithm</h1>
 <li><code>LoopTimers</code> (<code>timers</code>): Controls timing (and logging execution times) of the main loop and subprocesses therein.</li>
 </ul>
 <p>The role of <code>SimulationManager</code> is to handle how these objects interact in the main loop.</p>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md18"></a>
 2. Initialisation</h2>
 <p><code>SimulationManager</code> instances begin by initialising the <code>inputs</code> attribute. Based on this attribute, they set up <code>PSTD</code>/<code>FDTD</code> variables and prepare the <code>outputs</code> object for writing. Some members of the <code>outputs</code> objects are used as the buffer for the field and phasor data whilst the main loop is running, with the final state of this buffer being the output values. Other attributes of the <code>outputs</code> object that require information <em>from</em> the main loop are prepared (dimensions are determined, etc) at this stage but not set.</p>
-<h2><a class="anchor" id="autotoc_md18"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 3. Running the Main Loop</h2>
 <p>Once initialised, the <code>execute()</code> method can be called. This will create an instance of <code>LoopVariables</code> that is scoped to this function; which in turn sets up the variables that are required in the main loop but not needed elsewhere. This avoids bloating the <code>execute()</code> method with a large number of variable declarations and setup, as well as simplifying tear-down at the end of the loop. <code>timers</code> track the speed of execution of the main loop, and report to the logging.</p>
-<h2><a class="anchor" id="autotoc_md19"></a>
+<h2><a class="anchor" id="autotoc_md20"></a>
 4. Post-Processing</h2>
 <p>Upon completing <code>execute()</code> successfully, the <code>post_loop_processing()</code> method of <code>SimulationManager</code> writes the data to the <code>outputs</code> attributes that were not used as buffers during the main loop.</p>
-<h2><a class="anchor" id="autotoc_md20"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 5. Write out and Tear Down</h2>
 <p>From here, the <code>write_outputs()</code> method exports the data in <code>outputs</code> to the desired file.</p>
 <p>At this point, the instance of <code>SimulationManager</code> can be allowed to go out of scope. In practice, <code>main()</code> terminates here and the destructor handles the tear-down of <code>MATLAB</code> memory blocks.</p>
@@ -287,10 +287,12 @@ MATLAB Units</h2>
 <div class="fragment"><div class="line">matlab -batch run_tests</div>
 </div><!-- fragment --><p>In the <code>utils</code> folder, you'll find small MATLAB functions to edit the <code>data/pstd_input_file{2,3}D.m</code> files during the testing phase.</p>
 <p>The <code>iteratefdtd_matrix</code> function has different ways to generate source terms from an input file. However, some combinations of variables provided can be incompatible, resulting in errors or contradictory information. The unit test <code>test_iteratefdtd_matrix_source_combinations</code> goes through each possible combination of source-related inputs, checking for errors or valid input combinations. The combinations and expected results are listed in the table below.</p>
-<dl class="section note"><dt>Note</dt><dd><code>TD-field</code> is also known as <code>exi/eyi</code> in some docstrings.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd><code>TD-field</code> is also known as <code>exi/eyi</code> in some docstrings.</dd>
+<dd>
+<code>usecd</code> was the legacy name for the variable that controlled which solver method to use in the timestepping algorithm. Previous convention was that <code>usecd = 1</code> (or not present) resulted in the use of FDTD. This has since been superceeded by the <code>use_pstd</code> flag which is <code>true</code> when PSTD is to be used, and FDTD will be used otherwise (such as when this flag is not present or set explicitly to <code>false</code>).</dd></dl>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadCenter">TD-field   </th><th class="markdownTableHeadCenter">usecd   </th><th class="markdownTableHeadCenter">compactsource   </th><th class="markdownTableHeadCenter">efname   </th><th class="markdownTableHeadCenter">hfname   </th><th class="markdownTableHeadCenter">Raises error?   </th><th class="markdownTableHeadCenter">Error info    </th></tr>
+<th class="markdownTableHeadCenter">TD-field   </th><th class="markdownTableHeadCenter">Using FDTD   </th><th class="markdownTableHeadCenter">compactsource   </th><th class="markdownTableHeadCenter">efname   </th><th class="markdownTableHeadCenter">hfname   </th><th class="markdownTableHeadCenter">Raises error?   </th><th class="markdownTableHeadCenter">Error info    </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
 <tr class="markdownTableRowEven">
@@ -316,13 +318,13 @@ MATLAB Units</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
 <tr class="markdownTableRowEven">
@@ -334,11 +336,11 @@ MATLAB Units</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter"></td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and using FDTD, must specify both efname and hfname    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and using FDTD, must specify both efname and hfname    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and usecd, must specify both efname and hfname    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">If not TD-field and using FDTD, must specify both efname and hfname    </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot specify hfname if compact source    </td></tr>
 <tr class="markdownTableRowEven">
@@ -348,27 +350,27 @@ MATLAB Units</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Must specify efname if compact source and TD-field not specified    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource    </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot have not usecd &amp; not compactsource   </td></tr>
+<td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">0   </td><td class="markdownTableBodyCenter">1   </td><td class="markdownTableBodyCenter">Cannot use FDTD &amp; not compactsource   </td></tr>
 </table>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
-<p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/">zenodo</a>.</p>
+<p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/record/7899298">zenodo</a>.</p>
 <p>There are a few <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt">python packages you will need</a> before you are able to run the tests, which can be installed by executing: </p><div class="fragment"><div class="line">python -m pip install -r tdms/tests/requirements.txt</div>
 </div><!-- fragment --><p> if you don't already have them. You'll then need to <a class="el" href="md_doc_developers.html#compiling">compile</a> <code>tdms</code> with <code>-DBUILD_TESTING=ON</code>. Once compiled, the system tests can be run by invoking <code>pytest</code> and pointing it to the <code>tdms/tests/system</code> directory. For example, from the build directory: </p><div class="fragment"><div class="line">$ pwd</div>
 <div class="line">/path/to/repository/TDMS/tdms/build</div>
 <div class="line">$ pytest ../tests/system/</div>
 </div><!-- fragment --><p> The <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_system.py"><code>test_system.py</code></a> script runs each system test in sequence.</p>
-<p>**<a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/test_regen.py"><code>test_regen.py</code></a> and <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/system/tdms_testing_class.py.py"><code>tdms_testing_class.py</code></a> will replace <code>test_system.py</code> and <code>read_config.py</code> when the <a href="https://github.com/UCL/TDMS/issues/70">input overhaul</a> is complete.**</p>
-<p>When you run the tests for the first time, test data is downloaded to <code>tdms/tests/system/data</code> (and will be <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). These reference input files contain arrays for: the incident electric field, the computational grid, etc. which are needed by the simulation, and have been generated by a trusted version of the relevant MATLAB scripts. Subsequent runs of the tests will not re-download unless you manually delete the zip file(s).</p>
+<p>When you run the tests for the first time, the test data is downloaded to <code>tdms/tests/system/data</code> (and will be <a href="https://github.com/UCL/TDMS/blob/main/.gitignore">ignored by git</a>). Subsequent runs of the tests will not re-download unless you manually delete the zip file(s).</p>
+<p>The test data contains reference input files which contain arrays for the incident electric field, the computational grid, and so on (needed by the simulation). The files have been generated by a trusted version of the relevant MATLAB scripts. The data also contains reference <em>output</em> files which have been generated by a trusted version of TDMS - the system tests check output against reference outputs. I.e. regression testing: that new changes have preserved the functionality of TDMS.</p>
 <p>The system tests for <code>tdms</code> are configured with yaml files in the <code>data/input_generation/</code> directory. They are named <code>config_XX.yaml</code> where <code>XX</code> matches the ID of the system test, which themselves are named <code>arc_XX</code> by historical convention. These config files define a number of variables, parameters, and filenames that will be required when running the system tests - for a detailed breakdown of their syntax, see the annotated <code>config_01.yaml</code> file. This should also match the <code>test_id</code> field in the configuration file itself. The <em>reference outputs</em> or <em>reference data</em> are a collection of <code>.mat</code> files, produced from the <em>reference inputs</em> by a trusted version of the <code>tdms</code> executable. We test for regression using these reference files.</p>
 <p>A given system test typically has two calls to the <code>tdms</code> executable; one for when there is no scattering object present, and one for when there is some obstacle. More than two runs in a test might be due to the use of band-limited interpolation over cubic interpolation. Each call to the executable has a reference input and reference output. In the scripts, a given execution is called by <code>tests.utils.run_tdms</code> which wraps a <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">subprocess.Popen</a>.</p>
-<h3><a class="anchor" id="autotoc_md21"></a>
+<h3><a class="anchor" id="autotoc_md22"></a>
 Workflow of a System Test</h3>
 <p>The workflow of a particular system test <code>arc_XX</code> is:</p><ul>
 <li>Locally generate the reference inputs using functionality in <code>data/input_generation/generate_test_data.py</code>.<ul>
@@ -388,7 +390,7 @@ Workflow of a System Test</h3>
 <li><code>arc_XX</code> passes if this step is reached successfully.</li>
 </ul>
 <p>Due to <a href="https://github.com/matlab-actions/setup-matlab/issues/13">licensing issues regarding running <code>MATLAB</code> on GitHub runners</a>, we cannot use <code>matlabengine</code> to regenerate the reference input data during CI. (Although we are currently thinking of removing the <code>MATLAB</code> dependency which will then enable us to resolve this issue). The work-in-progress <code>test_regen.py</code> workflow can still be run locally through <code>pytest</code>, however in addition to <code>requirements.txt</code> you will also need to <a href="https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html">install <code>matlabengine</code></a>. See the <a href="https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html">MathWorks page</a> link for detailed requirements. You will need (at least) <code>Python &gt;= 3.8</code> and a licensed version of <code>MATLAB</code>.</p>
-<h2><a class="anchor" id="autotoc_md22"></a>
+<h2><a class="anchor" id="autotoc_md23"></a>
 Generating Input Data for the System Tests</h2>
 <p>The system tests rely on <code>.mat</code> input files that are generated through a series of MATLAB function calls and scripts. This directory contains the functionality to automatically (re)generate this input data, which serves two purposes:</p><ul>
 <li>The <code>.mat</code> <em>input</em> files do not need to be uploaded and fetched from Zenodo each time the system tests are run. They can be generated locally instead.<ul>
@@ -397,7 +399,7 @@ Generating Input Data for the System Tests</h2>
 </li>
 <li>We track changes to the way we handle inputs to <code>tdms</code>, and the system tests. Ensuring we test against unexpected behaviour due to input changes.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md23"></a>
+<h3><a class="anchor" id="autotoc_md24"></a>
 (Re)generation of the Data</h3>
 <p>(Re)generating the input data for a particular test case, <code>arc_XX</code>, is a three-step process:</p><ol type="1">
 <li>Determine variables, filenames, and the particular setup of <code>arc_XX</code>. This information is stored in the corresponding <code>config_XX.yaml</code> file. For example, is an illumination file required? What are the spatial obstacles? What is the solver method?</li>
@@ -408,7 +410,7 @@ Generating Input Data for the System Tests</h2>
 <ol type="1">
 <li>Clean up the auxillary <code>.mat</code> files that are generated by this process. In particular, any <code>gridfiles.mat</code>, illumination files, or other <code>.mat</code> files that are temporarily created when generating the input <code>.mat</code> file.</li>
 </ol>
-<h3><a class="anchor" id="autotoc_md24"></a>
+<h3><a class="anchor" id="autotoc_md25"></a>
 Contents of the &lt;tt&gt;data/input_generation&lt;/tt&gt; Directory (and subdirectories)</h3>
 <p>The <code>run_bscan</code> function is inside the <code>bscan/</code> directory.</p>
 <p>The <code>matlab/</code> directory contains functions that <code>run_bscan</code> will need to call on during the creation of the input data. This in particular includes the <code>iteratefdtd_matrix</code> function, which does the majority of the work in setting up gridfiles, illumination files, and the <code>.mat</code> inputs themselves.</p>

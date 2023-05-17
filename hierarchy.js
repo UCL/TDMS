@@ -34,6 +34,7 @@ var hierarchy =
     [ "GridLabels", "class_grid_labels.html", null ],
     [ "ijk", "structijk.html", null ],
     [ "IncidentField", "class_incident_field.html", null ],
+    [ "InputFlags", "class_input_flags.html", null ],
     [ "InputMatrices", "class_input_matrices.html", null ],
     [ "InterfaceComponent", "class_interface_component.html", null ],
     [ "InterpolationScheme", "class_interpolation_scheme.html", null ],

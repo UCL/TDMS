@@ -31,6 +31,7 @@ var annotated_dup =
     [ "GridLabels", "class_grid_labels.html", "class_grid_labels" ],
     [ "ijk", "structijk.html", "structijk" ],
     [ "IncidentField", "class_incident_field.html", null ],
+    [ "InputFlags", "class_input_flags.html", "class_input_flags" ],
     [ "InputMatrices", "class_input_matrices.html", "class_input_matrices" ],
     [ "InterfaceComponent", "class_interface_component.html", null ],
     [ "InterpolationScheme", "class_interpolation_scheme.html", "class_interpolation_scheme" ],
