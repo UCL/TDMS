@@ -131,52 +131,14 @@ TEST_CASE("Test wrong number of file names") {
   }
 }
 
-/**
- * @brief Test of the CLI options.
- *
- * TODO: FD will need to be removed.
- */
+/** @brief Test of the CLI options. */
 TEST_CASE("CL options") {
   vector<string> input_args = {"tdms", "input_file.mat", "output_file.mat"};
   SECTION("Doesn't have flags") {
     auto args =
             ArgumentNamespace(input_args.size(),
                               const_cast<char **>(vector_to_array(input_args)));
-    REQUIRE(!args.finite_difference());
-    REQUIRE(!args.cubic_interpolation());
-  }
-
-  SECTION("Interpolation flag") {
-    input_args.push_back("--cubic-interpolation");
-    auto args =
-            ArgumentNamespace(input_args.size(),
-                              const_cast<char **>(vector_to_array(input_args)));
-    REQUIRE(!args.finite_difference());
-    REQUIRE(args.cubic_interpolation());
-  }
-  SECTION("Solver method flag") {
-    input_args.push_back("--finite-difference");
-    auto args =
-            ArgumentNamespace(input_args.size(),
-                              const_cast<char **>(vector_to_array(input_args)));
-    REQUIRE(args.finite_difference());
-    REQUIRE(!args.cubic_interpolation());
-  }
-  SECTION("Interpolation quick option") {
-    input_args.push_back("-c");
-    auto args =
-            ArgumentNamespace(input_args.size(),
-                              const_cast<char **>(vector_to_array(input_args)));
-    REQUIRE(!args.finite_difference());
-    REQUIRE(args.cubic_interpolation());
-  }
-
-  SECTION("Solver method quick option") {
-    input_args.push_back("-fd");
-    auto args =
-            ArgumentNamespace(input_args.size(),
-                              const_cast<char **>(vector_to_array(input_args)));
-    REQUIRE(args.finite_difference());
-    REQUIRE(!args.cubic_interpolation());
+    // ArgumentNamespace should ignore executable name when counting input args
+    REQUIRE(args.num_non_flag == 2);
   }
 }
