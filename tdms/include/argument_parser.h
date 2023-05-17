@@ -131,7 +131,7 @@ class ArgumentParser {
 private:
   /** Prints the help message (all options).  */
   static void print_help_message();
-  /** Prints this software version. */
+  /** Prints the version of the compiled executable. */
   static void print_version();
 
 public:

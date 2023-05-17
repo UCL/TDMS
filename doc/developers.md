@@ -26,7 +26,8 @@ Major versions may contain changes to the API and UI, minor versions contain new
 
 So (for example) version v1.2.0 is major version 1, minor version 2, and the zeroth patch. v1.2.0 will be backwards-compatible with v1.1.99.
 
-**Mechanics**: Version control is via `git tag`s on the `main` branch and propagated to the C++ source [code via CMake](https://github.com/UCL/TDMS/blob/main/tdms/cmake/version_from_git.cmake). Release notes are kept in the [GitHub release page](https://github.com/UCL/TDMS/releases).
+**Mechanics**: Version control is via `git tag`s on the `main` branch and propagated to the C++ source [code via CMake](https://github.com/UCL/TDMS/blob/main/tdms/cmake/version_from_git.cmake).
+Release notes are kept in the [GitHub release page](https://github.com/UCL/TDMS/releases).
 
 As well as official releases, a placeholder "version" is assigned to every commit on every development branch, or can be supplied at compile-time (which takes the highest precedence).
 
