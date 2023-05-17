@@ -44,7 +44,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_if == N+1 : Interpolation impossible
   */
   SECTION("Band-limited interpolation allowed") {
-    SPDLOG_INFO("Interpolation scheme selection: band-limited allowed");
+    SPDLOG_INFO("Interpolation scheme selection: bandlimited allowed");
 
     REQUIRE_THROWS_AS(best_scheme(N, -1, InterpolationMethod::BandLimited),
                       out_of_range);
@@ -94,7 +94,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_if >= N : Interpolation impossible
   */
   SECTION("Only cubic interpolation") {
-    SPDLOG_INFO("Interpolation scheme selection: band-limited disallowed");
+    SPDLOG_INFO("Interpolation scheme selection: bandlimited disallowed");
     InterpolationMethod interpolation_method = InterpolationMethod::Cubic;
     REQUIRE_THROWS_AS(best_scheme(N, 0, interpolation_method), out_of_range);
     all_schemes_correct =

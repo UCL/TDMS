@@ -220,7 +220,7 @@ if ( mod( (phasorsurface(2) - phasorsurface(1)),phasorinc(1) ) || ...
     error('Incorrect specification of phasorinc');
 end
 
-% Cast band-limited to a boolean value
+% Cast bandlimited to a boolean value
 use_bli = all(logical(use_bli));
 % Cast use_pstd to a boolean value
 use_pstd = all(logical(use_pstd));

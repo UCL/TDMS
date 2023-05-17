@@ -63,7 +63,7 @@ def edit_mat_file(
     if "interpolation" in options:
         # We will be overwriting the value here
         if options["interpolation"] == "bli":
-            # Overwrite use_bli with True (band-limited)
+            # Overwrite use_bli with True (bandlimited)
             use_bli = OverwriteWith(True, True)
         elif options["interpolation"] == "cubic":
             # Overwrite use_bli with False (cubic, default)

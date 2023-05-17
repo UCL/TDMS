@@ -1,4 +1,4 @@
-% Whether to use band-limited interpolation over cubic interpolation
+% Whether to use bandlimited interpolation over cubic interpolation
 use_bli = 0;
 % Whether to use the PSTD method over the FDTD method
 use_pstd = 0;
