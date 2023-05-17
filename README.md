@@ -78,14 +78,32 @@ For beginners, we recommend starting with the demonstration MATLAB script, which
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
 
+### On the command line
+
 If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name.
-You can choose between two solver methods: pseudo-spectral time-domain (PSTD, the default) or finite-difference (FDTD, with option `--finite-difference`).
+You can choose between two solver methods: **finite-difference** or **pseudo-spectral**, as well as two interpolation methods: **cubic** or **bandlimited**.
+These options can be selected by setting the corresponding flag variables in the input file.
+When `tdms` reads the input, it will verify if the input file contains a dataset that matches the names of these flags.
 
-TDMS is parallelized with [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
+There are two flags available for configuration in the input file.
+<details>
+<summary> `use_pstd` </summary>
+- If not provided, or provided as `false`, then the default timestepping method of finite-differences (FDTD) will be used.
+- If present and set to `true`, then `tdms` will use the pseudo-spectral (PSTD) method when performing simulation timesteps.
+</details>
+<details>
+<summary> `use_bli` </summary>
+- If not provided, or provided as `false`, then the default interpolation method of cubic interpolation will be used to obtain field values at the centres of Yee cells.
+- If present and set to `true`, then `tdms` will use bandlimited interpolation (BLI) when obtaining field values at Yee cell centres.
+
+\note Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest.
+Otherwise, cubic interpolation typically enjoys superior accuracy.
+</details>
+
+TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
 You can set the maximum number of threads using the `OMP_NUM_THREADS` environment variable before calling the TDMS executable.
-
 ```{sh}
-export OMP_NUM_THREADS=4 # for example
+$ export OMP_NUM_THREADS=4 # for example
 ```
 
 ## Citation

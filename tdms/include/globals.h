@@ -65,11 +65,6 @@ enum FieldComponents { Ex = 1, Ey, Ez, Hx, Hy, Hz };
 
 enum ModeOfRun { Pass1, Pass2 };
 enum RCSType { parallel, perpendicular };
-enum SolverMethod { PseudoSpectral, FiniteDifference };
-
-//! The interpolation methods that can be used to extract field values at Yee
-//! cell centres
-enum PreferredInterpolationMethods { BandLimited, Cubic };
 
 // **************************************
 //			Mathematical Constants

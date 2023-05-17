@@ -4,12 +4,14 @@
  * @brief Tests the logic that determines which interpolation schemes are
  * appropriate.
  */
+#include "input_flags.h"
 #include "interpolation_methods.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 using namespace std;
+using tdms_flags::InterpolationMethod;
 
 /**
  * @brief Test whether best_scheme correctly determines the appropriate
@@ -24,9 +26,12 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
   // should throw out_of_range exception if interpolation is impossible (<3 Yee
   // cells in direction)
   SECTION("Too few cells to interpolate") {
-    REQUIRE_THROWS_AS(best_scheme(1, 0), out_of_range);
-    REQUIRE_THROWS_AS(best_scheme(2, 0), out_of_range);
-    REQUIRE_THROWS_AS(best_scheme(2, 1), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(1, 0, InterpolationMethod::BandLimited),
+                      out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(2, 0, InterpolationMethod::BandLimited),
+                      out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(2, 1, InterpolationMethod::BandLimited),
+                      out_of_range);
   }
 
   /* Suppose we have N >= 8 Yee cells in a dimension. The program should
@@ -39,36 +44,45 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_if == N+1 : Interpolation impossible
   */
   SECTION("Band-limited interpolation allowed") {
-    SPDLOG_INFO("Interpolation scheme selection: band-limited allowed");
+    SPDLOG_INFO("Interpolation scheme selection: bandlimited allowed");
 
-    REQUIRE_THROWS_AS(best_scheme(N, -1), out_of_range);
-    all_schemes_correct =
-            all_schemes_correct &&
-            (best_scheme(N, 0).get_priority() == BAND_LIMITED_CELL_ZERO);
+    REQUIRE_THROWS_AS(best_scheme(N, -1, InterpolationMethod::BandLimited),
+                      out_of_range);
     all_schemes_correct = all_schemes_correct &&
-                          (best_scheme(N, 1).get_priority() == BAND_LIMITED_0);
+                          (best_scheme(N, 0, InterpolationMethod::BandLimited)
+                                   .get_priority() == BAND_LIMITED_CELL_ZERO);
     all_schemes_correct = all_schemes_correct &&
-                          (best_scheme(N, 2).get_priority() == BAND_LIMITED_1);
+                          (best_scheme(N, 1, InterpolationMethod::BandLimited)
+                                   .get_priority() == BAND_LIMITED_0);
     all_schemes_correct = all_schemes_correct &&
-                          (best_scheme(N, 3).get_priority() == BAND_LIMITED_2);
+                          (best_scheme(N, 2, InterpolationMethod::BandLimited)
+                                   .get_priority() == BAND_LIMITED_1);
+    all_schemes_correct = all_schemes_correct &&
+                          (best_scheme(N, 3, InterpolationMethod::BandLimited)
+                                   .get_priority() == BAND_LIMITED_2);
     for (int i = 4; i <= N - 4; i++) {
-      all_schemes_correct =
-              all_schemes_correct &&
-              (best_scheme(N, i).get_priority() == BAND_LIMITED_3);
+      all_schemes_correct = all_schemes_correct &&
+                            (best_scheme(N, i, InterpolationMethod::BandLimited)
+                                     .get_priority() == BAND_LIMITED_3);
     }
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, N - 3).get_priority() == BAND_LIMITED_4);
+            (best_scheme(N, N - 3, InterpolationMethod::BandLimited)
+                     .get_priority() == BAND_LIMITED_4);
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, N - 2).get_priority() == BAND_LIMITED_5);
+            (best_scheme(N, N - 2, InterpolationMethod::BandLimited)
+                     .get_priority() == BAND_LIMITED_5);
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, N - 1).get_priority() == BAND_LIMITED_6);
+            (best_scheme(N, N - 1, InterpolationMethod::BandLimited)
+                     .get_priority() == BAND_LIMITED_6);
     all_schemes_correct = all_schemes_correct &&
-                          (best_scheme(N, N).get_priority() == BAND_LIMITED_7);
+                          (best_scheme(N, N, InterpolationMethod::BandLimited)
+                                   .get_priority() == BAND_LIMITED_7);
     REQUIRE(all_schemes_correct);
-    REQUIRE_THROWS_AS(best_scheme(N, N + 1), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(N, N + 1, InterpolationMethod::BandLimited),
+                      out_of_range);
   }
 
   /* Suppose we have N >= 8 Yee cells in a dimension. Then if we are restricted
@@ -80,22 +94,25 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_if >= N : Interpolation impossible
   */
   SECTION("Only cubic interpolation") {
-    SPDLOG_INFO("Interpolation scheme selection: band-limited disallowed");
-    PreferredInterpolationMethods pim = Cubic;
-    REQUIRE_THROWS_AS(best_scheme(N, 0, pim), out_of_range);
+    SPDLOG_INFO("Interpolation scheme selection: bandlimited disallowed");
+    InterpolationMethod interpolation_method = InterpolationMethod::Cubic;
+    REQUIRE_THROWS_AS(best_scheme(N, 0, interpolation_method), out_of_range);
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, 1, pim).get_priority() == CUBIC_INTERP_FIRST);
+            (best_scheme(N, 1, interpolation_method).get_priority() ==
+             CUBIC_INTERP_FIRST);
     for (int i = 2; i <= N - 2; i++) {
       all_schemes_correct =
               all_schemes_correct &&
-              (best_scheme(N, i, pim).get_priority() == CUBIC_INTERP_MIDDLE);
+              (best_scheme(N, i, interpolation_method).get_priority() ==
+               CUBIC_INTERP_MIDDLE);
     }
     all_schemes_correct =
             all_schemes_correct &&
-            (best_scheme(N, N - 1, pim).get_priority() == CUBIC_INTERP_LAST);
+            (best_scheme(N, N - 1, interpolation_method).get_priority() ==
+             CUBIC_INTERP_LAST);
     REQUIRE(all_schemes_correct);
-    REQUIRE_THROWS_AS(best_scheme(N, N, pim), out_of_range);
+    REQUIRE_THROWS_AS(best_scheme(N, N, interpolation_method), out_of_range);
   }
 
   /* If 4 <= N < 8 we fall back on cubic interpolation

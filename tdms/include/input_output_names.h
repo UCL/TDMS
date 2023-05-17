@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#define NMATRICES 49//< number of input matrices
+#define NMATRICES 48//< number of input matrices
 #define NOUTMATRICES_WRITE                                                     \
   23//< number of output matrices to be written to output file
 #define NOUTMATRICES_WRITE_ALL                                                 \
@@ -70,7 +70,6 @@ const std::vector<std::string> matrixnames_infile = {
         "k_det_obs_global",
         "air_interface",
         "intmatprops",
-        "intmethod",
         "tdfield",
         "tdfdir",
         "fieldsample",
@@ -121,7 +120,6 @@ const std::vector<std::string> matrixnames_input_with_grid = {
         "k_det_obs_global",
         "air_interface",
         "intmatprops",
-        "intmethod",
         "tdfield",
         "tdfdir",
         "fieldsample",
