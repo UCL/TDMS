@@ -138,9 +138,9 @@ jobs:
         run: |
           gcovr -r ${GITHUB_WORKSPACE}/tdms/{src,include,matlabio} . -o coverage.xml
           cat coverage.xml
+          cp coverage.xml ${{ runner.workspace }}/.
 
       - name: Upload coverage reports to Codecov
-        working-directory: ${{ runner.workspace }}/build
         if: matrix.build_testing == 'ON'
         uses: codecov/codecov-action@v3
 
