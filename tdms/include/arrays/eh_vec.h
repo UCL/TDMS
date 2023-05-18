@@ -11,13 +11,14 @@ protected:
 
   fftw_complex **data_ = nullptr;
 
-  bool is_allocated() const { return data_ != nullptr; }
-
   void free_memory() {
+    spdlog::info("Freeing memory");
     if (is_allocated()) {
       for (int i = 0; i < n_rows_; i++) { std::free(data_[i]); }
     }
     std::free(data_);
+    data_ = nullptr;
+    spdlog::info("Free'd");
   }
 
 public:
@@ -41,6 +42,8 @@ public:
       data_[i] = (fftw_complex *) malloc(n_cols_ * sizeof(fftw_complex));
     }
   }
+
+  bool is_allocated() const { return data_ != nullptr; }
 
   ~EHVec() { free_memory(); }
 };

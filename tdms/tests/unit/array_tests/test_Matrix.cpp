@@ -9,6 +9,7 @@
 
 #include "array_test_class.h"
 #include "arrays.h"
+#include "arrays/eh_vec.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::is_close;
@@ -167,8 +168,9 @@ void EHVecTest::test_other_methods() {
   EHVec eh;
 
   // allocate memory
+  REQUIRE(!eh.is_allocated());
   eh.allocate(n_rows, n_cols);
-  REQUIRE(eh.has_elements());
+  REQUIRE(eh.is_allocated());
 
   // check that we an assign fftw_complexes to the elements
   eh[0][0][REAL] = 1.;
