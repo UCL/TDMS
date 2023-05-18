@@ -1,6 +1,6 @@
 # **`MATLAB` Benchmarking Scripts**
 
-The directory `matlab_benchmark_scripts` contains scripts which perform band-limited interpolation (BLi) using `MATLAB`'s `interp` function.
+The directory `matlab_benchmark_scripts` contains scripts which perform bandlimited interpolation (BLi) using `MATLAB`'s `interp` function.
 `TDMS`'s interpolation schemes are based off this `MATLAB` function (specficially, in the coefficients the scheme uses to interpolate).
 
 In order to test that the interpolation is correctly implimented in the `TDMS` source, we provide unit tests that benchmark against `MATLAB`'s implimentations. These scripts are provided here for developer use and documentation.

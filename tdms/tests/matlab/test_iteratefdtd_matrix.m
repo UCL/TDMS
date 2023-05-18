@@ -38,7 +38,7 @@ end
 
 function create_valid_input(input_file)
     set_compactsource(input_file, 1);
-    set_usecd(input_file, 0);
+    set_use_pstd(input_file, 0);
     set_efname(input_file, 1);
 
     gridfile = 'gridfile.mat';
@@ -64,7 +64,7 @@ end
 
 function create_souce_with_wrong_dims(input_file, n_dimensions)
     set_compactsource(input_file, 1);
-    set_usecd(input_file, 0);
+    set_use_pstd(input_file, 0);
     set_efname(input_file, 1);
 
     gridfile = 'gridfile.mat';

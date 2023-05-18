@@ -10,7 +10,7 @@
 
 #include <complex>
 
-#include "globals.h"
+#include "input_flags.h"
 
 /**
  * @brief Defines our order of preference for the use of the various schemes.
@@ -21,7 +21,7 @@
  *
  * MODIFICATIONS TO THE ALIASED INTS WILL CHANGE THE ORDER OF SCHEME PREFERENCE!
  *
- * For band-limited schemes, we have 8 equidistant datapoints and can
+ * For bandlimited schemes, we have 8 equidistant datapoints and can
  * interpolate to the midpoint of any pair of consecutive points, or "half a
  * point spacing" to the right of the final data point. These "interpolation
  * positions" (interp positions) are marked with "o" below: v0   v1   v2   v3 v4
@@ -186,5 +186,5 @@ const InterpolationScheme CBLst = InterpolationScheme(
  */
 const InterpolationScheme &
 best_scheme(int datapts_in_direction, int interpolation_position,
-            PreferredInterpolationMethods interpolation_methods =
-                    PreferredInterpolationMethods::BandLimited);
+            tdms_flags::InterpolationMethod interpolation_methods =
+                    tdms_flags::InterpolationMethod::Cubic);

@@ -14,7 +14,7 @@ namespace tdms {
 #ifdef TDMS_VERSION
 const std::string VERSION = std::string(TDMS_VERSION);
 #else
-const std::string VERSION = "development";
+const std::string VERSION = "v1";
 #endif
 
 }// namespace tdms
@@ -65,11 +65,6 @@ enum FieldComponents { Ex = 1, Ey, Ez, Hx, Hy, Hz };
 
 enum ModeOfRun { Pass1, Pass2 };
 enum RCSType { parallel, perpendicular };
-enum SolverMethod { PseudoSpectral, FiniteDifference };
-
-//! The interpolation methods that can be used to extract field values at Yee
-//! cell centres
-enum PreferredInterpolationMethods { BandLimited, Cubic };
 
 // **************************************
 //			Mathematical Constants

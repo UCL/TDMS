@@ -6,7 +6,6 @@ fs_input:
   runs:
     fs_cubic:
       reference: fs_cubic_reference.mat
-      cubic_interpolation: True
 fs_bli_input:
   adjust: fs_input
   interpolation: bli
@@ -20,7 +19,6 @@ sc_input:
   runs:
     sc_cubic:
       reference: sc_cubic_reference.mat
-      cubic_interpolation: True
 sc_bli_input:
   adjust: sc_input
   interpolation: bli

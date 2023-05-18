@@ -13,6 +13,8 @@
 #include "arrays.h"
 #include "cell_coordinate.h"
 #include "globals.h"
+#include "input_flags.h"
+#include "input_matrices.h"
 #include "output_matrices/output_matrices.h"
 #include "simulation_manager/fdtd_bootstrapper.h"
 #include "simulation_manager/loop_timers.h"
@@ -39,6 +41,11 @@
  */
 class SimulationManager {
 private:
+  /*! The solver method to use in this simulation */
+  tdms_flags::SolverMethod solver_method;
+  /*! The interpolation methods to use in this simulation */
+  tdms_flags::InterpolationMethod i_method;
+
   /*! The input objects that are generated from an input file */
   ObjectsFromInfile inputs;
 
@@ -49,11 +56,6 @@ private:
   /*! Output object that will contain the results of this simulation, given the
    * input file */
   OutputMatrices outputs;
-
-  /*! The solver method to use in this simulation */
-  SolverMethod solver_method;
-  /*! The interpolation methods to use in this simulation */
-  PreferredInterpolationMethods pim;
 
   EHVec eh_vec;//!< TODO
 
@@ -298,8 +300,7 @@ private:
   void update_Exz(LoopVariables &lv);
 
 public:
-  SimulationManager(InputMatrices in_matrices, SolverMethod _solver_method,
-                    PreferredInterpolationMethods _pim);
+  SimulationManager(InputMatrices in_matrices, const InputFlags &in_flags);
 
   /** @brief Fetch the number of Yee cells in each dimension */
   IJKDimensions n_Yee_cells() { return inputs.IJK_tot; }

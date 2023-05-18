@@ -9,10 +9,10 @@
 #include "array_init.h"
 
 using tdms_math_constants::DCPI;
+using namespace tdms_flags;
 
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(
-        InputMatrices matrices_from_input_file, SolverMethod _solver_method,
-        PreferredInterpolationMethods _pim)
+        InputMatrices matrices_from_input_file, const InputFlags &in_flags)
     :// initialisation list - members whose classes have no default constructors
       Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
@@ -28,10 +28,16 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
               matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
       Ei(matrices_from_input_file["tdfield"])             // get tdfield
 {
-  // set solver method
-  set_solver_method(_solver_method);
-  // set interpolation methods
-  set_interpolation_method(_pim);
+  /* Set FDTD/PSTD-dependent variable skip_tdf [1: PSTD, 6: FDTD] */
+  skip_tdf = in_flags["use_pstd"] ? 1 : 6;
+
+  /** Set the preferred method of interpolation, and update the fields about
+   * this change */
+  InterpolationMethod i_method = in_flags["use_bli"]
+                                         ? InterpolationMethod::BandLimited
+                                         : InterpolationMethod::Cubic;
+  E_s.set_preferred_interpolation_methods(i_method);
+  H_s.set_preferred_interpolation_methods(i_method);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -167,11 +173,9 @@ IndependentObjectsFromInfile::~IndependentObjectsFromInfile() {
 }
 
 ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
-                                     SolverMethod _solver_method,
-                                     PreferredInterpolationMethods _pim)
+                                     const InputFlags &in_flags)
     :// build the independent objects first
-      IndependentObjectsFromInfile(matrices_from_input_file, _solver_method,
-                                   _pim),
+      IndependentObjectsFromInfile(matrices_from_input_file, in_flags),
       // Source has no default constructor, and we need information from the
       // Iterator_IndependentObjectsFromInfile first
       Isource(matrices_from_input_file["Isource"], J1.index - J0.index + 1,

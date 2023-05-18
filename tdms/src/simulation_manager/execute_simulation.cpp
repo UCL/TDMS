@@ -14,6 +14,7 @@
 using namespace std;
 using namespace tdms_math_constants;
 using namespace tdms_phys_constants;
+using tdms_flags::SolverMethod;
 
 void SimulationManager::execute() {
   // log the number of OMP threads being used
