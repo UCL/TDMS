@@ -1,5 +1,5 @@
 %{
-    BENCHMARK ERROR VALUES FOR BAND-LIMITED INTERPOLATION
+    BENCHMARK ERROR VALUES FOR BANDLIMITED INTERPOLATION
 
 Determines the error in MATLAB's BLi scheme for the test functions used in
 the BLi unit tests in test_interpolation_functions.cpp:

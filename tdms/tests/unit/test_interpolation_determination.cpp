@@ -43,7 +43,7 @@ TEST_CASE("best_interp_scheme: correct interpolation chosen") {
     - cell_id == N-3,N-2,N-1,N : Use BAND_LIMITED_(4,5,6,7) scheme respectively
     - cell_if == N+1 : Interpolation impossible
   */
-  SECTION("Band-limited interpolation allowed") {
+  SECTION("Bandlimited interpolation allowed") {
     SPDLOG_INFO("Interpolation scheme selection: bandlimited allowed");
 
     REQUIRE_THROWS_AS(best_scheme(N, -1, InterpolationMethod::BandLimited),
