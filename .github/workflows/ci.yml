@@ -138,11 +138,12 @@ jobs:
         run: |
           gcovr -r ${GITHUB_WORKSPACE}/tdms/{src,include,matlabio} . -o coverage.xml
           cat coverage.xml
-          cp coverage.xml ${{ runner.workspace }}/.
 
       - name: Upload coverage reports to Codecov
         if: matrix.build_testing == 'ON'
         uses: codecov/codecov-action@v3
+        with:
+          files: ${{ runner.workspace }}/build/coverage.xml
 
       - name: Tar the build result to maintain permissions
         # https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files
