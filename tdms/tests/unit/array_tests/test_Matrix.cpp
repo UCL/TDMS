@@ -2,17 +2,13 @@
  * @file test_Matrix.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests for the Matrix class and its subclasses (Vertices,
- * GratingStructure, Pupil, EHVec)
+ * GratingStructure, Pupil)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
 #include "arrays.h"
-#include "arrays/eh_vec.h"
-#include "unit_test_utils.h"
-
-using tdms_tests::is_close;
 
 void MatrixTest::test_correct_construction() {
   // create a Matrix via the default constructor
@@ -163,31 +159,6 @@ void PupilTest::test_correct_construction() {
   }
 }
 
-void EHVecTest::test_other_methods() {
-  const int REAL = 0, IMAG = 1;
-  EHVec eh;
-
-  // allocate memory
-  REQUIRE(!eh.is_allocated());
-  eh.allocate(n_rows, n_cols);
-  REQUIRE(eh.is_allocated());
-
-  // check that we an assign fftw_complexes to the elements
-  eh[0][0][REAL] = 1.;
-  eh[0][0][IMAG] = 0.;
-  eh[0][1][REAL] = 0.;
-  eh[0][1][IMAG] = 1.;
-  fftw_complex fftw_unit{1., 0.};
-  fftw_complex fftw_imag_unit{0., 1.};
-
-  bool elements_set_correctly =
-          is_close(eh[0][0][REAL], fftw_unit[REAL]) &&
-          is_close(eh[0][0][IMAG], fftw_unit[IMAG]) &&
-          is_close(eh[0][1][REAL], fftw_imag_unit[REAL]) &&
-          is_close(eh[0][1][IMAG], fftw_imag_unit[IMAG]);
-  REQUIRE(elements_set_correctly);
-}
-
 TEST_CASE("Matrix") { MatrixTest().run_all_class_tests(); }
 
 TEST_CASE("Vertices") { VerticesTest().run_all_class_tests(); }
@@ -195,5 +166,3 @@ TEST_CASE("Vertices") { VerticesTest().run_all_class_tests(); }
 TEST_CASE("GratingStructure") { GratingStructureTest().run_all_class_tests(); }
 
 TEST_CASE("Pupil") { PupilTest().run_all_class_tests(); }
-
-TEST_CASE("EHVec") { EHVecTest().run_all_class_tests(); }
