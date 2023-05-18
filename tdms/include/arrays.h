@@ -524,14 +524,6 @@ public:
 class CCoefficientMatrix : public Matrix<double> {};
 
 /**
- * Temporary storage 'vector'
- */
-class EHVec : public Matrix<fftw_complex> {
-public:
-  ~EHVec();
-};
-
-/**
  * Container for storing snapshots of the full-field
  */
 class FullFieldSnapshot {
