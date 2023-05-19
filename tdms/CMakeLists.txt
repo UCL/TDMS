@@ -57,6 +57,9 @@ else()
     find_package(OpenMP REQUIRED)
 endif()
 
+# hdf5 ------------------------------------------------------------------------
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+include_directories(${HDF5_INCLUDE_DIR})
 
 # spdlog ----------------------------------------------------------------------
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
@@ -133,7 +136,7 @@ add_library(coverage_config INTERFACE)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  message("Setting up code coverage.")
+  message(STATUS "Setting up code coverage.")
   # Add required flags (GCC & LLVM/Clang)
   target_compile_options(coverage_config INTERFACE
     -O0        # no optimization
