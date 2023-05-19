@@ -119,7 +119,7 @@ If you used TDMS in your research and found it helpful, please cite this work: [
     title        = {{TDMS - The Time-Domain Maxwell Solver}},
     URL          = {https://github.com/UCL/TDMS},
     publisher    = {Zenodo},
-    doi          = {10.5281/zenodo.7950604}
+    doi          = {10.5281/zenodo.7950603}
 }
 ```
 
@@ -129,7 +129,7 @@ If you used TDMS in your research and found it helpful, please cite this work: [
 
 ```tex
 \bibitem{tdms}
-P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950604}{10.5281/zenodo.7950604}.
+P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950603}{10.5281/zenodo.7950603}.
 ```
 
 </details>
