@@ -4,10 +4,7 @@
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
 
-# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS)
-
-> **Warning**
-> This repository is a _work in progress_. The API will change without notice
+# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS) [![DOI](https://zenodo.org/badge/448864310.svg)](https://zenodo.org/badge/latestdoi/448864310)
 
 <!-- \endcond -->
 
@@ -108,8 +105,7 @@ $ export OMP_NUM_THREADS=4 # for example
 
 ## Citation
 
-If you used TDMS in your research and found it helpful, please cite this work.
-<!-- [zenodo/FIXME](https://zenodo.org/) -->
+If you used TDMS in your research and found it helpful, please cite this work: [10.5281/zenodo.7950604](https://doi.org/10.5281/zenodo.7950604).
 
 <!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
 <!-- [contact_address)[mailto:FIXME] -->
@@ -118,10 +114,12 @@ If you used TDMS in your research and found it helpful, please cite this work.
 
 ```bibtex
 @software{tdms,
-    author  = {Munro, Peter and others},
-    license = {GPL-3.0},
-    title   = {{TDMS - The Time-Domain Maxwell Solver}},
-    URL     = {https://github.com/UCL/TDMS}
+    author       = {Munro, Peter and others},
+    license      = {GPL-3.0},
+    title        = {{TDMS - The Time-Domain Maxwell Solver}},
+    URL          = {https://github.com/UCL/TDMS},
+    publisher    = {Zenodo},
+    doi          = {10.5281/zenodo.7950603}
 }
 ```
 
@@ -131,7 +129,7 @@ If you used TDMS in your research and found it helpful, please cite this work.
 
 ```tex
 \bibitem{tdms}
-P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
+P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950603}{10.5281/zenodo.7950603}.
 ```
 
 </details>
