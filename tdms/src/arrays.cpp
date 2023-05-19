@@ -236,15 +236,6 @@ double FrequencyExtractVector::max() {
   return tmp;
 }
 
-void FrequencyVectors::initialise(const mxArray *ptr) {
-
-  if (mxIsEmpty(ptr)) { return; }
-
-  assert_is_struct_with_n_fields(ptr, 2, "f_vec");
-  x = Vector<double>(ptr_to_vector_in(ptr, "fx_vec", "f_vec"));
-  y = Vector<double>(ptr_to_vector_in(ptr, "fy_vec", "f_vec"));
-}
-
 void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
 
   if (mxIsEmpty(ptr)) { return; }

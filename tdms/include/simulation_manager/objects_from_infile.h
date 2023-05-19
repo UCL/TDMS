@@ -11,6 +11,7 @@
 
 #include "arrays.h"
 #include "cell_coordinate.h"
+#include "cuboid.h"
 #include "field.h"
 #include "fieldsample.h"
 #include "globals.h"
@@ -18,7 +19,6 @@
 #include "input_flags.h"
 #include "input_matrices.h"
 #include "interface.h"
-#include "shapes.h"
 #include "simulation_parameters.h"
 #include "source.h"
 #include "vertex_phasors.h"
