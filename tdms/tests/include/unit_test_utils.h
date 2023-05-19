@@ -11,6 +11,44 @@
 
 #include "globals.h"
 
+using tdms_math_constants::DCPI;
+
+namespace tdms_unit_test_data {
+
+#ifdef CMAKE_SOURCE_DIR
+inline std::string
+        tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
+                         "/tests/unit/hdf5_and_tdms_objects/class_data.mat");
+#else
+inline std::string
+        tdms_object_data(std::filesystem::current_path() /
+                         "../tests/unit/hdf5_and_tdms_objects/class_data.mat");
+#endif
+
+/* The struct_testdata is a .mat file containing a single structure array,
+example_struct. This structure array has the following data.
+
+MEMBER: value, MATLAB type
+double_no_decimal: 1.0, double
+double_half: 0.5, double
+string: 'tdms', char array
+boolean: 1, logical
+uint_345: 3 * 4 * 5 array of 1s, uint8
+double_22: [0.25, 0.5; 0.75, 1.], double
+complex_22: [0., -i; i, 0], complex
+*/
+#ifdef CMAKE_SOURCE_DIR
+inline std::string
+        struct_testdata(std::string(CMAKE_SOURCE_DIR) +
+                        "/tests/unit/hdf5_io_tests/structure_array.mat");
+#else
+inline std::string
+        struct_testdata(std::filesystem::current_path() /
+                        "../tests/unit/hdf5_io_tests/structure_array.mat");
+#endif
+
+}// namespace tdms_unit_test_data
+
 namespace tdms_tests {
 
 inline double TOLERANCE = 1e-16;//< Floating-point comparison tolerance
@@ -151,6 +189,23 @@ inline std::filesystem::path create_tmp_dir() {
   // mkdir and return the path to the directory we've just created
   std::filesystem::create_directory(path);
   return path;
+}
+
+/** @brief Returns the char represented by a uint16 */
+inline char uint16_to_char(const uint16_t &repr) { return *((char *) &repr); }
+
+/**
+ * @brief Returns the string composed of the characters represented by
+ * subsequent uint16s.
+ *
+ * @param repr Buffer of uint16s that represent individual characters
+ * @param buffer_length Length of the buffer
+ * @return string The string composed of the converted characters
+ */
+inline std::string uint16s_to_string(uint16_t *repr, int buffer_length) {
+  std::string output;
+  for (int i = 0; i < buffer_length; i++) { output += uint16_to_char(repr[i]); }
+  return output;
 }
 
 }// namespace tdms_tests
