@@ -57,6 +57,9 @@ else()
     find_package(OpenMP REQUIRED)
 endif()
 
+# hdf5 ------------------------------------------------------------------------
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+include_directories(${HDF5_INCLUDE_DIR})
 
 # spdlog ----------------------------------------------------------------------
 find_package(spdlog NO_CMAKE_PACKAGE_REGISTRY QUIET)
