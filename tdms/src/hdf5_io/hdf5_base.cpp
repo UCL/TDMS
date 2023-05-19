@@ -1,37 +1,30 @@
-#include "hdf5_io.h"
-#include "cell_coordinate.h"
+/**
+ * @file hdf5_io.cpp
+ * @authors Sam Cunliffe, William Graham
+ * @brief Common HDF5 I/O methods abstracted to the base class.
+ */
+#include "hdf5_io/hdf5_base.h"
 
-#include <exception>
 #include <iostream>
 
 #include <H5Cpp.h>
 #include <H5public.h>
 #include <spdlog/spdlog.h>
 
-/******************************************************************************
- * HDF5Writer
- */
-void HDF5Writer::write(const std::string &dataset_name, double *data, int size,
-                       hsize_t *dimensions) {
-  spdlog::debug("Writing {} to file: {}", dataset_name, filename_);
+using namespace std;
 
-  // declare a dataspace
-  H5::DataSpace dataspace(size, dimensions);
-  H5::DataType datatype(H5::PredType::NATIVE_DOUBLE);
-
-  // write the data to the dataset object in the file
-  H5::DataSet dataset = file_->createDataSet(dataset_name, datatype, dataspace);
-  dataset.write(data, H5::PredType::NATIVE_DOUBLE);
-  spdlog::trace("Write successful.");
+ijk to_ijk(const std::vector<hsize_t> dimensions) {
+  unsigned int rank = dimensions.size();
+  ijk out;
+  if (rank > 0) out.i = (int) dimensions[0];
+  if (rank > 1) out.j = (int) dimensions[1];
+  if (rank > 2) out.k = (int) dimensions[2];
+  if (rank > 3) spdlog::warn("Rank > 3");
+  return out;
 }
 
-/******************************************************************************
- * HDF5Base
- *
- * Common HDF5 I/O methods abstracted to the base class.
- */
-std::vector<std::string> HDF5Base::get_datanames() const {
-  std::vector<std::string> names;
+vector<string> HDF5Base::get_datanames() const {
+  vector<string> names;
 
   // iterate over all objects in the file
   for (unsigned int i = 0; i < file_->getNumObjs(); i++) {
@@ -47,8 +40,8 @@ std::vector<std::string> HDF5Base::get_datanames() const {
 }
 
 void HDF5Base::ls() const {
-  std::vector<std::string> names = this->get_datanames();
-  for (auto name : names) std::cout << name << std::endl;
+  vector<string> names = this->get_datanames();
+  for (auto name : names) cout << name << endl;
   return;
 }
 
@@ -61,7 +54,7 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
 
   // need the rank in order to declare the vector size
   int rank = dataspace.getSimpleExtentNdims();
-  std::vector<hsize_t> dimensions(rank);
+  vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
   return dimensions;
 }
