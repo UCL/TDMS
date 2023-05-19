@@ -16,7 +16,6 @@
 #include "input_flags.h"
 #include "input_matrices.h"
 #include "output_matrices/output_matrices.h"
-#include "simulation_manager/fdtd_bootstrapper.h"
 #include "simulation_manager/loop_timers.h"
 #include "simulation_manager/loop_variables.h"
 #include "simulation_manager/objects_from_infile.h"
