@@ -49,9 +49,8 @@ private:
   /*! The input objects that are generated from an input file */
   ObjectsFromInfile inputs;
 
-  LoopTimers timers;    //!< Timers for tracking the execution of the simulation
-  PSTDVariables PSTD;   //!< PSTD-solver-specific variables
-  FDTDBootstrapper FDTD;//!< FDTD bootstrapping variables
+  LoopTimers timers; //!< Timers for tracking the execution of the simulation
+  PSTDVariables PSTD;//!< PSTD-solver-specific variables
 
   /*! Output object that will contain the results of this simulation, given the
    * input file */

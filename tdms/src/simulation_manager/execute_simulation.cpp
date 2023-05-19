@@ -104,14 +104,6 @@ void SimulationManager::execute() {
     // Compute the detector function
     compute_detector_functions(tind, loop_variables);
 
-
-    // Extract the phasors just above the line
-    if ((inputs.params.run_mode == RunMode::complete) &&
-        (inputs.params.dimension == THREE)) {
-      FDTD.extract_phasors_in_plane(inputs.E_s, inputs.H_s, IJK_tot,
-                                    inputs.K0.index + 1, tind, inputs.params);
-    }
-
     // Update equations for the E field
 
     /*There are two options for determining the update coefficients for the FDTD

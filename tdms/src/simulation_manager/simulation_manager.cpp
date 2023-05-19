@@ -12,7 +12,7 @@ SimulationManager::SimulationManager(InputMatrices in_matrices,
                                      const InputFlags &in_flags)
     : solver_method(static_cast<SolverMethod>(in_flags["use_pstd"])),
       i_method(static_cast<InterpolationMethod>(in_flags["use_bli"])),
-      inputs(in_matrices, in_flags), FDTD(n_Yee_cells()) {
+      inputs(in_matrices, in_flags) {
   // read number of Yee cells
   IJKDimensions IJK_tot = n_Yee_cells();
 
