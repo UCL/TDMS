@@ -16,7 +16,6 @@
 #include "input_flags.h"
 #include "input_matrices.h"
 #include "output_matrices/output_matrices.h"
-#include "simulation_manager/fdtd_bootstrapper.h"
 #include "simulation_manager/loop_timers.h"
 #include "simulation_manager/loop_variables.h"
 #include "simulation_manager/objects_from_infile.h"
@@ -49,9 +48,8 @@ private:
   /*! The input objects that are generated from an input file */
   ObjectsFromInfile inputs;
 
-  LoopTimers timers;    //!< Timers for tracking the execution of the simulation
-  PSTDVariables PSTD;   //!< PSTD-solver-specific variables
-  FDTDBootstrapper FDTD;//!< FDTD bootstrapping variables
+  LoopTimers timers; //!< Timers for tracking the execution of the simulation
+  PSTDVariables PSTD;//!< PSTD-solver-specific variables
 
   /*! Output object that will contain the results of this simulation, given the
    * input file */
