@@ -143,7 +143,7 @@ jobs:
           lcov --list coverage.info
 
       - name: Upload coverage reports to Codecov
-        if: matrix.build_testing == 'ON' && ${{ contains(matrix.os, 'ubuntu') }}
+        if: matrix.build_testing == 'ON' && contains(matrix.os, 'ubuntu')
         uses: codecov/codecov-action@v3
 
       - name: Tar the build result to maintain permissions
