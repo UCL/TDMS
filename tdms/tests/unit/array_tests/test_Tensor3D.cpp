@@ -15,20 +15,18 @@
 using tdms_tests::TOLERANCE;
 
 void Tensor3DTest::test_correct_construction() {
-  Tensor3D<double> *t3d;
+  Tensor3D<double> t3d;
   SECTION("Default constructor") {
     // default constructor should assign all dimensions to 0, and the tensor
-    // itself should be a nullptr
-    t3d = new Tensor3D<double>;
-    // should have no elements
-    REQUIRE(!(t3d->has_elements()));
+    // should have no elements as a result
+    REQUIRE(!(t3d.has_elements()));
     // let us assign some free memory to this tensor via allocate()
-    t3d->allocate(n_layers, n_cols, n_rows);
+    t3d.allocate(n_layers, n_cols, n_rows);
     // we should now "have elements", even though they are unassigned
-    REQUIRE(t3d->has_elements());
+    REQUIRE(t3d.has_elements());
   }
   SECTION("Overloaded constructor") {
-    // also implicitly tests initialise()
+    // testing initialise() as the overloaded constructor is a wrapper for this
     double ***p = (double ***) malloc(n_layers * sizeof(double **));
     for (int k = 0; k < n_layers; k++) {
       p[k] = (double **) malloc(n_cols * sizeof(double *));
@@ -36,18 +34,15 @@ void Tensor3DTest::test_correct_construction() {
         p[k][j] = (double *) malloc(n_rows * sizeof(double));
       }
     }
-    t3d = new Tensor3D(p, n_layers, n_cols, n_rows);
+    t3d.initialise(p, n_layers, n_cols, n_rows);
     // this tensor should be flagged as "having elements", since we provided a
     // pointer in the constructor
-    REQUIRE(t3d->has_elements());
+    REQUIRE(t3d.has_elements());
   }
-  // tear down assigned memory
-  delete t3d;
 }
 
 void Tensor3DTest::test_other_methods() {
-  Tensor3D<double> t3d;
-  t3d.allocate(n_layers, n_cols, n_rows);
+  Tensor3D<double> t3d(n_layers, n_cols, n_rows);
   t3d.zero();
   SECTION("allocate() and zero()") {
     // we should be able to flag this tensor has elements, so the bool should be
@@ -57,7 +52,7 @@ void Tensor3DTest::test_other_methods() {
       for (int j = 0; j < n_cols; j++) {
         for (int i = 0; i < n_rows; i++) {
           allocated_and_zero =
-                  allocated_and_zero && (abs(t3d[{i, j, k}]) < TOLERANCE);
+                  allocated_and_zero && (abs(t3d(i, j, k)) < TOLERANCE);
         }
       }
     }
@@ -71,7 +66,7 @@ void Tensor3DTest::test_other_methods() {
     // 1, so the analytic norm is 16.
     for (int k = 0; k < n_layers; k++) {
       for (int j = 0; j < n_cols; j++) {
-        for (int i = 0; i < n_rows; i++) { t3d[{i, j, k}] = (i + j + k) % 2; }
+        for (int i = 0; i < n_rows; i++) { t3d(i, j, k) = (i + j + k) % 2; }
       }
     }
     // the analytic frobenuis norm of the tensor values

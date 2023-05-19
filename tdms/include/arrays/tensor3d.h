@@ -34,7 +34,7 @@ protected:
   int total_elements() const { return n_layers_ * n_cols_ * n_rows_; }
 
 public:
-  Tensor3D() : std::vector<T>(0){};
+  Tensor3D() : std::vector<T>(){};
   Tensor3D(int n_layers, int n_cols, int n_rows) {
     allocate(n_layers, n_cols, n_rows);
   }
@@ -74,7 +74,7 @@ public:
    * assign.
    */
   void allocate(int n_layers, int n_cols, int n_rows) {
-    n_layers = n_layers;
+    n_layers_ = n_layers;
     n_cols_ = n_cols;
     n_rows_ = n_rows;
     this->reserve(this->total_elements());
@@ -92,7 +92,7 @@ public:
     this->allocate(n_layers, n_cols, n_rows);
     for (int k = 0; k < n_layers_; k++) {
       for (int j = 0; j < n_cols_; j++) {
-        for (int i = 0; n_rows_; i++) {
+        for (int i = 0; i < n_rows_; i++) {
           this->operator()(i, j, k) = buffer[k][j][i];
         }
       }

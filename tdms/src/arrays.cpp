@@ -258,7 +258,8 @@ void DTilde::set_component(Tensor3D<complex<double>> &tensor,
                         to_string(n_cols));
   }
 
-  auto p = (complex<double> ***) malloc(sizeof(complex<double> **) * n_cols);
+  complex<double> ***p =
+          (complex<double> ***) malloc(sizeof(complex<double> **) * n_cols);
   for (int j = 0; j < n_cols; j++) {
     p[j] = (complex<double> **) malloc(sizeof(complex<double> *) * n_rows);
     for (int i = 0; i < n_rows; i++) {

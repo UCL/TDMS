@@ -363,6 +363,8 @@ protected:
                             int n_rows, int n_cols);
 
 public:
+  DTilde() = default;
+
   /** @brief Fetch the number of modes */
   inline int num_det_modes() const { return n_det_modes; };
 
