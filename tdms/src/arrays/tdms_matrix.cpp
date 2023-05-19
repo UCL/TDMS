@@ -15,7 +15,8 @@ GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
   auto dims = mxGetDimensions(ptr);
   if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 ||
       dims[1] != (I_tot + 1)) {
-    throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
+    throw runtime_error("structure should have dimension 2 x " +
+                        to_string(I_tot + 1));
   }
 
   int **matlab_buffer =
