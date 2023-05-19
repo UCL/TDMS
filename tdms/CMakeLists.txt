@@ -1,7 +1,7 @@
 # General setup ---------------------------------------------------------------
 cmake_minimum_required(VERSION 3.21)
 
-project(tdms LANGUAGES CXX C)
+project(tdms LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Allow building with testing, and default to off
