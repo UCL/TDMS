@@ -17,9 +17,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C
       D(matrices_from_input_file["D"]),                // get D
-      matched_layer(
-              matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
-      Ei(matrices_from_input_file["tdfield"])             // get tdfield
+      Ei(matrices_from_input_file["tdfield"])          // get tdfield
 {
   /* Set FDTD/PSTD-dependent variable skip_tdf [1: PSTD, 6: FDTD] */
   skip_tdf = in_flags["use_pstd"] ? 1 : 6;
@@ -140,9 +138,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   }
 
   // work out if we have a dispersive background
-  if (params.is_disp_ml) {
-    params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.k);
-  }
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
 
   // Set dt so that an integer number of time periods fits within a sinusoidal
   // period

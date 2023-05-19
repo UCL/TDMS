@@ -16,6 +16,13 @@
 #include "utils.h"
 
 template<typename T>
+struct xyz_vector {
+  std::vector<T> x = {};
+  std::vector<T> y = {};
+  std::vector<T> z = {};
+};
+
+template<typename T>
 class XYZTensor3D {
 public:
   T ***x = nullptr;
@@ -202,28 +209,23 @@ public:
   explicit DMaterial(const mxArray *ptr);
 };
 
-class DispersiveMultiLayer {
+struct DispersiveMultiLayer {
 public:
-  double *alpha = nullptr;
-  double *beta = nullptr;
-  double *gamma = nullptr;
-  XYZVectors kappa;
-  XYZVectors sigma;
-
-public:
-  explicit DispersiveMultiLayer(const mxArray *ptr);
+  std::vector<double> alpha;
+  std::vector<double> beta;
+  std::vector<double> gamma;
+  xyz_vector<double> kappa;
+  xyz_vector<double> sigma;
 
   /**
    * @brief Determines whether the (background) medium is dispersive
    *
-   * @param K_tot Number of Yee cells in the z-direction (number of entries in
-   * this->gamma)
    * @param near_zero_tolerance Tolerance for non-zero gamma (attenuation)
    * values
    * @return true Background is dispersive
    * @return false Background is not dispersive
    */
-  bool is_dispersive(int K_tot, double near_zero_tolerance = 1e-15);
+  bool is_dispersive(double near_zero_tolerance = 1e-15) const;
 };
 
 template<typename T>

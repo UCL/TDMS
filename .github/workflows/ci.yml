@@ -56,10 +56,10 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1.2.3
 
-      - name: Produce MATLAB unit test data
-        uses: matlab-actions/run-command@v1
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          command: cd('tdms/tests/unit/matlab_benchmark_scripts/'), setup_unit_tests
+          python-version: '3.9'
 
       # -------------------------------------------------------------------------------
       # Ubuntu
@@ -128,6 +128,20 @@ jobs:
         run: |
           cmake --build . --config ${{ matrix.build_type }}
 
+      # -------------------------------------------------------------------------------
+      # Unit tests
+      - name: Produce MATLAB unit test data
+        if: matrix.build_testing == 'ON'
+        uses: matlab-actions/run-command@v1
+        with:
+          command: cd('tdms/tests/unit/benchmark_scripts/'), setup_unit_tests
+
+      - name: Produce hdf5 unit test data
+        if: matrix.build_testing == 'ON'
+        run: |
+          pip install -r ${{ github.workspace }}/tdms/tests/requirements.txt
+          python ${{ github.workspace }}/tdms/tests/unit/benchmark_scripts/create_hdf5_test_file.py
+
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
         working-directory: ${{ runner.workspace }}/build
@@ -153,6 +167,8 @@ jobs:
         if: matrix.build_testing == 'ON'
         uses: codecov/codecov-action@v3
 
+      # -------------------------------------------------------------------------------
+      # Upload build artefact for system tests
       - name: Tar the build result to maintain permissions
         # https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files
         # https://github.com/actions/upload-artifact/issues/38
