@@ -107,8 +107,6 @@ public:
    * @param dataname The name of the datset to be read.
    * @param data A pointer to an array of correct size.
    */
-  // template <typename T>
-  // void read(const std::string &dataname, T *data) const;
   template<typename T>
   void read(const std::string &dataset_name, T *data) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
@@ -126,14 +124,9 @@ public:
     dataspace.getSimpleExtentDims(dimensions);
     spdlog::debug("Got dimensions");
 
-    // auto dimensions = shape_of(dataset_name);
-    //  TODO why do we need `dimensions` at all here?
-
     // now get the data type
     H5::DataType datatype = dataset.getDataType();
     spdlog::debug("Got datatype");
-    // std::cout << datatype.getObjName() << std::endl;
-    //
     dataset.read(data, datatype);
     spdlog::debug("Read");
 

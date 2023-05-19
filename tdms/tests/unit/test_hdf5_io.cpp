@@ -66,35 +66,6 @@ TEST_CASE("Test file I/O construction/destruction.") {
     spdlog::debug("Have read {}!", data[0]);
   }
 
-  /*
-  SECTION("Check write then (overwrite) then read.") {
-
-    // Create the file and write some data.
-    {
-      HDF5Writer f1(tmp.string() + "/test_file_wwr.h5");
-      // f1.write();
-      CHECK(f1.is_ok());
-
-    }// destructor called as we leave scope
-
-    // Overwrite the file and add some different data.
-    {
-      HDF5Writer f2(tmp.string() + "/test_file_wwr.h5");
-      // f2.write();
-      CHECK(f2.is_ok());
-
-    }// destructor called as we leave scope
-
-    // Now open the file in readonly. The first data should not be there (and
-    // should throw an exception). The second data should be there.
-    HDF5Reader f3(tmp.string() + "/test_file_wwr.h5");
-    // f3.read();
-
-    // CHECK_NOTHROW(f3.read());
-    // CHECK_THROWS(f3.read());
-  }
-  */
-
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
   std::filesystem::remove_all(tmp);
