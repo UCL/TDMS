@@ -49,12 +49,12 @@ brew install llvm
 
 After installing with Homebrew, you may need to set the following CMake arguments:
 
-    ```{sh}
-    -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
-    -DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
-    -DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
-    -DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5
-    ```
+```{sh}
+-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
+-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
+-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
+-DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5
+```
 
 On an ARM Mac, you will need to install the x86 version of Homebrew.
 To do so, use the following commands:
