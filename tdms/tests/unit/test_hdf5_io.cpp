@@ -186,13 +186,17 @@ TEST_CASE("Test w/r TDMS objects") {
   std::filesystem::remove_all(tmp);
 }
 
+#ifdef CMAKE_SOURCE_DIR
+std::string TESTDATA(std::string(CMAKE_SOURCE_DIR) +
+                     "/tests/unit/small_fdtdgrid.mat");
+#else
+std::string TESTDATA(std::filesystem::current_path() /
+                     "../tests/unit/small_fdtdgrid.mat");
+#endif
+
 TEST_CASE("Read from example input") {
-  auto cwd = std::filesystem::current_path();
-  spdlog::info("CWD was determined to be: {}", std::string(cwd));
-  std::string small_fdtdgrid_loc(cwd /
-                                 "../tests/system/unit/small_fdtdgrid.mat");
-  spdlog::info("I'm going to try and find: {}", small_fdtdgrid_loc);
-  HDF5Reader MATFile(small_fdtdgrid_loc);
+  spdlog::info("I'm going to try and find: {}", TESTDATA);
+  HDF5Reader MATFile(TESTDATA);
 
   SECTION("Read FDTD grid") {
     fdtdGridInitialiser gridinitialiser;
