@@ -65,9 +65,5 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
   return dimensions;
 }
 
-void HDF5Base::data_dump(const std::string &dataname) const {
-  throw std::logic_error("Not yet implemented");
-  return;
-}
 
 bool HDF5Base::is_ok() const { return true; }

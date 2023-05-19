@@ -70,11 +70,6 @@ public:
    */
   std::vector<hsize_t> shape_of(const std::string &dataname) const;
 
-  /**
-   * @brief Dumps the data to std::out for debugging purposes.
-   * @param dataname The name of the data table.
-   */
-  void data_dump(const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
