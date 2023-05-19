@@ -1,36 +1,10 @@
 #include "hdf5_io.h"
 
+#include <exception>
 #include <iostream>
 
 #include <H5Cpp.h>
 #include <spdlog/spdlog.h>
-
-/******************************************************************************
- * HDF5Reader
- */
-// template<typename T>
-// void HDF5Reader::read(const std::string &dataset_name, T *data) const {
-//   spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
-
-//   // get the dataset and dataspace (contains dimensionality info)
-//   H5::DataSet dataset = file_->openDataSet(dataset_name);
-//   H5::DataSpace dataspace = dataset.getSpace();
-
-//   // need to get the number of matrix dimensions (rank) so that we can
-//   // dynamically allocate `dimensions`
-//   int rank = dataspace.getSimpleExtentNdims();
-//   hsize_t *dimensions = new hsize_t[rank];
-//   dataspace.getSimpleExtentDims(dimensions);
-
-//   //auto dimensions = shape_of(dataset_name);
-//   // TODO why do we need `dimensions` at all here?
-
-//   // now get the data type
-//   H5::DataType datatype = dataset.getDataType();
-//   dataset.read(data, datatype);
-
-//   delete[] dimensions;
-// }
 
 /******************************************************************************
  * HDF5Writer
@@ -92,10 +66,8 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
 }
 
 void HDF5Base::data_dump(const std::string &dataname) const {
-  //
+  throw std::logic_error("Not yet implemented");
+  return;
 }
 
-bool HDF5Base::is_ok() const {
-  return true;
-  //
-}
+bool HDF5Base::is_ok() const { return true; }
