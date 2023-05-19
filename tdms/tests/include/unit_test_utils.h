@@ -16,13 +16,20 @@ using tdms_math_constants::DCPI;
 namespace tdms_unit_test_data {
 
 #ifdef CMAKE_SOURCE_DIR
-inline std::string
-        tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
-                         "/tests/unit/hdf5_and_tdms_objects/class_data.mat");
+inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
+                                    "/tests/unit/matlab_benchmark_scripts/"
+                                    "matlab_data/class_data.mat");
+inline std::string tdms_bad_object_data(std::string(CMAKE_SOURCE_DIR) +
+                                        "/tests/unit/matlab_benchmark_scripts/"
+                                        "matlab_data/bad_class_data.mat");
 #else
+inline std::string tdms_object_data(std::filesystem::current_path() /
+                                    "../tests/unit/matlab_benchmark_scripts/"
+                                    "matlab_data/class_data.mat");
 inline std::string
-        tdms_object_data(std::filesystem::current_path() /
-                         "../tests/unit/hdf5_and_tdms_objects/class_data.mat");
+        tdms_bad_object_data(std::filesystem::current_path() /
+                             "../tests/unit/matlab_benchmark_scripts/"
+                             "matlab_data/bad_class_data.mat");
 #endif
 
 /* The struct_testdata is a .mat file containing a single structure array,
@@ -38,13 +45,13 @@ double_22: [0.25, 0.5; 0.75, 1.], double
 complex_22: [0., -i; i, 0], complex
 */
 #ifdef CMAKE_SOURCE_DIR
-inline std::string
-        struct_testdata(std::string(CMAKE_SOURCE_DIR) +
-                        "/tests/unit/hdf5_io_tests/structure_array.mat");
+inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
+                                   "/tests/unit/matlab_benchmark_scripts/"
+                                   "matlab_data/structure_array.mat");
 #else
-inline std::string
-        struct_testdata(std::filesystem::current_path() /
-                        "../tests/unit/hdf5_io_tests/structure_array.mat");
+inline std::string struct_testdata(std::filesystem::current_path() /
+                                   "../tests/unit/matlab_benchmark_scripts/"
+                                   "matlab_data/structure_array.mat");
 #endif
 
 }// namespace tdms_unit_test_data
