@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "cell_coordinate.h"
 #include "matlabio.h"
 #include "matrix.h"
 
@@ -19,9 +20,8 @@ public:
   TDMSMatrix() = default;
   TDMSMatrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
 
-  T &operator()(int row, int col) {
-    return data_[row * n_cols_ + col];
-  }// TODO: convert old syntax :(
+  T &operator()(int row, int col) { return data_[row * n_cols_ + col]; }
+  T operator()(int row, int col) const { return data_[row * n_cols_ + col]; }
 
   void allocate(int n_rows, int n_cols) {
     n_rows_ = n_rows;
@@ -69,16 +69,11 @@ struct Pupil : public TDMSMatrix<double> {
   void initialise_from_matlab(const mxArray *ptr, int n_rows, int n_cols);
 };
 
-// class Vertices : public Matrix<int> {
-// public:
-//   Vertices() = default;
+struct Vertices : public TDMSMatrix<int> {
+  Vertices() = default;
 
-//   void initialise(const mxArray *ptr);
+  void initialise_from_matlab(const mxArray *ptr);
 
-//   int n_vertices() { return n_rows_; }
-
-//   ~Vertices() {
-//     if (has_elements()) { free_cast_matlab_2D_array(matrix); }
-//     matrix = nullptr;
-//   };
-// };
+  int n_vertices() { return n_rows_; }
+  ijk index_in_row(int row) const;
+};

@@ -8,7 +8,6 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "arrays.h"
 #include "arrays/tdms_matrix.h"
 
 void MatrixTest::test_correct_construction() {
@@ -56,12 +55,12 @@ void VerticesTest::test_correct_construction() {
   // create object
   Vertices v;
   // initialise
-  v.initialise(matlab_input);
+  v.initialise_from_matlab(matlab_input);
   // we should have n_vertex_elements number of vertices stored
   REQUIRE(v.n_vertices() == n_numeric_elements);
   // what's more, we should have decremented all the elements of v from 0 to -1
   for (int i = 0; i < n_numeric_elements; i++) {
-    for (int j = 0; j < 3; j++) { CHECK(v[j][i] == -1); }
+    for (int j = 0; j < 3; j++) { CHECK(v(i, j) == -1); }
   }
 }
 

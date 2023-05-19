@@ -344,20 +344,6 @@ public:
   int index(int value);
 };
 
-class Vertices : public Matrix<int> {
-public:
-  Vertices() = default;
-
-  void initialise(const mxArray *ptr);
-
-  int n_vertices() { return n_rows; }
-
-  ~Vertices() {
-    if (has_elements()) { free_cast_matlab_2D_array(matrix); }
-    matrix = nullptr;
-  };
-};
-
 class DetectorSensitivityArrays {
 public:
   fftw_complex *v = nullptr;          // Flat fftw vector

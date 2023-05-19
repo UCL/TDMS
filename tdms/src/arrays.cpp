@@ -219,26 +219,6 @@ int FieldComponentsVector::index(int value) {
   return -1;
 }
 
-void Vertices::initialise(const mxArray *ptr) {
-
-  auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
-  if (mxIsEmpty(element)) { return; }
-
-  auto dims = mxGetDimensions(element);
-  int n_vertices = n_rows = dims[0];
-  n_cols = dims[1];
-
-  if (n_cols != 3) {
-    throw runtime_error("Second dimension in campssample.vertices must be 3");
-  }
-
-  spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
-  matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, n_cols);
-
-  for (int j = 0; j < n_vertices; j++)// decrement index for MATLAB->C indexing
-    for (int k = 0; k < n_cols; k++) { matrix[k][j] -= 1; }
-}
-
 void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {
 
   v = (fftw_complex *) fftw_malloc(n_rows * n_cols * sizeof(fftw_complex));
