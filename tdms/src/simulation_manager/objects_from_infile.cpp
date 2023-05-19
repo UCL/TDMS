@@ -41,6 +41,9 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   K0 = INPUT_FILE.read("K0");
   K1 = INPUT_FILE.read("K1");
 
+  // Read the layer structure of the obstacle
+  INPUT_FILE.read(&matched_layer);
+
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
 
