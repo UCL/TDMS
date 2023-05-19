@@ -14,7 +14,6 @@
  *          **double, but can be anything in general).
  */
 class HDF5Reader : public HDF5Base {
-
 public:
   /**
    * @brief Construct a new HDF5Reader for a named file.
@@ -82,19 +81,9 @@ public:
               "Cannot read " + dataset_name + " into a 2D matrix, it has " +
               std::to_string(dimensions.size()) + " dimensions");
     }
-    int n_rows = dimensions[0];
-    int n_cols = dimensions[1];
 
-    SPDLOG_DEBUG("n_rows = {}; n_cols = {}", n_rows, n_cols);
-    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
-    read(dataset_name, buff);
-
-    data_location.allocate(n_rows, n_cols);
-    for (unsigned int i = 0; i < n_rows; i++) {
-      for (unsigned int j = 0; j < n_cols; j++) {
-        data_location(i, j) = buff[i * n_cols + j];
-      }
-    }
+    data_location.allocate(dimensions[0], dimensions[1]);
+    read(dataset_name, data_location.data_.data());
     return;
   }
 

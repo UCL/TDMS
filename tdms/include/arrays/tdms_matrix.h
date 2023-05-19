@@ -19,6 +19,9 @@
  */
 template<typename T>
 class Matrix {
+  friend class HDF5Reader;
+  friend class HDF5Writer;
+
 protected:
   int n_rows_ = 0;
   int n_cols_ = 0;

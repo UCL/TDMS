@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void HDF5Writer::write(const string &dataset_name, double *data, int size,
+void HDF5Writer::write(const string &dataset_name, const double *data, int size,
                        hsize_t *dimensions) {
   spdlog::debug("Writing {} to file: {}", dataset_name, filename_);
 
