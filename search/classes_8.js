@@ -1,6 +1,12 @@
 var searchData=
 [
-  ['perfectlymatchedlayer_0',['PerfectlyMatchedLayer',['../struct_perfectly_matched_layer.html',1,'']]],
-  ['planarinterface_1',['PlanarInterface',['../struct_planar_interface.html',1,'']]],
-  ['pupil_2',['Pupil',['../class_pupil.html',1,'']]]
+  ['magneticfield_0',['MagneticField',['../class_magnetic_field.html',1,'']]],
+  ['magneticsplitfield_1',['MagneticSplitField',['../class_magnetic_split_field.html',1,'']]],
+  ['materialcollection_2',['MaterialCollection',['../class_material_collection.html',1,'']]],
+  ['matfilematrixcollection_3',['MatFileMatrixCollection',['../class_mat_file_matrix_collection.html',1,'']]],
+  ['matrix_4',['Matrix',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20double_20_3e_5',['Matrix&lt; double &gt;',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20fftw_5fcomplex_20_3e_6',['Matrix&lt; fftw_complex &gt;',['../class_matrix.html',1,'']]],
+  ['matrix_3c_20int_20_3e_7',['Matrix&lt; int &gt;',['../class_matrix.html',1,'']]],
+  ['matrixcollection_8',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
 ];

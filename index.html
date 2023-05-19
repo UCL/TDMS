@@ -122,10 +122,11 @@ Mac-specific instructions</summary>
 <div class="fragment"><div class="line">-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++</div>
 <div class="line">-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/</div>
 <div class="line">-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm</div>
+<div class="line">-DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5</div>
 </div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew. To do so, use the following commands:</p>
 <div class="fragment"><div class="line">arch -x86_64 zsh</div>
 <div class="line">arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
-<div class="line">arch -x86_64 /usr/local/bin/brew install llvm</div>
+<div class="line">arch -x86_64 /usr/local/bin/brew install llvm hdf5</div>
 </div><!-- fragment --> </details>
 <p>You can check that <code>tdms</code> was installed correctly and is in your <code>PATH</code> by running: </p><div class="fragment"><div class="line">tdms --help</div>
 </div><!-- fragment --><p> in a new terminal.</p>

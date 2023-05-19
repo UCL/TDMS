@@ -32,6 +32,10 @@ var hierarchy =
       ] ]
     ] ],
     [ "GridLabels", "class_grid_labels.html", null ],
+    [ "HDF5Base", "class_h_d_f5_base.html", [
+      [ "HDF5Reader", "class_h_d_f5_reader.html", null ],
+      [ "HDF5Writer", "class_h_d_f5_writer.html", null ]
+    ] ],
     [ "ijk", "structijk.html", null ],
     [ "IncidentField", "class_incident_field.html", null ],
     [ "InputFlags", "class_input_flags.html", null ],
