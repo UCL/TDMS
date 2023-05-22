@@ -76,6 +76,24 @@ For beginners, we recommend starting with the demonstration MATLAB script, which
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
 
+### MATLAB file version
+
+To ensure that files produced by MATLAB are readable by TDMS, save them in .mat version 7.3 format.
+This can be achieved by passing '-v7.3' to MATLAB's save command as the final argument, for example:
+
+```
+save('my_input_file.mat', 'my_input_var_1', 'my_input_var_2', ..., 'my_input_var_N', '-v7.3');
+```
+
+Or set this as MATLAB's default in the settings.
+
+<details>
+<summary>MATLAB file settings</summary>
+
+![](doc/assets/matlab-file-settings.png)
+
+</details>
+
 ### On the command line
 
 If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name.
