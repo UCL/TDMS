@@ -8,11 +8,15 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <H5Cpp.h>
 #include <spdlog/spdlog.h>
+
+#include "arrays.h"
+#include "fdtd_grid_initialiser.h"
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -68,8 +72,8 @@ public:
    * @param dataname The name of the data table.
    * @return std::vector<hsize_t> The dimensions of the data.
    */
+  // IJKDimensions shape_of(const std::string &dataname) const;
   std::vector<hsize_t> shape_of(const std::string &dataname) const;
-
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.
@@ -92,7 +96,7 @@ public:
   /**
    * @brief Construct a new HDF5Reader for a named file.
    * @param filename The name of the file.
-   * @throws XX if file is not found.
+   * @throws H5::FileIException if the file can't be created.
    */
   HDF5Reader(const std::string &filename)
       : HDF5Base(filename, H5F_ACC_RDONLY) {}
@@ -106,26 +110,49 @@ public:
   void read(const std::string &dataset_name, T *data) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
 
-    // get the dataset and dataspace (contains dimensionality info)
+    // get the dataset and dataspace
     H5::DataSet dataset = file_->openDataSet(dataset_name);
     H5::DataSpace dataspace = dataset.getSpace();
-    spdlog::debug("Created dataspace");
-
-    // need to get the number of matrix dimensions (rank) so that we can
-    // dynamically allocate `dimensions`
-    int rank = dataspace.getSimpleExtentNdims();
-    spdlog::debug("Rank of dataspace: {}", rank);
-    hsize_t *dimensions = new hsize_t[rank];
-    dataspace.getSimpleExtentDims(dimensions);
-    spdlog::debug("Got dimensions");
 
     // now get the data type
     H5::DataType datatype = dataset.getDataType();
-    spdlog::debug("Got datatype");
     dataset.read(data, datatype);
-    spdlog::debug("Read");
+    spdlog::trace("Read successful.");
+  }
 
-    delete[] dimensions;
+  template<typename T>
+  void read(const std::string &dataset_name, Matrix<T> &data_location) const {
+    spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
+
+    std::vector<hsize_t> dimensions = shape_of(dataset_name);
+    if (dimensions.size() != 2) {
+      throw std::runtime_error(
+              "Cannot read " + dataset_name + " into a 2D matrix, it has " +
+              std::to_string(dimensions.size()) + " dimensions");
+    }
+    int n_rows = dimensions[0];
+    int n_cols = dimensions[1];
+
+    SPDLOG_DEBUG("n_rows = {}; n_cols = {}", n_rows, n_cols);
+    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
+    read(dataset_name, buff);
+
+    data_location.allocate(n_rows, n_cols);
+    for (unsigned int i = 0; i < n_rows; i++) {
+      for (unsigned int j = 0; j < n_cols; j++) {
+        data_location[i][j] = buff[i * n_cols + j];
+      }
+    }
+    return;
+  }
+
+  void read(const fdtdGridInitialiser &initialiser,
+            const std::string &dataset_name = "fdtdgrid") const {
+
+    // This method will take in the fdtdGridInit... object, assign the pointer
+    // member, and then run the object's
+    throw std::logic_error("Not yet implemented");
+    return;
   }
 };
 
@@ -135,6 +162,7 @@ public:
   /**
    * @brief Construct a new HDF5Writer, creates a file.
    * @param filename The name of the file to be created.
+   * @throws H5::FileIException if the file can't be created.
    */
   HDF5Writer(const std::string &filename) : HDF5Base(filename, H5F_ACC_TRUNC) {}
 
@@ -148,4 +176,27 @@ public:
    */
   void write(const std::string &dataname, double *data, int size,
              hsize_t *dimensions);
+
+  /**
+   * @brief Write `data` to the file with `dataname`.
+   *
+   * @param dataname The name of the data table.
+   * @param data The data itself.
+   * @param size The size of the data array.
+   * @param dimensions The number of dimensions of the array.
+   */
+  template<typename T>
+  void write(const std::string &dataname, const Matrix<T> &data) {
+    int n_cols = data.get_n_cols();
+    int n_rows = data.get_n_rows();
+    hsize_t dimension[2] = {static_cast<hsize_t>(n_rows),
+                            static_cast<hsize_t>(n_cols)};
+    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
+    for (unsigned int i = 0; i < n_rows; i++) {
+      for (unsigned int j = 0; j < n_cols; j++) {
+        buff[i * n_cols + j] = data[i][j];
+      }
+    }
+    write(dataname, buff, 2, dimension);
+  }
 };

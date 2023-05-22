@@ -1,9 +1,11 @@
 #include "hdf5_io.h"
+#include "cell_coordinate.h"
 
 #include <exception>
 #include <iostream>
 
 #include <H5Cpp.h>
+#include <H5public.h>
 #include <spdlog/spdlog.h>
 
 /******************************************************************************
@@ -51,6 +53,7 @@ void HDF5Base::ls() const {
 }
 
 std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
+  spdlog::debug("shape_of {}", dataname);
 
   // get the dataset and dataspace (contains dimensionality info)
   H5::DataSet dataset = file_->openDataSet(dataname);
@@ -60,10 +63,12 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
   int rank = dataspace.getSimpleExtentNdims();
   std::vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
-
-  // vector is the size in each dimension i, j(, k)
   return dimensions;
 }
 
-
-bool HDF5Base::is_ok() const { return true; }
+bool HDF5Base::is_ok() const {
+  // TODO: check for file health might be unnessicary given we've constructed
+  // the object.
+  return file_->isHdf5(filename_);
+  // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
+}
