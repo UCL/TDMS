@@ -21,7 +21,7 @@
 #include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
-using tdms_tests::create_tmp_dir; // unit_test_utils.h
+using tdms_tests::create_tmp_dir;// unit_test_utils.h
 
 TEST_CASE("Wrong datatype passed to ijk.") {
   auto tmp = create_tmp_dir();
