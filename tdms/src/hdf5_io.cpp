@@ -53,7 +53,7 @@ void HDF5Base::ls() const {
 }
 
 std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
-  SPDLOG_DEBUG("shape_of");
+  spdlog::debug("shape_of {}", dataname);
 
   // get the dataset and dataspace (contains dimensionality info)
   H5::DataSet dataset = file_->openDataSet(dataname);
