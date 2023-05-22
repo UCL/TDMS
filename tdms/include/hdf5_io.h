@@ -16,7 +16,6 @@
 #include <spdlog/spdlog.h>
 
 #include "arrays.h"
-#include "cell_coordinate.h"
 #include "fdtd_grid_initialiser.h"
 
 /**

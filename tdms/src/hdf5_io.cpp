@@ -8,24 +8,6 @@
 #include <H5public.h>
 #include <spdlog/spdlog.h>
 
-/**
- * @brief Convert from a vector of HDF5's hsize_t back to our struct of ints.
- * @note Local scope utility function as only this code needs to interact with
- * the HDF5 H5Cpp library.
- *
- * @param dimensions a 1, 2, or 3 element vector of dimensions.
- * @return ijk The dimensions in a struct.
- */
-ijk to_ijk(const std::vector<hsize_t> dimensions) {
-  unsigned int rank = dimensions.size();
-  ijk out;
-  if (rank > 0) out.i = (int) dimensions[0];
-  if (rank > 1) out.j = (int) dimensions[1];
-  if (rank > 2) out.k = (int) dimensions[2];
-  if (rank > 3) spdlog::warn("Rank > 3");
-  return out;
-}
-
 /******************************************************************************
  * HDF5Writer
  */
