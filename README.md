@@ -78,17 +78,15 @@ This script will generate the input to TDMS, run TDMS, and display sample output
 
 ### MATLAB file version
 
-To ensure that files produced by MATLAB are readable by TDMS, save them in .mat version 7.3 format.
-This can be achieved by passing '-v7.3' to MATLAB's save command as the final argument, for example:
+In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer.
+This can be done by passing '-v7.3' to MATLAB's save command as the final argument, for example:
 
 ```
 save('my_input_file.mat', 'my_input_var_1', 'my_input_var_2', ..., 'my_input_var_N', '-v7.3');
 ```
 
-Or set this as MATLAB's default in the settings.
-
 <details>
-<summary>MATLAB file settings</summary>
+<summary>Or set v7.3 as the default in MATLAB's settings.</summary>
 
 ![](doc/assets/matlab-file-settings.png)
 
