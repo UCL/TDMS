@@ -134,6 +134,17 @@ Mac-specific instructions</summary>
 How to run</h2>
 <p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <code>examples/arc_01</code> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>. This script will generate the input to TDMS, run TDMS, and display sample output.</p>
 <h3><a class="anchor" id="autotoc_md3"></a>
+MATLAB file version</h3>
+<p>In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer. This can be done by passing '-v7.3' to MATLAB's save command as the final argument, for example:</p>
+<div class="fragment"><div class="line">save(&#39;my_input_file.mat&#39;, &#39;my_input_var_1&#39;, &#39;my_input_var_2&#39;, ..., &#39;my_input_var_N&#39;, &#39;-v7.3&#39;);</div>
+</div><!-- fragment --><details >
+<summary >
+Or set v7.3 as the default in MATLAB's settings.</summary>
+<p></p>
+<p><img src="doc/assets/matlab-file-settings.png" alt="" class="inline"/></p>
+<p></p>
+</details>
+<h3><a class="anchor" id="autotoc_md4"></a>
 On the command line</h3>
 <p>If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name. You can choose between two solver methods: <b>finite-difference</b> or <b>pseudo-spectral</b>, as well as two interpolation methods: <b>cubic</b> or <b>bandlimited</b>. These options can be selected by setting the corresponding flag variables in the input file. When <code>tdms</code> reads the input, it will verify if the input file contains a dataset that matches the names of these flags.</p>
 <p>There are two flags available for configuration in the input file. </p><details >
@@ -154,7 +165,7 @@ On the command line</h3>
 <dl class="section note"><dt>Note</dt><dd>Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest. Otherwise, cubic interpolation typically enjoys superior accuracy. </dd></dl>
 </details>
 <p>TDMS is parallelised with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. You can set the maximum number of threads using the <code>OMP_NUM_THREADS</code> environment variable before calling the TDMS executable. </p><div class="fragment"><div class="line">$ export OMP_NUM_THREADS=4 # for example</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md4"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
 Citation</h2>
 <p>If you used TDMS in your research and found it helpful, please cite this work: <a href="https://doi.org/10.5281/zenodo.7950604">10.5281/zenodo.7950604</a>.</p>
 <details >
@@ -179,12 +190,12 @@ LaTeX</summary>
 <div class="line">P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950603}{10.5281/zenodo.7950603}.</div>
 </div><!-- fragment --><p></p>
 </details>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
 Acknowledgements</h2>
 <p>The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's <a href="https://ucl.ac.uk/medphys">Medical Physics and Biomedical Engineering</a> and <a href="https://ucl.ac.uk/arc">Centre for Advanced Research Computing</a> with generous funding from the <a href="https://royalsociety.org">Royal Society</a>.</p>
 <p><img src="doc/assets/biomedlogo.png" alt="medphys" class="inline"/>&#160;<img src="doc/assets/arclogo.png" alt="arc" class="inline"/></p>
 <p>Development of this software has previously benefited from funding from the <a href="https://cscuk.fcdo.gov.uk/about-us/scholarships-and-fellowships/">Commonwealth Scholarships Commission</a>, the <a href="https://www.ukri.org/councils/epsrc/">Engineering and Physical Sciences Research Council</a>, and the <a href="https://www.arc.gov.au/">Australian Research Council</a>.</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Want to contribute?</h2>
 <p>We're grateful for bug reports, feature requests, and pull requests. Please see our <a href="https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a> (we also have some <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html">developer documentation</a>). </p>
 </div></div><!-- PageDoc -->

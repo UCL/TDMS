@@ -28,45 +28,46 @@ var NAVTREE =
     [ "Time-Domain Maxwell Solver", "index.html#autotoc_md0", [
       [ "Getting started", "index.html#autotoc_md1", null ],
       [ "How to run", "index.html#autotoc_md2", [
-        [ "On the command line", "index.html#autotoc_md3", null ]
+        [ "MATLAB file version", "index.html#autotoc_md3", null ],
+        [ "On the command line", "index.html#autotoc_md4", null ]
       ] ],
-      [ "Citation", "index.html#autotoc_md4", null ],
-      [ "Acknowledgements", "index.html#autotoc_md5", null ],
-      [ "Want to contribute?", "index.html#autotoc_md6", null ]
+      [ "Citation", "index.html#autotoc_md5", null ],
+      [ "Acknowledgements", "index.html#autotoc_md6", null ],
+      [ "Want to contribute?", "index.html#autotoc_md7", null ]
     ] ],
     [ "Contribution guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", [
-      [ "Bugs", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md8", null ],
-      [ "Code contribution", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md9", [
-        [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md10", null ]
+      [ "Bugs", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md9", null ],
+      [ "Code contribution", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md10", [
+        [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md11", null ]
       ] ]
     ] ],
     [ "Developer documentation", "md_doc_developers.html", [
-      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md12", null ],
-      [ "Dependencies", "md_doc_developers.html#autotoc_md13", [
-        [ "Versions", "md_doc_developers.html#autotoc_md14", null ],
+      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md13", null ],
+      [ "Dependencies", "md_doc_developers.html#autotoc_md14", [
+        [ "Versions", "md_doc_developers.html#autotoc_md15", null ],
         [ "Code style and other admin", "md_doc_developers.html#code-style-and-doxygen", null ],
         [ "Linters and automatic code style", "md_doc_developers.html#pre-commit", null ]
       ] ],
       [ "Compiling and debugging", "md_doc_developers.html#compiling", [
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md15", null ]
+        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md16", null ]
       ] ],
-      [ "Where's the main?", "md_doc_developers.html#autotoc_md16", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md17", [
-        [ "2. Initialisation", "md_doc_developers.html#autotoc_md18", null ],
-        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md19", null ],
-        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md20", null ],
-        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md21", null ]
+      [ "Where's the main?", "md_doc_developers.html#autotoc_md17", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md18", [
+        [ "2. Initialisation", "md_doc_developers.html#autotoc_md19", null ],
+        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md20", null ],
+        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md21", null ],
+        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md22", null ]
       ] ],
       [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", null ],
         [ "Test coverage", "md_doc_developers.html#coverage", null ],
         [ "MATLAB Units", "md_doc_developers.html#matlab-unit-tests", null ],
         [ "System", "md_doc_developers.html#system-tests", [
-          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md22", null ]
+          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md23", null ]
         ] ],
-        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md23", [
-          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md24", null ],
-          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md25", null ]
+        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md24", [
+          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md25", null ],
+          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md26", null ]
         ] ]
       ] ]
     ] ],
@@ -105,7 +106,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"globals_8h.html"
+"functions_vars.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

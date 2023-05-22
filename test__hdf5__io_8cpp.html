@@ -100,25 +100,42 @@ $(document).ready(function(){initNavTree('test__hdf5__io_8cpp.html',''); initRes
 <p>Tests of the HDF5 file I/O functionality.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="hdf5__io_8h_source.html">hdf5_io.h</a>&quot;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;ctime&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;random&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;H5Exception.h&gt;</code><br />
 <code>#include &lt;catch2/catch_approx.hpp&gt;</code><br />
 <code>#include &lt;catch2/catch_test_macros.hpp&gt;</code><br />
 <code>#include &lt;spdlog/spdlog.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="arrays_8h_source.html">arrays.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="fdtd__grid__initialiser_8h_source.html">fdtd_grid_initialiser.h</a>&quot;</code><br />
 <code>#include &quot;unit_test_utils.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for test_hdf5_io.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="test__hdf5__io_8cpp__incl.svg" width="1284" height="199"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="test__hdf5__io_8cpp__incl.svg" width="2196" height="347"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a3e8981b367048658fca073f3586c4088"><td class="memItemLeft" align="right" valign="top"><a id="a3e8981b367048658fca073f3586c4088" name="a3e8981b367048658fca073f3586c4088"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Wrong datatype passed to ijk.&quot;)</td></tr>
+<tr class="separator:a3e8981b367048658fca073f3586c4088"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a644b1d2c9b410f994d2f4211371471"><td class="memItemLeft" align="right" valign="top"><a id="a8a644b1d2c9b410f994d2f4211371471" name="a8a644b1d2c9b410f994d2f4211371471"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Test file I/O construction/destruction.&quot;)</td></tr>
 <tr class="separator:a8a644b1d2c9b410f994d2f4211371471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1859aaec7d294cb4826cf121c0bd5e8"><td class="memItemLeft" align="right" valign="top"><a id="aa1859aaec7d294cb4826cf121c0bd5e8" name="aa1859aaec7d294cb4826cf121c0bd5e8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Test w/r TDMS objects&quot;)</td></tr>
+<tr class="separator:aa1859aaec7d294cb4826cf121c0bd5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae334d1254dc7356921b51080ce8ff5ce"><td class="memItemLeft" align="right" valign="top"><a id="ae334d1254dc7356921b51080ce8ff5ce" name="ae334d1254dc7356921b51080ce8ff5ce"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>TESTDATA</b> (std::filesystem::current_path()/&quot;../tests/unit/small_fdtdgrid.mat&quot;)</td></tr>
+<tr class="separator:ae334d1254dc7356921b51080ce8ff5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae754fcdd4350ea2ffe157fff9d760266"><td class="memItemLeft" align="right" valign="top"><a id="ae754fcdd4350ea2ffe157fff9d760266" name="ae754fcdd4350ea2ffe157fff9d760266"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Read from example input&quot;)</td></tr>
+<tr class="separator:ae754fcdd4350ea2ffe157fff9d760266"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Tests of the HDF5 file I/O functionality. </p>
