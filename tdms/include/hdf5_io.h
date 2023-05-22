@@ -71,7 +71,7 @@ public:
    * @brief Return shape/dimensionality information about the array data stored
    * with `name`.
    * @param dataname The name of the data table.
-   * @return IJKDimensions The dimensions of the data.
+   * @return std::vector<hsize_t> The dimensions of the data.
    */
   // IJKDimensions shape_of(const std::string &dataname) const;
   std::vector<hsize_t> shape_of(const std::string &dataname) const;

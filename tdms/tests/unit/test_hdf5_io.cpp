@@ -21,12 +21,11 @@
 #include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
-using tdms_tests::create_tmp_dir;
+using tdms_tests::create_tmp_dir; // unit_test_utils.h
 
 TEST_CASE("Wrong datatype passed to ijk.") {
   auto tmp = create_tmp_dir();
   HDF5Writer r(tmp.string() + "/why.h5");
-  // r.data_dump("x");
 }
 
 TEST_CASE("Test file I/O construction/destruction.") {
@@ -37,7 +36,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   SECTION("Check file creation.") {
     HDF5Writer f(tmp.string() + "/test_file_constructor.h5");
     CHECK(f.is_ok());
-  }
+  }// Destructor called as we leave scope
 
   SECTION("Check all reasonable file extensions are OK.") {
     for (auto extension : {".hdf5", ".h5", ".mat"}) {
@@ -71,6 +70,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   // Normal operation: we should be able to create a file and write to it, then
   // read from it.
   SECTION("Check write then read.") {
+    // Create a file and write some data.
     {
       HDF5Writer fw(tmp.string() + "/test_file_wr.h5");
       hsize_t dimensions[1] = {1};
@@ -112,7 +112,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
       CHECK(f2.is_ok());
 
-    }// destructor called as we leave scope
+    }// Destructor called as we leave scope.
 
     // Now open the file with a Reader. The first data should not be there (and
     // should throw an exception). The second data should be there.

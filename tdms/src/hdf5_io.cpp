@@ -70,8 +70,6 @@ void HDF5Base::ls() const {
   return;
 }
 
-// IJKDimensions HDF5Base::shape_of(const std::string &dataname) const {
-// return to_ijk(dimensions);
 std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
   SPDLOG_DEBUG("shape_of");
 
