@@ -151,6 +151,7 @@ public:
 
     // This method will take in the fdtdGridInit... object, assign the pointer
     // member, and then run the object's
+    throw std::logic_error("Not yet implemented");
     return;
   }
 };

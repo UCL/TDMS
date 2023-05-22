@@ -201,8 +201,8 @@ TEST_CASE("Read from example input") {
   HDF5Reader MATFile(TESTDATA);
 
   SECTION("Read FDTD grid") {
+    SKIP("Not implemented yet");
     fdtdGridInitialiser gridinitialiser;
     MATFile.read(gridinitialiser);
-    // CHECK();
   }
 }
