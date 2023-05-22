@@ -12,6 +12,7 @@
 #include <string>
 
 // external
+#include <H5Exception.h>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -52,7 +53,8 @@ TEST_CASE("Test file I/O construction/destruction.") {
   }
 
   SECTION("Check can't open nonexistent file.") {
-    CHECK_THROWS(HDF5Reader(tmp.string() + "/this_file_doesnt_exist.h5"));
+    CHECK_THROWS_AS(HDF5Reader(tmp.string() + "/this_file_doesnt_exist.h5"),
+                    H5::FileIException);
   }
 
   SECTION("Check can't read nonexistent data.") {
@@ -64,7 +66,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
     double data[1];
     HDF5Reader fr(tmp.string() + "/this_file_does_exist_but_is_empty.h5");
-    CHECK_THROWS(fr.read("nonexistantdata", data));
+    CHECK_THROWS_AS(fr.read("nonexistantdata", data), H5::FileIException);
   }
 
   // Normal operation: we should be able to create a file and write to it, then
