@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['i_0',['i',['../structijk.html#a5b03dc8b89c09a81cbdb396daf106680',1,'ijk::i()'],['../class_dimensions.html#a938a4b204973996a35b251583b4c56d9',1,'Dimensions::i()'],['../class_field_sample.html#a1e9a487e634028818cd4985bbc458f2a',1,'FieldSample::i()']]],
-  ['il_1',['il',['../class_field.html#a5d97d97622e26cf1a7249e9c75e72884',1,'Field']]],
-  ['imag_2',['imag',['../class_source.html#a5a872e2b0ab7f001982f3691695f8c4e',1,'Source']]],
-  ['input_5ffilename_3',['input_filename',['../class_input_flags.html#ad984b867a78c66ab14d0242fd0a39753',1,'InputFlags']]]
+  ['flag_5fvalues_0',['flag_values',['../class_input_flags.html#a77a58c1de1c891a2974cc0cbb4011d35',1,'InputFlags']]],
+  ['flag_5fvariables_1',['flag_variables',['../namespacetdms__flags.html#aec198c6b302a820af3a31259a644fb67',1,'tdms_flags']]]
 ];

@@ -1,12 +1,6 @@
 var searchData=
 [
-  ['dx_0',['dx',['../struct_yee_cell_dimensions.html#a808d30c98e2986fc718dcaa6626626dc',1,'YeeCellDimensions']]],
-  ['dxl_1',['Dxl',['../struct_perfectly_matched_layer.html#a9746e3f706f4f887ea8a157d3df952f0',1,'PerfectlyMatchedLayer']]],
-  ['dxu_2',['Dxu',['../struct_perfectly_matched_layer.html#aba51770d5ca1336dba609023f5211ef5',1,'PerfectlyMatchedLayer']]],
-  ['dy_3',['dy',['../struct_yee_cell_dimensions.html#afe3b786cf6aa6f3b758eda6d5f8ef1f3',1,'YeeCellDimensions']]],
-  ['dyl_4',['Dyl',['../struct_perfectly_matched_layer.html#a2a4c05a5ce25462d34148457cafa9f83',1,'PerfectlyMatchedLayer']]],
-  ['dyu_5',['Dyu',['../struct_perfectly_matched_layer.html#afe956d52a581dd847f2aeaa73c6379ac',1,'PerfectlyMatchedLayer']]],
-  ['dz_6',['dz',['../struct_yee_cell_dimensions.html#a4889355a29c32262633638c571d8a9ad',1,'YeeCellDimensions']]],
-  ['dzl_7',['Dzl',['../struct_perfectly_matched_layer.html#a7f57423510cd6f2c6e9f0695e82ac5fc',1,'PerfectlyMatchedLayer']]],
-  ['dzu_8',['Dzu',['../struct_perfectly_matched_layer.html#a2f30d9d890dd899071e8e2227d2177bb',1,'PerfectlyMatchedLayer']]]
+  ['camplitudesi_0',['camplitudesI',['../class_vertex_phasors.html#a5619ad81a627c0f5c08dc8e922d62432',1,'VertexPhasors']]],
+  ['cell_5fb_1',['cell_b',['../struct_source_index.html#af324c5f2a48c6a8e7494bd49a7731089',1,'SourceIndex']]],
+  ['cell_5fc_2',['cell_c',['../struct_source_index.html#aaa6051ede2a0a3b804f3d508b0842002',1,'SourceIndex']]]
 ];

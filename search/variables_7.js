@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['n_0',['n',['../class_field_sample.html#a6ecc06f3a1dc2360f84d0d58e55a0d0c',1,'FieldSample']]],
-  ['n_5fsurface_5fvertices_1',['n_surface_vertices',['../class_surface_phasors.html#afc872281d9bfe3775c144f12fb09e98a',1,'SurfacePhasors']]],
-  ['no_5fdata_5fstored_2',['no_data_stored',['../class_source.html#a4f23a652a9e8bd86b8a8e2565dd9632b',1,'Source']]]
+  ['ml_5fconst_5ffn_5fmax_5fpointwise_5ferror_0',['ML_const_fn_max_pointwise_error',['../test__interpolation__functions_8cpp.html#a1290791884206a5d9c9da07e64555c07',1,'test_interpolation_functions.cpp']]],
+  ['mx_1',['mx',['../class_field_sample.html#adc368ad5a8930a7799762f4626cd9d55',1,'FieldSample']]]
 ];
