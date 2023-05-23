@@ -1,5 +1,5 @@
 <map id="tdms/include/fdtd_grid_initialiser.h" name="tdms/include/fdtd_grid_initialiser.h">
-<area shape="rect" id="node1" title="Initialisation of the FDTD grid." alt="" coords="63,5,212,46"/>
+<area shape="rect" id="node1" title="Initialisation of the FDTD grid." alt="" coords="7,5,156,46"/>
 <area shape="rect" id="node2" href="$hdf5__io_8h.html" title="Helper classes for HDF5 file I/O." alt="" coords="5,94,158,120"/>
-<area shape="rect" id="node3" href="$test__hdf5__io_8cpp.html" title="Tests of the HDF5 file I/O functionality." alt="" coords="70,168,205,208"/>
+<area shape="rect" id="node3" href="$test__hdf5__io_8cpp.html" title="Tests of the HDF5 file I/O functionality." alt="" coords="14,168,149,208"/>
 </map>

@@ -110,12 +110,11 @@ $(document).ready(function(){initNavTree('test__hdf5__io_8cpp.html',''); initRes
 <code>#include &lt;catch2/catch_test_macros.hpp&gt;</code><br />
 <code>#include &lt;spdlog/spdlog.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="arrays_8h_source.html">arrays.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="fdtd__grid__initialiser_8h_source.html">fdtd_grid_initialiser.h</a>&quot;</code><br />
 <code>#include &quot;unit_test_utils.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for test_hdf5_io.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="test__hdf5__io_8cpp__incl.svg" width="2196" height="347"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="test__hdf5__io_8cpp__incl.svg" width="2180" height="347"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><table class="memberdecls">
@@ -130,16 +129,62 @@ Functions</h2></td></tr>
 <tr class="memitem:aa1859aaec7d294cb4826cf121c0bd5e8"><td class="memItemLeft" align="right" valign="top"><a id="aa1859aaec7d294cb4826cf121c0bd5e8" name="aa1859aaec7d294cb4826cf121c0bd5e8"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Test w/r TDMS objects&quot;)</td></tr>
 <tr class="separator:aa1859aaec7d294cb4826cf121c0bd5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae334d1254dc7356921b51080ce8ff5ce"><td class="memItemLeft" align="right" valign="top"><a id="ae334d1254dc7356921b51080ce8ff5ce" name="ae334d1254dc7356921b51080ce8ff5ce"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>TESTDATA</b> (std::filesystem::current_path()/&quot;../tests/unit/small_fdtdgrid.mat&quot;)</td></tr>
-<tr class="separator:ae334d1254dc7356921b51080ce8ff5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae754fcdd4350ea2ffe157fff9d760266"><td class="memItemLeft" align="right" valign="top"><a id="ae754fcdd4350ea2ffe157fff9d760266" name="ae754fcdd4350ea2ffe157fff9d760266"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Read from example input&quot;)</td></tr>
-<tr class="separator:ae754fcdd4350ea2ffe157fff9d760266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a44197d4f5f147c3ae8b769dbe52d5d"><td class="memItemLeft" align="right" valign="top"><a id="a6a44197d4f5f147c3ae8b769dbe52d5d" name="a6a44197d4f5f147c3ae8b769dbe52d5d"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>TESTDATA</b> (std::filesystem::current_path()/&quot;../tests/unit/structure_array.mat&quot;)</td></tr>
+<tr class="separator:a6a44197d4f5f147c3ae8b769dbe52d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93cc0d367830466b5f52f726aa01835c"><td class="memItemLeft" align="right" valign="top"><a id="a93cc0d367830466b5f52f726aa01835c" name="a93cc0d367830466b5f52f726aa01835c"></a>
+char&#160;</td><td class="memItemRight" valign="bottom"><b>uint16_to_char</b> (const uint16_t &amp;repr)</td></tr>
+<tr class="memdesc:a93cc0d367830466b5f52f726aa01835c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the char represented by a uint16. <br /></td></tr>
+<tr class="separator:a93cc0d367830466b5f52f726aa01835c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab49f7e290d5c2322054a3d5680b26b4f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test__hdf5__io_8cpp.html#ab49f7e290d5c2322054a3d5680b26b4f">uint16s_to_string</a> (uint16_t *repr, int buffer_length)</td></tr>
+<tr class="memdesc:ab49f7e290d5c2322054a3d5680b26b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the string composed of the characters represented by subsequent uint16s.  <br /></td></tr>
+<tr class="separator:ab49f7e290d5c2322054a3d5680b26b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae021c32fd014fb0148045ebfd8c6a80a"><td class="memItemLeft" align="right" valign="top"><a id="ae021c32fd014fb0148045ebfd8c6a80a" name="ae021c32fd014fb0148045ebfd8c6a80a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TEST_CASE</b> (&quot;Read from a MATLAB struct&quot;)</td></tr>
+<tr class="separator:ae021c32fd014fb0148045ebfd8c6a80a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Tests of the HDF5 file I/O functionality. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="ab49f7e290d5c2322054a3d5680b26b4f" name="ab49f7e290d5c2322054a3d5680b26b4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab49f7e290d5c2322054a3d5680b26b4f">&#9670;&#160;</a></span>uint16s_to_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string uint16s_to_string </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t *&#160;</td>
+          <td class="paramname"><em>repr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>buffer_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the string composed of the characters represented by subsequent uint16s. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">repr</td><td>Buffer of uint16s that represent individual characters </td></tr>
+    <tr><td class="paramname">buffer_length</td><td>Length of the buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>string The string composed of the converted characters </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

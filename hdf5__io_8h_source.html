@@ -211,91 +211,103 @@ $(document).ready(function(){initNavTree('hdf5__io_8h_source.html',''); initResi
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    H5::DataSpace dataspace = dataset.getSpace();</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// now get the data type</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    H5::DataType datatype = dataset.getDataType();</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    dataset.read(data, datatype);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    spdlog::trace(<span class="stringliteral">&quot;Read successful.&quot;</span>);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  }</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(<span class="keyword">const</span> std::string &amp;dataset_name, <a class="code hl_class" href="class_matrix.html">Matrix&lt;T&gt;</a> &amp;data_location)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    spdlog::debug(<span class="stringliteral">&quot;Reading {} from file: {}&quot;</span>, dataset_name, <a class="code hl_variable" href="class_h_d_f5_base.html#af385ecef3724fea66fcc6a8e2eff6fc0">filename_</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    dataset.read(data, dataset.getDataType());</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    spdlog::trace(<span class="stringliteral">&quot;Read successful.&quot;</span>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="keywordtype">void</span> read_field_from_struct(<span class="keyword">const</span> std::string &amp;struct_name,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                              <span class="keyword">const</span> std::string &amp;field_name, T *data)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    spdlog::debug(<span class="stringliteral">&quot;Reading {} from file: {}&quot;</span>, struct_name, <a class="code hl_variable" href="class_h_d_f5_base.html#af385ecef3724fea66fcc6a8e2eff6fc0">filename_</a>);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    std::vector&lt;hsize_t&gt; dimensions = <a class="code hl_function" href="class_h_d_f5_base.html#a9ecfab2ef5a442639d528a77c298b4ff">shape_of</a>(dataset_name);</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (dimensions.size() != 2) {</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>              <span class="stringliteral">&quot;Cannot read &quot;</span> + dataset_name + <span class="stringliteral">&quot; into a 2D matrix, it has &quot;</span> +</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>              std::to_string(dimensions.size()) + <span class="stringliteral">&quot; dimensions&quot;</span>);</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">int</span> n_rows = dimensions[0];</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">int</span> n_cols = dimensions[1];</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    SPDLOG_DEBUG(<span class="stringliteral">&quot;n_rows = {}; n_cols = {}&quot;</span>, n_rows, n_cols);</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    T *buff = (T *) malloc(n_rows * n_cols * <span class="keyword">sizeof</span>(T));</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(dataset_name, buff);</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    data_location.<a class="code hl_function" href="class_matrix.html#a6e16b537c11a8a608bbd9c1c853f5a99">allocate</a>(n_rows, n_cols);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; n_rows; i++) {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; n_cols; j++) {</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        data_location[i][j] = buff[i * n_cols + j];</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>      }</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  }</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(<span class="keyword">const</span> <a class="code hl_class" href="classfdtd_grid_initialiser.html">fdtdGridInitialiser</a> &amp;initialiser,</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keyword">const</span> std::string &amp;dataset_name = <span class="stringliteral">&quot;fdtdgrid&quot;</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="comment">// Structs are saved as groups, so we need to fetch the group this struct is</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="comment">// contained in</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    H5::Group structure_array = <a class="code hl_variable" href="class_h_d_f5_base.html#a58f1e130d84093c49858af1d3e8f70d9">file_</a>-&gt;openGroup(struct_name);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="comment">// Then fetch the requested data and read it into the buffer provided</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    H5::DataSet requested_field = structure_array.openDataSet(field_name);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    requested_field.read(data, requested_field.getDataType());</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(<span class="keyword">const</span> std::string &amp;dataset_name, <a class="code hl_class" href="class_matrix.html">Matrix&lt;T&gt;</a> &amp;data_location)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    spdlog::debug(<span class="stringliteral">&quot;Reading {} from file: {}&quot;</span>, dataset_name, <a class="code hl_variable" href="class_h_d_f5_base.html#af385ecef3724fea66fcc6a8e2eff6fc0">filename_</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::vector&lt;hsize_t&gt; dimensions = <a class="code hl_function" href="class_h_d_f5_base.html#a9ecfab2ef5a442639d528a77c298b4ff">shape_of</a>(dataset_name);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (dimensions.size() != 2) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>              <span class="stringliteral">&quot;Cannot read &quot;</span> + dataset_name + <span class="stringliteral">&quot; into a 2D matrix, it has &quot;</span> +</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>              std::to_string(dimensions.size()) + <span class="stringliteral">&quot; dimensions&quot;</span>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">int</span> n_rows = dimensions[0];</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">int</span> n_cols = dimensions[1];</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    SPDLOG_DEBUG(<span class="stringliteral">&quot;n_rows = {}; n_cols = {}&quot;</span>, n_rows, n_cols);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    T *buff = (T *) malloc(n_rows * n_cols * <span class="keyword">sizeof</span>(T));</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(dataset_name, buff);</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="comment">// This method will take in the fdtdGridInit... object, assign the pointer</span></div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="comment">// member, and then run the object&#39;s</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Not yet implemented&quot;</span>);</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>  }</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>};</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html">  159</a></span><span class="keyword">class </span><a class="code hl_class" href="class_h_d_f5_writer.html">HDF5Writer</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_h_d_f5_base.html">HDF5Base</a> {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    data_location.<a class="code hl_function" href="class_matrix.html#a6e16b537c11a8a608bbd9c1c853f5a99">allocate</a>(n_rows, n_cols);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; n_rows; i++) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; n_cols; j++) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        data_location[i][j] = buff[i * n_cols + j];</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  }</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="keyword">public</span>:<span class="comment"></span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="comment">   * @brief Construct a new HDF5Writer, creates a file.</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="comment">   * @param filename The name of the file to be created.</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="comment">   * @throws H5::FileIException if the file can&#39;t be created.</span></div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">  167</a></span>  <a class="code hl_function" href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">HDF5Writer</a>(<span class="keyword">const</span> std::string &amp;filename) : <a class="code hl_class" href="class_h_d_f5_base.html">HDF5Base</a>(filename, H5F_ACC_TRUNC) {}</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment"></span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="comment">   * @brief Write `data` to the file with `dataname`.</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="comment">   * @param dataname The name of the data table.</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="comment">   * @param data The data itself.</span></div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="comment">   * @param size The size of the data array.</span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="comment">   * @param dimensions The number of dimensions of the array.</span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_writer.html#a65f49a5cb01976bc28f4a69db4715c3b">write</a>(<span class="keyword">const</span> std::string &amp;dataname, <span class="keywordtype">double</span> *data, <span class="keywordtype">int</span> size,</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>             hsize_t *dimensions);</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="comment"></span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">   * @brief Write `data` to the file with `dataname`.</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="comment">   * @param dataname The name of the data table.</span></div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="comment">   * @param data The data itself.</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="comment">   * @param size The size of the data array.</span></div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span><span class="comment">   * @param dimensions The number of dimensions of the array.</span></div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">  189</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">write</a>(<span class="keyword">const</span> std::string &amp;dataname, <span class="keyword">const</span> <a class="code hl_class" href="class_matrix.html">Matrix&lt;T&gt;</a> &amp;data) {</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordtype">int</span> n_cols = data.get_n_cols();</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">int</span> n_rows = data.get_n_rows();</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    hsize_t dimension[2] = {<span class="keyword">static_cast&lt;</span>hsize_t<span class="keyword">&gt;</span>(n_rows),</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                            <span class="keyword">static_cast&lt;</span>hsize_t<span class="keyword">&gt;</span>(n_cols)};</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    T *buff = (T *) malloc(n_rows * n_cols * <span class="keyword">sizeof</span>(T));</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; n_rows; i++) {</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; n_cols; j++) {</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        buff[i * n_cols + j] = data[i][j];</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>      }</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <a class="code hl_function" href="class_h_d_f5_writer.html#a65f49a5cb01976bc28f4a69db4715c3b">write</a>(dataname, buff, 2, dimension);</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>  }</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>};</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">read</a>(<span class="keyword">const</span> <a class="code hl_class" href="classfdtd_grid_initialiser.html">fdtdGridInitialiser</a> &amp;initialiser,</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keyword">const</span> std::string &amp;dataset_name = <span class="stringliteral">&quot;fdtdgrid&quot;</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="comment">// This method will take in the fdtdGridInit... object, assign the pointer</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="comment">// member, and then run the object&#39;s</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Not yet implemented&quot;</span>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>};</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html">  171</a></span><span class="keyword">class </span><a class="code hl_class" href="class_h_d_f5_writer.html">HDF5Writer</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_h_d_f5_base.html">HDF5Base</a> {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="keyword">public</span>:<span class="comment"></span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="comment">   * @brief Construct a new HDF5Writer, creates a file.</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment">   * @param filename The name of the file to be created.</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="comment">   * @throws H5::FileIException if the file can&#39;t be created.</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">  179</a></span>  <a class="code hl_function" href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">HDF5Writer</a>(<span class="keyword">const</span> std::string &amp;filename) : <a class="code hl_class" href="class_h_d_f5_base.html">HDF5Base</a>(filename, H5F_ACC_TRUNC) {}</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment"></span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="comment">   * @brief Write `data` to the file with `dataname`.</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="comment">   * @param dataname The name of the data table.</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="comment">   * @param data The data itself.</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span><span class="comment">   * @param size The size of the data array.</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="comment">   * @param dimensions The number of dimensions of the array.</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_writer.html#a65f49a5cb01976bc28f4a69db4715c3b">write</a>(<span class="keyword">const</span> std::string &amp;dataname, <span class="keywordtype">double</span> *data, <span class="keywordtype">int</span> size,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>             hsize_t *dimensions);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="comment"></span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="comment">   * @brief Write `data` to the file with `dataname`.</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="comment">   * @param dataname The name of the data table.</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="comment">   * @param data The data itself.</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="comment">   * @param size The size of the data array.</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="comment">   * @param dimensions The number of dimensions of the array.</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">  201</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">write</a>(<span class="keyword">const</span> std::string &amp;dataname, <span class="keyword">const</span> <a class="code hl_class" href="class_matrix.html">Matrix&lt;T&gt;</a> &amp;data) {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">int</span> n_cols = data.get_n_cols();</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">int</span> n_rows = data.get_n_rows();</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    hsize_t dimension[2] = {<span class="keyword">static_cast&lt;</span>hsize_t<span class="keyword">&gt;</span>(n_rows),</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                            <span class="keyword">static_cast&lt;</span>hsize_t<span class="keyword">&gt;</span>(n_cols)};</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    T *buff = (T *) malloc(n_rows * n_cols * <span class="keyword">sizeof</span>(T));</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; n_rows; i++) {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>      <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; n_cols; j++) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        buff[i * n_cols + j] = data[i][j];</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>      }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <a class="code hl_function" href="class_h_d_f5_writer.html#a65f49a5cb01976bc28f4a69db4715c3b">write</a>(dataname, buff, 2, dimension);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>};</div>
 <div class="ttc" id="aarrays_8h_html"><div class="ttname"><a href="arrays_8h.html">arrays.h</a></div><div class="ttdoc">Classes describing arrays, vertices etc.</div></div>
 <div class="ttc" id="aclass_h_d_f5_base_html"><div class="ttname"><a href="class_h_d_f5_base.html">HDF5Base</a></div><div class="ttdoc">The base class for HDF5 I/O.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:26</div></div>
 <div class="ttc" id="aclass_h_d_f5_base_html_a0cc7078e82cf514d6b8e29871a73d3c5"><div class="ttname"><a href="class_h_d_f5_base.html#a0cc7078e82cf514d6b8e29871a73d3c5">HDF5Base::~HDF5Base</a></div><div class="ttdeci">~HDF5Base()</div><div class="ttdoc">Destructor closes the file.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:49</div></div>
@@ -310,10 +322,10 @@ $(document).ready(function(){initNavTree('hdf5__io_8h_source.html',''); initResi
 <div class="ttc" id="aclass_h_d_f5_reader_html"><div class="ttname"><a href="class_h_d_f5_reader.html">HDF5Reader</a></div><div class="ttdoc">Class wrapper of the reading of HDF5 format files.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:93</div></div>
 <div class="ttc" id="aclass_h_d_f5_reader_html_a44d7e28b75f9cda21841b5cd8c5482aa"><div class="ttname"><a href="class_h_d_f5_reader.html#a44d7e28b75f9cda21841b5cd8c5482aa">HDF5Reader::HDF5Reader</a></div><div class="ttdeci">HDF5Reader(const std::string &amp;filename)</div><div class="ttdoc">Construct a new HDF5Reader for a named file.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:101</div></div>
 <div class="ttc" id="aclass_h_d_f5_reader_html_af7da702756572a79fd56b0ca362289c2"><div class="ttname"><a href="class_h_d_f5_reader.html#af7da702756572a79fd56b0ca362289c2">HDF5Reader::read</a></div><div class="ttdeci">void read(const std::string &amp;dataset_name, T *data) const</div><div class="ttdoc">Reads a named dataset from the HDF5 file.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:110</div></div>
-<div class="ttc" id="aclass_h_d_f5_writer_html"><div class="ttname"><a href="class_h_d_f5_writer.html">HDF5Writer</a></div><div class="ttdef"><b>Definition:</b> hdf5_io.h:159</div></div>
-<div class="ttc" id="aclass_h_d_f5_writer_html_a224d601d3abbc9bda7616aad8078df23"><div class="ttname"><a href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">HDF5Writer::HDF5Writer</a></div><div class="ttdeci">HDF5Writer(const std::string &amp;filename)</div><div class="ttdoc">Construct a new HDF5Writer, creates a file.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:167</div></div>
+<div class="ttc" id="aclass_h_d_f5_writer_html"><div class="ttname"><a href="class_h_d_f5_writer.html">HDF5Writer</a></div><div class="ttdef"><b>Definition:</b> hdf5_io.h:171</div></div>
+<div class="ttc" id="aclass_h_d_f5_writer_html_a224d601d3abbc9bda7616aad8078df23"><div class="ttname"><a href="class_h_d_f5_writer.html#a224d601d3abbc9bda7616aad8078df23">HDF5Writer::HDF5Writer</a></div><div class="ttdeci">HDF5Writer(const std::string &amp;filename)</div><div class="ttdoc">Construct a new HDF5Writer, creates a file.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:179</div></div>
 <div class="ttc" id="aclass_h_d_f5_writer_html_a65f49a5cb01976bc28f4a69db4715c3b"><div class="ttname"><a href="class_h_d_f5_writer.html#a65f49a5cb01976bc28f4a69db4715c3b">HDF5Writer::write</a></div><div class="ttdeci">void write(const std::string &amp;dataname, double *data, int size, hsize_t *dimensions)</div><div class="ttdoc">Write data to the file with dataname.</div><div class="ttdef"><b>Definition:</b> hdf5_io.cpp:14</div></div>
-<div class="ttc" id="aclass_h_d_f5_writer_html_a9a37f489a0a33ed402c7e8e602329079"><div class="ttname"><a href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">HDF5Writer::write</a></div><div class="ttdeci">void write(const std::string &amp;dataname, const Matrix&lt; T &gt; &amp;data)</div><div class="ttdoc">Write data to the file with dataname.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:189</div></div>
+<div class="ttc" id="aclass_h_d_f5_writer_html_a9a37f489a0a33ed402c7e8e602329079"><div class="ttname"><a href="class_h_d_f5_writer.html#a9a37f489a0a33ed402c7e8e602329079">HDF5Writer::write</a></div><div class="ttdeci">void write(const std::string &amp;dataname, const Matrix&lt; T &gt; &amp;data)</div><div class="ttdoc">Write data to the file with dataname.</div><div class="ttdef"><b>Definition:</b> hdf5_io.h:201</div></div>
 <div class="ttc" id="aclass_matrix_html"><div class="ttname"><a href="class_matrix.html">Matrix</a></div><div class="ttdef"><b>Definition:</b> arrays.h:229</div></div>
 <div class="ttc" id="aclass_matrix_html_a6e16b537c11a8a608bbd9c1c853f5a99"><div class="ttname"><a href="class_matrix.html#a6e16b537c11a8a608bbd9c1c853f5a99">Matrix::allocate</a></div><div class="ttdeci">void allocate(int n_rows, int n_cols, T initial_value=0)</div><div class="ttdef"><b>Definition:</b> arrays.h:265</div></div>
 <div class="ttc" id="aclassfdtd_grid_initialiser_html"><div class="ttname"><a href="classfdtd_grid_initialiser.html">fdtdGridInitialiser</a></div><div class="ttdoc">A class to initialise an FDTD grid from a MATLAB file.</div><div class="ttdef"><b>Definition:</b> fdtd_grid_initialiser.h:15</div></div>
