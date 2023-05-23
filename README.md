@@ -4,10 +4,7 @@
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
 
-# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS)
-
-> **Warning**
-> This repository is a _work in progress_. The API will change without notice
+# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS) [![DOI](https://zenodo.org/badge/448864310.svg)](https://zenodo.org/badge/latestdoi/448864310)
 
 <!-- \endcond -->
 
@@ -127,6 +124,22 @@ For beginners, we recommend starting with the demonstration MATLAB script, which
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
 
+### MATLAB file version
+
+In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer.
+This can be done by passing '-v7.3' to MATLAB's save command as the final argument, for example:
+
+```
+save('my_input_file.mat', 'my_input_var_1', 'my_input_var_2', ..., 'my_input_var_N', '-v7.3');
+```
+
+<details>
+<summary>Or set v7.3 as the default in MATLAB's settings.</summary>
+
+![](doc/assets/matlab-file-settings.png)
+
+</details>
+
 ### On the command line
 
 If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name.
@@ -157,8 +170,7 @@ $ export OMP_NUM_THREADS=4 # for example
 
 ## Citation
 
-If you used TDMS in your research and found it helpful, please cite this work.
-<!-- [zenodo/FIXME](https://zenodo.org/) -->
+If you used TDMS in your research and found it helpful, please cite this work: [10.5281/zenodo.7950604](https://doi.org/10.5281/zenodo.7950604).
 
 <!-- If you use TDMS in your work and have examples that you would like to share with other users, please get in touch with us at -->
 <!-- [contact_address)[mailto:FIXME] -->
@@ -167,10 +179,12 @@ If you used TDMS in your research and found it helpful, please cite this work.
 
 ```bibtex
 @software{tdms,
-    author  = {Munro, Peter and others},
-    license = {GPL-3.0},
-    title   = {{TDMS - The Time-Domain Maxwell Solver}},
-    URL     = {https://github.com/UCL/TDMS}
+    author       = {Munro, Peter and others},
+    license      = {GPL-3.0},
+    title        = {{TDMS - The Time-Domain Maxwell Solver}},
+    URL          = {https://github.com/UCL/TDMS},
+    publisher    = {Zenodo},
+    doi          = {10.5281/zenodo.7950603}
 }
 ```
 
@@ -180,7 +194,7 @@ If you used TDMS in your research and found it helpful, please cite this work.
 
 ```tex
 \bibitem{tdms}
-P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}.
+P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950603}{10.5281/zenodo.7950603}.
 ```
 
 </details>
