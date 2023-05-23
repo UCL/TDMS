@@ -11,20 +11,8 @@
 #include <H5public.h>
 #include <spdlog/spdlog.h>
 
-using namespace std;
-
-ijk to_ijk(const std::vector<hsize_t> dimensions) {
-  unsigned int rank = dimensions.size();
-  ijk out;
-  if (rank > 0) out.i = (int) dimensions[0];
-  if (rank > 1) out.j = (int) dimensions[1];
-  if (rank > 2) out.k = (int) dimensions[2];
-  if (rank > 3) spdlog::warn("Rank > 3");
-  return out;
-}
-
-vector<string> HDF5Base::get_datanames() const {
-  vector<string> names;
+std::vector<std::string> HDF5Base::get_datanames() const {
+  std::vector<std::string> names;
 
   // iterate over all objects in the file
   for (unsigned int i = 0; i < file_->getNumObjs(); i++) {
@@ -40,8 +28,8 @@ vector<string> HDF5Base::get_datanames() const {
 }
 
 void HDF5Base::ls() const {
-  vector<string> names = this->get_datanames();
-  for (auto name : names) cout << name << endl;
+  std::vector<std::string> names = this->get_datanames();
+  for (auto name : names) std::cout << name << std::endl;
   return;
 }
 
@@ -54,7 +42,7 @@ std::vector<hsize_t> HDF5Base::shape_of(const std::string &dataname) const {
 
   // need the rank in order to declare the vector size
   int rank = dataspace.getSimpleExtentNdims();
-  vector<hsize_t> dimensions(rank);
+  std::vector<hsize_t> dimensions(rank);
   dataspace.getSimpleExtentDims(dimensions.data(), nullptr);
   return dimensions;
 }

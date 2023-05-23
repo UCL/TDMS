@@ -11,11 +11,11 @@
  * @brief Defines a plane over which a source/boundary condition is (or is not)
  * to be applied.
  *
- * There are 6 planes on which a source condition can be applied; I0, I1, J0,
- * J1, K0, and K1.
- * The {I,J,K} character indicates the axial direction to which the plane is
- * perpendicular, whilst the {0,1} character indicates whether this is the first
- * or second such plane perpendicular to that axial direction.
+ * @details There are 6 planes on which a source condition can be applied; I0,
+ * I1, J0, J1, K0, and K1. The {I,J,K} character indicates the axial direction
+ * to which the plane is perpendicular, whilst the {0,1} character indicates
+ * whether this is the first or second such plane perpendicular to that axial
+ * direction.
  *
  * The index member stores the value of the (constant) Yee cell index of all Yee
  * cells that lie in the plane defined. That is, index is the I-index of all Yee
@@ -27,8 +27,9 @@
  */
 class InterfaceComponent {
 public:
-  /*! Whether or not a source or boundary condition is applied at this
-   * interface */
+  /*!
+   * Whether or not a source or boundary condition is applied at this interface
+   */
   bool apply = false;
   /*! The value of the constant Yee-cell index for cells in this plane */
   int index = 0;

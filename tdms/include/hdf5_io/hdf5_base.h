@@ -15,16 +15,6 @@
 #include "cell_coordinate.h"
 
 /**
- * @brief Convert from a vector of HDF5's hsize_t back to our struct of ints.
- * @note Local scope utility function as only this code needs to interact with
- * the HDF5 H5Cpp library.
- *
- * @param dimensions a 1, 2, or 3 element vector of dimensions.
- * @return ijk The dimensions in a struct.
- */
-ijk to_ijk(const std::vector<hsize_t> dimensions);
-
-/**
  * @brief The base class for HDF5 I/O.
  * @details Common functionality and wraps handling the std::unique_ptr to hold
  * the H5::File object.

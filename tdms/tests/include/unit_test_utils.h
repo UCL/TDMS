@@ -15,6 +15,7 @@ using tdms_math_constants::DCPI;
 
 namespace tdms_unit_test_data {
 
+// Small test data files shipped with the test code.
 #ifdef CMAKE_SOURCE_DIR
 inline std::string
         tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
