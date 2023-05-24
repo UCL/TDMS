@@ -126,7 +126,7 @@ jobs:
       - name: Run the example script
         uses: matlab-actions/run-command@v1
         with:
-          command: cd('examples/arc_01/'), run_pstd_bscan
+          command: cd('build'), addpath('../examples/arc_01/'), run_pstd_bscan
 
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
