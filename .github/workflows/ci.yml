@@ -136,8 +136,8 @@ jobs:
         working-directory: ${{ runner.workspace }}/build
         shell: pwsh
         run: |
-          tdms.exe -h
-          tdms.exe --version
+          .\tdms.exe -h
+          .\tdms.exe --version
 
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
