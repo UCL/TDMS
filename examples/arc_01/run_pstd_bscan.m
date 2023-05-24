@@ -149,3 +149,5 @@ axis square;
 title('Normalised $H_{z}$ component of the scattered field from a cylinder', 'Interpreter', 'latex');
 xlabel('$x$', 'Interpreter', 'latex');
 ylabel('$z$', 'Interpreter', 'latex');
+
+exit;
