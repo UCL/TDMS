@@ -134,14 +134,18 @@ endif()
 
 
 # Install ---------------------------------------------------------------------
-if (APPLE)
-    list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
-elseif (UNIX)
-    list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
-endif()
-set_target_properties(tdms PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_RPATH}")
+if (BUILD_TESTING)
+    if (APPLE)
+        list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
+    elseif (UNIX)
+        list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+    endif()
+    set_target_properties(tdms PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_RPATH}")
 
-install(TARGETS tdms_lib tdms LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(TARGETS tdms_lib LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
+
+install(TARGETS tdms)
 
 
 # Code Coverage ---------------------------------------------------------------
