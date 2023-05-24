@@ -64,18 +64,16 @@ save(gridfile_fs, 'composition_matrix_fs', 'material_matrix_fs', '-v7.3');
 illfile = '';
 
 %% Use iteratefdtd_matrix to setup the input file(s).
-% Create the input to the simulation that models scattering from a
-% cylindrical obstacle.
+
 iteratefdtd_matrix(input_filename,'filesetup','cylinder_input.mat',gridfile_cyl,illfile);
-% Create the input to the simulation that has no obstacle, and only models
-% free space.
 iteratefdtd_matrix(input_filename,'filesetup','freespace_input.mat',gridfile_fs,illfile);
 
-%% Run the tdms executable
-% These commands can be carried out via the CLI.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Now run the executeables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-system('!tdms in_pstd_fs.mat out_pstd_fs.mat');
-system('!tdms in_pstd_cyl.mat out_pstd_cyl.mat');
+eval('!tdms in_pstd_fs.mat out_pstd_fs.mat');
+eval('!tdms in_pstd_cyl.mat out_pstd_cyl.mat');
 
 %plot the data
 dat_cyl = load('out_pstd_cyl');
