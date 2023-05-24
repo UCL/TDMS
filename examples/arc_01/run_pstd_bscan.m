@@ -145,7 +145,7 @@ ylabel('$z$', 'Interpreter', 'latex');
 % Plot a familiar TDMS image
 tdms_figure = figure(2);
 imagesc(data_cylinder.x_i, data_cylinder.z_i, abs(squeeze(data_cylinder.Hz_out)));
-axis equal;
+axis square;
 title('Normalised $H_{z}$ component of the scattered field from a cylinder', 'Interpreter', 'latex');
 xlabel('$x$', 'Interpreter', 'latex');
 ylabel('$z$', 'Interpreter', 'latex');
