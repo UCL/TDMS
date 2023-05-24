@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Allow building with testing, and default to off
 option(BUILD_TESTING "" OFF)
 include(CTest)
+include(GNUInstallDirs)
 
 # Allow user to specify git access protocol (default to https)
 option(GIT_SSH "" OFF)
@@ -42,7 +43,6 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64")
 # Set the RPATH for the executable to find the dynamically linked libraries
 get_filename_component(MATLAB_LIB_ROOT "${Matlab_MAT_LIBRARY}" DIRECTORY)
 set(CMAKE_INSTALL_RPATH ${MATLAB_LIB_ROOT})
-
 
 # FFTW3 -----------------------------------------------------------------------
 find_package(FFTW REQUIRED)
@@ -125,6 +125,17 @@ endif()
 
 
 # Install ---------------------------------------------------------------------
+if (BUILD_TESTING)
+    if (APPLE)
+        list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
+    elseif (UNIX)
+        list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+    endif()
+    set_target_properties(tdms PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_RPATH}")
+
+    install(TARGETS tdms_lib LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
+
 install(TARGETS tdms)
 
 
