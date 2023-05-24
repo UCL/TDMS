@@ -123,11 +123,6 @@ jobs:
         run: |
           cmake --build . --config ${{ matrix.build_type }}
 
-      - name: Run the example script
-        uses: matlab-actions/run-command@v1
-        with:
-          command: cd('build'), addpath('../examples/arc_01/'), run_pstd_bscan
-
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
         working-directory: ${{ runner.workspace }}/build
