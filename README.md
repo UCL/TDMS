@@ -87,7 +87,7 @@ command not found: tdms
 ```
 
 Assuming `tdms --help` works in a new terminal, try launching MATLAB _from_ that terminal.
- 
+
 ```{sh}
 $ tdms --help
 $ /Applications/MATLAB_<version>.app/bin/matlab
@@ -105,7 +105,7 @@ $ which tdms
 Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 
 </details>
- 
+
 ### MATLAB file version
 
 In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer.
