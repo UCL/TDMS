@@ -21,16 +21,6 @@ use_bli = 0;
 % Whether to use the PSTD method over the FDTD method
 use_pstd = 1;
 
-%% 3.2.4 FDTD specific
-% This section appears first as we will be setting f_an in 3.2.2 based on
-% the simulation timestep interval.
-
-% Courant time step
-dt = 2/sqrt(2)/pi*delta.x/(3e8/1.35)*.95;
-
-% Number of time steps to perform
-Nt = 500;
-
 %% 3.2.1 Grid
 
 % Specifies the dimensionality of the simulation. IE whether we are
@@ -61,6 +51,16 @@ delta = struct();
 delta.x = lambda/4;
 delta.y = lambda/4;
 delta.z = lambda/4;
+
+%% 3.2.4 FDTD specific
+% This section appears first as we will be setting f_an in 3.2.2 based on
+% the simulation timestep interval.
+
+% Courant time step
+dt = 2/sqrt(2)/pi*delta.x/(3e8/1.35)*.95;
+
+% Number of time steps to perform
+Nt = 500;
 
 %% 3.2.2 Source
 

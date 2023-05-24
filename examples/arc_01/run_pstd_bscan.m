@@ -1,8 +1,27 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This section generates the files used as input to the executeable
+%{
+An example script showing how to use TDMS to simulate the scattering of a
+beam of light due to the presence of a cylindrical scatterer.
 
-%Ensure that you are running MATLAB in the examples/arc_01 directory
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This script should be run via MATLAB from the examples/arc_01 directory.
+
+In this script, we setup two simulations over the same grid and with the same source, a pulsed beam of light incident from the K0-plane:
+- One simulation has no scatterer in the path of the beam (freespace
+obstacle)
+- The other simulation has a cylindrical (or since this is 2D, circular)
+scattering object in the path of the beam (cylindrical obstacle).
+The simulations are 2D, and differ only in the specification of the
+material file.
+Because of this, the same input file (arc_01_example_input)
+can be used for both simulations to setup the grid, timestep, simulation
+options, etc.
+
+This script will clear your MATLAB workspace of variables and figures via
+the clear and close commands, so please ensure that you have
+extracted/saved your workspace before running this script in an existing
+instance.
+%}
+% Clean the environment
+clear; close all;
 
 % The name of the input file to be read
 input_filename = 'arc_01_example_input.m';
@@ -38,20 +57,23 @@ refind = 1.42;
 % See S4 of the PDF documentation for explanations of the composition_matrix and material_matrix.
 % See the docstring in composition_matrix_builder.m for an explanation of
 % the function.
-composition_matrix_cyl = composition_matrix_builder(input_filename, obstacle_cyl, radius_cyl);
-material_matrix_cyl = [1 refind^2 1 0 0 0     0     0     0 0 0];
-
-composition_matrix_fs = composition_matrix_builder(input_filename, obstacle_fs, 0.);
-material_matrix_fs = [1 refind^2 1 0 0 0     0     0     0 0 0];
-
-% Save the material files for the two scattering objects, so we can pass
-% them to iteratefdtd_matrix.
-% We could have created these files via a separate script, or re-used
-% material files from another simulation if suitable.
+% When defining your own obstacles of custom shape, you will need to define
+% the composition matrix accordingly.
+composition_matrix = composition_matrix_builder(input_filename, obstacle_cyl, radius_cyl);
+material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
+% Due to the way iteratefdtd_matrix is coded, the material_file must
+% contain variables under the names composition_matrix and material_matrix.
+% As such, we now save these for the cylinder now, then overwrite them and
+% save to a different file for the freespace simulation
 gridfile_cyl = 'gridfile_cyl.mat';
-save(gridfile_cyl, 'composition_matrix_cyl', 'material_matrix_cyl', '-v7.3');
+save(gridfile_cyl, 'composition_matrix', 'material_matrix', '-v7.3');
+
+% Now produce the material file for the freespace simulation
+composition_matrix = composition_matrix_builder(input_filename, obstacle_fs, 0.);
+material_matrix = [1 refind^2 1 0 0 0     0     0     0 0 0];
 gridfile_fs = 'gridfile_fs.mat';
-save(gridfile_fs, 'composition_matrix_fs', 'material_matrix_fs', '-v7.3');
+save(gridfile_fs, 'composition_matrix', 'material_matrix', '-v7.3');
+
 
 %% 3.2.2 Source file specification
 % If our input_filename did not specify that we wish to use a matlab
@@ -66,34 +88,64 @@ illfile = '';
 %% Use iteratefdtd_matrix to setup the input file(s).
 % Create the input to the simulation that models scattering from a
 % cylindrical obstacle.
+% Write the created input file to the cylinder_input.mat file.
 iteratefdtd_matrix(input_filename,'filesetup','cylinder_input.mat',gridfile_cyl,illfile);
 % Create the input to the simulation that has no obstacle, and only models
 % free space.
+% Write the created input file to the freespace_input.mat file.
 iteratefdtd_matrix(input_filename,'filesetup','freespace_input.mat',gridfile_fs,illfile);
 
 %% Run the tdms executable
-% These commands can be carried out via the CLI.
+% These commands can be carried out via the CLI
+% Because MATLAB ships with versions of libstdc++ and prepends these to the
+% path when calling system, when running tdms from MATLAB it is necessary
+% to overwrite the search path for the libraries we need.
+% TDMS is built in such a way that it does not rely on environment
+% variables being present to run.
+% ON UNIX: You require the 'LD_LIBRARY_PATH', '' option
+% ON MAC: You require the 'DYLD_LIBRARY_PATH', '' option
+% ON WINDOWS: You should not require any additional arguments
 
-system('!tdms in_pstd_fs.mat out_pstd_fs.mat');
-system('!tdms in_pstd_cyl.mat out_pstd_cyl.mat');
+% Run the simulation for the freespace setup
+% On the command line, in the examples/arc_01 folder, run
+% tdms freespace_input.mat freespace_output.mat
+system('tdms freespace_input.mat freespace_output.mat', 'LD_LIBRARY_PATH', '', 'DYLD_LIBRARY_PATH', '');
+% Run the simulation for the cylindrical scatterer
+% On the command line, in the examples/arc_01 folder, run
+% tdms cylinder_input.mat cylinder_output.mat
+system('tdms cylinder_input.mat cylinder_output.mat', 'LD_LIBRARY_PATH', '', 'DYLD_LIBRARY_PATH', '');
 
-%plot the data
-dat_cyl = load('out_pstd_cyl');
-dat_fs = load('out_pstd_fs');
+%% View the results
+% Clear the variables that we have created during the setup and run phases
+% above.
+clear; close all;
 
-figure(1);clf;
+% Load the output data from the files
+data_cylinder = load('cylinder_output.mat');
+data_freespace = load('freespace_output.mat');
+
+% Plot the profiles of the incident beams in freespace and when the
+% scattering cylinder is present
+beam_figure = figure(1);
+
 subplot(2,1,1);
-imagesc(dat_fs.z_i,dat_fs.x_i,abs(squeeze(dat_fs.Ex_i)));
-axis equal;
-title('Focussed beam in free space');
+imagesc(data_freespace.x_i,data_freespace.z_i,abs(squeeze(data_freespace.Ex_i)));
+axis square;
+title('Focussed beam ($E_{x}$) in free space', 'Interpreter', 'latex');
+xlabel('$x$', 'Interpreter', 'latex');
+ylabel('$z$', 'Interpreter', 'latex');
 
 subplot(2,1,2);
-imagesc(dat_fs.z_i,dat_fs.x_i,abs(squeeze(dat_cyl.Ex_i)));
-title('Focussed beam with scattering cylinder');
-axis equal;
+imagesc(data_cylinder.x_i,data_cylinder.z_i,abs(squeeze(data_cylinder.Ex_i)));
+axis square;
+title('Focussed beam ($E_{x}$) in with scattering cylinder', 'Interpreter', 'latex');
+xlabel('$x$', 'Interpreter', 'latex');
+ylabel('$z$', 'Interpreter', 'latex');
 
-%%
-figure;
-imagesc(dat_cyl.z_i, dat_cyl.x_i, abs(squeeze(dat_cyl.Hz_out)));
+% Plot a familiar TDMS image
+tdms_figure = figure(2);
+imagesc(data_cylinder.x_i, data_cylinder.z_i, abs(squeeze(data_cylinder.Hz_out)));
 axis equal;
-title('Normalised Hz component of the scattered field from a cylinder');
+title('Normalised $H_{z}$ component of the scattered field from a cylinder', 'Interpreter', 'latex');
+xlabel('$x$', 'Interpreter', 'latex');
+ylabel('$z$', 'Interpreter', 'latex');
