@@ -128,8 +128,8 @@ jobs:
         working-directory: ${{ runner.workspace }}/build
         shell: bash
         run: |
-          tdms -h
-          tdms --version
+          ./tdms -h
+          ./tdms --version
 
       - name: Smoke test the build on Windows
         if: ${{ contains(matrix.os, 'windows') }}
