@@ -28,6 +28,9 @@ So (for example) version v1.2.0 is major version 1, minor version 2, and the zer
 
 **Mechanics**: Version control is via `git tag`s on the `main` branch and propagated to the C++ source [code via CMake](https://github.com/UCL/TDMS/blob/main/tdms/cmake/version_from_git.cmake).
 Release notes are kept in the [GitHub release page](https://github.com/UCL/TDMS/releases).
+If release hotfixes or release bugfixes are needed and `main` has advanced too far to follow the rules of a semantic version patch, then make a release branch `release/vX.Y` at (or close to) the tag of the version to patch.
+The release branch can have the important fixes `git cherry-pick`ed over and can be tagged with a patch version (independent of the changes in `main`).
+More details on this procedure are in [Issue #317](https://github.com/UCL/TDMS/issues/317).
 
 As well as official releases, a placeholder "version" is assigned to every commit on every development branch, or can be supplied at compile-time (which takes the highest precedence).
 
