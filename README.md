@@ -102,7 +102,7 @@ In a terminal run
 $ which tdms
 ```
 
-Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
+Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the `'tdms'` text in the calls to the `system()` function.
 
 </details>
 
