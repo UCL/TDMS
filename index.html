@@ -117,22 +117,38 @@ Getting started</h2>
 Mac-specific instructions</summary>
 <p></p>
 <p>To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP. You can install these using <a href="https://brew.sh">Homebrew</a> with the command:</p>
-<div class="fragment"><div class="line">brew install llvm</div>
+<div class="fragment"><div class="line">$ brew install llvm</div>
 </div><!-- fragment --><p>After installing with Homebrew, you may need to set the following CMake arguments:</p>
 <div class="fragment"><div class="line">-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++</div>
 <div class="line">-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/</div>
 <div class="line">-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm</div>
 <div class="line">-DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5</div>
 </div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew. To do so, use the following commands:</p>
-<div class="fragment"><div class="line">arch -x86_64 zsh</div>
-<div class="line">arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
-<div class="line">arch -x86_64 /usr/local/bin/brew install llvm hdf5</div>
+<div class="fragment"><div class="line">$ arch -x86_64 zsh</div>
+<div class="line">$ arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
+<div class="line">$ arch -x86_64 /usr/local/bin/brew install llvm hdf5</div>
 </div><!-- fragment --> </details>
-<p>You can check that <code>tdms</code> was installed correctly and is in your <code>PATH</code> by running: </p><div class="fragment"><div class="line">tdms --help</div>
+<p>You can check that <code>tdms</code> was installed correctly and is in your <code>PATH</code> by running: </p><div class="fragment"><div class="line">$ tdms --help</div>
+<div class="line">$ tdms --version</div>
 </div><!-- fragment --><p> in a new terminal.</p>
 <h2><a class="anchor" id="autotoc_md2"></a>
 How to run</h2>
 <p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <code>examples/arc_01</code> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>. This script will generate the input to TDMS, run TDMS, and display sample output.</p>
+<details >
+<summary >
+Troubleshooting</summary>
+<p></p>
+<p>We've seen that launching MATLAB on MacOS via the launcher (cmd + space) may not preserve the system <code>PATH</code>.</p>
+<div class="fragment"><div class="line">command not found: tdms</div>
+</div><!-- fragment --><p>Assuming <code>tdms --help</code> works in a new terminal, try launching MATLAB <em>from</em> that terminal.</p>
+<div class="fragment"><div class="line">$ tdms --help</div>
+<div class="line">$ /Applications/MATLAB_&lt;version&gt;.app/bin/matlab</div>
+</div><!-- fragment --><p>The MATLAB example scripts should then find <code>tdms</code>. If you still have problems, you can try hard-coding the full path to <code>tdms</code> into the MATLAB script.</p>
+<p>In a terminal run</p>
+<div class="fragment"><div class="line">$ which tdms</div>
+</div><!-- fragment --><p>Copy the full path (something like <code>/usr/local/bin/tdms</code>) into <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>, replacing the &lsquo;'tdms&rsquo;<code>text in the calls to the</code>system()` function.</p>
+<p></p>
+</details>
 <h3><a class="anchor" id="autotoc_md3"></a>
 MATLAB file version</h3>
 <p>In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer. This can be done by passing '-v7.3' to MATLAB's save command as the final argument, for example:</p>
