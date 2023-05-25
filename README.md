@@ -41,7 +41,7 @@ To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenM
 You can install these using [Homebrew](https://brew.sh) with the command:
 
 ```{sh}
-brew install llvm
+$ brew install llvm
 ```
 
 After installing with Homebrew, you may need to set the following CMake arguments:
@@ -57,15 +57,16 @@ On an ARM Mac, you will need to install the x86 version of Homebrew.
 To do so, use the following commands:
 
 ```{sh}
-arch -x86_64 zsh
-arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-arch -x86_64 /usr/local/bin/brew install llvm hdf5
+$ arch -x86_64 zsh
+$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ arch -x86_64 /usr/local/bin/brew install llvm hdf5
 ```
 </details>
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
-tdms --help
+$ tdms --help
+$ tdms --version
 ```
 in a new terminal.
 
@@ -75,6 +76,35 @@ You can run TDMS either directly or from a MATLAB script.
 For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
+
+<details>
+<summary>Troubleshooting</summary>
+
+We've seen that launching MATLAB on MacOS via the launcher (cmd + space) may not preserve the system `PATH`.
+
+```
+command not found: tdms
+```
+
+Assuming `tdms --help` works in a new terminal, try launching MATLAB _from_ that terminal.
+
+```{sh}
+$ tdms --help
+$ /Applications/MATLAB_<version>.app/bin/matlab
+```
+
+The MATLAB example scripts should then find `tdms`.
+If you still have problems, you can try hard-coding the full path to `tdms` into the MATLAB script.
+
+In a terminal run
+
+```{sh}
+$ which tdms
+```
+
+Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the `'tdms'` text in the calls to the `system()` function.
+
+</details>
 
 ### MATLAB file version
 
