@@ -133,7 +133,7 @@ jobs:
 
       - name: Smoke test the build on Windows
         if: ${{ contains(matrix.os, 'windows') }}
-        working-directory: ${{ runner.workspace }}/build
+        working-directory: ${{ runner.workspace }}/build/${{ matrix.build_type }}
         shell: pwsh
         run: |
           .\tdms.exe -h
