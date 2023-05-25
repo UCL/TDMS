@@ -2,43 +2,6 @@
 
 using namespace std;
 
-// void XYZVectors::set_ptr(const char c, double *ptr) {
-//   switch (c) {
-//     case 'x': {
-//       x = ptr;
-//       break;
-//     }
-//     case 'y': {
-//       y = ptr;
-//       break;
-//     }
-//     case 'z': {
-//       z = ptr;
-//       break;
-//     }
-//     default:
-//       throw std::runtime_error("Have no element " + std::string(1, c));
-//   }
-// }
-// void XYZVectors::set_ptr(AxialDirection d, double *ptr) {
-//   switch (d) {
-//     case AxialDirection::X: {
-//       x = ptr;
-//       break;
-//     }
-//     case AxialDirection::Y: {
-//       y = ptr;
-//       break;
-//     }
-//     case AxialDirection::Z: {
-//       z = ptr;
-//       break;
-//     }
-//     default:
-//       throw std::runtime_error("Have no element " + to_string(d));
-//   }
-// }
-
 bool XYZVector::all_elements_less_than(double comparison_value,
                                        AxialDirection component) const {
   // To save copying into a new vector, declare a pointer that will point to the

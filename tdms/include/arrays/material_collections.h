@@ -1,3 +1,9 @@
+/**
+ * @file material_collections.h
+ * @author William Graham
+ * @brief Storage containers for Yee-cell constants that appear in the update
+ * equations.
+ */
 #pragma once
 
 #include <string>
@@ -44,5 +50,7 @@ struct DBase {
   const std::string input_field = is_material ? "Dmaterial" : "D";
 };
 
+/** @copydoc DBase */
 typedef DBase<true> DMaterial;
+/** @copydoc DBase */
 typedef DBase<false> DCollection;

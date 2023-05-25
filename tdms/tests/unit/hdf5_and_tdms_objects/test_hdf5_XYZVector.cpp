@@ -1,7 +1,7 @@
 /**
- * @file test_hdf5_Matrix.cpp
- * @brief Tests of the HDF5 file I/O functionality when reading/writing Matrix
- * objects.
+ * @file test_hdf5_XYZVector.cpp
+ * @brief Tests of the HDF5 file I/O functionality when reading/writing
+ * XYZVector objects.
  */
 #include "hdf5_io/hdf5_reader.h"
 

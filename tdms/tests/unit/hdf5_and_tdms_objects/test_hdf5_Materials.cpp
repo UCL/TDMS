@@ -104,7 +104,7 @@ TEST_CASE("DMaterial and DCollection") {
     HDF5Reader file(hdf5_test_file);
 
     file.read(d_material);
-    // DCollections should be able to read from Dmaterials
+    // DCollections should be able to read from DMaterials
     // as they're the same structure
     file.read(d_collection, "Dmaterial");
   }

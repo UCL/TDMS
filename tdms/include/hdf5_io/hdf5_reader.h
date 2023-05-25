@@ -128,15 +128,70 @@ public:
    */
   void read(DispersiveMultiLayer &dml) const;
 
-  void read(const std::string &dataset_name, const std::string &name_prefix,
+  /**
+   * @brief Read data from a group with {x,y,z} members containing 1D data.
+   * @details There is no obligation for the three members to be read from to be
+   * of the same size, however they are expected to be doubles.
+   *
+   * The datasets themselves do not have to literally be called x, y, and z, but
+   * they must all be named with a common prefix that terminates in one of these
+   * three characters. This prefix must be specified by passing the name_prefix
+   * argument (an empty string is an acceptable value to pass).
+   *
+   * For example,
+   * group
+   * - data_x
+   * - data_y
+   * - data_z
+   * would be acceptable, however
+   * group
+   * - x_data
+   * - y_data
+   * - z_data
+   * and
+   * group
+   * - data_x
+   * - data_for_y
+   * - data_z
+   * would be unacceptable.
+   * @param group_name Name of the group within the file to read from.
+   * @param name_prefix A prefix to be attached to the {x,y,z} names of the
+   * datasets.
+   * @param v The XYZVector to read the data into.
+   */
+  void read(const std::string &group_name, const std::string &name_prefix,
             XYZVector &v) const;
 
+  /**
+   * @brief Read C-constants (algebraic terms) from the file.
+   * @details See CMaterial docstring for more information about the constants
+   * to be read.
+   * @param c_material Structure to read information into.
+   * @param group_name The name of the group in the file to read the data from.
+   * Defaults to Cmaterial (the expected location) if not provided.
+   */
   void read(CMaterial &c_material,
             const std::string &group_name = "Cmaterial") const;
 
+  /** @overload void read(CMaterial &c_material, const std::string &group_name =
+   * "Cmaterial")
+   */
   void read(CCollection &c_collection,
             const std::string &dataset_name = "C") const;
 
+  /**
+   * @brief Read D-constants (algebraic terms) from the file.
+   * @details See DBase docstring for more information about the constants to be
+   * read.
+   * @tparam is_material Either true or false, indicating either a DMaterial or
+   * DCollection is to be read. These structures are identical in terms of
+   * memory, however the default read location in the file differs between the
+   * two.
+   * @param d_base Either a DMaterial or DCollection, the structure to read the
+   * data into.
+   * @param group_name The name of the group in the file to read the data from.
+   * Uses the default location if not provided.
+   */
   template<bool is_material>
   void read(DBase<is_material> &d_base,
             const std::string group_name = "") const {
