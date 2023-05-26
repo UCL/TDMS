@@ -122,8 +122,11 @@ elseif isunix
     system('tdms freespace_input.mat freespace_output.mat', 'LD_LIBRARY_PATH', '');
     system('tdms cylinder_input.mat cylinder_output.mat', 'LD_LIBRARY_PATH', '');
 elseif ispc
-    system('tdms.exe freespace_input.mat freespace_output.mat');
-    system('tdms.exe cylinder_input.mat cylinder_output.mat');
+    % windows
+    % If you have installed to a nonstandard location, you will need to change the path to the
+    % executable accordingly. Also make sure the dlls are in the path.
+    system('"C:/Program Files (x86)/tdms/bin/tdms.exe" freespace_input.mat freespace_output.mat');
+    system('"C:/Program Files (x86)/tdms/bin/tdms.exe" cylinder_input.mat cylinder_output.mat');
 else
     error('Platform not understood!')
 end
