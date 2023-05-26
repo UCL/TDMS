@@ -13,6 +13,7 @@
 #include <H5Cpp.h>
 
 #include "cell_coordinate.h"
+#include "hdf5_io/hdf5_dimension.h"
 
 /**
  * @brief The base class for HDF5 I/O.
@@ -64,12 +65,22 @@ public:
 
   /**
    * @brief Return shape/dimensionality information about the array data stored
-   * with `name`.
+   * with `dataname`.
    * @param dataname The name of the data table.
-   * @return IJKDimensions The dimensions of the data.
+   * @return H5Dimension The dimensions of the data.
    */
-  // IJKDimensions shape_of(const std::string &dataname) const;
-  std::vector<hsize_t> shape_of(const std::string &dataname) const;
+  H5Dimension shape_of(const std::string &dataname) const;
+  /**
+   * @brief Return shape/dimensionality information about array data stored
+   * within a group.
+   *
+   * @param group_name The name of the HDF5 Group in which the data array is
+   * stored.
+   * @param dataname The name of the data array to check dimensions of.
+   * @return The dimensions of the data.
+   */
+  H5Dimension shape_of(const std::string &group_name,
+                       const std::string &dataname) const;
 
   /**
    * @brief Checks the file is a valid HDF5 file, and everything is OK.

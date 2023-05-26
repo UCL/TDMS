@@ -27,8 +27,7 @@
  */
 class InterfaceComponent {
 public:
-  /*!
-   * Whether or not a source or boundary condition is applied at this interface
+  /*! Whether or not a source or boundary condition is applied at this interface
    */
   bool apply = false;
   /*! The value of the constant Yee-cell index for cells in this plane */

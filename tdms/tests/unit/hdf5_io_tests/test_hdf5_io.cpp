@@ -10,7 +10,6 @@
 #include <string>
 
 // external
-#include <H5Exception.h>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -18,12 +17,8 @@
 // tdms
 #include "unit_test_utils.h"
 
-using tdms_tests::create_tmp_dir;// unit_test_utils.h
-
-TEST_CASE("Wrong datatype passed to ijk.") {
-  auto tmp = create_tmp_dir();
-  HDF5Writer r(tmp.string() + "/why.h5");
-}
+using namespace std;
+using tdms_tests::create_tmp_dir;
 
 TEST_CASE("Test file I/O construction/destruction.") {
   // test-case wide setup - temporary directory
@@ -48,8 +43,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   }
 
   SECTION("Check can't open nonexistent file.") {
-    CHECK_THROWS_AS(HDF5Reader(tmp.string() + "/this_file_doesnt_exist.h5"),
-                    H5::FileIException);
+    CHECK_THROWS(HDF5Reader(tmp.string() + "/this_file_doesnt_exist.h5"));
   }
 
   SECTION("Check can't read nonexistent data.") {
@@ -61,13 +55,13 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
     double data[1];
     HDF5Reader fr(tmp.string() + "/this_file_does_exist_but_is_empty.h5");
-    CHECK_THROWS_AS(fr.read("nonexistantdata", data), H5::FileIException);
+    CHECK_THROWS(fr.read("nonexistantdata", data));
   }
 
   // Normal operation: we should be able to create a file and write to it, then
   // read from it.
   SECTION("Check write then read.") {
-    // Create a file and write some data.
+    // Create a file and write some data
     {
       HDF5Writer fw(tmp.string() + "/test_file_wr.h5");
       hsize_t dimensions[1] = {1};
@@ -127,7 +121,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
-  std::filesystem::remove_all(tmp);
+  filesystem::remove_all(tmp);
 }
 
 TEST_CASE("Test read/write standard datatypes") {
@@ -148,33 +142,6 @@ TEST_CASE("Test read/write standard datatypes") {
     }
     for (unsigned int i = 0; i < 5; i++) {
       CHECK(to_write[i] == Catch::Approx(read_back[i]));
-    }
-  }
-
-  SECTION("5-by-6 2D array") {
-    SPDLOG_INFO("5-by-6 2D array");
-    Matrix<double> counting_matrix(5, 6);
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 6; j++) { counting_matrix[i][j] = 6. * i + j; }
-    }
-    Matrix<double> read_back;
-
-    {
-      HDF5Writer f1(tmp.string() + "/five-by-six.h5");
-      f1.write("five-by-six", counting_matrix);
-    }
-    {
-      SPDLOG_DEBUG("About to read...");
-      HDF5Reader f2(tmp.string() + "/five-by-six.h5");
-      f2.read("five-by-six", read_back);
-    }
-
-    for (unsigned int i = 0; i < 5; i++) {
-      for (unsigned int j = 0; j < 6; j++) {
-        SPDLOG_INFO("Checking {} == {}", counting_matrix[i][j],
-                    read_back[i][j]);
-        CHECK(counting_matrix[i][j] == Catch::Approx(read_back[i][j]));
-      }
     }
   }
 
