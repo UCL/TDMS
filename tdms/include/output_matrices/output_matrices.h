@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "arrays/cuboid.h"
 #include "cell_coordinate.h"
-#include "cuboid.h"
 #include "field.h"
 #include "fieldsample.h"
 #include "grid_labels.h"

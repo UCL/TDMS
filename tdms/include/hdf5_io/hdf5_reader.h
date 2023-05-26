@@ -3,7 +3,7 @@
 #include "hdf5_io/hdf5_base.h"
 
 #include "arrays.h"
-#include "cuboid.h"
+#include "arrays/cuboid.h"
 #include "interface.h"
 
 /**
