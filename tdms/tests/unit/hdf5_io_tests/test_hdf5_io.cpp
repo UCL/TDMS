@@ -123,7 +123,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   filesystem::remove_all(tmp);
 }
 
-TEST_CASE("Test read/write wrt standard datatypes") {
+TEST_CASE("Test read/write standard datatypes") {
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
@@ -146,5 +146,5 @@ TEST_CASE("Test read/write wrt standard datatypes") {
 
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
-  filesystem::remove_all(tmp);
+  std::filesystem::remove_all(tmp);
 }
