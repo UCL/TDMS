@@ -39,6 +39,17 @@ public:
   bool have_flag(std::string const &flag) const;
 
   /**
+   * @brief Return true if the user has requested the output file we written in
+   * compressed format.
+   * @details Compressed output is toggled by the -m, --minimise-file-size
+   * options on the CLI.
+   *
+   * This option is used when the outputs are being written, after the
+   * simulation has been performed.
+   */
+  bool compressed_output() const;
+
+  /**
    * @brief Have we been provided with a grid filename?
    *
    * @return true if there are 3 non-flag arguments (therefore a grid filename)
