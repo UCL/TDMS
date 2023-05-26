@@ -20,8 +20,6 @@ For further details about the method, please refer to the [PDF documentation](ht
 We don't ship binaries at the moment, so to use TDMS, it has to be compiled.
 It needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
 
-------
-
 <details>
 <summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/WIN.png"/> Windows prerequisite setup</summary>
 
@@ -42,7 +40,7 @@ Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP 
 
 For Debian-based distributions this should be as simple as
 ```{sh}
-sudo apt install git gcc cmake libfftw3-dev libgomp1
+$ sudo apt install git gcc cmake libfftw3-dev libgomp1
 ```
 
 </details>
@@ -52,24 +50,27 @@ sudo apt install git gcc cmake libfftw3-dev libgomp1
 
 On MacOS you will need an x86 compiler with libraries for OpenMP.
 You'll need to download the latest [xcode tools](https://apps.apple.com/app/xcode).
-And everything else can be installed using [Homebrew](https://brew.sh):
+And everything else can be installed using [Homebrew](https://brew.sh) with the command:
 
 ```{sh}
-brew install cmake fftw llvm
+$ brew install cmake fftw llvm
 ```
 
-On an ARM Mac, you will need to install the x86 version of Homebrew:
+On an ARM Mac, you will need to install the x86 version of Homebrew.
+To do so, use the following commands:
 
 ```{sh}
-arch -x86_64 zsh
-arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
+$ arch -x86_64 zsh
+$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
 ```
+
 </details>
 
 ------
 
 You'll need to download and install [MATLAB](https://www.mathworks.com/products/matlab.html), and take note where the headers are installed.
+</details>
 
 ## Getting started
 
@@ -92,7 +93,14 @@ If CMake cannot find MATLAB, FFTW, or install to the default installation prefix
 <details>
 <summary>Mac-specific instructions</summary>
 
- After installing with Homebrew, you may need to set the following CMake arguments:
+To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP.
+You can install these using [Homebrew](https://brew.sh) with the command:
+
+```{sh}
+$ brew install llvm
+```
+
+After installing with Homebrew, you may need to set the following CMake arguments:
 
 ```{sh}
 -DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
@@ -105,15 +113,16 @@ On an ARM Mac, you will need to install the x86 version of Homebrew.
 To do so, use the following commands:
 
 ```{sh}
-arch -x86_64 zsh
-arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-arch -x86_64 /usr/local/bin/brew install llvm hdf5
+$ arch -x86_64 zsh
+$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ arch -x86_64 /usr/local/bin/brew install llvm hdf5
 ```
 </details>
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
-tdms --help
+$ tdms --help
+$ tdms --version
 ```
 in a new terminal.
 
@@ -123,6 +132,35 @@ You can run TDMS either directly or from a MATLAB script.
 For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
+
+<details>
+<summary>Troubleshooting</summary>
+
+We've seen that launching MATLAB on MacOS via the launcher (cmd + space) may not preserve the system `PATH`.
+
+```
+command not found: tdms
+```
+
+Assuming `tdms --help` works in a new terminal, try launching MATLAB _from_ that terminal.
+
+```{sh}
+$ tdms --help
+$ /Applications/MATLAB_<version>.app/bin/matlab
+```
+
+The MATLAB example scripts should then find `tdms`.
+If you still have problems, you can try hard-coding the full path to `tdms` into the MATLAB script.
+
+In a terminal run
+
+```{sh}
+$ which tdms
+```
+
+Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the `'tdms'` text in the calls to the `system()` function.
+
+</details>
 
 ### MATLAB file version
 

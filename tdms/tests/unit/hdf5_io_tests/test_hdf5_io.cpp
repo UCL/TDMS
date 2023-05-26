@@ -2,13 +2,11 @@
  * @file test_hdf5_io.cpp
  * @brief Tests of the HDF5 file I/O functionality.
  */
-#include "hdf5_io.h"
+#include "hdf5_io/hdf5_reader.h"
+#include "hdf5_io/hdf5_writer.h"
 
 // std
-#include <cstdlib>
-#include <ctime>
 #include <filesystem>
-#include <random>
 #include <string>
 
 // external
@@ -18,8 +16,6 @@
 #include <spdlog/spdlog.h>
 
 // tdms
-#include "arrays.h"
-#include "fdtd_grid_initialiser.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::create_tmp_dir;// unit_test_utils.h
@@ -30,7 +26,6 @@ TEST_CASE("Wrong datatype passed to ijk.") {
 }
 
 TEST_CASE("Test file I/O construction/destruction.") {
-
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
@@ -135,7 +130,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
   std::filesystem::remove_all(tmp);
 }
 
-TEST_CASE("Test w/r TDMS objects") {
+TEST_CASE("Test read/write standard datatypes") {
   // test-case wide setup - temporary directory
   auto tmp = create_tmp_dir();
 
@@ -186,23 +181,4 @@ TEST_CASE("Test w/r TDMS objects") {
   // teardown - remove temporary directory and all files
   SPDLOG_DEBUG("Removing temporary directory.");
   std::filesystem::remove_all(tmp);
-}
-
-#ifdef CMAKE_SOURCE_DIR
-std::string TESTDATA(std::string(CMAKE_SOURCE_DIR) +
-                     "/tests/unit/small_fdtdgrid.mat");
-#else
-std::string TESTDATA(std::filesystem::current_path() /
-                     "../tests/unit/small_fdtdgrid.mat");
-#endif
-
-TEST_CASE("Read from example input") {
-  spdlog::info("I'm going to try and find: {}", TESTDATA);
-  HDF5Reader MATFile(TESTDATA);
-
-  SECTION("Read FDTD grid") {
-    SKIP("Not implemented yet");
-    fdtdGridInitialiser gridinitialiser;
-    MATFile.read(gridinitialiser);
-  }
 }
