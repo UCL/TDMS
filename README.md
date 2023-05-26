@@ -68,7 +68,7 @@ This has been tested Windows 10 with PowerShell.
 Assuming you don't already have them, you'll need to download and install:
 
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
-* [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and be sure to select the C++ kit,
+* [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ kit**,
 * [CMake](https://cmake.org/download/),
 * and [FFTW](https://www.fftw.org/install/windows.html).
 
