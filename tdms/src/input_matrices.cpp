@@ -27,7 +27,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename) {
   input_filename = std::string(mat_filename);
   MatrixCollection infile_expected(matrixnames_input_with_grid);
   MatFileMatrixCollection infile_contains(mat_filename);
-  spdlog::info("Input file: " + string(mat_filename) +
+  spdlog::info("Input file: " + input_filename +
                " | No gridfile supplied");
 
   // check that the input file actually has enough matrices for what we're
