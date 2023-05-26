@@ -47,7 +47,7 @@ int main(int nargs, char *argv[]) {
 
   // save the outputs, possibly in compressed format
   simulation.write_outputs_to_file(args.output_filename(),
-                                   args.have_flag("-m"));
+                                   args.compressed_output());
 
   return 0;
 }
