@@ -134,10 +134,12 @@ jobs:
       - name: Smoke test the build on Windows
         if: ${{ contains(matrix.os, 'windows') }}
         working-directory: ${{ runner.workspace }}/build/${{ matrix.build_type }}
-        shell: pwsh
+        shell: bash
         run: |
-          .\tdms.exe -h
-          .\tdms.exe --version
+          export PATH=$(dirname "$(which MATLAB)")/win64/:$PATH
+          export PATH=/c/Miniconda/envs/test/Library/bin/:$PATH
+          ./tdms.exe -h
+          ./tdms.exe --version
 
       - name: Run TDMS unit tests
         if: matrix.build_testing == 'ON'
