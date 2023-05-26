@@ -55,7 +55,7 @@ void InputMatrices::set_from_input_file(const char *mat_filename,
   input_filename = std::string(mat_filename);
   MatrixCollection infile_expected(matrixnames_infile);
   MatFileMatrixCollection infile_contains(mat_filename);
-  spdlog::info("Input file: " + string(mat_filename) +
+  spdlog::info("Input file: " + input_filename +
                " | Gridfile: " + string(gridfile));
 
   // first extract fdtdgrid from the gridfile provided
