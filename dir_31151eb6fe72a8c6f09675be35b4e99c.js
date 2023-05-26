@@ -19,7 +19,6 @@ var dir_31151eb6fe72a8c6f09675be35b4e99c =
     [ "matrix_collection.h", "matrix__collection_8h.html", "matrix__collection_8h" ],
     [ "mesh_base.h", "mesh__base_8h.html", "mesh__base_8h" ],
     [ "numerical_derivative.h", "numerical__derivative_8h.html", "numerical__derivative_8h" ],
-    [ "shapes.h", "shapes_8h_source.html", null ],
     [ "simulation_parameters.h", "simulation__parameters_8h.html", "simulation__parameters_8h" ],
     [ "source.h", "source_8h.html", "source_8h" ],
     [ "surface_phasors.h", "surface__phasors_8h.html", "surface__phasors_8h" ],

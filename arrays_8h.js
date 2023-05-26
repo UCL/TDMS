@@ -14,7 +14,7 @@ var arrays_8h =
     [ "GratingStructure", "class_grating_structure.html", null ],
     [ "Vector< T >", "class_vector.html", null ],
     [ "FrequencyExtractVector", "class_frequency_extract_vector.html", null ],
-    [ "FrequencyVectors", "class_frequency_vectors.html", null ],
+    [ "FrequencyVectors", "struct_frequency_vectors.html", null ],
     [ "Pupil", "class_pupil.html", null ],
     [ "Tensor3D< T >", "class_tensor3_d.html", "class_tensor3_d" ],
     [ "DTilde", "class_d_tilde.html", "class_d_tilde" ],

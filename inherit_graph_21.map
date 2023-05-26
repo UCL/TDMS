@@ -1,5 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_matrix.html" title=" " alt="" coords="5,31,125,56"/>
-<area shape="rect" id="node2" href="$class_c_coefficient_matrix.html" title=" " alt="" coords="173,5,303,31"/>
-<area shape="rect" id="node3" href="$class_pupil.html" title="Defines the numerical aperture of the objective, assuming that the lens is centred on the origin of t..." alt="" coords="213,55,263,80"/>
+<area shape="rect" id="node1" href="$class_matrix.html" title=" " alt="" coords="5,5,165,31"/>
+<area shape="rect" id="node2" href="$class_e_h_vec.html" title=" " alt="" coords="213,5,276,31"/>
 </map>

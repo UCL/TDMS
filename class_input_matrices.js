@@ -8,5 +8,6 @@ var class_input_matrices =
     [ "set_from_input_file", "class_input_matrices.html#a3b5de8db762f1f9483130d8d4fbcc0c7", null ],
     [ "set_matrix_pointer", "class_input_matrices.html#a74301958011b0059aefb16cf459b8240", null ],
     [ "set_matrix_pointer", "class_input_matrices.html#ab09ad4733b8a1ccd7c13aaaa86d410d3", null ],
-    [ "validate_assigned_pointers", "class_input_matrices.html#a6c585c28a30d17c03eefe1cb440a467e", null ]
+    [ "validate_assigned_pointers", "class_input_matrices.html#a6c585c28a30d17c03eefe1cb440a467e", null ],
+    [ "input_filename", "class_input_matrices.html#ae8cbdd1a482d322bb320d7a38e81adac", null ]
 ];

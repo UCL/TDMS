@@ -17,6 +17,5 @@ var searchData=
   ['concisetriangulatecuboid_14',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
   ['contribution_20guidelines_15',['Contribution guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
   ['create_5fvertex_5flist_16',['create_vertex_list',['../class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
-  ['cuboid_17',['Cuboid',['../class_cuboid.html',1,'']]],
-  ['currentdensitysplitfield_18',['CurrentDensitySplitField',['../class_current_density_split_field.html',1,'CurrentDensitySplitField'],['../class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
+  ['currentdensitysplitfield_17',['CurrentDensitySplitField',['../class_current_density_split_field.html',1,'CurrentDensitySplitField'],['../class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
 ];

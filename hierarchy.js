@@ -7,7 +7,6 @@ var hierarchy =
       [ "CMaterial", "class_c_material.html", null ]
     ] ],
     [ "complex_vector", "structcomplex__vector.html", null ],
-    [ "Cuboid", "class_cuboid.html", null ],
     [ "DCollectionBase", "class_d_collection_base.html", [
       [ "DCollection", "class_d_collection.html", null ],
       [ "DMaterial", "class_d_material.html", null ]
@@ -18,7 +17,7 @@ var hierarchy =
     [ "DTilde", "class_d_tilde.html", null ],
     [ "fdtdGridInitialiser", "classfdtd_grid_initialiser.html", null ],
     [ "FieldSample", "class_field_sample.html", null ],
-    [ "FrequencyVectors", "class_frequency_vectors.html", null ],
+    [ "FrequencyVectors", "struct_frequency_vectors.html", null ],
     [ "FullFieldSnapshot", "class_full_field_snapshot.html", null ],
     [ "Grid", "class_grid.html", [
       [ "Field", "class_field.html", [

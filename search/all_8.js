@@ -12,7 +12,7 @@ var searchData=
   ['init_5fgrid_5farrays_9',['init_grid_arrays',['../array__init_8h.html#a0995aa2ccd3cc9402dcec568cd5eca19',1,'array_init.cpp']]],
   ['initialise_5ffftw_5fplan_10',['initialise_fftw_plan',['../class_split_field_component.html#a1fc26ee4ab568697602cbc938da57065',1,'SplitFieldComponent::initialise_fftw_plan()'],['../class_split_field.html#a792343b412146ee62ea9bdeb77b2bbac',1,'SplitField::initialise_fftw_plan()']]],
   ['initialise_5ffrom_11',['initialise_from',['../class_grid_labels.html#a81c606e1c0dedff24b12ec68af1e22ee',1,'GridLabels']]],
-  ['input_5ffilename_12',['input_filename',['../class_argument_namespace.html#a1bddfb193da659b05938b577db646ff4',1,'ArgumentNamespace::input_filename()'],['../class_input_flags.html#ad984b867a78c66ab14d0242fd0a39753',1,'InputFlags::input_filename()']]],
+  ['input_5ffilename_12',['input_filename',['../class_argument_namespace.html#a1bddfb193da659b05938b577db646ff4',1,'ArgumentNamespace::input_filename()'],['../class_input_matrices.html#ae8cbdd1a482d322bb320d7a38e81adac',1,'InputMatrices::input_filename()'],['../class_input_flags.html#ad984b867a78c66ab14d0242fd0a39753',1,'InputFlags::input_filename()']]],
   ['input_5ffilenames_13',['input_filenames',['../class_argument_namespace.html#a6823ff8c993686da1770722aac6879ff',1,'ArgumentNamespace']]],
   ['input_5fflags_2eh_14',['input_flags.h',['../input__flags_8h.html',1,'']]],
   ['input_5fmatrices_2eh_15',['input_matrices.h',['../input__matrices_8h.html',1,'']]],
