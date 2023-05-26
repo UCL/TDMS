@@ -102,9 +102,6 @@ iteratefdtd_matrix(input_filename,'filesetup','freespace_input.mat',gridfile_fs,
 % to overwrite the search path for the libraries we need.
 % TDMS is built in such a way that it does not rely on environment
 % variables being present to run.
-% ON UNIX: You require the 'LD_LIBRARY_PATH', '' option
-% ON MAC: You require the 'DYLD_LIBRARY_PATH', '' option
-% ON WINDOWS: You should not require any additional arguments
 
 % Run the simulation for the freespace and then the cylindrical scattering.
 % On the command line, in the examples/arc_01 folder, run
