@@ -2,6 +2,7 @@ var class_argument_namespace =
 [
     [ "ArgumentNamespace", "class_argument_namespace.html#ab932c669a76e2bc2c0e2c36e1b8fd5d6", null ],
     [ "check_files_can_be_accessed", "class_argument_namespace.html#ac90ed1af7641004746700fac1068caeb", null ],
+    [ "compressed_output", "class_argument_namespace.html#a8e7c04ef2f99a5d5090c2c30f7d2ad89", null ],
     [ "grid_filename", "class_argument_namespace.html#a75b3ea55ae247796f2e6be7f9654dfc6", null ],
     [ "has_grid_filename", "class_argument_namespace.html#a9e06546d075820aa48683294e4ff62ed", null ],
     [ "have_correct_number_of_filenames", "class_argument_namespace.html#a15954bd490626afc032eef379e16949b", null ],

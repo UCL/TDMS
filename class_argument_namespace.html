@@ -114,6 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a38d0b80a197f4c21d97ebca03b495807"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_argument_namespace.html#a38d0b80a197f4c21d97ebca03b495807">have_flag</a> (std::string const &amp;flag) const</td></tr>
 <tr class="memdesc:a38d0b80a197f4c21d97ebca03b495807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the arguments for the flag provided.  <br /></td></tr>
 <tr class="separator:a38d0b80a197f4c21d97ebca03b495807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7c04ef2f99a5d5090c2c30f7d2ad89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_argument_namespace.html#a8e7c04ef2f99a5d5090c2c30f7d2ad89">compressed_output</a> () const</td></tr>
+<tr class="memdesc:a8e7c04ef2f99a5d5090c2c30f7d2ad89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the user has requested the output file we written in compressed format.  <br /></td></tr>
+<tr class="separator:a8e7c04ef2f99a5d5090c2c30f7d2ad89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e06546d075820aa48683294e4ff62ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_argument_namespace.html#a9e06546d075820aa48683294e4ff62ed">has_grid_filename</a> () const</td></tr>
 <tr class="memdesc:a9e06546d075820aa48683294e4ff62ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Have we been provided with a grid filename?  <br /></td></tr>
 <tr class="separator:a9e06546d075820aa48683294e4ff62ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,6 +210,27 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8e7c04ef2f99a5d5090c2c30f7d2ad89" name="a8e7c04ef2f99a5d5090c2c30f7d2ad89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7c04ef2f99a5d5090c2c30f7d2ad89">&#9670;&#160;</a></span>compressed_output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ArgumentNamespace::compressed_output </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return true if the user has requested the output file we written in compressed format. </p>
+<p>Compressed output is toggled by the -m, &ndash;minimise-file-size options on the CLI.</p>
+<p>This option is used when the outputs are being written, after the simulation has been performed. </p>
+
+</div>
+</div>
 <a id="a75b3ea55ae247796f2e6be7f9654dfc6" name="a75b3ea55ae247796f2e6be7f9654dfc6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a75b3ea55ae247796f2e6be7f9654dfc6">&#9670;&#160;</a></span>grid_filename()</h2>
 

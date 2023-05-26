@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"globals_vars.html":[5,1,2],
 "grid__labels_8h.html":[5,0,0,0,9],
 "grid__labels_8h_source.html":[5,0,0,0,9],
 "hierarchy.html":[4,2],
