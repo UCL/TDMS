@@ -106,14 +106,27 @@ iteratefdtd_matrix(input_filename,'filesetup','freespace_input.mat',gridfile_fs,
 % ON MAC: You require the 'DYLD_LIBRARY_PATH', '' option
 % ON WINDOWS: You should not require any additional arguments
 
-% Run the simulation for the freespace setup
+% Run the simulation for the freespace and then the cylindrical scattering.
 % On the command line, in the examples/arc_01 folder, run
-% tdms freespace_input.mat freespace_output.mat
-system('tdms freespace_input.mat freespace_output.mat', 'LD_LIBRARY_PATH', '', 'DYLD_LIBRARY_PATH', '');
-% Run the simulation for the cylindrical scatterer
-% On the command line, in the examples/arc_01 folder, run
-% tdms cylinder_input.mat cylinder_output.mat
-system('tdms cylinder_input.mat cylinder_output.mat', 'LD_LIBRARY_PATH', '', 'DYLD_LIBRARY_PATH', '');
+%           tdms freespace_input.mat freespace_output.mat
+% and/or
+%           tdms cylinder_input.mat cylinder_output.mat
+%
+% unfortunately this is OS-dependent.
+if ismac
+    % has to come first, because MacOS is also unix
+    system('tdms freespace_input.mat freespace_output.mat');
+    system('tdms cylinder_input.mat cylinder_output.mat');
+elseif isunix
+    % ubuntu
+    system('tdms freespace_input.mat freespace_output.mat', 'LD_LIBRARY_PATH', '');
+    system('tdms cylinder_input.mat cylinder_output.mat', 'LD_LIBRARY_PATH', '');
+elseif ispc
+    system('tdms.exe freespace_input.mat freespace_output.mat');
+    system('tdms.exe cylinder_input.mat cylinder_output.mat');
+else
+    error('Platform not understood!')
+end
 
 %% View the results
 % Clear the variables that we have created during the setup and run phases
@@ -149,5 +162,3 @@ axis square;
 title('Normalised $H_{z}$ component of the scattered field from a cylinder', 'Interpreter', 'latex');
 xlabel('$x$', 'Interpreter', 'latex');
 ylabel('$z$', 'Interpreter', 'latex');
-
-exit;
