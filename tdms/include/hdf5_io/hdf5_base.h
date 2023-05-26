@@ -67,7 +67,7 @@ public:
    * @brief Return shape/dimensionality information about the array data stored
    * with `dataname`.
    * @param dataname The name of the data table.
-   * @return The dimensions of the data.
+   * @return H5Dimension The dimensions of the data.
    */
   H5Dimension shape_of(const std::string &dataname) const;
   /**
