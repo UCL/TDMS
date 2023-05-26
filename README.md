@@ -124,7 +124,7 @@ If CMake cannot find MATLAB, FFTW, or install to the default installation prefix
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
-$ tdms -h
+$ tdms --help
 $ tdms --version
 ```
 in a new terminal.
