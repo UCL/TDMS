@@ -13,7 +13,7 @@ var hierarchy =
     ] ],
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
     [ "Dimensions", "class_dimensions.html", null ],
-    [ "DispersiveMultiLayer", "class_dispersive_multi_layer.html", null ],
+    [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", null ],
     [ "DTilde", "class_d_tilde.html", null ],
     [ "fdtdGridInitialiser", "classfdtd_grid_initialiser.html", null ],
     [ "FieldSample", "class_field_sample.html", null ],
@@ -78,6 +78,8 @@ var hierarchy =
       [ "FieldComponentsVector", "class_field_components_vector.html", null ]
     ] ],
     [ "VertexPhasors", "class_vertex_phasors.html", null ],
+    [ "xyz_vector< T >", "structxyz__vector.html", null ],
+    [ "xyz_vector< double >", "structxyz__vector.html", null ],
     [ "XYZTensor3D< T >", "class_x_y_z_tensor3_d.html", null ],
     [ "XYZTensor3D< double >", "class_x_y_z_tensor3_d.html", null ],
     [ "XYZVectors", "class_x_y_z_vectors.html", null ],

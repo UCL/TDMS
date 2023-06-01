@@ -8,7 +8,7 @@ var searchData=
   ['dimension_5',['Dimension',['../simulation__parameters_8h.html#afeeb3ea8d8350f7e9c636d23679a4dca',1,'simulation_parameters.h']]],
   ['dimensions_6',['Dimensions',['../class_dimensions.html',1,'']]],
   ['dimensions_2eh_7',['dimensions.h',['../dimensions_8h.html',1,'']]],
-  ['dispersivemultilayer_8',['DispersiveMultiLayer',['../class_dispersive_multi_layer.html',1,'']]],
+  ['dispersivemultilayer_8',['DispersiveMultiLayer',['../struct_dispersive_multi_layer.html',1,'']]],
   ['dmaterial_9',['DMaterial',['../class_d_material.html',1,'']]],
   ['drop_5ffirst_5fand_5flast_10',['drop_first_and_last',['../test__argument__parser_8cpp.html#a2356b65ed624e42f1c666bc1d5405cc9',1,'test_argument_parser.cpp']]],
   ['dtilde_11',['DTilde',['../class_d_tilde.html',1,'']]],

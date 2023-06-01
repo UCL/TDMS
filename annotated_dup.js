@@ -12,7 +12,7 @@ var annotated_dup =
     [ "DCollectionBase", "class_d_collection_base.html", null ],
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
     [ "Dimensions", "class_dimensions.html", "class_dimensions" ],
-    [ "DispersiveMultiLayer", "class_dispersive_multi_layer.html", "class_dispersive_multi_layer" ],
+    [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", "struct_dispersive_multi_layer" ],
     [ "DMaterial", "class_d_material.html", null ],
     [ "DTilde", "class_d_tilde.html", "class_d_tilde" ],
     [ "EHVec", "class_e_h_vec.html", null ],
@@ -56,6 +56,7 @@ var annotated_dup =
     [ "Vector", "class_vector.html", null ],
     [ "VertexPhasors", "class_vertex_phasors.html", "class_vertex_phasors" ],
     [ "Vertices", "class_vertices.html", null ],
+    [ "xyz_vector", "structxyz__vector.html", null ],
     [ "XYZTensor3D", "class_x_y_z_tensor3_d.html", "class_x_y_z_tensor3_d" ],
     [ "XYZVectors", "class_x_y_z_vectors.html", "class_x_y_z_vectors" ],
     [ "YeeCellDimensions", "struct_yee_cell_dimensions.html", "struct_yee_cell_dimensions" ]

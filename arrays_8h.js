@@ -1,5 +1,6 @@
 var arrays_8h =
 [
+    [ "xyz_vector< T >", "structxyz__vector.html", null ],
     [ "XYZTensor3D< T >", "class_x_y_z_tensor3_d.html", "class_x_y_z_tensor3_d" ],
     [ "XYZVectors", "class_x_y_z_vectors.html", "class_x_y_z_vectors" ],
     [ "MaterialCollection", "class_material_collection.html", null ],
@@ -9,7 +10,7 @@ var arrays_8h =
     [ "DCollectionBase", "class_d_collection_base.html", null ],
     [ "DCollection", "class_d_collection.html", null ],
     [ "DMaterial", "class_d_material.html", null ],
-    [ "DispersiveMultiLayer", "class_dispersive_multi_layer.html", "class_dispersive_multi_layer" ],
+    [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", "struct_dispersive_multi_layer" ],
     [ "Matrix< T >", "class_matrix.html", "class_matrix" ],
     [ "GratingStructure", "class_grating_structure.html", null ],
     [ "Vector< T >", "class_vector.html", null ],
