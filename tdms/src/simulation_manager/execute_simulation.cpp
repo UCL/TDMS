@@ -263,40 +263,40 @@ void SimulationManager::execute() {
                 }
 
 
-                Enp1 = Ca * inputs.E_s.yx[k][j][i] +
-                       Cb * (inputs.H_s.zx[k][j][i - 1] +
-                             inputs.H_s.zy[k][j][i - 1] -
-                             inputs.H_s.zx[k][j][i] - inputs.H_s.zy[k][j][i]);
+                Enp1 = Ca * inputs.E_s.yx(i, j, k) +
+                       Cb * (inputs.H_s.zx(i - 1, j, k) +
+                             inputs.H_s.zy(i - 1, j, k) -
+                             inputs.H_s.zx(i, j, k) - inputs.H_s.zy(i, j, k));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.yx(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.yx[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.yx[k][j][i]);
+                                           loop_variables.J_s.yx(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.yx(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx *
-                          loop_variables.J_c.yx[k][j][i];
+                          loop_variables.J_c.yx(i, j, k);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] +
-                         beta_l * loop_variables.J_nm1.yx[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.yx(i, j, k) +
+                         beta_l * loop_variables.J_nm1.yx(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.yx[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx[k][j][i];
-                  loop_variables.E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
-                  loop_variables.J_nm1.yx[k][j][i] =
-                          loop_variables.J_s.yx[k][j][i];
-                  loop_variables.J_s.yx[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.yx(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx(i, j, k);
+                  loop_variables.E_nm1.yx(i, j, k) = inputs.E_s.yx(i, j, k);
+                  loop_variables.J_nm1.yx(i, j, k) =
+                          loop_variables.J_s.yx(i, j, k);
+                  loop_variables.J_s.yx(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.yx[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.yx[k][j][i]);
+                  loop_variables.J_c.yx(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.yx(i, j, k));
                 }
 
-                inputs.E_s.yx[k][j][i] = Enp1;
+                inputs.E_s.yx(i, j, k) = Enp1;
               }
           // FDTD, E_s.yx
         } else {
@@ -421,45 +421,45 @@ void SimulationManager::execute() {
                 }
 
 
-                // Enp1 = Ca*E_s.yx[k][j][i]+Cb*(H_s.zx[k][j][i-1] +
-                // H_s.zy[k][j][i-1] - H_s.zx[k][j][i] - H_s.zy[k][j][i]);
+                // Enp1 = Ca*E_s.yx(i,j,k)+Cb*(H_s.zx[k][j][i-1] +
+                // H_s.zy[k][j][i-1] - H_s.zx(i,j,k) - H_s.zy(i,j,k));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.yx[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.yx(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.yx[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.yx[k][j][i]);
+                                           loop_variables.J_s.yx(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.yx(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx *
-                          loop_variables.J_c.yx[k][j][i];
+                          loop_variables.J_c.yx(i, j, k);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.yx[k][j][i] +
-                         beta_l * loop_variables.J_nm1.yx[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.yx(i, j, k) +
+                         beta_l * loop_variables.J_nm1.yx(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.yx[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx[k][j][i];
-                  loop_variables.E_nm1.yx[k][j][i] = inputs.E_s.yx[k][j][i];
-                  loop_variables.J_nm1.yx[k][j][i] =
-                          loop_variables.J_s.yx[k][j][i];
-                  loop_variables.J_s.yx[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.yx(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yx(i, j, k);
+                  loop_variables.E_nm1.yx(i, j, k) = inputs.E_s.yx(i, j, k);
+                  loop_variables.J_nm1.yx(i, j, k) =
+                          loop_variables.J_s.yx(i, j, k);
+                  loop_variables.J_s.yx(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.yx[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.yx[k][j][i]);
+                  loop_variables.J_c.yx(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.yx(i, j, k));
                 }
 
                 eh_vec[n][i][0] =
-                        inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
+                        inputs.H_s.zx(i, j, k) + inputs.H_s.zy(i, j, k);
                 eh_vec[n][i][1] = 0.;
                 PSTD.ca[n][i - 1] = Ca;
                 PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
-              eh_vec[n][i][0] = inputs.H_s.zx[k][j][i] + inputs.H_s.zy[k][j][i];
+              eh_vec[n][i][0] = inputs.H_s.zx(i, j, k) + inputs.H_s.zy(i, j, k);
               eh_vec[n][i][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex,
@@ -467,11 +467,11 @@ void SimulationManager::execute() {
                                inputs.E_s.yx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
-                inputs.E_s.yx[k][j][i] =
-                        PSTD.ca[n][i - 1] * inputs.E_s.yx[k][j][i] -
+                inputs.E_s.yx(i, j, k) =
+                        PSTD.ca[n][i - 1] * inputs.E_s.yx(i, j, k) -
                         PSTD.cb[n][i - 1] * eh_vec[n][i][0] /
                                 ((double) PSTD.N_ex);
-                // E_s.yx[k][j][i] = Enp1;
+                // E_s.yx(i,j,k) = Enp1;
               }
             }
           // PSTD, E_s.yx
@@ -594,41 +594,41 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                Enp1 = Ca * inputs.E_s.yz[k][j][i] +
-                       Cb * (inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i] -
-                             inputs.H_s.xy[k - 1][j][i] -
-                             inputs.H_s.xz[k - 1][j][i]);
+                Enp1 = Ca * inputs.E_s.yz(i, j, k) +
+                       Cb * (inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k) -
+                             inputs.H_s.xy(i, j, k - 1) -
+                             inputs.H_s.xz(i, j, k - 1));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.yz(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.yz[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.yz[k][j][i]);
+                                           loop_variables.J_s.yz(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.yz(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz *
-                          loop_variables.J_c.yz[k][j][i];
+                          loop_variables.J_c.yz(i, j, k);
 
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] +
-                         beta_l * loop_variables.J_nm1.yz[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.yz(i, j, k) +
+                         beta_l * loop_variables.J_nm1.yz(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.yz[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz[k][j][i];
-                  loop_variables.E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
-                  loop_variables.J_nm1.yz[k][j][i] =
-                          loop_variables.J_s.yz[k][j][i];
-                  loop_variables.J_s.yz[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.yz(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz(i, j, k);
+                  loop_variables.E_nm1.yz(i, j, k) = inputs.E_s.yz(i, j, k);
+                  loop_variables.J_nm1.yz(i, j, k) =
+                          loop_variables.J_s.yz(i, j, k);
+                  loop_variables.J_s.yz(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.yz[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.yz[k][j][i]);
+                  loop_variables.J_c.yz(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.yz(i, j, k));
                 }
 
-                inputs.E_s.yz[k][j][i] = Enp1;
+                inputs.E_s.yz(i, j, k) = Enp1;
               }
           // FDTD, E_s.yz
         } else {
@@ -746,46 +746,46 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                // Enp1 = Ca*E_s.yz[k][j][i]+Cb*(H_s.xy[k][j][i] +
-                // H_s.xz[k][j][i] - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
+                // Enp1 = Ca*E_s.yz(i,j,k)+Cb*(H_s.xy(i,j,k) +
+                // H_s.xz(i, j, k) - H_s.xy[k-1][j][i] - H_s.xz[k-1][j][i]);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.yz[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.yz(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dz *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.yz[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.yz[k][j][i]);
+                                           loop_variables.J_s.yz(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.yz(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dz *
-                          loop_variables.J_c.yz[k][j][i];
+                          loop_variables.J_c.yz(i, j, k);
 
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.yz[k][j][i] +
-                         beta_l * loop_variables.J_nm1.yz[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.yz(i, j, k) +
+                         beta_l * loop_variables.J_nm1.yz(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.yz[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz[k][j][i];
-                  loop_variables.E_nm1.yz[k][j][i] = inputs.E_s.yz[k][j][i];
-                  loop_variables.J_nm1.yz[k][j][i] =
-                          loop_variables.J_s.yz[k][j][i];
-                  loop_variables.J_s.yz[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.yz(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.yz(i, j, k);
+                  loop_variables.E_nm1.yz(i, j, k) = inputs.E_s.yz(i, j, k);
+                  loop_variables.J_nm1.yz(i, j, k) =
+                          loop_variables.J_s.yz(i, j, k);
+                  loop_variables.J_s.yz(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.yz[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.yz[k][j][i]);
+                  loop_variables.J_c.yz(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.yz(i, j, k));
                 }
 
                 eh_vec[n][k][0] =
-                        inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                        inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
                 eh_vec[n][k][1] = 0.;
                 PSTD.ca[n][k - 1] = Ca;
                 PSTD.cb[n][k - 1] = Cb;
               }
               k = 0;
-              eh_vec[n][k][0] = inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+              eh_vec[n][k][0] = inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
               eh_vec[n][k][1] = 0.;
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez,
                                inputs.E_s.yz.plan_f[n],
@@ -793,11 +793,11 @@ void SimulationManager::execute() {
 
 
               for (k = 1; k < K_tot; k++) {
-                inputs.E_s.yz[k][j][i] =
-                        PSTD.ca[n][k - 1] * inputs.E_s.yz[k][j][i] +
+                inputs.E_s.yz(i, j, k) =
+                        PSTD.ca[n][k - 1] * inputs.E_s.yz(i, j, k) +
                         PSTD.cb[n][k - 1] * eh_vec[n][k][0] /
                                 ((double) PSTD.N_ez);
-                // E_s.yz[k][j][i] = Enp1;
+                // E_s.yz(i,j,k) = Enp1;
               }
             }
           // PSTD, E_s.yz
@@ -922,40 +922,40 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                Enp1 = Ca * inputs.E_s.zx[k][j][i] +
-                       Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
-                             inputs.H_s.yx[k][j][i - 1] -
-                             inputs.H_s.yz[k][j][i - 1]);
+                Enp1 = Ca * inputs.E_s.zx(i, j, k) +
+                       Cb * (inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k) -
+                             inputs.H_s.yx(i - 1, j, k) -
+                             inputs.H_s.yz(i - 1, j, k));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.zx(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.zx[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.zx[k][j][i]);
+                                           loop_variables.J_s.zx(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.zx(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx *
-                          loop_variables.J_c.zx[k][j][i];
+                          loop_variables.J_c.zx(i, j, k);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
-                         beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.zx(i, j, k) +
+                         beta_l * loop_variables.J_nm1.zx(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                  loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                  loop_variables.J_nm1.zx[k][j][i] =
-                          loop_variables.J_s.zx[k][j][i];
-                  loop_variables.J_s.zx[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.zx(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx(i, j, k);
+                  loop_variables.E_nm1.zx(i, j, k) = inputs.E_s.zx(i, j, k);
+                  loop_variables.J_nm1.zx(i, j, k) =
+                          loop_variables.J_s.zx(i, j, k);
+                  loop_variables.J_s.zx(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.zx[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.zx[k][j][i]);
+                  loop_variables.J_c.zx(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.zx(i, j, k));
                 }
 
-                inputs.E_s.zx[k][j][i] = Enp1;
+                inputs.E_s.zx(i, j, k) = Enp1;
               }
           // FDTD, E_s.zx
         } else {
@@ -1072,45 +1072,45 @@ void SimulationManager::execute() {
                     gamma_l = gamma_l / 2.;
                   }
                 }
-                // Enp1 = Ca*E_s.zx[k][j][i]+Cb*(H_s.yx[k][j][i] +
-                // H_s.yz[k][j][i] - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
+                // Enp1 = Ca*E_s.zx(i,j,k)+Cb*(H_s.yx(i, j, k) +
+                // H_s.yz(i,j,k) - H_s.yx[k][j][i-1] - H_s.yz[k][j][i-1]);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.zx(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dx *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.zx[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.zx[k][j][i]);
+                                           loop_variables.J_s.zx(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.zx(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dx *
-                          loop_variables.J_c.zx[k][j][i];
+                          loop_variables.J_c.zx(i, j, k);
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
-                         beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.zx(i, j, k) +
+                         beta_l * loop_variables.J_nm1.zx(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                  loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                  loop_variables.J_nm1.zx[k][j][i] =
-                          loop_variables.J_s.zx[k][j][i];
-                  loop_variables.J_s.zx[k][j][i] = Jnp1;
+                                 (Enp1 - loop_variables.E_nm1.zx(i, j, k));
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx(i, j, k);
+                  loop_variables.E_nm1.zx(i, j, k) = inputs.E_s.zx(i, j, k);
+                  loop_variables.J_nm1.zx(i, j, k) =
+                          loop_variables.J_s.zx(i, j, k);
+                  loop_variables.J_s.zx(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.zx[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.zx[k][j][i]);
+                  loop_variables.J_c.zx(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.zx(i, j, k));
                 }
 
                 eh_vec[n][i][0] =
-                        inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+                        inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
                 eh_vec[n][i][1] = 0.;
                 PSTD.ca[n][i - 1] = Ca;
                 PSTD.cb[n][i - 1] = Cb;
               }
               i = 0;
-              eh_vec[n][i][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+              eh_vec[n][i][0] = inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
               eh_vec[n][i][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ex, PSTD.N_ex,
@@ -1118,11 +1118,11 @@ void SimulationManager::execute() {
                                inputs.E_s.zx.plan_b[n]);
 
               for (i = 1; i < I_tot; i++) {
-                inputs.E_s.zx[k][j][i] =
-                        PSTD.ca[n][i - 1] * inputs.E_s.zx[k][j][i] +
+                inputs.E_s.zx(i, j, k) =
+                        PSTD.ca[n][i - 1] * inputs.E_s.zx(i, j, k) +
                         PSTD.cb[n][i - 1] * eh_vec[n][i][0] /
                                 ((double) PSTD.N_ex);
-                // E_s.zx[k][j][i] = Enp1;
+                // E_s.zx(i,j,k) = Enp1;
               }
             }
           // PSTD, E_s.zx
@@ -1199,39 +1199,39 @@ void SimulationManager::execute() {
                 }
               }
 
-              Enp1 = Ca * inputs.E_s.zx[k][j][i] +
-                     Cb * (inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i] -
-                           inputs.H_s.yx[k][j][i - 1] -
-                           inputs.H_s.yz[k][j][i - 1]);
+              Enp1 = Ca * inputs.E_s.zx(i, j, k) +
+                     Cb * (inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k) -
+                           inputs.H_s.yx(i - 1, j, k) -
+                           inputs.H_s.yz(i - 1, j, k));
               if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) &&
                   gamma_l)
-                Enp1 += Cc * loop_variables.E_nm1.zx[k][j][i] -
+                Enp1 += Cc * loop_variables.E_nm1.zx(i, j, k) -
                         1. / 2. * Cb * inputs.params.delta.dx *
                                 ((1 + alpha_l) *
-                                         loop_variables.J_s.zx[k][j][i] +
-                                 beta_l * loop_variables.J_nm1.zx[k][j][i]);
+                                         loop_variables.J_s.zx(i, j, k) +
+                                 beta_l * loop_variables.J_nm1.zx(i, j, k));
               if (loop_variables.is_conductive && rho)
                 Enp1 += Cb * inputs.params.delta.dx *
-                        loop_variables.J_c.zx[k][j][i];
+                        loop_variables.J_c.zx(i, j, k);
 
               if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) &&
                   gamma_l) {
-                Jnp1 = alpha_l * loop_variables.J_s.zx[k][j][i] +
-                       beta_l * loop_variables.J_nm1.zx[k][j][i] +
+                Jnp1 = alpha_l * loop_variables.J_s.zx(i, j, k) +
+                       beta_l * loop_variables.J_nm1.zx(i, j, k) +
                        kappa_l * gamma_l / (2. * inputs.params.dt) *
-                               (Enp1 - loop_variables.E_nm1.zx[k][j][i]);
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx[k][j][i];
-                loop_variables.E_nm1.zx[k][j][i] = inputs.E_s.zx[k][j][i];
-                loop_variables.J_nm1.zx[k][j][i] =
-                        loop_variables.J_s.zx[k][j][i];
-                loop_variables.J_s.zx[k][j][i] = Jnp1;
+                               (Enp1 - loop_variables.E_nm1.zx(i, j, k));
+                Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zx(i, j, k);
+                loop_variables.E_nm1.zx(i, j, k) = inputs.E_s.zx(i, j, k);
+                loop_variables.J_nm1.zx(i, j, k) =
+                        loop_variables.J_s.zx(i, j, k);
+                loop_variables.J_s.zx(i, j, k) = Jnp1;
               }
               if (loop_variables.is_conductive && rho) {
-                loop_variables.J_c.zx[k][j][i] -=
-                        rho * (Enp1 + inputs.E_s.zx[k][j][i]);
+                loop_variables.J_c.zx(i, j, k) -=
+                        rho * (Enp1 + inputs.E_s.zx(i, j, k));
               }
 
-              inputs.E_s.zx[k][j][i] = Enp1;
+              inputs.E_s.zx(i, j, k) = Enp1;
             }
       }
       if (inputs.params.dimension == THREE ||
@@ -1353,41 +1353,41 @@ void SimulationManager::execute() {
                 }
 
 
-                Enp1 = Ca * inputs.E_s.zy[k][j][i] +
-                       Cb * (inputs.H_s.xy[k][j - 1][i] +
-                             inputs.H_s.xz[k][j - 1][i] -
-                             inputs.H_s.xy[k][j][i] - inputs.H_s.xz[k][j][i]);
+                Enp1 = Ca * inputs.E_s.zy(i, j, k) +
+                       Cb * (inputs.H_s.xy(i, j - 1, k) +
+                             inputs.H_s.xz(i, j - 1, k) -
+                             inputs.H_s.xy(i, j, k) - inputs.H_s.xz(i, j, k));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.zy(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.zy[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.zy[k][j][i]);
+                                           loop_variables.J_s.zy(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.zy(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy *
-                          loop_variables.J_c.zy[k][j][i];
+                          loop_variables.J_c.zy(i, j, k);
 
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
-                         beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.zy(i, j, k) +
+                         beta_l * loop_variables.J_nm1.zy(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
+                                 (Enp1 - loop_variables.E_nm1.zy(i, j, k));
 
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                  loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                  loop_variables.J_nm1.zy[k][j][i] =
-                          loop_variables.J_s.zy[k][j][i];
-                  loop_variables.J_s.zy[k][j][i] = Jnp1;
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy(i, j, k);
+                  loop_variables.E_nm1.zy(i, j, k) = inputs.E_s.zy(i, j, k);
+                  loop_variables.J_nm1.zy(i, j, k) =
+                          loop_variables.J_s.zy(i, j, k);
+                  loop_variables.J_s.zy(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.zy[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.zy[k][j][i]);
+                  loop_variables.J_c.zy(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.zy(i, j, k));
                 }
-                inputs.E_s.zy[k][j][i] = Enp1;
+                inputs.E_s.zy(i, j, k) = Enp1;
               }
           // FDTD, E_s.zy
         } else {
@@ -1506,41 +1506,41 @@ void SimulationManager::execute() {
                 }
 
 
-                // Enp1 = Ca*E_s.zy[k][j][i]+Cb*(H_s.xy[k][j-1][i] +
-                // H_s.xz[k][j-1][i] - H_s.xy[k][j][i] - H_s.xz[k][j][i]);
+                // Enp1 = Ca*E_s.zy(i,j,k)+Cb*(H_s.xy[k][j-1][i] +
+                // H_s.xz[k][j-1][i] - H_s.xy(i,j,k) - H_s.xz(i, j, k));
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l)
-                  Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
+                  Enp1 += Cc * loop_variables.E_nm1.zy(i, j, k) -
                           1. / 2. * Cb * inputs.params.delta.dy *
                                   ((1 + alpha_l) *
-                                           loop_variables.J_s.zy[k][j][i] +
-                                   beta_l * loop_variables.J_nm1.zy[k][j][i]);
+                                           loop_variables.J_s.zy(i, j, k) +
+                                   beta_l * loop_variables.J_nm1.zy(i, j, k));
                 if (loop_variables.is_conductive && rho)
                   Enp1 += Cb * inputs.params.delta.dy *
-                          loop_variables.J_c.zy[k][j][i];
+                          loop_variables.J_c.zy(i, j, k);
 
                 if ((loop_variables.is_dispersive ||
                      inputs.params.is_disp_ml) &&
                     gamma_l) {
-                  Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
-                         beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                  Jnp1 = alpha_l * loop_variables.J_s.zy(i, j, k) +
+                         beta_l * loop_variables.J_nm1.zy(i, j, k) +
                          kappa_l * gamma_l / (2. * inputs.params.dt) *
-                                 (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
+                                 (Enp1 - loop_variables.E_nm1.zy(i, j, k));
 
-                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                  loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                  loop_variables.J_nm1.zy[k][j][i] =
-                          loop_variables.J_s.zy[k][j][i];
-                  loop_variables.J_s.zy[k][j][i] = Jnp1;
+                  Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy(i, j, k);
+                  loop_variables.E_nm1.zy(i, j, k) = inputs.E_s.zy(i, j, k);
+                  loop_variables.J_nm1.zy(i, j, k) =
+                          loop_variables.J_s.zy(i, j, k);
+                  loop_variables.J_s.zy(i, j, k) = Jnp1;
                 }
                 if (loop_variables.is_conductive && rho) {
-                  loop_variables.J_c.zy[k][j][i] -=
-                          rho * (Enp1 + inputs.E_s.zy[k][j][i]);
+                  loop_variables.J_c.zy(i, j, k) -=
+                          rho * (Enp1 + inputs.E_s.zy(i, j, k));
                 }
 
                 eh_vec[n][j][0] =
-                        inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                        inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
                 eh_vec[n][j][1] = 0.;
                 PSTD.ca[n][j - 1] = Ca;
                 PSTD.cb[n][j - 1] = Cb;
@@ -1548,18 +1548,18 @@ void SimulationManager::execute() {
               if (J_tot > 1) {
                 j = 0;
                 eh_vec[n][j][0] =
-                        inputs.H_s.xy[k][j][i] + inputs.H_s.xz[k][j][i];
+                        inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
                 eh_vec[n][j][1] = 0.;
                 first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
                                  inputs.E_s.zy.plan_f[n],
                                  inputs.E_s.zy.plan_b[n]);
               }
               for (j = 1; j < J_tot; j++) {
-                inputs.E_s.zy[k][j][i] =
-                        PSTD.ca[n][j - 1] * inputs.E_s.zy[k][j][i] -
+                inputs.E_s.zy(i, j, k) =
+                        PSTD.ca[n][j - 1] * inputs.E_s.zy(i, j, k) -
                         PSTD.cb[n][j - 1] * eh_vec[n][j][0] /
                                 ((double) PSTD.N_ey);
-                // E_s.zy[k][j][i] = Enp1;
+                // E_s.zy(i,j,k) = Enp1;
               }
             }
           // PSTD, E_s.zy
@@ -1635,40 +1635,40 @@ void SimulationManager::execute() {
               }
 
 
-              Enp1 = Ca * inputs.E_s.zy[k][j][i] +
-                     Cb * (inputs.H_s.xy[k][j - 1][i] +
-                           inputs.H_s.xz[k][j - 1][i] - inputs.H_s.xy[k][j][i] -
-                           inputs.H_s.xz[k][j][i]);
+              Enp1 = Ca * inputs.E_s.zy(i, j, k) +
+                     Cb * (inputs.H_s.xy(i, j - 1, k) +
+                           inputs.H_s.xz(i, j - 1, k) - inputs.H_s.xy(i, j, k) -
+                           inputs.H_s.xz(i, j, k));
               if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) &&
                   gamma_l)
-                Enp1 += Cc * loop_variables.E_nm1.zy[k][j][i] -
+                Enp1 += Cc * loop_variables.E_nm1.zy(i, j, k) -
                         1. / 2. * Cb * inputs.params.delta.dy *
                                 ((1 + alpha_l) *
-                                         loop_variables.J_s.zy[k][j][i] +
-                                 beta_l * loop_variables.J_nm1.zy[k][j][i]);
+                                         loop_variables.J_s.zy(i, j, k) +
+                                 beta_l * loop_variables.J_nm1.zy(i, j, k));
               if (loop_variables.is_conductive && rho)
                 Enp1 += Cb * inputs.params.delta.dy *
-                        loop_variables.J_c.zy[k][j][i];
+                        loop_variables.J_c.zy(i, j, k);
 
               if ((loop_variables.is_dispersive || inputs.params.is_disp_ml) &&
                   gamma_l) {
-                Jnp1 = alpha_l * loop_variables.J_s.zy[k][j][i] +
-                       beta_l * loop_variables.J_nm1.zy[k][j][i] +
+                Jnp1 = alpha_l * loop_variables.J_s.zy(i, j, k) +
+                       beta_l * loop_variables.J_nm1.zy(i, j, k) +
                        kappa_l * gamma_l / (2. * inputs.params.dt) *
-                               (Enp1 - loop_variables.E_nm1.zy[k][j][i]);
+                               (Enp1 - loop_variables.E_nm1.zy(i, j, k));
 
-                Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy[k][j][i];
-                loop_variables.E_nm1.zy[k][j][i] = inputs.E_s.zy[k][j][i];
-                loop_variables.J_nm1.zy[k][j][i] =
-                        loop_variables.J_s.zy[k][j][i];
-                loop_variables.J_s.zy[k][j][i] = Jnp1;
+                Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.zy(i, j, k);
+                loop_variables.E_nm1.zy(i, j, k) = inputs.E_s.zy(i, j, k);
+                loop_variables.J_nm1.zy(i, j, k) =
+                        loop_variables.J_s.zy(i, j, k);
+                loop_variables.J_s.zy(i, j, k) = Jnp1;
               }
               if (loop_variables.is_conductive && rho) {
-                loop_variables.J_c.zy[k][j][i] -=
-                        rho * (Enp1 + inputs.E_s.zy[k][j][i]);
+                loop_variables.J_c.zy(i, j, k) -=
+                        rho * (Enp1 + inputs.E_s.zy(i, j, k));
               }
 
-              inputs.E_s.zy[k][j][i] = Enp1;
+              inputs.E_s.zy(i, j, k) = Enp1;
             }
       }
     }// end of parallel section
@@ -1752,21 +1752,21 @@ void SimulationManager::execute() {
                   }
 
                 if (!inputs.materials[k][j][i])
-                  inputs.H_s.xz[k][j][i] =
-                          inputs.D.a.z[k_loc] * inputs.H_s.xz[k][j][i] +
-                          inputs.D.b.z[k_loc] * (inputs.E_s.yx[k + 1][j][i] +
-                                                 inputs.E_s.yz[k + 1][j][i] -
-                                                 inputs.E_s.yx[k][j][i] -
-                                                 inputs.E_s.yz[k][j][i]);
+                  inputs.H_s.xz(i, j, k) =
+                          inputs.D.a.z[k_loc] * inputs.H_s.xz(i, j, k) +
+                          inputs.D.b.z[k_loc] * (inputs.E_s.yx(i, j, k + 1) +
+                                                 inputs.E_s.yz(i, j, k + 1) -
+                                                 inputs.E_s.yx(i, j, k) -
+                                                 inputs.E_s.yz(i, j, k));
                 else
-                  inputs.H_s.xz[k][j][i] =
+                  inputs.H_s.xz(i, j, k) =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.xz[k][j][i] +
+                                  inputs.H_s.xz(i, j, k) +
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.yx[k + 1][j][i] +
-                                   inputs.E_s.yz[k + 1][j][i] -
-                                   inputs.E_s.yx[k][j][i] -
-                                   inputs.E_s.yz[k][j][i]);
+                                  (inputs.E_s.yx(i, j, k + 1) +
+                                   inputs.E_s.yz(i, j, k + 1) -
+                                   inputs.E_s.yx(i, j, k) -
+                                   inputs.E_s.yz(i, j, k));
               }
           // FDTD, H_s.xz
         } else {
@@ -1797,25 +1797,27 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][k] = inputs.D.a.z[k_loc];
                   PSTD.cb[n][k] = inputs.D.b.z[k_loc];
-                  // H_s.xz[k][j][i] =
-                  // D.a.z[k_loc]*H_s.xz[k][j][i]+D.b.z[k_loc]*(E_s.yx[k+1][j][i]
-                  // + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+                  // H_s.xz(i, j, k) =
+                  // D.a.z[k_loc]*H_s.xz(i, j,
+                  // k)+D.b.z[k_loc]*(E_s.yx[k+1][j][i]
+                  // + E_s.yz[k+1][j][i] - E_s.yx(i,j,k) - E_s.yz(i,j,k));
                 } else {
                   PSTD.ca[n][k] =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][k] =
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1];
-                  // H_s.xz[k][j][i] =
-                  // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i]
-                  // + E_s.yz[k+1][j][i] - E_s.yx[k][j][i] - E_s.yz[k][j][i]);
+                  // H_s.xz(i, j, k) =
+                  // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz(i, j,
+                  // k)+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.yx[k+1][j][i]
+                  // + E_s.yz[k+1][j][i] - E_s.yx(i,j,k) - E_s.yz(i,j,k));
                 }
 
                 eh_vec[n][k][0] =
-                        inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+                        inputs.E_s.yx(i, j, k) + inputs.E_s.yz(i, j, k);
                 eh_vec[n][k][1] = 0.;
               }
               k = K_tot;
-              eh_vec[n][k][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+              eh_vec[n][k][0] = inputs.E_s.yx(i, j, k) + inputs.E_s.yz(i, j, k);
               eh_vec[n][k][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz,
@@ -1823,8 +1825,8 @@ void SimulationManager::execute() {
                                inputs.H_s.xz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
-                inputs.H_s.xz[k][j][i] =
-                        PSTD.ca[n][k] * inputs.H_s.xz[k][j][i] +
+                inputs.H_s.xz(i, j, k) =
+                        PSTD.ca[n][k] * inputs.H_s.xz(i, j, k) +
                         PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
@@ -1862,22 +1864,22 @@ void SimulationManager::execute() {
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!inputs.materials[k][j][i])
-                  inputs.H_s.xy[k][j][i] =
-                          inputs.D.a.y[array_ind] * inputs.H_s.xy[k][j][i] +
+                  inputs.H_s.xy(i, j, k) =
+                          inputs.D.a.y[array_ind] * inputs.H_s.xy(i, j, k) +
                           inputs.D.b.y[array_ind] *
-                                  (inputs.E_s.zy[k][j][i] +
-                                   inputs.E_s.zx[k][j][i] -
-                                   inputs.E_s.zy[k][j + 1][i] -
-                                   inputs.E_s.zx[k][j + 1][i]);
+                                  (inputs.E_s.zy(i, j, k) +
+                                   inputs.E_s.zx(i, j, k) -
+                                   inputs.E_s.zy(i, j + 1, k) -
+                                   inputs.E_s.zx(i, j + 1, k));
                 else
-                  inputs.H_s.xy[k][j][i] =
+                  inputs.H_s.xy(i, j, k) =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.xy[k][j][i] +
+                                  inputs.H_s.xy(i, j, k) +
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.zy[k][j][i] +
-                                   inputs.E_s.zx[k][j][i] -
-                                   inputs.E_s.zy[k][j + 1][i] -
-                                   inputs.E_s.zx[k][j + 1][i]);
+                                  (inputs.E_s.zy(i, j, k) +
+                                   inputs.E_s.zx(i, j, k) -
+                                   inputs.E_s.zy(i, j + 1, k) -
+                                   inputs.E_s.zx(i, j + 1, k));
               }
           // FDTD, H_s.xy
         } else {
@@ -1910,25 +1912,25 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][j] = inputs.D.a.y[array_ind];
                   PSTD.cb[n][j] = inputs.D.b.y[array_ind];
-                  //		H_s.xy[k][j][i] =
-                  // D.a.y[array_ind]*H_s.xy[k][j][i]+D.b.y[array_ind]*(E_s.zy[k][j][i]
-                  // + E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+                  //		H_s.xy(i,j,k) =
+                  // D.a.y[array_ind]*H_s.xy(i,j,k)+D.b.y[array_ind]*(E_s.zy(i,j,k)
+                  // + E_s.zx(i,j,k) - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
                 } else {
                   PSTD.ca[n][j] =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][j] =
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1];
-                  //		H_s.xy[k][j][i] =
-                  // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy[k][j][i]
-                  //+ E_s.zx[k][j][i] - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+                  //		H_s.xy(i,j,k) =
+                  // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy(i,j,k)+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy(i,j,k)
+                  //+ E_s.zx(i,j,k) - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
                 }
 
                 eh_vec[n][j][0] =
-                        inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
+                        inputs.E_s.zy(i, j, k) + inputs.E_s.zx(i, j, k);
                 eh_vec[n][j][1] = 0.;
               }
               j = J_tot;
-              eh_vec[n][j][0] = inputs.E_s.zy[k][j][i] + inputs.E_s.zx[k][j][i];
+              eh_vec[n][j][0] = inputs.E_s.zy(i, j, k) + inputs.E_s.zx(i, j, k);
               eh_vec[n][j][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy,
@@ -1936,8 +1938,8 @@ void SimulationManager::execute() {
                                inputs.H_s.xy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
-                inputs.H_s.xy[k][j][i] =
-                        PSTD.ca[n][j] * inputs.H_s.xy[k][j][i] -
+                inputs.H_s.xy(i, j, k) =
+                        PSTD.ca[n][j] * inputs.H_s.xy(i, j, k) -
                         PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
@@ -1974,22 +1976,22 @@ void SimulationManager::execute() {
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!inputs.materials[k][j][i])
-                  inputs.H_s.yx[k][j][i] =
-                          inputs.D.a.x[array_ind] * inputs.H_s.yx[k][j][i] +
+                  inputs.H_s.yx(i, j, k) =
+                          inputs.D.a.x[array_ind] * inputs.H_s.yx(i, j, k) +
                           inputs.D.b.x[array_ind] *
-                                  (inputs.E_s.zx[k][j][i + 1] +
-                                   inputs.E_s.zy[k][j][i + 1] -
-                                   inputs.E_s.zx[k][j][i] -
-                                   inputs.E_s.zy[k][j][i]);
+                                  (inputs.E_s.zx(i + 1, j, k) +
+                                   inputs.E_s.zy(i + 1, j, k) -
+                                   inputs.E_s.zx(i, j, k) -
+                                   inputs.E_s.zy(i, j, k));
                 else {
-                  inputs.H_s.yx[k][j][i] =
+                  inputs.H_s.yx(i, j, k) =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.yx[k][j][i] +
+                                  inputs.H_s.yx(i, j, k) +
                           inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.zx[k][j][i + 1] +
-                                   inputs.E_s.zy[k][j][i + 1] -
-                                   inputs.E_s.zx[k][j][i] -
-                                   inputs.E_s.zy[k][j][i]);
+                                  (inputs.E_s.zx(i + 1, j, k) +
+                                   inputs.E_s.zy(i + 1, j, k) -
+                                   inputs.E_s.zx(i, j, k) -
+                                   inputs.E_s.zy(i, j, k));
                 }
               }
           // FDTD, H_s.yx
@@ -2023,25 +2025,27 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][i] = inputs.D.a.x[array_ind];
                   PSTD.cb[n][i] = inputs.D.b.x[array_ind];
-                  //		H_s.yx[k][j][i] =
-                  // D.a.x[array_ind]*H_s.yx[k][j][i]+D.b.x[array_ind]*(E_s.zx[k][j][i+1]
-                  // + E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                  //		H_s.yx(i, j, k) =
+                  // D.a.x[array_ind]*H_s.yx(i, j,
+                  // k)+D.b.x[array_ind]*(E_s.zx[k][j][i+1]
+                  // + E_s.zy[k][j][i+1] - E_s.zx(i,j,k) - E_s.zy(i,j,k));
                 } else {
                   PSTD.ca[n][i] =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][i] =
                           inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1];
-                  //	H_s.yx[k][j][i] =
-                  // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1]
-                  //+ E_s.zy[k][j][i+1] - E_s.zx[k][j][i] - E_s.zy[k][j][i]);
+                  //	H_s.yx(i, j, k) =
+                  // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx(i, j,
+                  // k)+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.zx[k][j][i+1]
+                  //+ E_s.zy[k][j][i+1] - E_s.zx(i,j,k) - E_s.zy(i,j,k));
                 }
 
                 eh_vec[n][i][0] =
-                        inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
+                        inputs.E_s.zx(i, j, k) + inputs.E_s.zy(i, j, k);
                 eh_vec[n][i][1] = 0.;
               }
               i = I_tot;
-              eh_vec[n][i][0] = inputs.E_s.zx[k][j][i] + inputs.E_s.zy[k][j][i];
+              eh_vec[n][i][0] = inputs.E_s.zx(i, j, k) + inputs.E_s.zy(i, j, k);
               eh_vec[n][i][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hx, PSTD.N_hx,
@@ -2049,8 +2053,8 @@ void SimulationManager::execute() {
                                inputs.H_s.yx.plan_b[n]);
 
               for (i = 0; i < I_tot; i++) {
-                inputs.H_s.yx[k][j][i] =
-                        PSTD.ca[n][i] * inputs.H_s.yx[k][j][i] +
+                inputs.H_s.yx(i, j, k) =
+                        PSTD.ca[n][i] * inputs.H_s.yx(i, j, k) +
                         PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
@@ -2083,21 +2087,21 @@ void SimulationManager::execute() {
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
                 if (!inputs.materials[k][j][i]) {
-                  inputs.H_s.yz[k][j][i] =
-                          inputs.D.a.z[k_loc] * inputs.H_s.yz[k][j][i] +
-                          inputs.D.b.z[k_loc] * (inputs.E_s.xy[k][j][i] +
-                                                 inputs.E_s.xz[k][j][i] -
-                                                 inputs.E_s.xy[k + 1][j][i] -
-                                                 inputs.E_s.xz[k + 1][j][i]);
+                  inputs.H_s.yz(i, j, k) =
+                          inputs.D.a.z[k_loc] * inputs.H_s.yz(i, j, k) +
+                          inputs.D.b.z[k_loc] * (inputs.E_s.xy(i, j, k) +
+                                                 inputs.E_s.xz(i, j, k) -
+                                                 inputs.E_s.xy(i, j, k + 1) -
+                                                 inputs.E_s.xz(i, j, k + 1));
                 } else {
-                  inputs.H_s.yz[k][j][i] =
+                  inputs.H_s.yz(i, j, k) =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.yz[k][j][i] +
+                                  inputs.H_s.yz(i, j, k) +
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.xy[k][j][i] +
-                                   inputs.E_s.xz[k][j][i] -
-                                   inputs.E_s.xy[k + 1][j][i] -
-                                   inputs.E_s.xz[k + 1][j][i]);
+                                  (inputs.E_s.xy(i, j, k) +
+                                   inputs.E_s.xz(i, j, k) -
+                                   inputs.E_s.xy(i, j, k + 1) -
+                                   inputs.E_s.xz(i, j, k + 1));
                 }
               }
           }
@@ -2130,33 +2134,33 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][k] = inputs.D.a.z[k_loc];
                   PSTD.cb[n][k] = inputs.D.b.z[k_loc];
-                  // H_s.yz[k][j][i] =
-                  // D.a.z[k_loc]*H_s.yz[k][j][i]+D.b.z[k_loc]*(E_s.xy[k][j][i]
-                  // + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
+                  // H_s.yz(i,j,k) =
+                  // D.a.z[k_loc]*H_s.yz(i,j,k)+D.b.z[k_loc]*(E_s.xy(i,j,k)
+                  // + E_s.xz(i, j, k) - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 } else {
                   PSTD.ca[n][k] =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][k] =
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1];
-                  // H_s.yz[k][j][i] =
-                  // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz[k][j][i]+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy[k][j][i]
-                  // + E_s.xz[k][j][i] - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
+                  // H_s.yz(i,j,k) =
+                  // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz(i,j,k)+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy(i,j,k)
+                  // + E_s.xz(i, j, k) - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
                 }
 
                 eh_vec[n][k][0] =
-                        inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+                        inputs.E_s.xy(i, j, k) + inputs.E_s.xz(i, j, k);
                 eh_vec[n][k][1] = 0.;
               }
               k = K_tot;
-              eh_vec[n][k][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+              eh_vec[n][k][0] = inputs.E_s.xy(i, j, k) + inputs.E_s.xz(i, j, k);
               eh_vec[n][k][1] = 0.;
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hz, PSTD.N_hz,
                                inputs.H_s.yz.plan_f[n],
                                inputs.H_s.yz.plan_b[n]);
 
               for (k = 0; k < K_tot; k++) {
-                inputs.H_s.yz[k][j][i] =
-                        PSTD.ca[n][k] * inputs.H_s.yz[k][j][i] -
+                inputs.H_s.yz(i, j, k) =
+                        PSTD.ca[n][k] * inputs.H_s.yz(i, j, k) -
                         PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
@@ -2170,9 +2174,9 @@ void SimulationManager::execute() {
         for (k = 0; k <= K_tot; k++)
           for (j = 0; j < J_tot; j++)
             for (i = 0; i < (I_tot + 1); i++)
-              if (!inputs.materials[k][j][i]) inputs.H_s.xz[k][j][i] = 0.;
+              if (!inputs.materials[k][j][i]) inputs.H_s.xz(i, j, k) = 0.;
               else
-                inputs.H_s.xz[k][j][i] = 0.;
+                inputs.H_s.xz(i, j, k) = 0.;
 
 #pragma omp for
         // H_s.xy update
@@ -2201,21 +2205,21 @@ void SimulationManager::execute() {
               else
                 array_ind = (J_tot + 1) * k_loc + j;
               if (!inputs.materials[k][j][i])
-                inputs.H_s.xy[k][j][i] =
-                        inputs.D.a.y[array_ind] * inputs.H_s.xy[k][j][i] +
-                        inputs.D.b.y[array_ind] * (inputs.E_s.zy[k][j][i] +
-                                                   inputs.E_s.zx[k][j][i] -
-                                                   inputs.E_s.zy[k][j + 1][i] -
-                                                   inputs.E_s.zx[k][j + 1][i]);
+                inputs.H_s.xy(i, j, k) =
+                        inputs.D.a.y[array_ind] * inputs.H_s.xy(i, j, k) +
+                        inputs.D.b.y[array_ind] * (inputs.E_s.zy(i, j, k) +
+                                                   inputs.E_s.zx(i, j, k) -
+                                                   inputs.E_s.zy(i, j + 1, k) -
+                                                   inputs.E_s.zx(i, j + 1, k));
               else
-                inputs.H_s.xy[k][j][i] =
+                inputs.H_s.xy(i, j, k) =
                         inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1] *
-                                inputs.H_s.xy[k][j][i] +
+                                inputs.H_s.xy(i, j, k) +
                         inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1] *
-                                (inputs.E_s.zy[k][j][i] +
-                                 inputs.E_s.zx[k][j][i] -
-                                 inputs.E_s.zy[k][j + 1][i] -
-                                 inputs.E_s.zx[k][j + 1][i]);
+                                (inputs.E_s.zy(i, j, k) +
+                                 inputs.E_s.zx(i, j, k) -
+                                 inputs.E_s.zy(i, j + 1, k) -
+                                 inputs.E_s.zx(i, j + 1, k));
             }
 
 #pragma omp for
@@ -2245,30 +2249,30 @@ void SimulationManager::execute() {
               else
                 array_ind = (I_tot + 1) * k_loc + i;
               if (!inputs.materials[k][j][i])
-                inputs.H_s.yx[k][j][i] =
-                        inputs.D.a.x[array_ind] * inputs.H_s.yx[k][j][i] +
-                        inputs.D.b.x[array_ind] * (inputs.E_s.zx[k][j][i + 1] +
-                                                   inputs.E_s.zy[k][j][i + 1] -
-                                                   inputs.E_s.zx[k][j][i] -
-                                                   inputs.E_s.zy[k][j][i]);
+                inputs.H_s.yx(i, j, k) =
+                        inputs.D.a.x[array_ind] * inputs.H_s.yx(i, j, k) +
+                        inputs.D.b.x[array_ind] * (inputs.E_s.zx(i + 1, j, k) +
+                                                   inputs.E_s.zy(i + 1, j, k) -
+                                                   inputs.E_s.zx(i, j, k) -
+                                                   inputs.E_s.zy(i, j, k));
               else
-                inputs.H_s.yx[k][j][i] =
+                inputs.H_s.yx(i, j, k) =
                         inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1] *
-                                inputs.H_s.yx[k][j][i] +
+                                inputs.H_s.yx(i, j, k) +
                         inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1] *
-                                (inputs.E_s.zx[k][j][i + 1] +
-                                 inputs.E_s.zy[k][j][i + 1] -
-                                 inputs.E_s.zx[k][j][i] -
-                                 inputs.E_s.zy[k][j][i]);
+                                (inputs.E_s.zx(i + 1, j, k) +
+                                 inputs.E_s.zy(i + 1, j, k) -
+                                 inputs.E_s.zx(i, j, k) -
+                                 inputs.E_s.zy(i, j, k));
             }
 
 #pragma omp for
         for (k = 0; k <= K_tot; k++) {
           for (j = 0; j < (J_tot + 1); j++)
             for (i = 0; i < I_tot; i++)
-              if (!inputs.materials[k][j][i]) inputs.H_s.yz[k][j][i] = 0.;
+              if (!inputs.materials[k][j][i]) inputs.H_s.yz(i, j, k) = 0.;
               else
-                inputs.H_s.yz[k][j][i] = 0.;
+                inputs.H_s.yz(i, j, k) = 0.;
         }
       }
 
@@ -2303,22 +2307,22 @@ void SimulationManager::execute() {
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!inputs.materials[k][j][i])
-                  inputs.H_s.zy[k][j][i] =
-                          inputs.D.a.y[array_ind] * inputs.H_s.zy[k][j][i] +
+                  inputs.H_s.zy(i, j, k) =
+                          inputs.D.a.y[array_ind] * inputs.H_s.zy(i, j, k) +
                           inputs.D.b.y[array_ind] *
-                                  (inputs.E_s.xy[k][j + 1][i] +
-                                   inputs.E_s.xz[k][j + 1][i] -
-                                   inputs.E_s.xy[k][j][i] -
-                                   inputs.E_s.xz[k][j][i]);
+                                  (inputs.E_s.xy(i, j + 1, k) +
+                                   inputs.E_s.xz(i, j + 1, k) -
+                                   inputs.E_s.xy(i, j, k) -
+                                   inputs.E_s.xz(i, j, k));
                 else
-                  inputs.H_s.zy[k][j][i] =
+                  inputs.H_s.zy(i, j, k) =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.zy[k][j][i] +
+                                  inputs.H_s.zy(i, j, k) +
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.xy[k][j + 1][i] +
-                                   inputs.E_s.xz[k][j + 1][i] -
-                                   inputs.E_s.xy[k][j][i] -
-                                   inputs.E_s.xz[k][j][i]);
+                                  (inputs.E_s.xy(i, j + 1, k) +
+                                   inputs.E_s.xz(i, j + 1, k) -
+                                   inputs.E_s.xy(i, j, k) -
+                                   inputs.E_s.xz(i, j, k));
               }
           // FDTD, H_s.zy
         } else {
@@ -2351,25 +2355,25 @@ void SimulationManager::execute() {
                 if (!inputs.materials[k][j][i]) {
                   PSTD.ca[n][j] = inputs.D.a.y[array_ind];
                   PSTD.cb[n][j] = inputs.D.b.y[array_ind];
-                  //	      H_s.zy[k][j][i] =
-                  // D.a.y[array_ind]*H_s.zy[k][j][i]+D.b.y[array_ind]*(E_s.xy[k][j+1][i]
-                  // + E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+                  //	      H_s.zy(i,j,k) =
+                  // D.a.y[array_ind]*H_s.zy(i,j,k)+D.b.y[array_ind]*(E_s.xy[k][j+1][i]
+                  // + E_s.xz[k][j+1][i] - E_s.xy(i,j,k) - E_s.xz(i, j, k));
                 } else {
                   PSTD.ca[n][j] =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][j] =
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1];
-                  //	      H_s.zy[k][j][i] =
-                  // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy[k][j][i]+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i]
-                  //+ E_s.xz[k][j+1][i] - E_s.xy[k][j][i] - E_s.xz[k][j][i]);
+                  //	      H_s.zy(i,j,k) =
+                  // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy(i,j,k)+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i]
+                  //+ E_s.xz[k][j+1][i] - E_s.xy(i,j,k) - E_s.xz(i, j, k));
                 }
 
                 eh_vec[n][j][0] =
-                        inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+                        inputs.E_s.xy(i, j, k) + inputs.E_s.xz(i, j, k);
                 eh_vec[n][j][1] = 0.;
               }
               j = J_tot;
-              eh_vec[n][j][0] = inputs.E_s.xy[k][j][i] + inputs.E_s.xz[k][j][i];
+              eh_vec[n][j][0] = inputs.E_s.xy(i, j, k) + inputs.E_s.xz(i, j, k);
               eh_vec[n][j][1] = 0.;
 
               first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_hy, PSTD.N_hy,
@@ -2377,8 +2381,8 @@ void SimulationManager::execute() {
                                inputs.H_s.zy.plan_b[n]);
 
               for (j = 0; j < J_tot; j++) {
-                inputs.H_s.zy[k][j][i] =
-                        PSTD.ca[n][j] * inputs.H_s.zy[k][j][i] +
+                inputs.H_s.zy(i, j, k) =
+                        PSTD.ca[n][j] * inputs.H_s.zy(i, j, k) +
                         PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
@@ -2416,22 +2420,22 @@ void SimulationManager::execute() {
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!inputs.materials[k][j][i])
-                  inputs.H_s.zx[k][j][i] =
-                          inputs.D.a.x[array_ind] * inputs.H_s.zx[k][j][i] +
+                  inputs.H_s.zx(i, j, k) =
+                          inputs.D.a.x[array_ind] * inputs.H_s.zx(i, j, k) +
                           inputs.D.b.x[array_ind] *
-                                  (inputs.E_s.yx[k][j][i] +
-                                   inputs.E_s.yz[k][j][i] -
-                                   inputs.E_s.yx[k][j][i + 1] -
-                                   inputs.E_s.yz[k][j][i + 1]);
+                                  (inputs.E_s.yx(i, j, k) +
+                                   inputs.E_s.yz(i, j, k) -
+                                   inputs.E_s.yx(i + 1, j, k) -
+                                   inputs.E_s.yz(i + 1, j, k));
                 else
-                  inputs.H_s.zx[k][j][i] =
+                  inputs.H_s.zx(i, j, k) =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1] *
-                                  inputs.H_s.zx[k][j][i] +
+                                  inputs.H_s.zx(i, j, k) +
                           inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1] *
-                                  (inputs.E_s.yx[k][j][i] +
-                                   inputs.E_s.yz[k][j][i] -
-                                   inputs.E_s.yx[k][j][i + 1] -
-                                   inputs.E_s.yz[k][j][i + 1]);
+                                  (inputs.E_s.yx(i, j, k) +
+                                   inputs.E_s.yz(i, j, k) -
+                                   inputs.E_s.yx(i + 1, j, k) -
+                                   inputs.E_s.yz(i + 1, j, k));
               }
           // FDTD, H_s.zx
         } else {
@@ -2462,15 +2466,15 @@ void SimulationManager::execute() {
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!inputs.materials[k][j][i]) {
-                  //		H_s.zx[k][j][i] =
-                  // D.a.x[array_ind]*H_s.zx[k][j][i]+D.b.x[array_ind]*(E_s.yx[k][j][i]
-                  // + E_s.yz[k][j][i] - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
+                  //		H_s.zx(i,j,k) =
+                  // D.a.x[array_ind]*H_s.zx(i,j,k)+D.b.x[array_ind]*(E_s.yx(i,j,k)
+                  // + E_s.yz(i,j,k) - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
                   PSTD.ca[n][i] = inputs.D.a.x[array_ind];
                   PSTD.cb[n][i] = inputs.D.b.x[array_ind];
                 } else {
-                  //		H_s.zx[k][j][i] =
-                  // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.zx[k][j][i]+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.yx[k][j][i]
-                  //+ E_s.yz[k][j][i] - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
+                  //		H_s.zx(i,j,k) =
+                  // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.zx(i,j,k)+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.yx(i,j,k)
+                  //+ E_s.yz(i,j,k) - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
                   PSTD.ca[n][i] =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1];
                   PSTD.cb[n][i] =
@@ -2478,11 +2482,11 @@ void SimulationManager::execute() {
                 }
 
                 eh_vec[n][i][0] =
-                        inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+                        inputs.E_s.yx(i, j, k) + inputs.E_s.yz(i, j, k);
                 eh_vec[n][i][1] = 0.;
               }
               i = I_tot;
-              eh_vec[n][i][0] = inputs.E_s.yx[k][j][i] + inputs.E_s.yz[k][j][i];
+              eh_vec[n][i][0] = inputs.E_s.yx(i, j, k) + inputs.E_s.yz(i, j, k);
               eh_vec[n][i][1] = 0.;
 
 
@@ -2491,8 +2495,8 @@ void SimulationManager::execute() {
                                inputs.H_s.zx.plan_b[n]);
 
               for (i = 0; i < I_tot; i++) {
-                inputs.H_s.zx[k][j][i] =
-                        PSTD.ca[n][i] * inputs.H_s.zx[k][j][i] -
+                inputs.H_s.zx(i, j, k) =
+                        PSTD.ca[n][i] * inputs.H_s.zx(i, j, k) -
                         PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }

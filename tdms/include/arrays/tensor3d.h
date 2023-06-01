@@ -116,7 +116,7 @@ public:
    */
   double frobenius() const {
     T norm_val = 0;
-    for (const T element_value : this) {
+    for (const T &element_value : *this) {
       norm_val += abs(element_value) * abs(element_value);
     }
     return sqrt(norm_val);
