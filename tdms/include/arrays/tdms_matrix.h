@@ -18,7 +18,7 @@
  * @tparam T Numerical datatype
  */
 template<typename T>
-class TDMSMatrix {
+class Matrix {
 protected:
   int n_rows_ = 0;
   int n_cols_ = 0;
@@ -31,8 +31,11 @@ protected:
   int n_elements() const { return n_rows_ * n_cols_; }
 
 public:
-  TDMSMatrix() = default;
-  TDMSMatrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
+  Matrix() = default;
+  Matrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
+
+  int get_n_rows() const { return n_rows_; }
+  int get_n_cols() const { return n_cols_; }
 
   /** @brief Subscript operator for the Matrix, retrieving the (i,j)-th element
    */
@@ -81,10 +84,10 @@ public:
 
 /** @brief Matrix of C-coefficients. See the pdf documentation for their
  * definition. */
-class CCoefficientMatrix : public TDMSMatrix<double> {};
+typedef Matrix<double> CCoefficientMatrix;
 
 /** TODO: Docstring */
-struct GratingStructure : public TDMSMatrix<int> {
+struct GratingStructure : public Matrix<int> {
   GratingStructure(const mxArray *ptr, int I_tot);
 };
 
@@ -99,7 +102,7 @@ struct GratingStructure : public TDMSMatrix<int> {
  * Pupil(i, j) thus takes the value 1 for those (i,j) indices within the
  * aperture of the lens.
  */
-struct Pupil : public TDMSMatrix<double> {
+struct Pupil : public Matrix<double> {
   void initialise_from_matlab(const mxArray *ptr, int n_rows, int n_cols);
 };
 
@@ -108,7 +111,7 @@ struct Pupil : public TDMSMatrix<double> {
  * @details Each row of a Vertices instance consists of three integers (i, j, k)
  * that form the index of a particular Yee cell in the simulation space.
  */
-struct Vertices : public TDMSMatrix<int> {
+struct Vertices : public Matrix<int> {
   Vertices() = default;
 
   void initialise_from_matlab(const mxArray *ptr);

@@ -2,7 +2,7 @@
 
 #include "hdf5_io/hdf5_base.h"
 
-#include "arrays.h"
+#include "arrays/tdms_matrix.h"
 
 class HDF5Writer : public HDF5Base {
 
@@ -42,7 +42,7 @@ public:
     T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
     for (unsigned int i = 0; i < n_rows; i++) {
       for (unsigned int j = 0; j < n_cols; j++) {
-        buff[i * n_cols + j] = data[i][j];
+        buff[i * n_cols + j] = data(i, j);
       }
     }
     write(dataname, buff, 2, dimension);

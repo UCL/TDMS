@@ -27,7 +27,7 @@ void MatrixTest::test_correct_construction() {
 
     // should be able to assign to these values without seg faults now
     for (int i = 0; i < n_rows; i++) {
-      for (int j = 0; j < n_cols; j++) { CHECK_NOTHROW(M_double[i][j] = 1.); }
+      for (int j = 0; j < n_cols; j++) { CHECK_NOTHROW(M_double(i, j) = 1.); }
     }
   }
 }
@@ -41,7 +41,7 @@ void MatrixTest::test_other_methods() {
 
     // should be able to assign to these values without seg faults now
     for (int i = 0; i < n_rows; i++) {
-      for (int j = 0; j < n_cols; j++) { CHECK_NOTHROW(M_int[i][j] = 0); }
+      for (int j = 0; j < n_cols; j++) { CHECK_NOTHROW(M_int(i, j) = 0); }
     }
   }
 }

@@ -5,6 +5,7 @@
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/tdms_matrix.h"
 #include "interface.h"
 
 /**
@@ -91,7 +92,7 @@ public:
     data_location.allocate(n_rows, n_cols);
     for (unsigned int i = 0; i < n_rows; i++) {
       for (unsigned int j = 0; j < n_cols; j++) {
-        data_location[i][j] = buff[i * n_cols + j];
+        data_location(i, j) = buff[i * n_cols + j];
       }
     }
     return;
