@@ -17,9 +17,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
       Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
       C(matrices_from_input_file["C"]),                // get C
       D(matrices_from_input_file["D"]),                // get D
-      matched_layer(
-              matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
-      Ei(matrices_from_input_file["tdfield"])             // get tdfield
+      Ei(matrices_from_input_file["tdfield"])          // get tdfield
 {
   /* Set FDTD/PSTD-dependent variable skip_tdf [1: PSTD, 6: FDTD] */
   skip_tdf = in_flags["use_pstd"] ? 1 : 6;
@@ -42,6 +40,9 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   J1 = INPUT_FILE.read("J1");
   K0 = INPUT_FILE.read("K0");
   K1 = INPUT_FILE.read("K1");
+
+  // Read the layer structure of the obstacle
+  INPUT_FILE.read(&matched_layer);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -140,9 +141,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   }
 
   // work out if we have a dispersive background
-  if (params.is_disp_ml) {
-    params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.k);
-  }
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
 
   // Set dt so that an integer number of time periods fits within a sinusoidal
   // period

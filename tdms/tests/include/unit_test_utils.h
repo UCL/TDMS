@@ -17,41 +17,30 @@ namespace tdms_unit_test_data {
 
 #ifdef CMAKE_SOURCE_DIR
 inline std::string tdms_object_data(std::string(CMAKE_SOURCE_DIR) +
-                                    "/tests/unit/matlab_benchmark_scripts/"
-                                    "matlab_data/class_data.mat");
+                                    "/tests/unit/benchmark_scripts/"
+                                    "unit_test_data/class_data.mat");
 inline std::string tdms_bad_object_data(std::string(CMAKE_SOURCE_DIR) +
-                                        "/tests/unit/matlab_benchmark_scripts/"
-                                        "matlab_data/bad_class_data.mat");
+                                        "/tests/unit/benchmark_scripts/"
+                                        "unit_test_data/bad_class_data.mat");
+inline std::string hdf5_test_file(std::string(CMAKE_SOURCE_DIR) +
+                                  "/tests/unit/benchmark_scripts/"
+                                  "unit_test_data/hdf5_test_file.hdf5");
+inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
+                                   "/tests/unit/benchmark_scripts/"
+                                   "unit_test_data/structure_array.mat");
 #else
 inline std::string tdms_object_data(std::filesystem::current_path() /
-                                    "../tests/unit/matlab_benchmark_scripts/"
-                                    "matlab_data/class_data.mat");
-inline std::string
-        tdms_bad_object_data(std::filesystem::current_path() /
-                             "../tests/unit/matlab_benchmark_scripts/"
-                             "matlab_data/bad_class_data.mat");
-#endif
-
-/* The struct_testdata is a .mat file containing a single structure array,
-example_struct. This structure array has the following data.
-
-MEMBER: value, MATLAB type
-double_no_decimal: 1.0, double
-double_half: 0.5, double
-string: 'tdms', char array
-boolean: 1, logical
-uint_345: 3 * 4 * 5 array of 1s, uint8
-double_22: [0.25, 0.5; 0.75, 1.], double
-complex_22: [0., -i; i, 0], complex
-*/
-#ifdef CMAKE_SOURCE_DIR
-inline std::string struct_testdata(std::string(CMAKE_SOURCE_DIR) +
-                                   "/tests/unit/matlab_benchmark_scripts/"
-                                   "matlab_data/structure_array.mat");
-#else
+                                    "../tests/unit/benchmark_scripts/"
+                                    "unit_test_data/class_data.mat");
+inline std::string tdms_bad_object_data(std::filesystem::current_path() /
+                                        "../tests/unit/benchmark_scripts/"
+                                        "unit_test_data/bad_class_data.mat");
+inline std::string hdf5_test_file(std::filesystem::current_path() /
+                                  "../tests/unit/benchmark_scripts/"
+                                  "unit_test_data/hdf5_test_file.hdf5");
 inline std::string struct_testdata(std::filesystem::current_path() /
-                                   "../tests/unit/matlab_benchmark_scripts/"
-                                   "matlab_data/structure_array.mat");
+                                   "../tests/unit/benchmark_scripts/"
+                                   "unit_test_data/structure_array.mat");
 #endif
 
 }// namespace tdms_unit_test_data
