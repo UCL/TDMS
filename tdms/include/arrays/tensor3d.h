@@ -77,7 +77,7 @@ public:
     n_layers_ = n_layers;
     n_cols_ = n_cols;
     n_rows_ = n_rows;
-    this->reserve(this->total_elements());
+    this->resize(this->total_elements());
   }
 
   /**

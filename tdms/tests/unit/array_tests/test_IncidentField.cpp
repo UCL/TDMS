@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "arrays.h"
+#include "arrays/incident_field.h"
 #include "unit_test_utils.h"
 
 using namespace std;

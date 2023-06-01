@@ -355,41 +355,6 @@ public:
   ~Pupil();
 };
 
-class DTilde {
-protected:
-  int n_det_modes = 0;//< Number of modes specified
-  static void set_component(Tensor3D<std::complex<double>> &tensor,
-                            const mxArray *ptr, const std::string &name,
-                            int n_rows, int n_cols);
-
-public:
-  DTilde() = default;
-
-  /** @brief Fetch the number of modes */
-  inline int num_det_modes() const { return n_det_modes; };
-
-  /*! 3-dimensional vector of fibre modes indexed by (j, i, i_m).
-   * i and j index over the x and y plane respectively.
-   * i_m indexes the different modes specified in the input file.*/
-  Tensor3D<std::complex<double>> x;
-  /*! @copydoc x */
-  Tensor3D<std::complex<double>> y;
-
-  void initialise(const mxArray *ptr, int n_rows, int n_cols);
-};
-
-class IncidentField {
-protected:
-  void set_component(Tensor3D<double> &component, const mxArray *ptr,
-                     const std::string &name);
-
-public:
-  Tensor3D<double> x;
-  Tensor3D<double> y;
-
-  explicit IncidentField(const mxArray *ptr);
-};
-
 /**
  * List of field components as integers
  */
