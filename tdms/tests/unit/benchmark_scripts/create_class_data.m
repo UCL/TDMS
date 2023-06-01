@@ -33,8 +33,23 @@ f_vec_bad.fy_vec = zeros(2,1);      % This is permitted, but the former field sh
 % This array is read into the Cuboid class. It is just an array of 6 integers (stored as doubles OFC) that correspond to Yee cell indices in the various axial directions
 phasorsurface = [1 4 2 5 3 6];
 
+%% dispersive_aux
+% Structure array that populates a DispersiveMultiLayer object.
+% Has 9 fields, which are all vectors (theoretically of the same length but for testing purposes nope):
+% alpha, beta, gamma, kappa_x, kappa_y, kappa_z, sigma_x, sigma_y, sigma_z
+dispersive_aux = struct();
+dispersive_aux.alpha = 0:9;
+dispersive_aux.beta = 0:9;
+dispersive_aux.gamma = 0:9;
+dispersive_aux.kappa_x = 0:9;
+dispersive_aux.kappa_y = 0:9;
+dispersive_aux.kappa_z = 0:9;
+dispersive_aux.sigma_x = 0:9;
+dispersive_aux.sigma_y = 0:9;
+dispersive_aux.sigma_z = 0:9;
+
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
 
-save("matlab_data/class_data.mat", "-v7.3");
+save("unit_test_data/class_data.mat", "-v7.3");

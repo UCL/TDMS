@@ -23,9 +23,9 @@ public:
       : HDF5Base(filename, H5F_ACC_RDONLY) {}
 
   /**
-   * @brief Read the dataset stored within a group into the buffer provided. Can
-   * be used to read MATLAB structs by treating the struct as the Group and
-   * field as the Dataset.
+   * @brief Read the dataset stored within a group into the buffer provided.
+   * @details Can be used to read MATLAB structs by treating the struct as the
+   * Group and field as the Dataset.
    * @tparam T C++ datatype to read data into.
    * @param group The Group within the file in which the dataset lives.
    * @param dataset The name of the dataset to fetch data from.
@@ -42,6 +42,34 @@ public:
     // Then fetch the requested data and read it into the buffer provided
     H5::DataSet requested_field = structure_array.openDataSet(dataset);
     requested_field.read(data, requested_field.getDataType());
+  }
+
+  /**
+   * @brief Read the dataset stored within a group into the buffer provided,
+   * resizing the vector buffer accordingly.
+   * @details Can be used to read MATLAB structs by treating the struct as the
+   * Group and field as the Dataset.
+   * @tparam T C++ datatype to read data into.
+   * @param group The Group within the file in which the dataset lives.
+   * @param dataset The name of the dataset to fetch data from.
+   * @param[out] data The buffer into which to write the data.
+   */
+  template<typename T>
+  void read_dataset_in_group(const std::string &group,
+                             const std::string &dataset,
+                             std::vector<T> &data) const {
+    spdlog::debug("Reading {} from file: {}", group, filename_);
+
+    // Structs are saved as groups, so we need to fetch the group this struct is
+    // contained in
+    H5::Group structure_array = file_->openGroup(group);
+    // Then fetch the requested data and read it into the buffer provided,
+    // resizing the buffer if necessary
+    H5::DataSet requested_field = structure_array.openDataSet(dataset);
+    H5Dimension field_size(requested_field);
+    int number_of_elements = field_size.number_of_elements();
+    data.resize(number_of_elements);
+    requested_field.read(data.data(), requested_field.getDataType());
   }
 
   /**
@@ -139,4 +167,15 @@ public:
    * @param cube
    */
   void read(Cuboid *cube) const;
+
+  /**
+   * @brief Read data from the file into a DispersiveMultiLayerObject
+   * @details Data is read from the "dispersive_aux" group. If this group does
+   * not exist, no data is written but no exception is thrown.
+   *
+   * If the group does exist, the alpha, beta, gamma, kappa, and sigma members
+   * are populated with the corresponding data entries.
+   * @param dml DispersiveMultiLayer object into which to write data.
+   */
+  void read(DispersiveMultiLayer *dml) const;
 };
