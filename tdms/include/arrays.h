@@ -321,13 +321,6 @@ public:
   inline int size() const { return n; };
 };
 
-class FrequencyExtractVector : public Vector<double> {
-public:
-  FrequencyExtractVector(const mxArray *ptr, double omega_an);
-
-  double max();
-};
-
 struct FrequencyVectors {
   std::vector<double> x;
   std::vector<double> y;
@@ -473,24 +466,6 @@ public:
   Tensor3D<double> y;
 
   explicit IncidentField(const mxArray *ptr);
-};
-
-/**
- * List of field components as integers
- */
-class FieldComponentsVector : public Vector<int> {
-public:
-  FieldComponentsVector() = default;
-
-  void initialise(const mxArray *ptr);
-
-  /**
-   * Get the index of a particular integer in this vector. If it does not exist
-   * then return -1. Returns the first occurrence.
-   * @param value value to find in the vector
-   * @return index or -1
-   */
-  int index(int value);
 };
 
 class Vertices : public Matrix<int> {

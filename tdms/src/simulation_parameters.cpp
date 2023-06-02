@@ -5,6 +5,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "utils.h"
+
 using namespace std;
 
 SimulationParameters::SimulationParameters() = default;
@@ -53,7 +55,7 @@ void SimulationParameters::set_spacing_stride(const double *vector) {
 
 void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
 
-  double f_max = f_ex_vec.max();
+  double f_max = tdms_vector_utils::max(f_ex_vec);
   Np = (int) floor(1. / (2.5 * dt * f_max));
 
   // calculate Npe, the temporal DFT will be evaluated whenever tind increments

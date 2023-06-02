@@ -7,6 +7,7 @@
 #include <string>
 
 #include "arrays.h"
+#include "arrays/vector_typedefs.h"
 #include "input_matrices.h"
 
 // Stores the thickness in each axial direction of the Perfectly Matched Layer

@@ -7,9 +7,10 @@
 
 #include <complex>
 
-#include "arrays.h"
+#include "arrays/vector_typedefs.h"
 #include "field.h"
 #include "grid_labels.h"
+#include "utils.h"
 
 /**
  * Class container for handling complex amplitude samples at the vertices, and
@@ -24,13 +25,9 @@ private:
   components requested.
   */
   Vertices vertices;
-  /* An int array containing the MATLAB indices of the field components we want
-  to extract at the vertices.
-
-  The ints in this array correspond to the underlying values of the
-  FieldComponents enum: components = [1, 2, 6] corresponds to extracting Ex, Ey,
-  and Hz at the vertices, for example.
-  */
+  /*! The MATLAB indices of the field components we want to extract at the
+   * vertices.
+   */
   FieldComponentsVector components;
 
   mxArray *mx_camplitudes = nullptr;//< Complex amplitudes at the vertices
@@ -94,7 +91,8 @@ public:
   // Returns true/false based on whether there are/aren't elements in BOTH the
   // vertices and components arrays
   bool there_are_elements_in_arrays() {
-    return (vertices.has_elements() && components.has_elements());
+    return (vertices.has_elements() &&
+            tdms_vector_utils::has_elements(components));
   }
 
   /**
