@@ -45,7 +45,7 @@ def create_hdf5_test_file() -> None:
     not_marked_empty = file.create_dataset(
         "not_marked_empty", data=consecutive_numbers[0:0], shape=(0,), dtype=float
     )
-    not_marked_empty.attrs["MATLAB_empty"] = np.array(0, dtype=np.unit8)
+    not_marked_empty.attrs["MATLAB_empty"] = np.array(0, dtype=np.uint8)
 
     # Create an attribute at the root of the file for debugging and testing purposes
     file.attrs["file_attribute"] = 1
