@@ -23,6 +23,9 @@ read_in_test.tensor = reshape(0:11, 2, 3, 2);
 empty_struct = struct([]);
 empty_array = [];
 
+%% A non-empty standalone array that we can attempt to read from
+nonempty_dataset = 0:4;
+
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the
 % data back in.

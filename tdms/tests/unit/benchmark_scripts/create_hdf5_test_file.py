@@ -33,6 +33,8 @@ def create_hdf5_test_file() -> None:
         "tensor_double", data=consecutive_numbers, shape=(2, 3, 2), dtype=float
     )
 
+    file.attrs["file_attribute"] = 1
+
     file.close()
     return
 

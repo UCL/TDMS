@@ -56,7 +56,7 @@ bool HDF5Base::is_ok() const {
   // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
 }
 
-bool HDF5Base::is_empty(const std::string &object_name) const {
+bool HDF5Base::has_MATLAB_empty(const std::string &object_name) const {
   // Can't check anything if there's no file
   if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
 
