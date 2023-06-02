@@ -96,7 +96,7 @@ public:
    * MATLAB_empty.
    * @details Naturally, MATLAB does not save empty arrays or structs as objects
    * with no elements or size, instead it saves them as 2-by-1 arrays with 0's
-   * populating the data. This means that a simple comparision against the
+   * populating the data. This means that a simple comparison against the
    * number of elements or members does not provide the correct information when
    * attempting to determine whether an empty input has been passed.
    *
