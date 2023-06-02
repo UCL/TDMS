@@ -121,7 +121,7 @@ public:
    */
   void set_spacing_stride(const double *vector);
 
-  void set_Np(FrequencyExtractVector &f_ex_vec);
+  void set_Np(const FrequencyExtractVector &f_ex_vec);
 
   /**
    * @brief Unpacks all simulation parameters and flags from the matrix inputs

@@ -4,6 +4,7 @@
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/vector_typedefs.h"
 #include "interface.h"
 
 /**
@@ -178,4 +179,7 @@ public:
    * @param dml DispersiveMultiLayer object into which to write data.
    */
   void read(DispersiveMultiLayer *dml) const;
+
+  void read(FrequencyExtractVector &fev, double omega_an,
+            const std::string &dataset_name = "f_ex_vec") const;
 };

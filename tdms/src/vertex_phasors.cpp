@@ -31,7 +31,7 @@ void VertexPhasors::set_from(const mxArray *ptr) {
     int *component_entries_as_doubles = (int *) mxGetPr(components_field);
     components.resize(n_component_elements);
     for (unsigned int c_index = 0; c_index < n_component_elements; c_index++) {
-      components[i] = component_entries_as_doubles[i];
+      components[c_index] = component_entries_as_doubles[c_index];
     }
   }
 }
