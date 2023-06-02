@@ -85,18 +85,18 @@ void HDF5Reader::read(DispersiveMultiLayer *dml) const {
 
 void HDF5Reader::read(FrequencyExtractVector &fev, double omega_an,
                       const std::string &dataset_name) const {
-  H5Dimension shape = shape_of(dataset_name);
-
-  if (shape.number_of_elements() == 0) {
+  if (has_MATLAB_empty(dataset_name)) {
     // Insert a placehold frequency if no frequencies have been specified
     fev.resize(1);
     fev[0] = omega_an / 2. / DCPI;
-  } else if (!shape.is_1D()) {
-    // Cannot read from a multidimensional array
-    throw runtime_error(
-            dataset_name +
-            " is not a 1D so cannot be read into a FrequencyExtractVector");
   } else {
+    H5Dimension shape = shape_of(dataset_name);
+    // Cannot read from a multidimensional array
+    if (!shape.is_1D()) {
+      throw runtime_error(
+              dataset_name +
+              " is not a 1D so cannot be read into a FrequencyExtractVector");
+    }
     // Conditions are sufficient to read data in
     fev.resize(shape.number_of_elements());
     read(dataset_name, fev.data());
