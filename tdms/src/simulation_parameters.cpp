@@ -53,7 +53,8 @@ void SimulationParameters::set_spacing_stride(const double *vector) {
   spacing_stride.z = (int) vector[2];
 }
 
-void SimulationParameters::set_Np(const FrequencyExtractVector &f_ex_vec) {
+void SimulationParameters::set_Np_and_Npe(
+        const FrequencyExtractVector &f_ex_vec) {
 
   double f_max = tdms_vector_utils::max(f_ex_vec);
   Np = (int) floor(1. / (2.5 * dt * f_max));
