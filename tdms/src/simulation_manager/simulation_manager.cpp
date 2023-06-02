@@ -76,7 +76,7 @@ void SimulationManager::post_loop_processing() {
     if (inputs.params.run_mode == RunMode::complete &&
         inputs.params.exphasorssurface) {
       spdlog::info("Surface phasors");
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.surface_phasors.normalise_surface(ifx, E_norm[ifx],
                                                   H_norm[ifx]);
         spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
@@ -87,7 +87,7 @@ void SimulationManager::post_loop_processing() {
     if (inputs.params.run_mode == RunMode::complete &&
         outputs.vertex_phasors.there_are_vertices_to_extract_at()) {
       spdlog::info("Vertex phasors");
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.vertex_phasors.normalise_vertices(ifx, E_norm[ifx],
                                                   H_norm[ifx]);
         spdlog::info("\tE_norm[{0:d}]: {1:.5e} {2:.5e}", ifx, real(E_norm[ifx]),
@@ -102,7 +102,7 @@ void SimulationManager::post_loop_processing() {
       inputs.params.run_mode == RunMode::complete &&
       inputs.params.exdetintegral) {
     for (int im = 0; im < inputs.D_tilde.num_det_modes(); im++)
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.ID.x[ifx][im] = outputs.ID.x[ifx][im] / E_norm[ifx];
         outputs.ID.y[ifx][im] = outputs.ID.y[ifx][im] / E_norm[ifx];
 

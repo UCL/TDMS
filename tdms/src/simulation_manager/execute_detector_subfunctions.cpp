@@ -85,7 +85,7 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
     {
 #pragma omp for
       // For each frequency
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         // determine wavelength at this frequency
         lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
         Idxt = 0.;

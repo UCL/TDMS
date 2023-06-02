@@ -27,7 +27,7 @@ void VertexPhasors::set_from(const mxArray *ptr) {
           ptr_to_matrix_in(ptr, "components", "campssample");
   if (!mxIsEmpty(components_field)) {
     const mwSize *dims = mxGetDimensions(components_field);
-    int n_component_elements = max(dims[0], dims[1]);
+    unsigned int n_component_elements = max(dims[0], dims[1]);
     int *component_entries_as_doubles = (int *) mxGetPr(components_field);
     components.resize(n_component_elements);
     for (unsigned int c_index = 0; c_index < n_component_elements; c_index++) {
