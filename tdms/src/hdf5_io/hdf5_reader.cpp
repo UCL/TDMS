@@ -145,6 +145,6 @@ void HDF5Reader::read(FrequencyExtractVector &fev, double omega_an,
     // Conditions are sufficient to read data in
     fev.resize(shape.number_of_elements());
     read(dataset_name, fev.data());
-    spdlog::info("f_ex_vec has dimensions ({}, {})", shape[0], shape[1]);
+    spdlog::info("f_ex_vec has dimensions: " + shape.print());
   }
 }

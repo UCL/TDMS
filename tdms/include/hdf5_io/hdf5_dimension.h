@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include <H5Cpp.h>
@@ -12,20 +13,20 @@ public:
   H5Dimension(const H5::DataSet &data_set) : H5Dimension(data_set.getSpace()){};
 
   /**
-   * @brief Whether these dimensions describe an array that is castable to a 1D
+   * @brief Whether these dimensions describe an array that is cast-able to a 1D
    * array.
    * @details In the event that these dimensions only have one entry, or at
    * most one of the entries is greater than 1, the shape described can be cast
    * to a 1D-array of length max_dim().
    *
-   * @return true These dimensions describe (an object castable to) a 1D-array
+   * @return true These dimensions describe (an object cast-able to) a 1D-array
    * @return false Otherwise
    */
   bool is_1D() const;
 
   /**
    * @brief Returns the dimension of the greatest extent.
-   * @details For instances where is_1D() returns true, this conincides with the
+   * @details For instances where is_1D() returns true, this coincides with the
    * number of elements in the array, and the length of a 1D array necessary to
    * hold all the elements.
    *
@@ -39,4 +40,7 @@ public:
     for (hsize_t axis_size : *this) { product *= axis_size; }
     return product;
   }
+
+  /** @brief Return a string displaying the dimensions object. */
+  std::string print() const;
 };
