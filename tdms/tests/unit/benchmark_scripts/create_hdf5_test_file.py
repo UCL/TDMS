@@ -61,6 +61,26 @@ def create_hdf5_test_file() -> None:
     # Create an attribute at the root of the file for debugging and testing purposes
     file.attrs["file_attribute"] = 1
 
+    # Create C and D Material/Collection groups and fields
+    # CCollection can be read in with either 6 or 9 elements
+    # The D-objects read the same structured stuff, so we'll just overload to check they read correctly
+    CMaterial_group = read_in_test.create_group("Cmaterial")
+    CCollection_group = read_in_test.create_group("C")
+    DMaterial_group = read_in_test.create_group("Dmaterial")
+    for abc in ["a", "b", "c"]:
+        for xyz in ["x", "y", "z"]:
+            CMaterial_group.create_dataset(
+                "C" + abc + xyz, data=consecutive_numbers[0:5]
+            )
+    for ab in ["a", "b"]:
+        for xyz in ["x", "y", "z"]:
+            CCollection_group.create_dataset(
+                "C" + abc + xyz, data=consecutive_numbers[0:5]
+            )
+            DMaterial_group.create_dataset(
+                "D" + ab + xyz, data=consecutive_numbers[5:10]
+            )
+
     file.close()
     return
 

@@ -86,8 +86,7 @@ void HDF5Reader::read(const string &group_name, const string &name_prefix,
   }
 }
 
-void HDF5Reader::read(CMaterial &c_material) const {
-  string group_name("Cmaterial");
+void HDF5Reader::read(CMaterial &c_material, const string &group_name) const {
   // We should expect a group with 6 members
   H5::Group group = file_->openGroup(group_name);
   int n_members = group.getNumObjs();
@@ -102,8 +101,8 @@ void HDF5Reader::read(CMaterial &c_material) const {
   read(group_name, "Cc", c_material.c);
 }
 
-void HDF5Reader::read(CCollection &c_collection) const {
-  string group_name("C");
+void HDF5Reader::read(CCollection &c_collection,
+                      const std::string &group_name) const {
   // We should expect a group with either 6 or 9 members
   H5::Group group = file_->openGroup(group_name);
   int n_members = group.getNumObjs();

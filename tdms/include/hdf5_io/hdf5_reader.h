@@ -131,12 +131,18 @@ public:
   void read(const std::string &dataset_name, const std::string &name_prefix,
             XYZVector &v) const;
 
-  void read(CMaterial &c_material) const;
+  void read(CMaterial &c_material,
+            const std::string &group_name = "CMaterial") const;
 
-  void read(CCollection &c_collection) const;
+  void read(CCollection &c_collection,
+            const std::string &dataset_name = "C") const;
 
   template<bool is_material>
-  void read(DBase<is_material> &d_base) const {
+  void read(DBase<is_material> &d_base,
+            const std::string group_name = "") const {
+    // Read from non-standard location in file if passed
+    const std::string group_to_read_from =
+            group_name.empty() ? d_base.input_field : group_name;
     // We should expect a group with 6 members
     H5::Group group = file_->openGroup(d_base.input_field);
     int n_members = group.getNumObjs();

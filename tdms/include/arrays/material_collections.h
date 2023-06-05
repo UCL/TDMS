@@ -41,21 +41,8 @@ struct CCollection : public CMaterial {
 template<bool is_material>
 struct DBase {
   XYZVector a, b;
-  std::string input_field = is_material ? "Dmaterial" : "D";
+  const std::string input_field = is_material ? "Dmaterial" : "D";
 };
-
-// Try this for the C-stuff too? This one is easy since the construction methods
-// _are_ the same barring the input_field we read from
-// Also can we just do funky ? : assignment??
-
-// struct DBase<true> {
-//   XYZVector a, b;
-//   std::string input_field = "Dmaterial";
-// };
-// struct DBase<false> {
-//   XYZVector a, b;
-//   std::string input_field = "D";
-// };
 
 typedef DBase<true> DMaterial;
 typedef DBase<false> DCollection;
