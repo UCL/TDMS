@@ -28,6 +28,8 @@ TEST_CASE("HDF5Base: flagged_MATLAB_empty()") {
     REQUIRE(!matlab_file.flagged_MATLAB_empty("nonempty_dataset"));
     // Point to nonempty group (struct)
     REQUIRE(!matlab_file.flagged_MATLAB_empty("example_struct"));
+    // Point to a nonempty dataset within a group
+    REQUIRE(!matlab_file.flagged_MATLAB_empty("read_in_test/vector"));
     // Point to nonempty group not created by MATLAB (so the attribute should
     // not be flagged)
     REQUIRE(!hdf5_file.flagged_MATLAB_empty("read_in_test"));

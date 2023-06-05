@@ -56,7 +56,7 @@ bool HDF5Base::is_ok() const {
   // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
 }
 
-bool HDF5Base::flagged_MATLAB_empty(const std::string &object_name) const {
+bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
   // Can't check anything if there's no file
   if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
 
@@ -64,16 +64,16 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_name) const {
   H5::Attribute empty_attribute;
 
   // Attempt to fetch the object requested
-  if (!file_->exists(object_name)) {
-    throw std::runtime_error(filename_ + " has no object " + object_name);
+  if (!file_->exists(object_path)) {
+    throw std::runtime_error(filename_ + " has no object " + object_path);
   }
-  hid_t object_reference = file_->getObjId(object_name);
+  hid_t object_reference = file_->getObjId(object_path);
 
   // The object could be a group or a dataset, so we need to account for this
   H5I_type_t object_type = file_->getHDFObjType(object_reference);
   if (object_type == H5I_GROUP) {
     // Dealing with a group
-    H5::Group object = file_->openGroup(object_name);
+    H5::Group object = file_->openGroup(object_path);
     if (object.attrExists("MATLAB_empty")) {
       empty_attribute = object.openAttribute("MATLAB_empty");
     } else {
@@ -83,7 +83,7 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_name) const {
     object.close();
   } else if (object_type == H5I_DATASET) {
     // Dealing with a dataset
-    H5::DataSet object = file_->openDataSet(object_name);
+    H5::DataSet object = file_->openDataSet(object_path);
     if (object.attrExists("MATLAB_empty")) {
       empty_attribute = object.openAttribute("MATLAB_empty");
     } else {
@@ -94,7 +94,7 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_name) const {
   } else {
     // No other objects should be the result of MATLAB saving an empty object,
     // so throw error
-    throw std::runtime_error(object_name + " is not a Group or a DataSet");
+    throw std::runtime_error(object_path + " is not a Group or a DataSet");
   }
 
   // Having extracted the dataset, attempt to read the attribute value

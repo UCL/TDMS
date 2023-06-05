@@ -92,7 +92,7 @@ public:
   bool is_ok() const;
 
   /**
-   * @brief Returns true if the object under /object_name is flagged as
+   * @brief Returns true if the object under /object_path is flagged as
    * MATLAB_empty.
    * @details Naturally, MATLAB does not save empty arrays or structs as objects
    * with no elements or size, instead it saves them as 2-by-1 arrays with 0's
@@ -103,9 +103,9 @@ public:
    * MATLAB _does_ however attach an attribute to any object that it marks as
    * empty, MATLAB_empty. This uint8 is set to 1 if the object is indeed an
    * empty array, so _that_ is what we will use to distinguish.
-   * @param object_name Object path under root; /object_name.
+   * @param object_path Path to the object under file root; /object_path.
    * @return true The object is flagged as being the empty MATLAB array.
    * @return false Otherwise.
    */
-  bool flagged_MATLAB_empty(const std::string &object_name) const;
+  bool flagged_MATLAB_empty(const std::string &object_path) const;
 };
