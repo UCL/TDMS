@@ -14,6 +14,5 @@ var searchData=
   ['flag_5fvariables_11',['flag_variables',['../namespacetdms__flags.html#aec198c6b302a820af3a31259a644fb67',1,'tdms_flags']]],
   ['frequencyextractvector_12',['FrequencyExtractVector',['../class_frequency_extract_vector.html',1,'']]],
   ['frequencyvectors_13',['FrequencyVectors',['../struct_frequency_vectors.html',1,'']]],
-  ['frobenius_14',['frobenius',['../class_tensor3_d.html#a68b2ad27844616772a714b8294985db6',1,'Tensor3D']]],
-  ['fullfieldsnapshot_15',['FullFieldSnapshot',['../class_full_field_snapshot.html',1,'']]]
+  ['fullfieldsnapshot_14',['FullFieldSnapshot',['../class_full_field_snapshot.html',1,'']]]
 ];

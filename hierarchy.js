@@ -14,7 +14,6 @@ var hierarchy =
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
     [ "Dimensions", "class_dimensions.html", null ],
     [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", null ],
-    [ "DTilde", "class_d_tilde.html", null ],
     [ "fdtdGridInitialiser", "classfdtd_grid_initialiser.html", null ],
     [ "FieldSample", "class_field_sample.html", null ],
     [ "FrequencyVectors", "struct_frequency_vectors.html", null ],
@@ -32,7 +31,6 @@ var hierarchy =
     ] ],
     [ "GridLabels", "class_grid_labels.html", null ],
     [ "ijk", "structijk.html", null ],
-    [ "IncidentField", "class_incident_field.html", null ],
     [ "InputFlags", "class_input_flags.html", null ],
     [ "InputMatrices", "class_input_matrices.html", null ],
     [ "InterfaceComponent", "class_interface_component.html", null ],
@@ -61,11 +59,9 @@ var hierarchy =
     [ "SurfacePhasors", "class_surface_phasors.html", null ],
     [ "SurfaceSpacingStride", "struct_surface_spacing_stride.html", null ],
     [ "TDFieldExporter2D", "class_t_d_field_exporter2_d.html", null ],
-    [ "Tensor3D< T >", "class_tensor3_d.html", null ],
-    [ "Tensor3D< double >", "class_tensor3_d.html", [
+    [ "Tensor3D", null, [
       [ "SplitFieldComponent", "class_split_field_component.html", null ]
     ] ],
-    [ "Tensor3D< std::complex< double > >", "class_tensor3_d.html", null ],
     [ "Timer", "class_timer.html", null ],
     [ "Vector< T >", "class_vector.html", null ],
     [ "Vector< double >", "class_vector.html", [
