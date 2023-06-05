@@ -56,6 +56,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 else()
     find_package(OpenMP REQUIRED)
 endif()
+message(STATUS "OpenMP_VERSION=${OpenMP_VERSION}")
+message(STATUS "OpenMP_Mac_VERSION=${OpenMP_MAC_VERSION}")
+add_compile_definitions(OpenMP_VERSION="${OpenMP_VERSION}")
 
 # hdf5 ------------------------------------------------------------------------
 find_package(HDF5 REQUIRED COMPONENTS CXX)

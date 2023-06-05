@@ -84,7 +84,14 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
     {
 #pragma omp for
       // For each frequency
+#if defined(OpenMP_VERSION) && (OpenMP_VERSION < 3)
+      // windows gets special treatment
+      // https://stackoverflow.com/questions/2820621/
+      int input_size = inputs.f_ex_vec.size();
+      for (int ifx = 0; ifx < input_size; ifx++) {
+#else
       for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+#endif
         // determine wavelength at this frequency
         lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
         Idxt = 0.;
