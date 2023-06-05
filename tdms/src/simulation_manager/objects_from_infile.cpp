@@ -98,8 +98,8 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // if exdetintegral is flagged, setup pupil, D_tilde, and f_vec accordingly
   if (params.exdetintegral) {
     INPUT_FILE.read(f_vec);
-    pupil.initialise(matrices_from_input_file["Pupil"], f_vec.x.size(),
-                     f_vec.y.size());
+    pupil.initialise_from_matlab(matrices_from_input_file["Pupil"],
+                                 f_vec.x.size(), f_vec.y.size());
     D_tilde.initialise(matrices_from_input_file["D_tilde"], f_vec.x.size(),
                        f_vec.y.size());
 

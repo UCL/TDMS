@@ -65,9 +65,9 @@ public:
 
   IncidentField Ei;//< time-domain field
 
-  FrequencyVectors f_vec;                //< frequency vector
-  Pupil pupil;                           //< TODO
-  DTilde D_tilde;                        //< TODO
+  FrequencyVectors f_vec;//<! Frequency vector
+  Pupil pupil;           //<! Numerical aperture of the objective lens
+  DTilde D_tilde;        //< TODO
   TDFieldExporter2D ex_td_field_exporter;//< two-dimensional field exporter
 
   GridLabels input_grid_labels;//< cartesian labels of the Yee cells

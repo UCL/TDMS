@@ -327,27 +327,6 @@ struct FrequencyVectors {
 };
 
 /**
- * @brief Defines the numerical aperture of the objective, assuming that the
- * lens is centred on the origin of the PSTD simulation.
- *
- * In particular, since the fibre modes are imaged onto a Fourier plane of both
- * the physical fibre and the sample, the field scattered by the sample and
- * collected by the objective lens can have only a finite spatial support in the
- * aperature of the objective lens.
- *
- * Pupil[j][i] thus takes the value 1 for those (i,j) indices (note the order
- * swapping) within the aperture of the lens.
- */
-class Pupil : public Matrix<double> {
-public:
-  Pupil() = default;
-
-  void initialise(const mxArray *ptr, int n_rows, int n_cols);
-
-  ~Pupil();
-};
-
-/**
  * List of field components as integers
  */
 class FieldComponentsVector : public Vector<int> {

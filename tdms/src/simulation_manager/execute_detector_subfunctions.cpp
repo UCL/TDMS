@@ -71,8 +71,8 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
          j++)
       for (int i = 0;
            i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
-        lv.Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x(im, i, j);
-        lv.Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y(im, i, j);
+        lv.Ex_t.cm[j][i] *= inputs.pupil(i, j) * inputs.D_tilde.x(im, i, j);
+        lv.Ey_t.cm[j][i] *= inputs.pupil(i, j) * inputs.D_tilde.y(im, i, j);
       }
 
       /* Now iterate over each frequency we are extracting phasors at.

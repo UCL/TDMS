@@ -200,29 +200,6 @@ double FrequencyExtractVector::max() {
   return tmp;
 }
 
-void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
-
-  if (mxIsEmpty(ptr)) { return; }
-
-  auto dims = (int *) mxGetDimensions(ptr);
-
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows ||
-      dims[1] != n_cols) {
-    throw runtime_error("Pupil has dimension " + to_string(dims[0]) + "x" +
-                        to_string(dims[1]) + " but it needed to be " +
-                        to_string(n_rows) + "x" + to_string(n_cols));
-  }
-
-  matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
-  this->n_cols = n_cols;
-  this->n_rows = n_rows;
-}
-
-Pupil::~Pupil() {
-  free_cast_matlab_2D_array(matrix);
-  matrix = nullptr;
-}
-
 void FieldComponentsVector::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "components", "campssample");
