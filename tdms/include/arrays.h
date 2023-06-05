@@ -399,11 +399,6 @@ public:
 };
 
 /**
- * Matrix of c coefficients. See the pdf documentation for their definition
- */
-class CCoefficientMatrix : public Matrix<double> {};
-
-/**
  * Container for storing snapshots of the full-field
  */
 class FullFieldSnapshot {

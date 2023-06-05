@@ -176,8 +176,8 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
 
           eh_vec[n][j][0] = inputs.H_s.zy(i, j, k) + inputs.H_s.zx(i, j, k);
           eh_vec[n][j][1] = 0.;
-          PSTD.ca[n][j - 1] = Ca;
-          PSTD.cb[n][j - 1] = Cb;
+          PSTD.ca(n, j - 1) = Ca;
+          PSTD.cb(n, j - 1) = Cb;
         }
       }
       if (solver_method == SolverMethod::PseudoSpectral && J_tot > 1) {
@@ -188,8 +188,8 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
                          inputs.E_s.xy.plan_f[n], inputs.E_s.xy.plan_b[n]);
         for (j = 1; j < J_tot; j++) {
           inputs.E_s.xy(i, j, k) =
-                  PSTD.ca[n][j - 1] * inputs.E_s.xy(i, j, k) +
-                  PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
+                  PSTD.ca(n, j - 1) * inputs.E_s.xy(i, j, k) +
+                  PSTD.cb(n, j - 1) * eh_vec[n][j][0] / ((double) PSTD.N_ey);
         }
       }
     }
@@ -355,8 +355,8 @@ void SimulationManager::update_Exz(LoopVariables &lv) {
 
           eh_vec[n][k][0] = inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
           eh_vec[n][k][1] = 0.;
-          PSTD.ca[n][k - 1] = Ca;
-          PSTD.cb[n][k - 1] = Cb;
+          PSTD.ca(n, k - 1) = Ca;
+          PSTD.cb(n, k - 1) = Cb;
         }
       }
       if (solver_method == SolverMethod::PseudoSpectral) {
@@ -369,8 +369,8 @@ void SimulationManager::update_Exz(LoopVariables &lv) {
 
         for (k = 1; k < K_tot; k++) {
           inputs.E_s.xz(i, j, k) =
-                  PSTD.ca[n][k - 1] * inputs.E_s.xz(i, j, k) -
-                  PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
+                  PSTD.ca(n, k - 1) * inputs.E_s.xz(i, j, k) -
+                  PSTD.cb(n, k - 1) * eh_vec[n][k][0] / ((double) PSTD.N_ez);
         }
       }
     }
