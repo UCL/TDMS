@@ -37,9 +37,8 @@ TEST_CASE("HDF5: Read FrequencyVector") {
     HDF5Reader MATFile(tdms_object_data);
 
     SECTION("Read into existing FrequencyVectors object") {
-      MATFile.read(&f_vec);
+      MATFile.read(f_vec);
     }
-    SECTION("Return FrequencyVectors object") { f_vec = MATFile.read(); }
 
     // Confirm expected sizes
     CHECK(f_vec.x.size() == EXPECTED_VEC_SIZE);
@@ -60,6 +59,6 @@ TEST_CASE("HDF5: Read FrequencyVector") {
   // Bad object data provides a 2D array for fx_vec component
   SECTION("Incorrect sizes") {
     HDF5Reader MATFile(tdms_bad_object_data);
-    REQUIRE_THROWS_AS(MATFile.read(&f_vec), std::runtime_error);
+    REQUIRE_THROWS_AS(MATFile.read(f_vec), std::runtime_error);
   }
 }
