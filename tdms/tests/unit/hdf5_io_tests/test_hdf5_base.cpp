@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
@@ -27,10 +29,15 @@ TEST_CASE("HDF5Base::path_exists()") {
     // read_in_test/vector is a dataset
     REQUIRE(matlab_file.path_exists("read_in_test/vector", H5I_DATASET));
     REQUIRE(!matlab_file.path_exists("read_in_test/vector", H5I_GROUP));
+    REQUIRE_THROWS_AS(
+            matlab_file.path_exists("read_in_test/vector", H5I_GROUP, true),
+            std::runtime_error);
 
     // read_in_test is a group
     REQUIRE(hdf5_file.path_exists("read_in_test", H5I_GROUP));
     REQUIRE(!hdf5_file.path_exists("read_in_test", H5I_ATTR));
+    REQUIRE_THROWS_AS(hdf5_file.path_exists("read_in_test", H5I_ATTR, true),
+                      std::runtime_error);
   }
 
   SECTION("Request object types") {

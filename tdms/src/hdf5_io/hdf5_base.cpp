@@ -35,13 +35,23 @@ bool HDF5Base::path_exists(const std::string &path_under_root,
 }
 
 bool HDF5Base::path_exists(const std::string &path_under_root,
-                           const H5I_type_t &object_type) const {
+                           const H5I_type_t &object_type,
+                           const bool error_on_false) const {
   // Attempt to lookup the path
   bool path_is_valid = path_exists(path_under_root);
+  bool object_is_correct_type = false;
   // If the path is valid, check the object it points to is the correct type
   if (path_is_valid) {
     hid_t object_reference = file_->getObjId(path_under_root);
-    return file_->getHDFObjType(object_reference) == object_type;
+    object_is_correct_type =
+            file_->getHDFObjType(object_reference) == object_type;
+  }
+  // Return result, or throw error if running strictly
+  if (path_is_valid && object_is_correct_type) {
+    return true;
+  } else if (error_on_false) {
+    throw std::runtime_error(path_under_root +
+                             "does not point to an object of the correct type");
   }
   return false;
 }

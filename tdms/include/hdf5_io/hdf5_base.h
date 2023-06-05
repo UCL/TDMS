@@ -90,12 +90,15 @@ public:
    * points to an object of the type provided.
    * @param path_under_root Path under file root to check existence of.
    * @param object_type Type of object to check exists at the path location.
+   * @param error_on_false If true, throw a runtime error when the path is not
+   * found or points to the wrong object, instead of returning false.
    * @return true The path exists, and points to the object of the type
    * provided.
    * @return false Otherwise.
    */
   bool path_exists(const std::string &path_under_root,
-                   const H5I_type_t &object_type) const;
+                   const H5I_type_t &object_type,
+                   bool error_on_false = false) const;
 
   /**
    * @brief Print the names of all datasets to std::out.
