@@ -42,9 +42,9 @@ TEST_CASE("HDF5: Read InterfaceComponent") {
   SECTION("Read into existing InterfaceComponent") {
     InterfaceComponent I0, J0, K0;
 
-    MATFile.read("I0", &I0);
-    MATFile.read("J0", &J0);
-    MATFile.read("K0", &K0);
+    MATFile.read("I0", I0);
+    MATFile.read("J0", J0);
+    MATFile.read("K0", K0);
 
     bool I0_correct = (I0.index == 0) && (I0.apply == false);
     bool J0_correct = (J0.index == 1) && (J0.apply == false);
@@ -52,18 +52,5 @@ TEST_CASE("HDF5: Read InterfaceComponent") {
     CHECK(I0_correct);
     CHECK(J0_correct);
     CHECK(K0_correct);
-  }
-
-  SECTION("Return InterfaceComponent object") {
-    InterfaceComponent I1 = MATFile.read("I1");
-    InterfaceComponent J1 = MATFile.read("J1");
-    InterfaceComponent K1 = MATFile.read("K1");
-
-    bool I1_correct = (I1.index == 3) && (I1.apply == true);
-    bool J1_correct = (J1.index == 4) && (J1.apply == false);
-    bool K1_correct = (K1.index == 5) && (K1.apply == true);
-    CHECK(I1_correct);
-    CHECK(J1_correct);
-    CHECK(K1_correct);
   }
 }
