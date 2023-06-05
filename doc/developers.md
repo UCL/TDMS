@@ -263,7 +263,7 @@ It's good practice, and reassuring for your pull-request reviewers, if new C++ f
 
 The `tdms/tests/unit/benchmark_scripts` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
 
-To generate the necessary test inputs: change into the `benchmark_scripts`
+To generate the necessary test inputs; change into the `benchmark_scripts` directory and run,
 
 ```{sh}
 matlab -nosplash -nodesktop -nodisplay -r setup_unit_tests
