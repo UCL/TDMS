@@ -15,8 +15,9 @@
 /**
  * @brief Stores the fibre modes in the Fourier plane of the objective lens.
  * @details The "Tilde" indicates that these quantities are in a Fourier plane
- * relative to where the optical fibre is actually located, meaning that it has
- * a Fourier relationship relative to the physical fibre mode(s).
+ *          relative to where the optical fibre is actually located, meaning
+ *          that it has a Fourier relationship relative to the physical fibre
+ *          mode(s).
  */
 class DTilde {
 protected:

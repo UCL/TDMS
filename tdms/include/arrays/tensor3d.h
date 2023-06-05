@@ -54,8 +54,12 @@ public:
     initialise(buffer, n_layers, n_cols, n_rows);
   }
 
-  /** @brief Subscript operator for the Tensor, retrieving the (i,j,k)-th
-   * element. */
+  /** 
+   * @brief Subscript operator for the Tensor, retrieves the (i,j,k)-th element.
+   * @note Does not 'call' the tensor, but rather accesses the data.
+   * @example ... 
+   * @seealso Tensor3D::operator[](const ijk&)
+   */
   T &operator()(int i, int j, int k) { return data_[to_global_index(i, j, k)]; }
   T operator()(int i, int j, int k) const {
     return data_[to_global_index(i, j, k)];
