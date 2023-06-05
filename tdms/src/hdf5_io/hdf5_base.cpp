@@ -49,17 +49,7 @@ H5Dimension HDF5Base::shape_of(const std::string &group_name,
   return H5Dimension(dataspace);
 }
 
-bool HDF5Base::is_ok() const {
-  // TODO: check for file health might be unnecessary given we've constructed
-  // the object.
-  return file_->isHdf5(filename_);
-  // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
-}
-
 bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
-  // Can't check anything if there's no file
-  if (!is_ok()) { throw std::runtime_error("Problem with the file!"); }
-
   // Attempt to fetch the object requested
   if (!file_->exists(object_path)) {
     throw std::runtime_error(filename_ + " has no object " + object_path);

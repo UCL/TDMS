@@ -26,19 +26,15 @@ TEST_CASE("Test file I/O construction/destruction.") {
 
   SECTION("Check file creation.") {
     HDF5Writer f(tmp.string() + "/test_file_constructor.h5");
-    CHECK(f.is_ok());
   }// Destructor called as we leave scope
 
   SECTION("Check all reasonable file extensions are OK.") {
     for (auto extension : {".hdf5", ".h5", ".mat"}) {
       {
         HDF5Writer fw(tmp.string() + "/test_file" + extension);
-        CHECK(fw.is_ok());
-
       }// Destructor called as we leave scope.
 
       HDF5Reader fr(tmp.string() + "/test_file" + extension);
-      CHECK(fr.is_ok());
     }
   }
 
@@ -49,8 +45,6 @@ TEST_CASE("Test file I/O construction/destruction.") {
   SECTION("Check can't read nonexistent data.") {
     {
       HDF5Writer fw(tmp.string() + "/this_file_does_exist_but_is_empty.h5");
-      CHECK(fw.is_ok());
-
     }// Destructor called as we leave scope.
 
     double data[1];
@@ -68,10 +62,7 @@ TEST_CASE("Test file I/O construction/destruction.") {
       double writeme = 1337.;
       fw.write("testdata", &writeme, 1, dimensions);
       SPDLOG_DEBUG("Written data");
-
-      CHECK(fw.is_ok());
       fw.ls();
-
     }// Destructor called as we leave scope.
 
     double data[1];
@@ -88,9 +79,6 @@ TEST_CASE("Test file I/O construction/destruction.") {
       double writeme = 12345;
       f1.write("testdata", &writeme, 1, dimensions);
       SPDLOG_DEBUG("Written first data");
-
-      CHECK(f1.is_ok());
-
     }// Destructor called as we leave scope.
 
     // Overwrite the file and add some different data.
@@ -100,9 +88,6 @@ TEST_CASE("Test file I/O construction/destruction.") {
       double writeme = 54321.;
       f2.write("testdata2", &writeme, 1, dimensions);
       SPDLOG_DEBUG("Written second data");
-
-      CHECK(f2.is_ok());
-
     }// Destructor called as we leave scope.
 
     // Now open the file with a Reader. The first data should not be there (and

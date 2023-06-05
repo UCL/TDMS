@@ -39,6 +39,13 @@ protected:
   }
 
   /**
+   * @brief No default constructor: it never makes sense to have a HDF5Base
+   *        without a `file_` which means we need a `filename` passed to the
+   *        constructor.
+   */
+  HDF5Base() = delete;
+
+  /**
    * @brief Destructor closes the file.
    * @details Closes file when HDF5Reader(or HDF5Writer) goes out of scope.
    * Since the file pointer is a smart pointer it is deallocated automatically.
@@ -81,15 +88,6 @@ public:
    */
   H5Dimension shape_of(const std::string &group_name,
                        const std::string &dataname) const;
-
-  /**
-   * @brief Checks the file is a valid HDF5 file, and everything is OK.
-   * TODO: Can perhaps remove.
-   *
-   * @return true If all is well.
-   * @return false Otherwise.
-   */
-  bool is_ok() const;
 
   /**
    * @brief Returns true if the object under /object_path is flagged as
