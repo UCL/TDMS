@@ -65,6 +65,48 @@ public:
    */
   std::vector<std::string> get_datanames() const;
 
+
+  /**
+   * @brief Determines whether /path_under_root exists in the HDF5 file.
+   * @details Returns true so long as the path provided is valid, irrespective
+   * of the type of object that the path points to.
+   * @param path_under_root Path under file root to check existence of.
+   * @return true The path exists.
+   * @return false The path does not exist.
+   */
+  bool path_exists(const std::string &path_under_root) const;
+  /**
+   * @brief Determines whether /path_under_root exists in the HDF5 file. If it
+   * does, returns the type of object stored at that location.
+   * @details Returns true so long as the path provided is valid, irrespective
+   * of the type of object that the path points to.
+   *
+   * The parameter points_to is not set if the path_under_root is invalid. Use
+   * the returned boolean value to check whether it is safe to dereference this
+   * pointer and avoid undefined behaviour.
+   * @param path_under_root Path under file root to check existence of.
+   * @param[out] points_to Type of object the path points to, if it exists.
+   * Value is not set if the path does not exist.
+   * @return true The path exists.
+   * @return false The path does not exist.
+   */
+  bool path_exists(const std::string &path_under_root,
+                   H5I_type_t *points_to) const;
+  /**
+   * @brief Determines whether /path_under_root exists in the HDF5 file, and
+   * points to an object of the type provided.
+   * @param path_under_root Path under file root to check existence of.
+   * @param object_type Type of object to check exists at the path location.
+   * @param error_on_false If true, throw a runtime error when the path is not
+   * found or points to the wrong object, instead of returning false.
+   * @return true The path exists, and points to the object of the type
+   * provided.
+   * @return false Otherwise.
+   */
+  bool path_exists(const std::string &path_under_root,
+                   const H5I_type_t &object_type,
+                   bool error_on_false = false) const;
+
   /**
    * @brief Print the names of all datasets to std::out.
    */
@@ -72,22 +114,11 @@ public:
 
   /**
    * @brief Return shape/dimensionality information about the array data stored
-   * with `dataname`.
-   * @param dataname The name of the data table.
+   * under /dataset_path.
+   * @param dataset_path Path under file root to the dataset; /dataset_path.
    * @return H5Dimension The dimensions of the data.
    */
-  H5Dimension shape_of(const std::string &dataname) const;
-  /**
-   * @brief Return shape/dimensionality information about array data stored
-   * within a group.
-   *
-   * @param group_name The name of the HDF5 Group in which the data array is
-   * stored.
-   * @param dataname The name of the data array to check dimensions of.
-   * @return The dimensions of the data.
-   */
-  H5Dimension shape_of(const std::string &group_name,
-                       const std::string &dataname) const;
+  H5Dimension shape_of(const std::string &dataset_path) const;
 
   /**
    * @brief Returns true if the object under /object_path is flagged as

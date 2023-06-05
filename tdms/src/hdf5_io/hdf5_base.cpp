@@ -12,6 +12,50 @@
 #include <H5public.h>
 #include <spdlog/spdlog.h>
 
+bool HDF5Base::path_exists(const std::string &path_under_root) const {
+  // Can't check anything if there's no file
+  if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
+
+  // Attempt to lookup the path
+  return file_->exists(path_under_root);
+}
+
+bool HDF5Base::path_exists(const std::string &path_under_root,
+                           H5I_type_t *points_to) const {
+  // Attempt to lookup the path
+  bool return_value = path_exists(path_under_root);
+
+  // Set object type if the path existed
+  if (return_value) {
+    hid_t object_reference = file_->getObjId(path_under_root);
+    *points_to = file_->getHDFObjType(object_reference);
+  }
+
+  return return_value;
+}
+
+bool HDF5Base::path_exists(const std::string &path_under_root,
+                           const H5I_type_t &object_type,
+                           const bool error_on_false) const {
+  // Attempt to lookup the path
+  bool path_is_valid = path_exists(path_under_root);
+  bool object_is_correct_type = false;
+  // If the path is valid, check the object it points to is the correct type
+  if (path_is_valid) {
+    hid_t object_reference = file_->getObjId(path_under_root);
+    object_is_correct_type =
+            file_->getHDFObjType(object_reference) == object_type;
+  }
+  // Return result, or throw error if running strictly
+  if (path_is_valid && object_is_correct_type) {
+    return true;
+  } else if (error_on_false) {
+    throw std::runtime_error(path_under_root +
+                             "does not point to an object of the correct type");
+  }
+  return false;
+}
+
 std::vector<std::string> HDF5Base::get_datanames() const {
   std::vector<std::string> names;
 
@@ -34,31 +78,20 @@ void HDF5Base::ls() const {
   return;
 }
 
-H5Dimension HDF5Base::shape_of(const std::string &dataname) const {
-  // Get the dataspace (contains dimensionality info)
-  H5::DataSpace dataspace = file_->openDataSet(dataname).getSpace();
-  return H5Dimension(dataspace);
-}
-
-H5Dimension HDF5Base::shape_of(const std::string &group_name,
-                               const std::string &dataname) const {
-  // Open the group that contains the dataset
-  H5::Group group = file_->openGroup(group_name);
-  // Get the DataSpace for the DataSet within the group
-  H5::DataSpace dataspace = group.openDataSet(dataname).getSpace();
-  return H5Dimension(dataspace);
+H5Dimension HDF5Base::shape_of(const std::string &dataset_path) const {
+  if (path_exists(dataset_path, H5I_type_t::H5I_DATASET)) {
+    // Get the dataspace (contains dimensionality info)
+    return H5Dimension(file_->openDataSet(dataset_path).getSpace());
+  } else {
+    throw std::runtime_error(dataset_path + " does not point to a dataset");
+  }
 }
 
 bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
-  // Attempt to fetch the object requested
-  if (!file_->exists(object_path)) {
-    throw std::runtime_error(filename_ + " has no object " + object_path);
-  }
-  hid_t object_reference = file_->getObjId(object_path);
-
-  H5I_type_t object_type = file_->getHDFObjType(object_reference);
   H5::Attribute empty_attribute;// will point to the MATLAB_empty attribute
-  if (object_type == H5I_GROUP) {
+
+  if (path_exists(object_path, H5I_GROUP)) {
+    // Dealing with a group
     H5::Group object = file_->openGroup(object_path);
     if (object.attrExists("MATLAB_empty")) {
       empty_attribute = object.openAttribute("MATLAB_empty");
@@ -67,7 +100,7 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
       return false;
     }
     object.close();
-  } else if (object_type == H5I_DATASET) {
+  } else if (path_exists(object_path, H5I_DATASET)) {
     // Dealing with a dataset
     H5::DataSet object = file_->openDataSet(object_path);
     if (object.attrExists("MATLAB_empty")) {

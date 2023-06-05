@@ -20,7 +20,7 @@ TEST_CASE("HDF5: Read DispersiveMultiLayer") {
     vector<double> consecutive_integers(10);
     for (int i = 0; i < 10; i++) { consecutive_integers[i] = (double) i; }
 
-    MATFile.read(&dml);
+    MATFile.read(dml);
 
     // Assert correct data - each entry should just be the integers 0->9
     // inclusive

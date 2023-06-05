@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hdf5_io/hdf5_base.h"
+#include "hdf5_io/hdf5_dimension.h"
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
@@ -23,56 +24,6 @@ public:
       : HDF5Base(filename, H5F_ACC_RDONLY) {}
 
   /**
-   * @brief Read the dataset stored within a group into the buffer provided.
-   * @details Can be used to read MATLAB structs by treating the struct as the
-   * Group and field as the Dataset.
-   * @tparam T C++ datatype to read data into.
-   * @param group The Group within the file in which the dataset lives.
-   * @param dataset The name of the dataset to fetch data from.
-   * @param data The buffer into which to write the data.
-   */
-  template<typename T>
-  void read_dataset_in_group(const std::string &group,
-                             const std::string &dataset, T *data) const {
-    spdlog::debug("Reading {} from file: {}", group, filename_);
-
-    // Structs are saved as groups, so we need to fetch the group this struct is
-    // contained in
-    H5::Group structure_array = file_->openGroup(group);
-    // Then fetch the requested data and read it into the buffer provided
-    H5::DataSet requested_field = structure_array.openDataSet(dataset);
-    requested_field.read(data, requested_field.getDataType());
-  }
-
-  /**
-   * @brief Read the dataset stored within a group into the buffer provided,
-   * resizing the vector buffer accordingly.
-   * @details Can be used to read MATLAB structs by treating the struct as the
-   * Group and field as the Dataset.
-   * @tparam T C++ datatype to read data into.
-   * @param group The Group within the file in which the dataset lives.
-   * @param dataset The name of the dataset to fetch data from.
-   * @param[out] data The buffer into which to write the data.
-   */
-  template<typename T>
-  void read_dataset_in_group(const std::string &group,
-                             const std::string &dataset,
-                             std::vector<T> &data) const {
-    spdlog::debug("Reading {} from file: {}", group, filename_);
-
-    // Structs are saved as groups, so we need to fetch the group this struct is
-    // contained in
-    H5::Group structure_array = file_->openGroup(group);
-    // Then fetch the requested data and read it into the buffer provided,
-    // resizing the buffer if necessary
-    H5::DataSet requested_field = structure_array.openDataSet(dataset);
-    H5Dimension field_size(requested_field);
-    int number_of_elements = field_size.number_of_elements();
-    data.resize(number_of_elements);
-    requested_field.read(data.data(), requested_field.getDataType());
-  }
-
-  /**
    * @brief Reads a named dataset from the HDF5 file.
    * @param dataname The name of the datset to be read.
    * @param data A pointer to an array of correct size.
@@ -91,6 +42,29 @@ public:
   }
 
   /**
+   * @brief Reads the data from the dataset at the location (under file root)
+   * provided.
+   * @tparam T Datatype to read.
+   * @param path_to_dataset Path under file root of the dataset to read from.
+   * @param buffer Vector to read data into.
+   */
+  template<typename T>
+  void read(const std::string &path_to_dataset, std::vector<T> &buffer) const {
+    spdlog::debug("Reading {} from file", path_to_dataset, filename_);
+
+    if (path_exists(path_to_dataset, H5I_DATASET)) {
+      H5::DataSet dataset = file_->openDataSet(path_to_dataset);
+      H5Dimension dims = shape_of(path_to_dataset);
+      buffer.resize(dims.number_of_elements());
+      dataset.read(buffer.data(), dataset.getDataType());
+    } else {
+      // Path does not exist, throw error
+      throw std::runtime_error(path_to_dataset +
+                               " does not point to a dataset");
+    }
+  }
+
+  /**
    * @brief Reads a 2D-dataset into a Matrix object.
    *
    * @tparam T C++ datatype of the Matrix object
@@ -101,7 +75,7 @@ public:
   void read(const std::string &dataset_name, Matrix<T> &data_location) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
 
-    std::vector<hsize_t> dimensions = shape_of(dataset_name);
+    H5Dimension dimensions = shape_of(dataset_name);
     if (dimensions.size() != 2) {
       throw std::runtime_error(
               "Cannot read " + dataset_name + " into a 2D matrix, it has " +
@@ -129,35 +103,14 @@ public:
    * @param[in] plane The plane {I,J,K}{0,1} to read from the file.
    * @param[out] ic InterfaceComponent reference to populate/overwrite.
    */
-  void read(const std::string &plane, InterfaceComponent *ic) const;
-  /**
-   * @brief Read an InterfaceComponent from the file.
-   *
-   * @param plane The plane {I,J,K}{0,1} to read from the file.
-   * @return InterfaceComponent corresponding to the requested plane.
-   */
-  InterfaceComponent read(const std::string &plane) const {
-    InterfaceComponent ic;
-    read(plane, &ic);
-    return ic;
-  }
+  void read(const std::string &plane, InterfaceComponent &ic) const;
 
   /**
    * @brief Read FrequencyVectors into the buffer provided.
    *
    * @param[out] f_vec FrequencyVectors reference to populate/overwrite.
    */
-  void read(FrequencyVectors *f_vec) const;
-  /**
-   * @brief Read FrequencyVectors from the file.
-   *
-   * @return FrequencyVectors object containing the data from the input file.
-   */
-  FrequencyVectors read() const {
-    FrequencyVectors f_vec;
-    read(&f_vec);
-    return f_vec;
-  }
+  void read(FrequencyVectors &f_vec) const;
 
   /**
    * @brief
@@ -166,7 +119,7 @@ public:
    * to be offset by -1 b/c indexing things
    * @param cube
    */
-  void read(Cuboid *cube) const;
+  void read(Cuboid &cube) const;
 
   /**
    * @brief Read data from the file into a DispersiveMultiLayerObject
@@ -177,5 +130,5 @@ public:
    * are populated with the corresponding data entries.
    * @param dml DispersiveMultiLayer object into which to write data.
    */
-  void read(DispersiveMultiLayer *dml) const;
+  void read(DispersiveMultiLayer &dml) const;
 };

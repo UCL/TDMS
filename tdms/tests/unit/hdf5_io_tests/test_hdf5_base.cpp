@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
 
@@ -9,8 +11,57 @@ using tdms_unit_test_data::struct_testdata;
 
 // HDF5Base cannot be instantiated, so we use HDF5Reader just to avoid
 // accidental writes.
-TEST_CASE("HDF5Base: flagged_MATLAB_empty()") {
 
+TEST_CASE("HDF5Base::path_exists()") {
+  HDF5Reader matlab_file(struct_testdata);
+  HDF5Reader hdf5_file(hdf5_test_file);
+
+  SECTION("Paths that exist") {
+    spdlog::info("HDF5Base::path_exists() [Valid paths]");
+    // Point to a dataset that exists
+    REQUIRE(matlab_file.path_exists("empty_array"));
+    // Point to a group that exists
+    REQUIRE(matlab_file.path_exists("empty_struct"));
+  }
+
+  SECTION("Enforce object types") {
+    spdlog::info("HDF5Base::path_exists() [Forced types]");
+    // read_in_test/vector is a dataset
+    REQUIRE(matlab_file.path_exists("read_in_test/vector", H5I_DATASET));
+    REQUIRE(!matlab_file.path_exists("read_in_test/vector", H5I_GROUP));
+    REQUIRE_THROWS_AS(
+            matlab_file.path_exists("read_in_test/vector", H5I_GROUP, true),
+            std::runtime_error);
+
+    // read_in_test is a group
+    REQUIRE(hdf5_file.path_exists("read_in_test", H5I_GROUP));
+    REQUIRE(!hdf5_file.path_exists("read_in_test", H5I_ATTR));
+    REQUIRE_THROWS_AS(hdf5_file.path_exists("read_in_test", H5I_ATTR, true),
+                      std::runtime_error);
+  }
+
+  SECTION("Request object types") {
+    spdlog::info("HDF5Base::path_exists() [Request types]");
+    H5I_type_t dataset;
+    H5I_type_t group;
+
+    // Point to a dataset
+    REQUIRE(matlab_file.path_exists("read_in_test/vector", &dataset));
+    REQUIRE(dataset == H5I_DATASET);
+
+    // Point to a group
+    REQUIRE(hdf5_file.path_exists("read_in_test", &group));
+    REQUIRE(group == H5I_GROUP);
+  }
+
+  SECTION("Paths that do not exist") {
+    spdlog::info("HDF5Base::path_exists() [Invalid paths]");
+    REQUIRE(!hdf5_file.path_exists("this_path_is_invalid"));
+    REQUIRE(!matlab_file.path_exists("read_in_test/this_dataset_doesnt_exist"));
+  }
+}
+
+TEST_CASE("HDF5Base: flagged_MATLAB_empty()") {
   HDF5Reader matlab_file(struct_testdata);
   HDF5Reader hdf5_file(hdf5_test_file);
 
