@@ -8,6 +8,5 @@ var searchData=
   ['vector_3c_20int_20_3e_5',['Vector&lt; int &gt;',['../class_vector.html',1,'']]],
   ['vector_5fto_5farray_6',['vector_to_array',['../test__argument__parser_8cpp.html#a916cd668f77d0897a86d5ce2631ea030',1,'test_argument_parser.cpp']]],
   ['vertex_5fphasors_2eh_7',['vertex_phasors.h',['../vertex__phasors_8h.html',1,'']]],
-  ['vertexphasors_8',['VertexPhasors',['../class_vertex_phasors.html',1,'VertexPhasors'],['../class_vertex_phasors.html#aae6207412f686aa39eef314d2fcacd14',1,'VertexPhasors::VertexPhasors()']]],
-  ['vertices_9',['Vertices',['../class_vertices.html',1,'']]]
+  ['vertexphasors_8',['VertexPhasors',['../class_vertex_phasors.html',1,'VertexPhasors'],['../class_vertex_phasors.html#aae6207412f686aa39eef314d2fcacd14',1,'VertexPhasors::VertexPhasors()']]]
 ];

@@ -5,15 +5,15 @@
  -->
 <!-- Title: tdms/include/utils.h Pages: 1 -->
 <svg width="500pt" height="349pt"
- viewBox="0.00 0.00 500.38 348.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ viewBox="0.00 0.00 499.50 348.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 344.5)">
 <title>tdms/include/utils.h</title>
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title="Useful miscellaneous utility functions.">
-<polygon fill="#999999" stroke="#666666" points="418.5,-340.5 317.75,-340.5 317.75,-321.25 418.5,-321.25 418.5,-340.5"/>
-<text text-anchor="middle" x="368.12" y="-327" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/utils.h</text>
+<polygon fill="#999999" stroke="#666666" points="373.5,-340.5 272.75,-340.5 272.75,-321.25 373.5,-321.25 373.5,-340.5"/>
+<text text-anchor="middle" x="323.12" y="-327" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/utils.h</text>
 </a>
 </g>
 </g>
@@ -21,47 +21,47 @@
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:href="arrays_8h.html" target="_top" xlink:title="Classes describing arrays, vertices etc.">
-<polygon fill="white" stroke="#666666" points="362,-279.62 252.25,-279.62 252.25,-260.38 362,-260.38 362,-279.62"/>
-<text text-anchor="middle" x="307.12" y="-266.12" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/arrays.h</text>
+<polygon fill="white" stroke="#666666" points="317,-279.62 207.25,-279.62 207.25,-260.38 317,-260.38 317,-279.62"/>
+<text text-anchor="middle" x="262.12" y="-266.12" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/arrays.h</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M351.02,-313.37C339.83,-302.57 325.65,-288.87 316.48,-280.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="348.23,-315.51 357.86,-319.93 353.1,-310.47 348.23,-315.51"/>
+<path fill="none" stroke="#63b8ff" d="M306.02,-313.37C294.83,-302.57 280.65,-288.87 271.48,-280.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="303.23,-315.51 312.86,-319.93 308.1,-310.47 303.23,-315.51"/>
 </g>
 <!-- Node12 -->
 <g id="node12" class="node">
 <title>Node12</title>
 <g id="a_node12"><a xlink:href="test__utils_8cpp.html" target="_top" xlink:title="Tests of the utility functions.">
-<polygon fill="white" stroke="#666666" points="480.5,-285.25 379.75,-285.25 379.75,-254.75 480.5,-254.75 480.5,-285.25"/>
-<text text-anchor="start" x="387.75" y="-271.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/tests/unit/test</text>
-<text text-anchor="middle" x="430.12" y="-260.5" font-family="Helvetica,sans-Serif" font-size="10.00">_utils.cpp</text>
+<polygon fill="white" stroke="#666666" points="435.5,-285.25 334.75,-285.25 334.75,-254.75 435.5,-254.75 435.5,-285.25"/>
+<text text-anchor="start" x="342.75" y="-271.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/tests/unit/test</text>
+<text text-anchor="middle" x="385.12" y="-260.5" font-family="Helvetica,sans-Serif" font-size="10.00">_utils.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node12 -->
-<g id="edge16" class="edge">
+<g id="edge15" class="edge">
 <title>Node1&#45;&gt;Node12</title>
-<path fill="none" stroke="#63b8ff" d="M385.33,-313.54C394.58,-304.76 405.88,-294.02 414.82,-285.53"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="383.38,-310.51 378.54,-319.93 388.2,-315.59 383.38,-310.51"/>
+<path fill="none" stroke="#63b8ff" d="M340.33,-313.54C349.58,-304.76 360.88,-294.02 369.82,-285.53"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="338.38,-310.51 333.54,-319.93 343.2,-315.59 338.38,-310.51"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
 <g id="a_node3"><a xlink:href="field_8h.html" target="_top" xlink:title="Classes for the electric and magnetic (split) fields on a grid.">
-<polygon fill="white" stroke="#666666" points="357.5,-152.25 256.75,-152.25 256.75,-133 357.5,-133 357.5,-152.25"/>
-<text text-anchor="middle" x="307.12" y="-138.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/field.h</text>
+<polygon fill="white" stroke="#666666" points="368.5,-152.25 267.75,-152.25 267.75,-133 368.5,-133 368.5,-152.25"/>
+<text text-anchor="middle" x="318.12" y="-138.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/field.h</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node2&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M307.12,-249.3C307.12,-221.7 307.12,-172.63 307.12,-152.56"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="303.63,-248.98 307.12,-258.98 310.63,-248.98 303.63,-248.98"/>
+<path fill="none" stroke="#63b8ff" d="M270.59,-250.04C282.86,-222.58 305.09,-172.81 314.13,-152.56"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="267.03,-248.43 266.15,-258.98 273.43,-251.28 267.03,-248.43"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
@@ -75,90 +75,84 @@
 <!-- Node2&#45;&gt;Node5 -->
 <g id="edge9" class="edge">
 <title>Node2&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M241.37,-261.31C205.39,-254.58 161.48,-242.05 128.12,-218.75 98.24,-197.88 94.72,-185.65 80.12,-152.25 71.15,-131.72 67.86,-105.26 66.71,-91.67"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="240.32,-264.85 250.78,-263.14 241.53,-257.96 240.32,-264.85"/>
+<path fill="none" stroke="#63b8ff" d="M204.81,-257C178.93,-249.38 149.26,-237.33 127.12,-218.75 85.9,-184.14 71.4,-115.99 67.41,-91.65"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="203.69,-260.6 214.26,-259.91 205.57,-253.86 203.69,-260.6"/>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
 <g id="a_node7"><a xlink:href="surface__phasors_8h.html" target="_top" xlink:title="Contains a class that handles the complex amplitude extraction.">
-<polygon fill="white" stroke="#666666" points="371.5,-97 264.75,-97 264.75,-66.5 371.5,-66.5 371.5,-97"/>
-<text text-anchor="start" x="272.75" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/surface</text>
-<text text-anchor="middle" x="318.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_phasors.h</text>
+<polygon fill="white" stroke="#666666" points="491.5,-97 384.75,-97 384.75,-66.5 491.5,-66.5 491.5,-97"/>
+<text text-anchor="start" x="392.75" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/surface</text>
+<text text-anchor="middle" x="438.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_phasors.h</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node7 -->
 <g id="edge14" class="edge">
 <title>Node2&#45;&gt;Node7</title>
-<path fill="none" stroke="#63b8ff" d="M319.6,-251.03C334.1,-228.95 357.18,-189.8 366.12,-152.25 368.11,-143.93 369.31,-140.94 366.12,-133 360.38,-118.67 348.38,-106.1 337.82,-97.12"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="316.31,-248.65 313.63,-258.9 322.12,-252.56 316.31,-248.65"/>
-</g>
-<!-- Node8 -->
-<g id="node8" class="node">
-<title>Node8</title>
-<g id="a_node8"><a xlink:href="vertex__phasors_8h.html" target="_top" xlink:title="Contains a class that handles the complex amplitude extraction at the vertices.">
-<polygon fill="white" stroke="#666666" points="490.88,-97 389.38,-97 389.38,-66.5 490.88,-66.5 490.88,-97"/>
-<text text-anchor="start" x="397.38" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/vertex</text>
-<text text-anchor="middle" x="440.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_phasors.h</text>
-</a>
-</g>
-</g>
-<!-- Node2&#45;&gt;Node8 -->
-<g id="edge15" class="edge">
-<title>Node2&#45;&gt;Node8</title>
-<path fill="none" stroke="#63b8ff" d="M326.82,-253.17C337.7,-243.84 351.01,-231.42 361.12,-218.75 393.5,-178.21 421.33,-122.93 433.53,-97.12"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="324.82,-251.11 319.38,-260.21 329.3,-256.49 324.82,-251.11"/>
+<path fill="none" stroke="#63b8ff" d="M278.97,-252.5C301.66,-230.15 343.11,-188.83 377.12,-152.25 394.4,-133.67 413.59,-111.55 425.75,-97.34"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="276.93,-249.58 272.25,-259.09 281.84,-254.58 276.93,-249.58"/>
 </g>
 <!-- Node10 -->
 <g id="node10" class="node">
 <title>Node10</title>
 <g id="a_node10"><a xlink:href="simulation__parameters_8h.html" target="_top" xlink:title="Classes collecting parameters for the simulation.">
-<polygon fill="white" stroke="#666666" points="255.5,-218.75 136.75,-218.75 136.75,-188.25 255.5,-188.25 255.5,-218.75"/>
-<text text-anchor="start" x="144.75" y="-205.25" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/simulation</text>
-<text text-anchor="middle" x="196.12" y="-194" font-family="Helvetica,sans-Serif" font-size="10.00">_parameters.h</text>
+<polygon fill="white" stroke="#666666" points="254.5,-218.75 135.75,-218.75 135.75,-188.25 254.5,-188.25 254.5,-218.75"/>
+<text text-anchor="start" x="143.75" y="-205.25" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/simulation</text>
+<text text-anchor="middle" x="195.12" y="-194" font-family="Helvetica,sans-Serif" font-size="10.00">_parameters.h</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node10 -->
 <g id="edge10" class="edge">
 <title>Node2&#45;&gt;Node10</title>
-<path fill="none" stroke="#63b8ff" d="M282.32,-254.59C264.13,-244.01 239.5,-229.71 221.23,-219.09"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="280.29,-258.03 290.69,-260.03 283.8,-251.98 280.29,-258.03"/>
+<path fill="none" stroke="#63b8ff" d="M244.97,-252.49C234.26,-242.17 220.59,-229.02 210.28,-219.09"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="242.18,-254.62 251.81,-259.03 247.03,-249.57 242.18,-254.62"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
 <g id="a_node4"><a xlink:href="array__init_8h.html" target="_top" xlink:title="A collection of functions for array initialisation given MATLAB pointers.">
-<polygon fill="white" stroke="#666666" points="246.25,-97 150,-97 150,-66.5 246.25,-66.5 246.25,-97"/>
-<text text-anchor="start" x="158" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/array</text>
-<text text-anchor="middle" x="198.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_init.h</text>
+<polygon fill="white" stroke="#666666" points="366.25,-97 270,-97 270,-66.5 366.25,-66.5 366.25,-97"/>
+<text text-anchor="start" x="278" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/array</text>
+<text text-anchor="middle" x="318.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_init.h</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node3&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M281.26,-127.66C264.31,-118.5 242.19,-106.55 225.03,-97.28"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="279.11,-131.01 289.57,-132.68 282.44,-124.85 279.11,-131.01"/>
+<path fill="none" stroke="#63b8ff" d="M318.12,-121.7C318.12,-113.7 318.12,-104.65 318.12,-97.28"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="314.63,-121.68 318.12,-131.68 321.63,-121.68 314.63,-121.68"/>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node3&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M259.43,-129.97C213.58,-118.77 145.24,-102.08 103.3,-91.83"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="258.45,-133.58 269,-132.55 260.11,-126.78 258.45,-133.58"/>
+<path fill="none" stroke="#63b8ff" d="M268.86,-130.11C220.92,-118.91 149.04,-102.12 104.99,-91.83"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="267.77,-133.69 278.3,-132.55 269.36,-126.87 267.77,-133.69"/>
 </g>
 <!-- Node3&#45;&gt;Node7 -->
 <g id="edge6" class="edge">
 <title>Node3&#45;&gt;Node7</title>
-<path fill="none" stroke="#63b8ff" d="M310.79,-121.98C312.3,-113.91 314.02,-104.73 315.41,-97.28"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="307.19,-121.21 308.8,-131.68 314.07,-122.5 307.19,-121.21"/>
+<path fill="none" stroke="#63b8ff" d="M346.28,-127.81C364.88,-118.69 389.22,-106.74 408.17,-97.44"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="345.05,-125.01 337.61,-132.55 348.13,-131.29 345.05,-125.01"/>
+</g>
+<!-- Node8 -->
+<g id="node8" class="node">
+<title>Node8</title>
+<g id="a_node8"><a xlink:href="vertex__phasors_8h.html" target="_top" xlink:title="Contains a class that handles the complex amplitude extraction at the vertices.">
+<polygon fill="white" stroke="#666666" points="251.88,-97 150.38,-97 150.38,-66.5 251.88,-66.5 251.88,-97"/>
+<text text-anchor="start" x="158.38" y="-83.5" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/vertex</text>
+<text text-anchor="middle" x="201.12" y="-72.25" font-family="Helvetica,sans-Serif" font-size="10.00">_phasors.h</text>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node8 -->
 <g id="edge7" class="edge">
 <title>Node3&#45;&gt;Node8</title>
-<path fill="none" stroke="#63b8ff" d="M337.48,-128.19C358.19,-119.02 385.63,-106.87 406.93,-97.44"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="336.34,-125.31 328.61,-132.55 339.18,-131.71 336.34,-125.31"/>
+<path fill="none" stroke="#63b8ff" d="M290.42,-127.68C272.32,-118.58 248.72,-106.7 230.33,-97.44"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="288.59,-131.19 299.1,-132.55 291.74,-124.93 288.59,-131.19"/>
 </g>
 <!-- Node6 -->
 <g id="node6" class="node">
@@ -180,44 +174,44 @@
 <g id="node9" class="node">
 <title>Node9</title>
 <g id="a_node9"><a xlink:href="test___vertex_phasors_8cpp.html" target="_top" xlink:title="Unit tests for the VertexPhasors class.">
-<polygon fill="white" stroke="#666666" points="492.38,-30.5 387.88,-30.5 387.88,0 492.38,0 492.38,-30.5"/>
-<text text-anchor="start" x="395.88" y="-17" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/tests/unit/test</text>
-<text text-anchor="middle" x="440.12" y="-5.75" font-family="Helvetica,sans-Serif" font-size="10.00">_VertexPhasors.cpp</text>
+<polygon fill="white" stroke="#666666" points="253.38,-30.5 148.88,-30.5 148.88,0 253.38,0 253.38,-30.5"/>
+<text text-anchor="start" x="156.88" y="-17" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/tests/unit/test</text>
+<text text-anchor="middle" x="201.12" y="-5.75" font-family="Helvetica,sans-Serif" font-size="10.00">_VertexPhasors.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node8&#45;&gt;Node9 -->
 <g id="edge8" class="edge">
 <title>Node8&#45;&gt;Node9</title>
-<path fill="none" stroke="#63b8ff" d="M440.12,-55.38C440.12,-47.05 440.12,-38.08 440.12,-30.83"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="436.63,-55.11 440.12,-65.11 443.63,-55.11 436.63,-55.11"/>
+<path fill="none" stroke="#63b8ff" d="M201.12,-55.38C201.12,-47.05 201.12,-38.08 201.12,-30.83"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="197.63,-55.11 201.12,-65.11 204.63,-55.11 197.63,-55.11"/>
 </g>
 <!-- Node10&#45;&gt;Node3 -->
 <g id="edge11" class="edge">
 <title>Node10&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M233.52,-182.66C252.69,-172.5 275.09,-160.62 290.1,-152.65"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="232.04,-180.02 224.85,-187.8 235.32,-186.2 232.04,-180.02"/>
+<path fill="none" stroke="#63b8ff" d="M235.69,-183.08C257.12,-172.83 282.4,-160.72 299.26,-152.65"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="234.35,-180.32 226.85,-187.8 237.38,-186.63 234.35,-180.32"/>
 </g>
 <!-- Node10&#45;&gt;Node5 -->
 <g id="edge12" class="edge">
 <title>Node10&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M141.3,-183.35C125.17,-175.65 108.55,-165.42 96.12,-152.25 79.35,-134.47 71.11,-105.84 67.86,-91.51"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="139.67,-186.91 150.23,-187.82 142.54,-180.53 139.67,-186.91"/>
+<path fill="none" stroke="#63b8ff" d="M150.54,-182.84C135.58,-174.82 119.56,-164.51 107.12,-152.25 88.77,-134.15 75.62,-106.17 69.67,-91.86"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="148.67,-186.33 159.17,-187.78 151.87,-180.1 148.67,-186.33"/>
 </g>
 <!-- Node11 -->
 <g id="node11" class="node">
 <title>Node11</title>
 <g id="a_node11"><a xlink:href="mesh__base_8h.html" target="_top" xlink:title="Generation of orientated mesh.">
-<polygon fill="white" stroke="#666666" points="238.62,-152.25 105.62,-152.25 105.62,-133 238.62,-133 238.62,-152.25"/>
-<text text-anchor="middle" x="172.12" y="-138.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/mesh_base.h</text>
+<polygon fill="white" stroke="#666666" points="249.62,-152.25 116.62,-152.25 116.62,-133 249.62,-133 249.62,-152.25"/>
+<text text-anchor="middle" x="183.12" y="-138.75" font-family="Helvetica,sans-Serif" font-size="10.00">tdms/include/mesh_base.h</text>
 </a>
 </g>
 </g>
 <!-- Node10&#45;&gt;Node11 -->
 <g id="edge13" class="edge">
 <title>Node10&#45;&gt;Node11</title>
-<path fill="none" stroke="#63b8ff" d="M186.12,-177.94C182.47,-169.01 178.58,-159.45 175.82,-152.7"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="183.18,-179.01 190.19,-186.95 189.66,-176.37 183.18,-179.01"/>
+<path fill="none" stroke="#63b8ff" d="M190,-177.36C188.21,-168.59 186.32,-159.31 184.97,-152.7"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="186.73,-177.85 192.16,-186.95 193.59,-176.45 186.73,-177.85"/>
 </g>
 </g>
 </svg>

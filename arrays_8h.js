@@ -11,15 +11,10 @@ var arrays_8h =
     [ "DCollection", "class_d_collection.html", null ],
     [ "DMaterial", "class_d_material.html", null ],
     [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", "struct_dispersive_multi_layer" ],
-    [ "Matrix< T >", "class_matrix.html", "class_matrix" ],
-    [ "GratingStructure", "class_grating_structure.html", null ],
     [ "Vector< T >", "class_vector.html", null ],
     [ "FrequencyExtractVector", "class_frequency_extract_vector.html", null ],
     [ "FrequencyVectors", "struct_frequency_vectors.html", null ],
-    [ "Pupil", "class_pupil.html", null ],
     [ "FieldComponentsVector", "class_field_components_vector.html", "class_field_components_vector" ],
-    [ "Vertices", "class_vertices.html", null ],
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
-    [ "CCoefficientMatrix", "class_c_coefficient_matrix.html", null ],
     [ "FullFieldSnapshot", "class_full_field_snapshot.html", "class_full_field_snapshot" ]
 ];

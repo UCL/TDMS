@@ -59,8 +59,7 @@ var menudata={children:[
 {text:"v",url:"functions.html#index_v"},
 {text:"x",url:"functions.html#index_x"},
 {text:"y",url:"functions.html#index_y"},
-{text:"z",url:"functions.html#index_z"},
-{text:"~",url:"functions.html#index__7E"}]},
+{text:"z",url:"functions.html#index_z"}]},
 {text:"Functions",url:"functions_func.html",children:[
 {text:"a",url:"functions_func.html#index_a"},
 {text:"c",url:"functions_func.html#index_c"},
@@ -81,8 +80,7 @@ var menudata={children:[
 {text:"u",url:"functions_func.html#index_u"},
 {text:"v",url:"functions_func.html#index_v"},
 {text:"x",url:"functions_func.html#index_x"},
-{text:"z",url:"functions_func.html#index_z"},
-{text:"~",url:"functions_func.html#index__7E"}]},
+{text:"z",url:"functions_func.html#index_z"}]},
 {text:"Variables",url:"functions_vars.html",children:[
 {text:"a",url:"functions_vars.html#index_a"},
 {text:"c",url:"functions_vars.html#index_c"},

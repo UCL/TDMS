@@ -1,7 +1,5 @@
 <map id="VertexPhasors" name="VertexPhasors">
-<area shape="rect" id="node1" title=" " alt="" coords="69,169,176,195"/>
-<area shape="rect" id="node2" href="$class_vertices.html" title=" " alt="" coords="18,80,88,106"/>
-<area shape="rect" id="node3" href="$class_matrix.html" title=" " alt="" coords="5,5,101,31"/>
-<area shape="rect" id="node4" href="$class_field_components_vector.html" title=" " alt="" coords="112,80,274,106"/>
-<area shape="rect" id="node5" href="$class_vector.html" title=" " alt="" coords="144,5,242,31"/>
+<area shape="rect" id="node1" title=" " alt="" coords="32,169,140,195"/>
+<area shape="rect" id="node2" href="$class_field_components_vector.html" title=" " alt="" coords="5,80,167,106"/>
+<area shape="rect" id="node3" href="$class_vector.html" title=" " alt="" coords="37,5,135,31"/>
 </map>

@@ -4,8 +4,5 @@ var searchData=
   ['magneticsplitfield_1',['MagneticSplitField',['../class_magnetic_split_field.html',1,'']]],
   ['materialcollection_2',['MaterialCollection',['../class_material_collection.html',1,'']]],
   ['matfilematrixcollection_3',['MatFileMatrixCollection',['../class_mat_file_matrix_collection.html',1,'']]],
-  ['matrix_4',['Matrix',['../class_matrix.html',1,'']]],
-  ['matrix_3c_20double_20_3e_5',['Matrix&lt; double &gt;',['../class_matrix.html',1,'']]],
-  ['matrix_3c_20int_20_3e_6',['Matrix&lt; int &gt;',['../class_matrix.html',1,'']]],
-  ['matrixcollection_7',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
+  ['matrixcollection_4',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
 ];

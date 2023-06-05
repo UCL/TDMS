@@ -39,15 +39,6 @@ var hierarchy =
       [ "CMaterial", "class_c_material.html", null ],
       [ "DMaterial", "class_d_material.html", null ]
     ] ],
-    [ "Matrix< T >", "class_matrix.html", null ],
-    [ "Matrix< double >", "class_matrix.html", [
-      [ "CCoefficientMatrix", "class_c_coefficient_matrix.html", null ],
-      [ "Pupil", "class_pupil.html", null ]
-    ] ],
-    [ "Matrix< int >", "class_matrix.html", [
-      [ "GratingStructure", "class_grating_structure.html", null ],
-      [ "Vertices", "class_vertices.html", null ]
-    ] ],
     [ "MatrixCollection", "class_matrix_collection.html", [
       [ "MatFileMatrixCollection", "class_mat_file_matrix_collection.html", null ]
     ] ],
