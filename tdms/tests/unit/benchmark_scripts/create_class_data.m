@@ -63,15 +63,15 @@ Cmaterial.Cbz = 0:4;
 Cmaterial.Ccz = 0:4;
 
 C = Cmaterial;
-C = rmfield(C, "Ccx", "Ccy", "Ccz");
+C = rmfield(C, ["Ccx", "Ccy", "Ccz"]);
 
 Dmaterial = struct();
 Dmaterial.Dax = 5:9;
 Dmaterial.Dbx = 5:9;
-Dmaterial.Dcx = 5:9;
 Dmaterial.Day = 5:9;
 Dmaterial.Dby = 5:9;
-Dmaterial.Dcy = 5:9;
+Dmaterial.Daz = 5:9;
+Dmaterial.Dbz = 5:9;
 
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the

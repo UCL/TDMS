@@ -32,7 +32,7 @@ TEST_CASE("CMaterial") {
     file.read(c_material);
   }
 
-  bool data_read_correctly;
+  bool data_read_correctly = true;
   for (const char &xyz : {'x', 'y', 'z'}) {
     data_read_correctly = data_read_correctly &&
                           c_material.a[xyz] == expected_read &&
@@ -86,7 +86,7 @@ TEST_CASE("DMaterial and DCollection") {
   DCollection d_collection;
 
   // This is the data we expect to be read into each member
-  const std::vector<double> expected_read = {5., 6., 7., 8., 9., 10.};
+  const std::vector<double> expected_read = {5., 6., 7., 8., 9.};
 
   SECTION(".mat") {
     HDF5Reader file(tdms_object_data);

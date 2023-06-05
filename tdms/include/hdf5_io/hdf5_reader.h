@@ -132,7 +132,7 @@ public:
             XYZVector &v) const;
 
   void read(CMaterial &c_material,
-            const std::string &group_name = "CMaterial") const;
+            const std::string &group_name = "Cmaterial") const;
 
   void read(CCollection &c_collection,
             const std::string &dataset_name = "C") const;
@@ -140,11 +140,12 @@ public:
   template<bool is_material>
   void read(DBase<is_material> &d_base,
             const std::string group_name = "") const {
-    // Read from non-standard location in file if passed
+    // Read from non-standard location in file if passed a second argument
     const std::string group_to_read_from =
             group_name.empty() ? d_base.input_field : group_name;
+
     // We should expect a group with 6 members
-    H5::Group group = file_->openGroup(d_base.input_field);
+    H5::Group group = file_->openGroup(group_to_read_from);
     int n_members = group.getNumObjs();
     if (n_members != 6) {
       throw std::runtime_error("D should have 6 members, but " +
@@ -152,7 +153,7 @@ public:
     }
     group.close();
 
-    read(d_base.input_field, "Da", d_base.a);
-    read(d_base.input_field, "Db", d_base.b);
+    read(group_to_read_from, "Da", d_base.a);
+    read(group_to_read_from, "Db", d_base.b);
   };
 };
