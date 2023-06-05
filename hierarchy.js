@@ -46,9 +46,6 @@ var hierarchy =
       [ "CCoefficientMatrix", "class_c_coefficient_matrix.html", null ],
       [ "Pupil", "class_pupil.html", null ]
     ] ],
-    [ "Matrix< fftw_complex >", "class_matrix.html", [
-      [ "EHVec", "class_e_h_vec.html", null ]
-    ] ],
     [ "Matrix< int >", "class_matrix.html", [
       [ "GratingStructure", "class_grating_structure.html", null ],
       [ "Vertices", "class_vertices.html", null ]

@@ -620,85 +620,77 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="line"><a id="l00524" name="l00524"></a><span class="lineno"><a class="line" href="class_c_coefficient_matrix.html">  524</a></span><span class="keyword">class </span><a class="code hl_class" href="class_c_coefficient_matrix.html">CCoefficientMatrix</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_matrix.html">Matrix</a>&lt;double&gt; {};</div>
 <div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span><span class="comment"></span> </div>
 <div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span><span class="comment"> * Temporary storage &#39;vector&#39;</span></div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span><span class="comment"> * Container for storing snapshots of the full-field</span></div>
 <div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno"><a class="line" href="class_e_h_vec.html">  529</a></span><span class="keyword">class </span><a class="code hl_class" href="class_e_h_vec.html">EHVec</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_matrix.html">Matrix</a>&lt;fftw_complex&gt; {</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html">  529</a></span><span class="keyword">class </span><a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a> {</div>
 <div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>  <a class="code hl_class" href="class_e_h_vec.html">~EHVec</a>();</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>};</div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span><span class="comment"></span> </div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span><span class="comment"> * Container for storing snapshots of the full-field</span></div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html">  537</a></span><span class="keyword">class </span><a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a> {</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>  std::complex&lt;double&gt; Ex = 0.;<span class="comment">//&lt; x-component of the electric field</span></div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>  std::complex&lt;double&gt; Ey = 0.;<span class="comment">//&lt; y-component of the electric field</span></div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>  std::complex&lt;double&gt; Ez = 0.;<span class="comment">//&lt; z-component of the electric field</span></div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>  std::complex&lt;double&gt; Hx = 0.;<span class="comment">//&lt; x-component of the magnetic field</span></div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>  std::complex&lt;double&gt; Hy = 0.;<span class="comment">//&lt; y-component of the magnetic field</span></div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>  std::complex&lt;double&gt; Hz = 0.;<span class="comment">//&lt; z-component of the magnetic field</span></div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>  <a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span><span class="comment"></span> </div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span><span class="comment">   * @brief Return the component of the field corresponding to the index</span></div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span><span class="comment">   * provided.</span></div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span><span class="comment">   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.</span></div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span><span class="comment">   * This is the indexing order that other storage containers use.</span></div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span><span class="comment">   * Throws an error if provided an index &lt;0 or &gt;5.</span></div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span><span class="comment">   * @param index Field component index to fetch</span></div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span><span class="comment">   * @return std::complex&lt;double&gt; The field component</span></div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">  560</a></span>  std::complex&lt;double&gt; <a class="code hl_function" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">operator[]</a>(<span class="keywordtype">int</span> index) {</div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>    <span class="keywordflow">switch</span> (index) {</div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>      <span class="keywordflow">case</span> 0:</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>        <span class="keywordflow">return</span> Ex;</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>      <span class="keywordflow">case</span> 1:</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>        <span class="keywordflow">return</span> Ey;</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>      <span class="keywordflow">case</span> 2:</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>        <span class="keywordflow">return</span> Ez;</div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>      <span class="keywordflow">case</span> 3:</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>        <span class="keywordflow">return</span> Hx;</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>      <span class="keywordflow">case</span> 4:</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>        <span class="keywordflow">return</span> Hy;</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>      <span class="keywordflow">case</span> 5:</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>        <span class="keywordflow">return</span> Hz;</div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>      <span class="keywordflow">default</span>:</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + std::to_string(index) +</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>                                 <span class="stringliteral">&quot; does not correspond to a field component.&quot;</span>);</div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    }</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>  }</div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span><span class="comment"></span> </div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span><span class="comment">   * @brief Multiplies the electric field components by `factor`.</span></div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span><span class="comment">   * @param factor to scale the field by</span></div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">  591</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">multiply_E_by</a>(std::complex&lt;double&gt; factor) {</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>    Ex *= factor;</div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>    Ey *= factor;</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>    Ez *= factor;</div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>  }<span class="comment"></span></div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span><span class="comment">   * @brief Multiplies the magnetic field components by `factor`.</span></div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span><span class="comment">   * @param factor to scale the field by</span></div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">  600</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">multiply_H_by</a>(std::complex&lt;double&gt; factor) {</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>    Hx *= factor;</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>    Hy *= factor;</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>    Hz *= factor;</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>  }</div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>};</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>  std::complex&lt;double&gt; Ex = 0.;<span class="comment">//&lt; x-component of the electric field</span></div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>  std::complex&lt;double&gt; Ey = 0.;<span class="comment">//&lt; y-component of the electric field</span></div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>  std::complex&lt;double&gt; Ez = 0.;<span class="comment">//&lt; z-component of the electric field</span></div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>  std::complex&lt;double&gt; Hx = 0.;<span class="comment">//&lt; x-component of the magnetic field</span></div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>  std::complex&lt;double&gt; Hy = 0.;<span class="comment">//&lt; y-component of the magnetic field</span></div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>  std::complex&lt;double&gt; Hz = 0.;<span class="comment">//&lt; z-component of the magnetic field</span></div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span> </div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>  <a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span><span class="comment"></span> </div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span><span class="comment">   * @brief Return the component of the field corresponding to the index</span></div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span><span class="comment">   * provided.</span></div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span><span class="comment">   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.</span></div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span><span class="comment">   * This is the indexing order that other storage containers use.</span></div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span><span class="comment">   * Throws an error if provided an index &lt;0 or &gt;5.</span></div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span><span class="comment">   * @param index Field component index to fetch</span></div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span><span class="comment">   * @return std::complex&lt;double&gt; The field component</span></div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">  552</a></span>  std::complex&lt;double&gt; <a class="code hl_function" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">operator[]</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>    <span class="keywordflow">switch</span> (index) {</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>      <span class="keywordflow">case</span> 0:</div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>        <span class="keywordflow">return</span> Ex;</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>      <span class="keywordflow">case</span> 1:</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        <span class="keywordflow">return</span> Ey;</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>      <span class="keywordflow">case</span> 2:</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>        <span class="keywordflow">return</span> Ez;</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>      <span class="keywordflow">case</span> 3:</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>        <span class="keywordflow">return</span> Hx;</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>      <span class="keywordflow">case</span> 4:</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        <span class="keywordflow">return</span> Hy;</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>      <span class="keywordflow">case</span> 5:</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>        <span class="keywordflow">return</span> Hz;</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>      <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + std::to_string(index) +</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                                 <span class="stringliteral">&quot; does not correspond to a field component.&quot;</span>);</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>    }</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>  }</div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span><span class="comment"></span> </div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span><span class="comment">   * @brief Multiplies the electric field components by `factor`.</span></div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span><span class="comment">   * @param factor to scale the field by</span></div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">  583</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">multiply_E_by</a>(std::complex&lt;double&gt; factor) {</div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    Ex *= factor;</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>    Ey *= factor;</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>    Ez *= factor;</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>  }<span class="comment"></span></div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span><span class="comment">   * @brief Multiplies the magnetic field components by `factor`.</span></div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span><span class="comment">   * @param factor to scale the field by</span></div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">  592</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">multiply_H_by</a>(std::complex&lt;double&gt; factor) {</div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>    Hx *= factor;</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>    Hy *= factor;</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>    Hz *= factor;</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>  }</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>};</div>
 <div class="ttc" id="aclass_c_coefficient_matrix_html"><div class="ttname"><a href="class_c_coefficient_matrix.html">CCoefficientMatrix</a></div><div class="ttdef"><b>Definition:</b> arrays.h:524</div></div>
 <div class="ttc" id="aclass_c_collection_base_html"><div class="ttname"><a href="class_c_collection_base.html">CCollectionBase</a></div><div class="ttdoc">A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f...</div><div class="ttdef"><b>Definition:</b> arrays.h:152</div></div>
 <div class="ttc" id="aclass_c_collection_html"><div class="ttname"><a href="class_c_collection.html">CCollection</a></div><div class="ttdoc">A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f...</div><div class="ttdef"><b>Definition:</b> arrays.h:160</div></div>
@@ -711,14 +703,13 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="ttc" id="aclass_d_tilde_html_a233f21b11f30cd48c4a8292e1894dd5e"><div class="ttname"><a href="class_d_tilde.html#a233f21b11f30cd48c4a8292e1894dd5e">DTilde::x</a></div><div class="ttdeci">Tensor3D&lt; std::complex&lt; double &gt; &gt; x</div><div class="ttdef"><b>Definition:</b> arrays.h:459</div></div>
 <div class="ttc" id="aclass_d_tilde_html_a9e9d2cf14b5b485a90bff7154bf74ecf"><div class="ttname"><a href="class_d_tilde.html#a9e9d2cf14b5b485a90bff7154bf74ecf">DTilde::num_det_modes</a></div><div class="ttdeci">int num_det_modes() const</div><div class="ttdoc">Fetch the number of modes.</div><div class="ttdef"><b>Definition:</b> arrays.h:454</div></div>
 <div class="ttc" id="aclass_detector_sensitivity_arrays_html"><div class="ttname"><a href="class_detector_sensitivity_arrays.html">DetectorSensitivityArrays</a></div><div class="ttdef"><b>Definition:</b> arrays.h:510</div></div>
-<div class="ttc" id="aclass_e_h_vec_html"><div class="ttname"><a href="class_e_h_vec.html">EHVec</a></div><div class="ttdef"><b>Definition:</b> arrays.h:529</div></div>
 <div class="ttc" id="aclass_field_components_vector_html"><div class="ttname"><a href="class_field_components_vector.html">FieldComponentsVector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:481</div></div>
 <div class="ttc" id="aclass_field_components_vector_html_afa2ce13369d9b1f8fb1392a181be3f82"><div class="ttname"><a href="class_field_components_vector.html#afa2ce13369d9b1f8fb1392a181be3f82">FieldComponentsVector::index</a></div><div class="ttdeci">int index(int value)</div><div class="ttdef"><b>Definition:</b> arrays.cpp:334</div></div>
 <div class="ttc" id="aclass_frequency_extract_vector_html"><div class="ttname"><a href="class_frequency_extract_vector.html">FrequencyExtractVector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:324</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html"><div class="ttname"><a href="class_full_field_snapshot.html">FullFieldSnapshot</a></div><div class="ttdef"><b>Definition:</b> arrays.h:537</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_aa24df31b644ca68e3cf86b7c6799f5dc"><div class="ttname"><a href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">FullFieldSnapshot::multiply_E_by</a></div><div class="ttdeci">void multiply_E_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the electric field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:591</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_acf34a9ea69bbd2ef1aa9fb8c7b6fa07a"><div class="ttname"><a href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">FullFieldSnapshot::multiply_H_by</a></div><div class="ttdeci">void multiply_H_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the magnetic field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:600</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_aec09405bbf842beedc36c15073faceb7"><div class="ttname"><a href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot::operator[]</a></div><div class="ttdeci">std::complex&lt; double &gt; operator[](int index)</div><div class="ttdoc">Return the component of the field corresponding to the index provided.</div><div class="ttdef"><b>Definition:</b> arrays.h:560</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html"><div class="ttname"><a href="class_full_field_snapshot.html">FullFieldSnapshot</a></div><div class="ttdef"><b>Definition:</b> arrays.h:529</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_aa24df31b644ca68e3cf86b7c6799f5dc"><div class="ttname"><a href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">FullFieldSnapshot::multiply_E_by</a></div><div class="ttdeci">void multiply_E_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the electric field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:583</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_acf34a9ea69bbd2ef1aa9fb8c7b6fa07a"><div class="ttname"><a href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">FullFieldSnapshot::multiply_H_by</a></div><div class="ttdeci">void multiply_H_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the magnetic field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:592</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_aec09405bbf842beedc36c15073faceb7"><div class="ttname"><a href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot::operator[]</a></div><div class="ttdeci">std::complex&lt; double &gt; operator[](int index)</div><div class="ttdoc">Return the component of the field corresponding to the index provided.</div><div class="ttdef"><b>Definition:</b> arrays.h:552</div></div>
 <div class="ttc" id="aclass_grating_structure_html"><div class="ttname"><a href="class_grating_structure.html">GratingStructure</a></div><div class="ttdef"><b>Definition:</b> arrays.h:292</div></div>
 <div class="ttc" id="aclass_incident_field_html"><div class="ttname"><a href="class_incident_field.html">IncidentField</a></div><div class="ttdef"><b>Definition:</b> arrays.h:466</div></div>
 <div class="ttc" id="aclass_material_collection_html"><div class="ttname"><a href="class_material_collection.html">MaterialCollection</a></div><div class="ttdef"><b>Definition:</b> arrays.h:134</div></div>

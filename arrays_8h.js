@@ -24,6 +24,5 @@ var arrays_8h =
     [ "Vertices", "class_vertices.html", null ],
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
     [ "CCoefficientMatrix", "class_c_coefficient_matrix.html", null ],
-    [ "EHVec", "class_e_h_vec.html", null ],
     [ "FullFieldSnapshot", "class_full_field_snapshot.html", "class_full_field_snapshot" ]
 ];

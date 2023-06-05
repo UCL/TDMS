@@ -6,7 +6,6 @@ var searchData=
   ['matfilematrixcollection_3',['MatFileMatrixCollection',['../class_mat_file_matrix_collection.html',1,'']]],
   ['matrix_4',['Matrix',['../class_matrix.html',1,'']]],
   ['matrix_3c_20double_20_3e_5',['Matrix&lt; double &gt;',['../class_matrix.html',1,'']]],
-  ['matrix_3c_20fftw_5fcomplex_20_3e_6',['Matrix&lt; fftw_complex &gt;',['../class_matrix.html',1,'']]],
-  ['matrix_3c_20int_20_3e_7',['Matrix&lt; int &gt;',['../class_matrix.html',1,'']]],
-  ['matrixcollection_8',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
+  ['matrix_3c_20int_20_3e_6',['Matrix&lt; int &gt;',['../class_matrix.html',1,'']]],
+  ['matrixcollection_7',['MatrixCollection',['../class_matrix_collection.html',1,'']]]
 ];
