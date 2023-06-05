@@ -272,7 +272,13 @@ Unit</h2>
 <p>It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is covered by unit tests.</p>
 <h3><a class="anchor" id="autotoc_md23"></a>
 Benchmark Scripts and Data Generation</h3>
-<p>The <code>tdms/tests/unit/benchmarking</code> directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.</p>
+<p>The <code>tdms/tests/unit/benchmark_scripts</code> directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.</p>
+<p>To generate the necessary test inputs; change into the <code>benchmark_scripts</code> directory and run,</p>
+<div class="fragment"><div class="line">matlab -nosplash -nodesktop -nodisplay -r setup_unit_tests</div>
+</div><!-- fragment --><details >
+<summary >
+More details about the data generation scripts and benchmarking</summary>
+<p></p>
 <p>The <code>C++</code> unit tests require the presence of a <code>.mat</code> or <code>.hdf5</code> file to read/write data from/to during testing. The locations of these files are coded into <code>tests/include/unit_test_utils.h</code>, but the files themselves are not committed to the repository - they can be created by running the <code>setup_unit_tests.m</code> and <code>create_hdf5_data.py</code> scripts. These scripts can then be updated to add/remove/edit the data available to the unit tests:</p><ul>
 <li><code>create_hdf5_test_file.py</code> : Produces <code>hdf5_test_file.hdf5</code>; used when testing read/writing from <code>.hdf5</code> files.</li>
 <li><code>create_structure_array.m</code> : Produces <code>structure_array.mat</code>; used when testing reading/writing MATLAB <code>struct</code> arrays.</li>
@@ -280,6 +286,8 @@ Benchmark Scripts and Data Generation</h3>
 <li><code>create_bad_class_data.m</code> : Produces <code>bad_class_data.mat</code>; used for testing failure cases when reading/writing <code>tdms</code> objects to/from <code>.mat</code> files.</li>
 </ul>
 <p>The <code>benchmark_</code> scripts perform band-limited interpolation (BLi) using <code>MATLAB</code>'s <code>interp</code> function. <code>TDMS</code>'s interpolation schemes are based off this <code>MATLAB</code> function (specficially, in the coefficients the scheme uses to interpolate), and are thus used to benchmark the accuracy of the scheme.</p>
+<p></p>
+</details>
 <h2><a class="anchor" id="coverage"></a>
 Test coverage</h2>
 <p>If you want to check the coverage of the unit tests, then build with <code>-DCODE_COVERAGE=ON</code>. Then when you run <code>ctest</code> or the <code>tdms_tests</code> executable, <a href="https://gcc.gnu.org/onlinedocs/gcc/Gcov-Data-Files.html">GCDA coverage files</a> are generated. They are not really for humans to parse but can be summarised with other tools. In our build system we use <a href="https://github.com/linux-test-project/lcov"><code>lcov</code></a>, a frontend for <code>gcov</code> reports. If you don't have <code>lcov</code>, you can install it with aptitude or homebrew (<code>sudo apt install lcov</code> or <code>brew install lcov</code>).</p>
