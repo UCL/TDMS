@@ -82,7 +82,7 @@ void HDF5Reader::read(DispersiveMultiLayer &dml) const {
 void HDF5Reader::read(const string &group_name, const string &name_prefix,
                       XYZVector &v) const {
   for (const char &component : {'x', 'y', 'z'}) {
-    read_dataset_in_group(group_name, name_prefix + component, v[component]);
+    read(group_name + "/" + name_prefix + component, v[component]);
   }
 }
 
