@@ -13,9 +13,6 @@
 #include <spdlog/spdlog.h>
 
 bool HDF5Base::path_exists(const std::string &path_under_root) const {
-  // Can't check anything if there's no file
-  if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
-
   // Attempt to lookup the path
   return file_->exists(path_under_root);
 }
