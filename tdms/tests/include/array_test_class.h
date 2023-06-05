@@ -260,18 +260,3 @@ private:
 public:
   std::string get_class_name() override { return "XYZTensor3D"; }
 };
-
-/** @brief Unit tests for XYZVectors */
-class XYZVectorsTest : public AbstractArrayTest {
-private:
-  const static int n_layers = 4;
-  const static int n_cols = 8;
-  const static int n_rows = 16;
-
-  void test_correct_construction() override;
-  // set_ptr(), all_elements_less_than()
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "XYZVectors"; }
-};

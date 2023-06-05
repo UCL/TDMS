@@ -26,6 +26,12 @@ empty_array = [];
 %% A non-empty standalone array that we can attempt to read from
 nonempty_dataset = 0:4;
 
+%% An example to check that XYZVectors are read in correctly from .mat files
+XYZVector = struct();
+XYZVector.xyz_x = [0.1 0.2 0.3];
+XYZVector.xyz_y = [0.4 0.5 0.6];
+XYZVector.xyz_z = [0.7 0.8 0.9];
+
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
