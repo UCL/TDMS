@@ -58,10 +58,7 @@ bool HDF5Base::is_ok() const {
 
 bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
   // Can't check anything if there's no file
-  if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
-
-  // This will point to the MATLAB_empty attribute
-  H5::Attribute empty_attribute;
+  if (!is_ok()) { throw std::runtime_error("Problem with the file!"); }
 
   // Attempt to fetch the object requested
   if (!file_->exists(object_path)) {
@@ -69,11 +66,10 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
   }
   hid_t object_reference = file_->getObjId(object_path);
 
-  // The object could be a group or a dataset, so we need to account for this
   H5I_type_t object_type = file_->getHDFObjType(object_reference);
+  H5::Attribute empty_attribute;  // will point to the MATLAB_empty attribute
   if (object_type == H5I_GROUP) {
-    // Dealing with a group
-    H5::Group object = file_->openGroup(object_path);
+      H5::Group object = file_->openGroup(object_path);
     if (object.attrExists("MATLAB_empty")) {
       empty_attribute = object.openAttribute("MATLAB_empty");
     } else {
