@@ -107,5 +107,5 @@ public:
    * @return true The object is flagged as being the empty MATLAB array.
    * @return false Otherwise.
    */
-  bool has_MATLAB_empty(const std::string &object_name) const;
+  bool flagged_MATLAB_empty(const std::string &object_name) const;
 };
