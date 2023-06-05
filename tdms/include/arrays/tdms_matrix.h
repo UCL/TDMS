@@ -32,6 +32,7 @@ public:
 
   void initialise(T **buffer, int n_rows, int n_cols,
                   bool buffer_leads_n_cols = false) {
+    allocate(n_rows, n_cols);
     if (buffer_leads_n_cols) {
       for (int i = 0; i < n_rows; i++) {
         for (int j = 0; j < n_cols; j++) { operator()(i, j) = buffer[j][i]; }
@@ -48,9 +49,9 @@ public:
 
 class CCoefficientMatrix : public TDMSMatrix<double> {};
 
-// class GratingStructure : public Matrix<int> {
-//   GratingStructure(const mxArray *ptr, int I_tot);
-// };
+struct GratingStructure : public TDMSMatrix<int> {
+  GratingStructure(const mxArray *ptr, int I_tot);
+};
 
 // class Pupil : public Matrix<double> {
 // public:

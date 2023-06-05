@@ -152,12 +152,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -310,12 +310,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -490,12 +490,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -642,12 +642,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -819,12 +819,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -969,12 +969,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1141,12 +1141,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -1249,12 +1249,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1402,12 +1402,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1577,12 +1577,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -1737,12 +1737,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1780,12 +1780,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1843,12 +1843,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1889,12 +1889,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1952,12 +1952,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1999,12 +1999,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2062,12 +2062,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2107,12 +2107,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2174,12 +2174,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -2218,12 +2218,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -2276,12 +2276,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2322,12 +2322,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2386,12 +2386,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2432,12 +2432,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +

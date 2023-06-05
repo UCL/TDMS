@@ -9,6 +9,7 @@
 
 #include "array_test_class.h"
 #include "arrays.h"
+#include "arrays/tdms_matrix.h"
 
 void MatrixTest::test_correct_construction() {
   // create a Matrix via the default constructor

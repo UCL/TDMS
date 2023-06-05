@@ -13,6 +13,7 @@
 #include "arrays/cuboid.h"
 #include "arrays/dtilde.h"
 #include "arrays/incident_field.h"
+#include "arrays/tdms_matrix.h"
 #include "cell_coordinate.h"
 #include "field.h"
 #include "fieldsample.h"
@@ -90,7 +91,7 @@ public:
  * inputs from this file.
  *
  * The Sources, GratingStructure, and FrequencyExtractVector can only be
- * initalised after the other arrays in the input file have been parsed.
+ * initialised after the other arrays in the input file have been parsed.
  *
  * As such, this object inherits the setup of IndependentObjectsFromInfile, and
  * then constructs the aforementioned arrays using a combination of information

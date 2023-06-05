@@ -290,14 +290,6 @@ public:
   };
 };
 
-class GratingStructure : public Matrix<int> {
-
-public:
-  GratingStructure(const mxArray *ptr, int I_tot);
-
-  ~GratingStructure();
-};
-
 template<typename T>
 class Vector {
 protected:

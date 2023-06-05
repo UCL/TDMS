@@ -172,25 +172,6 @@ bool DispersiveMultiLayer::is_dispersive(double near_zero_tolerance) const {
   return false;
 }
 
-GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
-
-  if (mxIsEmpty(ptr)) { return; }
-
-  auto dims = mxGetDimensions(ptr);
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 ||
-      dims[1] != (I_tot + 1)) {
-    throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
-  }
-
-  matrix = cast_matlab_2D_array((int *) mxGetPr(ptr), 2, I_tot + 1);
-}
-
-GratingStructure::~GratingStructure() {
-  free_cast_matlab_2D_array(matrix);
-  // prevent double free when calling ~Matrix, superclass destructor
-  matrix = nullptr;
-}
-
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr,
                                                double omega_an) {
 

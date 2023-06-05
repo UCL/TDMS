@@ -25,11 +25,11 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
         if (inputs.params.is_structure) {
           if (k > inputs.params.pml.Dzl &&
               k < (inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K)) {
-            if ((k - inputs.structure[i][1]) <
+            if ((k - inputs.structure(1, i)) <
                         (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
-                (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-              k_loc = k - inputs.structure[i][1];
-            else if ((k - inputs.structure[i][1]) >=
+                (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+              k_loc = k - inputs.structure(1, i);
+            else if ((k - inputs.structure(1, i)) >=
                      (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl))
               k_loc = inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K - 1;
             else
@@ -213,11 +213,11 @@ void SimulationManager::update_Exz(LoopVariables &lv) {
         if (inputs.params.is_structure)
           if (k > inputs.params.pml.Dzl &&
               k < (inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K)) {
-            if ((k - inputs.structure[i][1]) <
+            if ((k - inputs.structure(1, i)) <
                         (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
-                (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-              k_loc = k - inputs.structure[i][1];
-            else if ((k - inputs.structure[i][1]) >=
+                (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+              k_loc = k - inputs.structure(1, i);
+            else if ((k - inputs.structure(1, i)) >=
                      (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl))
               k_loc = inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K - 1;
             else
