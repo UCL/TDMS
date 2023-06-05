@@ -11,6 +11,8 @@
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/dtilde.h"
+#include "arrays/incident_field.h"
 #include "cell_coordinate.h"
 #include "field.h"
 #include "fieldsample.h"

@@ -8,6 +8,7 @@
 
 #include "array_test_class.h"
 #include "arrays.h"
+#include "arrays/dtilde.h"
 
 using namespace std;
 

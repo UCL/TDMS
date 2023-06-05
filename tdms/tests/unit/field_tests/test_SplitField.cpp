@@ -29,9 +29,9 @@ TEST_CASE("SplitField: allocate and zero") {
   for (int k = 0; k < 1; k++) {
     for (int j = 0; j < 2; j++) {
       for (int i = 0; i < 3; i++) {
-        REQUIRE(is_close(field.xy[k][j][i], 0.0));
-        REQUIRE(is_close(field.zy[k][j][i], 0.0));
-        REQUIRE(is_close(field.yz[k][j][i], 0.0));
+        REQUIRE(is_close(field.xy(i, j, k), 0.0));
+        REQUIRE(is_close(field.zy(i, j, k), 0.0));
+        REQUIRE(is_close(field.yz(i, j, k), 0.0));
       }
     }
   }

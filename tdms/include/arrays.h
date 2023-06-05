@@ -11,6 +11,7 @@
 
 #include <fftw3.h>
 
+#include "arrays/tensor3d.h"
 #include "globals.h"
 #include "matlabio.h"
 #include "utils.h"
@@ -352,127 +353,6 @@ public:
   void initialise(const mxArray *ptr, int n_rows, int n_cols);
 
   ~Pupil();
-};
-
-template<typename T>
-class Tensor3D {
-protected:
-  int n_layers = 0;
-  int n_cols = 0;
-  int n_rows = 0;
-  T ***tensor = nullptr;
-
-public:
-  bool is_matlab_initialised = false;
-
-  Tensor3D() = default;
-
-  Tensor3D(T ***tensor, int n_layers, int n_cols, int n_rows) {
-    initialise(tensor, n_layers, n_cols, n_rows);
-  }
-
-  void initialise(T ***_tensor, int _n_layers, int _n_cols, int _n_rows) {
-    tensor = _tensor;
-    n_layers = _n_layers;
-    n_cols = _n_cols;
-    n_rows = _n_rows;
-  }
-
-  inline T **operator[](int value) const { return tensor[value]; };
-
-  bool has_elements() { return tensor != nullptr; };
-
-  void zero() {
-    for (int k = 0; k < n_layers; k++)
-      for (int j = 0; j < n_cols; j++)
-        for (int i = 0; i < n_rows; i++) { tensor[k][j][i] = 0; }
-  }
-
-  void allocate(int nK, int nJ, int nI) {
-    n_layers = nK, n_cols = nJ, n_rows = nI;
-    tensor = (T ***) malloc(n_layers * sizeof(T **));
-
-    for (int k = 0; k < n_layers; k++) {
-      tensor[k] = (T **) malloc(n_cols * sizeof(T *));
-    }
-
-    for (int k = 0; k < n_layers; k++) {
-      for (int j = 0; j < n_cols; j++) {
-        tensor[k][j] = (T *) malloc(n_rows * sizeof(T));
-      }
-    }
-  };
-
-  /**
-   * @brief Computes the Frobenius norm of the tensor
-   *
-   * fro_norm = \f$\sqrt{ \sum_{i=0}^{I_tot}\sum_{j=0}^{J_tot}\sum_{k=0}^{K_tot}
-   * |t[k][j][i]|^2 }\f$
-   */
-  double frobenius() {
-    T norm_val = 0;
-    for (int i1 = 0; i1 < n_layers; i1++) {
-      for (int i2 = 0; i2 < n_cols; i2++) {
-        for (int i3 = 0; i3 < n_rows; i3++) {
-          norm_val += abs(tensor[i1][i2][i3]) * abs(tensor[i1][i2][i3]);
-        }
-      }
-    }
-    return sqrt(norm_val);
-  }
-
-  ~Tensor3D() {
-    if (tensor == nullptr) return;
-    if (is_matlab_initialised) {
-      free_cast_matlab_3D_array(tensor, n_layers);
-    } else {
-      for (int k = 0; k < n_layers; k++) {
-        for (int j = 0; j < n_cols; j++) { free(tensor[k][j]); }
-        free(tensor[k]);
-      }
-      free(tensor);
-    }
-  }
-};
-
-/**
- * @brief Stores the fibre modes in the Fourier plane of the objective lens.
- *
- * The "Tilde" indicates that these quantities are in a Fourier plane relative
- * to where the optical fibre is actually located, meaning that is has a Fourier
- * relationship relative to the physical fibre mode(s).
- */
-class DTilde {
-protected:
-  int n_det_modes = 0;//< Number of modes specified
-  static void set_component(Tensor3D<std::complex<double>> &tensor,
-                            const mxArray *ptr, const std::string &name,
-                            int n_rows, int n_cols);
-
-public:
-  /** @brief Fetch the number of modes */
-  inline int num_det_modes() const { return n_det_modes; };
-
-  /*! 3-dimensional vector of fibre modes indexed by (j, i, i_m).
-   * i and j index over the x and y plane respectively.
-   * i_m indexes the different modes specified in the input file.*/
-  Tensor3D<std::complex<double>> x;
-  /*! @copydoc x */
-  Tensor3D<std::complex<double>> y;
-
-  void initialise(const mxArray *ptr, int n_rows, int n_cols);
-};
-
-class IncidentField {
-protected:
-  void set_component(Tensor3D<double> &component, const mxArray *ptr,
-                     const std::string &name);
-
-public:
-  Tensor3D<double> x;
-  Tensor3D<double> y;
-
-  explicit IncidentField(const mxArray *ptr);
 };
 
 /**
