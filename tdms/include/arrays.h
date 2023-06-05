@@ -230,75 +230,6 @@ public:
 };
 
 template<typename T>
-class Matrix {
-protected:
-  int n_rows = 0;
-  int n_cols = 0;
-  T **matrix = nullptr;
-
-public:
-  /**
-   * @brief Construct a new Matrix object, without assigned elements
-   *
-   */
-  Matrix() = default;
-  /**
-   * @brief Construct a new Matrix object, providing the dimensions
-   *
-   * @param n_rows,n_cols Number of rows and columns in the matrix
-   * @param initial_value The initial value of the elements, defaults to 0 to
-   * avoid initalised but unassigned values
-   */
-  Matrix(int n_rows, int n_cols) { allocate(n_rows, n_cols); }
-
-  inline T *operator[](int value) const { return matrix[value]; }
-  /**
-   * @brief Check whether this matrix has elements assigned
-   *
-   * @return true If this matrix has assigned elements
-   * @return false This matrix is currently unassigned
-   */
-  bool has_elements() { return matrix != nullptr; };
-
-  /**
-   * Allocate the memory for this matrix
-   *
-   * @param n_rows Number of rows
-   * @param n_cols Number of columns
-   */
-  void allocate(int n_rows, int n_cols, T initial_value = 0) {
-    this->n_rows = n_rows;
-    this->n_cols = n_cols;
-
-    matrix = (T **) malloc(sizeof(T *) * n_rows);
-    for (int i = 0; i < n_rows; i++) {
-      matrix[i] = (T *) malloc(sizeof(T) * n_cols);
-    }
-  };
-
-  int get_n_cols() const { return n_cols; }
-  int get_n_rows() const { return n_rows; }
-
-  /**
-   * Destructor. Must be defined in the header
-   */
-  ~Matrix() {
-    if (has_elements()) {
-      for (int i = 0; i < n_rows; i++) { free(matrix[i]); }
-      free(matrix);
-    }
-  };
-};
-
-class GratingStructure : public Matrix<int> {
-
-public:
-  GratingStructure(const mxArray *ptr, int I_tot);
-
-  ~GratingStructure();
-};
-
-template<typename T>
 class Vector {
 protected:
   int n = 0;          // Number of elements
@@ -335,27 +266,6 @@ struct FrequencyVectors {
 };
 
 /**
- * @brief Defines the numerical aperture of the objective, assuming that the
- * lens is centred on the origin of the PSTD simulation.
- *
- * In particular, since the fibre modes are imaged onto a Fourier plane of both
- * the physical fibre and the sample, the field scattered by the sample and
- * collected by the objective lens can have only a finite spatial support in the
- * aperature of the objective lens.
- *
- * Pupil[j][i] thus takes the value 1 for those (i,j) indices (note the order
- * swapping) within the aperture of the lens.
- */
-class Pupil : public Matrix<double> {
-public:
-  Pupil() = default;
-
-  void initialise(const mxArray *ptr, int n_rows, int n_cols);
-
-  ~Pupil();
-};
-
-/**
  * List of field components as integers
  */
 class FieldComponentsVector : public Vector<int> {
@@ -373,20 +283,6 @@ public:
   int index(int value);
 };
 
-class Vertices : public Matrix<int> {
-public:
-  Vertices() = default;
-
-  void initialise(const mxArray *ptr);
-
-  int n_vertices() { return n_rows; }
-
-  ~Vertices() {
-    if (has_elements()) { free_cast_matlab_2D_array(matrix); }
-    matrix = nullptr;
-  };
-};
-
 class DetectorSensitivityArrays {
 public:
   fftw_complex *v = nullptr;          // Flat fftw vector
@@ -397,11 +293,6 @@ public:
 
   ~DetectorSensitivityArrays();
 };
-
-/**
- * Matrix of c coefficients. See the pdf documentation for their definition
- */
-class CCoefficientMatrix : public Matrix<double> {};
 
 /**
  * Container for storing snapshots of the full-field

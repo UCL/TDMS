@@ -15,7 +15,7 @@ void VertexPhasors::set_from(const mxArray *ptr) {
   }
   assert_is_struct_with_n_fields(ptr, 2,
                                  "VertexPhasors (using campssample array)");
-  vertices.initialise(ptr);
+  vertices.initialise_from_matlab(ptr);
   components.initialise(ptr);
 }
 
@@ -91,8 +91,7 @@ void VertexPhasors::extractPhasorsVertices(int frequency_index,
   {
 #pragma omp for
     for (vindex = 0; vindex < n_vertices(); vindex++) {// loop over every vertex
-      CellCoordinate current_cell{vertices[0][vindex], vertices[1][vindex],
-                                  vertices[2][vindex]};
+      CellCoordinate current_cell = vertices.index_in_row(vindex);
 
       switch (params.dimension) {
         case Dimension::THREE:

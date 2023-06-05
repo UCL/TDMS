@@ -172,25 +172,6 @@ bool DispersiveMultiLayer::is_dispersive(double near_zero_tolerance) const {
   return false;
 }
 
-GratingStructure::GratingStructure(const mxArray *ptr, int I_tot) {
-
-  if (mxIsEmpty(ptr)) { return; }
-
-  auto dims = mxGetDimensions(ptr);
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != 2 ||
-      dims[1] != (I_tot + 1)) {
-    throw runtime_error("structure should have dimension 2 x (I_tot+1) ");
-  }
-
-  matrix = cast_matlab_2D_array((int *) mxGetPr(ptr), 2, I_tot + 1);
-}
-
-GratingStructure::~GratingStructure() {
-  free_cast_matlab_2D_array(matrix);
-  // prevent double free when calling ~Matrix, superclass destructor
-  matrix = nullptr;
-}
-
 FrequencyExtractVector::FrequencyExtractVector(const mxArray *ptr,
                                                double omega_an) {
 
@@ -219,29 +200,6 @@ double FrequencyExtractVector::max() {
   return tmp;
 }
 
-void Pupil::initialise(const mxArray *ptr, int n_rows, int n_cols) {
-
-  if (mxIsEmpty(ptr)) { return; }
-
-  auto dims = (int *) mxGetDimensions(ptr);
-
-  if (mxGetNumberOfDimensions(ptr) != 2 || dims[0] != n_rows ||
-      dims[1] != n_cols) {
-    throw runtime_error("Pupil has dimension " + to_string(dims[0]) + "x" +
-                        to_string(dims[1]) + " but it needed to be " +
-                        to_string(n_rows) + "x" + to_string(n_cols));
-  }
-
-  matrix = cast_matlab_2D_array(mxGetPr(ptr), n_rows, n_cols);
-  this->n_cols = n_cols;
-  this->n_rows = n_rows;
-}
-
-Pupil::~Pupil() {
-  free_cast_matlab_2D_array(matrix);
-  matrix = nullptr;
-}
-
 void FieldComponentsVector::initialise(const mxArray *ptr) {
 
   auto element = ptr_to_matrix_in(ptr, "components", "campssample");
@@ -259,26 +217,6 @@ int FieldComponentsVector::index(int value) {
   }
 
   return -1;
-}
-
-void Vertices::initialise(const mxArray *ptr) {
-
-  auto element = ptr_to_matrix_in(ptr, "vertices", "campssample");
-  if (mxIsEmpty(element)) { return; }
-
-  auto dims = mxGetDimensions(element);
-  int n_vertices = n_rows = dims[0];
-  n_cols = dims[1];
-
-  if (n_cols != 3) {
-    throw runtime_error("Second dimension in campssample.vertices must be 3");
-  }
-
-  spdlog::info("Found vertices ({0:d} x 3)", n_vertices);
-  matrix = cast_matlab_2D_array((int *) mxGetPr(element), n_vertices, n_cols);
-
-  for (int j = 0; j < n_vertices; j++)// decrement index for MATLAB->C indexing
-    for (int k = 0; k < n_cols; k++) { matrix[k][j] -= 1; }
 }
 
 void DetectorSensitivityArrays::initialise(int n_rows, int n_cols) {

@@ -27,7 +27,7 @@ TEST_CASE("HDF5: Read/Write Matrix") {
     SPDLOG_INFO("5-by-6 2D array");
     Matrix<double> counting_matrix(5, 6);
     for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 6; j++) { counting_matrix[i][j] = 6. * i + j; }
+      for (int j = 0; j < 6; j++) { counting_matrix(i, j) = 6. * i + j; }
     }
     Matrix<double> read_back;
 
@@ -43,9 +43,9 @@ TEST_CASE("HDF5: Read/Write Matrix") {
 
     for (unsigned int i = 0; i < 5; i++) {
       for (unsigned int j = 0; j < 6; j++) {
-        SPDLOG_INFO("Checking {} == {}", counting_matrix[i][j],
-                    read_back[i][j]);
-        CHECK(counting_matrix[i][j] == Catch::Approx(read_back[i][j]));
+        SPDLOG_INFO("Checking {} == {}", counting_matrix(i, j),
+                    read_back(i, j));
+        CHECK(counting_matrix(i, j) == Catch::Approx(read_back(i, j)));
       }
     }
   }

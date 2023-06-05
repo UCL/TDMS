@@ -152,12 +152,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -310,12 +310,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -455,8 +455,8 @@ void SimulationManager::execute() {
                 eh_vec[n][i][0] =
                         inputs.H_s.zx(i, j, k) + inputs.H_s.zy(i, j, k);
                 eh_vec[n][i][1] = 0.;
-                PSTD.ca[n][i - 1] = Ca;
-                PSTD.cb[n][i - 1] = Cb;
+                PSTD.ca(n, i - 1) = Ca;
+                PSTD.cb(n, i - 1) = Cb;
               }
               i = 0;
               eh_vec[n][i][0] = inputs.H_s.zx(i, j, k) + inputs.H_s.zy(i, j, k);
@@ -468,8 +468,8 @@ void SimulationManager::execute() {
 
               for (i = 1; i < I_tot; i++) {
                 inputs.E_s.yx(i, j, k) =
-                        PSTD.ca[n][i - 1] * inputs.E_s.yx(i, j, k) -
-                        PSTD.cb[n][i - 1] * eh_vec[n][i][0] /
+                        PSTD.ca(n, i - 1) * inputs.E_s.yx(i, j, k) -
+                        PSTD.cb(n, i - 1) * eh_vec[n][i][0] /
                                 ((double) PSTD.N_ex);
                 // E_s.yx(i,j,k) = Enp1;
               }
@@ -490,12 +490,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -642,12 +642,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -781,8 +781,8 @@ void SimulationManager::execute() {
                 eh_vec[n][k][0] =
                         inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
                 eh_vec[n][k][1] = 0.;
-                PSTD.ca[n][k - 1] = Ca;
-                PSTD.cb[n][k - 1] = Cb;
+                PSTD.ca(n, k - 1) = Ca;
+                PSTD.cb(n, k - 1) = Cb;
               }
               k = 0;
               eh_vec[n][k][0] = inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
@@ -794,8 +794,8 @@ void SimulationManager::execute() {
 
               for (k = 1; k < K_tot; k++) {
                 inputs.E_s.yz(i, j, k) =
-                        PSTD.ca[n][k - 1] * inputs.E_s.yz(i, j, k) +
-                        PSTD.cb[n][k - 1] * eh_vec[n][k][0] /
+                        PSTD.ca(n, k - 1) * inputs.E_s.yz(i, j, k) +
+                        PSTD.cb(n, k - 1) * eh_vec[n][k][0] /
                                 ((double) PSTD.N_ez);
                 // E_s.yz(i,j,k) = Enp1;
               }
@@ -819,12 +819,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -969,12 +969,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1106,8 +1106,8 @@ void SimulationManager::execute() {
                 eh_vec[n][i][0] =
                         inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
                 eh_vec[n][i][1] = 0.;
-                PSTD.ca[n][i - 1] = Ca;
-                PSTD.cb[n][i - 1] = Cb;
+                PSTD.ca(n, i - 1) = Ca;
+                PSTD.cb(n, i - 1) = Cb;
               }
               i = 0;
               eh_vec[n][i][0] = inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
@@ -1119,8 +1119,8 @@ void SimulationManager::execute() {
 
               for (i = 1; i < I_tot; i++) {
                 inputs.E_s.zx(i, j, k) =
-                        PSTD.ca[n][i - 1] * inputs.E_s.zx(i, j, k) +
-                        PSTD.cb[n][i - 1] * eh_vec[n][i][0] /
+                        PSTD.ca(n, i - 1) * inputs.E_s.zx(i, j, k) +
+                        PSTD.cb(n, i - 1) * eh_vec[n][i][0] /
                                 ((double) PSTD.N_ex);
                 // E_s.zx(i,j,k) = Enp1;
               }
@@ -1141,12 +1141,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -1249,12 +1249,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1402,12 +1402,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1542,8 +1542,8 @@ void SimulationManager::execute() {
                 eh_vec[n][j][0] =
                         inputs.H_s.xy(i, j, k) + inputs.H_s.xz(i, j, k);
                 eh_vec[n][j][1] = 0.;
-                PSTD.ca[n][j - 1] = Ca;
-                PSTD.cb[n][j - 1] = Cb;
+                PSTD.ca(n, j - 1) = Ca;
+                PSTD.cb(n, j - 1) = Cb;
               }
               if (J_tot > 1) {
                 j = 0;
@@ -1556,8 +1556,8 @@ void SimulationManager::execute() {
               }
               for (j = 1; j < J_tot; j++) {
                 inputs.E_s.zy(i, j, k) =
-                        PSTD.ca[n][j - 1] * inputs.E_s.zy(i, j, k) -
-                        PSTD.cb[n][j - 1] * eh_vec[n][j][0] /
+                        PSTD.ca(n, j - 1) * inputs.E_s.zy(i, j, k) -
+                        PSTD.cb(n, j - 1) * eh_vec[n][j][0] /
                                 ((double) PSTD.N_ey);
                 // E_s.zy(i,j,k) = Enp1;
               }
@@ -1577,12 +1577,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -1737,12 +1737,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1780,12 +1780,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1795,16 +1795,12 @@ void SimulationManager::execute() {
                   }
 
                 if (!inputs.materials[k][j][i]) {
-                  PSTD.ca[n][k] = inputs.D.a.z[k_loc];
-                  PSTD.cb[n][k] = inputs.D.b.z[k_loc];
-                  // H_s.xz(i, j, k) =
-                  // D.a.z[k_loc]*H_s.xz(i, j,
-                  // k)+D.b.z[k_loc]*(E_s.yx[k+1][j][i]
-                  // + E_s.yz[k+1][j][i] - E_s.yx(i,j,k) - E_s.yz(i,j,k));
+                  PSTD.ca(n, k) = inputs.D.a.z[k_loc];
+                  PSTD.cb(n, k) = inputs.D.b.z[k_loc];
                 } else {
-                  PSTD.ca[n][k] =
+                  PSTD.ca(n, k) =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][k] =
+                  PSTD.cb(n, k) =
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1];
                   // H_s.xz(i, j, k) =
                   // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.xz(i, j,
@@ -1826,8 +1822,8 @@ void SimulationManager::execute() {
 
               for (k = 0; k < K_tot; k++) {
                 inputs.H_s.xz(i, j, k) =
-                        PSTD.ca[n][k] * inputs.H_s.xz(i, j, k) +
-                        PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
+                        PSTD.ca(n, k) * inputs.H_s.xz(i, j, k) +
+                        PSTD.cb(n, k) * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
 
@@ -1847,12 +1843,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1893,12 +1889,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -1910,15 +1906,12 @@ void SimulationManager::execute() {
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!inputs.materials[k][j][i]) {
-                  PSTD.ca[n][j] = inputs.D.a.y[array_ind];
-                  PSTD.cb[n][j] = inputs.D.b.y[array_ind];
-                  //		H_s.xy(i,j,k) =
-                  // D.a.y[array_ind]*H_s.xy(i,j,k)+D.b.y[array_ind]*(E_s.zy(i,j,k)
-                  // + E_s.zx(i,j,k) - E_s.zy[k][j+1][i] - E_s.zx[k][j+1][i]);
+                  PSTD.ca(n, j) = inputs.D.a.y[array_ind];
+                  PSTD.cb(n, j) = inputs.D.b.y[array_ind];
                 } else {
-                  PSTD.ca[n][j] =
+                  PSTD.ca(n, j) =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][j] =
+                  PSTD.cb(n, j) =
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1];
                   //		H_s.xy(i,j,k) =
                   // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.xy(i,j,k)+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.zy(i,j,k)
@@ -1939,8 +1932,8 @@ void SimulationManager::execute() {
 
               for (j = 0; j < J_tot; j++) {
                 inputs.H_s.xy(i, j, k) =
-                        PSTD.ca[n][j] * inputs.H_s.xy(i, j, k) -
-                        PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
+                        PSTD.ca(n, j) * inputs.H_s.xy(i, j, k) -
+                        PSTD.cb(n, j) * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
           // PSTD, H_s.xy
@@ -1959,12 +1952,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2006,12 +1999,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2023,16 +2016,12 @@ void SimulationManager::execute() {
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!inputs.materials[k][j][i]) {
-                  PSTD.ca[n][i] = inputs.D.a.x[array_ind];
-                  PSTD.cb[n][i] = inputs.D.b.x[array_ind];
-                  //		H_s.yx(i, j, k) =
-                  // D.a.x[array_ind]*H_s.yx(i, j,
-                  // k)+D.b.x[array_ind]*(E_s.zx[k][j][i+1]
-                  // + E_s.zy[k][j][i+1] - E_s.zx(i,j,k) - E_s.zy(i,j,k));
+                  PSTD.ca(n, i) = inputs.D.a.x[array_ind];
+                  PSTD.cb(n, i) = inputs.D.b.x[array_ind];
                 } else {
-                  PSTD.ca[n][i] =
+                  PSTD.ca(n, i) =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][i] =
+                  PSTD.cb(n, i) =
                           inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1];
                   //	H_s.yx(i, j, k) =
                   // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.yx(i, j,
@@ -2054,8 +2043,8 @@ void SimulationManager::execute() {
 
               for (i = 0; i < I_tot; i++) {
                 inputs.H_s.yx(i, j, k) =
-                        PSTD.ca[n][i] * inputs.H_s.yx(i, j, k) +
-                        PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
+                        PSTD.ca(n, i) * inputs.H_s.yx(i, j, k) +
+                        PSTD.cb(n, i) * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
           // PSTD, H_s.yx
@@ -2073,12 +2062,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2118,12 +2107,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2132,15 +2121,12 @@ void SimulationManager::execute() {
                       k_loc = inputs.params.pml.Dzl + 1;
                   }
                 if (!inputs.materials[k][j][i]) {
-                  PSTD.ca[n][k] = inputs.D.a.z[k_loc];
-                  PSTD.cb[n][k] = inputs.D.b.z[k_loc];
-                  // H_s.yz(i,j,k) =
-                  // D.a.z[k_loc]*H_s.yz(i,j,k)+D.b.z[k_loc]*(E_s.xy(i,j,k)
-                  // + E_s.xz(i, j, k) - E_s.xy[k+1][j][i] - E_s.xz[k+1][j][i]);
+                  PSTD.ca(n, k) = inputs.D.a.z[k_loc];
+                  PSTD.cb(n, k) = inputs.D.b.z[k_loc];
                 } else {
-                  PSTD.ca[n][k] =
+                  PSTD.ca(n, k) =
                           inputs.Dmaterial.a.z[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][k] =
+                  PSTD.cb(n, k) =
                           inputs.Dmaterial.b.z[inputs.materials[k][j][i] - 1];
                   // H_s.yz(i,j,k) =
                   // Dmaterial.Da.z[materials[k][j][i]-1]*H_s.yz(i,j,k)+Dmaterial.Db.z[materials[k][j][i]-1]*(E_s.xy(i,j,k)
@@ -2160,8 +2146,8 @@ void SimulationManager::execute() {
 
               for (k = 0; k < K_tot; k++) {
                 inputs.H_s.yz(i, j, k) =
-                        PSTD.ca[n][k] * inputs.H_s.yz(i, j, k) -
-                        PSTD.cb[n][k] * eh_vec[n][k][0] / ((double) PSTD.N_hz);
+                        PSTD.ca(n, k) * inputs.H_s.yz(i, j, k) -
+                        PSTD.cb(n, k) * eh_vec[n][k][0] / ((double) PSTD.N_hz);
               }
             }
           // PSTD, H_s.yz
@@ -2188,12 +2174,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -2232,12 +2218,12 @@ void SimulationManager::execute() {
                 if (k > inputs.params.pml.Dzl &&
                     k < (inputs.params.pml.Dzl +
                          loop_variables.n_non_pml_cells_in_K)) {
-                  if ((k - inputs.structure[i][1]) <
+                  if ((k - inputs.structure(1, i)) <
                               (loop_variables.n_non_pml_cells_in_K +
                                inputs.params.pml.Dzl) &&
-                      (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                    k_loc = k - inputs.structure[i][1];
-                  else if ((k - inputs.structure[i][1]) >=
+                      (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                    k_loc = k - inputs.structure(1, i);
+                  else if ((k - inputs.structure(1, i)) >=
                            (loop_variables.n_non_pml_cells_in_K +
                             inputs.params.pml.Dzl))
                     k_loc = inputs.params.pml.Dzl +
@@ -2290,12 +2276,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2336,12 +2322,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2353,15 +2339,12 @@ void SimulationManager::execute() {
                 else
                   array_ind = (J_tot + 1) * k_loc + j;
                 if (!inputs.materials[k][j][i]) {
-                  PSTD.ca[n][j] = inputs.D.a.y[array_ind];
-                  PSTD.cb[n][j] = inputs.D.b.y[array_ind];
-                  //	      H_s.zy(i,j,k) =
-                  // D.a.y[array_ind]*H_s.zy(i,j,k)+D.b.y[array_ind]*(E_s.xy[k][j+1][i]
-                  // + E_s.xz[k][j+1][i] - E_s.xy(i,j,k) - E_s.xz(i, j, k));
+                  PSTD.ca(n, j) = inputs.D.a.y[array_ind];
+                  PSTD.cb(n, j) = inputs.D.b.y[array_ind];
                 } else {
-                  PSTD.ca[n][j] =
+                  PSTD.ca(n, j) =
                           inputs.Dmaterial.a.y[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][j] =
+                  PSTD.cb(n, j) =
                           inputs.Dmaterial.b.y[inputs.materials[k][j][i] - 1];
                   //	      H_s.zy(i,j,k) =
                   // Dmaterial.Da.y[materials[k][j][i]-1]*H_s.zy(i,j,k)+Dmaterial.Db.y[materials[k][j][i]-1]*(E_s.xy[k][j+1][i]
@@ -2382,8 +2365,8 @@ void SimulationManager::execute() {
 
               for (j = 0; j < J_tot; j++) {
                 inputs.H_s.zy(i, j, k) =
-                        PSTD.ca[n][j] * inputs.H_s.zy(i, j, k) +
-                        PSTD.cb[n][j] * eh_vec[n][j][0] / ((double) PSTD.N_hy);
+                        PSTD.ca(n, j) * inputs.H_s.zy(i, j, k) +
+                        PSTD.cb(n, j) * eh_vec[n][j][0] / ((double) PSTD.N_hy);
               }
             }
           // PSTD, H_s.zy
@@ -2403,12 +2386,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2449,12 +2432,12 @@ void SimulationManager::execute() {
                   if (k > inputs.params.pml.Dzl &&
                       k < (inputs.params.pml.Dzl +
                            loop_variables.n_non_pml_cells_in_K)) {
-                    if ((k - inputs.structure[i][1]) <
+                    if ((k - inputs.structure(1, i)) <
                                 (loop_variables.n_non_pml_cells_in_K +
                                  inputs.params.pml.Dzl) &&
-                        (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-                      k_loc = k - inputs.structure[i][1];
-                    else if ((k - inputs.structure[i][1]) >=
+                        (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+                      k_loc = k - inputs.structure(1, i);
+                    else if ((k - inputs.structure(1, i)) >=
                              (loop_variables.n_non_pml_cells_in_K +
                               inputs.params.pml.Dzl))
                       k_loc = inputs.params.pml.Dzl +
@@ -2466,18 +2449,12 @@ void SimulationManager::execute() {
                 else
                   array_ind = (I_tot + 1) * k_loc + i;
                 if (!inputs.materials[k][j][i]) {
-                  //		H_s.zx(i,j,k) =
-                  // D.a.x[array_ind]*H_s.zx(i,j,k)+D.b.x[array_ind]*(E_s.yx(i,j,k)
-                  // + E_s.yz(i,j,k) - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
-                  PSTD.ca[n][i] = inputs.D.a.x[array_ind];
-                  PSTD.cb[n][i] = inputs.D.b.x[array_ind];
+                  PSTD.ca(n, i) = inputs.D.a.x[array_ind];
+                  PSTD.cb(n, i) = inputs.D.b.x[array_ind];
                 } else {
-                  //		H_s.zx(i,j,k) =
-                  // Dmaterial.Da.x[materials[k][j][i]-1]*H_s.zx(i,j,k)+Dmaterial.Db.x[materials[k][j][i]-1]*(E_s.yx(i,j,k)
-                  //+ E_s.yz(i,j,k) - E_s.yx[k][j][i+1] - E_s.yz[k][j][i+1]);
-                  PSTD.ca[n][i] =
+                  PSTD.ca(n, i) =
                           inputs.Dmaterial.a.x[inputs.materials[k][j][i] - 1];
-                  PSTD.cb[n][i] =
+                  PSTD.cb(n, i) =
                           inputs.Dmaterial.b.x[inputs.materials[k][j][i] - 1];
                 }
 
@@ -2496,8 +2473,8 @@ void SimulationManager::execute() {
 
               for (i = 0; i < I_tot; i++) {
                 inputs.H_s.zx(i, j, k) =
-                        PSTD.ca[n][i] * inputs.H_s.zx(i, j, k) -
-                        PSTD.cb[n][i] * eh_vec[n][i][0] / ((double) PSTD.N_hx);
+                        PSTD.ca(n, i) * inputs.H_s.zx(i, j, k) -
+                        PSTD.cb(n, i) * eh_vec[n][i][0] / ((double) PSTD.N_hx);
               }
             }
           // PSTD, H_s.zx

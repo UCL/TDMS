@@ -7,7 +7,7 @@
 
 #include <complex>
 
-#include "arrays.h"
+#include "arrays/tdms_matrix.h"
 #include "field.h"
 #include "grid_labels.h"
 
