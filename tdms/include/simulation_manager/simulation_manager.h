@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "arrays.h"
+#include "arrays/eh_vec.h"
 #include "cell_coordinate.h"
 #include "globals.h"
 #include "input_flags.h"

@@ -199,18 +199,6 @@ public:
   std::string get_class_name() override { return "Pupil"; }
 };
 
-/** @brief Unit tests for EHVec */
-class EHVecTest : public AbstractArrayTest {
-private:
-  const int n_rows = 4, n_cols = 8;
-
-  // allocate() needs testing
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "EHVec"; }
-};
-
 /** @brief Unit tests for Tensor3D */
 class Tensor3DTest : public AbstractArrayTest {
 private:

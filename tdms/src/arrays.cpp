@@ -376,11 +376,3 @@ DetectorSensitivityArrays::~DetectorSensitivityArrays() {
   fftw_free(v);
   fftw_destroy_plan(plan);
 }
-
-EHVec::~EHVec() {
-  if (has_elements()) {
-    for (int i = 0; i < n_rows; i++) fftw_free(matrix[i]);
-    free(matrix);
-  }
-  matrix = nullptr;
-}
