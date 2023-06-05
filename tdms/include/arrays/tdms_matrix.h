@@ -13,8 +13,8 @@
  *
  * this->(i, j) = data_[i * n_cols_ + j].
  *
- * This is consistent with the way hdf5 files store array-like data, see
- * https://support.hdfgroup.org/HDF5/doc1.6/UG/12_Dataspaces.html.
+ * @seealso This is consistent with the way hdf5 files store array-like data, see
+ *          https://support.hdfgroup.org/HDF5/doc1.6/UG/12_Dataspaces.html.
  * @tparam T Numerical datatype
  */
 template<typename T>
@@ -91,11 +91,11 @@ typedef Matrix<double> CCoefficientMatrix;
 
 /**
  * @brief Defines the numerical aperture of the objective, assuming that the
- * lens is centred on the origin of the PSTD simulation.
+ *        lens is centred on the origin of the PSTD simulation.
  * @details In particular, since the fibre modes are imaged onto a Fourier plane
- * of both the physical fibre and the sample, the field scattered by the sample
- * and collected by the objective lens can have only a finite spatial support in
- * the aperture of the objective lens.
+ *         of both the physical fibre and the sample, the field scattered by the sample
+ *         and collected by the objective lens can have only a finite spatial support in
+ *         the aperture of the objective lens.
  *
  * Pupil(i, j) thus takes the value 1 for those (i,j) indices within the
  * aperture of the lens.
