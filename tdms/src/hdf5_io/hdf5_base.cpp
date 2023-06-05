@@ -67,9 +67,9 @@ bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
   hid_t object_reference = file_->getObjId(object_path);
 
   H5I_type_t object_type = file_->getHDFObjType(object_reference);
-  H5::Attribute empty_attribute;  // will point to the MATLAB_empty attribute
+  H5::Attribute empty_attribute;// will point to the MATLAB_empty attribute
   if (object_type == H5I_GROUP) {
-      H5::Group object = file_->openGroup(object_path);
+    H5::Group object = file_->openGroup(object_path);
     if (object.attrExists("MATLAB_empty")) {
       empty_attribute = object.openAttribute("MATLAB_empty");
     } else {
