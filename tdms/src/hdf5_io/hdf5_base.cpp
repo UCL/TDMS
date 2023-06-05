@@ -6,6 +6,7 @@
 #include "hdf5_io/hdf5_base.h"
 
 #include <iostream>
+#include <stdexcept>
 
 #include <H5Cpp.h>
 #include <H5public.h>
@@ -49,8 +50,54 @@ H5Dimension HDF5Base::shape_of(const std::string &group_name,
 }
 
 bool HDF5Base::is_ok() const {
-  // TODO: check for file health might be unnessicary given we've constructed
+  // TODO: check for file health might be unnecessary given we've constructed
   // the object.
   return file_->isHdf5(filename_);
   // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
+}
+
+bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {
+  // Can't check anything if there's no file
+  if (!is_ok()) { throw std::runtime_error("Problem with the file!"); }
+
+  // Attempt to fetch the object requested
+  if (!file_->exists(object_path)) {
+    throw std::runtime_error(filename_ + " has no object " + object_path);
+  }
+  hid_t object_reference = file_->getObjId(object_path);
+
+  H5I_type_t object_type = file_->getHDFObjType(object_reference);
+  H5::Attribute empty_attribute;// will point to the MATLAB_empty attribute
+  if (object_type == H5I_GROUP) {
+    H5::Group object = file_->openGroup(object_path);
+    if (object.attrExists("MATLAB_empty")) {
+      empty_attribute = object.openAttribute("MATLAB_empty");
+    } else {
+      // Object is not flagged as being empty
+      return false;
+    }
+    object.close();
+  } else if (object_type == H5I_DATASET) {
+    // Dealing with a dataset
+    H5::DataSet object = file_->openDataSet(object_path);
+    if (object.attrExists("MATLAB_empty")) {
+      empty_attribute = object.openAttribute("MATLAB_empty");
+    } else {
+      // Object is not flagged as being empty
+      return false;
+    }
+    object.close();
+  } else {
+    // No other objects should be the result of MATLAB saving an empty object,
+    // so throw error
+    throw std::runtime_error(object_path + " is not a Group or a DataSet");
+  }
+
+  // Having extracted the dataset, attempt to read the attribute value
+  uint8_t empty_bool[1];
+  empty_attribute.read(H5::PredType::NATIVE_UINT8, empty_bool);
+  empty_attribute.close();
+
+  // And finally return whether this is flagged as true
+  return empty_bool[0] == 1;
 }

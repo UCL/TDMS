@@ -19,6 +19,13 @@ read_in_test.vector = int32(0:11);
 read_in_test.matrix = reshape(0:11, 2, 6);
 read_in_test.tensor = reshape(0:11, 2, 3, 2);
 
+%% The two forms of the empty struct / matrix that we might come across
+empty_struct = struct([]);
+empty_array = [];
+
+%% A non-empty standalone array that we can attempt to read from
+nonempty_dataset = 0:4;
+
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the
 % data back in.
