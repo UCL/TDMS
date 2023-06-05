@@ -13,9 +13,6 @@
 #include <spdlog/spdlog.h>
 
 bool HDF5Base::path_exists(const std::string &path_under_root) const {
-  // Can't check anything if there's no file
-  if (file_ == nullptr) { throw std::runtime_error("No file opened"); }
-
   // Attempt to lookup the path
   return file_->exists(path_under_root);
 }
@@ -85,13 +82,6 @@ H5Dimension HDF5Base::shape_of(const std::string &dataset_path) const {
   } else {
     throw std::runtime_error(dataset_path + " does not point to a dataset");
   }
-}
-
-bool HDF5Base::is_ok() const {
-  // TODO: check for file health might be unnecessary given we've constructed
-  // the object.
-  return file_->isHdf5(filename_);
-  // return file_->isAccessible(filename_) && file_->isHdf5(filename_);
 }
 
 bool HDF5Base::flagged_MATLAB_empty(const std::string &object_path) const {

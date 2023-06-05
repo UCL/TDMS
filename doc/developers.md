@@ -261,7 +261,16 @@ It's good practice, and reassuring for your pull-request reviewers, if new C++ f
 
 #### Benchmark Scripts and Data Generation
 
-The `tdms/tests/unit/benchmarking` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
+The `tdms/tests/unit/benchmark_scripts` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
+
+To generate the necessary test inputs; change into the `benchmark_scripts` directory and run,
+
+```{sh}
+matlab -nosplash -nodesktop -nodisplay -r setup_unit_tests
+```
+
+<details>
+<summary>More details about the data generation scripts and benchmarking</summary>
 
 The `C++` unit tests require the presence of a `.mat` or `.hdf5` file to read/write data from/to during testing.
 The locations of these files are coded into `tests/include/unit_test_utils.h`, but the files themselves are not committed to the repository - they can be created by running the `setup_unit_tests.m` and `create_hdf5_data.py` scripts.
@@ -273,6 +282,8 @@ These scripts can then be updated to add/remove/edit the data available to the u
 
 The `benchmark_` scripts perform band-limited interpolation (BLi) using `MATLAB`'s `interp` function.
 `TDMS`'s interpolation schemes are based off this `MATLAB` function (specficially, in the coefficients the scheme uses to interpolate), and are thus used to benchmark the accuracy of the scheme.
+
+</details>
 
 ### Test coverage {#coverage}
 
