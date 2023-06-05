@@ -23,7 +23,7 @@ TEST_CASE("HDF5: Read Cuboid") {
 
   SECTION("Read into existing object") {
     HDF5Reader MATFile(tdms_object_data);
-    MATFile.read(&cube);
+    MATFile.read(cube);
     // Check expected values, noting the -1 offset that is applied because of
     // MATLAB indexing
     bool expected_values_recieved = cube[0] == 0 && cube[1] == 3 &&
@@ -35,6 +35,6 @@ TEST_CASE("HDF5: Read Cuboid") {
   SECTION("Throw error if too many elements provided") {
     HDF5Reader MATFile(tdms_bad_object_data);
     // Error should be thrown due to incorrect dimensions
-    REQUIRE_THROWS_AS(MATFile.read(&cube), std::runtime_error);
+    REQUIRE_THROWS_AS(MATFile.read(cube), std::runtime_error);
   }
 }

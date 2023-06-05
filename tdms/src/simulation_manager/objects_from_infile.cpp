@@ -34,15 +34,15 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
 
   // Read the interface components
-  I0 = INPUT_FILE.read("I0");
-  I1 = INPUT_FILE.read("I1");
-  J0 = INPUT_FILE.read("J0");
-  J1 = INPUT_FILE.read("J1");
-  K0 = INPUT_FILE.read("K0");
-  K1 = INPUT_FILE.read("K1");
+  INPUT_FILE.read("I0", I0);
+  INPUT_FILE.read("I1", I1);
+  INPUT_FILE.read("J0", J0);
+  INPUT_FILE.read("J1", J1);
+  INPUT_FILE.read("K0", K0);
+  INPUT_FILE.read("K1", K1);
 
   // Read the layer structure of the obstacle
-  INPUT_FILE.read(&matched_layer);
+  INPUT_FILE.read(matched_layer);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -71,7 +71,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // Get phasorsurface
   cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    INPUT_FILE.read(&cuboid);
+    INPUT_FILE.read(cuboid);
     if (IJK_tot.j == 0 && cuboid[2] != cuboid[3]) {
       throw std::runtime_error("In a 2D simulation, J0 should equal J1 in "
                                "phasorsurface.");
@@ -97,7 +97,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   D_tilde = DTilde();
   // if exdetintegral is flagged, setup pupil, D_tilde, and f_vec accordingly
   if (params.exdetintegral) {
-    f_vec = INPUT_FILE.read();
+    INPUT_FILE.read(f_vec);
     pupil.initialise(matrices_from_input_file["Pupil"], f_vec.x.size(),
                      f_vec.y.size());
     D_tilde.initialise(matrices_from_input_file["D_tilde"], f_vec.x.size(),

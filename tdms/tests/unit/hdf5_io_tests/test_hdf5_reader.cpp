@@ -21,7 +21,7 @@ using namespace std;
 using tdms_tests::uint16s_to_string;
 using tdms_unit_test_data::struct_testdata, tdms_unit_test_data::hdf5_test_file;
 
-TEST_CASE("HDF5: Read from a MATLAB struct") {
+TEST_CASE("HDF5Reader::read() [.mat files]") {
   HDF5Reader MATFile(struct_testdata);
 
   SECTION("Read numeric scalars") {
@@ -30,10 +30,9 @@ TEST_CASE("HDF5: Read from a MATLAB struct") {
     double one_half = 0., unity = 0.;
     bool logical_read = false;
     // Read values
-    MATFile.read_dataset_in_group("example_struct", "double_half", &one_half);
-    MATFile.read_dataset_in_group("example_struct", "double_no_decimal",
-                                  &unity);
-    MATFile.read_dataset_in_group("example_struct", "boolean", &logical_read);
+    MATFile.read("example_struct/double_half", &one_half);
+    MATFile.read("example_struct/double_no_decimal", &unity);
+    MATFile.read("example_struct/boolean", &logical_read);
     // Validate read in data
     REQUIRE(one_half == Catch::Approx(0.5));
     REQUIRE(unity == Catch::Approx(1.));
@@ -47,15 +46,14 @@ TEST_CASE("HDF5: Read from a MATLAB struct") {
     // we need to convert manually...
     {
       uint16_t read_uints16[4];
-      MATFile.read_dataset_in_group("example_struct", "string", read_uints16);
+      MATFile.read("example_struct/string", read_uints16);
       string tdms = uint16s_to_string(read_uints16, 4);
       REQUIRE(tdms == "tdms");
     }
     // The uint 3*4*5 uint matrix contains only 1s
     {
       vector<uint8_t> uint_matrix(3 * 4 * 5, 0);
-      MATFile.read_dataset_in_group("example_struct", "uint_345",
-                                    uint_matrix.data());
+      MATFile.read("example_struct/uint_345", uint_matrix);
       bool all_values_unity = true;
       for (uint8_t &value : uint_matrix) {
         if (value != 1) { all_values_unity = false; }
@@ -65,7 +63,7 @@ TEST_CASE("HDF5: Read from a MATLAB struct") {
     // The double 2*2 matrix contains 0.25, 0.5, 0.75, 1.
     {
       double two_by_two[4];
-      MATFile.read_dataset_in_group("example_struct", "double_22", two_by_two);
+      MATFile.read("example_struct/double_22", two_by_two);
       REQUIRE(two_by_two[0] == Catch::Approx(0.25));
       REQUIRE(two_by_two[1] == Catch::Approx(0.75));
       REQUIRE(two_by_two[2] == Catch::Approx(0.5));
@@ -75,9 +73,9 @@ TEST_CASE("HDF5: Read from a MATLAB struct") {
   }
 }
 
-/** @brief Test the performance of read_dataset_in_group, on both MATLAB files
+/** @brief Test the performance of read(), on both MATLAB files
  * and HDF5 files */
-TEST_CASE("HDF5Reader::read_dataset_in_group") {
+TEST_CASE("HDF5Reader::read() [std::vector]") {
   vector<double> read_buffer;
   read_buffer.reserve(12);
   // Used to check that data has been read in correctly
@@ -91,17 +89,17 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
       // check confirms that both the int data and the doubles that they were
       // cast to are correct
       vector<int> int_buffer(12);
-      Hfile.read_dataset_in_group("read_in_test", "vector", int_buffer.data());
+      Hfile.read("read_in_test/vector", int_buffer);
       for (int i = 0; i < 12; i++) {
         entries_read_correctly = entries_read_correctly && int_buffer[i] == i;
         read_buffer[i] = (double) int_buffer[i];
       }
     }
     SECTION("Matrix [double]") {
-      Hfile.read_dataset_in_group("read_in_test", "matrix", read_buffer.data());
+      Hfile.read("read_in_test/matrix", read_buffer);
     }
     SECTION("Tensor [double]") {
-      Hfile.read_dataset_in_group("read_in_test", "tensor", read_buffer.data());
+      Hfile.read("read_in_test/tensor", read_buffer);
     }
   }
 
@@ -114,20 +112,17 @@ TEST_CASE("HDF5Reader::read_dataset_in_group") {
       // check confirms that both the int data and the doubles that they were
       // cast to are correct
       vector<int64_t> int_buffer(12);
-      Hfile.read_dataset_in_group("read_in_test", "vector_int",
-                                  int_buffer.data());
+      Hfile.read("read_in_test/vector_int", int_buffer);
       for (int i = 0; i < 12; i++) {
         entries_read_correctly = entries_read_correctly && int_buffer[i] == i;
         read_buffer[i] = (double) int_buffer[i];
       }
     }
     SECTION("Matrix [double]") {
-      Hfile.read_dataset_in_group("read_in_test", "matrix_double",
-                                  read_buffer.data());
+      Hfile.read("read_in_test/matrix_double", read_buffer);
     }
     SECTION("Tensor [double]") {
-      Hfile.read_dataset_in_group("read_in_test", "tensor_double",
-                                  read_buffer.data());
+      Hfile.read("read_in_test/tensor_double", read_buffer);
     }
   }
 
