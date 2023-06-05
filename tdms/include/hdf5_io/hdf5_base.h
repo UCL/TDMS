@@ -45,6 +45,20 @@ protected:
    */
   ~HDF5Base() { file_->close(); }
 
+public:
+  /**
+   * @brief Get the name of the file.
+   * @return std::string the filename.
+   */
+  std::string get_filename() const { return filename_; }
+
+  /**
+   * @brief Get the names of all datasets (data tables) currently in the file.
+   * @return std::vector<std::string> A vector of their names.
+   */
+  std::vector<std::string> get_datanames() const;
+
+
   /**
    * @brief Determines whether /path_under_root exists in the HDF5 file.
    * @details Returns true so long as the path provided is valid, irrespective
@@ -82,19 +96,6 @@ protected:
    */
   bool path_exists(const std::string &path_under_root,
                    const H5I_type_t &object_type) const;
-
-public:
-  /**
-   * @brief Get the name of the file.
-   * @return std::string the filename.
-   */
-  std::string get_filename() const { return filename_; }
-
-  /**
-   * @brief Get the names of all datasets (data tables) currently in the file.
-   * @return std::vector<std::string> A vector of their names.
-   */
-  std::vector<std::string> get_datanames() const;
 
   /**
    * @brief Print the names of all datasets to std::out.

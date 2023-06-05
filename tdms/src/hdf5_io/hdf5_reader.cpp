@@ -21,8 +21,8 @@ void HDF5Reader::read(const string &plane, InterfaceComponent *ic) const {
 
 void HDF5Reader::read(FrequencyVectors *f_vec) const {
   // Allocate memory in f_vec
-  H5Dimension x_dims = shape_of("f_vec", "fx_vec");
-  H5Dimension y_dims = shape_of("f_vec", "fy_vec");
+  H5Dimension x_dims = shape_of("f_vec/fx_vec");
+  H5Dimension y_dims = shape_of("f_vec/fy_vec");
   // Check that we have one dimensional arrays
   if (!x_dims.is_1D() || !y_dims.is_1D()) {
     throw runtime_error("f_vec members are not 1D arrays!");

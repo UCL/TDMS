@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hdf5_io/hdf5_base.h"
+#include "hdf5_io/hdf5_dimension.h"
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
@@ -101,7 +102,7 @@ public:
   void read(const std::string &dataset_name, Matrix<T> &data_location) const {
     spdlog::debug("Reading {} from file: {}", dataset_name, filename_);
 
-    std::vector<hsize_t> dimensions = shape_of(dataset_name);
+    H5Dimension dimensions = shape_of(dataset_name);
     if (dimensions.size() != 2) {
       throw std::runtime_error(
               "Cannot read " + dataset_name + " into a 2D matrix, it has " +
