@@ -89,11 +89,6 @@ public:
  * definition. */
 typedef Matrix<double> CCoefficientMatrix;
 
-/** TODO: Docstring */
-struct GratingStructure : public Matrix<int> {
-  GratingStructure(const mxArray *ptr, int I_tot);
-};
-
 /**
  * @brief Defines the numerical aperture of the objective, assuming that the
  * lens is centred on the origin of the PSTD simulation.
@@ -105,8 +100,11 @@ struct GratingStructure : public Matrix<int> {
  * Pupil(i, j) thus takes the value 1 for those (i,j) indices within the
  * aperture of the lens.
  */
-struct Pupil : public Matrix<double> {
-  void initialise_from_matlab(const mxArray *ptr, int n_rows, int n_cols);
+typedef Matrix<double> Pupil;
+
+/** TODO: Docstring */
+struct GratingStructure : public Matrix<int> {
+  GratingStructure(const mxArray *ptr, int I_tot);
 };
 
 /**

@@ -2,7 +2,7 @@
  * @file test_Matrix.cpp
  * @author William Graham (ccaegra@ucl.ac.uk)
  * @brief Tests for the Matrix class and its subclasses (Vertices,
- * GratingStructure, Pupil)
+ * GratingStructure)
  */
 #include <catch2/catch_test_macros.hpp>
 #include <spdlog/spdlog.h>
@@ -114,55 +114,8 @@ void GratingStructureTest::test_correct_construction() {
   delete gs;
 }
 
-void PupilTest::test_empty_construction() {
-  Pupil p;
-  dimensions_2d[0] = 0;
-  dimensions_2d[1] = n_cols;
-  create_numeric_array(2, dimensions_2d);
-  // passing in an empty array to initialise() doesn't error, but also doesn't
-  // assign additionally, the rows and columns arguments aren't even used, so
-  // can be garbage
-  p.initialise_from_matlab(matlab_input, 1, 1);
-  REQUIRE(!p.has_elements());// shouldn't have assigned any memory or pointers
-}
-
-void PupilTest::test_wrong_input_dimensions() {
-  Pupil p;
-  SECTION("Wrong number of dimensions (3D)") {
-    dimensions_3d[0] = n_rows;
-    dimensions_3d[1] = n_cols;
-    dimensions_3d[2] = 2;
-    create_numeric_array(3, dimensions_3d);
-    REQUIRE_THROWS_AS(p.initialise_from_matlab(matlab_input, n_rows, n_cols),
-                      std::runtime_error);
-    REQUIRE(!p.has_elements());
-  }
-  SECTION("Wrong dimension size") {
-    dimensions_2d[0] = 2 * n_rows;
-    dimensions_2d[1] = n_cols + 1;
-    create_numeric_array(2, dimensions_2d);
-    REQUIRE_THROWS_AS(p.initialise_from_matlab(matlab_input, n_rows, n_cols),
-                      std::runtime_error);
-    REQUIRE(!p.has_elements());
-  }
-}
-
-void PupilTest::test_correct_construction() {
-  Pupil p;
-  SECTION("Default constructor") { REQUIRE(!p.has_elements()); }
-  SECTION("Overloaded constructor") {
-    dimensions_2d[0] = n_rows;
-    dimensions_2d[1] = n_cols;
-    create_numeric_array(2, dimensions_2d);
-    REQUIRE_NOTHROW(p.initialise_from_matlab(matlab_input, n_rows, n_cols));
-    REQUIRE(p.has_elements());
-  }
-}
-
 TEST_CASE("Matrix") { MatrixTest().run_all_class_tests(); }
 
 TEST_CASE("Vertices") { VerticesTest().run_all_class_tests(); }
 
 TEST_CASE("GratingStructure") { GratingStructureTest().run_all_class_tests(); }
-
-TEST_CASE("Pupil") { PupilTest().run_all_class_tests(); }

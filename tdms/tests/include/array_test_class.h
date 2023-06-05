@@ -186,19 +186,6 @@ public:
   std::string get_class_name() override { return "GratingStructure"; }
 };
 
-/** @brief Unit tests for Pupil */
-class PupilTest : public AbstractArrayTest {
-private:
-  const int n_rows = 4, n_cols = 8;
-
-  void test_empty_construction() override;
-  void test_wrong_input_dimensions() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "Pupil"; }
-};
-
 /** @brief Unit tests for Tensor3D */
 class Tensor3DTest : public AbstractArrayTest {
 private:
