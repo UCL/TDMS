@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['index_0',['index',['../class_field_components_vector.html#afa2ce13369d9b1f8fb1392a181be3f82',1,'FieldComponentsVector']]],
+  ['index_0',['index',['../namespacetdms__vector__utils.html#ab6d9aede6e7a4c60807b3e90f8dcb54e',1,'tdms_vector_utils']]],
   ['index_5ffrom_5fmatrix_5fname_1',['index_from_matrix_name',['../class_input_matrices.html#a8b204fbe65d6124bf41bf08ad14ce06b',1,'InputMatrices']]],
   ['init_5fdiff_5fshift_5fop_2',['init_diff_shift_op',['../numerical__derivative_8h.html#abbd1b9085a9a131df69a944578a65219',1,'numerical_derivative.cpp']]],
   ['init_5fgrid_5farrays_3',['init_grid_arrays',['../array__init_8h.html#a0995aa2ccd3cc9402dcec568cd5eca19',1,'array_init.cpp']]],

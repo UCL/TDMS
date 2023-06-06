@@ -92,6 +92,7 @@ $(document).ready(function(){initNavTree('utils_8h.html',''); initResizable(); }
 
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">utils.h File Reference</div></div>
 </div><!--header-->
@@ -99,22 +100,31 @@ $(document).ready(function(){initNavTree('utils_8h.html',''); initResizable(); }
 
 <p>Useful miscellaneous utility functions.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;iterator&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for utils.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8h__incl.svg" width="146" height="111"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8h__incl.svg" width="330" height="111"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8h__dep__incl.svg" width="667" height="466"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8h__dep__incl.svg" width="751" height="466"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
 <p><a href="utils_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacetdms__vector__utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetdms__vector__utils.html">tdms_vector_utils</a></td></tr>
+<tr class="memdesc:namespacetdms__vector__utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">A collection of utility functions that we will be applying to std::vectors multiple times throughout the codebase. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6d771ce08ce03dfefa0d0135773d9849"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849">assert_can_open_file</a> (const char *filename, const char *mode)</td></tr>
@@ -123,10 +133,22 @@ Functions</h2></td></tr>
 <tr class="memitem:a2b5bf5ac7771d3b341eb22e1042d72f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a2b5bf5ac7771d3b341eb22e1042d72f3">are_equal</a> (const char *a, const char *b)</td></tr>
 <tr class="memdesc:a2b5bf5ac7771d3b341eb22e1042d72f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check two strings are equal.  <br /></td></tr>
 <tr class="separator:a2b5bf5ac7771d3b341eb22e1042d72f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a959675ffe66c53e2410c485edaeb2fe7"><td class="memItemLeft" align="right" valign="top"><a id="a959675ffe66c53e2410c485edaeb2fe7" name="a959675ffe66c53e2410c485edaeb2fe7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>max</b> (int a, int b, int c)</td></tr>
-<tr class="memdesc:a959675ffe66c53e2410c485edaeb2fe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the maximum of three integer values. <br /></td></tr>
-<tr class="separator:a959675ffe66c53e2410c485edaeb2fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69759e020cb26ac8cf58e85fa8f86edf"><td class="memTemplParams" colspan="2"><a id="a69759e020cb26ac8cf58e85fa8f86edf" name="a69759e020cb26ac8cf58e85fa8f86edf"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a69759e020cb26ac8cf58e85fa8f86edf"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tdms_vector_utils::max</b> (const std::vector&lt; T &gt; &amp;v)</td></tr>
+<tr class="memdesc:a69759e020cb26ac8cf58e85fa8f86edf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the maximum value stored in the vector. <br /></td></tr>
+<tr class="separator:a69759e020cb26ac8cf58e85fa8f86edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a663a1d4cea32ab2d40af6ac1b2ecdea4"><td class="memTemplParams" colspan="2"><a id="a663a1d4cea32ab2d40af6ac1b2ecdea4" name="a663a1d4cea32ab2d40af6ac1b2ecdea4"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a663a1d4cea32ab2d40af6ac1b2ecdea4"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tdms_vector_utils::has_elements</b> (const std::vector&lt; T &gt; &amp;v)</td></tr>
+<tr class="memdesc:a663a1d4cea32ab2d40af6ac1b2ecdea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the vector has non-zero size. <br /></td></tr>
+<tr class="separator:a663a1d4cea32ab2d40af6ac1b2ecdea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d9aede6e7a4c60807b3e90f8dcb54e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab6d9aede6e7a4c60807b3e90f8dcb54e"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetdms__vector__utils.html#ab6d9aede6e7a4c60807b3e90f8dcb54e">tdms_vector_utils::index</a> (const std::vector&lt; T &gt; &amp;v, const T &amp;value)</td></tr>
+<tr class="separator:ab6d9aede6e7a4c60807b3e90f8dcb54e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89fa17327d197e6c0ce66f9d7dbf1084"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetdms__vector__utils.html#a89fa17327d197e6c0ce66f9d7dbf1084">tdms_vector_utils::to_vector_int</a> (const std::vector&lt; double &gt; &amp;ints_that_are_doubles)</td></tr>
+<tr class="memdesc:a89fa17327d197e6c0ce66f9d7dbf1084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static_casts an array of doubles to ints. ONLY INTENDED FOR CASES WHERE WE KNOW THAT THE VALUES STORED AS DOUBLES ARE INTS.  <br /></td></tr>
+<tr class="separator:a89fa17327d197e6c0ce66f9d7dbf1084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Useful miscellaneous utility functions. </p>

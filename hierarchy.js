@@ -42,12 +42,8 @@ var hierarchy =
     ] ],
     [ "Timer", "class_timer.html", null ],
     [ "Vector< T >", "class_vector.html", null ],
-    [ "Vector< double >", "class_vector.html", [
-      [ "FrequencyExtractVector", "class_frequency_extract_vector.html", null ]
-    ] ],
-    [ "Vector< int >", "class_vector.html", [
-      [ "FieldComponentsVector", "class_field_components_vector.html", null ]
-    ] ],
+    [ "Vector< double >", "class_vector.html", null ],
+    [ "Vector< int >", "class_vector.html", null ],
     [ "VertexPhasors", "class_vertex_phasors.html", null ],
     [ "XYZTensor3D< T >", "class_x_y_z_tensor3_d.html", null ],
     [ "XYZTensor3D< double >", "class_x_y_z_tensor3_d.html", null ],

@@ -1,14 +1,14 @@
 <map id="tdms/include/utils.h" name="tdms/include/utils.h">
-<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="369,5,503,31"/>
-<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="282,87,428,112"/>
-<area shape="rect" id="node12" href="$test__utils_8cpp.html" title="Tests of the utility functions." alt="" coords="452,79,586,120"/>
-<area shape="rect" id="node3" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="362,256,497,282"/>
+<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="506,5,641,31"/>
+<area shape="rect" id="node2" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="342,87,488,112"/>
+<area shape="rect" id="node8" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="525,330,660,371"/>
+<area shape="rect" id="node12" href="$test__utils_8cpp.html" title="Tests of the utility functions." alt="" coords="610,79,745,120"/>
+<area shape="rect" id="node3" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="348,256,482,282"/>
 <area shape="rect" id="node5" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,338,182,363"/>
-<area shape="rect" id="node7" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="518,330,661,371"/>
-<area shape="rect" id="node10" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="186,168,345,208"/>
-<area shape="rect" id="node4" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="365,330,494,371"/>
-<area shape="rect" id="node8" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="206,330,341,371"/>
+<area shape="rect" id="node7" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="358,330,501,371"/>
+<area shape="rect" id="node10" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="188,168,346,208"/>
+<area shape="rect" id="node4" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="205,330,334,371"/>
 <area shape="rect" id="node6" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="26,419,161,459"/>
-<area shape="rect" id="node9" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="204,419,343,459"/>
-<area shape="rect" id="node11" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="161,256,338,282"/>
+<area shape="rect" id="node9" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="523,419,662,459"/>
+<area shape="rect" id="node11" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="146,256,324,282"/>
 </map>

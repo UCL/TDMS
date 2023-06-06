@@ -10,9 +10,10 @@ var searchData=
   ['click_7',['click',['../class_timer.html#a8487935861016f5d7c6f1b46c74f5cbb',1,'Timer']]],
   ['complex_5fmult_5fvec_8',['complex_mult_vec',['../numerical__derivative_8h.html#a217eabdfd29264b5cea1535b19662996',1,'numerical_derivative.cpp']]],
   ['complex_5fvector_9',['complex_vector',['../structcomplex__vector.html',1,'']]],
-  ['compressed_5foutput_10',['compressed_output',['../class_argument_namespace.html#a8e7c04ef2f99a5d5090c2c30f7d2ad89',1,'ArgumentNamespace']]],
-  ['concisetriangulatecuboid_11',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
-  ['contribution_20guidelines_12',['Contribution guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
-  ['create_5fvertex_5flist_13',['create_vertex_list',['../class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
-  ['currentdensitysplitfield_14',['CurrentDensitySplitField',['../class_current_density_split_field.html',1,'CurrentDensitySplitField'],['../class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
+  ['components_10',['components',['../class_vertex_phasors.html#ac3f97c8ac420265330d395a4998a6c96',1,'VertexPhasors']]],
+  ['compressed_5foutput_11',['compressed_output',['../class_argument_namespace.html#a8e7c04ef2f99a5d5090c2c30f7d2ad89',1,'ArgumentNamespace']]],
+  ['concisetriangulatecuboid_12',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
+  ['contribution_20guidelines_13',['Contribution guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
+  ['create_5fvertex_5flist_14',['create_vertex_list',['../class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
+  ['currentdensitysplitfield_15',['CurrentDensitySplitField',['../class_current_density_split_field.html',1,'CurrentDensitySplitField'],['../class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
 ];

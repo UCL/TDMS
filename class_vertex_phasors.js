@@ -10,5 +10,6 @@ var class_vertex_phasors =
     [ "setup_complex_amplitude_arrays", "class_vertex_phasors.html#aa55d80d600322b2639f1abbb9557587b", null ],
     [ "there_are_vertices_to_extract_at", "class_vertex_phasors.html#ad7cb67b33fdff91e2dd1bdb07fb78d21", null ],
     [ "update_vertex_camplitudes", "class_vertex_phasors.html#a440fef465a4124c7ddc2c9c30a07cc1d", null ],
-    [ "camplitudesI", "class_vertex_phasors.html#a5619ad81a627c0f5c08dc8e922d62432", null ]
+    [ "camplitudesI", "class_vertex_phasors.html#a5619ad81a627c0f5c08dc8e922d62432", null ],
+    [ "components", "class_vertex_phasors.html#ac3f97c8ac420265330d395a4998a6c96", null ]
 ];

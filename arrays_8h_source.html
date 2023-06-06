@@ -190,132 +190,104 @@ $(document).ready(function(){initNavTree('arrays_8h_source.html',''); initResiza
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> size()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> n; };</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>};</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="class_frequency_extract_vector.html">   97</a></span><span class="keyword">class </span><a class="code hl_class" href="class_frequency_extract_vector.html">FrequencyExtractVector</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_vector.html">Vector</a>&lt;double&gt; {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <a class="code hl_class" href="class_frequency_extract_vector.html">FrequencyExtractVector</a>(<span class="keyword">const</span> mxArray *ptr, <span class="keywordtype">double</span> omega_an);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keywordtype">double</span> max();</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>};</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="struct_frequency_vectors.html">  104</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_frequency_vectors.html">FrequencyVectors</a> {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  std::vector&lt;double&gt; x;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  std::vector&lt;double&gt; y;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="comment"></span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="comment"> * List of field components as integers</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="class_field_components_vector.html">  112</a></span><span class="keyword">class </span><a class="code hl_class" href="class_field_components_vector.html">FieldComponentsVector</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_vector.html">Vector</a>&lt;int&gt; {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <a class="code hl_class" href="class_field_components_vector.html">FieldComponentsVector</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordtype">void</span> initialise(<span class="keyword">const</span> mxArray *ptr);</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="comment"></span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="comment">   * Get the index of a particular integer in this vector. If it does not exist</span></div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="comment">   * then return -1. Returns the first occurrence.</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="comment">   * @param value value to find in the vector</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="comment">   * @return index or -1</span></div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="class_field_components_vector.html#afa2ce13369d9b1f8fb1392a181be3f82">index</a>(<span class="keywordtype">int</span> value);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="class_detector_sensitivity_arrays.html">  127</a></span><span class="keyword">class </span><a class="code hl_class" href="class_detector_sensitivity_arrays.html">DetectorSensitivityArrays</a> {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  fftw_complex *v = <span class="keyword">nullptr</span>;          <span class="comment">// Flat fftw vector</span></div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  fftw_plan plan = <span class="keyword">nullptr</span>;           <span class="comment">// fftw plan for the setup</span></div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  std::complex&lt;double&gt; **cm = <span class="keyword">nullptr</span>;<span class="comment">// Column major matrix</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> initialise(<span class="keywordtype">int</span> n_rows, <span class="keywordtype">int</span> n_cols);</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <a class="code hl_class" href="class_detector_sensitivity_arrays.html">~DetectorSensitivityArrays</a>();</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="comment"></span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="comment"> * Container for storing snapshots of the full-field</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html">  141</a></span><span class="keyword">class </span><a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a> {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  std::complex&lt;double&gt; Ex = 0.;<span class="comment">//&lt; x-component of the electric field</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  std::complex&lt;double&gt; Ey = 0.;<span class="comment">//&lt; y-component of the electric field</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  std::complex&lt;double&gt; Ez = 0.;<span class="comment">//&lt; z-component of the electric field</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  std::complex&lt;double&gt; Hx = 0.;<span class="comment">//&lt; x-component of the magnetic field</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  std::complex&lt;double&gt; Hy = 0.;<span class="comment">//&lt; y-component of the magnetic field</span></div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  std::complex&lt;double&gt; Hz = 0.;<span class="comment">//&lt; z-component of the magnetic field</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="comment"></span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">   * @brief Return the component of the field corresponding to the index</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">   * provided.</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="comment">   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.</span></div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="comment">   * This is the indexing order that other storage containers use.</span></div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="comment">   * Throws an error if provided an index &lt;0 or &gt;5.</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="comment">   *</span></div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="comment">   * @param index Field component index to fetch</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="comment">   * @return std::complex&lt;double&gt; The field component</span></div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">  164</a></span>  std::complex&lt;double&gt; <a class="code hl_function" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">operator[]</a>(<span class="keywordtype">int</span> index) {</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">switch</span> (index) {</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>      <span class="keywordflow">case</span> 0:</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keywordflow">return</span> Ex;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>      <span class="keywordflow">case</span> 1:</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">return</span> Ey;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>      <span class="keywordflow">case</span> 2:</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> Ez;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>      <span class="keywordflow">case</span> 3:</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">return</span> Hx;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>      <span class="keywordflow">case</span> 4:</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">return</span> Hy;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>      <span class="keywordflow">case</span> 5:</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span> Hz;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>      <span class="keywordflow">default</span>:</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + std::to_string(index) +</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                                 <span class="stringliteral">&quot; does not correspond to a field component.&quot;</span>);</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  }</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="comment"></span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="comment">   * @brief Multiplies the electric field components by `factor`.</span></div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="comment">   * @param factor to scale the field by</span></div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">  195</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">multiply_E_by</a>(std::complex&lt;double&gt; factor) {</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    Ex *= factor;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    Ey *= factor;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    Ez *= factor;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  }<span class="comment"></span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="comment">   * @brief Multiplies the magnetic field components by `factor`.</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="comment">   * @param factor to scale the field by</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="comment">   */</span></div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">  204</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">multiply_H_by</a>(std::complex&lt;double&gt; factor) {</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    Hx *= factor;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    Hy *= factor;</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    Hz *= factor;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>  }</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>};</div>
-<div class="ttc" id="aclass_detector_sensitivity_arrays_html"><div class="ttname"><a href="class_detector_sensitivity_arrays.html">DetectorSensitivityArrays</a></div><div class="ttdef"><b>Definition:</b> arrays.h:127</div></div>
-<div class="ttc" id="aclass_field_components_vector_html"><div class="ttname"><a href="class_field_components_vector.html">FieldComponentsVector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:112</div></div>
-<div class="ttc" id="aclass_field_components_vector_html_afa2ce13369d9b1f8fb1392a181be3f82"><div class="ttname"><a href="class_field_components_vector.html#afa2ce13369d9b1f8fb1392a181be3f82">FieldComponentsVector::index</a></div><div class="ttdeci">int index(int value)</div><div class="ttdef"><b>Definition:</b> arrays.cpp:51</div></div>
-<div class="ttc" id="aclass_frequency_extract_vector_html"><div class="ttname"><a href="class_frequency_extract_vector.html">FrequencyExtractVector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:97</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html"><div class="ttname"><a href="class_full_field_snapshot.html">FullFieldSnapshot</a></div><div class="ttdef"><b>Definition:</b> arrays.h:141</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_aa24df31b644ca68e3cf86b7c6799f5dc"><div class="ttname"><a href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">FullFieldSnapshot::multiply_E_by</a></div><div class="ttdeci">void multiply_E_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the electric field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:195</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_acf34a9ea69bbd2ef1aa9fb8c7b6fa07a"><div class="ttname"><a href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">FullFieldSnapshot::multiply_H_by</a></div><div class="ttdeci">void multiply_H_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the magnetic field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:204</div></div>
-<div class="ttc" id="aclass_full_field_snapshot_html_aec09405bbf842beedc36c15073faceb7"><div class="ttname"><a href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot::operator[]</a></div><div class="ttdeci">std::complex&lt; double &gt; operator[](int index)</div><div class="ttdoc">Return the component of the field corresponding to the index provided.</div><div class="ttdef"><b>Definition:</b> arrays.h:164</div></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="struct_frequency_vectors.html">   97</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_frequency_vectors.html">FrequencyVectors</a> {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  std::vector&lt;double&gt; x;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  std::vector&lt;double&gt; y;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="class_detector_sensitivity_arrays.html">  102</a></span><span class="keyword">class </span><a class="code hl_class" href="class_detector_sensitivity_arrays.html">DetectorSensitivityArrays</a> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  fftw_complex *v = <span class="keyword">nullptr</span>;          <span class="comment">// Flat fftw vector</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  fftw_plan plan = <span class="keyword">nullptr</span>;           <span class="comment">// fftw plan for the setup</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  std::complex&lt;double&gt; **cm = <span class="keyword">nullptr</span>;<span class="comment">// Column major matrix</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  <span class="keywordtype">void</span> initialise(<span class="keywordtype">int</span> n_rows, <span class="keywordtype">int</span> n_cols);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  <a class="code hl_class" href="class_detector_sensitivity_arrays.html">~DetectorSensitivityArrays</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="comment"></span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="comment"> * Container for storing snapshots of the full-field</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html">  116</a></span><span class="keyword">class </span><a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a> {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  std::complex&lt;double&gt; Ex = 0.;<span class="comment">//&lt; x-component of the electric field</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  std::complex&lt;double&gt; Ey = 0.;<span class="comment">//&lt; y-component of the electric field</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  std::complex&lt;double&gt; Ez = 0.;<span class="comment">//&lt; z-component of the electric field</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  std::complex&lt;double&gt; Hx = 0.;<span class="comment">//&lt; x-component of the magnetic field</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  std::complex&lt;double&gt; Hy = 0.;<span class="comment">//&lt; y-component of the magnetic field</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  std::complex&lt;double&gt; Hz = 0.;<span class="comment">//&lt; z-component of the magnetic field</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <a class="code hl_class" href="class_full_field_snapshot.html">FullFieldSnapshot</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="comment"></span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="comment">   * @brief Return the component of the field corresponding to the index</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="comment">   * provided.</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="comment">   * 0 = Ex, 1 = Ey, 2 = Ez, 3 = Hx, 4 = Hy, 5 = Hz.</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="comment">   * This is the indexing order that other storage containers use.</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="comment">   * Throws an error if provided an index &lt;0 or &gt;5.</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="comment">   * @param index Field component index to fetch</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="comment">   * @return std::complex&lt;double&gt; The field component</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">  139</a></span>  std::complex&lt;double&gt; <a class="code hl_function" href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">operator[]</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">switch</span> (index) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      <span class="keywordflow">case</span> 0:</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">return</span> Ex;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>      <span class="keywordflow">case</span> 1:</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">return</span> Ey;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>      <span class="keywordflow">case</span> 2:</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> Ez;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>      <span class="keywordflow">case</span> 3:</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">return</span> Hx;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>      <span class="keywordflow">case</span> 4:</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">return</span> Hy;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      <span class="keywordflow">case</span> 5:</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">return</span> Hz;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>      <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Index &quot;</span> + std::to_string(index) +</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                                 <span class="stringliteral">&quot; does not correspond to a field component.&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="comment"></span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">   * @brief Multiplies the electric field components by `factor`.</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment">   * @param factor to scale the field by</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">  170</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">multiply_E_by</a>(std::complex&lt;double&gt; factor) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    Ex *= factor;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    Ey *= factor;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    Ez *= factor;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  }<span class="comment"></span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment">   * @brief Multiplies the magnetic field components by `factor`.</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="comment">   * @param factor to scale the field by</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">  179</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">multiply_H_by</a>(std::complex&lt;double&gt; factor) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    Hx *= factor;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    Hy *= factor;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    Hz *= factor;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>};</div>
+<div class="ttc" id="aclass_detector_sensitivity_arrays_html"><div class="ttname"><a href="class_detector_sensitivity_arrays.html">DetectorSensitivityArrays</a></div><div class="ttdef"><b>Definition:</b> arrays.h:102</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html"><div class="ttname"><a href="class_full_field_snapshot.html">FullFieldSnapshot</a></div><div class="ttdef"><b>Definition:</b> arrays.h:116</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_aa24df31b644ca68e3cf86b7c6799f5dc"><div class="ttname"><a href="class_full_field_snapshot.html#aa24df31b644ca68e3cf86b7c6799f5dc">FullFieldSnapshot::multiply_E_by</a></div><div class="ttdeci">void multiply_E_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the electric field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:170</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_acf34a9ea69bbd2ef1aa9fb8c7b6fa07a"><div class="ttname"><a href="class_full_field_snapshot.html#acf34a9ea69bbd2ef1aa9fb8c7b6fa07a">FullFieldSnapshot::multiply_H_by</a></div><div class="ttdeci">void multiply_H_by(std::complex&lt; double &gt; factor)</div><div class="ttdoc">Multiplies the magnetic field components by factor.</div><div class="ttdef"><b>Definition:</b> arrays.h:179</div></div>
+<div class="ttc" id="aclass_full_field_snapshot_html_aec09405bbf842beedc36c15073faceb7"><div class="ttname"><a href="class_full_field_snapshot.html#aec09405bbf842beedc36c15073faceb7">FullFieldSnapshot::operator[]</a></div><div class="ttdeci">std::complex&lt; double &gt; operator[](int index)</div><div class="ttdoc">Return the component of the field corresponding to the index provided.</div><div class="ttdef"><b>Definition:</b> arrays.h:139</div></div>
 <div class="ttc" id="aclass_vector_html"><div class="ttname"><a href="class_vector.html">Vector</a></div><div class="ttdef"><b>Definition:</b> arrays.h:74</div></div>
 <div class="ttc" id="aclass_x_y_z_tensor3_d_html"><div class="ttname"><a href="class_x_y_z_tensor3_d.html">XYZTensor3D</a></div><div class="ttdef"><b>Definition:</b> arrays.h:19</div></div>
 <div class="ttc" id="aclass_x_y_z_tensor3_d_html_ac7894b517964b8f32a0578c469551a30"><div class="ttname"><a href="class_x_y_z_tensor3_d.html#ac7894b517964b8f32a0578c469551a30">XYZTensor3D::allocate</a></div><div class="ttdeci">void allocate(int I_total, int J_total, int K_total)</div><div class="ttdoc">Allocates x, y, and z as (K_total+1) * (J_total+1) * (I_total+1) arrays.</div><div class="ttdef"><b>Definition:</b> arrays.h:56</div></div>
 <div class="ttc" id="aglobals_8h_html"><div class="ttname"><a href="globals_8h.html">globals.h</a></div><div class="ttdoc">Type definitions and global constants.</div></div>
-<div class="ttc" id="astruct_frequency_vectors_html"><div class="ttname"><a href="struct_frequency_vectors.html">FrequencyVectors</a></div><div class="ttdef"><b>Definition:</b> arrays.h:104</div></div>
+<div class="ttc" id="astruct_frequency_vectors_html"><div class="ttname"><a href="struct_frequency_vectors.html">FrequencyVectors</a></div><div class="ttdef"><b>Definition:</b> arrays.h:97</div></div>
 <div class="ttc" id="autils_8h_html"><div class="ttname"><a href="utils_8h.html">utils.h</a></div><div class="ttdoc">Useful miscellaneous utility functions.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

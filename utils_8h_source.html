@@ -98,31 +98,88 @@ $(document).ready(function(){initNavTree('utils_8h_source.html',''); initResizab
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment"> * @file utils.h</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment"> * @brief Useful miscellaneous utility functions</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"></span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> * @brief Throws a runtime error if a file is not found.</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> * @param filename The name of the file to check.</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> * @param mode The mode to try and open with.</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849">assert_can_open_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">/**</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * @brief Check two strings are equal</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * @param a The first string</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> * @param b The second string</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * @return true if the strings are the same</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * @return false otherwise</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">bool</span> <a class="code hl_function" href="utils_8h.html#a2b5bf5ac7771d3b341eb22e1042d72f3">are_equal</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *a, <span class="keyword">const</span> <span class="keywordtype">char</span> *b);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"></span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">/** @brief Return the maximum of three integer values */</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">int</span> <a class="code hl_function" href="utils_8h.html#a959675ffe66c53e2410c485edaeb2fe7">max</a>(<span class="keywordtype">int</span> a, <span class="keywordtype">int</span> b, <span class="keywordtype">int</span> c);</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"></span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> * @brief Throws a runtime error if a file is not found.</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> * @param filename The name of the file to check.</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * @param mode The mode to try and open with.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849">assert_can_open_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"></span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * @brief Check two strings are equal</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> * @param a The first string</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> * @param b The second string</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> * @return true if the strings are the same</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> * @return false otherwise</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">bool</span> <a class="code hl_function" href="utils_8h.html#a2b5bf5ac7771d3b341eb22e1042d72f3">are_equal</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *a, <span class="keyword">const</span> <span class="keywordtype">char</span> *b);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"></span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> * @brief A collection of utility functions that we will be applying to</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> * std::vectors multiple times throughout the codebase.</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespacetdms__vector__utils.html">   34</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacetdms__vector__utils.html">tdms_vector_utils</a> {<span class="comment"></span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">/** @brief Return the maximum value stored in the vector. */</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespacetdms__vector__utils.html#a69759e020cb26ac8cf58e85fa8f86edf">   37</a></span>T <a class="code hl_function" href="namespacetdms__vector__utils.html#a69759e020cb26ac8cf58e85fa8f86edf">max</a>(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;v) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordflow">return</span> *std::max_element(v.begin(), v.end());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"></span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">/** @brief Return true if the vector has non-zero size. */</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespacetdms__vector__utils.html#a663a1d4cea32ab2d40af6ac1b2ecdea4">   43</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacetdms__vector__utils.html#a663a1d4cea32ab2d40af6ac1b2ecdea4">has_elements</a>(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;v) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keywordflow">return</span> v.size() != 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment"></span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment"> * Get the index of a particular integer in this vector. If it does not exist</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment"> * then return -1. Returns the first occurrence.</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"> * @param v Vector to search through for the value</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment"> * @param value value to find</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment"> * @return index of the value in the vector, or -1 (if not found)</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="namespacetdms__vector__utils.html#ab6d9aede6e7a4c60807b3e90f8dcb54e">   55</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespacetdms__vector__utils.html#ab6d9aede6e7a4c60807b3e90f8dcb54e">index</a>(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;v, <span class="keyword">const</span> T &amp;value) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <span class="keyword">auto</span> found_index = std::find(v.begin(), v.end(), value);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  <span class="comment">// Return -1 if we didn&#39;t find the value</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keywordflow">if</span> (found_index == v.end()) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="comment">// Otherwise return the index of the occurrence of the value</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> std::distance(v.begin(), found_index);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment"></span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment"> * @brief Static_casts an array of doubles to ints. ONLY INTENDED FOR CASES</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="comment"> * WHERE WE KNOW THAT THE VALUES STORED AS DOUBLES ARE INTS.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment"> * @details Usage cases are restricted to when data is read from MATLAB .mat</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment"> * files, which by default save all values as floats, however we are expecting</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment"> * to receive integer values (cell indices, sizes, etc).</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment"> * @param ints_that_are_doubles Vector of doubles that actually contain integer</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment"> * values</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment"> * @return std::vector&lt;int&gt; Converted values</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>std::vector&lt;int&gt;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespacetdms__vector__utils.html#a89fa17327d197e6c0ce66f9d7dbf1084">   77</a></span><a class="code hl_function" href="namespacetdms__vector__utils.html#a89fa17327d197e6c0ce66f9d7dbf1084">to_vector_int</a>(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;ints_that_are_doubles);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}<span class="comment">// namespace tdms_vector_utils</span></div>
+<div class="ttc" id="anamespacetdms__vector__utils_html"><div class="ttname"><a href="namespacetdms__vector__utils.html">tdms_vector_utils</a></div><div class="ttdoc">A collection of utility functions that we will be applying to std::vectors multiple times throughout ...</div><div class="ttdef"><b>Definition:</b> utils.h:34</div></div>
+<div class="ttc" id="anamespacetdms__vector__utils_html_a663a1d4cea32ab2d40af6ac1b2ecdea4"><div class="ttname"><a href="namespacetdms__vector__utils.html#a663a1d4cea32ab2d40af6ac1b2ecdea4">tdms_vector_utils::has_elements</a></div><div class="ttdeci">bool has_elements(const std::vector&lt; T &gt; &amp;v)</div><div class="ttdoc">Return true if the vector has non-zero size.</div><div class="ttdef"><b>Definition:</b> utils.h:43</div></div>
+<div class="ttc" id="anamespacetdms__vector__utils_html_a69759e020cb26ac8cf58e85fa8f86edf"><div class="ttname"><a href="namespacetdms__vector__utils.html#a69759e020cb26ac8cf58e85fa8f86edf">tdms_vector_utils::max</a></div><div class="ttdeci">T max(const std::vector&lt; T &gt; &amp;v)</div><div class="ttdoc">Return the maximum value stored in the vector.</div><div class="ttdef"><b>Definition:</b> utils.h:37</div></div>
+<div class="ttc" id="anamespacetdms__vector__utils_html_a89fa17327d197e6c0ce66f9d7dbf1084"><div class="ttname"><a href="namespacetdms__vector__utils.html#a89fa17327d197e6c0ce66f9d7dbf1084">tdms_vector_utils::to_vector_int</a></div><div class="ttdeci">std::vector&lt; int &gt; to_vector_int(const std::vector&lt; double &gt; &amp;ints_that_are_doubles)</div><div class="ttdoc">Static_casts an array of doubles to ints. ONLY INTENDED FOR CASES WHERE WE KNOW THAT THE VALUES STORE...</div></div>
+<div class="ttc" id="anamespacetdms__vector__utils_html_ab6d9aede6e7a4c60807b3e90f8dcb54e"><div class="ttname"><a href="namespacetdms__vector__utils.html#ab6d9aede6e7a4c60807b3e90f8dcb54e">tdms_vector_utils::index</a></div><div class="ttdeci">int index(const std::vector&lt; T &gt; &amp;v, const T &amp;value)</div><div class="ttdef"><b>Definition:</b> utils.h:55</div></div>
 <div class="ttc" id="autils_8h_html_a2b5bf5ac7771d3b341eb22e1042d72f3"><div class="ttname"><a href="utils_8h.html#a2b5bf5ac7771d3b341eb22e1042d72f3">are_equal</a></div><div class="ttdeci">bool are_equal(const char *a, const char *b)</div><div class="ttdoc">Check two strings are equal.</div><div class="ttdef"><b>Definition:</b> utils.cpp:21</div></div>
 <div class="ttc" id="autils_8h_html_a6d771ce08ce03dfefa0d0135773d9849"><div class="ttname"><a href="utils_8h.html#a6d771ce08ce03dfefa0d0135773d9849">assert_can_open_file</a></div><div class="ttdeci">void assert_can_open_file(const char *filename, const char *mode)</div><div class="ttdoc">Throws a runtime error if a file is not found.</div><div class="ttdef"><b>Definition:</b> utils.cpp:10</div></div>
-<div class="ttc" id="autils_8h_html_a959675ffe66c53e2410c485edaeb2fe7"><div class="ttname"><a href="utils_8h.html#a959675ffe66c53e2410c485edaeb2fe7">max</a></div><div class="ttdeci">int max(int a, int b, int c)</div><div class="ttdoc">Return the maximum of three integer values.</div><div class="ttdef"><b>Definition:</b> utils.cpp:23</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

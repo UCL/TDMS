@@ -124,11 +124,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_dimension</b> (st
 <tr class="memitem:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_parameters.html#a3f5aca819aabeede1fdc3ca60e41d13d">set_spacing_stride</a> (const double *vector)</td></tr>
 <tr class="memdesc:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the surface spacing stride. The x, y, z step size for extracting phasors (in matlab this is called 'phasorinc')  <br /></td></tr>
 <tr class="separator:a3f5aca819aabeede1fdc3ca60e41d13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memItemLeft" align="right" valign="top"><a id="a329f77bf60b70aae7c7e744a56dcc3fb" name="a329f77bf60b70aae7c7e744a56dcc3fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_Np</b> (<a class="el" href="class_frequency_extract_vector.html">FrequencyExtractVector</a> &amp;f_ex_vec)</td></tr>
-<tr class="separator:a329f77bf60b70aae7c7e744a56dcc3fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3238a6d8f8eb6a50c8ab0b2ae97a6eb2"><td class="memItemLeft" align="right" valign="top"><a id="a3238a6d8f8eb6a50c8ab0b2ae97a6eb2" name="a3238a6d8f8eb6a50c8ab0b2ae97a6eb2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_Np_and_Npe</b> (const FrequencyExtractVector &amp;f_ex_vec)</td></tr>
+<tr class="memdesc:a3238a6d8f8eb6a50c8ab0b2ae97a6eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the number of times to extract the phasors (Np), and the number of iterations between each extraction (Npe). <br /></td></tr>
+<tr class="separator:a3238a6d8f8eb6a50c8ab0b2ae97a6eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05d8c16f873435e51e8e32ff48fe353b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_simulation_parameters.html#a05d8c16f873435e51e8e32ff48fe353b">unpack_from_input_matrices</a> (<a class="el" href="class_input_matrices.html">InputMatrices</a> in_matrices)</td></tr>
-<tr class="memdesc:a05d8c16f873435e51e8e32ff48fe353b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all simulation parameters and flags from the matrix inputs the executable recieved.  <br /></td></tr>
+<tr class="memdesc:a05d8c16f873435e51e8e32ff48fe353b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpacks all simulation parameters and flags from the matrix inputs the executable received.  <br /></td></tr>
 <tr class="separator:a05d8c16f873435e51e8e32ff48fe353b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -264,7 +265,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>eyi_present</b> = fal
       </table>
 </div><div class="memdoc">
 
-<p>Unpacks all simulation parameters and flags from the matrix inputs the executable recieved. </p>
+<p>Unpacks all simulation parameters and flags from the matrix inputs the executable received. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">in_matrices</td><td>The input arrays from the input file(s) to tdms </td></tr>
