@@ -92,9 +92,9 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
  * because OpenMP 2.5 (the only version the VSCode compiler supports) does not
  * permit unsigned integers in parallel for loops.
  *
- * Conversely, OpenMP on Mac and Ubuntu does support this, so the code is simpler
- * and safer. When VisualStudio eventually update their OpenMP spec we can
- * probably remove this.
+ * Conversely, OpenMP on Mac and Ubuntu does support this, so the code is
+ * simpler and safer. When VisualStudio eventually update their OpenMP spec we
+ * can probably remove this.
  */
 #if (_OPENMP < 200805)
       long long int loop_upper_index = inputs.f_ex_vec.size();
