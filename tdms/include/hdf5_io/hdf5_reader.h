@@ -11,12 +11,14 @@
 #include "arrays/dispersive_multilayer.h"
 #include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/vector_typedefs.h"
 #include "arrays/xyz_vector.h"
 #include "interface.h"
 
 /**
  * @brief Class wrapper of the reading of HDF5 format files.
- * @details Opens files in readonly and retrieves the datasets (in our case
+ * @details Opens files in readonly and retrieves the datasets (in our
+ * case
  *          **double, but can be anything in general).
  */
 class HDF5Reader : public HDF5Base {
@@ -211,4 +213,6 @@ public:
     read(group_to_read_from, "Da", d_base.a);
     read(group_to_read_from, "Db", d_base.b);
   };
+  void read(FrequencyExtractVector &fev, double omega_an,
+            const std::string &dataset_name = "f_ex_vec") const;
 };

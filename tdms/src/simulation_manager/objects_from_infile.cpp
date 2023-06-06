@@ -133,6 +133,12 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
     }
   }
 
+  // Fetch the vector of frequencies to extract at
+  INPUT_FILE.read(f_ex_vec, params.omega_an);
+  // Update simulation parameters with the number of iterations between
+  // extractions
+  params.set_Np(f_ex_vec);
+
   // work out if we have a dispersive background
   if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
 
@@ -185,10 +191,7 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
       Ksource(matrices_from_input_file["Ksource"], I1.index - I0.index + 1,
               J1.index - J0.index + 1, "Ksource"),
       // Get structure, we need I_tot from Iterator_IndependentObjectsFromInfile
-      structure(matrices_from_input_file["structure"], IJK_tot.i),
-      // Get f_ex_vec, the vector of frequencies to extract the field at.
-      // Need params.omega from Iterator_IndependentObjectsFromInfile
-      f_ex_vec(matrices_from_input_file["f_ex_vec"], params.omega_an) {
+      structure(matrices_from_input_file["structure"], IJK_tot.i) {
   // Update params according to structure's values
   params.is_structure = structure.has_elements();
 }
