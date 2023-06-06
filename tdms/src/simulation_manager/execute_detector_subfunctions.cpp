@@ -83,9 +83,28 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, kprop,   \
                                              phaseTermE, cphaseTermE)
     {
-#pragma omp for
       // For each frequency
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+/**
+ * The following #if ... #else ... #endif block is to work around
+ * https://stackoverflow.com/questions/2820621/
+ *
+ * On Windows, we are forced to unsafe cast between unsigned and signed integer
+ * because OpenMP 2.5 (the only version the VSCode compiler supports) does not
+ * permit unsigned integers in parallel for loops.
+ *
+ * Conversely, OpenMP on Mac and Ubuntu does support this, so the code is
+ * simpler and safer. When VisualStudio eventually update their OpenMP spec we
+ * can probably remove this.
+ */
+#if (_OPENMP < 200805)
+      long long int loop_upper_index = inputs.f_ex_vec.size();
+
+#pragma omp for
+      for (int ifx = 0; ifx < loop_upper_index; ifx++) {
+#else
+#pragma omp for
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+#endif
         // determine wavelength at this frequency
         lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
         Idxt = 0.;

@@ -9,6 +9,7 @@
 #include "arrays/incident_field.h"
 #include "arrays/material_collections.h"
 #include "hdf5_io/hdf5_reader.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -56,9 +57,10 @@ void SimulationParameters::set_spacing_stride(const double *vector) {
   spacing_stride.z = (int) vector[2];
 }
 
-void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
+void SimulationParameters::set_Np_and_Npe(
+        const FrequencyExtractVector &f_ex_vec) {
 
-  double f_max = f_ex_vec.max();
+  double f_max = tdms_vector_utils::max(f_ex_vec);
   Np = (int) floor(1. / (2.5 * dt * f_max));
 
   // calculate Npe, the temporal DFT will be evaluated whenever tind increments
@@ -132,9 +134,4 @@ void SimulationParameters::unpack_from_input_matrices(
   IncidentField Ei(in_matrices["tdfield"]);
   exi_present = Ei.x.has_elements();
   eyi_present = Ei.y.has_elements();
-
-  // set_Np -> do we actually USE this? f_ex_vec goes out of scope immediately
-  // after...
-  FrequencyExtractVector f_ex_vec(in_matrices["f_ex_vec"], omega_an);
-  set_Np(f_ex_vec);
 }

@@ -59,7 +59,7 @@ void SimulationManager::extract_phasors(int &dft_counter, unsigned int tind) {
                           inputs.params.dt, inputs.Nsteps);
     // if we are additionally extracting surface phasors
     if (inputs.params.exphasorssurface) {
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.surface_phasors.extractPhasorsSurface(
                 ifx, inputs.E_s, inputs.H_s, dft_counter,
                 inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.Nsteps, inputs.params,
@@ -85,7 +85,7 @@ void SimulationManager::extract_phasors(int &dft_counter, unsigned int tind) {
     // Extract phasors on the user-defined surface
     if ((inputs.params.exphasorssurface) &&
         ((tind - inputs.params.start_tind) % inputs.params.Np == 0)) {
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.surface_phasors.extractPhasorsSurface(
                 ifx, inputs.E_s, inputs.H_s, tind,
                 inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params.Npe,
@@ -95,7 +95,7 @@ void SimulationManager::extract_phasors(int &dft_counter, unsigned int tind) {
     // Extract phasors at the user-defined vertices
     if (outputs.vertex_phasors.there_are_vertices_to_extract_at() &&
         ((tind - inputs.params.start_tind) % inputs.params.Np == 0)) {
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         outputs.vertex_phasors.extractPhasorsVertices(
                 ifx, inputs.E_s, inputs.H_s, tind,
                 inputs.f_ex_vec[ifx] * 2 * DCPI, inputs.params);
@@ -125,7 +125,7 @@ void SimulationManager::new_acquisition_period(unsigned int tind) {
       outputs.E.angular_norm = 0.0;
       outputs.H.angular_norm = 0.0;
       // zero normalisation factors at each frequency
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
         E_norm[ifx] = 0.;
         H_norm[ifx] = 0.;
       }
@@ -133,7 +133,7 @@ void SimulationManager::new_acquisition_period(unsigned int tind) {
     // We now update the angular norms and extract phasors
     outputs.E.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
     outputs.H.add_to_angular_norm(tind, inputs.Nsteps, inputs.params);
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+    for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
       extract_phasor_norms(ifx, tind, inputs.Nsteps);
     }
   } else if ((tind - inputs.params.start_tind) % inputs.params.Np == 0) {
@@ -141,7 +141,7 @@ void SimulationManager::new_acquisition_period(unsigned int tind) {
     // iterations
     outputs.E.add_to_angular_norm(tind, inputs.params.Npe, inputs.params);
     outputs.H.add_to_angular_norm(tind, inputs.params.Npe, inputs.params);
-    for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+    for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
       extract_phasor_norms(ifx, tind, inputs.params.Npe);
     }
   }
