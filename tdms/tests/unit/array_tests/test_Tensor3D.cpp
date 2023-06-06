@@ -9,7 +9,7 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "arrays.h"
+#include "arrays/tensor3d.h"
 #include "unit_test_utils.h"
 
 using tdms_tests::TOLERANCE;

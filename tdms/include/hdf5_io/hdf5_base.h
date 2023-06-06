@@ -1,5 +1,5 @@
 /**
- * @file hdf5_io.h
+ * @file hdf5_base.h
  * @brief Helper classes for HDF5 file I/O.
  * @details The main classes are `HDF5Reader` and `HDF5Writer` with the methods
  * `HDF5Reader::read` and `HDF5Writer::write` respectively.

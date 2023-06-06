@@ -5,7 +5,10 @@
 
 #include <spdlog/spdlog.h>
 
+#include "arrays.h"
 #include "arrays/incident_field.h"
+#include "arrays/material_collections.h"
+#include "hdf5_io/hdf5_reader.h"
 
 using namespace std;
 
@@ -70,7 +73,9 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
 void SimulationParameters::unpack_from_input_matrices(
         InputMatrices in_matrices) {
   // determine if we have a dispersive medium or multilayer
-  CCollection C(in_matrices["C"]);
+  CCollection C;
+  HDF5Reader INPUT_FILE(in_matrices.input_filename);
+  INPUT_FILE.read(C);
   is_disp_ml = C.is_disp_ml;
   is_multilayer = C.is_multilayer;
 

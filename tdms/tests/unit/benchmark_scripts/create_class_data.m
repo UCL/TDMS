@@ -48,6 +48,31 @@ dispersive_aux.sigma_x = 0:9;
 dispersive_aux.sigma_y = 0:9;
 dispersive_aux.sigma_z = 0:9;
 
+%% CMaterial, DMaterial, CCollection
+% CMaterial has 9 elements, CCollection can have 6 or 9. DMaterial has 6.
+% Fields are vectors, named {C,D}{a,b,c}{x,y,z}. c-fields are missing if only 6 fields are present.
+Cmaterial = struct();
+Cmaterial.Cax = 0:4;
+Cmaterial.Cbx = 0:4;
+Cmaterial.Ccx = 0:4;
+Cmaterial.Cay = 0:4;
+Cmaterial.Cby = 0:4;
+Cmaterial.Ccy = 0:4;
+Cmaterial.Caz = 0:4;
+Cmaterial.Cbz = 0:4;
+Cmaterial.Ccz = 0:4;
+
+C = Cmaterial;
+C = rmfield(C, ["Ccx", "Ccy", "Ccz"]);
+
+Dmaterial = struct();
+Dmaterial.Dax = 5:9;
+Dmaterial.Dbx = 5:9;
+Dmaterial.Day = 5:9;
+Dmaterial.Dby = 5:9;
+Dmaterial.Daz = 5:9;
+Dmaterial.Dbz = 5:9;
+
 %% save variables to the file we need
 % Save the files to the expected filename for the unit tests to read the
 % data back in.

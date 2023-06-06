@@ -21,6 +21,7 @@ def create_hdf5_test_file() -> None:
 
     # Create a group under root
     read_in_test = file.require_group("read_in_test")
+
     # Populate group with test data
     read_in_test.create_dataset(
         "vector_int", data=consecutive_numbers, shape=(12,), dtype=int
@@ -31,6 +32,16 @@ def create_hdf5_test_file() -> None:
     read_in_test.create_dataset(
         "tensor_double", data=consecutive_numbers, shape=(2, 3, 2), dtype=float
     )
+
+    # Create data for an XYZVector
+    x_array = np.array([0.1, 0.2, 0.3])
+    y_array = np.array([0.4, 0.5, 0.6])
+    z_array = np.array([0.7, 0.8, 0.9])
+
+    xyz_vector_group = file.require_group("XYZVector")
+    xyz_vector_group.create_dataset("xyz_x", data=x_array)
+    xyz_vector_group.create_dataset("xyz_y", data=y_array)
+    xyz_vector_group.create_dataset("xyz_z", data=z_array)
 
     # Create & populate the group that mimics MATLAB empty arrays
     # Deliberately include some data here to stress that emptiness is based off the presence of an attribute
@@ -49,6 +60,26 @@ def create_hdf5_test_file() -> None:
 
     # Create an attribute at the root of the file for debugging and testing purposes
     file.attrs["file_attribute"] = 1
+
+    # Create C and D Material/Collection groups and fields
+    # CCollection can be read in with either 6 or 9 elements
+    # The D-objects read the same structured stuff, so we'll just overload to check they read correctly
+    CMaterial_group = file.require_group("Cmaterial")
+    CCollection_group = file.require_group("C")
+    DMaterial_group = file.require_group("Dmaterial")
+    for abc in ["a", "b", "c"]:
+        for xyz in ["x", "y", "z"]:
+            CMaterial_group.create_dataset(
+                "C" + abc + xyz, data=consecutive_numbers[0:5]
+            )
+    for ab in ["a", "b"]:
+        for xyz in ["x", "y", "z"]:
+            CCollection_group.create_dataset(
+                "C" + ab + xyz, data=consecutive_numbers[0:5]
+            )
+            DMaterial_group.create_dataset(
+                "D" + ab + xyz, data=consecutive_numbers[5:10]
+            )
 
     file.close()
     return

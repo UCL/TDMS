@@ -8,6 +8,7 @@
 
 #include "arrays.h"
 #include "arrays/eh_vec.h"
+#include "arrays/tensor3d.h"
 #include "cell_coordinate.h"
 #include "dimensions.h"
 #include "input_flags.h"
