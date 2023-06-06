@@ -12,9 +12,12 @@ name: Build and test
 on:
   push:
     branches: ["main"]
+    paths: ['tdms/**'] 
   pull_request:
+    paths: ['tdms/**'] 
   merge_group:
   workflow_dispatch:
+
 
 
 concurrency:
