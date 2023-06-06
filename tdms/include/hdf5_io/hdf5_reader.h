@@ -18,8 +18,7 @@
 /**
  * @brief Class wrapper of the reading of HDF5 format files.
  * @details Opens files in readonly and retrieves the datasets (in our
- * case
- *          **double, but can be anything in general).
+ *          case, **double, but can be anything in general).
  */
 class HDF5Reader : public HDF5Base {
 public:

@@ -76,8 +76,8 @@ public:
 
   GridLabels input_grid_labels;//!< cartesian labels of the Yee cells
 
-  FrequencyExtractVector
-          f_ex_vec;//< Vector of frequencies to extract field & phasors at
+  //! Vector of frequencies to extract field & phasors at
+  FrequencyExtractVector f_ex_vec;
 
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 

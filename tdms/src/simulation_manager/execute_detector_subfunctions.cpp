@@ -84,15 +84,18 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
                                              phaseTermE, cphaseTermE)
     {
       // For each frequency
-/* https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
-On Windows, we are forced to unsafe cast between unsigned and signed integer
-because OpenMP 2.5 (the only version the VSCode compiler supports) does not
-permit unsigned integers in parallel for loops.
-
-Conversely, OpenMP on Mac and Ubuntu does support this, and thus we can avoid
-both an unsafe cast and unsafe comparison between a signed loop variable and
-unsigned vector size.
-*/
+/**
+ * The following #if ... #else ... #endif block is to work around
+ * https://stackoverflow.com/questions/2820621/
+ *
+ * On Windows, we are forced to unsafe cast between unsigned and signed integer
+ * because OpenMP 2.5 (the only version the VSCode compiler supports) does not
+ * permit unsigned integers in parallel for loops.
+ *
+ * Conversely, OpenMP on Mac and Ubuntu does support this, so the code is simpler
+ * and safer. When VisualStudio eventually update their OpenMP spec we can
+ * probably remove this.
+ */
 #if (_OPENMP < 200805)
       long long int loop_upper_index = inputs.f_ex_vec.size();
 
