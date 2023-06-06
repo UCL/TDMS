@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <spdlog/spdlog.h>
+
 using namespace std;
 
 H5Dimension::H5Dimension(const H5::DataSpace &data_space) {
@@ -20,4 +22,11 @@ bool H5Dimension::is_1D() const {
     }
   }
   return n_non_trivial_dimensions <= 1;
+}
+
+string H5Dimension::print() const {
+  string log_string = "(";
+  for (const hsize_t &val : *this) { log_string += to_string(val) + ", "; }
+  log_string += ")";
+  return log_string;
 }

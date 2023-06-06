@@ -3,6 +3,8 @@
 #include <spdlog/spdlog.h>
 
 #include "globals.h"
+#include "matlabio.h"
+#include "matrix.h"
 
 using namespace std;
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
@@ -16,7 +18,22 @@ void VertexPhasors::set_from(const mxArray *ptr) {
   assert_is_struct_with_n_fields(ptr, 2,
                                  "VertexPhasors (using campssample array)");
   vertices.initialise_from_matlab(ptr);
-  components.initialise(ptr);
+
+  // Setup the components by reading the MATLAB buffer
+  // This should use the HDF5Reader methods when this class is detached from
+  // MATLAB. This section will also need to use the to_vector_int method from
+  // tdms_vector_utils.
+  mxArray *components_field =
+          ptr_to_matrix_in(ptr, "components", "campssample");
+  if (!mxIsEmpty(components_field)) {
+    const mwSize *dims = mxGetDimensions(components_field);
+    unsigned int n_component_elements = max(dims[0], dims[1]);
+    int *component_entries_as_doubles = (int *) mxGetPr(components_field);
+    components.resize(n_component_elements);
+    for (unsigned int c_index = 0; c_index < n_component_elements; c_index++) {
+      components[c_index] = component_entries_as_doubles[c_index];
+    }
+  }
 }
 
 void VertexPhasors::normalise_vertices(int frequency_index,
@@ -25,7 +42,7 @@ void VertexPhasors::normalise_vertices(int frequency_index,
   for (int i = FieldComponents::Ex; i <= FieldComponents::Hz; i++) {
     // determine whether we are extracting this field component at the vertices
     // or not
-    int index_in_camplitudes = components.index(i);
+    int index_in_camplitudes = tdms_vector_utils::index(components, i);
     if (index_in_camplitudes >= 0) {
       // we are extracting this component, determine the normalisation factor
       complex<double> norm = i <= FieldComponents::Ez ? Enorm : Hnorm;
@@ -131,10 +148,10 @@ void VertexPhasors::update_vertex_camplitudes(int frequency_index,
                                               FullFieldSnapshot F) {
   for (int component_id = FieldComponents::Ex;
        component_id <= FieldComponents::Hz; component_id++) {
-    int idx = components.index(component_id);
+    int idx = tdms_vector_utils::index(components, component_id);
     // MATLAB indexes Ex->Hz with 1->6 (FieldComponents enum) whilst C++ indexes
     // Ex->Hz with 0->5 (FullFieldSnapshot) this is not an ideal fix, but it is
-    // the simplist so long as we remember the correspondence above
+    // the simplest so long as we remember the correspondence above
     int cpp_component_index = component_id - 1;
     if (idx >= 0) {
       // this component has been requested for extraction

@@ -16,6 +16,7 @@
 #include "arrays/incident_field.h"
 #include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/vector_typedefs.h"
 #include "arrays/xyz_vector.h"
 #include "cell_coordinate.h"
 #include "field.h"
@@ -75,6 +76,9 @@ public:
 
   GridLabels input_grid_labels;//!< cartesian labels of the Yee cells
 
+  //! Vector of frequencies to extract field & phasors at
+  FrequencyExtractVector f_ex_vec;
+
   /* DERIVED VARIABLES FROM INDEPENDENT INPUTS */
 
   IJKDimensions IJK_tot;//!< total number of Yee cells in the x,y,z directions
@@ -93,8 +97,8 @@ public:
  * in an InputMatrices object, but also handling interdependencies between
  * inputs from this file.
  *
- * The Sources, GratingStructure, and FrequencyExtractVector can only be
- * initialised after the other arrays in the input file have been parsed.
+ * The Sources and GratingStructure can only be initialised after the other
+ * arrays in the input file have been parsed.
  *
  * As such, this object inherits the setup of IndependentObjectsFromInfile, and
  * then constructs the aforementioned arrays using a combination of information
@@ -104,8 +108,6 @@ class ObjectsFromInfile : public IndependentObjectsFromInfile {
 public:
   Source Isource, Jsource, Ksource;//< TODO
   GratingStructure structure;      //< TODO
-  FrequencyExtractVector
-          f_ex_vec;//< Vector of frequencies to extract field & phasors at
 
   ObjectsFromInfile(InputMatrices matrices_from_input_file,
                     const InputFlags &in_flags);

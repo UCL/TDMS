@@ -6,7 +6,10 @@
 
 #include <spdlog/spdlog.h>
 
+#include "globals.h"
+
 using namespace std;
+using tdms_math_constants::DCPI;
 
 void HDF5Reader::read(const string &plane, InterfaceComponent &ic) const {
   string path_to_data = "interface/" + plane;
@@ -122,5 +125,26 @@ void HDF5Reader::read(CCollection &c_collection,
   if (n_members == 9) {
     c_collection.is_disp_ml = true;
     read(group_name, "Cc", c_collection.c);
+  }
+}
+
+void HDF5Reader::read(FrequencyExtractVector &fev, double omega_an,
+                      const std::string &dataset_name) const {
+  if (flagged_MATLAB_empty(dataset_name)) {
+    // Insert a placehold frequency if no frequencies have been specified
+    fev.resize(1);
+    fev[0] = omega_an / 2. / DCPI;
+  } else {
+    H5Dimension shape = shape_of(dataset_name);
+    // Cannot read from a multidimensional array
+    if (!shape.is_1D()) {
+      throw runtime_error(
+              dataset_name +
+              " is not a 1D so cannot be read into a FrequencyExtractVector");
+    }
+    // Conditions are sufficient to read data in
+    fev.resize(shape.number_of_elements());
+    read(dataset_name, fev.data());
+    spdlog::info("f_ex_vec has dimensions: " + shape.print());
   }
 }
