@@ -12,7 +12,7 @@
 
 /**
  * @brief Stores dispersive constants that describe the properties of the
- * multilayered structure being simulated.
+ *        multilayered structure being simulated.
  */
 struct DispersiveMultiLayer {
 public:

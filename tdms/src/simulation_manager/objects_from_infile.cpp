@@ -84,15 +84,6 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // mxGetPr pointers will be cleaned up by XYZVectors destructor
   rho_cond = XYZVector();
   INPUT_FILE.read("conductive_aux", "rho_", rho_cond);
-  // rho_cond.x =
-  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-  //                                  "rho_x", "conductive_aux"));
-  // rho_cond.y =
-  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-  //                                  "rho_y", "conductive_aux"));
-  // rho_cond.z =
-  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-  //                                  "rho_z", "conductive_aux"));
 
   // prepare variables dependent on frequency extraction vector
   f_vec = FrequencyVectors();

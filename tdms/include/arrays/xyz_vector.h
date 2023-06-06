@@ -28,13 +28,10 @@ struct XYZVector {
     switch (direction) {
       case 'x':
         return x;
-        break;
       case 'y':
         return y;
-        break;
       case 'z':
         return z;
-        break;
       default:
         throw std::runtime_error("Component not recognised");
         break;
