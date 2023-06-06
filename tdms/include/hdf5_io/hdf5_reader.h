@@ -64,6 +64,25 @@ public:
     }
   }
 
+  /**
+   * @brief Read data from the file, expecting the given data type to be present
+   * in the file.
+   * @details To read non-standard datatypes from files, we must define a
+   * corresponding structure array that matches the data-type, and a
+   * H5::CompType from this which can be used to read the data in via the HDF5
+   * API.
+   *
+   * The compound type should be created via
+   * H5::CompType new_comp_type(sizeof(T));
+   * and then have the data-type members added via the
+   * new_comp_type.insertMember() method.
+   * @tparam T Datatype represented in HDF5 by the parameter compound_type.
+   * @param path_to_dataset Path from the file root to the dataset to read.
+   * @param[out] buffer Buffer into which to read the data. Will be
+   * automatically resized.
+   * @param compound_type H5::CompType that the data is stored as, in the
+   * dataset.
+   */
   template<typename T>
   void read(const std::string &path_to_dataset, std::vector<T> &buffer,
             const H5::CompType &compound_type) {
