@@ -3,9 +3,10 @@ name: MATLAB tests
 on:
   push:
     branches: "main"
+    paths: ['tdms/tests/matlab/**']
   pull_request:
+    paths: ['tdms/tests/matlab/**']
   merge_group:
-  release:
   workflow_dispatch:
 
 concurrency:

@@ -12,9 +12,9 @@ name: Build and test
 on:
   push:
     branches: ["main"]
-    paths: ['tdms/**'] 
+    paths: ['tdms/tests/matlab/**']
   pull_request:
-    paths: ['tdms/**'] 
+    paths: ['tdms/tests/matlab/**']
   merge_group:
   workflow_dispatch:
 
