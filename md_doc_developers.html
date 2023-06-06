@@ -219,6 +219,7 @@ Where's the main?</h1>
 <li>Write the outputs and tear-down memory.</li>
 </ol>
 <p>The <code>SimulationManager</code> class governs steps 2 through 5.</p>
+<p>A flowchart that further breaks down the above steps can be viewed below. <img src="assets/TDMS_flowchart.png" alt="" class="inline"/></p>
 <h1><a class="anchor" id="autotoc_md18"></a>
 Code organisation of the TDMS algorithm</h1>
 <p>An instance of <code>SimulationManager</code> essentially supports one <code>tdms</code> simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the <code>SimulationManager</code> instance):</p><ul>
