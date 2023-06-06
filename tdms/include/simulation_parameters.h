@@ -121,11 +121,14 @@ public:
    */
   void set_spacing_stride(const double *vector);
 
-  void set_Np(const FrequencyExtractVector &f_ex_vec);
+  /** @brief Calculate the number of times to extract the phasors (Np), and the
+   * number of iterations between each extraction (Npe).
+   */
+  void set_Np_and_Npe(const FrequencyExtractVector &f_ex_vec);
 
   /**
    * @brief Unpacks all simulation parameters and flags from the matrix inputs
-   * the executable recieved.
+   * the executable received.
    *
    * @param in_matrices The input arrays from the input file(s) to tdms
    */

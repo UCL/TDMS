@@ -137,7 +137,7 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   INPUT_FILE.read(f_ex_vec, params.omega_an);
   // Update simulation parameters with the number of iterations between
   // extractions
-  params.set_Np(f_ex_vec);
+  params.set_Np_and_Npe(f_ex_vec);
 
   // work out if we have a dispersive background
   if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
