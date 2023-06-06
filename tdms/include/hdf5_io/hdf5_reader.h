@@ -5,7 +5,9 @@
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/xyz_vector.h"
 #include "interface.h"
 
 /**
@@ -121,4 +123,26 @@ public:
    * @param dml DispersiveMultiLayer object into which to write data.
    */
   void read(DispersiveMultiLayer &dml) const;
+
+  void read(const std::string &dataset_name, const std::string &name_prefix,
+            XYZVector &v) const;
+
+  void read(CMaterial &c_material) const;
+
+  void read(CCollection &c_collection) const;
+
+  template<bool is_material>
+  void read(DBase<is_material> &d_base) const {
+    // We should expect a group with 6 members
+    H5::Group group = file_->openGroup(d_base.input_field);
+    int n_members = group.getNumObjs();
+    if (n_members != 6) {
+      throw runtime_error("D should have 6 members, but " +
+                          to_string(n_members) + " were found");
+    }
+    group.close();
+
+    read(d_base.input_field, "Da", d_base.a);
+    read(d_base.input_field, "Db", d_base.b);
+  };
 };

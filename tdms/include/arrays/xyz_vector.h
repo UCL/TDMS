@@ -8,22 +8,23 @@ struct XYZVector {
   std::vector<double> x = {};
   std::vector<double> y = {};
   std::vector<double> z = {};
-  //   /**
-  //    * Set the pointer for one of the vectors in this collection with a name
-  //    of
-  //    * c
-  //    * @param c Character labeling the vector
-  //    * @param ptr Pointer to assign
-  //    */
-  //   void set_ptr(char c, double *ptr);
-  //   /**
-  //    * Set the pointer for one of the vectors in this collection with a name
-  //    of
-  //    * c
-  //    * @param d AxialDirection labeling the vector
-  //    * @param ptr Pointer to assign
-  //    */
-  //   void set_ptr(AxialDirection d, double *ptr);
+
+  std::vector<double> &operator[](const char &direction) {
+    switch (direction) {
+      case 'x':
+        return x;
+        break;
+      case 'y':
+        return y;
+        break;
+      case 'z':
+        return z;
+        break;
+      default:
+        throw std::runtime_error("Component not recognised");
+        break;
+    }
+  }
 
   /**
    * @brief Determines whether all elements in the x, y, or z vector are less

@@ -13,7 +13,9 @@
 #include "arrays/cuboid.h"
 #include "arrays/dtilde.h"
 #include "arrays/incident_field.h"
+#include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/xyz_vector.h"
 #include "cell_coordinate.h"
 #include "field.h"
 #include "fieldsample.h"
@@ -60,7 +62,7 @@ public:
           K1;   //< user-defined interface components
   Cuboid cuboid;//< user-defined surface to extract phasors over
 
-  XYZVectors rho_cond;               //< conductive aux
+  XYZVector rho_cond;                //< conductive aux
   DispersiveMultiLayer matched_layer;//< dispersive aux
 
   IncidentField Ei;//< time-domain field

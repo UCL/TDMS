@@ -13,11 +13,7 @@ using namespace tdms_flags;
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(
         InputMatrices matrices_from_input_file, const InputFlags &in_flags)
     :// initialisation list - members whose classes have no default constructors
-      Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
-      Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
-      C(matrices_from_input_file["C"]),                // get C
-      D(matrices_from_input_file["D"]),                // get D
-      Ei(matrices_from_input_file["tdfield"])          // get tdfield
+      Ei(matrices_from_input_file["tdfield"])// get tdfield
 {
   /* Set FDTD/PSTD-dependent variable skip_tdf [1: PSTD, 6: FDTD] */
   skip_tdf = in_flags["use_pstd"] ? 1 : 6;
@@ -32,6 +28,12 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
 
   // HDF5Reader to extract data from the input file
   HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
+
+  // Read material constants
+  INPUT_FILE.read(Cmaterial);
+  INPUT_FILE.read(Dmaterial);
+  INPUT_FILE.read(C);
+  INPUT_FILE.read(D);
 
   // Read the interface components
   INPUT_FILE.read("I0", I0);
@@ -80,16 +82,17 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
 
   // Get conductive_aux, and setup with pointers
   // mxGetPr pointers will be cleaned up by XYZVectors destructor
-  rho_cond = XYZVectors();
-  rho_cond.x =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_x", "conductive_aux"));
-  rho_cond.y =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_y", "conductive_aux"));
-  rho_cond.z =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_z", "conductive_aux"));
+  rho_cond = XYZVector();
+  INPUT_FILE.read("conductive_aux", "rho_", rho_cond);
+  // rho_cond.x =
+  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
+  //                                  "rho_x", "conductive_aux"));
+  // rho_cond.y =
+  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
+  //                                  "rho_y", "conductive_aux"));
+  // rho_cond.z =
+  //         mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
+  //                                  "rho_z", "conductive_aux"));
 
   // prepare variables dependent on frequency extraction vector
   f_vec = FrequencyVectors();

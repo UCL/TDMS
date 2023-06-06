@@ -78,3 +78,50 @@ void HDF5Reader::read(DispersiveMultiLayer &dml) const {
   read(group_name + "/sigma_y", dml.sigma.y);
   read(group_name + "/sigma_z", dml.sigma.z);
 }
+
+void HDF5Reader::read(const string &group_name, const string &name_prefix,
+                      XYZVector &v) const {
+  for (const char &component : {'x', 'y', 'z'}) {
+    read_dataset_in_group(group_name, name_prefix + component, v[component]);
+  }
+}
+
+void HDF5Reader::read(CMaterial &c_material) const {
+  string group_name("Cmaterial");
+  // We should expect a group with 6 members
+  H5::Group group = file_->openGroup(group_name);
+  int n_members = group.getNumObjs();
+  if (n_members != 9) {
+    throw runtime_error("CMaterial should have 9 members, but " +
+                        to_string(n_members) + " were found");
+  }
+  group.close();
+
+  read(group_name, "Ca", c_material.a);
+  read(group_name, "Cb", c_material.b);
+  read(group_name, "Cc", c_material.c);
+}
+
+void HDF5Reader::read(CCollection &c_collection) const {
+  string group_name("C");
+  // We should expect a group with either 6 or 9 members
+  H5::Group group = file_->openGroup(group_name);
+  int n_members = group.getNumObjs();
+
+  if (n_members != 6 && n_members != 9) {
+    throw runtime_error("CCollection should have 6 or 9 members, but " +
+                        to_string(n_members) + " were found");
+  }
+  group.close();
+
+  // Initialise the a and b arrays
+  read(group_name, "Ca", c_collection.a);
+  read(group_name, "Cb", c_collection.b);
+
+  // Initialise the c arrays, if provided
+  // Additionally flag the material as a dispersive multilayer
+  if (n_members == 9) {
+    c_collection.is_disp_ml = true;
+    read(group_name, "Cc", c_collection.c);
+  }
+}
