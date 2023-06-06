@@ -85,7 +85,21 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
     {
 #pragma omp for
       // For each frequency
+/* https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
+On Windows, we are forced to unsafe cast between unsigned and signed integer
+because OpenMP 2.5 (the only version the VSCode compiler supports) does not
+permit unsigned integers in parallel for loops.
+
+Conversely, OpenMP on Mac and Ubuntu does support this, and thus we can avoid
+both an unsafe cast and unsafe comparison between a signed loop variable and
+unsigned vector size.
+*/
+#if (_OPENMP < 200805)
+      long long int loop_upper_index = inputs.f_ex_vec.size();
+      for (int ifx = 0; ifx < loop_upper_index; ifx++) {
+#else
       for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+#endif
         // determine wavelength at this frequency
         lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
         Idxt = 0.;
