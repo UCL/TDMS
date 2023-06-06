@@ -1,11 +1,17 @@
 #pragma once
 
+#include <stdexcept>
+#include <string>
+
 #include "hdf5_io/hdf5_base.h"
 #include "hdf5_io/hdf5_dimension.h"
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/dispersive_multilayer.h"
+#include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/xyz_vector.h"
 #include "interface.h"
 
 /**
@@ -121,4 +127,88 @@ public:
    * @param dml DispersiveMultiLayer object into which to write data.
    */
   void read(DispersiveMultiLayer &dml) const;
+
+  /**
+   * @brief Read data from a group with {x,y,z} members containing 1D data.
+   * @details There is no obligation for the three members to be read from to be
+   * of the same size, however they are expected to be doubles.
+   *
+   * The datasets themselves do not have to literally be called x, y, and z, but
+   * they must all be named with a common prefix that terminates in one of these
+   * three characters. This prefix must be specified by passing the name_prefix
+   * argument (an empty string is an acceptable value to pass).
+   *
+   * For example,
+   * group
+   * - data_x
+   * - data_y
+   * - data_z
+   * would be acceptable, however
+   * group
+   * - x_data
+   * - y_data
+   * - z_data
+   * and
+   * group
+   * - data_x
+   * - data_for_y
+   * - data_z
+   * would be unacceptable.
+   * @param group_name Name of the group within the file to read from.
+   * @param name_prefix A prefix to be attached to the {x,y,z} names of the
+   * datasets.
+   * @param v The XYZVector to read the data into.
+   */
+  void read(const std::string &group_name, const std::string &name_prefix,
+            XYZVector &v) const;
+
+  /**
+   * @brief Read C-constants (algebraic terms) from the file.
+   * @details See CMaterial docstring for more information about the constants
+   * to be read.
+   * @param c_material Structure to read information into.
+   * @param group_name The name of the group in the file to read the data from.
+   * Defaults to Cmaterial (the expected location) if not provided.
+   */
+  void read(CMaterial &c_material,
+            const std::string &group_name = "Cmaterial") const;
+
+  /** @overload void read(CMaterial &c_material, const std::string &group_name =
+   * "Cmaterial")
+   */
+  void read(CCollection &c_collection,
+            const std::string &dataset_name = "C") const;
+
+  /**
+   * @brief Read D-constants (algebraic terms) from the file.
+   * @details See DBase docstring for more information about the constants to be
+   * read.
+   * @tparam is_material Either true or false, indicating either a DMaterial or
+   * DCollection is to be read. These structures are identical in terms of
+   * memory, however the default read location in the file differs between the
+   * two.
+   * @param d_base Either a DMaterial or DCollection, the structure to read the
+   * data into.
+   * @param group_name The name of the group in the file to read the data from.
+   * Uses the default location if not provided.
+   */
+  template<bool is_material>
+  void read(DBase<is_material> &d_base,
+            const std::string group_name = "") const {
+    // Read from non-standard location in file if passed a second argument
+    const std::string group_to_read_from =
+            group_name.empty() ? d_base.input_field : group_name;
+
+    // We should expect a group with 6 members
+    H5::Group group = file_->openGroup(group_to_read_from);
+    int n_members = group.getNumObjs();
+    if (n_members != 6) {
+      throw std::runtime_error("D should have 6 members, but " +
+                               std::to_string(n_members) + " were found");
+    }
+    group.close();
+
+    read(group_to_read_from, "Da", d_base.a);
+    read(group_to_read_from, "Db", d_base.b);
+  };
 };

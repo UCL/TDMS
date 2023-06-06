@@ -57,6 +57,7 @@ void ArgumentParser::print_help_message() {
 
 void ArgumentParser::print_version() {
   fprintf(stdout, "TDMS version: %s\n", tdms::VERSION.c_str());
+  fprintf(stdout, "OpenMP version: %i\n", _OPENMP);
 }
 
 ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {

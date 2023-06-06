@@ -27,9 +27,9 @@ if(GIT_FOUND)
 		OUTPUT_STRIP_TRAILING_WHITESPACE )
 
 	string(REGEX MATCH "v[0-9]+\.[0-9]+\.[0-9]+" IS_SEMVER "${TAG_OR_SHORT_HASH}")
-	if (CURRENT_BRANCH STREQUAL "main" AND IS_SEMVER)
-	    # If main is tagged with a sememantic version (of the form v1.2.3) then
-	    # that is the version.
+	if (CURRENT_BRANCH STREQUAL "main" OR CURRENT_BRANCH STREQUAL "" AND IS_SEMVER)
+	    # If we're on main or in a detatched head, and we're tagged with a
+	    # sememantic version (of the form v1.2.3) then that is the version.
 		set(TDMS_VERSION "${TAG_OR_SHORT_HASH}")
 	else()
 		# If it's not a tag on main or if it's a commit hash then the "version"
