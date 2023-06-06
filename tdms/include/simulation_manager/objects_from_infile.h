@@ -16,6 +16,7 @@
 #include "arrays/incident_field.h"
 #include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
+#include "arrays/vector_typedefs.h"
 #include "arrays/xyz_vector.h"
 #include "cell_coordinate.h"
 #include "field.h"
