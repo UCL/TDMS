@@ -83,7 +83,6 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, kprop,   \
                                              phaseTermE, cphaseTermE)
     {
-#pragma omp for
       // For each frequency
 /* https://stackoverflow.com/questions/2820621/why-arent-unsigned-openmp-index-variables-allowed
 On Windows, we are forced to unsafe cast between unsigned and signed integer
@@ -96,8 +95,11 @@ unsigned vector size.
 */
 #if (_OPENMP < 200805)
       long long int loop_upper_index = inputs.f_ex_vec.size();
+
+#pragma omp for
       for (int ifx = 0; ifx < loop_upper_index; ifx++) {
 #else
+#pragma omp for
       for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
 #endif
         // determine wavelength at this frequency
