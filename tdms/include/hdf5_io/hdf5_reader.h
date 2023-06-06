@@ -85,7 +85,7 @@ public:
    */
   template<typename T>
   void read(const std::string &path_to_dataset, std::vector<T> &buffer,
-            const H5::CompType &compound_type) {
+            const H5::CompType &compound_type) const {
     spdlog::debug("Reading COMPOUND DATA from {} in {}", path_to_dataset,
                   filename_);
 
