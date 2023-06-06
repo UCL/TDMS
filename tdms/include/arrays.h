@@ -11,8 +11,6 @@
 
 #include <fftw3.h>
 
-#include "arrays/tensor3d.h"
-#include "arrays/xyz_vector.h"
 #include "globals.h"
 #include "matlabio.h"
 #include "utils.h"
