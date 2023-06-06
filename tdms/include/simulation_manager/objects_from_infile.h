@@ -1,7 +1,7 @@
 /**
  * @file objects_from_infile.h
  * @brief Classes that unpack variables from the input files the TDMS executable
- * recieves and initalise fields.h and array.h datatypes to store this data.
+ * receives and initialise fields.h and array.h datatypes to store this data.
  */
 #pragma once
 
@@ -11,6 +11,7 @@
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/dispersive_multilayer.h"
 #include "arrays/dtilde.h"
 #include "arrays/incident_field.h"
 #include "arrays/material_collections.h"

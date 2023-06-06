@@ -1,10 +1,14 @@
 #pragma once
 
+#include <stdexcept>
+#include <string>
+
 #include "hdf5_io/hdf5_base.h"
 #include "hdf5_io/hdf5_dimension.h"
 
 #include "arrays.h"
 #include "arrays/cuboid.h"
+#include "arrays/dispersive_multilayer.h"
 #include "arrays/material_collections.h"
 #include "arrays/tdms_matrix.h"
 #include "arrays/xyz_vector.h"
@@ -137,8 +141,8 @@ public:
     H5::Group group = file_->openGroup(d_base.input_field);
     int n_members = group.getNumObjs();
     if (n_members != 6) {
-      throw runtime_error("D should have 6 members, but " +
-                          to_string(n_members) + " were found");
+      throw std::runtime_error("D should have 6 members, but " +
+                               std::to_string(n_members) + " were found");
     }
     group.close();
 

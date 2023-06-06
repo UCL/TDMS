@@ -8,7 +8,7 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "arrays.h"
+#include "arrays/xyz_vector.h"
 #include "globals.h"
 #include "unit_test_utils.h"
 
@@ -16,7 +16,7 @@ using std::accumulate;
 using tdms_tests::is_close;
 
 void XYZVectorsTest::test_correct_construction() {
-  XYZVectors v;
+  XYZVector v;
   // check that, although this has been declared, its members still point to
   // nullptrs
   bool are_nullptrs = (v.x == nullptr) && (v.y == nullptr) && (v.z == nullptr);
@@ -24,7 +24,7 @@ void XYZVectorsTest::test_correct_construction() {
 }
 
 void XYZVectorsTest::test_other_methods() {
-  XYZVectors v;
+  XYZVector v;
   // create some arrays to assign to the members
   double x_vec[n_rows] = {0.}, y_vec[n_cols] = {2., 1.},
          z_vec[n_layers] = {1., 2., 3., 4.};

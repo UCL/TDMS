@@ -85,8 +85,7 @@ void LoopVariables::setup_dispersive_properties(const ObjectsFromInfile &data) {
           is_dispersive_medium(data.materials, IJK, data.gamma, data.params.dt);
   // work out if we have conductive background: background is conductive if at
   // least one entry exceeds 1e-15
-  is_conductive = !(data.rho_cond.all_elements_less_than(1e-15, IJK.i + 1,
-                                                         IJK.j + 1, IJK.k + 1));
+  is_conductive = !(data.rho_cond.all_elements_less_than(1e-15));
 
   // prepare additional field variables for dispersive media
   E_nm1 = ElectricSplitField(IJK.i, IJK.j, IJK.k);
