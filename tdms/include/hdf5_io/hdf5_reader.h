@@ -64,6 +64,23 @@ public:
     }
   }
 
+  template<typename T>
+  void read(const std::string &path_to_dataset, std::vector<T> &buffer,
+            const H5::CompType &compound_type) {
+    spdlog::debug("Reading COMPOUND DATA from {} in {}", path_to_dataset,
+                  filename_);
+
+    if (path_exists(path_to_dataset, H5I_DATASET)) {
+      H5::DataSet dataset = file_->openDataSet(path_to_dataset);
+      H5Dimension dims = shape_of(path_to_dataset);
+      buffer.resize(dims.number_of_elements());
+      dataset.read(buffer.data(), compound_type);
+    } else {
+      // Path does not exist, throw error
+      throw std::runtime_error(path_to_dataset + "does not point to a dataset");
+    }
+  }
+
   /**
    * @brief Reads a 2D-dataset into a Matrix object.
    *
