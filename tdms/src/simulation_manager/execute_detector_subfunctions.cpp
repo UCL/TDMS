@@ -1,6 +1,7 @@
 #include "simulation_manager/simulation_manager.h"
 
 #include <omp.h>
+#include <spdlog/spdlog.h>
 
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using tdms_phys_constants::LIGHT_V;

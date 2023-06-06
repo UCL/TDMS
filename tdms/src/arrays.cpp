@@ -10,83 +10,6 @@
 using namespace std;
 using namespace tdms_math_constants;
 
-void XYZVectors::set_ptr(const char c, double *ptr) {
-  switch (c) {
-    case 'x': {
-      x = ptr;
-      break;
-    }
-    case 'y': {
-      y = ptr;
-      break;
-    }
-    case 'z': {
-      z = ptr;
-      break;
-    }
-    default:
-      throw std::runtime_error("Have no element " + std::string(1, c));
-  }
-}
-void XYZVectors::set_ptr(AxialDirection d, double *ptr) {
-  switch (d) {
-    case AxialDirection::X: {
-      x = ptr;
-      break;
-    }
-    case AxialDirection::Y: {
-      y = ptr;
-      break;
-    }
-    case AxialDirection::Z: {
-      z = ptr;
-      break;
-    }
-    default:
-      throw std::runtime_error("Have no element " + to_string(d));
-  }
-}
-
-bool XYZVectors::all_elements_less_than(double comparison_value,
-                                        int vector_length,
-                                        AxialDirection component,
-                                        int buffer_start) const {
-  double *component_pointer;
-  switch (component) {
-    case AxialDirection::X:
-      component_pointer = x;
-      break;
-    case AxialDirection::Y:
-      component_pointer = y;
-      break;
-    case AxialDirection::Z:
-      component_pointer = z;
-      break;
-    default:
-      throw runtime_error("Error - component not recognised");
-      break;
-  }
-  for (int index = buffer_start; index < vector_length; index++) {
-    if (component_pointer[buffer_start + index] > comparison_value) {
-      return false;
-    }
-  }
-  return true;
-}
-bool XYZVectors::all_elements_less_than(double comparison_value, int nx, int ny,
-                                        int nz) const {
-  if (!all_elements_less_than(comparison_value, nx, AxialDirection::X)) {
-    return false;
-  }
-  if (!all_elements_less_than(comparison_value, ny, AxialDirection::Y)) {
-    return false;
-  }
-  if (!all_elements_less_than(comparison_value, nz, AxialDirection::Z)) {
-    return false;
-  }
-  return true;
-}
-
 CMaterial::CMaterial(const mxArray *ptr) {
 
   assert_num_fields_equals(9, ptr, "Cmaterials");
@@ -96,8 +19,7 @@ CMaterial::CMaterial(const mxArray *ptr) {
   init_xyz_vectors(ptr, c, "Cc");
 }
 
-void MaterialCollection::init_xyz_vectors(const mxArray *ptr,
-                                          XYZVectors &arrays,
+void MaterialCollection::init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                                           const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
@@ -106,7 +28,7 @@ void MaterialCollection::init_xyz_vectors(const mxArray *ptr,
   }
 }
 
-void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+void CCollection::init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                                    const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {
@@ -153,7 +75,7 @@ DCollection::DCollection(const mxArray *ptr) {
   init_xyz_vectors(ptr, b, "Db");
 }
 
-void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+void DCollection::init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                                    const string &prefix) {
 
   for (char component : {'x', 'y', 'z'}) {

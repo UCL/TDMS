@@ -12,16 +12,10 @@
 #include <fftw3.h>
 
 #include "arrays/tensor3d.h"
+#include "arrays/xyz_vector.h"
 #include "globals.h"
 #include "matlabio.h"
 #include "utils.h"
-
-template<typename T>
-struct xyz_vector {
-  std::vector<T> x = {};
-  std::vector<T> y = {};
-  std::vector<T> z = {};
-};
 
 template<typename T>
 class XYZTensor3D {
@@ -78,69 +72,16 @@ public:
   }
 };
 
-class XYZVectors {
-public:
-  double *x = nullptr;
-  double *y = nullptr;
-  double *z = nullptr;
-
-  /**
-   * Default constructor
-   */
-  XYZVectors() = default;
-
-  /**
-   * Set the pointer for one of the vectors in this collection with a name of c
-   * @param c Character labeling the vector
-   * @param ptr Pointer to assign
-   */
-  void set_ptr(char c, double *ptr);
-  /**
-   * Set the pointer for one of the vectors in this collection with a name of c
-   * @param d AxialDirection labeling the vector
-   * @param ptr Pointer to assign
-   */
-  void set_ptr(AxialDirection d, double *ptr);
-
-  /**
-   * @brief Determines whether all elements in the x, y, or z vector are less
-   * than a given value.
-   *
-   * @param comparison_value Value to compare elements to
-   * @param vector_length Number of elements to compare against
-   * @param component Vector to compare elements against; x, y, or z
-   * @param buffer_start Only compare elements between buffer_start (inclusive)
-   * and buffer_start+vector_length-1 (inclusive)
-   * @return true All elements are less than the comparison_value
-   * @return false At least one element is not less than the comparison_value
-   */
-  bool all_elements_less_than(double comparison_value, int vector_length,
-                              AxialDirection component,
-                              int buffer_start = 0) const;
-  /**
-   * @brief Determines whether all elements in the x, y, AND z vectors are less
-   * than a given value.
-   *
-   * @param comparison_value Value to compare elements to
-   * @param nx,ny,nz Number of elements in the nx, ny, and nz vectors
-   * respectively
-   * @return true All elements are less than the comparison_value
-   * @return false At least one element is not less than the comparison_value
-   */
-  bool all_elements_less_than(double comparison_value, int nx, int ny,
-                              int nz) const;
-};
-
 // TODO: docstring
 class MaterialCollection {
 protected:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+  static void init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                                const std::string &prefix);
 };
 
 /**
  * @brief A class to encapsulate collection of algebraic terms in the
- * discretized forms of Maxwells equations for E fields. The symbol chosen in
+ * discretized forms of Maxwell's equations for E fields. The symbol chosen in
  * the original reference is \f$C\f$.
  *
  * @details Algebraic terms \f$C_{a,b,c}\f$ defined in Section 4.2 of Munro, P,.
@@ -152,15 +93,15 @@ protected:
  */
 class CCollectionBase {
 public:
-  XYZVectors a;
-  XYZVectors b;
-  XYZVectors c;
+  XYZVector a;
+  XYZVector b;
+  XYZVector c;
 };
 
 /*! @copydoc CCollectionBase */
 class CCollection : public CCollectionBase {
 private:
-  void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+  void init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                         const std::string &prefix);
 
 public:
@@ -178,7 +119,7 @@ public:
 
 /**
  * @brief A class to encapsulate collection of algebraic terms in the
- * discretized forms of Maxwells equations for H fields. The symbol chosen in
+ * discretized forms of Maxwell's equations for H fields. The symbol chosen in
  * the original reference is \f$D\f$.
  *
  * @details Algebraic terms \f$D_{a,b}\f$ defined in Section 4.2 of Munro, P,.
@@ -190,14 +131,14 @@ public:
  */
 class DCollectionBase {
 public:
-  XYZVectors a;
-  XYZVectors b;
+  XYZVector a;
+  XYZVector b;
 };
 
 /*! @copydoc DCollectionBase */
 class DCollection : public DCollectionBase {
 private:
-  static void init_xyz_vectors(const mxArray *ptr, XYZVectors &arrays,
+  static void init_xyz_vectors(const mxArray *ptr, XYZVector &arrays,
                                const std::string &prefix);
 
 public:
@@ -215,8 +156,8 @@ public:
   std::vector<double> alpha;
   std::vector<double> beta;
   std::vector<double> gamma;
-  xyz_vector<double> kappa;
-  xyz_vector<double> sigma;
+  XYZVector kappa;
+  XYZVector sigma;
 
   /**
    * @brief Determines whether the (background) medium is dispersive
