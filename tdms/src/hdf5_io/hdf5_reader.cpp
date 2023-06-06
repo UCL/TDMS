@@ -130,7 +130,7 @@ void HDF5Reader::read(CCollection &c_collection,
 
 void HDF5Reader::read(FrequencyExtractVector &fev, double omega_an,
                       const std::string &dataset_name) const {
-  if (has_MATLAB_empty(dataset_name)) {
+  if (flagged_MATLAB_empty(dataset_name)) {
     // Insert a placehold frequency if no frequencies have been specified
     fev.resize(1);
     fev[0] = omega_an / 2. / DCPI;
