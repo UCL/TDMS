@@ -1,12 +1,11 @@
 <map id="tdms/include/arrays.h" name="tdms/include/arrays.h">
-<area shape="rect" id="node1" title="Classes describing arrays, vertices etc." alt="" coords="262,5,409,31"/>
+<area shape="rect" id="node1" title="Classes describing arrays, vertices etc." alt="" coords="220,5,366,31"/>
 <area shape="rect" id="node2" title=" " alt="" coords="39,153,109,178"/>
 <area shape="rect" id="node3" title=" " alt="" coords="23,79,101,105"/>
-<area shape="rect" id="node4" title=" " alt="" coords="538,153,592,178"/>
+<area shape="rect" id="node4" title=" " alt="" coords="377,153,430,178"/>
 <area shape="rect" id="node5" title=" " alt="" coords="223,79,280,105"/>
 <area shape="rect" id="node6" title=" " alt="" coords="305,79,366,105"/>
-<area shape="rect" id="node7" title=" " alt="" coords="390,79,513,105"/>
-<area shape="rect" id="node8" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="126,79,199,105"/>
-<area shape="rect" id="node9" title=" " alt="" coords="618,79,699,105"/>
-<area shape="rect" id="node10" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="537,79,593,105"/>
+<area shape="rect" id="node7" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="125,79,199,105"/>
+<area shape="rect" id="node8" title=" " alt="" coords="441,79,523,105"/>
+<area shape="rect" id="node9" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="547,79,604,105"/>
 </map>

@@ -1,9 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_c_collection_base.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="8,19,128,44"/>
-<area shape="rect" id="node2" href="$class_c_collection.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="179,5,268,31"/>
-<area shape="rect" id="node3" href="$class_c_material.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="185,55,262,80"/>
-<area shape="rect" id="node4" href="$class_d_collection_base.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="8,153,128,179"/>
-<area shape="rect" id="node5" href="$class_d_collection.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="179,153,268,179"/>
-<area shape="rect" id="node6" href="$class_d_material.html" title="A class to encapsulate collection of algebraic terms in the discretized forms of Maxwells equations f..." alt="" coords="185,104,262,130"/>
-<area shape="rect" id="node7" href="$class_material_collection.html" title=" " alt="" coords="5,80,131,106"/>
+<area shape="rect" id="node1" href="$structcomplex__vector.html" title=" " alt="" coords="5,5,119,31"/>
 </map>

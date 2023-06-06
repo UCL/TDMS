@@ -30,6 +30,5 @@ var searchData=
   ['interpolationscheme_27',['InterpolationScheme',['../class_interpolation_scheme.html',1,'InterpolationScheme'],['../class_interpolation_scheme.html#a4538815b746df6521fea1f9a444a7e4d',1,'InterpolationScheme::InterpolationScheme()']]],
   ['is_5fa_5fflag_5fargument_28',['is_a_flag_argument',['../class_argument_namespace.html#a49fb5859ce9ff5e3088ca235e7b24c62',1,'ArgumentNamespace']]],
   ['is_5fbetter_5fthan_29',['is_better_than',['../class_interpolation_scheme.html#a9ef8c24307749dca025db2504b4bd5d3',1,'InterpolationScheme']]],
-  ['is_5fdispersive_30',['is_dispersive',['../struct_dispersive_multi_layer.html#a27d7e44ea9c30dc9c0a920da77e246a0',1,'DispersiveMultiLayer']]],
-  ['is_5fempty_31',['is_empty',['../class_source.html#ab85548bc4b5d2cf92f5d90ab92fa5235',1,'Source']]]
+  ['is_5fempty_30',['is_empty',['../class_source.html#ab85548bc4b5d2cf92f5d90ab92fa5235',1,'Source']]]
 ];

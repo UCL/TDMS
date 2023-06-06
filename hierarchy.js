@@ -2,18 +2,9 @@ var hierarchy =
 [
     [ "ArgumentNamespace", "class_argument_namespace.html", null ],
     [ "ArgumentParser", "class_argument_parser.html", null ],
-    [ "CCollectionBase", "class_c_collection_base.html", [
-      [ "CCollection", "class_c_collection.html", null ],
-      [ "CMaterial", "class_c_material.html", null ]
-    ] ],
     [ "complex_vector", "structcomplex__vector.html", null ],
-    [ "DCollectionBase", "class_d_collection_base.html", [
-      [ "DCollection", "class_d_collection.html", null ],
-      [ "DMaterial", "class_d_material.html", null ]
-    ] ],
     [ "DetectorSensitivityArrays", "class_detector_sensitivity_arrays.html", null ],
     [ "Dimensions", "class_dimensions.html", null ],
-    [ "DispersiveMultiLayer", "struct_dispersive_multi_layer.html", null ],
     [ "fdtdGridInitialiser", "classfdtd_grid_initialiser.html", null ],
     [ "FieldSample", "class_field_sample.html", null ],
     [ "FrequencyVectors", "struct_frequency_vectors.html", null ],
@@ -35,10 +26,6 @@ var hierarchy =
     [ "InputMatrices", "class_input_matrices.html", null ],
     [ "InterfaceComponent", "class_interface_component.html", null ],
     [ "InterpolationScheme", "class_interpolation_scheme.html", null ],
-    [ "MaterialCollection", "class_material_collection.html", [
-      [ "CMaterial", "class_c_material.html", null ],
-      [ "DMaterial", "class_d_material.html", null ]
-    ] ],
     [ "MatrixCollection", "class_matrix_collection.html", [
       [ "MatFileMatrixCollection", "class_mat_file_matrix_collection.html", null ]
     ] ],
@@ -62,10 +49,7 @@ var hierarchy =
       [ "FieldComponentsVector", "class_field_components_vector.html", null ]
     ] ],
     [ "VertexPhasors", "class_vertex_phasors.html", null ],
-    [ "xyz_vector< T >", "structxyz__vector.html", null ],
-    [ "xyz_vector< double >", "structxyz__vector.html", null ],
     [ "XYZTensor3D< T >", "class_x_y_z_tensor3_d.html", null ],
     [ "XYZTensor3D< double >", "class_x_y_z_tensor3_d.html", null ],
-    [ "XYZVectors", "class_x_y_z_vectors.html", null ],
     [ "YeeCellDimensions", "struct_yee_cell_dimensions.html", null ]
 ];
