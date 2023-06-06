@@ -69,7 +69,6 @@ TEST_CASE("HDF5Reader::read() [.mat files]") {
       REQUIRE(two_by_two[2] == Catch::Approx(0.5));
       REQUIRE(two_by_two[3] == Catch::Approx(1.0));
     }
-    // The complex matrix is the Pauli-y matrix [0, -i; i, 0]
   }
 }
 
