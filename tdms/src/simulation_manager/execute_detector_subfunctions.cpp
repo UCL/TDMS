@@ -1,6 +1,7 @@
 #include "simulation_manager/simulation_manager.h"
 
 #include <omp.h>
+#include <spdlog/spdlog.h>
 
 using tdms_math_constants::DCPI, tdms_math_constants::IMAGINARY_UNIT;
 using tdms_phys_constants::LIGHT_V;
@@ -41,11 +42,11 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
       int m = j - inputs.params.pml.Dyl +
               (i - inputs.params.pml.Dxl) *
                       (J_tot - inputs.params.pml.Dyu - inputs.params.pml.Dyl);
-      lv.Ex_t.v[m][0] = inputs.E_s.xy[inputs.params.k_det_obs][j][i] +
-                        inputs.E_s.xz[inputs.params.k_det_obs][j][i];
+      lv.Ex_t.v[m][0] = inputs.E_s.xy(i, j, inputs.params.k_det_obs) +
+                        inputs.E_s.xz(i, j, inputs.params.k_det_obs);
       lv.Ex_t.v[m][1] = 0.;
-      lv.Ey_t.v[m][0] = inputs.E_s.yx[inputs.params.k_det_obs][j][i] +
-                        inputs.E_s.yz[inputs.params.k_det_obs][j][i];
+      lv.Ey_t.v[m][0] = inputs.E_s.yx(i, j, inputs.params.k_det_obs) +
+                        inputs.E_s.yz(i, j, inputs.params.k_det_obs);
       lv.Ey_t.v[m][1] = 0.;
     }
 
@@ -71,8 +72,8 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
          j++)
       for (int i = 0;
            i < (I_tot - inputs.params.pml.Dxu - inputs.params.pml.Dxl); i++) {
-        lv.Ex_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.x[j][i][im];
-        lv.Ey_t.cm[j][i] *= inputs.pupil[j][i] * inputs.D_tilde.y[j][i][im];
+        lv.Ex_t.cm[j][i] *= inputs.pupil(i, j) * inputs.D_tilde.x(im, i, j);
+        lv.Ey_t.cm[j][i] *= inputs.pupil(i, j) * inputs.D_tilde.y(im, i, j);
       }
 
       /* Now iterate over each frequency we are extracting phasors at.
@@ -82,9 +83,28 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, kprop,   \
                                              phaseTermE, cphaseTermE)
     {
-#pragma omp for
       // For each frequency
-      for (int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+/**
+ * The following #if ... #else ... #endif block is to work around
+ * https://stackoverflow.com/questions/2820621/
+ *
+ * On Windows, we are forced to unsafe cast between unsigned and signed integer
+ * because OpenMP 2.5 (the only version the VSCode compiler supports) does not
+ * permit unsigned integers in parallel for loops.
+ *
+ * Conversely, OpenMP on Mac and Ubuntu does support this, so the code is
+ * simpler and safer. When VisualStudio eventually update their OpenMP spec we
+ * can probably remove this.
+ */
+#if (_OPENMP < 200805)
+      long long int loop_upper_index = inputs.f_ex_vec.size();
+
+#pragma omp for
+      for (int ifx = 0; ifx < loop_upper_index; ifx++) {
+#else
+#pragma omp for
+      for (unsigned int ifx = 0; ifx < inputs.f_ex_vec.size(); ifx++) {
+#endif
         // determine wavelength at this frequency
         lambda_an_t = LIGHT_V / inputs.f_ex_vec[ifx];
         Idxt = 0.;

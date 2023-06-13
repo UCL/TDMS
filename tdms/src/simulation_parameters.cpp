@@ -5,6 +5,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include "arrays.h"
+#include "arrays/incident_field.h"
+#include "arrays/material_collections.h"
+#include "hdf5_io/hdf5_reader.h"
+#include "utils.h"
+
 using namespace std;
 
 SimulationParameters::SimulationParameters() = default;
@@ -51,9 +57,10 @@ void SimulationParameters::set_spacing_stride(const double *vector) {
   spacing_stride.z = (int) vector[2];
 }
 
-void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
+void SimulationParameters::set_Np_and_Npe(
+        const FrequencyExtractVector &f_ex_vec) {
 
-  double f_max = f_ex_vec.max();
+  double f_max = tdms_vector_utils::max(f_ex_vec);
   Np = (int) floor(1. / (2.5 * dt * f_max));
 
   // calculate Npe, the temporal DFT will be evaluated whenever tind increments
@@ -68,7 +75,9 @@ void SimulationParameters::set_Np(FrequencyExtractVector &f_ex_vec) {
 void SimulationParameters::unpack_from_input_matrices(
         InputMatrices in_matrices) {
   // determine if we have a dispersive medium or multilayer
-  CCollection C(in_matrices["C"]);
+  CCollection C;
+  HDF5Reader INPUT_FILE(in_matrices.input_filename);
+  INPUT_FILE.read(C);
   is_disp_ml = C.is_disp_ml;
   is_multilayer = C.is_multilayer;
 
@@ -125,8 +134,4 @@ void SimulationParameters::unpack_from_input_matrices(
   IncidentField Ei(in_matrices["tdfield"]);
   exi_present = Ei.x.has_elements();
   eyi_present = Ei.y.has_elements();
-
-  // set_Np
-  FrequencyExtractVector f_ex_vec(in_matrices["f_ex_vec"], omega_an);
-  set_Np(f_ex_vec);
 }

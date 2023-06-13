@@ -2,7 +2,7 @@
 
 #include "hdf5_io/hdf5_base.h"
 
-#include "arrays.h"
+#include "arrays/tdms_matrix.h"
 
 class HDF5Writer : public HDF5Base {
 
@@ -22,7 +22,7 @@ public:
    * @param size The size of the data array.
    * @param dimensions The number of dimensions of the array.
    */
-  void write(const std::string &dataname, double *data, int size,
+  void write(const std::string &dataname, const double *data, int size,
              hsize_t *dimensions);
 
   /**
@@ -35,16 +35,9 @@ public:
    */
   template<typename T>
   void write(const std::string &dataname, const Matrix<T> &data) {
-    int n_cols = data.get_n_cols();
-    int n_rows = data.get_n_rows();
-    hsize_t dimension[2] = {static_cast<hsize_t>(n_rows),
-                            static_cast<hsize_t>(n_cols)};
-    T *buff = (T *) malloc(n_rows * n_cols * sizeof(T));
-    for (unsigned int i = 0; i < n_rows; i++) {
-      for (unsigned int j = 0; j < n_cols; j++) {
-        buff[i * n_cols + j] = data[i][j];
-      }
-    }
-    write(dataname, buff, 2, dimension);
+    hsize_t dimensions[2];
+    dimensions[0] = data.get_n_rows();
+    dimensions[1] = data.get_n_cols();
+    write(dataname, data.data_.data(), 2, dimensions);
   }
 };

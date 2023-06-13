@@ -25,11 +25,11 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
         if (inputs.params.is_structure) {
           if (k > inputs.params.pml.Dzl &&
               k < (inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K)) {
-            if ((k - inputs.structure[i][1]) <
+            if ((k - inputs.structure(1, i)) <
                         (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
-                (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-              k_loc = k - inputs.structure[i][1];
-            else if ((k - inputs.structure[i][1]) >=
+                (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+              k_loc = k - inputs.structure(1, i);
+            else if ((k - inputs.structure(1, i)) >=
                      (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl))
               k_loc = inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K - 1;
             else
@@ -120,76 +120,76 @@ void SimulationManager::update_Exy(LoopVariables &lv) {
 
         double Enp1, Jnp1;
         if (solver_method == SolverMethod::FiniteDifference) {
-          Enp1 = Ca * inputs.E_s.xy[k][j][i] +
-                 Cb * (inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i] -
-                       inputs.H_s.zy[k][j - 1][i] - inputs.H_s.zx[k][j - 1][i]);
+          Enp1 = Ca * inputs.E_s.xy(i, j, k) +
+                 Cb * (inputs.H_s.zy(i, j, k) + inputs.H_s.zx(i, j, k) -
+                       inputs.H_s.zy(i, j - 1, k) - inputs.H_s.zx(i, j - 1, k));
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
-            Enp1 += Cc * lv.E_nm1.xy[k][j][i] -
+            Enp1 += Cc * lv.E_nm1.xy(i, j, k) -
                     1. / 2. * Cb * inputs.params.delta.dy *
-                            ((1 + alpha_l) * lv.J_s.xy[k][j][i] +
-                             beta_l * lv.J_nm1.xy[k][j][i]);
+                            ((1 + alpha_l) * lv.J_s.xy(i, j, k) +
+                             beta_l * lv.J_nm1.xy(i, j, k));
           if (lv.is_conductive && rho)
-            Enp1 += Cb * inputs.params.delta.dy * lv.J_c.xy[k][j][i];
+            Enp1 += Cb * inputs.params.delta.dy * lv.J_c.xy(i, j, k);
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
-            Jnp1 = alpha_l * lv.J_s.xy[k][j][i] +
-                   beta_l * lv.J_nm1.xy[k][j][i] +
+            Jnp1 = alpha_l * lv.J_s.xy(i, j, k) +
+                   beta_l * lv.J_nm1.xy(i, j, k) +
                    kappa_l * gamma_l / (2. * inputs.params.dt) *
-                           (Enp1 - lv.E_nm1.xy[k][j][i]);
-            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy[k][j][i];
+                           (Enp1 - lv.E_nm1.xy(i, j, k));
+            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy(i, j, k);
 
-            lv.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
-            lv.J_nm1.xy[k][j][i] = lv.J_s.xy[k][j][i];
-            lv.J_s.xy[k][j][i] = Jnp1;
+            lv.E_nm1.xy(i, j, k) = inputs.E_s.xy(i, j, k);
+            lv.J_nm1.xy(i, j, k) = lv.J_s.xy(i, j, k);
+            lv.J_s.xy(i, j, k) = Jnp1;
           }
 
           if (lv.is_conductive && rho) {
-            lv.J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]);
+            lv.J_c.xy(i, j, k) -= rho * (Enp1 + inputs.E_s.xy(i, j, k));
           }
 
-          inputs.E_s.xy[k][j][i] = Enp1;
+          inputs.E_s.xy(i, j, k) = Enp1;
         } else {// pseudo-spectral
           Enp1 = 0.0;
-          // Enp1 = Ca*E_s.xy[k][j][i]+Cb*(H_s.zy[k][j][i] + H_s.zx[k][j][i] -
+          // Enp1 = Ca*E_s.xy(i,j,k)+Cb*(H_s.zy(i,j,k) + H_s.zx(i,j,k) -
           // H_s.zy[k][j-1][i] - H_s.zx[k][j-1][i]);
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
-            Enp1 += Cc * lv.E_nm1.xy[k][j][i] -
+            Enp1 += Cc * lv.E_nm1.xy(i, j, k) -
                     1. / 2. * Cb * inputs.params.delta.dy *
-                            ((1 + alpha_l) * lv.J_s.xy[k][j][i] +
-                             beta_l * lv.J_nm1.xy[k][j][i]);
+                            ((1 + alpha_l) * lv.J_s.xy(i, j, k) +
+                             beta_l * lv.J_nm1.xy(i, j, k));
           if (lv.is_conductive && rho)
-            Enp1 += Cb * inputs.params.delta.dy * lv.J_c.xy[k][j][i];
+            Enp1 += Cb * inputs.params.delta.dy * lv.J_c.xy(i, j, k);
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
-            Jnp1 = alpha_l * lv.J_s.xy[k][j][i] +
-                   beta_l * lv.J_nm1.xy[k][j][i] +
+            Jnp1 = alpha_l * lv.J_s.xy(i, j, k) +
+                   beta_l * lv.J_nm1.xy(i, j, k) +
                    kappa_l * gamma_l / (2. * inputs.params.dt) *
-                           (Enp1 - lv.E_nm1.xy[k][j][i]);
-            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy[k][j][i];
+                           (Enp1 - lv.E_nm1.xy(i, j, k));
+            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xy(i, j, k);
 
-            lv.E_nm1.xy[k][j][i] = inputs.E_s.xy[k][j][i];
-            lv.J_nm1.xy[k][j][i] = lv.J_s.xy[k][j][i];
-            lv.J_s.xy[k][j][i] = Jnp1;
+            lv.E_nm1.xy(i, j, k) = inputs.E_s.xy(i, j, k);
+            lv.J_nm1.xy(i, j, k) = lv.J_s.xy(i, j, k);
+            lv.J_s.xy(i, j, k) = Jnp1;
           }
 
           if (lv.is_conductive && rho) {
-            lv.J_c.xy[k][j][i] -= rho * (Enp1 + inputs.E_s.xy[k][j][i]);
+            lv.J_c.xy(i, j, k) -= rho * (Enp1 + inputs.E_s.xy(i, j, k));
           }
 
-          eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
+          eh_vec[n][j][0] = inputs.H_s.zy(i, j, k) + inputs.H_s.zx(i, j, k);
           eh_vec[n][j][1] = 0.;
-          PSTD.ca[n][j - 1] = Ca;
-          PSTD.cb[n][j - 1] = Cb;
+          PSTD.ca(n, j - 1) = Ca;
+          PSTD.cb(n, j - 1) = Cb;
         }
       }
       if (solver_method == SolverMethod::PseudoSpectral && J_tot > 1) {
         int j = 0;
-        eh_vec[n][j][0] = inputs.H_s.zy[k][j][i] + inputs.H_s.zx[k][j][i];
+        eh_vec[n][j][0] = inputs.H_s.zy(i, j, k) + inputs.H_s.zx(i, j, k);
         eh_vec[n][j][1] = 0.;
         first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ey, PSTD.N_ey,
                          inputs.E_s.xy.plan_f[n], inputs.E_s.xy.plan_b[n]);
         for (j = 1; j < J_tot; j++) {
-          inputs.E_s.xy[k][j][i] =
-                  PSTD.ca[n][j - 1] * inputs.E_s.xy[k][j][i] +
-                  PSTD.cb[n][j - 1] * eh_vec[n][j][0] / ((double) PSTD.N_ey);
+          inputs.E_s.xy(i, j, k) =
+                  PSTD.ca(n, j - 1) * inputs.E_s.xy(i, j, k) +
+                  PSTD.cb(n, j - 1) * eh_vec[n][j][0] / ((double) PSTD.N_ey);
         }
       }
     }
@@ -213,11 +213,11 @@ void SimulationManager::update_Exz(LoopVariables &lv) {
         if (inputs.params.is_structure)
           if (k > inputs.params.pml.Dzl &&
               k < (inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K)) {
-            if ((k - inputs.structure[i][1]) <
+            if ((k - inputs.structure(1, i)) <
                         (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl) &&
-                (k - inputs.structure[i][1]) > inputs.params.pml.Dzl)
-              k_loc = k - inputs.structure[i][1];
-            else if ((k - inputs.structure[i][1]) >=
+                (k - inputs.structure(1, i)) > inputs.params.pml.Dzl)
+              k_loc = k - inputs.structure(1, i);
+            else if ((k - inputs.structure(1, i)) >=
                      (lv.n_non_pml_cells_in_K + inputs.params.pml.Dzl))
               k_loc = inputs.params.pml.Dzl + lv.n_non_pml_cells_in_K - 1;
             else
@@ -302,75 +302,75 @@ void SimulationManager::update_Exz(LoopVariables &lv) {
         // variables...
         double Enp1, Jnp1;
         if (solver_method == SolverMethod::FiniteDifference) {
-          Enp1 = Ca * inputs.E_s.xz[k][j][i] +
-                 Cb * (inputs.H_s.yx[k - 1][j][i] + inputs.H_s.yz[k - 1][j][i] -
-                       inputs.H_s.yx[k][j][i] - inputs.H_s.yz[k][j][i]);
+          Enp1 = Ca * inputs.E_s.xz(i, j, k) +
+                 Cb * (inputs.H_s.yx(i, j, k - 1) + inputs.H_s.yz(i, j, k - 1) -
+                       inputs.H_s.yx(i, j, k) - inputs.H_s.yz(i, j, k));
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
-            Enp1 += Cc * lv.E_nm1.xz[k][j][i] -
+            Enp1 += Cc * lv.E_nm1.xz(i, j, k) -
                     1. / 2. * Cb * inputs.params.delta.dz *
-                            ((1 + alpha_l) * lv.J_s.xz[k][j][i] +
-                             beta_l * lv.J_nm1.xz[k][j][i]);
+                            ((1 + alpha_l) * lv.J_s.xz(i, j, k) +
+                             beta_l * lv.J_nm1.xz(i, j, k));
           if (lv.is_conductive && rho)
-            Enp1 += Cb * inputs.params.delta.dz * lv.J_c.xz[k][j][i];
+            Enp1 += Cb * inputs.params.delta.dz * lv.J_c.xz(i, j, k);
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
-            Jnp1 = alpha_l * lv.J_s.xz[k][j][i] +
-                   beta_l * lv.J_nm1.xz[k][j][i] +
+            Jnp1 = alpha_l * lv.J_s.xz(i, j, k) +
+                   beta_l * lv.J_nm1.xz(i, j, k) +
                    kappa_l * gamma_l / (2. * inputs.params.dt) *
-                           (Enp1 - lv.E_nm1.xz[k][j][i]);
-            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz[k][j][i];
-            lv.E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
-            lv.J_nm1.xz[k][j][i] = lv.J_s.xz[k][j][i];
-            lv.J_s.xz[k][j][i] = Jnp1;
+                           (Enp1 - lv.E_nm1.xz(i, j, k));
+            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz(i, j, k);
+            lv.E_nm1.xz(i, j, k) = inputs.E_s.xz(i, j, k);
+            lv.J_nm1.xz(i, j, k) = lv.J_s.xz(i, j, k);
+            lv.J_s.xz(i, j, k) = Jnp1;
           }
 
           if (lv.is_conductive && rho) {
-            lv.J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]);
+            lv.J_c.xz(i, j, k) -= rho * (Enp1 + inputs.E_s.xz(i, j, k));
           }
 
-          inputs.E_s.xz[k][j][i] = Enp1;
+          inputs.E_s.xz(i, j, k) = Enp1;
         } else {// psuedo-spectral
-          // Enp1 = Ca*E_s.xz[k][j][i]+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i]
-          // - H_s.yx[k][j][i] - H_s.yz[k][j][i]);
+          // Enp1 = Ca*E_s.xz(i,j,k)+Cb*(H_s.yx[k-1][j][i] + H_s.yz[k-1][j][i]
+          // - H_s.yx(i,j,k) - H_s.yz(i,j,k));
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l)
-            Enp1 += Cc * lv.E_nm1.xz[k][j][i] -
+            Enp1 += Cc * lv.E_nm1.xz(i, j, k) -
                     1. / 2. * Cb * inputs.params.delta.dz *
-                            ((1 + alpha_l) * lv.J_s.xz[k][j][i] +
-                             beta_l * lv.J_nm1.xz[k][j][i]);
+                            ((1 + alpha_l) * lv.J_s.xz(i, j, k) +
+                             beta_l * lv.J_nm1.xz(i, j, k));
           if (lv.is_conductive && rho)
-            Enp1 += Cb * inputs.params.delta.dz * lv.J_c.xz[k][j][i];
+            Enp1 += Cb * inputs.params.delta.dz * lv.J_c.xz(i, j, k);
           if ((lv.is_dispersive || inputs.params.is_disp_ml) && gamma_l) {
-            Jnp1 = alpha_l * lv.J_s.xz[k][j][i] +
-                   beta_l * lv.J_nm1.xz[k][j][i] +
+            Jnp1 = alpha_l * lv.J_s.xz(i, j, k) +
+                   beta_l * lv.J_nm1.xz(i, j, k) +
                    kappa_l * gamma_l / (2. * inputs.params.dt) *
-                           (Enp1 - lv.E_nm1.xz[k][j][i]);
-            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz[k][j][i];
-            lv.E_nm1.xz[k][j][i] = inputs.E_s.xz[k][j][i];
-            lv.J_nm1.xz[k][j][i] = lv.J_s.xz[k][j][i];
-            lv.J_s.xz[k][j][i] = Jnp1;
+                           (Enp1 - lv.E_nm1.xz(i, j, k));
+            Jnp1 += sigma_l / EPSILON0 * gamma_l * inputs.E_s.xz(i, j, k);
+            lv.E_nm1.xz(i, j, k) = inputs.E_s.xz(i, j, k);
+            lv.J_nm1.xz(i, j, k) = lv.J_s.xz(i, j, k);
+            lv.J_s.xz(i, j, k) = Jnp1;
           }
 
           if (lv.is_conductive && rho) {
-            lv.J_c.xz[k][j][i] -= rho * (Enp1 + inputs.E_s.xz[k][j][i]);
+            lv.J_c.xz(i, j, k) -= rho * (Enp1 + inputs.E_s.xz(i, j, k));
           }
 
-          eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+          eh_vec[n][k][0] = inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
           eh_vec[n][k][1] = 0.;
-          PSTD.ca[n][k - 1] = Ca;
-          PSTD.cb[n][k - 1] = Cb;
+          PSTD.ca(n, k - 1) = Ca;
+          PSTD.cb(n, k - 1) = Cb;
         }
       }
       if (solver_method == SolverMethod::PseudoSpectral) {
         int k = 0;
-        eh_vec[n][k][0] = inputs.H_s.yx[k][j][i] + inputs.H_s.yz[k][j][i];
+        eh_vec[n][k][0] = inputs.H_s.yx(i, j, k) + inputs.H_s.yz(i, j, k);
         eh_vec[n][k][1] = 0.;
 
         first_derivative(eh_vec[n], eh_vec[n], PSTD.dk_ez, PSTD.N_ez,
                          inputs.E_s.xz.plan_f[n], inputs.E_s.xz.plan_b[n]);
 
         for (k = 1; k < K_tot; k++) {
-          inputs.E_s.xz[k][j][i] =
-                  PSTD.ca[n][k - 1] * inputs.E_s.xz[k][j][i] -
-                  PSTD.cb[n][k - 1] * eh_vec[n][k][0] / ((double) PSTD.N_ez);
+          inputs.E_s.xz(i, j, k) =
+                  PSTD.ca(n, k - 1) * inputs.E_s.xz(i, j, k) -
+                  PSTD.cb(n, k - 1) * eh_vec[n][k][0] / ((double) PSTD.N_ez);
         }
       }
     }

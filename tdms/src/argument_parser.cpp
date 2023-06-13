@@ -14,7 +14,7 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 
   auto args = ArgumentNamespace(n_args, arg_ptrs);
 
-  if (args.have_flag("-h")) {
+  if (args.have_flag("-h") || args.have_flag("--help")) {
     print_help_message();
     exit(0);
   }
@@ -24,7 +24,7 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
     exit(0);
   }
 
-  if (args.have_flag("-q")) {// quiet operation
+  if (args.have_flag("-q") || args.have_flag("--quiet")) {// quiet operation
     spdlog::set_level(spdlog::level::off);
   }
 
@@ -43,20 +43,21 @@ ArgumentNamespace ArgumentParser::parse_args(int n_args, char *arg_ptrs[]) {
 }
 
 void ArgumentParser::print_help_message() {
-  fprintf(stdout,
-          "Usage:\n"
-          "tdms [options] infile outfile\n"
-          "tdms [options] infile gridfile outfile\n"
-          "Options:\n"
-          "-h:\tDisplay this help message\n"
-          "-v, --version:\tDisplay tdms version information\n"
-          "-q:\tQuiet operation. Silence all logging\n"
-          "-m:\tMinimise output file size by not saving vertex and facet "
-          "information\n\n");
+  fprintf(stdout, "Usage:\n"
+                  "tdms [options] infile outfile\n"
+                  "tdms [options] infile gridfile outfile\n"
+                  "Options:\n"
+                  "-h, --help:\tDisplay this help message\n"
+                  "-v, --version:\tDisplay tdms version information\n"
+                  "-q, --quiet:\tQuiet operation. Silence all logging\n"
+                  "-m, --minimise-file-size:\tMinimise output file size by not "
+                  "saving vertex and facet "
+                  "information\n\n");
 }
 
 void ArgumentParser::print_version() {
   fprintf(stdout, "TDMS version: %s\n", tdms::VERSION.c_str());
+  fprintf(stdout, "OpenMP version: %i\n", _OPENMP);
 }
 
 ArgumentNamespace::ArgumentNamespace(int n_args, char *arg_ptrs[]) {
@@ -134,4 +135,8 @@ void ArgumentNamespace::check_files_can_be_accessed() {
 
 bool ArgumentNamespace::have_correct_number_of_filenames() const {
   return num_non_flag == 2 || num_non_flag == 3;
+}
+
+bool ArgumentNamespace::compressed_output() const {
+  return have_flag("-m") || have_flag("--minimise-file-size");
 }

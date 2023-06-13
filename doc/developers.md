@@ -193,6 +193,9 @@ Broadly speaking, the `main` function - and thus a call to (or execution of) `td
 
 The `SimulationManager` class governs steps 2 through 5.
 
+A flowchart that further breaks down the above steps can be viewed below.
+![](assets/TDMS_flowchart.png)
+
 ## Code organisation of the TDMS algorithm
 
 <!-- TODO We definitely need a diagram here. -->
@@ -257,7 +260,33 @@ The doxygen-style comments will be included in this developer documentation.
 
 To run the unit tests, [compile](#compiling) with `-DBUILD_TESTING=ON`. Then run `ctest` from the build directory or execute the test executable `./tdms_tests`.
 
-It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is at covered by unit tests.
+It's good practice, and reassuring for your pull-request reviewers, if new C++ functionality is covered by unit tests.
+
+#### Benchmark Scripts and Data Generation
+
+The `tdms/tests/unit/benchmark_scripts` directory contains scripts that produce input data for the unit tests, or that provide benchmarks for the units that are tested.
+
+To generate the necessary test inputs; change into the `benchmark_scripts` directory and run,
+
+```{sh}
+matlab -nosplash -nodesktop -nodisplay -r setup_unit_tests
+```
+
+<details>
+<summary>More details about the data generation scripts and benchmarking</summary>
+
+The `C++` unit tests require the presence of a `.mat` or `.hdf5` file to read/write data from/to during testing.
+The locations of these files are coded into `tests/include/unit_test_utils.h`, but the files themselves are not committed to the repository - they can be created by running the `setup_unit_tests.m` and `create_hdf5_data.py` scripts.
+These scripts can then be updated to add/remove/edit the data available to the unit tests:
+- `create_hdf5_test_file.py` : Produces `hdf5_test_file.hdf5`; used when testing read/writing from `.hdf5` files.
+- `create_structure_array.m` : Produces `structure_array.mat`; used when testing reading/writing MATLAB `struct` arrays.
+- `create_class_data.m` : Produces `class_data.mat`; used when testing reading/writing `tdms` objects to/from `.mat` files.
+- `create_bad_class_data.m` : Produces `bad_class_data.mat`; used for testing failure cases when reading/writing `tdms` objects to/from `.mat` files.
+
+The `benchmark_` scripts perform band-limited interpolation (BLi) using `MATLAB`'s `interp` function.
+`TDMS`'s interpolation schemes are based off this `MATLAB` function (specficially, in the coefficients the scheme uses to interpolate), and are thus used to benchmark the accuracy of the scheme.
+
+</details>
 
 ### Test coverage {#coverage}
 
@@ -309,40 +338,40 @@ The combinations and expected results are listed in the table below.
 
 \note `usecd` was the legacy name for the variable that controlled which solver method to use in the timestepping algorithm. Previous convention was that `usecd = 1` (or not present) resulted in the use of FDTD. This has since been superceeded by the `use_pstd` flag which is `true` when PSTD is to be used, and FDTD will be used otherwise (such as when this flag is not present or set explicitly to `false`).
 
-| TD-field | Using FDTD | compactsource | efname    | hfname    | Raises error? | Error info |
-|:--------:|:----------:|:-------------:|:---------:|:---------:|:-------------:|:----------:|
-| 1        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1          | 1             | 1         | 0         | 0             |  |
-| 1        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 1          | 1             | 0         | 0         | 0             |  |
-| 1        | 1          | 0             | 1         | 1         | 0             |  |
-| 1        | 1          | 0             | 1         | 0         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1          | 0             | 0         | 1         | 1             | If not compact source, both efname and hfname must be specified |
-| 1        | 1          | 0             | 0         | 0         | 0             |  |
-| 1        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0          | 1             | 1         | 0         | 0             |  |
-| 1        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 1        | 0          | 1             | 0         | 0         | 0             |  |
-| 1        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
-| 1        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
-| 1        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
-| 1        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
-| 0        | 1          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1          | 1             | 1         | 0         | 0             |  |
-| 0        | 1          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 1          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 1          | 0             | 1         | 1         | 0             |  |
-| 0        | 1          | 0             | 1         | 0         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
-| 0        | 1          | 0             | 0         | 1         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
-| 0        | 1          | 0             | 0         | 0         | 1             | If not TD-field and using FDTD, must specify both efname and hfname |
-| 0        | 0          | 1             | 1         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0          | 1             | 1         | 0         | 0             |  |
-| 0        | 0          | 1             | 0         | 1         | 1             | Cannot specify hfname if compact source |
-| 0        | 0          | 1             | 0         | 0         | 1             | Must specify efname if compact source and TD-field not specified |
-| 0        | 0          | 0             | 1         | 1         | 1             | Cannot use FDTD & not compactsource |
-| 0        | 0          | 0             | 1         | 0         | 1             | Cannot use FDTD & not compactsource |
-| 0        | 0          | 0             | 0         | 1         | 1             | Cannot use FDTD & not compactsource |
-| 0        | 0          | 0             | 0         | 0         | 1             | Cannot use FDTD & not compactsource |
+| TD-field | Using FDTD | compactsource | efname | hfname | Raises error? |                             Error info                              |
+| :------: | :--------: | :-----------: | :----: | :----: | :-----------: | :-----------------------------------------------------------------: |
+|    1     |     1      |       1       |   1    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    1     |     1      |       1       |   1    |   0    |       0       |                                                                     |
+|    1     |     1      |       1       |   0    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    1     |     1      |       1       |   0    |   0    |       0       |                                                                     |
+|    1     |     1      |       0       |   1    |   1    |       0       |                                                                     |
+|    1     |     1      |       0       |   1    |   0    |       1       |   If not compact source, both efname and hfname must be specified   |
+|    1     |     1      |       0       |   0    |   1    |       1       |   If not compact source, both efname and hfname must be specified   |
+|    1     |     1      |       0       |   0    |   0    |       0       |                                                                     |
+|    1     |     0      |       1       |   1    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    1     |     0      |       1       |   1    |   0    |       0       |                                                                     |
+|    1     |     0      |       1       |   0    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    1     |     0      |       1       |   0    |   0    |       0       |                                                                     |
+|    1     |     0      |       0       |   1    |   1    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    1     |     0      |       0       |   1    |   0    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    1     |     0      |       0       |   0    |   1    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    1     |     0      |       0       |   0    |   0    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    0     |     1      |       1       |   1    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    0     |     1      |       1       |   1    |   0    |       0       |                                                                     |
+|    0     |     1      |       1       |   0    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    0     |     1      |       1       |   0    |   0    |       1       |  Must specify efname if compact source and TD-field not specified   |
+|    0     |     1      |       0       |   1    |   1    |       0       |                                                                     |
+|    0     |     1      |       0       |   1    |   0    |       1       | If not TD-field and using FDTD, must specify both efname and hfname |
+|    0     |     1      |       0       |   0    |   1    |       1       | If not TD-field and using FDTD, must specify both efname and hfname |
+|    0     |     1      |       0       |   0    |   0    |       1       | If not TD-field and using FDTD, must specify both efname and hfname |
+|    0     |     0      |       1       |   1    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    0     |     0      |       1       |   1    |   0    |       0       |                                                                     |
+|    0     |     0      |       1       |   0    |   1    |       1       |               Cannot specify hfname if compact source               |
+|    0     |     0      |       1       |   0    |   0    |       1       |  Must specify efname if compact source and TD-field not specified   |
+|    0     |     0      |       0       |   1    |   1    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    0     |     0      |       0       |   1    |   0    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    0     |     0      |       0       |   0    |   1    |       1       |                 Cannot use FDTD & not compactsource                 |
+|    0     |     0      |       0       |   0    |   0    |       1       |                 Cannot use FDTD & not compactsource                 |
 
 ### System {#system-tests}
 

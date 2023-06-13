@@ -139,7 +139,7 @@ void SimulationManager::update_source_terms_pulsed(double time_E, int tind) {
               d_constant * common_amplitude * real(source_value * common_phase);
       // Update broadband source term
       if (inputs.params.eyi_present) {
-        inputs.H_s.xz[cell_to_update] -= d_constant * inputs.Ei.y[tind][j][i];
+        inputs.H_s.xz[cell_to_update] -= d_constant * inputs.Ei.y(i, j, tind);
       }
     }
     for (int i = 0; i < I_tot; i++) {
@@ -152,7 +152,7 @@ void SimulationManager::update_source_terms_pulsed(double time_E, int tind) {
               d_constant * common_amplitude * real(source_value * common_phase);
       // Update broadband source term
       if (inputs.params.exi_present) {
-        inputs.H_s.yz[cell_to_update] += d_constant * inputs.Ei.x[tind][j][i];
+        inputs.H_s.yz[cell_to_update] += d_constant * inputs.Ei.x(i, j, tind);
       }
     }
   } else {
@@ -165,7 +165,7 @@ void SimulationManager::update_source_terms_pulsed(double time_E, int tind) {
         inputs.H_s.xz[cell_to_update] -= d_constant * common_amplitude *
                                          real(source_value * common_phase);
         if (inputs.params.eyi_present) {
-          inputs.H_s.xz[cell_to_update] -= d_constant * inputs.Ei.y[tind][j][i];
+          inputs.H_s.xz[cell_to_update] -= d_constant * inputs.Ei.y(i, j, tind);
         }
       }
     }
@@ -178,7 +178,7 @@ void SimulationManager::update_source_terms_pulsed(double time_E, int tind) {
         inputs.H_s.yz[cell_to_update] += d_constant * common_amplitude *
                                          real(source_value * common_phase);
         if (inputs.params.exi_present) {
-          inputs.H_s.yz[cell_to_update] += d_constant * inputs.Ei.x[tind][j][i];
+          inputs.H_s.yz[cell_to_update] += d_constant * inputs.Ei.x(i, j, tind);
         }
       }
     }

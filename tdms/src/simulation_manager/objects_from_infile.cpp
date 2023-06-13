@@ -3,10 +3,9 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
-// For ptr_to_vector_in, ptr_to_vector_or_empty_in, int_cast_from_double_in
-#include "matlabio.h"
-// for init_grid_arrays
 #include "array_init.h"
+#include "hdf5_io/hdf5_reader.h"
+#include "matlabio.h"
 
 using tdms_math_constants::DCPI;
 using namespace tdms_flags;
@@ -14,19 +13,7 @@ using namespace tdms_flags;
 IndependentObjectsFromInfile::IndependentObjectsFromInfile(
         InputMatrices matrices_from_input_file, const InputFlags &in_flags)
     :// initialisation list - members whose classes have no default constructors
-      Cmaterial(matrices_from_input_file["Cmaterial"]),// get Cmaterial
-      Dmaterial(matrices_from_input_file["Dmaterial"]),// get Dmaterial
-      C(matrices_from_input_file["C"]),                // get C
-      D(matrices_from_input_file["D"]),                // get D
-      I0(matrices_from_input_file["interface"], "I0"), // get the interface(s)
-      I1(matrices_from_input_file["interface"], "I1"),
-      J0(matrices_from_input_file["interface"], "J0"),
-      J1(matrices_from_input_file["interface"], "J1"),
-      K0(matrices_from_input_file["interface"], "K0"),
-      K1(matrices_from_input_file["interface"], "K1"),
-      matched_layer(
-              matrices_from_input_file["dispersive_aux"]),// get dispersive_aux
-      Ei(matrices_from_input_file["tdfield"])             // get tdfield
+      Ei(matrices_from_input_file["tdfield"])// get tdfield
 {
   /* Set FDTD/PSTD-dependent variable skip_tdf [1: PSTD, 6: FDTD] */
   skip_tdf = in_flags["use_pstd"] ? 1 : 6;
@@ -38,6 +25,26 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
                                          : InterpolationMethod::Cubic;
   E_s.set_preferred_interpolation_methods(i_method);
   H_s.set_preferred_interpolation_methods(i_method);
+
+  // HDF5Reader to extract data from the input file
+  HDF5Reader INPUT_FILE(matrices_from_input_file.input_filename);
+
+  // Read material constants
+  INPUT_FILE.read(Cmaterial);
+  INPUT_FILE.read(Dmaterial);
+  INPUT_FILE.read(C);
+  INPUT_FILE.read(D);
+
+  // Read the interface components
+  INPUT_FILE.read("I0", I0);
+  INPUT_FILE.read("I1", I1);
+  INPUT_FILE.read("J0", J0);
+  INPUT_FILE.read("J1", J1);
+  INPUT_FILE.read("K0", K0);
+  INPUT_FILE.read("K1", K1);
+
+  // Read the layer structure of the obstacle
+  INPUT_FILE.read(matched_layer);
 
   // unpack the parameters for this simulation
   params.unpack_from_input_matrices(matrices_from_input_file);
@@ -66,21 +73,17 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   // Get phasorsurface
   cuboid = Cuboid();
   if (params.exphasorssurface && params.run_mode == RunMode::complete) {
-    cuboid.initialise(matrices_from_input_file["phasorsurface"], IJK_tot.j);
+    INPUT_FILE.read(cuboid);
+    if (IJK_tot.j == 0 && cuboid[2] != cuboid[3]) {
+      throw std::runtime_error("In a 2D simulation, J0 should equal J1 in "
+                               "phasorsurface.");
+    }
   }
 
   // Get conductive_aux, and setup with pointers
   // mxGetPr pointers will be cleaned up by XYZVectors destructor
-  rho_cond = XYZVectors();
-  rho_cond.x =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_x", "conductive_aux"));
-  rho_cond.y =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_y", "conductive_aux"));
-  rho_cond.z =
-          mxGetPr(ptr_to_vector_in(matrices_from_input_file["conductive_aux"],
-                                   "rho_z", "conductive_aux"));
+  rho_cond = XYZVector();
+  INPUT_FILE.read("conductive_aux", "rho_", rho_cond);
 
   // prepare variables dependent on frequency extraction vector
   f_vec = FrequencyVectors();
@@ -88,9 +91,8 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
   D_tilde = DTilde();
   // if exdetintegral is flagged, setup pupil, D_tilde, and f_vec accordingly
   if (params.exdetintegral) {
-    f_vec.initialise(matrices_from_input_file["f_vec"]);
-    pupil.initialise(matrices_from_input_file["Pupil"], f_vec.x.size(),
-                     f_vec.y.size());
+    INPUT_FILE.read(f_vec);
+    INPUT_FILE.read("Pupil", pupil);
     D_tilde.initialise(matrices_from_input_file["D_tilde"], f_vec.x.size(),
                        f_vec.y.size());
 
@@ -131,10 +133,14 @@ IndependentObjectsFromInfile::IndependentObjectsFromInfile(
     }
   }
 
+  // Fetch the vector of frequencies to extract at
+  INPUT_FILE.read(f_ex_vec, params.omega_an);
+  // Update simulation parameters with the number of iterations between
+  // extractions
+  params.set_Np_and_Npe(f_ex_vec);
+
   // work out if we have a dispersive background
-  if (params.is_disp_ml) {
-    params.is_disp_ml = matched_layer.is_dispersive(IJK_tot.k);
-  }
+  if (params.is_disp_ml) { params.is_disp_ml = matched_layer.is_dispersive(); }
 
   // Set dt so that an integer number of time periods fits within a sinusoidal
   // period
@@ -185,10 +191,7 @@ ObjectsFromInfile::ObjectsFromInfile(InputMatrices matrices_from_input_file,
       Ksource(matrices_from_input_file["Ksource"], I1.index - I0.index + 1,
               J1.index - J0.index + 1, "Ksource"),
       // Get structure, we need I_tot from Iterator_IndependentObjectsFromInfile
-      structure(matrices_from_input_file["structure"], IJK_tot.i),
-      // Get f_ex_vec, the vector of frequencies to extract the field at.
-      // Need params.omega from Iterator_IndependentObjectsFromInfile
-      f_ex_vec(matrices_from_input_file["f_ex_vec"], params.omega_an) {
+      structure(matrices_from_input_file["structure"], IJK_tot.i) {
   // Update params according to structure's values
   params.is_structure = structure.has_elements();
 }

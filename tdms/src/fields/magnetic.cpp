@@ -341,8 +341,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
         for (int ind = b_scheme->first_nonzero_coeff;
              ind <= b_scheme->last_nonzero_coeff; ind++) {
           data_for_first_scheme[ind] =
-                  xy[k - b_scheme->number_of_datapoints_to_left + ind][j][i] +
-                  xz[k - b_scheme->number_of_datapoints_to_left + ind][j][i];
+                  xy(i, j, k - b_scheme->number_of_datapoints_to_left + ind) +
+                  xz(i, j, k - b_scheme->number_of_datapoints_to_left + ind);
         }
 
         // now run the interpolation scheme and place the result into the output
@@ -368,7 +368,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
               int cell_k = k - c_scheme->number_of_datapoints_to_left + kk;
               // gather the data for interpolating in the z dimension
               data_for_first_scheme[kk] =
-                      xy[cell_k][cell_j][i] + xz[cell_k][cell_j][i];
+                      xy(i, cell_j, cell_k) + xz(i, cell_j, cell_k);
             }
             // interpolate in z to obtain a value for the Hx field at position
             // (i, cell_j+Dy, k) place this into the appropriate index in the
@@ -395,7 +395,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
               int cell_j = j - b_scheme->number_of_datapoints_to_left + jj;
               // gather the data for interpolating in the y dimension
               data_for_first_scheme[jj] =
-                      xy[cell_k][cell_j][i] + xz[cell_k][cell_j][i];
+                      xy(i, cell_j, cell_k) + xz(i, cell_j, cell_k);
             }
             // interpolate in y to obtain a value for the Hx field at position
             // (i, j, cell_k+Dz) place this into the appropriate index in the
@@ -432,7 +432,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
             int cell_k = k - b_scheme->number_of_datapoints_to_left + kk;
             // gather the data for interpolating in the z dimension
             data_for_first_scheme[kk] =
-                    yx[cell_k][j][cell_i] + yz[cell_k][j][cell_i];
+                    yx(cell_i, j, cell_k) + yz(cell_i, j, cell_k);
           }
           // interpolate in z to obtain a value for the Hy field at position
           // (cell_i+Dx, j, k) place this into the appropriate index in the data
@@ -458,7 +458,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
             int cell_i = i - c_scheme->number_of_datapoints_to_left + ii;
             // gather the data for interpolating in the x dimension
             data_for_first_scheme[ii] =
-                    yx[cell_k][j][cell_i] + yz[cell_k][j][cell_i];
+                    yx(cell_i, j, cell_k) + yz(cell_i, j, cell_k);
           }
           // interpolate in x to obtain a value for the Hy field at position (i,
           // j, cell_k+Dz) place this into the appropriate index in the data
@@ -481,8 +481,8 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
         for (int ind = b_scheme->first_nonzero_coeff;
              ind <= b_scheme->last_nonzero_coeff; ind++) {
           data_for_first_scheme[ind] =
-                  zx[k][j][i - b_scheme->number_of_datapoints_to_left + ind] +
-                  zy[k][j][i - b_scheme->number_of_datapoints_to_left + ind];
+                  zx(i - b_scheme->number_of_datapoints_to_left + ind, j, k) +
+                  zy(i - b_scheme->number_of_datapoints_to_left + ind, j, k);
         }
 
         // now run the interpolation scheme and place the result into the output
@@ -508,7 +508,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
               int cell_j = j - c_scheme->number_of_datapoints_to_left + jj;
               // gather the data for interpolating in the y dimension
               data_for_first_scheme[jj] =
-                      zx[k][cell_j][cell_i] + zy[k][cell_j][cell_i];
+                      zx(cell_i, cell_j, k) + zy(cell_i, cell_j, k);
             }
             // interpolate in y to obtain a value for the Hz field at position
             // (cell_i+Dx, j, k) place this into the appropriate index in the
@@ -535,7 +535,7 @@ double MagneticSplitField::interpolate_to_centre_of(AxialDirection d,
               int cell_i = i - b_scheme->number_of_datapoints_to_left + ii;
               // gather the data for interpolating in the x dimension
               data_for_first_scheme[ii] =
-                      zx[k][cell_j][cell_i] + zy[k][cell_j][cell_i];
+                      zx(cell_i, cell_j, k) + zy(cell_i, cell_j, k);
             }
             // interpolate in x to obtain a value for the Hz field at position
             // (i, j, cell_k+Dz) place this into the appropriate index in the

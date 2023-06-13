@@ -23,31 +23,6 @@
 
 #include "abstract_array_test_class.h"
 
-/** @brief Unit tests for CCollection */
-class CCollectionTest : public AbstractArrayTest {
-private:
-  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby",
-                               "Cbz", "Ccx", "Ccy", "Ccz"};
-
-  void test_incorrect_number_of_fields() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "CCollection"; }
-};
-
-/** @brief Unit tests for DCollection */
-class DCollectionTest : public AbstractArrayTest {
-private:
-  const char *fieldnames[6] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
-
-  void test_incorrect_number_of_fields() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "DCollection"; }
-};
-
 /** @brief Unit tests for DetectorSensitivityArrays */
 class DetectorSensitivityArraysTest : public AbstractArrayTest {
 private:
@@ -58,24 +33,6 @@ private:
 
 public:
   std::string get_class_name() override { return "DetectorSensitivityArray"; }
-};
-
-/** @brief Unit tests for DispersiveMultilayer */
-class DispersiveMultilayerTest : public AbstractArrayTest {
-private:
-  const int n_fields = 9;
-  const char *fieldnames[9] = {"alpha",   "beta",    "gamma",
-                               "kappa_x", "kappa_y", "kappa_z",
-                               "sigma_x", "sigma_y", "sigma_z"};
-
-  void test_empty_construction() override;
-  void test_wrong_input_type() override;
-  void test_correct_construction() override;
-  // test: is_dispersive()
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "DispersiveMultilayer"; }
 };
 
 // Test methods check the performance of initialise, as this is the de-facto
@@ -110,23 +67,6 @@ public:
   std::string get_class_name() override { return "FieldSample"; }
 };
 
-// Test methods check the performance of initialise, as this is the de-facto
-// constructor
-class FrequencyVectorsTest : public AbstractArrayTest {
-private:
-  const int n_fields = 2;
-  const char *fieldnames[2] = {"fx_vec", "fy_vec"};
-
-  void test_empty_construction() override;
-  void test_wrong_input_type() override;
-  void test_incorrect_number_of_fields() override;
-  void test_correct_construction() override;
-  void test_initialise_method() override;
-
-public:
-  std::string get_class_name() override { return "FrequencyVectors"; }
-};
-
 /** @brief Unit tests for FullFieldSnapshot */
 class FullFieldSnapshotTest : public AbstractArrayTest {
 private:
@@ -151,38 +91,6 @@ private:
 
 public:
   std::string get_class_name() override { return "IncidentField"; }
-};
-
-/** @brief Unit tests for CMaterial */
-class CMaterialTest : public AbstractArrayTest {
-private:
-  const int n_fields = 9;
-  const char *fieldnames[9] = {"Cax", "Cay", "Caz", "Cbx", "Cby",
-                               "Cbz", "Ccx", "Ccy", "Ccz"};
-  const char *wrong_fieldnames[9] = {"Dax", "Cay", "Daz", "Cbx", "Dby",
-                                     "Cbz", "Ccx", "Ccy", "Ccz"};
-
-  void test_incorrect_number_of_fields() override;
-  void test_incorrect_fieldname() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "CMaterial"; }
-};
-
-/** @brief Unit tests for DMaterial */
-class DMaterialTest : public AbstractArrayTest {
-private:
-  const int n_fields = 6;
-  const char *fieldnames[6] = {"Dax", "Day", "Daz", "Dbx", "Dby", "Dbz"};
-  const char *wrong_fieldnames[6] = {"Dax", "Cay", "Daz", "Cbx", "Dby", "Cbz"};
-
-  void test_incorrect_number_of_fields() override;
-  void test_incorrect_fieldname() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "DMaterial"; }
 };
 
 /** @brief Unit tests for Matrix */
@@ -221,31 +129,6 @@ public:
   std::string get_class_name() override { return "GratingStructure"; }
 };
 
-/** @brief Unit tests for Pupil */
-class PupilTest : public AbstractArrayTest {
-private:
-  const int n_rows = 4, n_cols = 8;
-
-  void test_empty_construction() override;
-  void test_wrong_input_dimensions() override;
-  void test_correct_construction() override;
-
-public:
-  std::string get_class_name() override { return "Pupil"; }
-};
-
-/** @brief Unit tests for EHVec */
-class EHVecTest : public AbstractArrayTest {
-private:
-  const int n_rows = 4, n_cols = 8;
-
-  // allocate() needs testing
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "EHVec"; }
-};
-
 /** @brief Unit tests for Tensor3D */
 class Tensor3DTest : public AbstractArrayTest {
 private:
@@ -266,34 +149,6 @@ private:
 
 public:
   std::string get_class_name() override { return "Vector"; }
-};
-
-/** @brief Unit tests for FieldComponentsVector */
-class FieldComponentsVectorTest : public AbstractArrayTest {
-private:
-  const int n_fields = 1;
-  const char *fieldnames[1] = {"components"};
-
-  void test_correct_construction() override;
-  void test_initialise_method() override;
-
-public:
-  std::string get_class_name() override { return "FieldComponentsVector"; }
-};
-
-/** @brief Unit tests for FrequencyExtractVector */
-class FrequencyExtractVectorTest : public AbstractArrayTest {
-private:
-  const double omega_an = 1.;
-
-  void test_empty_construction() override;
-  void test_wrong_input_dimensions() override;
-  void test_correct_construction() override;
-  // max() method
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "FrequencyExtractVector"; }
 };
 
 /** @brief Unit tests for VertexPhasors */
@@ -319,19 +174,4 @@ private:
 
 public:
   std::string get_class_name() override { return "XYZTensor3D"; }
-};
-
-/** @brief Unit tests for XYZVectors */
-class XYZVectorsTest : public AbstractArrayTest {
-private:
-  const static int n_layers = 4;
-  const static int n_cols = 8;
-  const static int n_rows = 16;
-
-  void test_correct_construction() override;
-  // set_ptr(), all_elements_less_than()
-  void test_other_methods() override;
-
-public:
-  std::string get_class_name() override { return "XYZVectors"; }
 };

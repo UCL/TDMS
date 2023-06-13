@@ -7,7 +7,7 @@
 
 #include <fftw3.h>
 
-#include "arrays.h"
+#include "arrays/tdms_matrix.h"
 #include "cell_coordinate.h"
 
 /**

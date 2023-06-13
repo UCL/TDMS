@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "arrays/cuboid.h"
 #include "cell_coordinate.h"
 #include "field.h"
 #include "fieldsample.h"
@@ -14,7 +15,6 @@
 #include "matrix.h"
 #include "output_matrices/id_variables.h"
 #include "output_matrices/output_matrix_pointers.h"
-#include "shapes.h"
 #include "simulation_parameters.h"
 #include "surface_phasors.h"
 #include "vertex_phasors.h"

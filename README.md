@@ -4,7 +4,7 @@
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
 
-# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/github/license/UCL/TDMS)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS) [![DOI](https://zenodo.org/badge/448864310.svg)](https://zenodo.org/badge/latestdoi/448864310)
+# TDMS · [![latest release](https://badgen.net/github/release/UCL/TDMS)](https://github.com/UCL/TDMS/releases)  [![license](https://badgen.net/badge/license/GPL-3.0/blue)](https://github.com/UCL/TDMS/blob/main/LICENSE) [![Build and test](https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/ci.yml) [![MATLAB tests](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg)](https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml) [![codecov](https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL)](https://codecov.io/gh/UCL/TDMS) [![DOI](https://zenodo.org/badge/448864310.svg)](https://zenodo.org/badge/latestdoi/448864310)
 
 <!-- \endcond -->
 
@@ -135,6 +135,8 @@ You can run TDMS either directly or from a MATLAB script.
 For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
+It also commentates on what it is doing, so you can follow along with what is being setup and created at each stage.
+We have also annotated the input file [`arc_01_example_input.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m) that this script passes to `iteratefdtd_matrix.m`.
 
 <details>
 <summary>Troubleshooting</summary>

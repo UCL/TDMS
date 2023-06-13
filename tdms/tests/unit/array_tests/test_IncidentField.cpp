@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include "array_test_class.h"
-#include "arrays.h"
+#include "arrays/incident_field.h"
 #include "unit_test_utils.h"
 
 using namespace std;
@@ -73,9 +73,9 @@ void IncidentFieldTest::test_correct_construction() {
       for (int kk = 0; kk < n_layers; kk++) {
         elements_set_correctly =
                 elements_set_correctly &&
-                (abs(i_field.x[kk][jj][ii] -
+                (abs(i_field.x(ii, jj, kk) -
                      1. / ((double) (kk + jj + ii + 1))) < TOLERANCE) &&
-                (abs(i_field.y[kk][jj][ii] -
+                (abs(i_field.y(ii, jj, kk) -
                      1. / ((double) (kk + jj + ii + 1))) < TOLERANCE);
       }
     }
