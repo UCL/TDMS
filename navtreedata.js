@@ -27,49 +27,50 @@ var NAVTREE =
   [ "TDMS", "index.html", [
     [ "Time-Domain Maxwell Solver", "index.html#autotoc_md0", [
       [ "Getting started", "index.html#autotoc_md1", null ],
-      [ "How to run", "index.html#autotoc_md2", [
-        [ "MATLAB file version", "index.html#autotoc_md3", null ],
-        [ "On the command line", "index.html#autotoc_md4", null ]
+      [ "Installation", "index.html#autotoc_md3", null ],
+      [ "How to run", "index.html#autotoc_md4", [
+        [ "MATLAB file version", "index.html#autotoc_md5", null ],
+        [ "On the command line", "index.html#autotoc_md6", null ]
       ] ],
-      [ "Citation", "index.html#autotoc_md5", null ],
-      [ "Acknowledgements", "index.html#autotoc_md6", null ],
-      [ "Want to contribute?", "index.html#autotoc_md7", null ]
+      [ "Citation", "index.html#autotoc_md7", null ],
+      [ "Acknowledgements", "index.html#autotoc_md8", null ],
+      [ "Want to contribute?", "index.html#autotoc_md9", null ]
     ] ],
     [ "Contribution guidelines", "md__c_o_n_t_r_i_b_u_t_i_n_g.html", [
-      [ "Bugs", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md9", null ],
-      [ "Code contribution", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md10", [
-        [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md11", null ]
+      [ "Bugs", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md11", null ],
+      [ "Code contribution", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md12", [
+        [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md13", null ]
       ] ]
     ] ],
     [ "Developer documentation", "md_doc_developers.html", [
-      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md13", null ],
-      [ "Dependencies", "md_doc_developers.html#autotoc_md14", [
-        [ "Versions", "md_doc_developers.html#autotoc_md15", null ],
+      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md15", null ],
+      [ "Dependencies", "md_doc_developers.html#autotoc_md16", [
+        [ "Versions", "md_doc_developers.html#autotoc_md17", null ],
         [ "Code style and other admin", "md_doc_developers.html#code-style-and-doxygen", null ],
         [ "Linters and automatic code style", "md_doc_developers.html#pre-commit", null ]
       ] ],
       [ "Compiling and debugging", "md_doc_developers.html#compiling", [
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md16", null ]
+        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md18", null ]
       ] ],
-      [ "Where's the main?", "md_doc_developers.html#autotoc_md17", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md18", [
-        [ "2. Initialisation", "md_doc_developers.html#autotoc_md19", null ],
-        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md20", null ],
-        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md21", null ],
-        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md22", null ]
+      [ "Navigating the algorithm code", "md_doc_developers.html#autotoc_md19", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md20", [
+        [ "2. Initialisation", "md_doc_developers.html#autotoc_md21", null ],
+        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md22", null ],
+        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md23", null ],
+        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md24", null ]
       ] ],
       [ "Testing", "md_doc_developers.html#testing", [
         [ "Unit", "md_doc_developers.html#unit-testing", [
-          [ "Benchmark Scripts and Data Generation", "md_doc_developers.html#autotoc_md23", null ]
+          [ "Benchmark Scripts and Data Generation", "md_doc_developers.html#autotoc_md25", null ]
         ] ],
         [ "Test coverage", "md_doc_developers.html#coverage", null ],
         [ "MATLAB Units", "md_doc_developers.html#matlab-unit-tests", null ],
         [ "System", "md_doc_developers.html#system-tests", [
-          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md24", null ]
+          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md26", null ]
         ] ],
-        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md25", [
-          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md26", null ],
-          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md27", null ]
+        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md27", [
+          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md28", null ],
+          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md29", null ]
         ] ]
       ] ]
     ] ],
@@ -109,7 +110,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"interpolation__methods_8h.html#a0c71c7b51a760b8fcecc30d8196aee23a3d87cf842f3b4a1a14358480c6c3c1ca"
+"interpolation__methods_8h.html#a0c71c7b51a760b8fcecc30d8196aee23a3a9fa7bb91dd83b72579bbd1c029361b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

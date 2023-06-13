@@ -101,39 +101,84 @@ Time-Domain Maxwell Solver</h1>
 <p><img src="doc/assets/HzNormBanner.png" alt="The normed z-component of the H field incident on a cylinder" class="inline"/></p>
 <h2><a class="anchor" id="autotoc_md1"></a>
 Getting started</h2>
-<p>To use TDMS, it needs to be built against <a href="https://www.fftw.org/">FFTW</a> and <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, which must be downloaded and installed first. To install, follow these steps:</p>
-<div class="fragment"><div class="line">$ git clone git@github.com:UCL/TDMS.git</div>
-<div class="line">$ cd TDMS</div>
-<div class="line">$ git checkout v1.0.0 # the stable version</div>
-<div class="line">$ mkdir build; cd build</div>
-<div class="line">$ cmake ../tdms \</div>
-<div class="line"># -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \</div>
-<div class="line"># -DFFTW_ROOT=/usr/local/fftw3/ \</div>
-<div class="line"># -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
-<div class="line">$ make install</div>
-</div><!-- fragment --><p>If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.</p>
+<p>We don't ship binaries at the moment, so to use TDMS, it has to be compiled. It needs to be built against <a href="https://www.fftw.org/">FFTW</a> and <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, which must be downloaded and installed first.</p>
 <details >
 <summary >
-Mac-specific instructions</summary>
+<img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/UBT.png" alt="" class="inline"/> Linux prerequisite setup</summary>
 <p></p>
-<p>To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP. You can install these using <a href="https://brew.sh">Homebrew</a> with the command:</p>
-<div class="fragment"><div class="line">$ brew install llvm</div>
-</div><!-- fragment --><p>After installing with Homebrew, you may need to set the following CMake arguments:</p>
-<div class="fragment"><div class="line">-DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++</div>
-<div class="line">-DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/</div>
-<div class="line">-DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm</div>
-<div class="line">-DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5</div>
-</div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew. To do so, use the following commands:</p>
+<p>Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP and FFTW.</p>
+<p>For Debian-based distributions this should be as simple as </p><div class="fragment"><div class="line">$ sudo apt install git gcc cmake libfftw3-dev libgomp1</div>
+</div><!-- fragment --><p></p>
+</details>
+<details >
+<summary >
+<img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/MAC.png" alt="" class="inline"/> MacOS prerequisite setup</summary>
+<p></p>
+<p>On MacOS you will need an x86 compiler with libraries for OpenMP. You'll need to download the latest <a href="https://apps.apple.com/app/xcode">Xcode tools</a>.</p>
+<p>Everything else can be installed using <a href="https://brew.sh">Homebrew</a>:</p>
+<div class="fragment"><div class="line">$ brew install cmake fftw llvm</div>
+</div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew:</p>
 <div class="fragment"><div class="line">$ arch -x86_64 zsh</div>
 <div class="line">$ arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
-<div class="line">$ arch -x86_64 /usr/local/bin/brew install llvm hdf5</div>
-</div><!-- fragment --> </details>
+<div class="line">$ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm</div>
+</div><!-- fragment --><p></p>
+</details>
+<details >
+<summary >
+<img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/WIN.png" alt="" class="inline"/> Windows prerequisite setup</summary>
+<p></p>
+<p>TDMS was developed on, and has been extensively tested on linux. Support for Windows is quite new and experimental (please <a href="https://github.com/UCL/TDMS/issues/new/choose">report</a> any issues you encounter!).</p>
+<p>It might be more straightforward to use the <a href="https://learn.microsoft.com/en-gb/windows/wsl/install">Windows subsystem for Linux (WSL2)</a>, or set up an linux virtual machine.</p>
+<p>However, TDMS <em>can</em> be compiled natively on Windows. This has been tested Windows 10 and 11, with PowerShell.</p>
+<p>Assuming you don't already have them, you'll need to download and install:</p>
+<ul>
+<li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>,</li>
+<li><a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio</a> and <b>be sure to select the C++ developer kit</b>,</li>
+<li><a href="https://cmake.org/download/">CMake</a>,</li>
+<li>and <a href="https://www.fftw.org/install/windows.html">FFTW</a>.</li>
+</ul>
+<p>You can check that the Visual Studio compiler was installed with:</p>
+<div class="fragment"><div class="line">PS&gt; MSBuild.exe -h</div>
+</div><!-- fragment --><p>Potentially the simplest way to get FFTW is via <a href="https://anaconda.org/conda-forge/fftw">conda</a>:</p>
+<div class="fragment"><div class="line">PS&gt; conda install -c conda-forge fftw --yes</div>
+</div><!-- fragment --><p>You'll need to ensure the paths to FFTW and MATLAB (the locations of <code>fftw3.dll</code> and <code>libmex.dll</code> respectively) are in the <code>env:Path</code>.</p>
+<p>These can be found, e.g. by </p><div class="fragment"><div class="line">PS&gt; conda list fftw # assuming you installed via conda</div>
+<div class="line">PS&gt; which.exe MATLAB</div>
+</div><!-- fragment --><p> Which should return something like <code>C:\Program Files (x86)\MATLAB\R20XXx\bin\matlab</code> and maybe <code>C:\ProgramData\envs\base\bin</code>. If you downloaded FFTW and created <code>fftw3.dll</code> with <code>lib.exe</code>, you just need to know where you saved it.</p>
+<p>You can append the paths:</p>
+<div class="fragment"><div class="line">PS&gt; $env:Path += &quot;;C:\Program Files (x86)\MATLAB\R20XXx\bin\;C:\ &lt; wherever fftw3.dll is &gt;&quot;</div>
+</div><!-- fragment --><p>Which will help Windows locate <code>.dll</code> files later. For all following instructions, you'll have to substitute our mentions of <code>tdms</code> with <code>tdms.exe</code> and <code>$</code> is used to denote a command prompt which, in PowerShell, would look like <code>PS&gt;</code></p>
+<details >
+<summary >
+Even more Windows troubleshooting</summary>
+<p></p>
+<p>We've seen that in a fresh PowerShell window, Windows does not remember the location of the <code>.dll</code> files, so you may have to re-add them to the path, or copy them into the directory where TDMS was installed.</p>
+<p>TDMS typically installs to <code>"C:\Program Files (x86)\tdms\bin\tdms.exe"</code>.</p>
+<p></p>
+</details>
+<p></p>
+</details>
+<hr  />
+<p>You'll need to download and install <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, and take note where the headers are installed. </p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Installation</h2>
+<p>To compile and install, follow these steps:</p>
+<div class="fragment"><div class="line">$ git clone git@github.com:UCL/TDMS.git</div>
+<div class="line">$ cd TDMS</div>
+<div class="line">$ git checkout v1.0.1 # the stable version</div>
+<div class="line">$ mkdir build; cd build</div>
+<div class="line">$ cmake ../tdms \</div>
+<div class="line">$ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \</div>
+<div class="line">$ # -DFFTW_ROOT=/usr/local/fftw3/ \</div>
+<div class="line">$ # -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
+<div class="line">$ cmake --build . --target install --config Release</div>
+</div><!-- fragment --><p>If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.</p>
 <p>You can check that <code>tdms</code> was installed correctly and is in your <code>PATH</code> by running: </p><div class="fragment"><div class="line">$ tdms --help</div>
 <div class="line">$ tdms --version</div>
 </div><!-- fragment --><p> in a new terminal.</p>
-<h2><a class="anchor" id="autotoc_md2"></a>
+<h2><a class="anchor" id="autotoc_md4"></a>
 How to run</h2>
-<p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <code>examples/arc_01</code> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>. This script will generate the input to TDMS, run TDMS, and display sample output. It also commentates on what it is doing, so you can follow along with what is being setup and created at each stage. We have also annotated the input file <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m"><code>arc_01_example_input.m</code></a> that this script passes to <code>iteratefdtd_matrix.m</code>.</p>
+<p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <code>examples/arc_01</code> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>. This script will generate the input to TDMS, run TDMS, and display sample output. There are comments explaining what it is doing, so you can follow along with what is being setup and created at each stage. We have also commented the input file <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m"><code>arc_01_example_input.m</code></a> that this script passes to <code>iteratefdtd_matrix.m</code>.</p>
 <details >
 <summary >
 Troubleshooting</summary>
@@ -146,10 +191,10 @@ Troubleshooting</summary>
 </div><!-- fragment --><p>The MATLAB example scripts should then find <code>tdms</code>. If you still have problems, you can try hard-coding the full path to <code>tdms</code> into the MATLAB script.</p>
 <p>In a terminal run</p>
 <div class="fragment"><div class="line">$ which tdms</div>
-</div><!-- fragment --><p>Copy the full path (something like <code>/usr/local/bin/tdms</code>) into <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>, replacing the &lsquo;'tdms&rsquo;<code>text in the calls to the</code>system()` function.</p>
+</div><!-- fragment --><p>Copy the full path (something like <code>/usr/local/bin/tdms</code>) into <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><code>run_pstd_bscan.m</code></a>, replacing the &lsquo; 'tdms&rsquo; <code>text in the calls to the</code><code>system()</code>` function.</p>
 <p></p>
 </details>
-<h3><a class="anchor" id="autotoc_md3"></a>
+<h3><a class="anchor" id="autotoc_md5"></a>
 MATLAB file version</h3>
 <p>In order to be readable by TDMS, files need to be saved in .mat (MATLAB file) version 7.3 or newer. This can be done by passing '-v7.3' to MATLAB's save command as the final argument, for example:</p>
 <div class="fragment"><div class="line">save(&#39;my_input_file.mat&#39;, &#39;my_input_var_1&#39;, &#39;my_input_var_2&#39;, ..., &#39;my_input_var_N&#39;, &#39;-v7.3&#39;);</div>
@@ -160,7 +205,7 @@ Or set v7.3 as the default in MATLAB's settings.</summary>
 <p><img src="doc/assets/matlab-file-settings.png" alt="" class="inline"/></p>
 <p></p>
 </details>
-<h3><a class="anchor" id="autotoc_md4"></a>
+<h3><a class="anchor" id="autotoc_md6"></a>
 On the command line</h3>
 <p>If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name. You can choose between two solver methods: <b>finite-difference</b> or <b>pseudo-spectral</b>, as well as two interpolation methods: <b>cubic</b> or <b>bandlimited</b>. These options can be selected by setting the corresponding flag variables in the input file. When <code>tdms</code> reads the input, it will verify if the input file contains a dataset that matches the names of these flags.</p>
 <p>There are two flags available for configuration in the input file. </p><details >
@@ -181,7 +226,7 @@ On the command line</h3>
 <dl class="section note"><dt>Note</dt><dd>Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest. Otherwise, cubic interpolation typically enjoys superior accuracy. </dd></dl>
 </details>
 <p>TDMS is parallelised with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. You can set the maximum number of threads using the <code>OMP_NUM_THREADS</code> environment variable before calling the TDMS executable. </p><div class="fragment"><div class="line">$ export OMP_NUM_THREADS=4 # for example</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
 Citation</h2>
 <p>If you used TDMS in your research and found it helpful, please cite this work: <a href="https://doi.org/10.5281/zenodo.7950604">10.5281/zenodo.7950604</a>.</p>
 <details >
@@ -206,12 +251,12 @@ LaTeX</summary>
 <div class="line">P. Munro, et al \emph{TDMS - The Time-Domain Maxwell Solver}, \url{https://github.com/UCL/TDMS}, \href{https://doi.org/10.5281/zenodo.7950603}{10.5281/zenodo.7950603}.</div>
 </div><!-- fragment --><p></p>
 </details>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md8"></a>
 Acknowledgements</h2>
 <p>The TDMS source code was released under a GPL-3.0 License as part of a joint project between University College London's <a href="https://ucl.ac.uk/medphys">Medical Physics and Biomedical Engineering</a> and <a href="https://ucl.ac.uk/arc">Centre for Advanced Research Computing</a> with generous funding from the <a href="https://royalsociety.org">Royal Society</a>.</p>
 <p><img src="doc/assets/biomedlogo.png" alt="medphys" class="inline"/>&#160;<img src="doc/assets/arclogo.png" alt="arc" class="inline"/></p>
 <p>Development of this software has previously benefited from funding from the <a href="https://cscuk.fcdo.gov.uk/about-us/scholarships-and-fellowships/">Commonwealth Scholarships Commission</a>, the <a href="https://www.ukri.org/councils/epsrc/">Engineering and Physical Sciences Research Council</a>, and the <a href="https://www.arc.gov.au/">Australian Research Council</a>.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 Want to contribute?</h2>
 <p>We're grateful for bug reports, feature requests, and pull requests. Please see our <a href="https://github-pages.ucl.ac.uk/TDMS/md__c_o_n_t_r_i_b_u_t_i_n_g.html">contribution guidelines</a> (we also have some <a href="https://github-pages.ucl.ac.uk/TDMS/md_doc_developers.html">developer documentation</a>). </p>
 </div></div><!-- PageDoc -->
