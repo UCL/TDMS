@@ -17,51 +17,135 @@ For further details about the method, please refer to the [PDF documentation](ht
 
 ## Getting started
 
-To use TDMS, it needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
-To install, follow these steps:
-
-```bash
-$ git clone git@github.com:UCL/TDMS.git
-$ cd TDMS
-$ git checkout v1.0.0 # the stable version
-$ mkdir build; cd build
-$ cmake ../tdms \
-# -DMatlab_ROOT_DIR=/usr/local/MATLAB/R2019b/ \
-# -DFFTW_ROOT=/usr/local/fftw3/ \
-# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
-$ make install
-```
-
-If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
+We don't ship binaries at the moment, so to use TDMS, it has to be compiled.
+It needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://www.mathworks.com/products/matlab.html), which must be downloaded and installed first.
 
 <details>
-<summary>Mac-specific instructions</summary>
+<summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/UBT.png"/> Linux prerequisite setup</summary>
 
-To compile TDMS on a Mac, you will need an x86 compiler with libraries for OpenMP.
-You can install these using [Homebrew](https://brew.sh) with the command:
+Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP and FFTW.
 
+For Debian-based distributions this should be as simple as
 ```{sh}
-$ brew install llvm
+$ sudo apt install git gcc cmake libfftw3-dev libgomp1
 ```
 
-After installing with Homebrew, you may need to set the following CMake arguments:
+<!-- TODO: add libhdf5-dev here when updating to v1.2 -->
+
+</details>
+
+<details>
+<summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/MAC.png"/> MacOS prerequisite setup</summary>
+
+On MacOS you will need an x86 compiler with libraries for OpenMP.
+You'll need to download the latest [Xcode tools](https://apps.apple.com/app/xcode).
+
+Everything else can be installed using [Homebrew](https://brew.sh):
 
 ```{sh}
--DCMAKE_CXX_COMPILER=/Users/username/.local/homebrew/opt/llvm/bin/clang++
--DOMP_ROOT=/Users/username/.local/homebrew/opt/llvm/
--DCXX_ROOT=/Users/username/.local/homebrew/opt/llvm
--DHDF5_ROOT=/Users/username/.local/homebrew/opt/hdf5
+$ brew install cmake fftw llvm
 ```
 
-On an ARM Mac, you will need to install the x86 version of Homebrew.
-To do so, use the following commands:
+On an ARM Mac, you will need to install the x86 version of Homebrew:
 
 ```{sh}
 $ arch -x86_64 zsh
 $ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-$ arch -x86_64 /usr/local/bin/brew install llvm hdf5
+$ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
 ```
+
+<!-- on MacOS it's just hdf5 as an argument to brew -->
+
 </details>
+
+<details>
+<summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/WIN.png"/> Windows prerequisite setup</summary>
+
+TDMS was developed on, and has been extensively tested on linux.
+Support for Windows is quite new and experimental (please [report](https://github.com/UCL/TDMS/issues/new/choose) any issues you encounter!).
+
+It might be more straightforward to use the [Windows subsystem for Linux (WSL2)](https://learn.microsoft.com/en-gb/windows/wsl/install), or set up an linux virtual machine.
+
+However, TDMS _can_ be compiled natively on Windows.
+This has been tested Windows 10 and 11, with PowerShell.
+
+Assuming you don't already have them, you'll need to download and install:
+
+<!-- * HDF5 -->
+* [MATLAB](https://www.mathworks.com/products/matlab.html),
+* [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
+* [CMake](https://cmake.org/download/),
+* and [FFTW](https://www.fftw.org/install/windows.html).
+
+You can check that the Visual Studio compiler was installed with:
+
+```{pwsh}
+PS> MSBuild.exe -h
+```
+
+Potentially the simplest way to get FFTW is via [conda](https://anaconda.org/conda-forge/fftw):
+
+
+```{pwsh}
+PS> conda install -c conda-forge fftw --yes
+```
+
+<!-- TODO: add HDF5 👆 here when updating to v2 -->
+
+You'll need to ensure the paths to FFTW and MATLAB (the locations of `fftw3.dll` and `libmex.dll` respectively) are in the `env:Path`.
+
+These can be found, e.g. by
+```{pwsh}
+PS> conda list fftw # assuming you installed via conda
+PS> which.exe MATLAB
+```
+Which should return something like `C:\Program Files (x86)\MATLAB\R20XXx\bin\matlab` and maybe `C:\ProgramData\envs\base\bin`.
+If you downloaded FFTW and created `fftw3.dll` with `lib.exe`, you just need to know where you saved it.
+
+You can append the paths:
+
+```{pwsh}
+PS> $env:Path += ";C:\Program Files (x86)\MATLAB\R20XXx\bin\;C:\ < wherever fftw3.dll is >"
+```
+
+Which will help Windows locate `.dll` files later.
+For all following instructions, you'll have to substitute our mentions of ``tdms`` with ``tdms.exe`` and ``$`` is used to denote a command prompt which, in PowerShell, would look like ``PS>``
+
+<details>
+<summary>Even more Windows troubleshooting</summary>
+
+We've seen that in a fresh PowerShell window, Windows does not remember the location of the ``.dll`` files, so you may have to re-add them to the path, or copy them into the directory where TDMS was installed.
+
+TDMS typically installs to ``"C:\Program Files (x86)\tdms\bin\tdms.exe"``.
+
+</details>
+
+</details>
+
+------
+
+You'll need to download and install [MATLAB](https://www.mathworks.com/products/matlab.html), and take note where the headers are installed.
+</details>
+
+## Installation
+
+To compile and install, follow these steps:
+
+```{sh}
+$ git clone git@github.com:UCL/TDMS.git
+$ cd TDMS
+$ git checkout v1.0.1 # the stable version
+$ mkdir build; cd build
+$ cmake ../tdms \
+$ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
+$ # -DFFTW_ROOT=/usr/local/fftw3/ \
+$ # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+$ cmake --build . --target install --config Release
+```
+
+If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
+
+<!-- TODO: add HDF5 when updating to v2 -->
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
@@ -76,8 +160,8 @@ You can run TDMS either directly or from a MATLAB script.
 For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
-It also commentates on what it is doing, so you can follow along with what is being setup and created at each stage.
-We have also annotated the input file [`arc_01_example_input.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m) that this script passes to `iteratefdtd_matrix.m`.
+There are comments explaining what it is doing, so you can follow along with what is being setup and created at each stage.
+We have also commented the input file [`arc_01_example_input.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m) that this script passes to `iteratefdtd_matrix.m`.
 
 <details>
 <summary>Troubleshooting</summary>
@@ -104,7 +188,7 @@ In a terminal run
 $ which tdms
 ```
 
-Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the `'tdms'` text in the calls to the `system()` function.
+Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the ` 'tdms' ` text in the calls to the ``system()`` function.
 
 </details>
 
