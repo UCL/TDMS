@@ -30,6 +30,8 @@ For Debian-based distributions this should be as simple as
 $ sudo apt install git gcc cmake libfftw3-dev libgomp1
 ```
 
+<!-- TODO: add libhdf5-dev here when updating to v1.2 -->
+
 </details>
 
 <details>
@@ -52,6 +54,8 @@ $ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Home
 $ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
 ```
 
+<!-- on MacOS it's just hdf5 as an argument to brew -->
+
 </details>
 
 <details>
@@ -67,6 +71,7 @@ This has been tested Windows 10 and 11, with PowerShell.
 
 Assuming you don't already have them, you'll need to download and install:
 
+<!-- * HDF5 -->
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
 * [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
 * [CMake](https://cmake.org/download/),
@@ -80,9 +85,12 @@ PS> MSBuild.exe -h
 
 Potentially the simplest way to get FFTW is via [conda](https://anaconda.org/conda-forge/fftw):
 
+
 ```{pwsh}
 PS> conda install -c conda-forge fftw --yes
 ```
+
+<!-- TODO: add HDF5 👆 here when updating to v2 -->
 
 You'll need to ensure the paths to FFTW and MATLAB (the locations of `fftw3.dll` and `libmex.dll` respectively) are in the `env:Path`.
 
@@ -126,7 +134,7 @@ To compile and install, follow these steps:
 ```{sh}
 $ git clone git@github.com:UCL/TDMS.git
 $ cd TDMS
-$ git checkout v1.0.0 # the stable version
+$ git checkout v1.0.1 # the stable version
 $ mkdir build; cd build
 $ cmake ../tdms \
 $ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
@@ -136,6 +144,8 @@ $ cmake --build . --target install --config Release
 ```
 
 If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
+
+<!-- TODO: add HDF5 when updating to v2 -->
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
