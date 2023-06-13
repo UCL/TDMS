@@ -63,14 +63,20 @@ Support for Windows is quite new and experimental (please [report](https://githu
 It might be more straightforward to use the [Windows subsystem for Linux (WSL2)](https://learn.microsoft.com/en-gb/windows/wsl/install), or set up an linux virtual machine.
 
 However, TDMS _can_ be compiled natively on Windows.
-This has been tested Windows 10 with PowerShell.
+This has been tested Windows 10 and 11, with PowerShell.
 
 Assuming you don't already have them, you'll need to download and install:
 
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
-* [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ kit**,
+* [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
 * [CMake](https://cmake.org/download/),
 * and [FFTW](https://www.fftw.org/install/windows.html).
+
+You can check that the Visual Studio compiler was installed with:
+
+```{pwsh}
+PS> MSBuild.exe -h
+```
 
 Potentially the simplest way to get FFTW is via [conda](https://anaconda.org/conda-forge/fftw):
 
@@ -95,7 +101,16 @@ PS> $env:Path += ";C:\Program Files (x86)\MATLAB\R20XXx\bin\;C:\ < wherever fftw
 ```
 
 Which will help Windows locate `.dll` files later.
-For all following instructions, you'll have to substitute our mentions of `tdms` with `tdms.exe` and `$` is used to denote a command prompt which, in PowerShell would look like `PS>`
+For all following instructions, you'll have to substitute our mentions of ``tdms`` with ``tdms.exe`` and ``$`` is used to denote a command prompt which, in PowerShell, would look like ``PS>``
+
+<details>
+<summary>Even more Windows troubleshooting</summary>
+
+We've seen that in a fresh PowerShell window, Windows does not remember the location of the ``.dll`` files, so you may have to re-add them to the path, or copy them into the directory where TDMS was installed.
+
+TDMS typically installs to ``"C:\Program Files (x86)\tdms\bin\tdms.exe"``.
+
+</details>
 
 </details>
 
@@ -114,9 +129,9 @@ $ cd TDMS
 $ git checkout v1.0.0 # the stable version
 $ mkdir build; cd build
 $ cmake ../tdms \
-# -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
-# -DFFTW_ROOT=/usr/local/fftw3/ \
-# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+$ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
+$ # -DFFTW_ROOT=/usr/local/fftw3/ \
+$ # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
 $ cmake --build . --target install --config Release
 ```
 
@@ -135,8 +150,8 @@ You can run TDMS either directly or from a MATLAB script.
 For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the `examples/arc_01` directory.
 Move into this directory, launch MATLAB, and run the MATLAB script [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m).
 This script will generate the input to TDMS, run TDMS, and display sample output.
-It also commentates on what it is doing, so you can follow along with what is being setup and created at each stage.
-We have also annotated the input file [`arc_01_example_input.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m) that this script passes to `iteratefdtd_matrix.m`.
+There are comments explaining what it is doing, so you can follow along with what is being setup and created at each stage.
+We have also commented the input file [`arc_01_example_input.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m) that this script passes to `iteratefdtd_matrix.m`.
 
 <details>
 <summary>Troubleshooting</summary>
