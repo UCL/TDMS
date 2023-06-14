@@ -215,8 +215,6 @@ A flowchart that further breaks down the above steps can be viewed below.
 
 ## Code organisation of the TDMS algorithm
 
-<!-- TODO We definitely need a diagram here. -->
-
 An instance of `SimulationManager` essentially supports one `tdms` simulation, however functionality is divided across its member variables. These objects themselves group variables by functionality, purpose, and necessary scope. The list below provides a description of these objects (with parentheses denoting the member name in the `SimulationManager` instance):
 - `ObjectsFromInfile` (`inputs`): Handles conversion of any input arrays to native `C++` objects, and any variables that are derived directly from the input file supplied to `tdms` on the command line.
 - `OutputMatrices` (`outputs`): Handles data storage for the outputs and the process of writing the output file.
@@ -394,6 +392,8 @@ The combinations and expected results are listed in the table below.
 
 The full system tests are written in Python 3, and call the `tdms` executable for known inputs and compare to expected outputs.
 We use [pytest](https://docs.pytest.org) and our example data is provided as zip files on [zenodo](https://zenodo.org/record/7899298).
+
+\warning Important to note that most of these tests are downsampled and/or not physically meaningful. They simply test for regressions of the code. If you are interested in examples that do have some physical meaning take a look at ``arc03`` and ``arc12``.
 
 There are a few [python packages you will need](https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt) before you are able to run the tests, which can be installed by executing:
 ```{.sh}
