@@ -388,6 +388,7 @@ MATLAB Units</h2>
 <h2><a class="anchor" id="system-tests"></a>
 System</h2>
 <p>The full system tests are written in Python 3, and call the <code>tdms</code> executable for known inputs and compare to expected outputs. We use <a href="https://docs.pytest.org">pytest</a> and our example data is provided as zip files on <a href="https://zenodo.org/record/7899298">zenodo</a>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Important to note that most of these tests are downsampled and/or not physically meaningful. They simply test for regressions of the code. If you are interested in examples that do have some physical meaning take a look at <code>arc03</code> and <code>arc12</code>.</dd></dl>
 <p>There are a few <a href="https://github.com/UCL/TDMS/blob/main/tdms/tests/requirements.txt">python packages you will need</a> before you are able to run the tests, which can be installed by executing: </p><div class="fragment"><div class="line">python -m pip install -r tdms/tests/requirements.txt</div>
 </div><!-- fragment --><p> if you don't already have them. You'll then need to <a class="el" href="md_doc_developers.html#compiling">compile</a> <code>tdms</code> with <code>-DBUILD_TESTING=ON</code>. Once compiled, the system tests can be run by invoking <code>pytest</code> and pointing it to the <code>tdms/tests/system</code> directory. For example, from the build directory: </p><div class="fragment"><div class="line">$ pwd</div>
 <div class="line">/path/to/repository/TDMS/tdms/build</div>
