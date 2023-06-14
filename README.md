@@ -30,7 +30,7 @@ For Debian-based distributions this should be as simple as
 $ sudo apt install git gcc cmake libfftw3-dev libgomp1
 ```
 
-<!-- TODO: add libhdf5-dev here when updating to v1.2 -->
+<!-- TODO: add libhdf5-dev here when updating to v1.1+ -->
 
 </details>
 
@@ -54,14 +54,14 @@ $ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Home
 $ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
 ```
 
-<!-- on MacOS it's just hdf5 as an argument to brew -->
+<!-- TODO (v1.1+) on MacOS it's just hdf5 as an argument to brew -->
 
 </details>
 
 <details>
 <summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/WIN.png"/> Windows prerequisite setup</summary>
 
-TDMS was developed on, and has been extensively tested on linux.
+TDMS was developed - and extensively tested - on linux.
 Support for Windows is quite new and experimental (please [report](https://github.com/UCL/TDMS/issues/new/choose) any issues you encounter!).
 
 It might be more straightforward to use the [Windows subsystem for Linux (WSL2)](https://learn.microsoft.com/en-gb/windows/wsl/install), or set up an linux virtual machine.
@@ -71,7 +71,9 @@ This has been tested Windows 10 and 11, with PowerShell.
 
 Assuming you don't already have them, you'll need to download and install:
 
-<!-- * HDF5 -->
+<!-- when updating to version 1.1+, uncomment
+
+* [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5+CPP+Reference+Manuals) -->
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
 * [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
 * [CMake](https://cmake.org/download/),
@@ -90,7 +92,7 @@ Potentially the simplest way to get FFTW is via [conda](https://anaconda.org/con
 PS> conda install -c conda-forge fftw --yes
 ```
 
-<!-- TODO: add HDF5 👆 here when updating to v2 -->
+<!-- TODO: add HDF5 👆 here when updating to v1.1+ probably also via conda is the easiest -->
 
 You'll need to ensure the paths to FFTW and MATLAB (the locations of `fftw3.dll` and `libmex.dll` respectively) are in the `env:Path`.
 
@@ -145,7 +147,7 @@ $ cmake --build . --target install --config Release
 
 If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
 
-<!-- TODO: add HDF5 when updating to v2 -->
+<!-- TODO: add HDF5 when updating to v1.1+ -->
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
 ```{sh}
