@@ -38,10 +38,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        build_type: [Debug]
-        # Only Debug builds (so we have helpful debug output in our logs). Can
-        # also test 'Release'.
+        os: [ubuntu-latest, ubuntu-20.04, windows-latest, macos-latest]
+        build_type: [Debug, Release]
         build_testing: [ON, OFF]
         exclude:
           # Currently our tests don't compile, and nor do we have a coverage
