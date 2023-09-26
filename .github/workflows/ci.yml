@@ -89,7 +89,7 @@ jobs:
       # MacOS
       - name: Install dependencies for MacOS
         if: ${{ contains(matrix.os, 'macos') }}
-        run: brew install fftw hdf5 lcov
+        run: brew install fftw hdf5
 
       - name: Fix omp headers not linked on MacOS
         if: ${{ contains(matrix.os, 'macos') }}
@@ -167,7 +167,7 @@ jobs:
           ctest -C ${{ matrix.build_type }} --output-on-failure --extra-verbose
 
       - name: Run coverage analysis with lcov
-        if: matrix.build_testing == 'ON'
+        if: matrix.build_testing == 'ON' && contains(matrix.os, 'ubuntu')
         shell: bash
         # Create the coverage summary, filter out dependencies' coverage then
         # print human-readable summary in the build logs.
