@@ -10,7 +10,7 @@ var searchData=
   ['set_5fspacing_5fstride_7',['set_spacing_stride',['../class_simulation_parameters.html#a3f5aca819aabeede1fdc3ca60e41d13d',1,'SimulationParameters']]],
   ['set_5fvalues_5ffrom_8',['set_values_from',['../class_field.html#a9aaf9b68cac30ee0c2ad27ca15975f5b',1,'Field']]],
   ['setup_5fcomplex_5famplitude_5farrays_9',['setup_complex_amplitude_arrays',['../class_vertex_phasors.html#aa55d80d600322b2639f1abbb9557587b',1,'VertexPhasors']]],
-  ['splitfield_10',['SplitField',['../class_split_field.html#a2bdcf6a2af5f99c6ec348b4d8e842418',1,'SplitField::SplitField()=default'],['../class_split_field.html#ab06dc80550ff3d79a2d89242ce77d3f2',1,'SplitField::SplitField(int I_total, int J_total, int K_total)']]],
+  ['splitfield_10',['splitfield',['../class_split_field.html#a2bdcf6a2af5f99c6ec348b4d8e842418',1,'SplitField::SplitField()=default'],['../class_split_field.html#ab06dc80550ff3d79a2d89242ce77d3f2',1,'SplitField::SplitField(int I_total, int J_total, int K_total)']]],
   ['start_11',['start',['../class_timer.html#a3a8b5272198d029779dc9302a54305a8',1,'Timer']]],
   ['surfacephasors_12',['SurfacePhasors',['../class_surface_phasors.html#a25568be5d58f1826077f0e6dbde6a57c',1,'SurfacePhasors']]]
 ];

@@ -1,22 +1,52 @@
 <map id="tdms/include/simulation_parameters.h" name="tdms/include/simulation_parameters.h">
-<area shape="rect" id="node1" title="Classes collecting parameters for the simulation." alt="" coords="573,5,731,46"/>
-<area shape="rect" id="node2" title=" " alt="" coords="565,241,619,267"/>
-<area shape="rect" id="node3" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="350,94,418,120"/>
-<area shape="rect" id="node13" title=" " alt="" coords="629,94,795,120"/>
-<area shape="rect" id="node14" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="819,94,936,120"/>
-<area shape="rect" id="node4" title=" " alt="" coords="106,241,177,267"/>
-<area shape="rect" id="node5" title=" " alt="" coords="345,168,423,193"/>
-<area shape="rect" id="node6" title=" " alt="" coords="782,241,839,267"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,168,67,193"/>
-<area shape="rect" id="node8" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="142,168,215,193"/>
-<area shape="rect" id="node9" title=" " alt="" coords="239,168,321,193"/>
-<area shape="rect" id="node10" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="448,168,504,193"/>
-<area shape="rect" id="node11" title=" " alt="" coords="452,241,527,267"/>
-<area shape="rect" id="node12" title=" " alt="" coords="367,241,428,267"/>
-<area shape="rect" id="node15" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="680,168,829,193"/>
-<area shape="rect" id="node16" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="984,241,1056,267"/>
-<area shape="rect" id="node20" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="904,168,1035,193"/>
-<area shape="rect" id="node17" title=" " alt="" coords="908,315,962,341"/>
-<area shape="rect" id="node18" title=" " alt="" coords="986,315,1054,341"/>
-<area shape="rect" id="node19" title=" " alt="" coords="1078,315,1135,341"/>
+<area shape="rect" id="Node000001" title="Classes collecting parameters for the simulation." alt="" coords="573,5,731,46"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="565,241,619,267"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="642,47,620,95,604,165,596,226,591,226,598,164,615,93,638,45"/>
+<area shape="rect" id="Node000003" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="350,94,418,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="586,49,434,94,432,89,584,44"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="629,94,795,120"/>
+<area shape="poly" id="edge17_Node000001_Node000013" title=" " alt="" coords="669,45,696,80,691,83,665,48"/>
+<area shape="rect" id="Node000014" href="$input__matrices_8h.html" title="Class handling the input matrices that are read in from the input file." alt="" coords="819,94,936,120"/>
+<area shape="poly" id="edge18_Node000001_Node000014" title=" " alt="" coords="709,44,829,86,828,91,707,49"/>
+<area shape="poly" id="edge5_Node000003_Node000002" title=" " alt="" coords="420,117,468,137,518,166,551,196,577,227,573,231,547,200,514,170,465,141,418,122"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="106,241,177,267"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="350,114,292,120,226,131,167,148,145,158,131,169,125,182,124,197,131,227,126,228,119,197,120,181,127,166,143,153,165,143,225,126,292,115,349,108"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="345,168,423,193"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="387,120,387,152,381,152,381,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="782,241,839,267"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="419,107,658,127,778,143,820,154,843,166,851,181,849,199,833,230,829,228,844,197,845,182,839,170,818,159,777,149,657,132,418,113"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="5,168,67,193"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="350,117,86,170,83,171,81,166,85,165,349,112"/>
+<area shape="rect" id="Node000008" href="$globals_8h.html" title="Type definitions and global constants." alt="" coords="142,168,215,193"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="350,123,229,165,227,160,348,118"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="239,168,321,193"/>
+<area shape="poly" id="edge11_Node000003_Node000009" title=" " alt="" coords="368,122,312,161,309,156,365,118"/>
+<area shape="rect" id="Node000010" href="$utils_8h.html" title="Useful miscellaneous utility functions." alt="" coords="448,168,504,193"/>
+<area shape="poly" id="edge12_Node000003_Node000010" title=" " alt="" coords="401,118,450,156,447,160,398,122"/>
+<area shape="poly" id="edge10_Node000008_Node000002" title=" " alt="" coords="216,188,227,191,383,215,539,239,551,241,550,246,538,244,382,221,226,196,215,194"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="175,195,157,229,152,226,170,192"/>
+<area shape="poly" id="edge15_Node000010_Node000002" title=" " alt="" coords="497,192,561,231,558,235,494,196"/>
+<area shape="poly" id="edge16_Node000010_Node000006" title=" " alt="" coords="505,185,768,241,767,246,504,190"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="452,241,527,267"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="481,193,487,225,482,226,476,194"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="367,241,428,267"/>
+<area shape="poly" id="edge14_Node000010_Node000012" title=" " alt="" coords="464,196,424,233,420,229,461,192"/>
+<area shape="poly" id="edge19_Node000014_Node000002" title=" " alt="" coords="823,123,735,145,696,158,669,170,636,199,610,230,606,227,632,195,667,165,694,153,734,140,821,118"/>
+<area shape="rect" id="Node000015" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="680,168,829,193"/>
+<area shape="poly" id="edge20_Node000014_Node000015" title=" " alt="" coords="858,123,790,162,787,157,855,118"/>
+<area shape="rect" id="Node000016" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="984,241,1056,267"/>
+<area shape="poly" id="edge23_Node000014_Node000016" title=" " alt="" coords="937,109,967,116,998,127,1026,143,1049,166,1055,182,1054,199,1041,229,1036,227,1049,197,1050,183,1044,169,1023,147,995,131,965,121,936,115"/>
+<area shape="rect" id="Node000020" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="904,168,1035,193"/>
+<area shape="poly" id="edge27_Node000014_Node000020" title=" " alt="" coords="895,118,944,156,940,160,891,122"/>
+<area shape="poly" id="edge21_Node000015_Node000002" title=" " alt="" coords="728,196,634,237,632,232,726,191"/>
+<area shape="poly" id="edge22_Node000015_Node000006" title=" " alt="" coords="766,192,794,227,790,231,762,195"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="908,315,962,341"/>
+<area shape="poly" id="edge24_Node000016_Node000017" title=" " alt="" coords="1007,270,962,307,959,303,1004,265"/>
+<area shape="rect" id="Node000018" title=" " alt="" coords="986,315,1054,341"/>
+<area shape="poly" id="edge25_Node000016_Node000018" title=" " alt="" coords="1023,267,1023,299,1017,299,1017,267"/>
+<area shape="rect" id="Node000019" title=" " alt="" coords="1078,315,1135,341"/>
+<area shape="poly" id="edge26_Node000016_Node000019" title=" " alt="" coords="1036,265,1082,303,1079,307,1033,270"/>
+<area shape="poly" id="edge28_Node000020_Node000002" title=" " alt="" coords="905,197,635,248,634,242,904,191"/>
+<area shape="poly" id="edge29_Node000020_Node000006" title=" " alt="" coords="944,196,852,237,850,232,941,191"/>
+<area shape="poly" id="edge30_Node000020_Node000016" title=" " alt="" coords="980,192,1005,227,1001,230,976,195"/>
 </map>

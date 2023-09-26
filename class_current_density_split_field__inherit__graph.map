@@ -1,5 +1,7 @@
 <map id="CurrentDensitySplitField" name="CurrentDensitySplitField">
-<area shape="rect" id="node1" title=" " alt="" coords="5,153,169,178"/>
-<area shape="rect" id="node2" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="49,79,125,105"/>
-<area shape="rect" id="node3" href="$class_grid.html" title=" " alt="" coords="64,5,110,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,153,169,178"/>
+<area shape="rect" id="Node000002" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="49,79,125,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,120,90,152,84,152,84,120"/>
+<area shape="rect" id="Node000003" href="$class_grid.html" title=" " alt="" coords="64,5,110,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="90,46,90,79,84,79,84,46"/>
 </map>

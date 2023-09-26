@@ -1,8 +1,13 @@
 <map id="SplitField" name="SplitField">
-<area shape="rect" id="node1" title="A split field defined over a grid." alt="" coords="245,258,320,283"/>
-<area shape="rect" id="node2" href="$class_grid.html" title=" " alt="" coords="202,94,248,120"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,141,31"/>
-<area shape="rect" id="node4" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="208,5,247,31"/>
-<area shape="rect" id="node5" href="$class_split_field_component.html" title=" " alt="" coords="271,94,414,120"/>
-<area shape="rect" id="node6" title=" " alt="" coords="273,5,412,31"/>
+<area shape="rect" id="Node000001" title="A split field defined over a grid." alt="" coords="245,258,320,283"/>
+<area shape="rect" id="Node000002" href="$class_grid.html" title=" " alt="" coords="202,94,248,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="237,134,281,256,276,258,232,135"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,5,141,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="83,44,89,57,99,68,123,83,151,94,202,102,202,107,150,99,121,88,95,72,85,60,78,47"/>
+<area shape="rect" id="Node000004" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="208,5,247,31"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="230,46,228,94,223,94,224,46"/>
+<area shape="rect" id="Node000005" href="$class_split_field_component.html" title=" " alt="" coords="271,94,414,120"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="335,135,289,258,284,256,330,134"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="273,5,412,31"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="345,47,345,94,340,94,340,47"/>
 </map>

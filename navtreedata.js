@@ -42,35 +42,35 @@ var NAVTREE =
         [ "Pull requests", "md__c_o_n_t_r_i_b_u_t_i_n_g.html#autotoc_md13", null ]
       ] ]
     ] ],
-    [ "Developer documentation", "md_doc_developers.html", [
-      [ "Developers' introduction to TDMS", "md_doc_developers.html#autotoc_md15", null ],
-      [ "Dependencies", "md_doc_developers.html#autotoc_md16", [
-        [ "Versions", "md_doc_developers.html#autotoc_md17", null ],
-        [ "Code style and other admin", "md_doc_developers.html#code-style-and-doxygen", null ],
-        [ "Linters and automatic code style", "md_doc_developers.html#pre-commit", null ]
+    [ "Developer documentation", "md_doc_2developers.html", [
+      [ "Developers' introduction to TDMS", "md_doc_2developers.html#autotoc_md15", null ],
+      [ "Dependencies", "md_doc_2developers.html#autotoc_md16", [
+        [ "Versions", "md_doc_2developers.html#autotoc_md17", null ],
+        [ "Code style and other admin", "md_doc_2developers.html#code-style-and-doxygen", null ],
+        [ "Linters and automatic code style", "md_doc_2developers.html#pre-commit", null ]
       ] ],
-      [ "Compiling and debugging", "md_doc_developers.html#compiling", [
-        [ "Compiling on UCL's Myriad cluster", "md_doc_developers.html#autotoc_md18", null ]
+      [ "Compiling and debugging", "md_doc_2developers.html#compiling", [
+        [ "Compiling on UCL's Myriad cluster", "md_doc_2developers.html#autotoc_md18", null ]
       ] ],
-      [ "Navigating the algorithm code", "md_doc_developers.html#autotoc_md19", null ],
-      [ "Code organisation of the TDMS algorithm", "md_doc_developers.html#autotoc_md20", [
-        [ "2. Initialisation", "md_doc_developers.html#autotoc_md21", null ],
-        [ "3. Running the Main Loop", "md_doc_developers.html#autotoc_md22", null ],
-        [ "4. Post-Processing", "md_doc_developers.html#autotoc_md23", null ],
-        [ "5. Write out and Tear Down", "md_doc_developers.html#autotoc_md24", null ]
+      [ "Navigating the algorithm code", "md_doc_2developers.html#autotoc_md19", null ],
+      [ "Code organisation of the TDMS algorithm", "md_doc_2developers.html#autotoc_md20", [
+        [ "2. Initialisation", "md_doc_2developers.html#autotoc_md21", null ],
+        [ "3. Running the Main Loop", "md_doc_2developers.html#autotoc_md22", null ],
+        [ "4. Post-Processing", "md_doc_2developers.html#autotoc_md23", null ],
+        [ "5. Write out and Tear Down", "md_doc_2developers.html#autotoc_md24", null ]
       ] ],
-      [ "Testing", "md_doc_developers.html#testing", [
-        [ "Unit", "md_doc_developers.html#unit-testing", [
-          [ "Benchmark Scripts and Data Generation", "md_doc_developers.html#autotoc_md25", null ]
+      [ "Testing", "md_doc_2developers.html#testing", [
+        [ "Unit", "md_doc_2developers.html#unit-testing", [
+          [ "Benchmark Scripts and Data Generation", "md_doc_2developers.html#autotoc_md25", null ]
         ] ],
-        [ "Test coverage", "md_doc_developers.html#coverage", null ],
-        [ "MATLAB Units", "md_doc_developers.html#matlab-unit-tests", null ],
-        [ "System", "md_doc_developers.html#system-tests", [
-          [ "Workflow of a System Test", "md_doc_developers.html#autotoc_md26", null ]
+        [ "Test coverage", "md_doc_2developers.html#coverage", null ],
+        [ "MATLAB Units", "md_doc_2developers.html#matlab-unit-tests", null ],
+        [ "System", "md_doc_2developers.html#system-tests", [
+          [ "Workflow of a System Test", "md_doc_2developers.html#autotoc_md26", null ]
         ] ],
-        [ "Generating Input Data for the System Tests", "md_doc_developers.html#autotoc_md27", [
-          [ "(Re)generation of the Data", "md_doc_developers.html#autotoc_md28", null ],
-          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_developers.html#autotoc_md29", null ]
+        [ "Generating Input Data for the System Tests", "md_doc_2developers.html#autotoc_md27", [
+          [ "(Re)generation of the Data", "md_doc_2developers.html#autotoc_md28", null ],
+          [ "Contents of the <tt>data/input_generation</tt> Directory (and subdirectories)", "md_doc_2developers.html#autotoc_md29", null ]
         ] ]
       ] ]
     ] ],

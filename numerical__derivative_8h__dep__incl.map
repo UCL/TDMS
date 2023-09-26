@@ -1,4 +1,5 @@
 <map id="tdms/include/numerical_derivative.h" name="tdms/include/numerical_derivative.h">
-<area shape="rect" id="node1" title="Functions to calculate the numerical derivatives." alt="" coords="14,5,169,46"/>
-<area shape="rect" id="node2" href="$test__numerical__derivative_8cpp.html" title="Tests of the numerical differentiation/FFT functions." alt="" coords="5,94,178,135"/>
+<area shape="rect" id="Node000001" title="Functions to calculate the numerical derivatives." alt="" coords="14,5,169,46"/>
+<area shape="rect" id="Node000002" href="$test__numerical__derivative_8cpp.html" title="Tests of the numerical differentiation/FFT functions." alt="" coords="5,94,178,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,62,94,94,89,94,89,62"/>
 </map>

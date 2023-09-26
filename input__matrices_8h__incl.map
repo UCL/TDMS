@@ -1,11 +1,23 @@
 <map id="tdms/include/input_matrices.h" name="tdms/include/input_matrices.h">
-<area shape="rect" id="node1" title="Class handling the input matrices that are read in from the input file." alt="" coords="115,5,242,46"/>
-<area shape="rect" id="node2" title=" " alt="" coords="71,168,124,193"/>
-<area shape="rect" id="node3" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="23,94,172,120"/>
-<area shape="rect" id="node5" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="299,168,370,193"/>
-<area shape="rect" id="node9" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="196,94,326,120"/>
-<area shape="rect" id="node4" title=" " alt="" coords="190,168,247,193"/>
-<area shape="rect" id="node6" title=" " alt="" coords="222,241,276,267"/>
-<area shape="rect" id="node7" title=" " alt="" coords="300,241,369,267"/>
-<area shape="rect" id="node8" title=" " alt="" coords="393,241,450,267"/>
+<area shape="rect" id="Node000001" title="Class handling the input matrices that are read in from the input file." alt="" coords="115,5,242,46"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="71,168,124,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,37,87,45,59,57,33,74,13,95,9,104,8,113,17,130,35,146,58,159,55,163,32,150,13,133,3,114,4,103,8,93,30,69,56,52,85,40,114,32"/>
+<area shape="rect" id="Node000003" href="$input__output__names_8h.html" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="23,94,172,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="160,48,123,85,119,81,157,44"/>
+<area shape="rect" id="Node000005" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="299,168,370,193"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="243,34,270,42,297,54,321,71,341,93,347,107,350,123,346,153,341,153,344,123,342,109,336,95,318,75,294,59,268,47,242,39"/>
+<area shape="rect" id="Node000009" href="$matrix__collection_8h.html" title="A collection of named MATLAB matrices." alt="" coords="196,94,326,120"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="201,44,239,81,235,85,197,48"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="100,120,100,152,95,152,95,120"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="190,168,247,193"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="119,118,186,157,183,162,116,123"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="222,241,276,267"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="322,196,277,233,273,229,318,192"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="300,241,369,267"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="337,194,337,226,332,226,332,194"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="393,241,450,267"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="351,192,397,229,393,233,348,196"/>
+<area shape="poly" id="edge10_Node000009_Node000002" title=" " alt="" coords="234,123,139,164,137,159,232,118"/>
+<area shape="poly" id="edge11_Node000009_Node000004" title=" " alt="" coords="256,121,236,156,231,153,252,119"/>
+<area shape="poly" id="edge12_Node000009_Node000005" title=" " alt="" coords="275,118,313,155,310,159,271,122"/>
 </map>

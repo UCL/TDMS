@@ -1,5 +1,7 @@
 <map id="tdms/include/input_output_names.h" name="tdms/include/input_output_names.h">
-<area shape="rect" id="node1" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="8,5,136,46"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,94,59,120"/>
-<area shape="rect" id="node3" title=" " alt="" coords="83,94,141,120"/>
+<area shape="rect" id="Node000001" title="Constant values associated with the format of the input and output files and matrices." alt="" coords="8,5,136,46"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,94,59,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="64,48,47,81,43,79,60,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="83,94,141,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="84,45,101,79,97,81,80,48"/>
 </map>

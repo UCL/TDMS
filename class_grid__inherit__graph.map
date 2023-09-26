@@ -1,10 +1,17 @@
 <map id="Grid" name="Grid">
-<area shape="rect" id="node1" title=" " alt="" coords="5,104,51,130"/>
-<area shape="rect" id="node2" href="$class_field.html" title=" " alt="" coords="112,55,161,80"/>
-<area shape="rect" id="node5" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="99,128,174,154"/>
-<area shape="rect" id="node3" href="$class_electric_field.html" title=" " alt="" coords="257,5,350,31"/>
-<area shape="rect" id="node4" href="$class_magnetic_field.html" title=" " alt="" coords="253,55,355,80"/>
-<area shape="rect" id="node6" href="$class_current_density_split_field.html" title=" " alt="" coords="222,104,385,130"/>
-<area shape="rect" id="node7" href="$class_electric_split_field.html" title=" " alt="" coords="244,153,363,179"/>
-<area shape="rect" id="node8" href="$class_magnetic_split_field.html" title=" " alt="" coords="240,203,368,228"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,104,51,130"/>
+<area shape="rect" id="Node000002" href="$class_field.html" title=" " alt="" coords="112,55,161,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="64,98,110,76,112,81,66,103"/>
+<area shape="rect" id="Node000005" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="99,128,174,154"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="67,123,99,130,98,135,65,128"/>
+<area shape="rect" id="Node000003" href="$class_electric_field.html" title=" " alt="" coords="257,5,350,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="175,53,221,40,257,29,258,34,223,45,177,58"/>
+<area shape="rect" id="Node000004" href="$class_magnetic_field.html" title=" " alt="" coords="253,55,355,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="177,65,252,65,252,70,177,70"/>
+<area shape="rect" id="Node000006" href="$class_current_density_split_field.html" title=" " alt="" coords="222,104,385,130"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="189,131,221,126,222,131,190,136"/>
+<area shape="rect" id="Node000007" href="$class_electric_split_field.html" title=" " alt="" coords="244,153,363,179"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="190,146,244,154,243,160,189,151"/>
+<area shape="rect" id="Node000008" href="$class_magnetic_split_field.html" title=" " alt="" coords="240,203,368,228"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="170,160,223,189,251,200,249,205,221,194,168,165"/>
 </map>

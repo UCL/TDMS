@@ -1,19 +1,4 @@
 var searchData=
 [
-  ['camplitudesi_0',['camplitudesI',['../class_vertex_phasors.html#a5619ad81a627c0f5c08dc8e922d62432',1,'VertexPhasors']]],
-  ['cell_5fb_1',['cell_b',['../struct_source_index.html#af324c5f2a48c6a8e7494bd49a7731089',1,'SourceIndex']]],
-  ['cell_5fc_2',['cell_c',['../struct_source_index.html#aaa6051ede2a0a3b804f3d508b0842002',1,'SourceIndex']]],
-  ['cell_5fcoordinate_2eh_3',['cell_coordinate.h',['../cell__coordinate_8h.html',1,'']]],
-  ['cellcoordinate_4',['CellCoordinate',['../cell__coordinate_8h.html#a3f5d14a0d93b0ecee277023e2a434b1f',1,'cell_coordinate.h']]],
-  ['check_5ffiles_5fcan_5fbe_5faccessed_5',['check_files_can_be_accessed',['../class_argument_namespace.html#ac90ed1af7641004746700fac1068caeb',1,'ArgumentNamespace']]],
-  ['check_5fhas_5fat_5fleast_5fas_5fmany_5fmatrices_5fas_6',['check_has_at_least_as_many_matrices_as',['../class_matrix_collection.html#a2f3ef9f35d35a2d46911167648b1e0d3',1,'MatrixCollection']]],
-  ['click_7',['click',['../class_timer.html#a8487935861016f5d7c6f1b46c74f5cbb',1,'Timer']]],
-  ['complex_5fmult_5fvec_8',['complex_mult_vec',['../numerical__derivative_8h.html#a217eabdfd29264b5cea1535b19662996',1,'numerical_derivative.cpp']]],
-  ['complex_5fvector_9',['complex_vector',['../structcomplex__vector.html',1,'']]],
-  ['components_10',['components',['../class_vertex_phasors.html#ac3f97c8ac420265330d395a4998a6c96',1,'VertexPhasors']]],
-  ['compressed_5foutput_11',['compressed_output',['../class_argument_namespace.html#a8e7c04ef2f99a5d5090c2c30f7d2ad89',1,'ArgumentNamespace']]],
-  ['concisetriangulatecuboid_12',['conciseTriangulateCuboid',['../mesh__base_8h.html#ad1d38a26a5651489a9f8d82fb9afb747',1,'mesh_base.cpp']]],
-  ['contribution_20guidelines_13',['Contribution guidelines',['../md__c_o_n_t_r_i_b_u_t_i_n_g.html',1,'']]],
-  ['create_5fvertex_5flist_14',['create_vertex_list',['../class_surface_phasors.html#a1f1b6c74e2e2bb7db03a391df8ae0e70',1,'SurfacePhasors']]],
-  ['currentdensitysplitfield_15',['CurrentDensitySplitField',['../class_current_density_split_field.html',1,'CurrentDensitySplitField'],['../class_current_density_split_field.html#a6f483a46cf842f11b902c796282abc90',1,'CurrentDensitySplitField::CurrentDensitySplitField()']]]
+  ['4_20post_20processing_0',['4. Post-Processing',['../md_doc_2developers.html#autotoc_md23',1,'']]]
 ];

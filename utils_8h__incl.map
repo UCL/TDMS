@@ -1,7 +1,11 @@
 <map id="tdms/include/utils.h" name="tdms/include/utils.h">
-<area shape="rect" id="node1" title="Useful miscellaneous utility functions." alt="" coords="107,5,242,31"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,79,80,105"/>
-<area shape="rect" id="node3" title=" " alt="" coords="104,79,165,105"/>
-<area shape="rect" id="node4" title=" " alt="" coords="189,79,243,105"/>
-<area shape="rect" id="node5" title=" " alt="" coords="267,79,325,105"/>
+<area shape="rect" id="Node000001" title="Useful miscellaneous utility functions." alt="" coords="107,5,242,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,80,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,34,79,74,77,69,151,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="104,79,165,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="170,33,151,67,146,64,166,30"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="189,79,243,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="184,30,204,64,199,67,179,33"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="267,79,325,105"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="196,29,263,68,261,73,194,34"/>
 </map>

@@ -1,6 +1,9 @@
 <map id="SimulationParameters" name="SimulationParameters">
-<area shape="rect" id="node1" title="Class storing the various constants and behaviour flags for one executation of the tdms executable." alt="" coords="184,94,334,120"/>
-<area shape="rect" id="node2" href="$struct_perfectly_matched_layer.html" title=" " alt="" coords="5,5,161,31"/>
-<area shape="rect" id="node3" href="$struct_surface_spacing_stride.html" title="A three&#45;tuple of integers that contain the stride in each direction to extract the phasors on." alt="" coords="185,5,333,31"/>
-<area shape="rect" id="node4" href="$struct_yee_cell_dimensions.html" title="The x,y,z lengths of the cuboidal Yee cells." alt="" coords="357,5,492,31"/>
+<area shape="rect" id="Node000001" title="Class storing the various constants and behaviour flags for one executation of the tdms executable." alt="" coords="184,94,334,120"/>
+<area shape="rect" id="Node000002" href="$struct_perfectly_matched_layer.html" title=" " alt="" coords="5,5,161,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,36,235,91,233,96,120,41"/>
+<area shape="rect" id="Node000003" href="$struct_surface_spacing_stride.html" title="A three&#45;tuple of integers that contain the stride in each direction to extract the phasors on." alt="" coords="185,5,333,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="262,47,262,94,256,94,256,47"/>
+<area shape="rect" id="Node000004" href="$struct_yee_cell_dimensions.html" title="The x,y,z lengths of the cuboidal Yee cells." alt="" coords="357,5,492,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="399,43,354,72,298,96,296,91,351,68,396,38"/>
 </map>

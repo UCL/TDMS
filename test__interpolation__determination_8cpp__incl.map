@@ -1,16 +1,31 @@
 <map id="tdms/tests/unit/test_interpolation_determination.cpp" name="tdms/tests/unit/test_interpolation_determination.cpp">
-<area shape="rect" id="node1" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="156,5,364,46"/>
-<area shape="rect" id="node2" href="$input__flags_8h.html" title="Organises enumerated constants, names, and classes for handling flag&#45;variables that are passed to TDM..." alt="" coords="223,168,319,193"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,241,118,267"/>
-<area shape="rect" id="node12" href="$interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="239,94,399,120"/>
-<area shape="rect" id="node14" title=" " alt="" coords="423,94,623,120"/>
-<area shape="rect" id="node3" title=" " alt="" coords="499,241,573,267"/>
-<area shape="rect" id="node4" title=" " alt="" coords="142,241,221,267"/>
-<area shape="rect" id="node5" title=" " alt="" coords="244,241,298,267"/>
-<area shape="rect" id="node6" title=" " alt="" coords="322,241,380,267"/>
-<area shape="rect" id="node8" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="403,241,475,267"/>
-<area shape="rect" id="node9" title=" " alt="" coords="326,315,381,341"/>
-<area shape="rect" id="node10" title=" " alt="" coords="405,315,473,341"/>
-<area shape="rect" id="node11" title=" " alt="" coords="497,315,554,341"/>
-<area shape="rect" id="node13" title=" " alt="" coords="342,168,413,193"/>
+<area shape="rect" id="Node000001" title="Tests the logic that determines which interpolation schemes are appropriate." alt="" coords="156,5,364,46"/>
+<area shape="rect" id="Node000002" href="$input__flags_8h.html" title="Organises enumerated constants, names, and classes for handling flag&#45;variables that are passed to TDM..." alt="" coords="223,168,319,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="248,48,231,81,227,100,229,119,238,138,251,155,246,158,234,140,224,120,222,100,226,80,243,45"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="5,241,118,267"/>
+<area shape="poly" id="edge15_Node000001_Node000007" title=" " alt="" coords="245,48,84,231,80,228,241,45"/>
+<area shape="rect" id="Node000012" href="$interpolation__methods_8h.html" title="InterpScheme class methods and supporting functions." alt="" coords="239,94,399,120"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="277,45,303,80,299,83,273,48"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="423,94,623,120"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="327,44,468,86,467,92,325,49"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="499,241,573,267"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="317,191,485,236,484,242,315,196"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="142,241,221,267"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="257,196,210,234,207,229,254,192"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="244,241,298,267"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="274,194,274,226,268,226,268,194"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="322,241,380,267"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="286,192,328,229,325,233,283,196"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="236,196,112,238,111,233,234,191"/>
+<area shape="rect" id="Node000008" href="$mat__io_8h.html" title="Includes MATLAB headers for I/O." alt="" coords="403,241,475,267"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="300,191,397,232,395,237,298,196"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="326,315,381,341"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="426,270,381,307,378,303,423,265"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="405,315,473,341"/>
+<area shape="poly" id="edge9_Node000008_Node000010" title=" " alt="" coords="442,267,442,299,436,299,436,267"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="497,315,554,341"/>
+<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="455,265,501,303,498,307,452,270"/>
+<area shape="poly" id="edge13_Node000012_Node000002" title=" " alt="" coords="313,121,290,156,285,153,309,118"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="342,168,413,193"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="331,118,360,154,356,157,326,122"/>
 </map>
