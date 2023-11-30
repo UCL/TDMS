@@ -3,9 +3,9 @@ on:
   push:
     branches:
       - main
-      - 348-latex-doc-build-barf
-    # paths:
-    #  - 'doc/latex/**'
+  pull_request:
+    paths:
+      - 'doc/latex/**'
   workflow_dispatch:
 jobs:
   build_latex:
