@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 348-latex-doc-build-barf
     paths:
       - 'doc/latex/**'
   workflow_dispatch:
