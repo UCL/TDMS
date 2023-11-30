@@ -4,8 +4,8 @@ on:
     branches:
       - main
       - 348-latex-doc-build-barf
-    paths:
-      - 'doc/latex/**'
+    # paths:
+    #  - 'doc/latex/**'
   workflow_dispatch:
 jobs:
   build_latex:
