@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'doc/latex/**'
+  workflow_dispatch:
 jobs:
   build_latex:
     runs-on: ubuntu-latest
