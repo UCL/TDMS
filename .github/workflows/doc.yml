@@ -3,8 +3,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
     paths:
       - 'doc/latex/**'
+  workflow_dispatch:
 jobs:
   build_latex:
     runs-on: ubuntu-latest
@@ -14,7 +16,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v2
+        uses: xu-cheng/latex-action@v3
         with:
           root_file: masterdoc.tex
           working_directory: doc/latex
@@ -23,7 +25,7 @@ jobs:
           mv doc/latex/masterdoc.pdf .
           ls | grep -xv "masterdoc.pdf" | xargs rm -rf
       - name: Commit documentation
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Build documentation
           branch: gh-doc
