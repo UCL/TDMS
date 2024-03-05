@@ -1,10 +1,11 @@
-function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method)
+function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method, ntheta, nphi)
     %% Sets up a Gaussian electric field over the spatial grid X, Y, Z that is passed. Optional parameters can be passed to change the default behaviour.
     % X, Y, Z           : Vectors defining the coordinate grid, output of ndgrid(x, y, z)
     % tight             : Boolean, when set to true, a tighter Gaussian is produced but the number of lens angles is increased. Defaults to false.
     % gauss_pol_method  : Function handle wrapping gauss_pol_base - determines detailed shape of the Gaussian field.
     %                     gauss_pol_based is used as the default.
-    %
+    % ntheta            : Override for the ntheta variable
+    % nphi              : Override for the nphi variable
     % E                 : The gaussian electric field produced, defined over the spatial grid.
 
     %% Check for optional arguments
@@ -28,12 +29,20 @@ function [E] = efield_gauss_base(X, Y, Z, tight, gauss_pol_method)
     % Adjust depending on tight-ness
     if tight
         dz = lambda/4;
-        ntheta = 100;
-        nphi = 100;
+        if ~exist('ntheta', 'var')
+            ntheta = 100;
+        end
+        if ~exist('nphi', 'var')
+            nphi = 100;
+        end
     else
         dz = lambda/6;
-        ntheta = 200;
-        nphi = [];
+        if ~exist('ntheta', 'var')
+            ntheta = 200;
+        end
+        if ~exist('nphi', 'var')
+            nphi = [];
+        end
     end
     % dz/2 term due to the modified source condition
     vertices = [X(:) Y(:) Z(:)];
