@@ -296,7 +296,7 @@ if ~isempty(multilayer)
 	error('multilayer must have elements greater than 0');
 	elseif max(multilayer) > K
 		error('multilayer must have elements less than or equal to  K');
-    elseif all(sort(multilayer)==multilayer)
+    elseif all(sort(multilayer)~=multilayer)
 		error('multilayer must be monotonically increasing');
     end
 end
