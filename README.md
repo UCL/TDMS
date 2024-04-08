@@ -26,11 +26,10 @@ It needs to be built against [FFTW](https://www.fftw.org/) and [MATLAB](https://
 Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP and FFTW.
 
 For Debian-based distributions this should be as simple as
-```{sh}
-$ sudo apt install git gcc cmake libfftw3-dev libgomp1
-```
 
-<!-- TODO: add libhdf5-dev here when updating to v1.1+ -->
+```{sh}
+sudo apt install git gcc cmake libfftw3-dev libgomp1 libhdf5-dev
+```
 
 </details>
 
@@ -40,7 +39,15 @@ $ sudo apt install git gcc cmake libfftw3-dev libgomp1
 On MacOS everything can be installed using [Homebrew](https://brew.sh):
 
 ```{sh}
-$ brew install cmake fftw llvm hdf5
+brew install cmake fftw llvm hdf5
+```
+
+On an ARM Mac, you will need to install the x86 version of Homebrew:
+
+```{sh}
+arch -x86_64 zsh
+arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+arch -x86_64 /usr/local/bin/brew install cmake fftw llvm hdf5
 ```
 
 </details>
@@ -58,9 +65,7 @@ This has been tested Windows 10 and 11, with PowerShell.
 
 Assuming you don't already have them, you'll need to download and install:
 
-<!-- when updating to version 1.1+, uncomment
-
-* [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5+CPP+Reference+Manuals) -->
+* [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5+CPP+Reference+Manuals)
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
 * [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
 * [CMake](https://cmake.org/download/),
@@ -72,22 +77,21 @@ You can check that the Visual Studio compiler was installed with:
 PS> MSBuild.exe -h
 ```
 
-Potentially the simplest way to get FFTW is via [conda](https://anaconda.org/conda-forge/fftw):
-
+Potentially the simplest way to get FFTW and HDF5 is via [conda](https://anaconda.org/conda-forge/fftw):
 
 ```{pwsh}
-PS> conda install -c conda-forge fftw --yes
+PS> conda install -c conda-forge fftw hdf5 --yes
 ```
-
-<!-- TODO: add HDF5 👆 here when updating to v1.1+ probably also via conda is the easiest -->
 
 You'll need to ensure the paths to FFTW and MATLAB (the locations of `fftw3.dll` and `libmex.dll` respectively) are in the `env:Path`.
 
 These can be found, e.g. by
+
 ```{pwsh}
 PS> conda list fftw # assuming you installed via conda
 PS> which.exe MATLAB
 ```
+
 Which should return something like `C:\Program Files (x86)\MATLAB\R20XXx\bin\matlab` and maybe `C:\ProgramData\envs\base\bin`.
 If you downloaded FFTW and created `fftw3.dll` with `lib.exe`, you just need to know where you saved it.
 
@@ -121,26 +125,27 @@ You'll need to download and install [MATLAB](https://www.mathworks.com/products/
 To compile and install, follow these steps:
 
 ```{sh}
-$ git clone git@github.com:UCL/TDMS.git
-$ cd TDMS
-$ git checkout v1.0.2 # the stable version
-$ mkdir build; cd build
-$ cmake ../tdms \
-$ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
-$ # -DFFTW_ROOT=/usr/local/fftw3/ \
-$ # -DCMAKE_INSTALL_PREFIX=$HOME/.local/
-$ cmake --build . --target install --config Release
+git clone git@github.com:UCL/TDMS.git
+cd TDMS
+git checkout v1.0.2 # the stable version
+mkdir build; cd build
+cmake ../tdms \
+# -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
+# -DFFTW_ROOT=/usr/local/fftw3/ \
+# -DCMAKE_INSTALL_PREFIX=$HOME/.local/
+# -DHDF5_ROOT=/usr/include/hdf5/ \
+cmake --build . --target install --config Release
 ```
 
-If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
-
-<!-- TODO: add HDF5 when updating to v1.1+ -->
+If CMake cannot find MATLAB, FFTW, HDF5, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.
 
 You can check that `tdms` was installed correctly and is in your `PATH` by running:
+
 ```{sh}
-$ tdms --help
-$ tdms --version
+tdms --help
+tdms --version
 ```
+
 in a new terminal.
 
 ## How to run
@@ -164,8 +169,8 @@ command not found: tdms
 Assuming `tdms --help` works in a new terminal, try launching MATLAB _from_ that terminal.
 
 ```{sh}
-$ tdms --help
-$ /Applications/MATLAB_<version>.app/bin/matlab
+tdms --help
+/Applications/MATLAB_<version>.app/bin/matlab
 ```
 
 The MATLAB example scripts should then find `tdms`.
@@ -174,7 +179,7 @@ If you still have problems, you can try hard-coding the full path to `tdms` into
 In a terminal run
 
 ```{sh}
-$ which tdms
+which tdms
 ```
 
 Copy the full path (something like `/usr/local/bin/tdms`) into [`run_pstd_bscan.m`](https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m), replacing the ` 'tdms' ` text in the calls to the ``system()`` function.
@@ -221,8 +226,9 @@ Otherwise, cubic interpolation typically enjoys superior accuracy.
 
 TDMS is parallelised with [OpenMP](https://en.wikipedia.org/wiki/OpenMP).
 You can set the maximum number of threads using the `OMP_NUM_THREADS` environment variable before calling the TDMS executable.
+
 ```{sh}
-$ export OMP_NUM_THREADS=4 # for example
+export OMP_NUM_THREADS=4 # for example
 ```
 
 ## Citation
