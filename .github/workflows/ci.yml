@@ -8,7 +8,6 @@ name: Build and test
 # time we only run the full system tests on Ubuntu (although this can easily be
 # changed).
 
-
 on:
   push:
     branches: ["main"]
@@ -16,20 +15,20 @@ on:
   merge_group:
   workflow_dispatch:
 
-
 concurrency:
   # Skip intermediate builds: always.
   # Cancel intermediate builds: always.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-
 jobs:
   linting:
     name: Linting checks with pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: ucl/composite-actions/pre-commit@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.1
 
   build:
     name: ${{ matrix.build_type }} build on ${{ matrix.os }} with build testing ${{ matrix.build_testing }}
@@ -57,7 +56,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       # -------------------------------------------------------------------------------
       # Ubuntu
