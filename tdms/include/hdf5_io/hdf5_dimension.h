@@ -10,8 +10,7 @@ class H5Dimension : public std::vector<hsize_t> {
 public:
   H5Dimension() = default;
   H5Dimension(const H5::DataSpace &data_space);
-  H5Dimension(const H5::DataSet &data_set)
-      : H5Dimension(data_set.getSpace()) {};
+  H5Dimension(const H5::DataSet &data_set) : H5Dimension(data_set.getSpace()){};
 
   /**
    * @brief Whether these dimensions describe an array that is cast-able to a 1D

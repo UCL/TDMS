@@ -1,6 +1,7 @@
 """
 Common utilities for running TDMS system tests
 """
+
 import os
 import shutil
 from dataclasses import dataclass

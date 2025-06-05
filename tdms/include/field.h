@@ -172,7 +172,7 @@ public:
    * dimensions
    */
   ElectricSplitField(int I_total, int J_total, int K_total)
-      : SplitField(I_total, J_total, K_total) {};
+      : SplitField(I_total, J_total, K_total){};
 
   /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
@@ -199,7 +199,7 @@ public:
    * dimensions
    */
   MagneticSplitField(int I_total, int J_total, int K_total)
-      : SplitField(I_total, J_total, K_total) {};
+      : SplitField(I_total, J_total, K_total){};
 
   /**
    * @brief Interpolates a split E-field component to the centre of a Yee cell
@@ -224,7 +224,7 @@ public:
    * dimensions
    */
   CurrentDensitySplitField(int I_total, int J_total, int K_total)
-      : SplitField(I_total, J_total, K_total) {};
+      : SplitField(I_total, J_total, K_total){};
 
   double interpolate_to_centre_of(AxialDirection d,
                                   CellCoordinate cell) override {
@@ -419,7 +419,7 @@ private:
 public:
   ElectricField() = default;
   ElectricField(int I_total, int J_total, int K_total)
-      : Field(I_total, J_total, K_total) {};
+      : Field(I_total, J_total, K_total){};
 
   /**
    * @brief Interpolates an E-field component to the centre of a Yee cell
@@ -469,7 +469,7 @@ private:
 public:
   MagneticField() = default;
   MagneticField(int I_total, int J_total, int K_total)
-      : Field(I_total, J_total, K_total) {};
+      : Field(I_total, J_total, K_total){};
 
   /**
    * @brief Interpolates an H-field component to the centre of a Yee cell
