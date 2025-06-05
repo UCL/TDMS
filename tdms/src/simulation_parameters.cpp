@@ -29,7 +29,7 @@ void SimulationParameters::set_source_mode(string mode_string) {
 
 void SimulationParameters::set_run_mode(string mode_string) {
 
-  auto s = std::ove(mode_string);
+  auto s = std::move(mode_string);
   if (s == "complete") {
     run_mode = RunMode::complete;
   } else if (s == "analyse") {
