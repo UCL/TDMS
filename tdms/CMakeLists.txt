@@ -37,9 +37,6 @@ include_directories(${CMAKE_SOURCE_DIR}/matlabio/)
 find_package(Matlab REQUIRED MAT_LIBRARY)
 include_directories(${Matlab_INCLUDE_DIRS})
 
-# Currently matlab only has x84 libraries on Mac (no arm)
-set(CMAKE_OSX_ARCHITECTURES "x86_64")
-
 # Set the RPATH for the executable to find the dynamically linked libraries
 get_filename_component(MATLAB_LIB_ROOT "${Matlab_MAT_LIBRARY}" DIRECTORY)
 set(CMAKE_INSTALL_RPATH ${MATLAB_LIB_ROOT})

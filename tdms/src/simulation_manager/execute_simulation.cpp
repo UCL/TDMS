@@ -128,8 +128,9 @@ void SimulationManager::execute() {
              // warning
 
 #pragma omp parallel default(shared) private(                                  \
-        i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l, beta_l,        \
-        gamma_l, kappa_l, sigma_l, Enp1, Jnp1)//,ca_vec,cb_vec,eh_vec)
+                i, j, k, n, rho, k_loc, array_ind, Ca, Cb, Cc, alpha_l,        \
+                        beta_l, gamma_l, kappa_l, sigma_l, Enp1,               \
+                        Jnp1)//,ca_vec,cb_vec,eh_vec)
     {
       n = omp_get_thread_num();
       Enp1 = 0.0;
@@ -803,7 +804,7 @@ void SimulationManager::execute() {
           // PSTD, E_s.yz
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
-      }  // if(params.dimension==THREE || params.dimension==TE)
+      }// if(params.dimension==THREE || params.dimension==TE)
 
       if (inputs.params.dimension == THREE ||
           inputs.params.dimension == Dimension::TRANSVERSE_ELECTRIC) {
@@ -1128,7 +1129,7 @@ void SimulationManager::execute() {
           // PSTD, E_s.zx
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
-      }  //(params.dimension==THREE || params.dimension==TE)
+      }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
         // E_s.zx updates
@@ -1565,7 +1566,7 @@ void SimulationManager::execute() {
           // PSTD, E_s.zy
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
-      }  //(params.dimension==THREE || params.dimension==TE)
+      }//(params.dimension==THREE || params.dimension==TE)
       else {
 #pragma omp for
         for (k = 0; k <= K_tot; k++)
@@ -1719,7 +1720,7 @@ void SimulationManager::execute() {
     /********************/
     // begin parallel
 #pragma omp parallel default(shared) private(                                  \
-        i, j, k, n, k_loc, array_ind)//,ca_vec,cb_vec,eh_vec)
+                i, j, k, n, k_loc, array_ind)//,ca_vec,cb_vec,eh_vec)
     {
       n = omp_get_thread_num();
 
@@ -2153,7 +2154,7 @@ void SimulationManager::execute() {
           // PSTD, H_s.yz
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
-      }  //(params.dimension==THREE || params.dimension==TE)
+      }//(params.dimension==THREE || params.dimension==TE)
       else {
 
 #pragma omp for
@@ -2480,8 +2481,8 @@ void SimulationManager::execute() {
           // PSTD, H_s.zx
         }// if (solver_method == DerivativeMethod::FiniteDifference) (else
          // PseudoSpectral)
-      }  //(params.dimension==THREE || params.dimension==TE)
-    }    // end parallel
+      }//(params.dimension==THREE || params.dimension==TE)
+    }// end parallel
     if (TIME_EXEC) { timers.click_timer(TimersTrackingLoop::INTERNAL); }
 
     /* Update source terms for self consistency across scattered/total interface
