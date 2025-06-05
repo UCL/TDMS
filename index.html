@@ -115,13 +115,8 @@ Getting started</h2>
 <summary >
 <img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/MAC.png" alt="" class="inline"/> MacOS prerequisite setup</summary>
 <p></p>
-<p>On MacOS you will need an x86 compiler with libraries for OpenMP. You'll need to download the latest <a href="https://apps.apple.com/app/xcode">Xcode tools</a>.</p>
-<p>Everything else can be installed using <a href="https://brew.sh">Homebrew</a>:</p>
-<div class="fragment"><div class="line">$ brew install cmake fftw llvm</div>
-</div><!-- fragment --><p>On an ARM Mac, you will need to install the x86 version of Homebrew:</p>
-<div class="fragment"><div class="line">$ arch -x86_64 zsh</div>
-<div class="line">$ arch -x86_64 /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</div>
-<div class="line">$ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm</div>
+<p>On MacOS everything can be installed using <a href="https://brew.sh">Homebrew</a>:</p>
+<div class="fragment"><div class="line">$ brew install cmake fftw llvm hdf5</div>
 </div><!-- fragment --><p></p>
 </details>
 <details >
@@ -166,7 +161,7 @@ Installation</h2>
 <p>To compile and install, follow these steps:</p>
 <div class="fragment"><div class="line">$ git clone git@github.com:UCL/TDMS.git</div>
 <div class="line">$ cd TDMS</div>
-<div class="line">$ git checkout v1.0.1 # the stable version</div>
+<div class="line">$ git checkout v1.0.2 # the stable version</div>
 <div class="line">$ mkdir build; cd build</div>
 <div class="line">$ cmake ../tdms \</div>
 <div class="line">$ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \</div>
