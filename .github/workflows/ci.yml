@@ -13,6 +13,8 @@ on:
     branches: ["main"]
   pull_request:
   merge_group:
+  schedule:
+    - cron: "0 9 15 * *"
   workflow_dispatch:
 
 concurrency:
