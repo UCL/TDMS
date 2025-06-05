@@ -17,7 +17,7 @@ SimulationParameters::SimulationParameters() = default;
 
 void SimulationParameters::set_source_mode(string mode_string) {
 
-  auto s = move(mode_string);
+  auto s = std::move(mode_string);
   if (s == "steadystate") {
     source_mode = SourceMode::steadystate;
   } else if (s == "pulsed") {
@@ -29,7 +29,7 @@ void SimulationParameters::set_source_mode(string mode_string) {
 
 void SimulationParameters::set_run_mode(string mode_string) {
 
-  auto s = move(mode_string);
+  auto s = std::ove(mode_string);
   if (s == "complete") {
     run_mode = RunMode::complete;
   } else if (s == "analyse") {
@@ -41,7 +41,7 @@ void SimulationParameters::set_run_mode(string mode_string) {
 
 void SimulationParameters::set_dimension(string mode_string) {
 
-  auto s = move(mode_string);
+  auto s = std::move(mode_string);
   if (s == "3") {
     dimension = Dimension::THREE;
   } else if (s == "TE") {
