@@ -92,7 +92,15 @@ jobs:
       # MacOS
       - name: Install dependencies for MacOS
         if: ${{ contains(matrix.os, 'macos') }}
-        run: brew install fftw hdf5
+        run: brew install fftw hdf5 libomp
+
+      - name: Fix omp headers not linked on MacOS
+        if: ${{ contains(matrix.os, 'macos') }}
+        run: |
+          brew unlink libomp
+          brew link --force libomp
+          export DOMP_ROOT_MAC=-DOMP_ROOT=$(brew --prefix libomp)
+          echo "DOMP_ROOT_MAC=${DOMP_ROOT_MAC}" >> $GITHUB_ENV
 
       # -------------------------------------------------------------------------------
       - name: Create build environment
