@@ -151,7 +151,7 @@ jobs:
       # Unit tests
       - name: Produce MATLAB unit test data
         if: matrix.build_testing == 'ON'
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: cd('tdms/tests/unit/benchmark_scripts/'), setup_unit_tests
 
