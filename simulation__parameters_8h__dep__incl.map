@@ -11,10 +11,10 @@
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="230,129,121,177,119,172,227,124"/>
 <area shape="rect" id="Node000006" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="358,168,501,208"/>
 <area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="309,125,391,165,388,169,307,129"/>
-<area shape="rect" id="Node000007" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="525,168,660,208"/>
+<area shape="rect" id="Node000007" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="524,168,660,208"/>
 <area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="335,121,525,168,524,173,333,126"/>
 <area shape="rect" id="Node000005" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="26,256,161,297"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="96,217,96,256,91,256,91,217"/>
-<area shape="rect" id="Node000008" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="523,256,662,297"/>
+<area shape="rect" id="Node000008" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="522,256,662,297"/>
 <area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="595,224,595,256,590,256,590,224"/>
 </map>

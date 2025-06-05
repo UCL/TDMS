@@ -4,7 +4,7 @@ var searchData=
   ['n_5fcomponents_1',['n_components',['../class_vertex_phasors.html#a6687f07a430aca97c213b2f6bd8802d5',1,'VertexPhasors']]],
   ['n_5fsurface_5fvertices_2',['n_surface_vertices',['../class_surface_phasors.html#afc872281d9bfe3775c144f12fb09e98a',1,'SurfacePhasors']]],
   ['n_5fvertices_3',['n_vertices',['../class_vertex_phasors.html#ad7e6b56a196ab75a34d5e1de7f665a91',1,'VertexPhasors']]],
-  ['navigating_20the_20algorithm_20code_4',['Navigating the algorithm code',['../md_doc_2developers.html#autotoc_md19',1,'']]],
+  ['navigating_20the_20algorithm_20code_4',['Navigating the algorithm code',['../md_doc_2developers.html#autotoc_md20',1,'']]],
   ['nflags_5',['NFLAGS',['../input__flags_8h.html#a86ba047c9e827c37470ffbe087ef6d35',1,'input_flags.h']]],
   ['no_5fdata_5fstored_6',['no_data_stored',['../class_source.html#a4f23a652a9e8bd86b8a8e2565dd9632b',1,'Source']]],
   ['normalise_5fsurface_7',['normalise_surface',['../class_surface_phasors.html#a8948023a7248add2e5fcb6a961bc9db6',1,'SurfacePhasors']]],

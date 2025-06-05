@@ -1,9 +1,9 @@
 <map id="tdms/include/mat_io.h" name="tdms/include/mat_io.h">
-<area shape="rect" id="Node000001" title="Includes MATLAB headers for I/O." alt="" coords="43,5,193,31"/>
+<area shape="rect" id="Node000001" title="Includes MATLAB headers for I/O." alt="" coords="43,5,192,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,60,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,34,60,71,57,67,102,29"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="84,79,152,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="121,31,121,63,115,63,115,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="120,31,120,63,115,63,115,31"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="176,79,233,105"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="134,29,180,67,177,71,131,34"/>
 </map>

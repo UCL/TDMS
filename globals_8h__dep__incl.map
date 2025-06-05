@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Type definitions and global constants." alt="" coords="751,5,902,31"/>
 <area shape="rect" id="Node000002" href="$argument__parser_8h.html" title="Parse the command line options." alt="" coords="167,79,321,120"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="736,34,321,90,321,85,735,29"/>
-<area shape="rect" id="Node000005" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="631,87,777,112"/>
+<area shape="rect" id="Node000005" href="$arrays_8h.html" title="Classes describing arrays, vertices etc." alt="" coords="631,86,777,112"/>
 <area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="797,42,724,88,721,84,794,37"/>
 <area shape="rect" id="Node000012" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="744,419,883,459"/>
 <area shape="poly" id="edge18_Node000001_Node000012" title=" " alt="" coords="858,38,888,65,918,99,942,140,949,163,952,187,952,271,950,324,942,347,926,372,897,400,864,421,861,416,894,396,922,369,937,345,944,323,947,270,947,187,944,164,937,142,914,102,884,68,854,42"/>
@@ -14,13 +14,13 @@
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="194,130,118,170,116,165,192,125"/>
 <area shape="rect" id="Node000006" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="637,256,771,282"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="707,128,707,256,701,256,701,128"/>
-<area shape="rect" id="Node000008" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="259,338,435,363"/>
-<area shape="poly" id="edge12_Node000005_Node000008" title=" " alt="" coords="616,115,540,135,502,150,467,170,444,188,423,209,390,258,366,304,353,338,348,336,362,302,385,255,419,206,440,184,464,165,500,146,539,130,615,110"/>
-<area shape="rect" id="Node000010" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="770,330,913,371"/>
+<area shape="rect" id="Node000008" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="258,338,435,363"/>
+<area shape="poly" id="edge12_Node000005_Node000008" title=" " alt="" coords="616,115,540,135,502,151,467,170,444,188,423,209,390,257,366,304,353,338,348,336,362,302,385,255,419,206,440,184,464,165,500,146,539,130,615,110"/>
+<area shape="rect" id="Node000010" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="770,330,912,371"/>
 <area shape="poly" id="edge17_Node000005_Node000010" title=" " alt="" coords="720,125,833,328,828,331,716,127"/>
 <area shape="rect" id="Node000013" href="$simulation__parameters_8h.html" title="Classes collecting parameters for the simulation." alt="" coords="477,168,635,208"/>
 <area shape="poly" id="edge13_Node000005_Node000013" title=" " alt="" coords="672,123,591,170,588,165,669,118"/>
-<area shape="rect" id="Node000007" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="459,330,587,371"/>
+<area shape="rect" id="Node000007" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="458,330,587,371"/>
 <area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="663,291,569,332,567,327,661,286"/>
 <area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="635,288,402,339,401,334,634,283"/>
 <area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="739,288,809,327,806,332,736,292"/>

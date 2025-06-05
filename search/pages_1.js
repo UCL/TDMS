@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['developer_20documentation_0',['Developer documentation',['../md_doc_2developers.html',1,'']]],
-  ['documentation_1',['Developer documentation',['../md_doc_2developers.html',1,'']]]
+  ['3_20running_20the_20main_20loop_0',['3. Running the Main Loop',['../md_doc_2developers.html#autotoc_md23',1,'']]]
 ];

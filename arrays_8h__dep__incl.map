@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Classes describing arrays, vertices etc." alt="" coords="282,5,428,31"/>
 <area shape="rect" id="Node000002" href="$field_8h.html" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="362,168,497,193"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="369,44,426,166,421,168,364,46"/>
-<area shape="rect" id="Node000004" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,249,182,275"/>
+<area shape="rect" id="Node000004" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="5,249,182,274"/>
 <area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="267,38,220,55,176,81,158,100,142,121,118,169,104,215,98,249,93,248,99,214,113,167,137,119,154,96,173,77,218,50,265,33"/>
 <area shape="rect" id="Node000006" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="518,241,661,282"/>
 <area shape="poly" id="edge13_Node000001_Node000006" title=" " alt="" coords="381,40,510,166,575,239,571,243,506,170,377,43"/>
@@ -19,7 +19,7 @@
 <area shape="rect" id="Node000008" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="204,330,343,371"/>
 <area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="276,298,276,330,271,330,271,298"/>
 <area shape="poly" id="edge10_Node000009_Node000002" title=" " alt="" coords="321,124,406,165,403,170,319,129"/>
-<area shape="poly" id="edge11_Node000009_Node000004" title=" " alt="" coords="207,129,177,148,150,170,119,211,101,249,96,247,115,208,146,166,174,143,204,125"/>
+<area shape="poly" id="edge11_Node000009_Node000004" title=" " alt="" coords="208,129,178,148,151,170,120,211,101,249,96,247,116,208,148,166,175,143,205,125"/>
 <area shape="rect" id="Node000010" href="$mesh__base_8h.html" title="Generation of orientated mesh." alt="" coords="161,168,338,193"/>
 <area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="261,135,255,168,249,167,256,134"/>
 </map>

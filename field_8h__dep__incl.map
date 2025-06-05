@@ -2,14 +2,14 @@
 <area shape="rect" id="Node000001" title="Classes for the electric and magnetic (split) fields on a grid." alt="" coords="270,5,405,31"/>
 <area shape="rect" id="Node000002" href="$array__init_8h.html" title="A collection of functions for array initialisation given MATLAB pointers." alt="" coords="5,79,134,120"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="283,38,135,82,134,76,281,33"/>
-<area shape="rect" id="Node000003" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="157,87,334,112"/>
+<area shape="rect" id="Node000003" href="$fieldsample_8h.html" title="Class that stores the extracted field values at user&#45;defined vertices." alt="" coords="157,86,334,112"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="314,43,261,88,258,84,310,39"/>
 <area shape="rect" id="Node000005" href="$surface__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction." alt="" coords="358,79,501,120"/>
 <area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="365,39,409,77,405,81,361,43"/>
-<area shape="rect" id="Node000006" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="525,79,660,120"/>
+<area shape="rect" id="Node000006" href="$vertex__phasors_8h.html" title="Contains a class that handles the complex amplitude extraction at the vertices." alt="" coords="524,79,660,120"/>
 <area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="392,34,529,76,528,81,391,39"/>
 <area shape="rect" id="Node000004" href="$test___field_sample_8cpp.html" title="Unit tests for the FieldSample class and its subclasses." alt="" coords="178,168,313,208"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="248,128,248,168,243,168,243,128"/>
-<area shape="rect" id="Node000007" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="523,168,662,208"/>
+<area shape="rect" id="Node000007" href="$test___vertex_phasors_8cpp.html" title="Unit tests for the VertexPhasors class." alt="" coords="522,168,662,208"/>
 <area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="595,135,595,167,590,167,590,135"/>
 </map>

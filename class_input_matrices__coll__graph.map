@@ -1,5 +1,0 @@
-<map id="InputMatrices" name="InputMatrices">
-<area shape="rect" id="Node000001" title="Allows us to handle the MATLAB arrays from the input file in a human&#45;readable format." alt="" coords="5,94,106,120"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="29,5,82,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="58,47,58,94,53,94,53,47"/>
-</map>

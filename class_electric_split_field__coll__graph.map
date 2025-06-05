@@ -1,15 +1,13 @@
 <map id="ElectricSplitField" name="ElectricSplitField">
-<area shape="rect" id="Node000001" title=" " alt="" coords="223,333,342,358"/>
-<area shape="rect" id="Node000002" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="245,258,320,283"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="285,299,285,332,280,332,280,299"/>
-<area shape="rect" id="Node000003" href="$class_grid.html" title=" " alt="" coords="202,94,248,120"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="237,134,281,256,276,258,232,135"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="5,5,141,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="83,44,89,57,99,68,123,83,151,94,202,102,202,107,150,99,121,88,95,72,85,60,78,47"/>
-<area shape="rect" id="Node000005" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="208,5,247,31"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="230,46,228,94,223,94,224,46"/>
-<area shape="rect" id="Node000006" href="$class_split_field_component.html" title=" " alt="" coords="271,94,414,120"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="335,135,289,258,284,256,330,134"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="273,5,412,31"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="345,47,345,94,340,94,340,47"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="26,375,145,401"/>
+<area shape="rect" id="Node000002" href="$class_split_field.html" title="A split field defined over a grid." alt="" coords="48,300,123,326"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,341,88,375,83,375,83,341"/>
+<area shape="rect" id="Node000003" href="$class_grid.html" title=" " alt="" coords="5,102,51,128"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="38,141,84,299,79,301,33,143"/>
+<area shape="rect" id="Node000004" href="$structijk.html" title="A structure for holding three values, which typically pertain to the same quantity but for each of th..." alt="" coords="9,5,47,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="31,46,31,101,25,101,25,46"/>
+<area shape="rect" id="Node000005" href="$class_split_field_component.html" title=" " alt="" coords="74,102,216,128"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="140,143,92,301,86,299,135,141"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="76,5,215,31"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="148,46,148,101,143,101,143,46"/>
 </map>
