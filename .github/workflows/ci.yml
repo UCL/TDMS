@@ -28,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
+      - name: Check clang-format version
+        run: clang-format --version
       - uses: pre-commit/action@v3.0.1
 
   build:
