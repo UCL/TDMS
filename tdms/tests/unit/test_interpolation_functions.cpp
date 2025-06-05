@@ -144,8 +144,7 @@ TEST_CASE("BLi: interpolation-coefficient sums match") {
   coeff_sums[7] = BL7.interpolate(a);
   // now check that the entries of coeff_sums are the same
   int n = 8;
-  while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol)
-    ;
+  while (--n > 0 && abs(coeff_sums[n] - coeff_sums[0]) < tol);
   // we only reach the end of the while loop, IE get to n==0, when all elements
   // in the array are the same
   REQUIRE(n == 0);
