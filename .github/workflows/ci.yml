@@ -92,14 +92,6 @@ jobs:
         if: ${{ contains(matrix.os, 'macos') }}
         run: brew install fftw hdf5
 
-      - name: Fix omp headers not linked on MacOS
-        if: ${{ contains(matrix.os, 'macos') }}
-        run: |
-          brew unlink libomp
-          brew link --force libomp
-          export DOMP_ROOT_MAC=-DOMP_ROOT=$(brew --prefix libomp)
-          echo "DOMP_ROOT_MAC=${DOMP_ROOT_MAC}" >> $GITHUB_ENV
-
       # -------------------------------------------------------------------------------
       - name: Create build environment
         run: |
@@ -176,8 +168,8 @@ jobs:
           lcov --capture --directory ${{ runner.workspace }}/build/CMakeFiles/tdms_tests.dir/src --output-file coverage.info
           lcov --remove coverage.info '/usr/*' --output-file coverage.info
           lcov --remove coverage.info '*/_deps/*' --output-file coverage.info
-          lcov --remove coverage.info '/Library/*' --output-file coverage.info
-          lcov --remove coverage.info '/Applications/*' --output-file coverage.info
+          lcov --ignore-errors unused --remove coverage.info '/Library/*' --output-file coverage.info
+          lcov --ignore-errors unused --remove coverage.info '/Applications/*' --output-file coverage.info
           lcov --list coverage.info
 
       - name: Upload coverage reports to Codecov
