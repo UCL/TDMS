@@ -37,24 +37,11 @@ $ sudo apt install git gcc cmake libfftw3-dev libgomp1
 <details>
 <summary><img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/MAC.png"/> MacOS prerequisite setup</summary>
 
-On MacOS you will need an x86 compiler with libraries for OpenMP.
-You'll need to download the latest [Xcode tools](https://apps.apple.com/app/xcode).
-
-Everything else can be installed using [Homebrew](https://brew.sh):
+On MacOS everything can be installed using [Homebrew](https://brew.sh):
 
 ```{sh}
-$ brew install cmake fftw llvm
+$ brew install cmake fftw llvm hdf5
 ```
-
-On an ARM Mac, you will need to install the x86 version of Homebrew:
-
-```{sh}
-$ arch -x86_64 zsh
-$ arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-$ arch -x86_64 /usr/local/bin/brew install cmake fftw llvm
-```
-
-<!-- TODO (v1.1+) on MacOS it's just hdf5 as an argument to brew -->
 
 </details>
 
@@ -136,7 +123,7 @@ To compile and install, follow these steps:
 ```{sh}
 $ git clone git@github.com:UCL/TDMS.git
 $ cd TDMS
-$ git checkout v1.0.1 # the stable version
+$ git checkout v1.0.2 # the stable version
 $ mkdir build; cd build
 $ cmake ../tdms \
 $ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
