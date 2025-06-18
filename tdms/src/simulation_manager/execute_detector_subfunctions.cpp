@@ -76,10 +76,10 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
         lv.Ey_t.cm[j][i] *= inputs.pupil(i, j) * inputs.D_tilde.y(im, i, j);
       }
 
-    /* Now iterate over each frequency we are extracting phasors at.
-      We do this in parallel since, for each frequency, we only need to read
-      values from the detector arrays. Ergo, we can handle computing phasors
-      at different frequencies simultaneously. */
+      /* Now iterate over each frequency we are extracting phasors at.
+        We do this in parallel since, for each frequency, we only need to read
+        values from the detector arrays. Ergo, we can handle computing phasors
+        at different frequencies simultaneously. */
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, kprop,   \
                                                      phaseTermE, cphaseTermE)
     {
