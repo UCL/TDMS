@@ -36,7 +36,6 @@ jobs:
 
   build:
     name: ${{ matrix.build_type }} build on ${{ matrix.os }} with build testing ${{ matrix.build_testing }}
-    needs: linting
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
