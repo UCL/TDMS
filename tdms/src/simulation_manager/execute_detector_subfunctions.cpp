@@ -81,7 +81,7 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
         values from the detector arrays. Ergo, we can handle computing phasors
         at different frequencies simultaneously. */
 #pragma omp parallel default(shared) private(lambda_an_t, Idxt, Idyt, kprop,   \
-                                                     phaseTermE, cphaseTermE)
+                                             phaseTermE, cphaseTermE)
     {
       // For each frequency
 /**
@@ -168,6 +168,6 @@ void SimulationManager::compute_detector_functions(unsigned int tind,
         outputs.ID.y[ifx][im] += Idyt * cphaseTermE;
 
       }// end of loop on frequencies
-    }// end of pragma omp parallel
-  }// end of loop over each mode
+    }  // end of pragma omp parallel
+  }    // end of loop over each mode
 }
