@@ -65,7 +65,7 @@ This has been tested Windows 10 and 11, with PowerShell.
 
 Assuming you don't already have them, you'll need to download and install:
 
-* [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5+CPP+Reference+Manuals)
+* [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5+CPP+Reference+Manuals) >= version 1.10.4
 * [MATLAB](https://www.mathworks.com/products/matlab.html),
 * [Visual Studio](https://visualstudio.microsoft.com/vs/community/) and **be sure to select the C++ developer kit**,
 * [CMake](https://cmake.org/download/),
