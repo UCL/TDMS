@@ -25,7 +25,7 @@ jobs:
           mv doc/latex/masterdoc.pdf .
           ls | grep -xv "masterdoc.pdf" | xargs rm -rf
       - name: Commit documentation
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Build documentation
           branch: gh-doc
