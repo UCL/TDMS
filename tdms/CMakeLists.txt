@@ -119,7 +119,7 @@ endif()
 
 
 # Compile options -------------------------------------------------------------
-target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O3)
+target_compile_options(tdms PUBLIC -DMX_COMPAT_32 -c ${DFLAG} -O4)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(tdms PRIVATE /W4)
