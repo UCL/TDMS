@@ -28,7 +28,7 @@ jobs:
     name: Linting checks with pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
       - name: Check clang-format version
         run: clang-format --version
@@ -51,10 +51,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v2.5.0
+        uses: matlab-actions/setup-matlab@v2.6.0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -217,10 +217,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v2.5.0
+        uses: matlab-actions/setup-matlab@v2.6.0
 
       - name: Install HDF5 libraries for Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
@@ -234,7 +234,7 @@ jobs:
           python3 -m pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
 
       - name: Download build result
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: tdms_build_${{ matrix.os }}
           path: ${{ runner.workspace }}
