@@ -12,3 +12,10 @@ updates:
       all-github-actions:
         patterns:
           - "*"
+  - package-ecosystem: gitsubmodule
+    directory: doc/
+    schedule:
+        interval: "monthly"
+    labels:
+      - "housekeeping"
+      - "technical"
