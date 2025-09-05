@@ -1,6 +1,6 @@
 /*!
 This is a patched 'Cookie helper functions' from Doxygen that overrides all
-cookie setting and places everything in sessionStorage. It migth break some browsers but works in Firefox and Chrome.
+cookie setting and places everything in sessionStorage. It might break some browsers but works in Firefox and Chrome.
 
 Original header:
  Copyright (c) 2023 Dimitri van Heesch
