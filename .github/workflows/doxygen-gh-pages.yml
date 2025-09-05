@@ -18,58 +18,60 @@ jobs:
   doxygen:
     runs-on: macos-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          submodules: "true"
 
-    - name: Checkout repository
-      uses: actions/checkout@v5
-      with:
-        submodules: "true"
+      - name: Install Doxygen
+        run: brew install doxygen graphviz
+        shell: bash
 
-    - name: Install Doxygen
-      run: brew install doxygen graphviz
-      shell: bash
+      - name: Run Doxygen
+        run: doxygen doc/Doxyfile
+        shell: bash
 
-    - name: Run Doxygen
-      run: doxygen doc/Doxyfile
-      shell: bash
+      # Disabling jekyll ensures pages with underscores work on gh pages.
+      - name: Create .nojekyll
+        run: touch html/.nojekyll
+        shell: bash
 
-    # Disabling jekyll ensures pages with underscores work on gh pages.
-    - name: Create .nojekyll
-      run: touch html/.nojekyll
-      shell: bash
+      - name: Manually copy over assets
+        # Preserve the directory structure to keep README's image references!
+        run: |
+          mkdir -p html/doc/assets
+          cp -R doc/assets/*.png html/doc/assets
+        shell: bash
 
-    - name: Manually copy over assets
-      # Preserve the directory structure to keep README's image references!
-      run: |
-        mkdir -p html/doc/assets
-        cp -R doc/assets/*.png html/doc/assets
-      shell: bash
+      - name: Manually patch cookie.js
+        run: cp doc/js/cookie.js html/cookie.js
+        shell: bash
 
-    - name: Upload the website
-      uses: actions/upload-artifact@v4
-      with:
-        name: tdms_website
-        path: html/*
-        retention-days: 1
+      - name: Upload the website
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdms_website
+          path: html/*
+          retention-days: 1
 
   publish:
     runs-on: ubuntu-latest
     needs: doxygen
     if: github.event_name == 'push' && github.ref_name == 'main'
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-    - name: Checkout repository
-      uses: actions/checkout@v5
+      - name: Download the content for deployment
+        uses: actions/download-artifact@v5
+        with:
+          name: tdms_website
+          path: html
+          # Recreate and download to the html directory just for tidiness sake.
 
-    - name: Download the content for deployment
-      uses: actions/download-artifact@v5
-      with:
-        name: tdms_website
-        path: html
-        # Recreate and download to the html directory just for tidiness sake.
-
-    - name: Commit to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
-        folder: html
+      - name: Commit to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: html
