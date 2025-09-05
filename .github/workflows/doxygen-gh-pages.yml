@@ -57,13 +57,12 @@ jobs:
         shell: bash
 
       - name: Upload static files as artifact
-        id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: html/
+          path: html
 
   publish:
-    if: github.event_name == 'push' && github.ref_name == 'main'
+    if: github.ref == 'refs/heads/main' # only deploy from main
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
