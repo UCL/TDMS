@@ -95,7 +95,7 @@ $(function(){initNavTree('index.html','',''); });
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a>   </p>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md0"></a>
-TDMS · <a href="https://github.com/UCL/TDMS/releases"><img src="https://badgen.net/github/release/UCL/TDMS" alt="latest release" class="inline"/></a> <a href="https://github.com/UCL/TDMS/blob/main/LICENSE"><img src="https://badgen.net/badge/license/GPL-3.0/blue" alt="license" class="inline"/></a> <a href="https://github.com/UCL/TDMS/actions/workflows/ci.yml"><img src="https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg" alt="Build and test" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml"><img src="https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg" alt="MATLAB tests" style="pointer-events: none;" class="inline"/></a> <a href="https://codecov.io/gh/UCL/TDMS"><img src="https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL" alt="codecov" style="pointer-events: none;" class="inline"/></a> <a href="https://zenodo.org/badge/latestdoi/448864310"><img src="https://zenodo.org/badge/448864310.svg" alt="DOI" style="pointer-events: none;" class="inline"/></a></h1>
+TDMS · <a href="https://github.com/UCL/TDMS/releases"><img src="https://badgen.net/github/release/UCL/TDMS" alt="latest release" class="inline"/></a> <a href="https://github.com/UCL/TDMS/blob/main/LICENSE"><img src="https://badgen.net/badge/license/GPL-3.0/blue" alt="license" class="inline"/></a> <a href="https://github.com/UCL/TDMS/actions/workflows/ci.yml"><img src="https://github.com/UCL/TDMS/actions/workflows/ci.yml/badge.svg" alt="Build and test" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml"><img src="https://github.com/UCL/TDMS/actions/workflows/matlab_tests.yml/badge.svg" alt="MATLAB tests" style="pointer-events: none;" class="inline"/></a> <a href="https://codecov.io/gh/UCL/TDMS"><img src="https://codecov.io/gh/UCL/TDMS/branch/main/graph/badge.svg?token=3kqP14kslL" alt="codecov" style="pointer-events: none;" class="inline"/></a> <a href="https://zenodo.org/badge/latestdoi/448864310"><img src="doc/assets/doi-badge.svg" alt="DOI:10.5281/zenodo.7950603" style="pointer-events: none;" class="inline"/></a></h1>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
 Time-Domain Maxwell Solver</h1>
 <p>TDMS, the Time Domain Maxwell Solver, is a hybrid C++ and MATLAB tool for simulating light propagation through a medium by solving Maxwell's equations. For further details about the method, please refer to the <a href="https://github.com/UCL/TDMS/blob/gh-doc/masterdoc.pdf">PDF documentation</a>.</p>
@@ -108,7 +108,8 @@ Getting started</h2>
 <img src="https://github.com/EgoistDeveloper/operating-system-logos/blob/master/src/24x24/UBT.png" alt="" class="inline"/> Linux prerequisite setup</summary>
 <p></p>
 <p>Assuming you don't already have them, you'll need a C++ compiler, CMake, OpenMP and FFTW.</p>
-<p>For Debian-based distributions this should be as simple as </p><div class="fragment"><div class="line">$ sudo apt install git gcc cmake libfftw3-dev libgomp1</div>
+<p>For Debian-based distributions this should be as simple as</p>
+<div class="fragment"><div class="line">$ sudo apt install git gcc cmake libfftw3-dev libgomp1</div>
 </div><!-- fragment --><p></p>
 </details>
 <details >
@@ -127,6 +128,7 @@ Getting started</h2>
 <p>It might be more straightforward to use the <a href="https://learn.microsoft.com/en-gb/windows/wsl/install">Windows subsystem for Linux (WSL2)</a>, or set up an linux virtual machine.</p>
 <p>However, TDMS <em>can</em> be compiled natively on Windows. This has been tested Windows 10 and 11, with PowerShell.</p>
 <p>Assuming you don't already have them, you'll need to download and install:</p>
+<p></p>
 <ul>
 <li><a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>,</li>
 <li><a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio</a> and <b>be sure to select the C++ developer kit</b>,</li>
@@ -138,9 +140,10 @@ Getting started</h2>
 </div><!-- fragment --><p>Potentially the simplest way to get FFTW is via <a href="https://anaconda.org/conda-forge/fftw">conda</a>:</p>
 <div class="fragment"><div class="line">PS&gt; conda install -c conda-forge fftw --yes</div>
 </div><!-- fragment --><p>You'll need to ensure the paths to FFTW and MATLAB (the locations of <span class="tt">fftw3.dll</span> and <span class="tt">libmex.dll</span> respectively) are in the <span class="tt">env:Path</span>.</p>
-<p>These can be found, e.g. by </p><div class="fragment"><div class="line">PS&gt; conda list fftw # assuming you installed via conda</div>
+<p>These can be found, e.g. by</p>
+<div class="fragment"><div class="line">PS&gt; conda list fftw # assuming you installed via conda</div>
 <div class="line">PS&gt; which.exe MATLAB</div>
-</div><!-- fragment --><p> Which should return something like <span class="tt">C:\Program Files (x86)\MATLAB\R20XXx\bin\matlab</span> and maybe <span class="tt">C:\ProgramData\envs\base\bin</span>. If you downloaded FFTW and created <span class="tt">fftw3.dll</span> with <span class="tt">lib.exe</span>, you just need to know where you saved it.</p>
+</div><!-- fragment --><p>Which should return something like <span class="tt">C:\Program Files (x86)\MATLAB\R20XXx\bin\matlab</span> and maybe <span class="tt">C:\ProgramData\envs\base\bin</span>. If you downloaded FFTW and created <span class="tt">fftw3.dll</span> with <span class="tt">lib.exe</span>, you just need to know where you saved it.</p>
 <p>You can append the paths:</p>
 <div class="fragment"><div class="line">PS&gt; $env:Path += &quot;;C:\Program Files (x86)\MATLAB\R20XXx\bin\;C:\ &lt; wherever fftw3.dll is &gt;&quot;</div>
 </div><!-- fragment --><p>Which will help Windows locate <span class="tt">.dll</span> files later. For all following instructions, you'll have to substitute our mentions of <span class="tt">tdms</span> with <span class="tt">tdms.exe</span> and <span class="tt">$</span> is used to denote a command prompt which, in PowerShell, would look like <span class="tt">PS&gt;</span></p>
@@ -155,7 +158,7 @@ Even more Windows troubleshooting</summary>
 <p></p>
 </details>
 <hr  />
-<p>You'll need to download and install <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, and take note where the headers are installed. </p>
+<p>You'll need to download and install <a href="https://www.mathworks.com/products/matlab.html">MATLAB</a>, and take note where the headers are installed.</p>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
 Installation</h2>
 <p>To compile and install, follow these steps:</p>
@@ -169,9 +172,10 @@ Installation</h2>
 <div class="line">$ # -DCMAKE_INSTALL_PREFIX=$HOME/.local/</div>
 <div class="line">$ cmake --build . --target install --config Release</div>
 </div><!-- fragment --><p>If CMake cannot find MATLAB, FFTW, or install to the default installation prefix, uncomment the relevant line(s) and modify the path(s) accordingly.</p>
-<p>You can check that <span class="tt">tdms</span> was installed correctly and is in your <span class="tt">PATH</span> by running: </p><div class="fragment"><div class="line">$ tdms --help</div>
+<p>You can check that <span class="tt">tdms</span> was installed correctly and is in your <span class="tt">PATH</span> by running:</p>
+<div class="fragment"><div class="line">$ tdms --help</div>
 <div class="line">$ tdms --version</div>
-</div><!-- fragment --><p> in a new terminal.</p>
+</div><!-- fragment --><p>in a new terminal.</p>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
 How to run</h2>
 <p>You can run TDMS either directly or from a MATLAB script. For beginners, we recommend starting with the demonstration MATLAB script, which you can find in the <span class="tt">examples/arc_01</span> directory. Move into this directory, launch MATLAB, and run the MATLAB script <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><span class="tt">run_pstd_bscan.m</span></a>. This script will generate the input to TDMS, run TDMS, and display sample output. There are comments explaining what it is doing, so you can follow along with what is being setup and created at each stage. We have also commented the input file <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/arc_01_example_input.m"><span class="tt">arc_01_example_input.m</span></a> that this script passes to <span class="tt">iteratefdtd_matrix.m</span>.</p>
@@ -187,7 +191,7 @@ Troubleshooting</summary>
 </div><!-- fragment --><p>The MATLAB example scripts should then find <span class="tt">tdms</span>. If you still have problems, you can try hard-coding the full path to <span class="tt">tdms</span> into the MATLAB script.</p>
 <p>In a terminal run</p>
 <div class="fragment"><div class="line">$ which tdms</div>
-</div><!-- fragment --><p>Copy the full path (something like <span class="tt">/usr/local/bin/tdms</span>) into <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><span class="tt">run_pstd_bscan.m</span></a>, replacing the &lsquo; 'tdms&rsquo; <span class="tt"> text in the calls to the </span><span class="tt">system()</span>` function.</p>
+</div><!-- fragment --><p>Copy the full path (something like <span class="tt">/usr/local/bin/tdms</span>) into <a href="https://github.com/UCL/TDMS/blob/main/examples/arc_01/run_pstd_bscan.m"><span class="tt">run_pstd_bscan.m</span></a>, replacing the &lsquo;'tdms&rsquo;<span class="tt"> text in the calls to the </span>system()` function.</p>
 <p></p>
 </details>
 <h3 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
@@ -204,7 +208,8 @@ Or set v7.3 as the default in MATLAB's settings.</summary>
 <h3 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
 On the command line</h3>
 <p>If you want to run TDMS standalone at the command line, the basic operation is with two arguments: an input file containing simulation parameters, and an output file name. You can choose between two solver methods: <b>finite-difference</b> or <b>pseudo-spectral</b>, as well as two interpolation methods: <b>cubic</b> or <b>bandlimited</b>. These options can be selected by setting the corresponding flag variables in the input file. When <span class="tt">tdms</span> reads the input, it will verify if the input file contains a dataset that matches the names of these flags.</p>
-<p>There are two flags available for configuration in the input file. </p><details >
+<p>There are two flags available for configuration in the input file.</p>
+<details >
 <summary >
 <span class="tt">use_pstd</span> </summary>
 <ul>
@@ -219,9 +224,10 @@ On the command line</h3>
 <li>If not provided, or provided as <span class="tt">false</span>, then the default interpolation method of cubic interpolation will be used to obtain field values at the centres of Yee cells.</li>
 <li>If present and set to <span class="tt">true</span>, then <span class="tt">tdms</span> will use bandlimited interpolation (BLI) when obtaining field values at Yee cell centres.</li>
 </ul>
-<dl class="section note"><dt>Note</dt><dd>Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest. Otherwise, cubic interpolation typically enjoys superior accuracy. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Typically bandlimited interpolation is superior to cubic interpolation when the extent of the Yee cell is of approximately the same order as, but slightly less than, one-sixth of the shortest wavelength of interest. Otherwise, cubic interpolation typically enjoys superior accuracy.</dd></dl>
 </details>
-<p>TDMS is parallelised with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. You can set the maximum number of threads using the <span class="tt">OMP_NUM_THREADS</span> environment variable before calling the TDMS executable. </p><div class="fragment"><div class="line">$ export OMP_NUM_THREADS=4 # for example</div>
+<p>TDMS is parallelised with <a href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>. You can set the maximum number of threads using the <span class="tt">OMP_NUM_THREADS</span> environment variable before calling the TDMS executable.</p>
+<div class="fragment"><div class="line">$ export OMP_NUM_THREADS=4 # for example</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
 Citation</h2>
 <p>If you used TDMS in your research and found it helpful, please cite this work: <a href="https://doi.org/10.5281/zenodo.7950604">10.5281/zenodo.7950604</a>.</p>
