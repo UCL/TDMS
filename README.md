@@ -1,5 +1,5 @@
-<!-- \cond
- -->
+<!-- \cond -->
+
 <!-- 👆 this comment and the endcond below, tells doxygen to ignore the badges
 and title at the top of README.md when building the project page (the title
 would be duplicated) everything else in README.md is also the project homepage. -->
