@@ -117,8 +117,8 @@ class TDMSSystemTest:
         # call run_tdms with these options
         start = time.time()
         run_tdms(*tdms_command_call)
-        ellapsed_s = time.time() - start
-        print(f" (took {ellapsed_s}s to complete)")
+        elapsed_s = time.time() - start
+        print(f" (took {elapsed_s:.5}s to complete)")
         return
 
 
