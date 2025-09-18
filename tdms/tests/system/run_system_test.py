@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from warnings import warn
@@ -56,10 +55,7 @@ class TDMSRun:
     def execute(self) -> Result:
         """Call tdms with the commands specified in this instance"""
         sys.stdout.write(f"Now running:\n\t {self}")
-        start = time.time()
         result = run_tdms(*self.command)
-        ellapsed_s = time.time() - start
-        sys.stdout.write(f"\t (took {ellapsed_s}s)")
         return result
 
 
