@@ -3,6 +3,7 @@
 # See YAMLTestConfig.help() for details on writing config files for tests.
 #
 #########
+import time
 from pathlib import Path
 
 import yaml
@@ -112,9 +113,12 @@ class TDMSSystemTest:
         # create the options for the tdms call
         tdms_command_call = self.create_tdms_call_options()
         # display tdms call to the user for debugging/logging purposes
-        print(f"Calling tdms with arguments {tdms_command_call}")
+        print(f"Calling tdms with arguments {tdms_command_call}", end="", flush=True)
         # call run_tdms with these options
+        start = time.time()
         run_tdms(*tdms_command_call)
+        elapsed_s = time.time() - start
+        print(f" (took {elapsed_s:.5}s to complete)")
         return
 
 

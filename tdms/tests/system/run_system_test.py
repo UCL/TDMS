@@ -1,4 +1,5 @@
 import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from warnings import warn
@@ -53,7 +54,7 @@ class TDMSRun:
 
     def execute(self) -> Result:
         """Call tdms with the commands specified in this instance"""
-        print("Now running:\n\t", self)
+        sys.stdout.write(f"Now running:\n\t {self}")
         result = run_tdms(*self.command)
         return result
 
