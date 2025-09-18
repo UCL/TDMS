@@ -49,7 +49,7 @@ jobs:
         # Preserve the directory structure to keep README's image references!
         run: |
           mkdir -p html/doc/assets
-          cp -R doc/assets/*.{png,svg} html/doc/assets
+          cp -R doc/assets/*.png html/doc/assets
         shell: bash
 
       - name: Manually patch cookie.js
