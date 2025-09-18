@@ -178,7 +178,7 @@ git clone git@github.com:UCL/TDMS.git
 
 module purge
 module load beta-modules
-module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 cmake/3.21.1
+module load gcc-libs/9.2.0 compilers/gnu/9.2.0 xorg-utils matlab/full/r2021a/9.10 fftw/3.3.6-pl2/gnu-4.9.2 hdf/5-1.10.5/gnu-9.2.0 cmake/3.21.1
 cd TDMS/tdms
 mkdir build; cd build
 cmake .. \
