@@ -25,7 +25,7 @@ GENERATE_LATEX         = NO
 EXTRACT_PRIVATE        = YES
 STRIP_CODE_COMMENTS    = NO
 
-# make behavior useful a CI test: warn undocumented
+# make behavior useful as a CI test: warn undocumented
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
