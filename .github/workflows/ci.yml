@@ -198,7 +198,7 @@ jobs:
         if: matrix.build_testing == 'OFF' && matrix.build_type == 'Debug'
         # If we use the build with testing ON, we'd also need to copy over (and
         # install) the libtdms.so so use the OFF build for simplicity.
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tdms_build_${{ matrix.os }}
           path: ${{ runner.workspace }}/build/tdms_build.tar
@@ -234,7 +234,7 @@ jobs:
           python3 -m pip install -r ${GITHUB_WORKSPACE}/tdms/tests/requirements.txt
 
       - name: Download build result
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: tdms_build_${{ matrix.os }}
           path: ${{ runner.workspace }}
