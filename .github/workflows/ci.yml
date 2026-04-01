@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v2.6.1
+        uses: matlab-actions/setup-matlab@v3.0.0
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -150,7 +150,7 @@ jobs:
       # Unit tests
       - name: Produce MATLAB unit test data
         if: matrix.build_testing == 'ON'
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:
           command: cd('tdms/tests/unit/benchmark_scripts/'), setup_unit_tests
 
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         if: matrix.build_testing == 'ON' && contains(matrix.os, 'ubuntu')
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
 
       # -------------------------------------------------------------------------------
       # Upload build artefact for system tests
@@ -220,7 +220,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v2.6.1
+        uses: matlab-actions/setup-matlab@v3.0.0
 
       - name: Install HDF5 libraries for Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
