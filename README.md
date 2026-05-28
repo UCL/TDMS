@@ -123,7 +123,7 @@ To compile and install, follow these steps:
 ```{sh}
 $ git clone git@github.com:UCL/TDMS.git
 $ cd TDMS
-$ git checkout v1.0.2 # the stable version
+$ git checkout v1.0.1 # the stable version
 $ mkdir build; cd build
 $ cmake ../tdms \
 $ # -DMatlab_ROOT_DIR=/usr/local/MATLAB/R20XXx/ \
