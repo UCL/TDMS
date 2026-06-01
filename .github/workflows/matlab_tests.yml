@@ -23,9 +23,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v2.6.1
+        uses: matlab-actions/setup-matlab@v3.0.1
 
       - name: Run script
-        uses: matlab-actions/run-command@v2
+        uses: matlab-actions/run-command@v3
         with:      # rfpcb contains a delta function definition which must be removed so a delta struct can be defined
           command: rmpath([matlabroot '/toolbox/rfpcb/rfpcb/shapes']), run('tdms/tests/matlab/run_tests.m')
